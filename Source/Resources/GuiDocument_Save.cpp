@@ -31,7 +31,7 @@ document_operation_visitors::SerializeRunVisitor
 						parent->subNodes.Add(replacedParent);
 						Ptr<XmlElement> oldParent = parent;
 						parent = replacedParent;
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							subRun->Accept(this);
 						}
@@ -39,7 +39,7 @@ document_operation_visitors::SerializeRunVisitor
 					}
 					else
 					{
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							subRun->Accept(this);
 						}
@@ -276,7 +276,7 @@ DocumentModel
 				content->name.value=L"Content";
 				doc->subNodes.Add(content);
 				
-				FOREACH(Ptr<DocumentParagraphRun>, p, paragraphs)
+				for (auto p : paragraphs)
 				{
 					SerializeRunVisitor visitor(content);
 					p->Accept(&visitor);

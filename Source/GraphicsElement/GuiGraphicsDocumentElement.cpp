@@ -48,7 +48,7 @@ SetPropertiesVisitor
 
 					void VisitContainer(DocumentContainerRun* run)
 					{
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							subRun->Accept(this);
 						}

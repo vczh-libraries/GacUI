@@ -131,7 +131,7 @@ GuiTreeViewInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Nodes)
 						{
@@ -307,7 +307,7 @@ GuiTreeNodeInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == GlobalStringKey::Empty)
 						{

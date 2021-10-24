@@ -33,7 +33,7 @@ If a run decides that itself should be cut, then leftRun and rightRun contains n
 					vint leftCount = 0;
 					Ptr<DocumentRun> selectedRun;
 
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						RunRange range = runRanges[subRun.Obj()];
 						if (range.start<position)

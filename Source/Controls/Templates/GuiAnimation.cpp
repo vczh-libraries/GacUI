@@ -205,7 +205,7 @@ IGuiAnimationCoroutine
 					}
 					for (vint i = 0; i < groupAnimations.Count(); i++)
 					{
-						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
+						for (auto animation : groupAnimations.GetByIndex(i))
 						{
 							animation->Pause();
 						}
@@ -220,7 +220,7 @@ IGuiAnimationCoroutine
 					}
 					for (vint i = 0; i < groupAnimations.Count(); i++)
 					{
-						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
+						for (auto animation : groupAnimations.GetByIndex(i))
 						{
 							animation->Resume();
 						}

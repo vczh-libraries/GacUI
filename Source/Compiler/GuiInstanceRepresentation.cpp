@@ -53,14 +53,14 @@ GuiAttSetterRepr
 		{
 			GuiValueRepr::CloneBody(repr);
 
-			FOREACH_INDEXER(GlobalStringKey, name, index, setters.Keys())
+			for (auto [name, index] : indexed(setters.Keys()))
 			{
 				auto src = setters.Values()[index];
 				auto dst = MakePtr<SetterValue>();
 
 				dst->binding = src->binding;
 				dst->attPosition = src->attPosition;
-				FOREACH(Ptr<GuiValueRepr>, value, src->values)
+				for (auto value : src->values)
 				{
 					dst->values.Add(value->Clone());
 				}
@@ -68,7 +68,7 @@ GuiAttSetterRepr
 				repr->setters.Add(name, dst);
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, name, index, eventHandlers.Keys())
+			for (auto [name, index] : indexed(eventHandlers.Keys()))
 			{
 				auto src = eventHandlers.Values()[index];
 				auto dst = MakePtr<EventValue>();
@@ -82,7 +82,7 @@ GuiAttSetterRepr
 				repr->eventHandlers.Add(name, dst);
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, name, index, environmentVariables.Keys())
+			for (auto [name, index] : indexed(environmentVariables.Keys()))
 			{
 				auto src = environmentVariables.Values()[index];
 				auto dst = MakePtr<EnvVarValue>();
@@ -124,7 +124,7 @@ GuiAttSetterRepr
 					auto value = setters.Values()[i];
 					if (key == GlobalStringKey::Empty)
 					{
-						FOREACH(Ptr<GuiValueRepr>, repr, value->values)
+						for (auto repr : value->values)
 						{
 							repr->FillXml(xml);
 						}
@@ -146,7 +146,7 @@ GuiAttSetterRepr
 								xmlProp->name.value += L"-" + value->binding.ToString();
 							}
 
-							FOREACH(Ptr<GuiValueRepr>, repr, value->values)
+							for (auto repr : value->values)
 							{
 								if (!repr.Cast<GuiTextRepr>())
 								{
@@ -157,7 +157,7 @@ GuiAttSetterRepr
 						}
 						else
 						{
-							FOREACH(Ptr<GuiValueRepr>, repr, value->values)
+							for (auto repr : value->values)
 							{
 								if (auto textRepr = repr.Cast<GuiTextRepr>())
 								{
@@ -288,7 +288,7 @@ GuiInstanceContext
 				}
 
 				// collect default attributes
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
+				for (auto element : XmlGetElements(xml))
 				{
 					if(auto name = parser->Parse({ resource }, element->name.value, element->codeRange.start, errors))
 					{
@@ -324,7 +324,7 @@ GuiInstanceContext
 				}
 
 				// collect values
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
+				for (auto element : XmlGetElements(xml))
 				{
 					if(auto name = parser->Parse({ resource }, element->name.value, element->name.codeRange.start, errors))
 					{
@@ -371,7 +371,7 @@ GuiInstanceContext
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
 				// collect values
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
+				for (auto element : XmlGetElements(xml))
 				{
 					if(auto name = parser->Parse({ resource }, element->name.value, element->name.codeRange.start, errors))
 					{
@@ -429,7 +429,7 @@ GuiInstanceContext
 				setter->tagPosition = { {resource},xml->codeRange.start };
 
 				// collect attributes as setters
-				FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
+				for (auto att : xml->attributes)
 				{
 					if(auto name = parser->Parse({ resource }, att->name.value, att->name.codeRange.start, errors))
 					{
@@ -522,7 +522,7 @@ GuiInstanceContext
 						ctor->typeNamespace = GlobalStringKey::Get(ctorName->namespaceName);
 						ctor->typeName = GlobalStringKey::Get(ctorName->name);
 						// collect attributes as setters
-						FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
+						for (auto att : xml->attributes)
 						{
 							if(auto attName = parser->Parse({ resource }, att->name.value, att->name.codeRange.start, errors))
 							{
@@ -601,7 +601,7 @@ GuiInstanceContext
 						L"presentation::theme::*";
 					namespaceAttributes.Add(att);
 				}
-				FOREACH(Ptr<XmlAttribute>, att, namespaceAttributes)
+				for (auto att : namespaceAttributes)
 				{
 					// check if the attribute defines a namespace
 					WString attName = att->name.value;
@@ -638,7 +638,7 @@ GuiInstanceContext
 						// extract all patterns in the namespace, split the value by ';'
 						List<WString> patterns;
 						SplitBySemicolon(att->value.value, patterns);
-						FOREACH(WString, pattern, patterns)
+						for (auto pattern : patterns)
 						{
 							// add the pattern to the namespace
 							Ptr<GuiInstanceNamespace> ns = new GuiInstanceNamespace;
@@ -658,7 +658,7 @@ GuiInstanceContext
 				}
 
 				// load instance
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml->rootElement))
+				for (auto element : XmlGetElements(xml->rootElement))
 				{
 					if (element->name.value == L"ref.Parameter")
 					{
@@ -782,7 +782,7 @@ GuiInstanceContext
 				}
 			}
 
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, parameters)
+			for (auto parameter : parameters)
 			{
 				auto xmlParameter = MakePtr<XmlElement>();
 				xmlParameter->name.value = L"ref.Parameter";
@@ -799,7 +799,7 @@ GuiInstanceContext
 				xmlParameter->attributes.Add(attClass);
 			}
 
-			FOREACH(Ptr<GuiInstanceLocalized>, localized, localizeds)
+			for (auto localized : localizeds)
 			{
 				auto xmlParameter = MakePtr<XmlElement>();
 				xmlParameter->name.value = L"ref.LocalizedStrings";
@@ -868,7 +868,7 @@ GuiInstanceContext
 				appliedStyles = true;
 
 				List<Ptr<GuiInstanceStyle>> styles;
-				FOREACH(WString, uri, stylePaths)
+				for (auto uri : stylePaths)
 				{
 					WString protocol, path;
 					if (IsResourceUrl(uri, protocol, path))
@@ -888,11 +888,11 @@ GuiInstanceContext
 					}
 				}
 
-				FOREACH(Ptr<GuiInstanceStyle>, style, styles)
+				for (auto style : styles)
 				{
 					List<Ptr<GuiConstructorRepr>> output;
 					ExecuteQuery(style->query, this, output);
-					FOREACH(Ptr<GuiConstructorRepr>, ctor, output)
+					for (auto ctor : output)
 					{
 						ApplyStyle(style, ctor);
 					}
@@ -923,18 +923,18 @@ GuiInstanceStyle
 				void Visit(GuiAttSetterRepr* repr)override
 				{
 					repr->fromStyle = true;
-					FOREACH(Ptr<GuiAttSetterRepr::SetterValue>, value, repr->setters.Values())
+					for (auto value : repr->setters.Values())
 					{
-						FOREACH(Ptr<GuiValueRepr>, subValue, value->values)
+						for (auto subValue : value->values)
 						{
 							subValue->Accept(this);
 						}
 					}
-					FOREACH(Ptr<GuiAttSetterRepr::EventValue>, value, repr->eventHandlers.Values())
+					for (auto value : repr->eventHandlers.Values())
 					{
 						value->fromStyle = true;
 					}
-					FOREACH(Ptr<GuiAttSetterRepr::EnvVarValue>, value, repr->environmentVariables.Values())
+					for (auto value : repr->environmentVariables.Values())
 					{
 						value->fromStyle = true;
 					}
@@ -999,7 +999,7 @@ GuiInstanceStyleContext
 			auto context = MakePtr<GuiInstanceStyleContext>();
 			if (xml->rootElement->name.value == L"Styles")
 			{
-				FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(xml->rootElement))
+				for (auto styleElement : XmlGetElements(xml->rootElement))
 				{
 					if (styleElement->name.value == L"Style")
 					{
@@ -1026,7 +1026,7 @@ GuiInstanceStyleContext
 			auto xmlStyles = MakePtr<XmlElement>();
 			xmlStyles->name.value = L"Styles";
 
-			FOREACH(Ptr<GuiInstanceStyle>, style, styles)
+			for (auto style : styles)
 			{
 				xmlStyles->subNodes.Add(style->SaveToXml());
 			}

@@ -80,7 +80,7 @@ DocumentModel::EditRangeOperations
 
 			// copy styles
 			List<WString> styleNames;
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, newDocument->paragraphs)
+			for (auto paragraph : newDocument->paragraphs)
 			{
 				CollectStyleName(paragraph.Obj(), styleNames);
 			}
@@ -249,11 +249,11 @@ DocumentModel::EditRun
 
 			// rename model's styles
 			typedef Pair<WString, WString> NamePair;
-			FOREACH(NamePair, name, From(oldNames).Pairwise(newNames))
+			for (auto name : From(oldNames).Pairwise(newNames))
 			{
 				model->RenameStyle(name.key, name.value);
 			}
-			FOREACH(WString, name, newNames)
+			for (auto name : newNames)
 			{
 				if((name.Length()==0 || name[0]!=L'#') && !styles.Keys().Contains(name))
 				{
@@ -441,7 +441,7 @@ DocumentModel::EditHyperlink
 			auto package = GetHyperlink(paragraphIndex, begin, end);
 			if (package->hyperlinks.Count() > 0)
 			{
-				FOREACH(Ptr<DocumentHyperlinkRun>, run, package->hyperlinks)
+				for (auto run : package->hyperlinks)
 				{
 					run->reference = reference;
 					run->normalStyleName = normalStyleName;
@@ -516,7 +516,7 @@ DocumentModel::EditStyleName
 			styles.Remove(oldStyleName);
 			styles.Add(newStyleName, style);
 
-			FOREACH(Ptr<DocumentStyle>, subStyle, styles.Values())
+			for (auto subStyle : styles.Values())
 			{
 				if(subStyle->parentStyleName==oldStyleName)
 				{
@@ -524,7 +524,7 @@ DocumentModel::EditStyleName
 				}
 			}
 
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, paragraphs)
+			for (auto paragraph : paragraphs)
 			{
 				ReplaceStyleName(paragraph.Obj(), oldStyleName, newStyleName);
 			}

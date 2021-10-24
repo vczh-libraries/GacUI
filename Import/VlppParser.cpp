@@ -240,7 +240,7 @@ ParsingAutoRecoverParser
 						processingFutureIndex++;
 						if(previous.future && previous.future->currentState==-1) continue;
 
-						FOREACH(vint, currentTableTokenIndex, prioritizedTokens)
+						for (auto currentTableTokenIndex : prioritizedTokens)
 						{
 							vint newInsertedTokenCount = previous.insertedTokenCount;
 							if (currentTableTokenIndex != ParsingTable::NormalReduce && currentTableTokenIndex != ParsingTable::LeftRecursiveReduce)
@@ -321,7 +321,7 @@ ParsingAutoRecoverParser
 
 			ParsingAutoRecoverParser::~ParsingAutoRecoverParser()
 			{
-				FOREACH(RecoverFuture, future, recoverFutures)
+				for (auto future : recoverFutures)
 				{
 					delete future.future;
 				}
@@ -727,7 +727,7 @@ ParsingAmbiguousParser
 					vint resolvableFutureLevels=SearchPathForOneStep(state, futures, resultBegin, resultEnd, errors);
 					BuildDecisions(state, futures, resultBegin, resultEnd, resolvableFutureLevels, errors);
 
-					FOREACH(ParsingState::Future*, future, futures)
+					for (auto future : futures)
 					{
 						delete future;
 					}
@@ -811,7 +811,7 @@ ParsingAutoRecoverAmbiguousParser
 					{
 						// try to see if the target token is reached
 						List<ParsingState::Future*> recoveryFutures;
-						FOREACH(ParsingState::Future*, future, consumedTokenFutures)
+						for (auto future : consumedTokenFutures)
 						{
 							if (future->selectedToken == currentTokenIndex)
 							{
@@ -825,7 +825,7 @@ ParsingAutoRecoverAmbiguousParser
 							// finally reached the expected currentTokenIndex
 							// move these previous futures to the end
 							// then the original parser algorith, will use these previous futures to reach the currentTokenIndex in the next step
-							FOREACH(ParsingState::Future*, future, recoveryFutures)
+							for (auto future : recoveryFutures)
 							{
 								futures.Remove(future);
 								futures.Add(future);
@@ -834,7 +834,7 @@ ParsingAutoRecoverAmbiguousParser
 							end = futures.Count();
 
 							// delete all futures in consumedTokenFutures
-							FOREACH(ParsingState::Future*, future, consumedTokenFutures)
+							for (auto future : consumedTokenFutures)
 							{
 								delete future;
 							}
@@ -1683,11 +1683,11 @@ PrepareSymbols
 						if(classType)
 						{
 							PrepareSymbolsTypeDefinitionVisitor visitor(manager, classType, errors);
-							FOREACH(Ptr<ParsingDefinitionTypeDefinition>, subType, node->subTypes)
+							for (auto subType : node->subTypes)
 							{
 								subType->Accept(&visitor);
 							}
-							FOREACH(Ptr<ParsingDefinitionClassMemberDefinition>, member, node->members)
+							for (auto member : node->members)
 							{
 								member->Accept(&visitor);
 							}
@@ -1719,7 +1719,7 @@ PrepareSymbols
 						if(enumType)
 						{
 							PrepareSymbolsTypeDefinitionVisitor visitor(manager, enumType, errors);
-							FOREACH(Ptr<ParsingDefinitionEnumMemberDefinition>, member, node->members)
+							for (auto member : node->members)
 							{
 								member->Accept(&visitor);
 							}
@@ -1736,13 +1736,13 @@ PrepareSymbols
 			{
 				{
 					PrepareSymbolsTypeDefinitionVisitor visitor(manager, manager->GetGlobal(), errors);
-					FOREACH(Ptr<ParsingDefinitionTypeDefinition>, typeDefinition, definition->types)
+					for (auto typeDefinition : definition->types)
 					{
 						typeDefinition->Accept(&visitor);
 					}
 				}
 
-				FOREACH(Ptr<ParsingDefinitionTokenDefinition>, token, definition->tokens)
+				for (auto token : definition->tokens)
 				{
 					if(manager->GetGlobal()->GetSubSymbolByName(token->name))
 					{
@@ -1762,7 +1762,7 @@ PrepareSymbols
 					}
 				}
 
-				FOREACH(Ptr<ParsingDefinitionRuleDefinition>, rule, definition->rules)
+				for (auto rule : definition->rules)
 				{
 					if(manager->GetGlobal()->GetSubSymbolByName(rule->name))
 					{
@@ -1838,7 +1838,7 @@ ValidateRuleStructure
 					case ParsingSymbol::TokenDef:
 						{
 							bool discard=false;
-							FOREACH(Ptr<ParsingDefinitionTokenDefinition>, token, definition->tokens)
+							for (auto token : definition->tokens)
 							{
 								if(token->name==symbol->GetName())
 								{
@@ -1962,7 +1962,7 @@ ValidateRuleStructure
 
 			void ValidateRuleStructure(Ptr<definitions::ParsingDefinition> definition, Ptr<definitions::ParsingDefinitionRuleDefinition> rule, ParsingSymbolManager* manager, collections::List<Ptr<ParsingError>>& errors)
 			{
-				FOREACH(Ptr<ParsingDefinitionGrammar>, grammar, rule->grammars)
+				for (auto grammar : rule->grammars)
 				{
 					ValidateRuleStructureVisitor visitor(definition, manager, rule.Obj(), errors);
 					grammar->Accept(&visitor);
@@ -2004,7 +2004,7 @@ ResolveRuleSymbols
 				WString ToString()
 				{
 					WString result;
-					FOREACH(Ptr<GrammarPathFragment>, fragment, fragments)
+					for (auto fragment : fragments)
 					{
 						if(!fragment->epsilon)
 						{
@@ -2074,7 +2074,7 @@ ResolveRuleSymbols
 
 				void BuildPath(List<Ptr<GrammarPath>>& paths)
 				{
-					FOREACH(GrammarPathFragment*, fragment, currentFragmentEnds)
+					for (auto fragment : currentFragmentEnds)
 					{
 						Ptr<GrammarPath> path=new GrammarPath;
 						paths.Add(path);
@@ -2299,7 +2299,7 @@ ResolveRuleSymbols
 			{
 				ParsingSymbol* ruleType=manager->GetGlobal()->GetSubSymbolByName(rule->name)->GetDescriptorSymbol();
 
-				FOREACH(Ptr<ParsingDefinitionGrammar>, grammar, rule->grammars)
+				for (auto grammar : rule->grammars)
 				{
 					List<Ptr<GrammarPath>> paths;
 					{
@@ -2308,12 +2308,12 @@ ResolveRuleSymbols
 						visitor.BuildPath(paths);
 					}
 
-					FOREACH(Ptr<GrammarPath>, path, paths)
+					for (auto path : paths)
 					{
 						path->pathType=ruleType;
 						vint createdTypeCount=0;
 						vint transitionCount=0;
-						FOREACH(Ptr<GrammarPathFragment>, fragment, path->fragments)
+						for (auto fragment : path->fragments)
 						{
 							if(fragment->createdType)
 							{
@@ -2341,9 +2341,9 @@ ResolveRuleSymbols
 					}
 
 					ResolveAssignerGrammarVisitor::GrammarPathMap grammarPathMap;
-					FOREACH(Ptr<GrammarPath>, path, paths)
+					for (auto path : paths)
 					{
-						FOREACH(Ptr<GrammarPathFragment>, fragment, path->fragments)
+						for (auto fragment : path->fragments)
 						{
 							ParsingDefinitionGrammar* grammar=fragment->grammar;
 							Ptr<GrammarPathContainer> container;
@@ -2362,7 +2362,7 @@ ResolveRuleSymbols
 					}
 
 					ResolveAssignerGrammarVisitor visitor(manager, errors, grammarPathMap);
-					FOREACH(ParsingDefinitionGrammar*, grammar, grammarPathMap.Keys())
+					for (auto grammar : grammarPathMap.Keys())
 					{
 						grammar->Accept(&visitor);
 					}
@@ -2418,7 +2418,7 @@ ResolveSymbols
 					ParsingSymbol* classType=manager->CacheGetClassType(node.Obj());
 					if(classType)
 					{
-						FOREACH(Ptr<ParsingDefinitionTypeDefinition>, subType, node->subTypes)
+						for (auto subType : node->subTypes)
 						{
 							ResolveTypeSymbols(subType, manager, classType, errors);
 						}
@@ -2428,12 +2428,12 @@ ResolveSymbols
 
 			void ResolveSymbols(Ptr<definitions::ParsingDefinition> definition, ParsingSymbolManager* manager, collections::List<Ptr<ParsingError>>& errors)
 			{
-				FOREACH(Ptr<ParsingDefinitionTypeDefinition>, type, definition->types)
+				for (auto type : definition->types)
 				{
 					ResolveTypeSymbols(type, manager, manager->GetGlobal(), errors);
 				}
 
-				FOREACH(Ptr<ParsingDefinitionRuleDefinition>, rule, definition->rules)
+				for (auto rule : definition->rules)
 				{
 					vint errorCount=errors.Count();
 					ValidateRuleStructure(definition, rule, manager, errors);
@@ -2802,7 +2802,7 @@ CreateNondeterministicPDAFromEpsilonPDA::closure_searching
 			// closure searching function
 			void SearchClosureInternal(ClosureItem::SearchResult(*closurePredicate)(Transition*), List<Transition*>& transitionPath, Transition* transition, State* state, List<ClosureItem>& closure)
 			{
-				FOREACH(Transition*, singleTransitionPath, transitionPath)
+				for (auto singleTransitionPath : transitionPath)
 				{
 					if(singleTransitionPath->source==state && closurePredicate(singleTransitionPath)!=ClosureItem::Blocked)
 					{
@@ -2818,7 +2818,7 @@ CreateNondeterministicPDAFromEpsilonPDA::closure_searching
 				{
 				case ClosureItem::Continue:
 					{
-						FOREACH(Transition*, newTransition, state->transitions)
+						for (auto newTransition : state->transitions)
 						{
 							if(!transitionPath.Contains(newTransition))
 							{
@@ -2884,7 +2884,7 @@ RemoveEpsilonTransitions
 					// search for epsilon closure
 					List<ClosureItem> closure;
 					SearchClosure(&EpsilonClosure, currentOldState, closure);
-					FOREACH(ClosureItem, closureItem, closure)
+					for (auto closureItem : closure)
 					{
 						Transition* oldTransition=closureItem.transitions->Get(closureItem.transitions->Count()-1);
 						if(!closureItem.cycle || oldTransition->transitionType!=Transition::Epsilon)
@@ -2895,7 +2895,7 @@ RemoveEpsilonTransitions
 								// keep a epsilon transition that without the last "TokenFinish"
 								State* newEndState=GetMappedState(automaton, oldTransition->source, scanningStates, oldNewStateMap);
 								Transition* transition=automaton->Epsilon(currentNewState, newEndState);
-								FOREACH(Transition*, pathTransition, *closureItem.transitions.Obj())
+								for (auto pathTransition : *closureItem.transitions.Obj())
 								{
 									if(pathTransition==oldTransition) break;
 									CopyFrom(transition->actions, pathTransition->actions, true);
@@ -2906,7 +2906,7 @@ RemoveEpsilonTransitions
 								// build compacted non-epsilon transition to the target state of the path
 								State* newEndState=GetMappedState(automaton, oldTransition->target, scanningStates, oldNewStateMap);
 								Transition* transition=automaton->CopyTransition(currentNewState, newEndState, oldTransition);
-								FOREACH(Transition*, pathTransition, *closureItem.transitions.Obj())
+								for (auto pathTransition : *closureItem.transitions.Obj())
 								{
 									CopyFrom(transition->actions, pathTransition->actions, true);
 								}
@@ -3074,7 +3074,7 @@ CreateRuleEpsilonPDA
 				ruleInfo->startState=automaton->RuleStartState(rule.Obj());
 				automaton->TokenBegin(ruleInfo->rootRuleStartState, ruleInfo->startState);
 
-				FOREACH(Ptr<ParsingDefinitionGrammar>, grammar, rule->grammars)
+				for (auto grammar : rule->grammars)
 				{
 					State* grammarStartState=automaton->StartState(rule.Obj(), grammar.Obj(), grammar.Obj());
 					State* grammarEndState=automaton->EndState(rule.Obj(), grammar.Obj(), grammar.Obj());
@@ -3094,7 +3094,7 @@ CreateEpsilonPDA
 			Ptr<Automaton> CreateEpsilonPDA(Ptr<definitions::ParsingDefinition> definition, ParsingSymbolManager* manager)
 			{
 				Ptr<Automaton> automaton=new Automaton(manager);
-				FOREACH(Ptr<ParsingDefinitionRuleDefinition>, rule, definition->rules)
+				for (auto rule : definition->rules)
 				{
 					CreateRuleEpsilonPDA(automaton, rule, manager);
 				}
@@ -3227,9 +3227,9 @@ CreateLookAhead
 
 					// check if there are non-stable look aheads in two transitions points to the same state
 					// in such situation means that the two transition cannot always be determined using look aheads
-					FOREACH(Ptr<ParsingTable::LookAheadInfo>, lai1, la1)
+					for (auto lai1 : la1)
 					{
-						FOREACH(Ptr<ParsingTable::LookAheadInfo>, lai2, la2)
+						for (auto lai2 : la2)
 						{
 							if (lai1->state == lai2->state)
 							{
@@ -3277,7 +3277,7 @@ CollectAttribute
 
 			void CollectAttributeInfo(Ptr<ParsingTable::AttributeInfoList> att, List<Ptr<definitions::ParsingDefinitionAttribute>>& atts)
 			{
-				FOREACH(Ptr<definitions::ParsingDefinitionAttribute>, datt, atts)
+				for (auto datt : atts)
 				{
 					Ptr<ParsingTable::AttributeInfo> tatt=new ParsingTable::AttributeInfo(datt->name);
 					CopyFrom(tatt->arguments, datt->arguments);
@@ -3359,7 +3359,7 @@ GenerateTable
 
 				// find all class types
 				CollectType(manager->GetGlobal(), types);
-				FOREACH(ParsingSymbol*, type, types)
+				for (auto type : types)
 				{
 					Ptr<ParsingTable::AttributeInfoList> typeAtt = new ParsingTable::AttributeInfoList;
 					ParsingSymbol* parent = type;
@@ -3397,13 +3397,13 @@ GenerateTable
 				}
 
 				// find all class fields
-				FOREACH(ParsingSymbol*, type, orderedChildTypeKeys)
+				for (auto type : orderedChildTypeKeys)
 				{
 					List<ParsingSymbol*>& children = *childTypeValues[type].Obj();
 					ParsingDefinitionClassDefinition* classDef = manager->CacheGetClassDefinition(type);
 					List<vint> fieldAtts;
 
-					FOREACH_INDEXER(Ptr<ParsingDefinitionClassMemberDefinition>, field, index, classDef->members)
+					for (auto [field, index] : indexed(classDef->members))
 					{
 						if (field->attributes.Count() > 0)
 						{
@@ -3416,10 +3416,10 @@ GenerateTable
 						}
 					}
 
-					FOREACH(ParsingSymbol*, child, children)
+					for (auto child : children)
 					{
 						WString type = GetTypeFullName(child);
-						FOREACH_INDEXER(Ptr<ParsingDefinitionClassMemberDefinition>, field, index, classDef->members)
+						for (auto [field, index] : indexed(classDef->members))
 						{
 							treeFieldAtts.Add(Pair<WString, WString>(type, field->name), fieldAtts[index]);
 						}
@@ -3437,7 +3437,7 @@ GenerateTable
 				Dictionary<WString, vint> tokenAtts;
 				Dictionary<WString, vint> ruleAtts;
 
-				FOREACH(Ptr<ParsingDefinitionTokenDefinition>, token, definition->tokens)
+				for (auto token : definition->tokens)
 				{
 					if (token->attributes.Count() > 0)
 					{
@@ -3465,7 +3465,7 @@ GenerateTable
 				/***********************************************************************
 				find all rules
 				***********************************************************************/
-				FOREACH(Ptr<ParsingDefinitionRuleDefinition>, rule, definition->rules)
+				for (auto rule : definition->rules)
 				{
 					if (rule->attributes.Count() > 0)
 					{
@@ -3486,7 +3486,7 @@ GenerateTable
 				{
 					vint currentState = 0;
 					List<State*> scanningStates;
-					FOREACH(Ptr<RuleInfo>, ruleInfo, jointPDA->ruleInfos)
+					for (auto ruleInfo : jointPDA->ruleInfos)
 					{
 						if (!scanningStates.Contains(ruleInfo->rootRuleStartState))
 						{
@@ -3498,7 +3498,7 @@ GenerateTable
 							State* state = scanningStates[currentState++];
 							stateIds.Add(state);
 
-							FOREACH(Transition*, transition, state->transitions)
+							for (auto transition : state->transitions)
 							{
 								if (!scanningStates.Contains(transition->target))
 								{
@@ -3512,7 +3512,7 @@ GenerateTable
 
 				// there will be some states that is used in shift and reduce but it is not a reachable state
 				// so the state table will record all state
-				FOREACH(Ptr<State>, state, jointPDA->states)
+				for (auto state : jointPDA->states)
 				{
 					if (!stateIds.Contains(state.Obj()))
 					{
@@ -3526,7 +3526,7 @@ GenerateTable
 				/***********************************************************************
 				fill attribute infos
 				***********************************************************************/
-				FOREACH_INDEXER(Ptr<ParsingTable::AttributeInfoList>, att, index, atts)
+				for (auto [att, index] : indexed(atts))
 				{
 					table->SetAttributeInfo(index, att);
 				}
@@ -3535,7 +3535,7 @@ GenerateTable
 				fill tree type infos
 				***********************************************************************/
 				typedef Pair<WString, vint> TreeTypeAttsPair;
-				FOREACH_INDEXER(TreeTypeAttsPair, type, index, typeAtts)
+				for (auto [type, index] : indexed(typeAtts))
 				{
 					table->SetTreeTypeInfo(index, ParsingTable::TreeTypeInfo(type.key, type.value));
 				}
@@ -3544,7 +3544,7 @@ GenerateTable
 				fill tree field infos
 				***********************************************************************/
 				typedef Pair<Pair<WString, WString>, vint> TreeFieldAttsPair;
-				FOREACH_INDEXER(TreeFieldAttsPair, field, index, treeFieldAtts)
+				for (auto [field, index] : indexed(treeFieldAtts))
 				{
 					table->SetTreeFieldInfo(index, ParsingTable::TreeFieldInfo(field.key.key, field.key.value, field.value));
 				}
@@ -3552,7 +3552,7 @@ GenerateTable
 				/***********************************************************************
 				fill token infos
 				***********************************************************************/
-				FOREACH(ParsingSymbol*, symbol, tokenIds.Keys())
+				for (auto symbol : tokenIds.Keys())
 				{
 					ParsingTable::TokenInfo info;
 					info.name = symbol->GetName();
@@ -3563,7 +3563,7 @@ GenerateTable
 					table->SetTokenInfo(id, info);
 				}
 
-				FOREACH_INDEXER(WString, name, i, discardTokens)
+				for (auto [name, i] : indexed(discardTokens))
 				{
 					ParsingSymbol* symbol = jointPDA->symbolManager->GetGlobal()->GetSubSymbolByName(name);
 
@@ -3577,7 +3577,7 @@ GenerateTable
 				/***********************************************************************
 				fill rule infos
 				***********************************************************************/
-				FOREACH_INDEXER(ParsingDefinitionRuleDefinition*, rule, i, jointPDA->orderedRulesDefs)
+				for (auto [rule, i] : indexed(jointPDA->orderedRulesDefs))
 				{
 					Ptr<RuleInfo> pdaRuleInfo = jointPDA->ruleDefToInfoMap[rule];
 					ParsingTable::RuleInfo info;
@@ -3603,7 +3603,7 @@ GenerateTable
 				/***********************************************************************
 				fill state infos
 				***********************************************************************/
-				FOREACH_INDEXER(State*, state, i, stateIds)
+				for (auto [state, i] : indexed(stateIds))
 				{
 					ParsingTable::StateInfo info;
 					info.ruleName = state->ownerRule->name;
@@ -3615,12 +3615,12 @@ GenerateTable
 				/***********************************************************************
 				fill transition table
 				***********************************************************************/
-				FOREACH_INDEXER(State*, state, stateIndex, stateIds)
+				for (auto [state, stateIndex] : indexed(stateIds))
 				{
 					// if this state is not necessary, stop building the table
 					if (stateIndex >= availableStateCount) break;
 
-					FOREACH(Transition*, transition, state->transitions)
+					for (auto transition : state->transitions)
 					{
 						vint tokenIndex = -1;
 						switch (transition->transitionType)
@@ -3655,7 +3655,7 @@ GenerateTable
 						item->targetState = stateIds.IndexOf(transition->target);
 						bag->transitionItems.Add(item);
 
-						FOREACH(Ptr<Action>, action, transition->actions)
+						for (auto action : transition->actions)
 						{
 							ParsingTable::Instruction ins;
 							switch (action->actionType)
@@ -3842,7 +3842,7 @@ CreateJointPDAFromNondeterministicPDA
 				// build rule info data
 				Dictionary<WString, ParsingDefinitionRuleDefinition*> ruleMap;
 				Dictionary<State*, State*> oldNewStateMap;
-				FOREACH(ParsingDefinitionRuleDefinition*, rule, nondeterministicPDA->orderedRulesDefs)
+				for (auto rule : nondeterministicPDA->orderedRulesDefs)
 				{
 					// build new rule info
 					Ptr<RuleInfo> ruleInfo=nondeterministicPDA->ruleDefToInfoMap[rule];
@@ -3863,7 +3863,7 @@ CreateJointPDAFromNondeterministicPDA
 					newRuleInfo->startState->stateExpression=ruleInfo->startState->stateExpression;
 				}
 
-				FOREACH(Ptr<State>, oldState, nondeterministicPDA->states)
+				for (auto oldState : nondeterministicPDA->states)
 				{
 					if((oldState->inputs.Count()>0 || oldState->transitions.Count()>0) && !oldNewStateMap.Keys().Contains(oldState.Obj()))
 					{
@@ -3874,13 +3874,13 @@ CreateJointPDAFromNondeterministicPDA
 				}
 
 				// create transitions
-				FOREACH(ParsingDefinitionRuleDefinition*, rule, nondeterministicPDA->orderedRulesDefs)
+				for (auto rule : nondeterministicPDA->orderedRulesDefs)
 				{
 					Ptr<RuleInfo> ruleInfo=nondeterministicPDA->ruleDefToInfoMap[rule];
 					Ptr<RuleInfo> newRuleInfo=automaton->ruleDefToInfoMap[rule];
 
 					// complete new rule info
-					FOREACH(State*, endState, ruleInfo->endStates)
+					for (auto endState : ruleInfo->endStates)
 					{
 						newRuleInfo->endStates.Add(oldNewStateMap[endState]);
 					}
@@ -3894,7 +3894,7 @@ CreateJointPDAFromNondeterministicPDA
 					{
 						State* currentOldState=scanningStates[currentStateIndex++];
 						State* currentNewState=oldNewStateMap[currentOldState];
-						FOREACH(Transition*, oldTransition, currentOldState->transitions)
+						for (auto oldTransition : currentOldState->transitions)
 						{
 							State* oldSource=oldTransition->source;
 							State* oldTarget=oldTransition->target;
@@ -3922,7 +3922,7 @@ CreateJointPDAFromNondeterministicPDA
 									shiftTransition->actions.Add(action);
 								}
 
-								FOREACH(State*, oldEndState, oldRuleInfo->endStates)
+								for (auto oldEndState : oldRuleInfo->endStates)
 								{
 									Transition* reduceTransition=automaton->NormalReduce(oldNewStateMap[oldEndState], newTarget);
 									Ptr<Action> action=new Action;
@@ -3961,7 +3961,7 @@ CompactJointPDA
 
 			void CompactJointPDA(Ptr<Automaton> jointPDA)
 			{
-				FOREACH(Ptr<State>, state, jointPDA->states)
+				for (auto state : jointPDA->states)
 				{
 					State* currentState=state.Obj();
 
@@ -3969,7 +3969,7 @@ CompactJointPDA
 					List<ClosureItem> closure;
 					SearchClosure(&ShiftReduceCompactClosure, currentState, closure);
 
-					FOREACH(ClosureItem, closureItem, closure)
+					for (auto closureItem : closure)
 					{
 						Transition* lastTransition=closureItem.transitions->Get(closureItem.transitions->Count()-1);
 						Transition::StackOperationType stackOperationType=Transition::None;
@@ -3979,9 +3979,9 @@ CompactJointPDA
 						{
 							bool containsShift=false;
 							bool containsReduce=false;
-							FOREACH(Transition*, pathTransition, *closureItem.transitions.Obj())
+							for (auto pathTransition : *closureItem.transitions.Obj())
 							{
-								FOREACH(Ptr<Action>, action, pathTransition->actions)
+								for (auto action : pathTransition->actions)
 								{
 									if(action->actionType==Action::Shift) containsShift=true;
 									if(action->actionType==Action::Reduce) containsReduce=true;
@@ -4029,7 +4029,7 @@ CompactJointPDA
 							// there will be <shift* token>, <reduce* token> or <reduce* shift* token>
 							// but there will not be something like <reduce* shift* reduce* token>
 							// so we can append stackPattern safely
-							FOREACH(Transition*, pathTransition, *closureItem.transitions.Obj())
+							for (auto pathTransition : *closureItem.transitions.Obj())
 							{
 								CopyFrom(transition->actions, pathTransition->actions, true);
 							}
@@ -4057,7 +4057,7 @@ MarkLeftRecursiveInJointPDA
 				vint errorCount=errors.Count();
 				// record all left recursive shifts and delete all left recursive epsilon transition
 				SortedList<Pair<State*, State*>> leftRecursiveShifts;
-				FOREACH(Ptr<State>, state, jointPDA->states)
+				for (auto state : jointPDA->states)
 				{
 					for(vint i=state->transitions.Count()-1;i>=0;i--)
 					{
@@ -4065,7 +4065,7 @@ MarkLeftRecursiveInJointPDA
 						if(transition->stackOperationType==Transition::LeftRecursive)
 						{
 							Ptr<Action> shiftAction;
-							FOREACH(Ptr<Action>, action, transition->actions)
+							for (auto action : transition->actions)
 							{
 								if(action->actionType==Action::Shift)
 								{
@@ -4097,9 +4097,9 @@ MarkLeftRecursiveInJointPDA
 				// change all reduce actions whose (shiftReduceSource, shiftReduceTarget) is recorded in leftRecursiveShifts to left-recursive-reduce
 				// when a reduce is converted to a left-recursive-reduce, the corresponding state in stackPattern should be removed
 				// so this will keep count(Reduce) == count(stackPattern)
-				FOREACH(Ptr<State>, state, jointPDA->states)
+				for (auto state : jointPDA->states)
 				{
-					FOREACH(Transition*, transition, state->transitions)
+					for (auto transition : state->transitions)
 					{
 						for(vint i=transition->actions.Count()-1;i>=0;i--)
 						{
@@ -4135,13 +4135,13 @@ MarkLeftRecursiveInJointPDA
 				}
 
 				// delete complicated transitions
-				FOREACH(Ptr<State>, state, jointPDA->states)
+				for (auto state : jointPDA->states)
 				{
 					while(true)
 					{
 						bool deleted=false;
-						FOREACH(Transition*, t1, state->transitions)
-						FOREACH(Transition*, t2, state->transitions)
+						for (auto t1 : state->transitions)
+						for (auto t2 : state->transitions)
 						if(t1!=t2)
 						{
 							if(Transition::IsEquivalent(t1, t2, true))
@@ -4266,7 +4266,7 @@ RearrangeState
 			{
 				if(!stateContentSorted.Contains(state))
 				{
-					FOREACH(Transition*, transition, state->transitions)
+					for (auto transition : state->transitions)
 					{
 						CopyFrom(transition->actions, From(transition->actions).OrderBy(&CompareActionForRearranging));
 					}
@@ -4298,7 +4298,7 @@ MoveActionsForMergingState
 				}
 
 				// copy all movable actions
-				FOREACH(Transition*, t, transition->source->inputs)
+				for (auto t : transition->source->inputs)
 				{
 					CopyFrom(t->actions, movableActions, true);
 				}
@@ -4362,7 +4362,7 @@ MergeState2ToState1Because(Transitions|Input)
 				{
 					Transition* t2=state2->inputs[i];
 					bool add=true;
-					FOREACH(Transition*, t1, state1->inputs)
+					for (auto t1 : state1->inputs)
 					{
 						if(Transition::IsEquivalent(t1, t2, false) && t1->source==t2->source)
 						{
@@ -4391,7 +4391,7 @@ MergeState2ToState1Because(Transitions|Input)
 				{
 					Transition* t2=state2->transitions[i];
 					bool add=true;
-					FOREACH(Transition*, t1, state1->transitions)
+					for (auto t1 : state1->transitions)
 					{
 						if(Transition::IsEquivalent(t1, t2, false) && t1->target==t2->target)
 						{
@@ -4482,7 +4482,7 @@ CreateNondeterministicPDAFromEpsilonPDA
 			Ptr<Automaton> CreateNondeterministicPDAFromEpsilonPDA(Ptr<Automaton> epsilonPDA)
 			{
 				Ptr<Automaton> automaton=new Automaton(epsilonPDA->symbolManager);
-				FOREACH(ParsingDefinitionRuleDefinition*, rule, epsilonPDA->orderedRulesDefs)
+				for (auto rule : epsilonPDA->orderedRulesDefs)
 				{
 					// build new rule info
 					Ptr<RuleInfo> ruleInfo=epsilonPDA->ruleDefToInfoMap[rule];
@@ -4521,7 +4521,7 @@ CreateNondeterministicPDAFromEpsilonPDA
 					newRuleInfo->startState=newRuleInfo->rootRuleStartState->transitions[0]->target;
 
 					// record end states
-					FOREACH(State*, state, newStates)
+					for (auto state : newStates)
 					{
 						if(state->endState)
 						{
@@ -6310,13 +6310,13 @@ Logger (ParsingDefinitionGrammar)
 
 			void Log(Ptr<ParsingDefinition> definition, TextWriter& writer)
 			{
-				FOREACH(Ptr<ParsingDefinitionTypeDefinition>, type, definition->types)
+				for (auto type : definition->types)
 				{
 					Log(type.Obj(), L"", writer);
 					writer.WriteLine(L"");
 				}
 
-				FOREACH(Ptr<ParsingDefinitionTokenDefinition>, token, definition->tokens)
+				for (auto token : definition->tokens)
 				{
 					if(token->discard)
 					{
@@ -6334,7 +6334,7 @@ Logger (ParsingDefinitionGrammar)
 				}
 				writer.WriteLine(L"");
 
-				FOREACH(Ptr<ParsingDefinitionRuleDefinition>, rule, definition->rules)
+				for (auto rule : definition->rules)
 				{
 					writer.WriteString(L"rule ");
 					Log(rule->type.Obj(), writer);
@@ -6343,7 +6343,7 @@ Logger (ParsingDefinitionGrammar)
 					LogAttributeList(rule.Obj(), writer);
 					writer.WriteLine(L"");
 
-					FOREACH(Ptr<ParsingDefinitionGrammar>, grammar, rule->grammars)
+					for (auto grammar : rule->grammars)
 					{
 						writer.WriteString(L"        = ");
 						Log(grammar.Obj(), writer);
@@ -6385,7 +6385,7 @@ Logger (Automaton)
 
 			void Log(Ptr<Automaton> automaton, stream::TextWriter& writer)
 			{
-				FOREACH(Ptr<RuleInfo>, ruleInfo, automaton->ruleInfos)
+				for (auto ruleInfo : automaton->ruleInfos)
 				{
 					writer.WriteString(L"Root Rule Start: ");
 					writer.WriteLine(ruleInfo->rootRuleStartState->stateName);
@@ -6396,7 +6396,7 @@ Logger (Automaton)
 					writer.WriteString(L"Rule Start: ");
 					writer.WriteLine(ruleInfo->startState->stateName);
 
-					FOREACH(State*, endState, ruleInfo->endStates)
+					for (auto endState : ruleInfo->endStates)
 					{
 						writer.WriteString(L"Rule End: ");
 						writer.WriteLine(endState->stateName);
@@ -6406,7 +6406,7 @@ Logger (Automaton)
 				}
 
 				List<State*> states;
-				FOREACH(Ptr<RuleInfo>, ruleInfo, automaton->ruleInfos)
+				for (auto ruleInfo : automaton->ruleInfos)
 				{
 					vint currentState=states.Count();
 					states.Add(ruleInfo->rootRuleStartState);
@@ -6425,7 +6425,7 @@ Logger (Automaton)
 						}
 						writer.WriteLine(state->stateName);
 
-						FOREACH(Transition*, transition, state->transitions)
+						for (auto transition : state->transitions)
 						{
 							if(!states.Contains(transition->target))
 							{
@@ -6472,7 +6472,7 @@ Logger (Automaton)
 							}
 							writer.WriteLine(transition->target->stateName);
 
-							FOREACH(Ptr<Action>, action, transition->actions)
+							for (auto action : transition->actions)
 							{
 								switch(action->actionType)
 								{
@@ -6538,7 +6538,7 @@ Logger (ParsingTable)
 				if(attributeIndex!=-1)
 				{
 					Ptr<ParsingTable::AttributeInfoList> atts=table->GetAttributeInfo(attributeIndex);
-					FOREACH(Ptr<ParsingTable::AttributeInfo>, att, atts->attributes)
+					for (auto att : atts->attributes)
 					{
 						writer.WriteString(prefix);
 						writer.WriteString(L"@");
@@ -6586,21 +6586,21 @@ Logger (ParsingTable)
 						if(bag)
 						{
 							WString content;
-							FOREACH(Ptr<ParsingTable::TransitionItem>, item, bag->transitionItems)
+							for (auto item : bag->transitionItems)
 							{
 								if(content!=L"") content+=L"\r\n";
 								content+=itow(item->targetState);
-								FOREACH_INDEXER(vint, state, index, item->stackPattern)
+								for (auto [state, index] : indexed(item->stackPattern))
 								{
 									content+=(index==0?L" : ":L", ");
 									content+=itow(state);
 								}
 								content+=L"\r\n";
 
-								FOREACH(Ptr<ParsingTable::LookAheadInfo>, lookAhead, item->lookAheads)
+								for (auto lookAhead : item->lookAheads)
 								{
 									content+=L"  ";
-									FOREACH_INDEXER(vint, token, index, lookAhead->tokens)
+									for (auto [token, index] : indexed(lookAhead->tokens))
 									{
 										content+=(index==0?L"> ":L", ");
 										content+=itow(token);
@@ -6609,7 +6609,7 @@ Logger (ParsingTable)
 								}
 
 								content+=L"  ";
-								FOREACH(ParsingTable::Instruction, ins, item->instructions)
+								for (auto ins : item->instructions)
 								{
 									switch(ins.instructionType)
 									{
@@ -7187,10 +7187,10 @@ ParsingState
 				if(item->lookAheads.Count()>0 && lookAheadTokens)
 				{
 					passLookAheadTest=false;
-					FOREACH(Ptr<ParsingTable::LookAheadInfo>, info, item->lookAheads)
+					for (auto info : item->lookAheads)
 					{
 						vint index=0;
-						FOREACH(vint, token, *lookAheadTokens)
+						for (auto token : *lookAheadTokens)
 						{
 							if(info->tokens[index]!=token)
 							{
@@ -7669,7 +7669,7 @@ ParsingTreeBuilder
 						{
 							Ptr<ParsingTreeObject> ambiguousNode=new ParsingTreeObject(result.ambiguityNodeType, operationTarget->GetCodeRange());
 							Ptr<ParsingTreeArray> items=new ParsingTreeArray(L"", operationTarget->GetCodeRange());
-							FOREACH(Ptr<ParsingTreeObject>, node, ambiguityNodes)
+							for (auto node : ambiguityNodes)
 							{
 								items->AddItem(node);
 							}
@@ -8120,7 +8120,7 @@ ParsingTable::LookAheadInfo
 				{
 					if(Ptr<TransitionBag> bag=table->GetTransitionBag(state, i))
 					{
-						FOREACH(Ptr<TransitionItem>, item, bag->transitionItems)
+						for (auto item : bag->transitionItems)
 						{
 							if (i == ParsingTable::NormalReduce || i == ParsingTable::LeftRecursiveReduce)
 							{
@@ -8165,7 +8165,7 @@ ParsingTable::TransitionItem
 			{
 				bool hasReduce=false;
 				bool hasLrReduce=false;
-				FOREACH(ParsingTable::Instruction, ins, t->instructions)
+				for (auto ins : t->instructions)
 				{
 					switch(ins.instructionType)
 					{
@@ -8453,11 +8453,11 @@ ParsingTable
 			void ParsingTable::Initialize()
 			{
 				List<WString> tokens;
-				FOREACH(TokenInfo, info, From(tokenInfos).Skip(UserTokenStart))
+				for (auto info : From(tokenInfos).Skip(UserTokenStart))
 				{
 					tokens.Add(info.regex);
 				}
-				FOREACH(TokenInfo, info, discardTokenInfos)
+				for (auto info : discardTokenInfos)
 				{
 					tokens.Add(info.regex);
 				}
@@ -8474,7 +8474,7 @@ ParsingTable
 				lexer = new RegexLexer(tokens, {});
 
 				ruleMap.Clear();
-				FOREACH_INDEXER(RuleInfo, rule, index, ruleInfos)
+				for (auto [rule, index] : indexed(ruleInfos))
 				{
 					ruleMap.Add(rule.name, index);
 				}
@@ -8485,13 +8485,13 @@ ParsingTable
 				}
 
 				treeTypeInfoMap.Clear();
-				FOREACH_INDEXER(TreeTypeInfo, info, index, treeTypeInfos)
+				for (auto [info, index] : indexed(treeTypeInfos))
 				{
 					treeTypeInfoMap.Add(info.type, index);
 				}
 
 				treeFieldInfoMap.Clear();
-				FOREACH_INDEXER(TreeFieldInfo, info, index, treeFieldInfos)
+				for (auto [info, index] : indexed(treeFieldInfos))
 				{
 					Pair<WString, WString> key(info.type, info.field);
 					treeFieldInfoMap.Add(key, index);
@@ -8592,7 +8592,7 @@ ParsingTreeNode::TraversalVisitor
 			{
 			case TraverseDirection::ByTextPosition:
 				{
-					FOREACH(Ptr<ParsingTreeNode>, node, node->GetSubNodes())
+					for (auto node : node->GetSubNodes())
 					{
 						node->Accept(this);
 					}
@@ -8600,7 +8600,7 @@ ParsingTreeNode::TraversalVisitor
 				break;
 			case TraverseDirection::ByStorePosition:
 				{
-					FOREACH(Ptr<ParsingTreeNode>, node, node->GetMembers().Values())
+					for (auto node : node->GetMembers().Values())
 					{
 						node->Accept(this);
 					}
@@ -8617,7 +8617,7 @@ ParsingTreeNode::TraversalVisitor
 			{
 			case TraverseDirection::ByTextPosition:
 				{
-					FOREACH(Ptr<ParsingTreeNode>, node, node->GetSubNodes())
+					for (auto node : node->GetSubNodes())
 					{
 						node->Accept(this);
 					}
@@ -8625,7 +8625,7 @@ ParsingTreeNode::TraversalVisitor
 				break;
 			case TraverseDirection::ByStorePosition:
 				{
-					FOREACH(Ptr<ParsingTreeNode>, node, node->GetItems())
+					for (auto node : node->GetItems())
 					{
 						node->Accept(this);
 					}
@@ -8688,14 +8688,14 @@ ParsingTreeNode
 			auto subNodesExists = &subNodes;
 			if(subNodesExists)
 			{
-				FOREACH(Ptr<ParsingTreeNode>, node, subNodes)
+				for (auto node : subNodes)
 				{
 					node->InitializeQueryCache();
 				}
 
 				//if (codeRange.start.IsInvalid() || codeRange.start.IsInvalid())
 				{
-					FOREACH(Ptr<ParsingTreeNode>, subNode, subNodes)
+					for (auto subNode : subNodes)
 					{
 						const auto& subRange = subNode->codeRange;
 						const auto& min = !subRange.start.IsInvalid() ? subRange.start : subRange.end;
@@ -9077,11 +9077,11 @@ ParsingTreeArray
 
 		bool ParsingTreeArray::Clear()
 		{
-			FOREACH(Ptr<ParsingTreeNode>, node, items)
+			for (auto node : items)
 			{
 				if(!BeforeRemoveChild(node)) return false;
 			}
-			FOREACH(Ptr<ParsingTreeNode>, node, items)
+			for (auto node : items)
 			{
 				AfterRemoveChild(node);
 			}
@@ -9170,7 +9170,7 @@ ParsingMultiplePrintNodeRecorder
 
 		void ParsingMultiplePrintNodeRecorder::Record(ParsingTreeCustomBase* node, const ParsingTextRange& range)
 		{
-			FOREACH(Ptr<IParsingPrintNodeRecorder>, recorder, recorders)
+			for (auto recorder : recorders)
 			{
 				recorder->Record(node, range);
 			}
@@ -9376,7 +9376,7 @@ JsonPrintVisitor
 				void Visit(JsonArray* node)
 				{
 					writer.WriteChar(L'[');
-					FOREACH_INDEXER(Ptr<JsonNode>, item, i, node->items)
+					for (auto [item, i] : indexed(node->items))
 					{
 						if(i>0) writer.WriteChar(L',');
 						item->Accept(this);
@@ -9395,7 +9395,7 @@ JsonPrintVisitor
 				void Visit(JsonObject* node)
 				{
 					writer.WriteChar(L'{');
-					FOREACH_INDEXER(Ptr<JsonObjectField>, field, i, node->fields)
+					for (auto [field, i] : indexed(node->fields))
 					{
 						if(i>0) writer.WriteChar(L',');
 						field->Accept(this);
@@ -10239,7 +10239,7 @@ XmlPrintVisitor
 				{
 					writer.WriteChar(L'<');
 					writer.WriteString(node->name.value);
-					FOREACH(Ptr<XmlAttribute>, att, node->attributes)
+					for (auto att : node->attributes)
 					{
 						writer.WriteChar(L' ');
 						att->Accept(this);
@@ -10251,7 +10251,7 @@ XmlPrintVisitor
 					else
 					{
 						writer.WriteChar(L'>');
-						FOREACH(Ptr<XmlNode>, subNode, node->subNodes)
+						for (auto subNode : node->subNodes)
 						{
 							subNode->Accept(this);
 						}
@@ -10265,7 +10265,7 @@ XmlPrintVisitor
 				{
 					writer.WriteString(L"<?");
 					writer.WriteString(node->name.value);
-					FOREACH(Ptr<XmlAttribute>, att, node->attributes)
+					for (auto att : node->attributes)
 					{
 						writer.WriteChar(L' ');
 						att->Accept(this);
@@ -10275,7 +10275,7 @@ XmlPrintVisitor
 
 				void Visit(XmlDocument* node)
 				{
-					FOREACH(Ptr<XmlNode>, prolog, node->prologs)
+					for (auto prolog : node->prologs)
 					{
 						prolog->Accept(this);
 					}
@@ -10385,7 +10385,7 @@ API
 			void XmlPrintContent(Ptr<XmlElement> element, stream::TextWriter& writer)
 			{
 				XmlPrintVisitor visitor(writer);
-				FOREACH(Ptr<XmlNode>, node, element->subNodes)
+				for (auto node : element->subNodes)
 				{
 					node->Accept(&visitor);
 				}
@@ -10430,7 +10430,7 @@ Linq To Xml
 
 			Ptr<XmlAttribute> XmlGetAttribute(XmlElement* element, const WString& name)
 			{
-				FOREACH(Ptr<XmlAttribute>, att, element->attributes)
+				for (auto att : element->attributes)
 				{
 					if(att->name.value==name)
 					{
@@ -10442,7 +10442,7 @@ Linq To Xml
 
 			Ptr<XmlElement> XmlGetElement(XmlElement* element, const WString& name)
 			{
-				FOREACH(Ptr<XmlNode>, node, element->subNodes)
+				for (auto node : element->subNodes)
 				{
 					Ptr<XmlElement> subElement=node.Cast<XmlElement>();
 					if(subElement && subElement->name.value==name)
@@ -10469,7 +10469,7 @@ Linq To Xml
 			WString XmlGetValue(XmlElement* element)
 			{
 				WString result;
-				FOREACH(Ptr<XmlNode>, node, element->subNodes)
+				for (auto node : element->subNodes)
 				{
 					if(Ptr<XmlText> text=node.Cast<XmlText>())
 					{

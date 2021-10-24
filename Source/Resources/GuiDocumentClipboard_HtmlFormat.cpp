@@ -30,7 +30,7 @@ namespace vl
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -235,7 +235,7 @@ namespace vl
 				StreamWriter writer(encoderStream);
 				GenerateHtmlVisitor visitor(model.Obj(), writer);
 
-				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+				for (auto paragraph : model->paragraphs)
 				{
 					writer.WriteString(L"<p style=\"text-align:");
 					if (paragraph->alignment)

@@ -996,7 +996,7 @@ WindowsForm
 					auto flag = flagDisposed;
 					bool skip = false;
 					{
-						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
+						for (auto handler : messageHandlers)
 						{
 							handler->BeforeHandle(hwnd, uMsg, wParam, lParam, skip);
 							CHECK_DISPOSED;
@@ -1010,7 +1010,7 @@ WindowsForm
 					CHECK_DISPOSED;
 					if (GetWindowsFormFromHandle(hwnd))
 					{
-						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
+						for (auto handler : messageHandlers)
 						{
 							handler->AfterHandle(hwnd, uMsg, wParam, lParam, skip, result);
 							CHECK_DISPOSED;
@@ -1746,7 +1746,7 @@ WindowsController
 				{
 					if (rootWindowOnly)
 					{
-						FOREACH(WindowsForm*, window, windows.Values())
+						for (auto window : windows.Values())
 						{
 							if (window->GetWindowMode() == INativeWindow::Normal)
 							{
@@ -1790,7 +1790,7 @@ WindowsController
 					{
 						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
 						{
-							FOREACH(WindowsForm*, window, windows.Values())
+							for (auto window : windows.Values())
 							{
 								if (window->IsVisible())
 								{
@@ -1806,7 +1806,7 @@ WindowsController
 										return window->GetWindowMode() == INativeWindow::Normal;
 									})
 								);
-							FOREACH(WindowsForm*, window, normalWindows)
+							for (auto window : normalWindows)
 							{
 								DestroyNativeWindow(window);
 							}

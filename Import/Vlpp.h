@@ -2466,7 +2466,8 @@ Interfaces
 		
 		/// <summary>
 		/// An enumerable interface representing all types that provide multiple values in order.
-		/// range-based for-loop is not supported on enumerable yet, current we have "FOREACH" and "FOREACH_INDEXER" for iterating values.
+		/// range-based for-loop is available on enumerable yet.
+		/// by applying the indexed function on the collection, a tuple of value and index is returned, structured binding could apply.
 		/// <see cref="CopyFrom`*"/> functions work for all enumerable implementation.
 		/// <see cref="LazyList`1"/> provides high-level operations for enumerables, you can create a lazy list by calling <see cref="From`*"/> on any enumerables.
 		/// </summary>
@@ -2482,17 +2483,17 @@ Interfaces
 		///     CopyFrom(ys, xs);
 		///
 		///     // print ys
-		///     FOREACH(vint, y, ys)
+		///     for (auto y : ys)
 		///         Console::Write(itow(y) + L" ");
 		///     Console::WriteLine(L"");
 		///
 		///     // print ys, added by the position
-		///     FOREACH_INDEXER(vint, y, i, ys)
+		///     for (auto [y, i] : indexed(ys))
 		///         Console::Write(itow(y + i) + L" ");
 		///     Console::WriteLine(L"");
 		///
 		///     // print all odd numbers in ys
-		///     FOREACH(vint, y, From(ys).Where([](int a){return a % 2 == 1;}))
+		///     for (auto y : From(ys).Where([](int a){return a % 2 == 1;}))
 		///         Console::Write(itow(y) + L" ");
 		///     Console::WriteLine(L"");
 		/// }
@@ -2509,7 +2510,7 @@ Interfaces
 			/// </summary>
 			/// <remarks>
 			/// In most of the cases, you do not need to call this function.
-			/// "FOREACH", "FOREACH_INDEXER", <see cref="CopyFrom`*"/> and <see cref="LazyList`1"/> do all the jobs for you.
+			/// "for (auto x : xs);", "for (auto [x, i] : indexed(xs));", <see cref="CopyFrom`*"/> and <see cref="LazyList`1"/> do all the jobs for you.
 			/// </remarks>
 			/// <returns>The enumerator.</returns>
 			virtual IEnumerator<T>*						CreateEnumerator()const=0;
@@ -4694,75 +4695,148 @@ namespace vl
 {
 	namespace collections
 	{
-
-/***********************************************************************
-ForEachIterator
-***********************************************************************/
-
-		template<typename T>
-		class ForEachIterator : public Object
+		struct RangeBasedForLoopEnding
 		{
-		public:
-			virtual bool				Next(T& variable)const=0;
-
-			operator bool()const
-			{
-				return true;
-			}
 		};
 
 /***********************************************************************
-ForEachIterator for IEnumerable
+Range-Based For-Loop Iterator
 ***********************************************************************/
 
 		template<typename T>
-		class EnumerableForEachIterator : public ForEachIterator<T>
+		struct RangeBasedForLoopIterator
 		{
-		protected:
-			Ptr<IEnumerator<T>>			enumerator;
+		private:
+			IEnumerator<T>*			iterator;
+
 		public:
-			EnumerableForEachIterator(const IEnumerable<T>& enumerable)
-				:enumerator(enumerable.CreateEnumerator())
+			RangeBasedForLoopIterator(const IEnumerable<T>& enumerable)
+				: iterator(enumerable.CreateEnumerator())
 			{
+				operator++();
 			}
 
-			EnumerableForEachIterator(const EnumerableForEachIterator<T>& enumerableIterator)
-				:enumerator(enumerableIterator.enumerator)
+			~RangeBasedForLoopIterator()
 			{
+				if (iterator) delete iterator;
 			}
 
-			bool Next(T& variable)const
+			void operator++()
 			{
-				if(enumerator->Next())
+				if (!iterator->Next())
 				{
-					variable=enumerator->Current();
-					return true;
+					delete iterator;
+					iterator = nullptr;
 				}
-				else
-				{
-					return false;
-				}
+			}
+
+			const T& operator*() const
+			{
+				return iterator->Current();
+			}
+
+			bool operator==(RangeBasedForLoopEnding) const
+			{
+				return iterator == nullptr;
 			}
 		};
 
 		template<typename T>
-		EnumerableForEachIterator<T> CreateForEachIterator(const IEnumerable<T>& enumerable)
+		RangeBasedForLoopIterator<T> begin(const IEnumerable<T>& enumerable)
 		{
-			return enumerable;
+			return { enumerable };
+		}
+
+		template<typename T>
+		RangeBasedForLoopEnding end(const IEnumerable<T>& enumerable)
+		{
+			return {};
 		}
 
 /***********************************************************************
-FOREACH and FOREACH_INDEXER
+Range-Based For-Loop Iterator with Index
 ***********************************************************************/
 
-#define FOREACH(TYPE, VARIABLE, COLLECTION)\
-		SCOPE_VARIABLE(const ::vl::collections::ForEachIterator<TYPE>&, __foreach_iterator__, ::vl::collections::CreateForEachIterator(COLLECTION))\
-		for(TYPE VARIABLE;__foreach_iterator__.Next(VARIABLE);)
+		template<typename T>
+		struct RangeBasedForLoopIteratorWithIndex
+		{
+			struct Tuple
+			{
+				const T&			value;
+				vint				index;
 
-#define FOREACH_INDEXER(TYPE, VARIABLE, INDEXER, COLLECTION)\
-		SCOPE_VARIABLE(const ::vl::collections::ForEachIterator<TYPE>&, __foreach_iterator__, ::vl::collections::CreateForEachIterator(COLLECTION))\
-		SCOPE_VARIABLE(vint, INDEXER, 0)\
-		for(TYPE VARIABLE;__foreach_iterator__.Next(VARIABLE);INDEXER++)
+				Tuple(const T& _value, vint _index)
+					: value(_value)
+					, index(_index)
+				{
+				}
+			};
+		private:
+			IEnumerator<T>*			iterator;
+			vint					index;
+
+		public:
+			RangeBasedForLoopIteratorWithIndex(const IEnumerable<T>& enumerable)
+				: iterator(enumerable.CreateEnumerator())
+				, index(-1)
+			{
+				operator++();
+			}
+
+			~RangeBasedForLoopIteratorWithIndex()
+			{
+				if (iterator) delete iterator;
+			}
+
+			void operator++()
+			{
+				if (!iterator->Next())
+				{
+					delete iterator;
+					iterator = nullptr;
+				}
+				index++;
+			}
+
+			Tuple operator*() const
+			{
+				return { iterator->Current(),index };
+			}
+
+			bool operator==(RangeBasedForLoopEnding) const
+			{
+				return iterator == nullptr;
+			}
+		};
+
+		template<typename T>
+		struct EnumerableWithIndex
+		{
+			const IEnumerable<T>&	enumerable;
+
+			EnumerableWithIndex(const IEnumerable<T>& _enumerable)
+				: enumerable(_enumerable)
+			{
+			}
+		};
+
+		template<typename T>
+		EnumerableWithIndex<T> indexed(const IEnumerable<T>& enumerable)
+		{
+			return { enumerable };
+		}
+
+		template<typename T>
+		RangeBasedForLoopIteratorWithIndex<T> begin(const EnumerableWithIndex<T>& enumerable)
+		{
+			return { enumerable.enumerable };
+		}
+
+		template<typename T>
+		RangeBasedForLoopEnding end(const EnumerableWithIndex<T>& enumerable)
+		{
+			return {};
+		}
 	}
 }
 
@@ -7003,8 +7077,8 @@ Functions:
 	From(array) => [T]
 	Range(start, count) => [vint]
 
-	FOREACH(X, a, XList)
-	FOREACH_INDEXER(X, a, index, XList)
+	for (auto x : xs);
+	for (auto [x, i] : indexed(xs));
 ***********************************************************************/
 
 #ifndef VCZH_COLLECTIONS_OPERATION
@@ -7079,9 +7153,9 @@ Quick Sort
 		/// Returns zero when two arguments equal.
 		/// </param>
 		template<typename T>
-		void Sort(T* items, vint length, const Func<vint(T, T)>& orderer)
+		void Sort(T* items, vint length, const Func<vint64_t(T, T)>& orderer)
 		{
-			SortLambda<T, Func<vint(T, T)>>(items, length, orderer);
+			SortLambda<T, Func<vint64_t(T, T)>>(items, length, orderer);
 		}
 
 /***********************************************************************
@@ -7175,7 +7249,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     auto ys = From(xs).Select([](vint x){ return x * 2; });
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			template<typename F>
@@ -7193,7 +7267,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     auto ys = From(xs).Where([](vint x){ return x % 2 == 0; });
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			template<typename F>
@@ -7246,7 +7320,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     auto ys = From(xs).OrderBy([](vint x, vint y){ return x - y; });
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			template<typename F>
@@ -7319,9 +7393,9 @@ LazyList
 			template<typename I, typename F>
 			I Aggregate(I init, F f)const
 			{
-				FOREACH(T, t, *this)
+				for (auto& t : *this)
 				{
-					init=f(init, t);
+					init = f(init, t);
 				}
 				return init;
 			}
@@ -7482,7 +7556,7 @@ LazyList
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     vint ys[] = {6, 7, 8, 9, 10};
 			///     auto zs = From(xs).Concat(From(ys));
-			///     FOREACH(vint, z, zs) Console::Write(itow(z) + L" ");
+			///     for (auto z : zs) Console::Write(itow(z) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Concat(const IEnumerable<T>& remains)const
@@ -7498,7 +7572,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     auto ys = From(xs).Take(3);
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Take(vint count)const
@@ -7514,7 +7588,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     auto ys = From(xs).Skip(3);
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Skip(vint count)const
@@ -7530,7 +7604,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     auto ys = From(xs).Repeat(3);
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Repeat(vint count)const
@@ -7545,7 +7619,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 2, 3, 3, 3, 4, 4, 5};
 			///     auto ys = From(xs).Distinct();
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Distinct()const
@@ -7560,7 +7634,7 @@ LazyList
 			/// {
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     auto ys = From(xs).Reverse();
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Reverse()const
@@ -7583,7 +7657,7 @@ LazyList
 			///     vint xs[] = {1, 2, 3, 4, 5, 6, 7};
 			///     vint ys[] = {60, 70, 80, 90, 100};
 			///     auto zs = From(xs).Pairwise(From(ys)).Select([](Pair<vint, vint> p){ return p.key + p.value; });
-			///     FOREACH(vint, z, zs) Console::Write(itow(z) + L" ");
+			///     for (auto z : zs) Console::Write(itow(z) + L" ");
 			/// }
 			/// ]]></example>
 			template<typename U>
@@ -7601,7 +7675,7 @@ LazyList
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     vint ys[] = {3, 4, 5, 6, 7};
 			///     auto zs = From(xs).Intersect(From(ys));
-			///     FOREACH(vint, z, zs) Console::Write(itow(z) + L" ");
+			///     for (auto z : zs) Console::Write(itow(z) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Intersect(const IEnumerable<T>& remains)const
@@ -7618,7 +7692,7 @@ LazyList
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     vint ys[] = {3, 4, 5, 6, 7};
 			///     auto zs = From(xs).Except(From(ys));
-			///     FOREACH(vint, z, zs) Console::Write(itow(z) + L" ");
+			///     for (auto z : zs) Console::Write(itow(z) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Except(const IEnumerable<T>& remains)const
@@ -7635,7 +7709,7 @@ LazyList
 			///     vint xs[] = {1, 2, 3, 4, 5};
 			///     vint ys[] = {3, 4, 5, 6, 7};
 			///     auto zs = From(xs).Union(From(ys));
-			///     FOREACH(vint, z, zs) Console::Write(itow(z) + L" ");
+			///     for (auto z : zs) Console::Write(itow(z) + L" ");
 			/// }
 			/// ]]></example>
 			LazyList<T> Union(const IEnumerable<T>& remains)const
@@ -7691,7 +7765,7 @@ LazyList
 			///         vint factors[] = {1, 10, 100};
 			///         return From(factors).Select([=](vint f){ return f * x; }).Evaluate(true);
 			///     });
-			///     FOREACH(vint, y, ys) Console::Write(itow(y) + L" ");
+			///     for (auto y : ys) Console::Write(itow(y) + L" ");
 			/// }
 			/// ]]></example>
 			template<typename F>
@@ -7717,10 +7791,10 @@ LazyList
 			///     vint xs[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 			///     auto ys = From(xs).GroupBy([](vint x){ return x % 3; });
 			///     using TY = Pair<vint, LazyList<vint>>;
-			///     FOREACH(TY, y, ys)
+			///     for (auto y : ys)
 			///     {
 			///         Console::Write(itow(y.key) + L":");
-			///         FOREACH(vint, z, y.value) Console::Write(L" " + itow(z));
+			///         for (auto z : y.value) Console::Write(L" " + itow(z));
 			///         Console::WriteLine(L"");
 			///     }
 			/// }

@@ -68,7 +68,7 @@ ParserParsingAnalyzer
 				{
 					if (auto members = typeDef->GetMember(L"subTypes").Cast<ParsingTreeArray>())
 					{
-						FOREACH(Ptr<ParsingTreeNode>, subNode, members->GetItems())
+						for (auto subNode : members->GetItems())
 						{
 							if (auto subType = subNode.Cast<ParsingTreeObject>())
 							{
@@ -127,7 +127,7 @@ ParserParsingAnalyzer
 				{
 					if (auto members = typeDef->GetMember(L"members").Cast<ParsingTreeArray>())
 					{
-						FOREACH(Ptr<ParsingTreeNode>, subNode, members->GetItems())
+						for (auto subNode : members->GetItems())
 						{
 							if (auto member = subNode.Cast<ParsingTreeObject>())
 							{
@@ -153,7 +153,7 @@ ParserParsingAnalyzer
 
 					if (auto members = typeDef->GetMember(L"members").Cast<ParsingTreeArray>())
 					{
-						FOREACH(Ptr<ParsingTreeNode>, subNode, members->GetItems())
+						for (auto subNode : members->GetItems())
 						{
 							if (auto field = subNode.Cast<ParsingTreeObject>())
 							{
@@ -170,7 +170,7 @@ ParserParsingAnalyzer
 
 					if (auto members = typeDef->GetMember(L"subTypes").Cast<ParsingTreeArray>())
 					{
-						FOREACH(Ptr<ParsingTreeNode>, subNode, members->GetItems())
+						for (auto subNode : members->GetItems())
 						{
 							if (auto subType = subNode.Cast<ParsingTreeObject>())
 							{
@@ -187,7 +187,7 @@ ParserParsingAnalyzer
 			auto cache = MakePtr<Cache>();
 			if (auto definitions = output.node->GetMember(L"definitions").Cast<ParsingTreeArray>())
 			{
-				FOREACH(Ptr<ParsingTreeNode>, subNode, definitions->GetItems())
+				for (auto subNode : definitions->GetItems())
 				{
 					if (auto obj = subNode.Cast<ParsingTreeObject>())
 					{
@@ -195,7 +195,7 @@ ParserParsingAnalyzer
 					}
 				}
 				
-				FOREACH(Ptr<ParsingTreeNode>, subNode, definitions->GetItems())
+				for (auto subNode : definitions->GetItems())
 				{
 					if (auto obj = subNode.Cast<ParsingTreeObject>())
 					{
@@ -244,7 +244,7 @@ ParserParsingAnalyzer
 					List<WString> typeScopes;
 					GetTypeScopes(typeObj, typeScopes, output);
 
-					FOREACH(WString, typeScope, typeScopes)
+					for (auto typeScope : typeScopes)
 					{
 						if (cache->typeNames.Contains(typeScope, name))
 						{
@@ -383,7 +383,7 @@ ParserParsingAnalyzer
 				members.Add(L"second");
 			}
 
-			FOREACH(WString, member, members)
+			for (auto member : members)
 			{
 				if (auto subGrammarDef = GetMember(grammarDef, member, output).Cast<ParsingTreeObject>())
 				{
@@ -458,7 +458,7 @@ ParserParsingAnalyzer
 							vint index = cache->inheritedTypes.Keys().IndexOf(type);
 							if (index != -1)
 							{
-								FOREACH(WString, inheritedType, cache->inheritedTypes.GetByIndex(index))
+								for (auto inheritedType : cache->inheritedTypes.GetByIndex(index))
 								{
 									if (!types.Contains(inheritedType))
 									{
@@ -500,7 +500,7 @@ ParserParsingAnalyzer
 				{
 					List<WString> typeScopes;
 					GetTypeScopes(tokenContext.tokenParent, typeScopes, &partialOutput);
-					FOREACH(WString, typeName, From(typeScopes)
+					for (auto typeName : From(typeScopes)
 						.SelectMany([=](const WString& typeScope)
 						{
 							vint index = cache->typeNames.Keys().IndexOf(typeScope);
@@ -532,7 +532,7 @@ ParserParsingAnalyzer
 						vint index = cache->typeNames.Keys().IndexOf(resolvedType + L".");
 						if (index != -1)
 						{
-							FOREACH(WString, typeName, cache->typeNames.GetByIndex(index))
+							for (auto typeName : cache->typeNames.GetByIndex(index))
 							{
 								ParsingCandidateItem item;
 								item.semanticId = _type;
@@ -547,14 +547,14 @@ ParserParsingAnalyzer
 			{
 				if (tokenContext.field == L"name") // Token, Rule
 				{
-					FOREACH(WString, name, cache->tokenNames)
+					for (auto name : cache->tokenNames)
 					{
 						ParsingCandidateItem item;
 						item.semanticId = _token;
 						item.name = name;
 						candidateItems.Add(item);
 					}
-					FOREACH(WString, name, cache->ruleNames)
+					for (auto name : cache->ruleNames)
 					{
 						ParsingCandidateItem item;
 						item.semanticId = _rule;
@@ -567,7 +567,7 @@ ParserParsingAnalyzer
 			{
 				if (tokenContext.field == L"text") // Literal
 				{
-					FOREACH(WString, name, cache->literalNames)
+					for (auto name : cache->literalNames)
 					{
 						ParsingCandidateItem item;
 						item.semanticId = _literal;
@@ -626,7 +626,7 @@ ParserParsingAnalyzer
 								if (index != -1)
 								{
 									const auto& members = cache->enumItems.GetByIndex(index);
-									FOREACH(WString, member, members)
+									for (auto member : members)
 									{
 										ParsingCandidateItem item;
 										item.semanticId = _enumValue;

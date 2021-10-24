@@ -131,14 +131,14 @@ WorkflowCompiler (Compile)
 		extern Ptr<workflow::WfModule>							Workflow_GenerateInstanceClass(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors, vint passIndex);
 
 #define WORKFLOW_ENVIRONMENT_VARIABLE_ADD\
-		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
+		for (auto [envVar, index] : indexed(repr->environmentVariables.Keys()))\
 		{\
 			auto value = repr->environmentVariables.Values()[index];\
 			resolvingResult.envVars.Add(envVar, value);\
 		}\
 
 #define WORKFLOW_ENVIRONMENT_VARIABLE_REMOVE\
-		FOREACH_INDEXER(GlobalStringKey, envVar, index, repr->environmentVariables.Keys())\
+		for (auto [envVar, index] : indexed(repr->environmentVariables.Keys()))\
 		{\
 			auto value = repr->environmentVariables.Values()[index];\
 			resolvingResult.envVars.Remove(envVar, value.Obj());\

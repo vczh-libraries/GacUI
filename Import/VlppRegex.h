@@ -94,7 +94,7 @@ Data Structure
 			/// {
 			///     Regex regex(L"^/.*?((?C/S+)(/.*?))+$");
 			///     auto match = regex.MatchHead(L"C++ and C# are my favorite programing languages");
-			///     FOREACH(RegexString, capture, match->Captures())
+			///     for (auto capture : match->Captures())
 			///     {
 			///         Console::WriteLine(capture.Value());
 			///     }
@@ -108,7 +108,7 @@ Data Structure
 			/// {
 			///     Regex regex(L"^/.*?((<lang>C/S+)(/.*?))+$");
 			///     auto match = regex.MatchHead(L"C++ and C# are my favorite programing languages");
-			///     FOREACH(RegexString, capture, match->Groups().Get(L"lang"))
+			///     for (auto capture : match->Groups().Get(L"lang"))
 			///     {
 			///         Console::WriteLine(capture.Value());
 			///     }
@@ -278,7 +278,7 @@ Regex
 			///     Regex regex(L"C/S+");
 			///     RegexMatch::List matches;
 			///     regex.Search(L"C++ and C# are my favorite programing languages", matches);
-			///     FOREACH(Ptr<RegexMatch>, match, matches)
+			///     for (auto match : matches)
 			///     {
 			///         Console::WriteLine(match->Result().Value());
 			///     }
@@ -295,7 +295,7 @@ Regex
 			///     Regex regex(L"C/S+");
 			///     RegexMatch::List matches;
 			///     regex.Split(L"C++ and C# are my favorite programing languages", false, matches);
-			///     FOREACH(Ptr<RegexMatch>, match, matches)
+			///     for (auto match : matches)
 			///     {
 			///         Console::WriteLine(match->Result().Value());
 			///     }
@@ -312,7 +312,7 @@ Regex
 			///     Regex regex(L"C/S+");
 			///     RegexMatch::List matches;
 			///     regex.Cut(L"C++ and C# are my favorite programing languages", false, matches);
-			///     FOREACH(Ptr<RegexMatch>, match, matches)
+			///     for (auto match : matches)
 			///     {
 			///         Console::WriteLine(match->Result().Value());
 			///     }
@@ -567,7 +567,7 @@ Tokenizer
 			///     RegexLexerColorizer colorizer = lexer.Colorize();
 			/// 
 			///     void* lastInterTokenState = nullptr;
-			///     FOREACH_INDEXER(const wchar_t*, line, index, From(lines))
+			///     for (auto [line, index] : indexed(From(lines)))
 			///     {
 			///         Console::WriteLine(L"Begin line " + itow(index));
 			///         argument.processingText = line;
@@ -625,7 +625,7 @@ Tokenizer
 		///     WString input = L"I have 2 books.";
 		///     auto tokenResult = lexer.Parse(input);
 		/// 
-		///     FOREACH(RegexToken, token, tokenResult)
+		///     for (auto token : tokenResult)
 		///     {
 		///         // input must be in a variable
 		///         // because token.reading points to a position from input.Buffer();
@@ -668,7 +668,7 @@ Tokenizer
 			///     List<RegexToken> filtered;
 			///     tokenResult.ReadToEnd(filtered, [](vint token) { return token < 0 || token == 2; });
 			/// 
-			///     FOREACH(RegexToken, token, tokenResult)
+			///     for (auto token : tokenResult)
 			///     {
 			///         // input must be in a variable
 			///         // because token.reading points to a position from input.Buffer();
@@ -825,7 +825,7 @@ Tokenizer
 			///     RegexLexerWalker walker = lexer.Walk();
 			/// 
 			///     WString tests[] = { L".", L"2", L"2.", L"2.5", L"2.5." };
-			///     FOREACH(WString, test, From(tests))
+			///     for (auto test : From(tests))
 			///     {
 			///         if (walker.IsClosedToken(test.Buffer(), test.Length()))
 			///         {
@@ -875,7 +875,7 @@ Tokenizer
 			///     RegexLexerWalker walker = lexer.Walk();
 			/// 
 			///     WString tests[] = { L".", L"2", L"2.", L"2.5", L"2.5." };
-			///     FOREACH(WString, test, From(tests))
+			///     for (auto test : From(tests))
 			///     {
 			///         if (walker.IsClosedToken(test))
 			///         {
@@ -934,7 +934,7 @@ Tokenizer
 		///     RegexLexer lexer(tokenDefs, proc);
 		///     RegexLexerColorizer colorizer = lexer.Colorize();
 		/// 
-		///     FOREACH_INDEXER(const wchar_t*, line, index, From(lines))
+		///     ///     for (auto [line, index] : indexed(From(lines)))
 		///     {
 		///         Console::WriteLine(L"Begin line " + itow(index));
 		///         argument.processingText = line;

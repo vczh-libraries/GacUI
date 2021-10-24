@@ -76,7 +76,7 @@ namespace vl
 				if (index != -1)
 				{
 					auto record = sp->nodePositions.Values()[index];
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
 					}
@@ -90,7 +90,7 @@ namespace vl
 				if (index != -1)
 				{
 					auto record = sp->nodePositions.Values()[index];
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
 					}

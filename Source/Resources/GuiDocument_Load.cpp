@@ -104,7 +104,7 @@ document_operation_visitors::DeserializeNodeVisitor
 								}
 							}
 
-							FOREACH(Ptr<XmlAttribute>, att, node->attributes)
+							for (auto att : node->attributes)
 							{
 								if (att->name.value == L"width")
 								{
@@ -156,7 +156,7 @@ document_operation_visitors::DeserializeNodeVisitor
 						Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
 						run->style = sp;
 
-						FOREACH(Ptr<XmlAttribute>, att, node->attributes)
+						for (auto att : node->attributes)
 						{
 							if (att->name.value == L"face")
 							{
@@ -280,7 +280,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"p")
 					{
-						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
+						for (auto sub : node->subNodes)
 						{
 							sub->Accept(this);
 						}
@@ -291,7 +291,7 @@ document_operation_visitors::DeserializeNodeVisitor
 						{
 							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"Unknown element in <p>: \"" + node->name.value + L"\"."));
 						}
-						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
+						for (auto sub : node->subNodes)
 						{
 							sub->Accept(this);
 						}
@@ -301,7 +301,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					{
 						Ptr<DocumentContainerRun> oldContainer = container;
 						container = createdContainer;
-						FOREACH(Ptr<XmlNode>, subNode, subNodeContainer->subNodes)
+						for (auto subNode : subNodeContainer->subNodes)
 						{
 							subNode->Accept(this);
 						}
@@ -330,7 +330,7 @@ document_operation_visitors::DeserializeNodeVisitor
 				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
 				style->styles=sp;
 
-				FOREACH(Ptr<XmlElement>, att, XmlGetElements(styleElement))
+				for (auto att : XmlGetElements(styleElement))
 				{
 					if(att->name.value==L"face")
 					{
@@ -403,11 +403,11 @@ DocumentModel
 			Ptr<DocumentModel> model = new DocumentModel;
 			if (xml->rootElement->name.value == L"Doc")
 			{
-				FOREACH(Ptr<XmlElement>, partElement, XmlGetElements(xml->rootElement))
+				for (auto partElement : XmlGetElements(xml->rootElement))
 				{
 					if (partElement->name.value == L"Styles")
 					{
-						FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(partElement))
+						for (auto styleElement : XmlGetElements(partElement))
 						{
 							if (styleElement->name.value == L"Style")
 							{
@@ -452,7 +452,7 @@ DocumentModel
 					}
 					else if (partElement->name.value == L"Content")
 					{
-						FOREACH_INDEXER(Ptr<XmlElement>, p, i, XmlGetElements(partElement))
+						for (auto [p, i] : indexed(XmlGetElements(partElement)))
 						{
 							if (p->name.value == L"p")
 							{

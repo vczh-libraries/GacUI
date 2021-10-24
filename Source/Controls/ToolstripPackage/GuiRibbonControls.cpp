@@ -547,7 +547,7 @@ GuiRibbonButtons
 
 			void GuiRibbonButtons::AfterControlTemplateInstalled_(bool initialize)
 			{
-				FOREACH(GuiControl*, button, buttons)
+				for (auto button : buttons)
 				{
 					SetButtonThemeName(responsiveView->GetCurrentView(), button);
 				}
@@ -555,7 +555,7 @@ GuiRibbonButtons
 
 			void GuiRibbonButtons::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				FOREACH(GuiControl*, button, buttons)
+				for (auto button : buttons)
 				{
 					SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button);
 				}

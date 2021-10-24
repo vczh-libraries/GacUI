@@ -82,7 +82,7 @@ GuiShortcutKeyManager
 			bool GuiShortcutKeyManager::Execute(const NativeWindowKeyInfo& info)
 			{
 				bool executed=false;
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(info))
 					{
@@ -96,7 +96,7 @@ GuiShortcutKeyManager
 
 			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(ctrl, shift, alt, key))
 					{
@@ -110,7 +110,7 @@ GuiShortcutKeyManager
 
 			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(ctrl, shift, alt, key))
 					{
@@ -123,7 +123,7 @@ GuiShortcutKeyManager
 
 			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(ctrl, shift, alt, key))
 					{

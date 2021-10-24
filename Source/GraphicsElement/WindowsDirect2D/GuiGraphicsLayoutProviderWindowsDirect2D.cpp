@@ -489,7 +489,7 @@ WindowsDirect2DParagraph (Initialization)
 				~WindowsDirect2DParagraph()
 				{
 					CloseCaret();
-					FOREACH(Color, color, usedColors)
+					for (auto color : usedColors)
 					{
 						renderTarget->DestroyDirect2DBrush(color);
 					}

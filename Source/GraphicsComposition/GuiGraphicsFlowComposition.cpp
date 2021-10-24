@@ -274,7 +274,7 @@ GuiFlowComposition
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
 					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
-					FOREACH(GuiFlowItemComposition*, item, flowItems)
+					for (auto item : flowItems)
 					{
 						auto itemSize = item->GetPreferredBounds().GetSize();
 						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;

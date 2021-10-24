@@ -221,7 +221,7 @@ GuiTab
 					}
 
 					selectedPage = value;
-					FOREACH(GuiTabPage*, tabPage, tabPages)
+					for (auto tabPage : tabPages)
 					{
 						tabPage->SetVisible(tabPage == selectedPage);
 					}

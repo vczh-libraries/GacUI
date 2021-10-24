@@ -1385,7 +1385,7 @@ GenericTypeInfo
 			WString GenericTypeInfo::GetTypeFriendlyName()
 			{
 				WString result = elementType->GetTypeFriendlyName() + L"<";
-				FOREACH_INDEXER(Ptr<ITypeInfo>, type, i, genericArguments)
+				for (auto [type, i] : indexed(genericArguments))
 				{
 					if (i>0) result += L", ";
 					result += type->GetTypeFriendlyName();
@@ -3988,7 +3988,7 @@ MetaonlyTypeInfo
 					default:;
 					}
 					WString result = elementType->GetTypeFriendlyName() + L"<";
-					FOREACH_INDEXER(Ptr<MetaonlyTypeInfo>, type, i, genericArguments)
+					for (auto [type, i] : indexed(genericArguments))
 					{
 						if (i > 0) result += L", ";
 						result += type->GetTypeFriendlyName();

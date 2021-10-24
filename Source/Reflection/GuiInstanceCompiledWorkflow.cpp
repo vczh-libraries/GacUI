@@ -126,15 +126,15 @@ Compiled Workflow Type Resolver (Workflow)
 								WfAssemblyLoadErrors loadErrors;
 								if (!compiled->Initialize(true, loadErrors))
 								{
-									FOREACH(WString, loadError, loadErrors.duplicatedTypes)
+									for (auto loadError : loadErrors.duplicatedTypes)
 									{
 										errors.Add({ {resource},L"Failed to add an existing type: " + loadError });
 									}
-									FOREACH(WString, loadError, loadErrors.unresolvedTypes)
+									for (auto loadError : loadErrors.unresolvedTypes)
 									{
 										errors.Add({ {resource},L"Unable to resolve type: " + loadError });
 									}
-									FOREACH(WString, loadError, loadErrors.unresolvedMembers)
+									for (auto loadError : loadErrors.unresolvedMembers)
 									{
 										errors.Add({ {resource},L"Unable to resolve member: " + loadError });
 									}

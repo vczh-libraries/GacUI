@@ -98,7 +98,7 @@ GuiControlInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)

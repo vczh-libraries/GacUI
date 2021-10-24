@@ -24,7 +24,7 @@ GuiApplication
 				{
 					composition->GetEventReceiver()->clipboardNotify.Execute(arguments);
 				}
-				FOREACH(GuiGraphicsComposition*, subComposition, composition->Children())
+				for (auto subComposition : composition->Children())
 				{
 					InvokeClipboardNotify(subComposition, arguments);
 				}
@@ -298,7 +298,7 @@ GuiPluginManager
 					auto name = plugin->GetName();
 					if (name != L"")
 					{
-						FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+						for (auto plugin : plugins)
 						{
 							CHECK_ERROR(plugin->GetName() != name, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Duplicated plugin name.");
 						}
@@ -314,13 +314,13 @@ GuiPluginManager
 					SortedList<WString> loaded;
 					Group<WString, WString> loading;
 					Dictionary<WString, Ptr<IGuiPlugin>> pluginsToLoad;
-					FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+					for (auto plugin : plugins)
 					{
 						auto name = plugin->GetName();
 						pluginsToLoad.Add(name, plugin);
 						List<WString> dependencies;
 						plugin->GetDependencies(dependencies);
-						FOREACH(WString, dependency, dependencies)
+						for (auto dependency : dependencies)
 						{
 							loading.Add(name, dependency);
 						}
@@ -330,7 +330,7 @@ GuiPluginManager
 					{
 						vint count = pluginsToLoad.Count();
 						{
-							FOREACH_INDEXER(WString, name, index, pluginsToLoad.Keys())
+							for (auto [name, index] : indexed(pluginsToLoad.Keys()))
 							{
 								if (!loading.Keys().Contains(name))
 								{
@@ -350,13 +350,13 @@ GuiPluginManager
 						if (count == pluginsToLoad.Count())
 						{
 							WString message;
-							FOREACH(Ptr<IGuiPlugin>, plugin, pluginsToLoad.Values())
+							for (auto plugin : pluginsToLoad.Values())
 							{
 								message += L"Cannot load plugin \"" + plugin->GetName() + L"\" because part of its dependencies are not ready:";
 								List<WString> dependencies;
 								plugin->GetDependencies(dependencies);
 								bool first = true;
-								FOREACH(WString, dependency, dependencies)
+								for (auto dependency : dependencies)
 								{
 									if (!loaded.Contains(dependency))
 									{
@@ -374,7 +374,7 @@ GuiPluginManager
 				{
 					CHECK_ERROR(loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has not been executed.");
 					loaded=false;
-					FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+					for (auto plugin : plugins)
 					{
 						plugin->Unload();
 					}

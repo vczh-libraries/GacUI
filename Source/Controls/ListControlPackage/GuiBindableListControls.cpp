@@ -658,7 +658,7 @@ GuiBindableTreeView::ItemSourceNode
 					itemChangedEventHandler = nullptr;
 				}
 				childrenVirtualList = nullptr;
-				FOREACH(Ptr<ItemSourceNode>, node, children)
+				for (auto node : children)
 				{
 					node->UnprepareChildren();
 				}
@@ -735,7 +735,7 @@ GuiBindableTreeView::ItemSourceNode
 					PrepareChildren(PrepareValueList(itemSource));
 				}
 				vint count = 1;
-				FOREACH(Ptr<ItemSourceNode>, child, children)
+				for (auto child : children)
 				{
 					count += child->CalculateTotalVisibleNodes();
 				}

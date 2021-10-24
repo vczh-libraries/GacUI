@@ -338,7 +338,7 @@ GuiResourceError
 				offset.column = 0;
 			}
 
-			FOREACH(Ptr<ParsingError>, error, parsingErrors)
+			for (auto error : parsingErrors)
 			{
 				auto pos = error->codeRange.start;
 				if (pos.row < 0 || pos.column < 0)
@@ -390,7 +390,7 @@ GuiResourceError
 				return result;
 			});
 
-			FOREACH_INDEXER(GuiResourceError, error, index, errors)
+			for (auto [error, index] : indexed(errors))
 			{
 				bool needHeader = index == 0;
 				if (index > 0)
@@ -488,7 +488,7 @@ GuiResourceFolder
 		{
 			ClearItems();
 			ClearFolders();
-			FOREACH(Ptr<XmlElement>, element, XmlGetElements(folderXml))
+			for (auto element : XmlGetElements(folderXml))
 			{
 				WString name;
 				if (Ptr<XmlAttribute> nameAtt = XmlGetAttribute(element, L"name"))
@@ -662,7 +662,7 @@ GuiResourceFolder
 
 		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent)
 		{
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (resolver->XmlSerializable())
@@ -718,7 +718,7 @@ GuiResourceFolder
 				}
 			}
 
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				auto attName = MakePtr<XmlAttribute>();
 				attName->name.value = L"name";
@@ -761,14 +761,14 @@ GuiResourceFolder
 		void GuiResourceFolder::CollectTypeNames(collections::List<WString>& typeNames)
 		{
 			if (importUri != L"") return;
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				if (!typeNames.Contains(item->GetTypeName()))
 				{
 					typeNames.Add(item->GetTypeName());
 				}
 			}
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				folder->CollectTypeNames(typeNames);
 			}
@@ -886,7 +886,7 @@ GuiResourceFolder
 			typedef Tuple<vint, WString, IGuiResourceTypeResolver_DirectLoadStream*, Ptr<GuiResourceItem>, Ptr<DescriptableObject>> ItemTuple;
 			List<ItemTuple> itemTuples;
 
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (resolver->StreamSerializable())
@@ -916,7 +916,7 @@ GuiResourceFolder
 
 			vint count = itemTuples.Count();
 			writer << count;
-			FOREACH(ItemTuple, item, itemTuples)
+			for (auto item : itemTuples)
 			{
 				vint typeName = item.f0;
 				WString name = item.f1;
@@ -930,7 +930,7 @@ GuiResourceFolder
 
 			count = folders.Count();
 			writer << count;
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				WString name = folder->GetName();
 				WString importUri = folder->GetImportUri();
@@ -945,7 +945,7 @@ GuiResourceFolder
 		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			if (importUri != L"") return;
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
@@ -961,7 +961,7 @@ GuiResourceFolder
 				}
 			}
 
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				folder->PrecompileResourceFolder(context, callback, errors);
 			}
@@ -970,7 +970,7 @@ GuiResourceFolder
 		void GuiResourceFolder::InitializeResourceFolder(GuiResourceInitializeContext& context, GuiResourceError::List& errors)
 		{
 			if (importUri != L"") return;
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto initialize = typeResolver->Initialize())
@@ -979,7 +979,7 @@ GuiResourceFolder
 				}
 			}
 
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				folder->InitializeResourceFolder(context, errors);
 			}
@@ -1245,7 +1245,7 @@ GuiResourceMetadata
 				xmlDeps->name.value = L"Dependencies";
 				root->subNodes.Add(xmlDeps);
 
-				FOREACH(WString, dep, dependencies)
+				for (auto dep : dependencies)
 				{
 					auto xmlDep = MakePtr<XmlElement>();
 					xmlDep->name.value = L"Resource";
@@ -1272,7 +1272,7 @@ GuiResource
 
 		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors)
 		{
-			FOREACH(DelayLoading, delay, delayLoadings)
+			for (auto delay : delayLoadings)
 			{
 				WString type = delay.type;
 				WString folder = delay.workingDirectory;
@@ -1461,7 +1461,7 @@ GuiResource
 						{
 							callback->OnPerPass(i);
 						}
-						FOREACH(WString, name, resolvers)
+						for (auto name : resolvers)
 						{
 							auto resolver = manager->GetTypeResolver(name);
 							resolver->Precompile()->PerPassPrecompile(context, errors);
@@ -1764,7 +1764,7 @@ IGuiResourceResolverManager
 			vint GetMaxPrecompilePassIndex()override
 			{
 				vint maxPass = -1;
-				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				for (auto resolver : typeResolvers.Values())
 				{
 					if (auto precompile = resolver->Precompile())
 					{
@@ -1781,7 +1781,7 @@ IGuiResourceResolverManager
 			vint GetMaxInitializePassIndex()override
 			{
 				vint maxPass = -1;
-				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				for (auto resolver : typeResolvers.Values())
 				{
 					if (auto initialize = resolver->Initialize())
 					{

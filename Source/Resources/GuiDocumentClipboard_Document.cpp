@@ -20,7 +20,7 @@ namespace vl
 
 				virtual void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, childRun, run->runs)
+					for (auto childRun : run->runs)
 					{
 						childRun->Accept(this);
 					}
@@ -101,7 +101,7 @@ namespace vl
 		void ModifyDocumentForClipboard(Ptr<DocumentModel> model)
 		{
 			ModifyDocumentForClipboardVisitor visitor;
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+			for (auto paragraph : model->paragraphs)
 			{
 				paragraph->Accept(&visitor);
 			}
@@ -156,7 +156,7 @@ namespace vl
 		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream)
 		{
 			CollectImageRunsVisitor visitor;
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+			for (auto paragraph : model->paragraphs)
 			{
 				paragraph->Accept(&visitor);
 			}
@@ -179,7 +179,7 @@ namespace vl
 				vint32_t count = (vint32_t)visitor.imageRuns.Count();
 				writer << count;
 
-				FOREACH(Ptr<DocumentImageRun>, imageRun, visitor.imageRuns)
+				for (auto imageRun : visitor.imageRuns)
 				{
 					MemoryStream memoryStream;
 					if (imageRun->image)

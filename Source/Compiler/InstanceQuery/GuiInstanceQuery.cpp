@@ -45,10 +45,10 @@ ExecuteQueryVisitor
 			{
 				if (setter)
 				{
-					FOREACH_INDEXER(GlobalStringKey, attribute, index, setter->setters.Keys())
+					for (auto [attribute, index] : indexed(setter->setters.Keys()))
 					{
 						auto setterValue = setter->setters.Values()[index];
-						FOREACH(Ptr<GuiValueRepr>, value, setterValue->values)
+						for (auto value : setterValue->values)
 						{
 							if (auto ctor = value.Cast<GuiConstructorRepr>())
 							{
@@ -85,7 +85,7 @@ ExecuteQueryVisitor
 				auto inputExists = &input;
 				if (inputExists)
 				{
-					FOREACH(Ptr<GuiConstructorRepr>, setter, input)
+					for (auto setter : input)
 					{
 						Traverse(node, setter);
 					}
@@ -155,7 +155,7 @@ ApplyStyle
 
 		void ApplyStyleInternal(Ptr<GuiAttSetterRepr> src, Ptr<GuiAttSetterRepr> dst)
 		{
-			FOREACH_INDEXER(GlobalStringKey, attribute, srcIndex, src->setters.Keys())
+			for (auto [attribute, srcIndex] : indexed(src->setters.Keys()))
 			{
 				auto srcValue = src->setters.Values()[srcIndex];
 				vint dstIndex = dst->setters.Keys().IndexOf(attribute);
@@ -180,7 +180,7 @@ ApplyStyle
 				}
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, eventName, srcIndex, src->eventHandlers.Keys())
+			for (auto [eventName, srcIndex] : indexed(src->eventHandlers.Keys()))
 			{
 				if (!dst->eventHandlers.Keys().Contains(eventName))
 				{
@@ -189,7 +189,7 @@ ApplyStyle
 				}
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, varName, srcIndex, src->environmentVariables.Keys())
+			for (auto [varName, srcIndex] : indexed(src->environmentVariables.Keys()))
 			{
 				if (!dst->environmentVariables.Keys().Contains(varName))
 				{

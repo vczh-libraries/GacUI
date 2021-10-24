@@ -62,7 +62,7 @@ namespace vl
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -166,7 +166,7 @@ namespace vl
 				StreamWriter writer(bodyStream);
 				GenerateRtfVisitor visitor(model.Obj(), fontTable, colorTable, writer);
 
-				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+				for (auto paragraph : model->paragraphs)
 				{
 					if (paragraph->alignment)
 					{
@@ -193,7 +193,7 @@ namespace vl
 				StreamWriter writer(encoderStream);
 
 				writer.WriteString(L"{\\rtf1\\ansi\\deff0{\\fonttbl");
-				FOREACH_INDEXER(WString, fontName, index, fontTable)
+				for (auto [fontName, index] : indexed(fontTable))
 				{
 					writer.WriteString(L"{\\f");
 					writer.WriteString(itow(index));
@@ -203,7 +203,7 @@ namespace vl
 				}
 
 				writer.WriteString(L"}{\\colortbl");
-				FOREACH_INDEXER(Color, color, index, colorTable)
+				for (auto [color, index] : indexed(colorTable))
 				{
 					writer.WriteString(L";\\red");
 					writer.WriteString(itow(color.r));

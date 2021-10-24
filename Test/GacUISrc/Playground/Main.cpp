@@ -99,7 +99,7 @@ void GuiMain()
 	Group<WString, WString> deps;
 
 	Dictionary<WString, FilePath> paths;
-	FOREACH(WString, name, names)
+	for (auto name : names)
 	{
 		List<WString> dependencies;
 		vint index = deps.Keys().IndexOf(name);
@@ -111,11 +111,11 @@ void GuiMain()
 		LoadResource(paths[name]);
 	}
 
-	FOREACH(WString, name, names)
+	for (auto name : names)
 	{
 		GetResourceManager()->UnloadResource(name);
 	}
-	FOREACH(WString, name, From(names).Reverse())
+	for (auto name : From(names).Reverse())
 	{
 		LoadResource(paths[name]);
 	}

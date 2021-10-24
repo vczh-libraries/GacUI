@@ -66,7 +66,7 @@ list::GroupedDataSource
 					{
 						if (GetGroupEnabled())
 						{
-							FOREACH_INDEXER(Value, groupValue, index, GetLazyList<Value>(itemSource))
+							for (auto [groupValue, index] : indexed(GetLazyList<Value>(itemSource)))
 							{
 								auto group = MakePtr<GalleryGroup>();
 								group->name = titleProperty(groupValue);
@@ -601,7 +601,7 @@ GuiBindableRibbonGalleryList
 			{
 				if (0 <= index && index < joinedItemSource.Count())
 				{
-					FOREACH_INDEXER(Ptr<list::GalleryGroup>, group, groupIndex, groupedItemSource)
+					for (auto [group, groupIndex] : indexed(groupedItemSource))
 					{
 						auto itemValues = group->GetItemValues();
 						vint itemCount = itemValues ? itemValues->GetCount() : 0;

@@ -149,7 +149,7 @@ WorkflowGenerateBindingVisitor
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
-					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+					for (auto [setter, index] : indexed(repr->setters.Values()))
 					{
 						auto propertyName = repr->setters.Keys()[index];
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
@@ -162,14 +162,14 @@ WorkflowGenerateBindingVisitor
 						}
 						else
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								value->Accept(this);
 							}
 						}
 					}
 
-					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
+					for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 					{
 						if (reprTypeInfo.typeInfo)
 						{
@@ -197,7 +197,7 @@ WorkflowGenerateBindingVisitor
 			WorkflowGenerateBindingVisitor visitor(precompileContext, resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);
 
-			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
+			for (auto localized : resolvingResult.context->localizeds)
 			{
 				auto code = L"bind(" + localized->className.ToString() + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale))";
 				if (auto bindExpr = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, localized->tagPosition, errors))

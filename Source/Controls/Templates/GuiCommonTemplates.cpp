@@ -344,7 +344,7 @@ GuiCommonDatePickerLook
 			void GuiCommonDatePickerLook::SetDateButtonTemplate(const TemplateProperty<GuiSelectableButtonTemplate>& value)
 			{
 				dateButtonTemplate = value;
-				FOREACH(GuiSelectableButton*, button, buttonDays)
+				for (auto button : buttonDays)
 				{
 					button->SetControlTemplate(value);
 				}
@@ -425,7 +425,7 @@ GuiCommonDatePickerLook
 					listYears->SetFont(value);
 					comboMonth->SetFont(value);
 					listMonths->SetFont(value);
-					FOREACH(GuiSolidLabelElement*, label, From(labelDaysOfWeek).Concat(labelDays))
+					for (auto label : From(labelDaysOfWeek).Concat(labelDays))
 					{
 						label->SetFont(value);
 					}

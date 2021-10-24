@@ -581,7 +581,7 @@ GuiDefaultInstanceLoader
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
-				FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
 					PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
 					if (propertyType.f1)
@@ -633,7 +633,7 @@ GuiDefaultInstanceLoader
 						case GuiInstancePropertyInfo::SupportArray:
 							{
 								auto refArray = MakePtr<WfConstructorExpression>();
-								FOREACH(ArgumentInfo, item, arguments.GetByIndex(index))
+								for (auto item : arguments.GetByIndex(index))
 								{
 									auto argument = MakePtr<WfConstructorArgument>();
 									argument->key = item.expression;
@@ -890,7 +890,7 @@ GuiInstanceLoaderManager
 
 			IGuiInstanceDeserializer* GetInstanceDeserializer(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
-				FOREACH(Ptr<IGuiInstanceDeserializer>, deserializer, deserializers)
+				for (auto deserializer : deserializers)
 				{
 					if (deserializer->CanDeserialize(propertyInfo, typeInfo))
 					{
@@ -929,7 +929,7 @@ GuiInstanceLoaderManager
 				typeInfos.Add(typeInfo->typeName, typeInfo);
 				FillParentTypeInfos(typeInfo);
 
-				FOREACH(Ptr<VirtualTypeInfo>, derived, typeInfos.Values())
+				for (auto derived : typeInfos.Values())
 				{
 					if (derived->parentTypes.Contains(typeInfo->typeDescriptor))
 					{
@@ -1015,7 +1015,7 @@ GuiInstanceLoaderManager
 			void ClearReflectionCache()override
 			{
 				rootLoader->ClearReflectionCache();
-				FOREACH(Ptr<VirtualTypeInfo>, info, typeInfos.Values())
+				for (auto info : typeInfos.Values())
 				{
 					info->loader->ClearReflectionCache();
 				}

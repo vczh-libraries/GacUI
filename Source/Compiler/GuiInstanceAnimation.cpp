@@ -160,7 +160,7 @@ GuiInstanceGradientAnimation::SaveToXml
 				targetsElement->name.value = L"Targets";
 				gradientElement->subNodes.Add(targetsElement);
 
-				FOREACH(Target, target, targets)
+				for (auto target : targets)
 				{
 					auto targetElement = MakePtr<XmlElement>();
 					targetElement->name.value = L"Target";
@@ -299,7 +299,7 @@ GuiInstanceGradientAnimation::EnumerateMembers
 
 		void GuiInstanceGradientAnimation::EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td)
 		{
-			FOREACH(Target, target, targets)
+			for (auto target : targets)
 			{
 				auto propInfo = td->GetPropertyByName(target.name, true);
 				EnumerateMembers(callback, [](auto x) {return x; }, propInfo, propInfo);
@@ -480,7 +480,7 @@ GuiInstanceGradientAnimation::Compile
 						}
 					};
 					createIntVar(L"", interpolation, interpolationPosition);
-					FOREACH(Target, target, targets)
+					for (auto target : targets)
 					{
 						if (target.interpolation != L"")
 						{
@@ -490,7 +490,7 @@ GuiInstanceGradientAnimation::Compile
 
 					List<IPropertyInfo*> props;
 					List<Ptr<WfExpression>> interpolations;
-					FOREACH(Target, target, targets)
+					for (auto target : targets)
 					{
 						if (auto propInfo = td->GetPropertyByName(target.name, true))
 						{
@@ -853,7 +853,7 @@ GuiInstanceGradientAnimation::Compile
 								block->statements.Add(declStat);
 							}, td);
 
-							FOREACH(Target, target, targets)
+							for (auto target : targets)
 							{
 								auto refCurrent = MakePtr<WfReferenceExpression>();
 								refCurrent->name.value = L"<ani>current";
@@ -1004,7 +1004,7 @@ GuiInstanceGradientAnimation::Compile
 								block->statements.Add(varStat);
 							}
 							{
-								FOREACH(Target, target, targets)
+								for (auto target : targets)
 								{
 									auto refBegin = MakePtr<WfReferenceExpression>();
 									refBegin->name.value = L"Begin";
@@ -1149,7 +1149,7 @@ GuiInstanceGradientAnimation::Compile
 								propNames.Add(L"End");
 								propNames.Add(L"Current");
 
-								FOREACH(WString, propName, propNames)
+								for (auto propName : propNames)
 								{
 									{
 										auto newExpr = MakePtr<WfNewClassExpression>();
@@ -1169,7 +1169,7 @@ GuiInstanceGradientAnimation::Compile
 										block->statements.Add(exprStat);
 									}
 									
-									FOREACH(Target, target, targets)
+									for (auto target : targets)
 									{
 										auto refProp = MakePtr<WfReferenceExpression>();
 										refProp->name.value = propName;

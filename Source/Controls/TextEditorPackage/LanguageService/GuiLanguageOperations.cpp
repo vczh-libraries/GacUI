@@ -198,7 +198,7 @@ RepeatingParsingExecutor
 				if(node)
 				{
 					OnContextFinishedAsync(result);
-					FOREACH(ICallback*, callback, callbacks)
+					for (auto callback : callbacks)
 					{
 						callback->OnParsingFinishedAsync(result);
 					}
@@ -267,7 +267,7 @@ RepeatingParsingExecutor
 						.Concat(fieldSemanticAtts.Values())
 					)
 				{
-					FOREACH(WString, argument, att->arguments)
+					for (auto argument : att->arguments)
 					{
 						if(!semanticIndexMap.Contains(argument))
 						{
@@ -277,7 +277,7 @@ RepeatingParsingExecutor
 				}
 
 				vint index=0;
-				FOREACH(vint, tokenIndex, tokenIndexMap.Values())
+				for (auto tokenIndex : tokenIndexMap.Values())
 				{
 					TokenMetaData md;
 					md.tableTokenIndex=tokenIndex+ParsingTable::UserTokenStart;
@@ -325,7 +325,7 @@ RepeatingParsingExecutor
 						if((index=fieldSemanticAtts.Keys().IndexOf(fieldDesc))!=-1)
 						{
 							md.semantics=new List<vint>;
-							FOREACH(WString, argument, fieldSemanticAtts.Values()[index]->arguments)
+							for (auto argument : fieldSemanticAtts.Values()[index]->arguments)
 							{
 								md.semantics->Add(semanticIndexMap.IndexOf(argument));
 							}

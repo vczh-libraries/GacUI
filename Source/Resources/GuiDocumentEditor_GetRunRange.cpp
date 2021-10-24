@@ -28,7 +28,7 @@ Calculate range informations for each run object
 				{
 					RunRange range;
 					range.start = start;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}

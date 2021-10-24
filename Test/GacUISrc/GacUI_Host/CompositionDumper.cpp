@@ -238,7 +238,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 	SortedList<GuiGraphicsComposition*> dumped;
 	if (auto stack = dynamic_cast<GuiStackComposition*>(composition))
 	{
-		FOREACH(GuiStackItemComposition*, child, stack->GetStackItems())
+		for (auto child : stack->GetStackItems())
 		{
 			dumped.Add(child);
 			auto childXml = DumpCompositionToXml(child);
@@ -248,7 +248,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 	}
 	if (auto flow = dynamic_cast<GuiFlowComposition*>(composition))
 	{
-		FOREACH(GuiFlowItemComposition*, child, flow->GetFlowItems())
+		for (auto child : flow->GetFlowItems())
 		{
 			dumped.Add(child);
 			auto childXml = DumpCompositionToXml(child);
@@ -257,7 +257,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 		}
 	}
 
-	FOREACH(GuiGraphicsComposition*, child, composition->Children())
+	for (auto child : composition->Children())
 	{
 		if (!dumped.Contains(child))
 		{

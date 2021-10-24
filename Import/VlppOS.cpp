@@ -553,7 +553,7 @@ File
 			{
 				EncoderStream encoderStream(fileStream, *encoder);
 				StreamWriter writer(encoderStream);
-				FOREACH(WString, line, lines)
+				for (auto line : lines)
 				{
 					writer.WriteLine(line);
 				}
@@ -805,14 +805,14 @@ Folder
 			{
 				List<Folder> folders;
 				GetFolders(folders);
-				FOREACH(Folder, folder, folders)
+				for (auto folder : folders)
 				{
 					if (!folder.Delete(true)) return false;
 				}
 				
 				List<File> files;
 				GetFiles(files);
-				FOREACH(File, file, files)
+				for (auto file : files)
 				{
 					if (!file.Delete()) return false;
 				}
@@ -1121,7 +1121,7 @@ Utilities
 		{
 			// concatincate response body
 			vint totalSize = 0;
-			FOREACH(BufferPair, p, availableBuffers)
+			for (auto p : availableBuffers)
 			{
 				totalSize += p.length;
 			}
@@ -1131,7 +1131,7 @@ Utilities
 				char* utf8 = new char[totalSize];
 				{
 					char* temp = utf8;
-					FOREACH(BufferPair, p, availableBuffers)
+					for (auto p : availableBuffers)
 					{
 						memcpy(temp, p.buffer, p.length);
 						temp += p.length;
@@ -1140,7 +1140,7 @@ Utilities
 				memcpy(&response.body[0], utf8, totalSize);
 				delete[] utf8;
 			}
-			FOREACH(BufferPair, p, availableBuffers)
+			for (auto p : availableBuffers)
 			{
 				delete[] p.buffer;
 			}

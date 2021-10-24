@@ -285,7 +285,7 @@ GuiDocumentCommonInterface
 			{
 				if (activeHyperlinks)
 				{
-					FOREACH(Ptr<DocumentHyperlinkRun>, run, activeHyperlinks->hyperlinks)
+					for (auto run : activeHyperlinks->hyperlinks)
 					{
 						run->styleName = activate ? run->activeStyleName : run->normalStyleName;
 					}
@@ -628,7 +628,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnStartRender()
 			{
-				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				for (auto item : documentItems.Values())
 				{
 					item->visible = false;
 				}
@@ -636,7 +636,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnFinishRender()
 			{
-				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				for (auto item : documentItems.Values())
 				{
 					if (item->container->GetVisible() != item->visible)
 					{

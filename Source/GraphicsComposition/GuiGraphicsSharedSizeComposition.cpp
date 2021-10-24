@@ -142,7 +142,7 @@ GuiSharedSizeRootComposition
 
 			void GuiSharedSizeRootComposition::CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
 			{
-				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
+				for (auto item : childItems)
 				{
 					auto group = item->GetGroup();
 					auto minSize = item->GetPreferredMinSize();
@@ -164,7 +164,7 @@ GuiSharedSizeRootComposition
 
 			void GuiSharedSizeRootComposition::AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
 			{
-				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
+				for (auto item : childItems)
 				{
 					auto group = item->GetGroup();
 					auto size = item->GetPreferredMinSize();

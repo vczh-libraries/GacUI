@@ -97,7 +97,7 @@ GuiInstanceRootObject
 				auto controlHost = GetControlHostForInstance();
 				if (UninstallTimerCallback(controlHost))
 				{
-					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					for (auto animation : runningAnimations)
 					{
 						animation->Pause();
 					}
@@ -106,7 +106,7 @@ GuiInstanceRootObject
 				if (controlHost)
 				{
 					InstallTimerCallback(controlHost);
-					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					for (auto animation : runningAnimations)
 					{
 						animation->Resume();
 					}
@@ -116,7 +116,7 @@ GuiInstanceRootObject
 
 			void GuiInstanceRootObject::StartPendingAnimations()
 			{
-				FOREACH(Ptr<IGuiAnimation>, animation, pendingAnimations)
+				for (auto animation : pendingAnimations)
 				{
 					animation->Start();
 				}
@@ -140,11 +140,11 @@ GuiInstanceRootObject
 				{
 					finalized = true;
 
-					FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+					for (auto subscription : subscriptions)
 					{
 						subscription->Close();
 					}
-					FOREACH(GuiComponent*, component, components)
+					for (auto component : components)
 					{
 						component->Detach(this);
 					}
@@ -228,7 +228,7 @@ GuiInstanceRootObject
 
 			void GuiInstanceRootObject::UpdateSubscriptions()
 			{
-				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+				for (auto subscription : subscriptions)
 				{
 					subscription->Update();
 				}

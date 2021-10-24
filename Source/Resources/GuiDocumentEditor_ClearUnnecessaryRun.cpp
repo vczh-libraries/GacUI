@@ -133,7 +133,7 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 				bool OnlyImageOrObject(DocumentContainerRun* run)
 				{
 					bool onlyImageOrObject = true;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						if (!subRun.Cast<DocumentImageRun>() && !subRun.Cast<DocumentEmbeddedObjectRun>())
 						{
@@ -182,7 +182,7 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 				CONTINUE_PROCESSING:
 					if (From(run->runs).Cast<DocumentStylePropertiesRun>().First(nullptr) != nullptr)
 					{
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							if (auto styleRun = subRun.Cast<DocumentStylePropertiesRun>())
 							{

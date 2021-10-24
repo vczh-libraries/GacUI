@@ -167,9 +167,9 @@ GuiGrammarAutoComplete
 						Ptr<ParsingTable::TransitionBag> bag=table->GetTransitionBag(i, j);
 						if(bag)
 						{
-							FOREACH(Ptr<ParsingTable::TransitionItem>, item, bag->transitionItems)
+							for (auto item : bag->transitionItems)
 							{
-								FOREACH(ParsingTable::Instruction, ins, item->instructions)
+								for (auto ins : item->instructions)
 								{
 									if(ins.instructionType==ParsingTable::Instruction::LeftRecursiveReduce)
 									{
@@ -231,7 +231,7 @@ GuiGrammarAutoComplete
 				RegexToken lastToken;
 				lastToken.reading=0;
 
-				FOREACH(RegexToken, token, tokens)
+				for (auto token : tokens)
 				{
 					// we treat "class| Name" as editing the first token
 					if(TextPos(token.rowEnd, token.columnEnd+1)>=pos)
@@ -292,7 +292,7 @@ GuiGrammarAutoComplete
 						ParsingTreeObject* obj = dynamic_cast<ParsingTreeObject*>(current);
 						if (obj)
 						{
-							FOREACH(WString, rule, obj->GetCreatorRules())
+							for (auto rule : obj->GetCreatorRules())
 							{
 								if (leftRecursiveRules.Contains(rule))
 								{
@@ -411,7 +411,7 @@ GuiGrammarAutoComplete
 						// initialize a TextLines with the latest modifiedCode
 						text::TextLines lines(nullptr);
 						lines.SetText(newContext.modifiedCode);
-						FOREACH(TextEditNotifyStruct, trace, usedTrace)
+						for (auto trace : usedTrace)
 						{
 							// apply a modification to lines
 							TextPos start = trace.originalStart;
@@ -453,7 +453,7 @@ GuiGrammarAutoComplete
 			void GuiGrammarAutoComplete::DeleteFutures(collections::List<parsing::tabling::ParsingState::Future*>& futures)
 			{
 				// delete all futures and clear the list
-				FOREACH(ParsingState::Future*, future, futures)
+				for (auto future : futures)
 				{
 					delete future;
 				}
@@ -515,14 +515,14 @@ GuiGrammarAutoComplete
 							List<ParsingState::Future*> possibilities;
 							if (recoveryFutures.Count() > 0)
 							{
-								FOREACH(ParsingState::Future*, future, recoveryFutures)
+								for (auto future : recoveryFutures)
 								{
 									state.Explore(tableTokenIndex, future, possibilities);
 								}
 							}
 							else
 							{
-								FOREACH(ParsingState::Future*, future, nonRecoveryFutures)
+								for (auto future : nonRecoveryFutures)
 								{
 									state.Explore(tableTokenIndex, future, possibilities);
 								}
@@ -534,7 +534,7 @@ GuiGrammarAutoComplete
 							{
 								ParsingState::Future* candidateFuture = possibilities[i];
 								bool duplicated = false;
-								FOREACH(ParsingState::Future*, future, selectedPossibilities)
+								for (auto future : selectedPossibilities)
 								{
 									if (
 										candidateFuture->currentState == future->currentState &&
@@ -614,7 +614,7 @@ GuiGrammarAutoComplete
 					state.Explore(ParsingTable::NormalReduce, nonRecoveryFutures[i], nonRecoveryFutures);
 					state.Explore(ParsingTable::LeftRecursiveReduce, nonRecoveryFutures[i], nonRecoveryFutures);
 				}
-				FOREACH(ParsingState::Future*, future, nonRecoveryFutures)
+				for (auto future : nonRecoveryFutures)
 				{
 					vint count = state.GetTable()->GetTokenCount();
 					for (vint i = ParsingTable::UserTokenStart; i < count; i++)
@@ -624,7 +624,7 @@ GuiGrammarAutoComplete
 				}
 
 				// get all possible tokens that marked using @AutoCompleteCandidate
-				FOREACH(ParsingState::Future*, future, possibilities)
+				for (auto future : possibilities)
 				{
 					if (!tableTokenIndices.Contains(future->selectedToken))
 					{
@@ -684,7 +684,7 @@ GuiGrammarAutoComplete
 						ParsingTreeBuilder builder;
 						builder.Reset();
 						bool succeeded = true;
-						FOREACH(ParsingState::TransitionResult, transition, collector.GetTransitions())
+						for (auto transition : collector.GetTransitions())
 						{
 							if (!(succeeded = builder.Run(transition)))
 							{
@@ -728,7 +728,7 @@ GuiGrammarAutoComplete
 						// collect all auto complete types
 						{
 							// collect all keywords that can be put into the auto complete list
-							FOREACH(vint, token, tableTokenIndices)
+							for (auto token : tableTokenIndices)
 							{
 								vint regexToken = token - ParsingTable::UserTokenStart;
 								if (regexToken >= 0)
@@ -930,7 +930,7 @@ GuiGrammarAutoComplete
 					List<ParsingCandidateItem> itemValues;
 
 					// copy all candidate keywords
-					FOREACH(vint, token, autoComplete->shownCandidates)
+					for (auto token : autoComplete->shownCandidates)
 					{
 						WString literal = parsingExecutor->GetTokenMetaData(token).unescapedRegexText;
 						if (literal != L"" && !itemKeys.Contains(literal))
@@ -945,7 +945,7 @@ GuiGrammarAutoComplete
 					// copy all candidate symbols
 					if (autoComplete->acceptableSemanticIds)
 					{
-						FOREACH(ParsingCandidateItem, item, autoComplete->candidateItems)
+						for (auto item : autoComplete->candidateItems)
 						{
 							if (autoComplete->acceptableSemanticIds->Contains(item.semanticId))
 							{

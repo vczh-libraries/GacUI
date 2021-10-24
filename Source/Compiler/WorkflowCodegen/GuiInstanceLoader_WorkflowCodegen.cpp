@@ -29,7 +29,7 @@ FindInstanceLoadingSource
 			if (index != -1)
 			{
 				Ptr<GuiInstanceContext::NamespaceInfo> namespaceInfo = context->namespaces.Values()[index];
-				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
+				for (auto ns : namespaceInfo->namespaces)
 				{
 					auto fullName = GlobalStringKey::Get(ns->prefix + typeName + ns->postfix);
 					if (auto nullable = callback(fullName))
@@ -174,7 +174,7 @@ WorkflowEventNamesVisitor
 
 			void Visit(GuiAttSetterRepr* repr)override
 			{
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 					List<types::PropertyResolving> possibleInfos;
@@ -203,7 +203,7 @@ WorkflowEventNamesVisitor
 						}
 						else
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, instanceClass, errors);
 								value->Accept(&visitor);
@@ -212,7 +212,7 @@ WorkflowEventNamesVisitor
 					}
 				}
 
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
+				for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 				{
 					if (handler->binding == GlobalStringKey::Empty)
 					{
@@ -599,7 +599,7 @@ Workflow_GenerateInstanceClass
 				call->type = CopyType(instanceClass->baseTypes[0]);
 				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
 
-				FOREACH(Ptr<GuiInstanceParameter>, parameter, baseTypeContext->parameters)
+				for (auto parameter : baseTypeContext->parameters)
 				{
 					auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
 					auto expression = Workflow_ParseExpression(
@@ -650,7 +650,7 @@ Workflow_GenerateInstanceClass
 			// ref.LocalizedString (Property)
 			///////////////////////////////////////////////////////////////
 
-			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
+			for (auto localized : context->localizeds)
 			{
 				if (auto lsTd = GetTypeDescriptor(localized->className.ToString()))
 				{
@@ -725,7 +725,7 @@ Workflow_GenerateInstanceClass
 			// ref.Parameter (Variable, Getter, CtorArgument)
 			///////////////////////////////////////////////////////////////
 
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+			for (auto parameter : context->parameters)
 			{
 				auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
 				vint errorCount = errors.Count();

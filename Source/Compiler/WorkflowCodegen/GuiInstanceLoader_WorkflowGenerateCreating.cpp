@@ -202,11 +202,11 @@ WorkflowGenerateCreatingVisitor
 
 				vint errorCount = errors.Count();
 				IGuiInstanceLoader::ArgumentMap arguments;
-				FOREACH(GlobalStringKey, pairedProp, pairedProps)
+				for (auto pairedProp : pairedProps)
 				{
 					usedProps.Add(pairedProp, info.loader);
 					auto pairedSetter = repr->setters[pairedProp];
-					FOREACH(Ptr<GuiValueRepr>, pairedValue, pairedSetter->values)
+					for (auto pairedValue : pairedSetter->values)
 					{
 						auto pairedInfo = resolvingResult.propertyResolvings[pairedValue.Obj()];
 						if (pairedInfo.loader == info.loader)
@@ -223,7 +223,7 @@ WorkflowGenerateCreatingVisitor
 				else if (errorCount == errors.Count())
 				{
 					WString propNames;
-					FOREACH_INDEXER(GlobalStringKey, pairedProp, propIndex, pairedProps)
+					for (auto [pairedProp, propIndex] : indexed(pairedProps))
 					{
 						if (propIndex > 0)propNames += L", ";
 						propNames += L"\"" + pairedProp.ToString() + L"\"";
@@ -253,7 +253,7 @@ WorkflowGenerateCreatingVisitor
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
 					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
-					FOREACH(GlobalStringKey, prop, From(repr->setters.Keys()).Reverse())
+					for (auto prop : From(repr->setters.Keys()).Reverse())
 					{
 						auto setter = repr->setters[prop];
 						IGuiInstanceLoader::PropertyInfo propInfo(reprTypeInfo, prop);
@@ -269,7 +269,7 @@ WorkflowGenerateCreatingVisitor
 						}
 						else if (setter->binding == GlobalStringKey::Empty)
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								auto info = resolvingResult.propertyResolvings[value.Obj()];
 								if (info.info->usage == GuiInstancePropertyInfo::Property)
@@ -303,7 +303,7 @@ WorkflowGenerateCreatingVisitor
 			{
 				WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
-				FOREACH_INDEXER(GlobalStringKey, prop, index, repr->setters.Keys())
+				for (auto [prop, index] : indexed(repr->setters.Keys()))
 				{
 					auto setter = repr->setters.Values()[index];
 					auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
@@ -311,7 +311,7 @@ WorkflowGenerateCreatingVisitor
 
 					if (setter->binding == GlobalStringKey::Empty)
 					{
-						FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+						for (auto value : setter->values)
 						{
 							auto argument = GetArgumentInfo(setter->attPosition, value.Obj());
 							if (argument.typeInfo && argument.expression)
@@ -404,7 +404,7 @@ WorkflowGenerateCreatingVisitor
 						}
 					}
 
-					FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
+					for (auto parameter : resolvingResult.context->parameters)
 					{
 						auto refInstance = MakePtr<WfReferenceExpression>();
 						refInstance->name.value = parameter->name.ToString();

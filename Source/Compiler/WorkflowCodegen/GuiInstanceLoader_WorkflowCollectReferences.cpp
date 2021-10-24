@@ -259,7 +259,7 @@ WorkflowReferenceNamesVisitor
 			
 				auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					List<types::PropertyResolving> possibleInfos;
 					auto prop = repr->setters.Keys()[index];
@@ -269,7 +269,7 @@ WorkflowReferenceNamesVisitor
 					{
 						if (setter->binding == GlobalStringKey::Empty)
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, generatedNameCount, errors);
 								value->Accept(&visitor);
@@ -375,7 +375,7 @@ WorkflowReferenceNamesVisitor
 							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
 						}
 					}
-					FOREACH(GlobalStringKey, prop, From(requiredProps).Distinct())
+					for (auto prop : From(requiredProps).Distinct())
 					{
 						if (!properties.Keys().Contains(prop))
 						{
@@ -412,7 +412,7 @@ WorkflowReferenceNamesVisitor
 					if (pairProps.Count() > 0)
 					{
 						List<GlobalStringKey> missingProps;
-						FOREACH(GlobalStringKey, key, pairProps)
+						for (auto key : pairProps)
 						{
 							if (!properties.Contains(key, loader))
 							{
@@ -428,7 +428,7 @@ WorkflowReferenceNamesVisitor
 								+ L"\" of type \""
 								+ resolvedTypeInfo.typeName.ToString()
 								+ L"\", the following missing properties are required: ";
-							FOREACH_INDEXER(GlobalStringKey, key, index, missingProps)
+							for (auto [key, index] : indexed(missingProps))
 							{
 								if (index > 0)error += L", ";
 								error += L"\"" + key.ToString() + L"\"";
@@ -437,7 +437,7 @@ WorkflowReferenceNamesVisitor
 							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->setters[prop]->attPosition, error));
 						}
 						
-						FOREACH(GlobalStringKey, key, pairProps)
+						for (auto key : pairProps)
 						{
 							properties.Remove(key, loader);
 						}
@@ -448,7 +448,7 @@ WorkflowReferenceNamesVisitor
 					}
 				}
 
-				FOREACH(Ptr<GuiAttSetterRepr::EventValue>, handler, repr->eventHandlers.Values())
+				for (auto handler : repr->eventHandlers.Values())
 				{
 					if (handler->binding != GlobalStringKey::Empty)
 					{
@@ -732,7 +732,7 @@ WorkflowReferenceNamesVisitor
 
 		IGuiInstanceLoader::TypeInfo Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
+			for (auto parameter : resolvingResult.context->parameters)
 			{
 				auto type = GetTypeDescriptor(parameter->className.ToString());
 				if (!type)

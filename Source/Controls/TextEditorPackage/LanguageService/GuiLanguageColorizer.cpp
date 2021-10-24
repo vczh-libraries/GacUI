@@ -180,7 +180,7 @@ GuiGrammarColorizer
 					}
 				}
 
-				FOREACH_INDEXER(WString, color, index, colorSettings.Keys())
+				for (auto [color, index] : indexed(colorSettings.Keys()))
 				{
 					if(!tokenColors.Contains(color))
 					{

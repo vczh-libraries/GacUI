@@ -131,7 +131,7 @@ Clone the current run with its children
 						else
 						{
 							Ptr<DocumentContainerRun> containerRun = CopyRun(run).Cast<DocumentContainerRun>();
-							FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+							for (auto subRun : run->runs)
 							{
 								subRun->Accept(this);
 								if (clonedRun)

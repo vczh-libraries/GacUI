@@ -61,7 +61,7 @@ GuiInstanceLocalizedStrings
 			}
 
 			SortedList<WString> existingLocales;
-			FOREACH(Ptr<XmlElement>, xmlStrings, XmlGetElements(xml->rootElement))
+			for (auto xmlStrings : XmlGetElements(xml->rootElement))
 			{
 				if (xmlStrings->name.value != L"Strings")
 				{
@@ -81,7 +81,7 @@ GuiInstanceLocalizedStrings
 					lss->tagPosition = { { resource },xmlStrings->name.codeRange.start };
 					SplitBySemicolon(attLocales->value.value, lss->locales);
 
-					FOREACH(WString, locale, lss->locales)
+					for (auto locale : lss->locales)
 					{
 						if (!existingLocales.Contains(locale))
 						{
@@ -93,7 +93,7 @@ GuiInstanceLocalizedStrings
 						}
 					}
 
-					FOREACH(Ptr<XmlElement>, xmlString, XmlGetElements(xmlStrings))
+					for (auto xmlString : XmlGetElements(xmlStrings))
 					{
 						if (xmlString->name.value != L"String")
 						{
@@ -158,7 +158,7 @@ GuiInstanceLocalizedStrings
 				xml->attributes.Add(att);
 			}
 
-			FOREACH(Ptr<GuiInstanceLocalizedStrings::Strings>, lss, strings)
+			for (auto lss : strings)
 			{
 				auto xmlStrings = MakePtr<XmlElement>();
 				xml->subNodes.Add(xmlStrings);
@@ -170,7 +170,7 @@ GuiInstanceLocalizedStrings
 					xmlStrings->attributes.Add(att);
 				}
 
-				FOREACH(Ptr<GuiInstanceLocalizedStrings::StringItem>, lssi, lss->items.Values())
+				for (auto lssi : lss->items.Values())
 				{
 					auto xmlString = MakePtr<XmlElement>();
 					xmlStrings->subNodes.Add(xmlString);
@@ -347,7 +347,7 @@ GuiInstanceLocalizedStrings
 				textDesc->texts.Add(reading);
 			}
 
-			FOREACH_INDEXER(vint, i, index, From(textDesc->positions).OrderBy([](vint a, vint b) {return a - b; }))
+			for (auto [i, index] : indexed(From(textDesc->positions)).OrderBy([](vint a, vint b) {return a - b; }))
 			{
 				if (i != index)
 				{
@@ -363,7 +363,7 @@ GuiInstanceLocalizedStrings
 			auto defaultStrings = GetDefaultStrings();
 
 			vint errorCount = errors.Count();
-			FOREACH(Ptr<Strings>, lss, strings)
+			for (auto lss : strings)
 			{
 				if (lss != defaultStrings)
 				{
@@ -399,7 +399,7 @@ GuiInstanceLocalizedStrings
 				return;
 			}
 
-			FOREACH(Ptr<StringItem>, lssi, defaultStrings->items.Values())
+			for (auto lssi : defaultStrings->items.Values())
 			{
 				if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
 				{
@@ -412,13 +412,13 @@ GuiInstanceLocalizedStrings
 			}
 
 			auto defaultLocalesName = defaultStrings->GetLocalesName();
-			FOREACH(Ptr<Strings>, lss, strings)
+			for (auto lss : strings)
 			{
 				if (lss != defaultStrings)
 				{
 					auto localesName = lss->GetLocalesName();
 
-					FOREACH(Ptr<StringItem>, lssi, lss->items.Values())
+					for (auto lssi : lss->items.Values())
 					{
 						if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
 						{
@@ -488,7 +488,7 @@ GuiInstanceLocalizedStrings
 				lsExpr->type = refPointer;
 			}
 
-			FOREACH(Ptr<StringItem>, lss, ls->items.Values())
+			for (auto lss : ls->items.Values())
 			{
 				auto textDesc = textDescs[{ls, lss->name}];
 				auto func = GenerateFunction(textDesc, lss->name, WfClassMemberKind::Override);
@@ -677,7 +677,7 @@ GuiInstanceLocalizedStrings
 				lsInterface->constructorType = WfConstructorType::SharedPtr;
 
 				auto defaultStrings = GetDefaultStrings();
-				FOREACH(WString, functionName, defaultStrings->items.Keys())
+				for (auto functionName : defaultStrings->items.Keys())
 				{
 					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfClassMemberKind::Normal);
 					lsInterface->declarations.Add(func);
@@ -762,12 +762,12 @@ GuiInstanceLocalizedStrings
 				func->statement = block;
 
 				auto defaultStrings = GetDefaultStrings();
-				FOREACH(Ptr<Strings>, ls, strings)
+				for (auto ls : strings)
 				{
 					if (ls != defaultStrings)
 					{
 						auto listExpr = MakePtr<WfConstructorExpression>();
-						FOREACH(WString, locale, ls->locales)
+						for (auto locale : ls->locales)
 						{
 							auto strExpr = MakePtr<WfStringExpression>();
 							strExpr->value.value = locale;

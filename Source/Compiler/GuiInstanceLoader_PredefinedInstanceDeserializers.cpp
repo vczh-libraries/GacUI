@@ -92,7 +92,7 @@ GuiTemplatePropertyDeserializer
 						L"\" cannot be empty."));
 				}
 
-				FOREACH(WString, controlTemplateName, typeNames)
+				for (auto controlTemplateName : typeNames)
 				{
 					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
 					if (!controlTemplateTd)
@@ -149,7 +149,7 @@ GuiTemplatePropertyDeserializer
 				funcCreateTemplate->statement = block;
 
 				ITypeDescriptor* stopControlTemplateTd = nullptr;
-				FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
+				for (auto controlTemplateTd : controlTemplateTds)
 				{
 					if (!controlTemplateTd->CanConvertTo(expectedTemplateType->GetTypeDescriptor()))
 					{
@@ -285,7 +285,7 @@ GuiTemplatePropertyDeserializer
 			{
 				auto templateType = TypeInfoRetriver<GuiGridVisualizerTemplate*>::CreateTypeInfo();
 				Ptr<WfExpression> previousFactory;
-				FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
+				for (auto [controlTemplateTd, index] : indexed(controlTemplateTds))
 				{
 					List<ITypeDescriptor*> tds;
 					tds.Add(controlTemplateTd);
@@ -749,7 +749,7 @@ GuiDataProcessorDeserializer
 						argumentNames.Add(L"<row2>");
 					}
 
-					FOREACH(WString, name, argumentNames)
+					for (auto name : argumentNames)
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
 						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
@@ -775,7 +775,7 @@ GuiDataProcessorDeserializer
 
 					auto callExpr = MakePtr<WfCallExpression>();
 					callExpr->function = inferExpr;
-					FOREACH_INDEXER(WString, name, index, argumentNames)
+					for (auto [name, index] : indexed(argumentNames))
 					{
 						auto refExpr = MakePtr<WfReferenceExpression>();
 						refExpr->name.value = name;

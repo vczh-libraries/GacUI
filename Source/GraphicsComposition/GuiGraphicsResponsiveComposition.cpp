@@ -334,7 +334,7 @@ GuiResponsiveViewComposition
 			{
 				destructing = true;
 
-				FOREACH(GuiResponsiveCompositionBase*, view, views)
+				for (auto view : views)
 				{
 					if (view != currentView)
 					{
@@ -342,7 +342,7 @@ GuiResponsiveViewComposition
 					}
 				}
 
-				FOREACH(GuiControl*, shared, From(sharedControls).Except(usedSharedControls))
+				for (auto shared : From(sharedControls).Except(usedSharedControls))
 				{
 					SafeDeleteControl(shared);
 				}
@@ -562,7 +562,7 @@ GuiResponsiveStackComposition
 					GuiResponsiveCompositionBase* selected = nullptr;
 					vint size = 0;
 
-					FOREACH(GuiResponsiveCompositionBase*, child, availables)
+					for (auto child : availables)
 					{
 						if (!ignored.Contains(child))
 						{
@@ -722,7 +722,7 @@ GuiResponsiveGroupComposition
 			{
 				DEFINE_AVAILABLE;
 				vint level = currentLevel;
-				FOREACH(GuiResponsiveCompositionBase*, child, availables)
+				for (auto child : availables)
 				{
 					if (child->GetCurrentLevel() >= level)
 					{
@@ -742,7 +742,7 @@ GuiResponsiveGroupComposition
 			{
 				DEFINE_AVAILABLE;
 				vint level = currentLevel;
-				FOREACH(GuiResponsiveCompositionBase*, child, availables)
+				for (auto child : availables)
 				{
 					while (child->GetCurrentLevel() <= level)
 					{

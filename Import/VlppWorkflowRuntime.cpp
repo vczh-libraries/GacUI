@@ -56,7 +56,7 @@ WfRuntimeCallStackInfo
 					if (!context)
 					{
 						Dictionary<WString, Value> map;
-						FOREACH_INDEXER(WString, name, index, names)
+						for (auto [name, index] : indexed(names))
 						{
 							map.Add(name, context->variables[index]);
 						}
@@ -660,19 +660,19 @@ namespace vl
 
 				void Initialize(WfWriterContextPrepare& prepare)
 				{
-					FOREACH_INDEXER(ITypeDescriptor*, td, index, prepare.tds)
+					for (auto [td, index] : indexed(prepare.tds))
 					{
 						tdIndex.Add(td, index);
 					}
-					FOREACH_INDEXER(IMethodInfo*, mi, index, prepare.mis)
+					for (auto [mi, index] : indexed(prepare.mis))
 					{
 						miIndex.Add(mi, index);
 					}
-					FOREACH_INDEXER(IPropertyInfo*, pi, index, prepare.pis)
+					for (auto [pi, index] : indexed(prepare.pis))
 					{
 						piIndex.Add(pi, index);
 					}
-					FOREACH_INDEXER(IEventInfo*, ei, index, prepare.eis)
+					for (auto [ei, index] : indexed(prepare.eis))
 					{
 						eiIndex.Add(ei, index);
 					}
@@ -806,19 +806,19 @@ Serialization (CollectMetadata)
 
 			static void CollectMetadata(WfTypeImpl* typeImpl, WfWriterContextPrepare& prepare)
 			{
-				FOREACH(Ptr<WfClass>, td, typeImpl->classes)
+				for (auto td : typeImpl->classes)
 				{
 					CollectTd(td.Obj(), prepare);
 				}
-				FOREACH(Ptr<WfInterface>, td, typeImpl->interfaces)
+				for (auto td : typeImpl->interfaces)
 				{
 					CollectTd(td.Obj(), prepare);
 				}
-				FOREACH(Ptr<WfStruct>, td, typeImpl->structs)
+				for (auto td : typeImpl->structs)
 				{
 					CollectTd(td.Obj(), prepare);
 				}
-				FOREACH(Ptr<WfEnum>, td, typeImpl->enums)
+				for (auto td : typeImpl->enums)
 				{
 					CollectTd(td.Obj(), prepare);
 				}
@@ -869,15 +869,15 @@ Serialization (CollectMetadata)
 					}
 				}
 
-				FOREACH(IMethodInfo*, mi, prepare.mis)
+				for (auto mi : prepare.mis)
 				{
 					CollectTd(mi, prepare);
 				}
-				FOREACH(IPropertyInfo*, pi, prepare.pis)
+				for (auto pi : prepare.pis)
 				{
 					CollectTd(pi, prepare);
 				}
-				FOREACH(IEventInfo*, ei, prepare.eis)
+				for (auto ei : prepare.eis)
 				{
 					CollectTd(ei, prepare);
 				}
@@ -1858,19 +1858,19 @@ Serialization (TypeImpl)
 				static void IO(WfReader& reader, WfTypeImpl& value)
 				{
 					// fill types
-					FOREACH(Ptr<WfClass>, td, value.classes)
+					for (auto td : value.classes)
 					{
 						IOClass(reader, td.Obj());
 					}
-					FOREACH(Ptr<WfInterface>, td, value.interfaces)
+					for (auto td : value.interfaces)
 					{
 						IOInterface(reader, td.Obj());
 					}
-					FOREACH(Ptr<WfStruct>, td, value.structs)
+					for (auto td : value.structs)
 					{
 						IOStruct(reader, td.Obj());
 					}
-					FOREACH(Ptr<WfEnum>, td, value.enums)
+					for (auto td : value.enums)
 					{
 						IOEnum(reader, td.Obj());
 					}
@@ -1879,19 +1879,19 @@ Serialization (TypeImpl)
 				static void IO(WfWriter& writer, WfTypeImpl& value)
 				{
 					// fill types
-					FOREACH(Ptr<WfClass>, td, value.classes)
+					for (auto td : value.classes)
 					{
 						IOClass(writer, td.Obj());
 					}
-					FOREACH(Ptr<WfInterface>, td, value.interfaces)
+					for (auto td : value.interfaces)
 					{
 						IOInterface(writer, td.Obj());
 					}
-					FOREACH(Ptr<WfStruct>, td, value.structs)
+					for (auto td : value.structs)
 					{
 						IOStruct(writer, td.Obj());
 					}
-					FOREACH(Ptr<WfEnum>, td, value.enums)
+					for (auto td : value.enums)
 					{
 						IOEnum(writer, td.Obj());
 					}
@@ -2215,7 +2215,7 @@ Serialization (Assembly)
 					vint piCount = prepare.pis.Count();
 					vint eiCount = prepare.eis.Count();
 					writer << tdCount << miCount << piCount << eiCount;
-					FOREACH(ITypeDescriptor*, td, prepare.tds)
+					for (auto td : prepare.tds)
 					{
 						writer << td;
 					}
@@ -2226,15 +2226,15 @@ Serialization (Assembly)
 						GetGlobalTypeManager()->AddTypeLoader(value.typeImpl);
 					}
 
-					FOREACH(IMethodInfo*, mi, prepare.mis)
+					for (auto mi : prepare.mis)
 					{
 						writer << mi;
 					}
-					FOREACH(IPropertyInfo*, pi, prepare.pis)
+					for (auto pi : prepare.pis)
 					{
 						writer << pi;
 					}
-					FOREACH(IEventInfo*, ei, prepare.eis)
+					for (auto ei : prepare.eis)
 					{
 						writer << ei;
 					}
@@ -4988,7 +4988,7 @@ WfEvent
 					if (index != -1)
 					{
 						auto& values = record->handlers.GetByIndex(index);
-						FOREACH(Ptr<EventHandlerImpl>, handler, values)
+						for (auto handler : values)
 						{
 							handler->proxy->Invoke(arguments);
 						}
@@ -5570,7 +5570,7 @@ WfInterfaceInstance
 				arguments[0] = Value::From(_proxy);
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				InitializeAggregation(baseCtors.Count());
-				FOREACH_INDEXER(IMethodInfo*, ctor, index, baseCtors)
+				for (auto [ctor, index] : indexed(baseCtors))
 				{
 					Ptr<DescriptableObject> ptr;
 					{
@@ -5616,11 +5616,11 @@ WfTypeImpl
 				}
 
 				globalContext = _globalContext;
-				FOREACH(Ptr<WfClass>, td, classes)
+				for (auto td : classes)
 				{
 					td->SetGlobalContext(globalContext);
 				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
+				for (auto td : interfaces)
 				{
 					td->SetGlobalContext(globalContext);
 				}
@@ -5637,7 +5637,7 @@ WfTypeImpl
 
 			void WfTypeImpl::Load(reflection::description::ITypeManager* manager)
 			{
-				FOREACH(Ptr<WfClass>, td, classes)
+				for (auto td : classes)
 				{
 					if (td->GetBaseTypeDescriptorCount() == 0)
 					{
@@ -5645,7 +5645,7 @@ WfTypeImpl
 					}
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
+				for (auto td : interfaces)
 				{
 					if (td->GetBaseTypeDescriptorCount() == 0)
 					{
@@ -5653,11 +5653,11 @@ WfTypeImpl
 					}
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
-				FOREACH(Ptr<WfStruct>, td, structs)
+				for (auto td : structs)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
-				FOREACH(Ptr<WfEnum>, td, enums)
+				for (auto td : enums)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), td);
 				}
@@ -5665,19 +5665,19 @@ WfTypeImpl
 
 			void WfTypeImpl::Unload(reflection::description::ITypeManager* manager)
 			{
-				FOREACH(Ptr<WfClass>, td, classes)
+				for (auto td : classes)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
-				FOREACH(Ptr<WfInterface>, td, interfaces)
+				for (auto td : interfaces)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
-				FOREACH(Ptr<WfStruct>, td, structs)
+				for (auto td : structs)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}
-				FOREACH(Ptr<WfEnum>, td, enums)
+				for (auto td : enums)
 				{
 					manager->SetTypeDescriptor(td->GetTypeName(), nullptr);
 				}

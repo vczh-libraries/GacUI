@@ -42,7 +42,7 @@ namespace vl
 					if (compiled->assembly)
 					{
 						auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-						FOREACH_INDEXER(WString, code, codeIndex, codes)
+						for (auto [code, codeIndex] : indexed(codes))
 						{
 							text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
 							text += code + L"\r\n";
@@ -50,7 +50,7 @@ namespace vl
 					}
 					else
 					{
-						FOREACH_INDEXER(GuiInstanceCompiledWorkflow::ModuleRecord, moduleRecord, codeIndex, compiled->modules)
+						for (auto [moduleRecord, codeIndex] : indexed(compiled->modules))
 						{
 							WString code = GenerateToStream([&](StreamWriter& writer)
 							{
@@ -81,14 +81,14 @@ namespace vl
 
 			if (compiled->metadata->errors.Count() > 0)
 			{
-				FOREACH(Ptr<ParsingError>, error, compiled->metadata->errors)
+				for (auto error : compiled->metadata->errors)
 				{
 					errors.Add(GuiResourceError({ {resource} }, error->errorMessage));
 				}
 				return nullptr;
 			}
 
-			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+			for (auto [fileName, index] : indexed(output->cppFiles.Keys()))
 			{
 				WString code = output->cppFiles.Values()[index];
 				File file(cppFolder / fileName);

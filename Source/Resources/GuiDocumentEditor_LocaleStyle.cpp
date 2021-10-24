@@ -32,7 +32,7 @@ Get all container runs that contain the specified position from top to bottom
 				{
 					locatedRuns.Add(run);
 					Ptr<DocumentRun> selectedRun;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						RunRange range = runRanges[subRun.Obj()];
 						if (position == range.start)

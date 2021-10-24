@@ -31,7 +31,7 @@ Get the hyperlink run that contains the specified position
 				void VisitContainer(DocumentContainerRun* run)
 				{
 					Ptr<DocumentRun> selectedRun;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						RunRange range = runRanges[subRun.Obj()];
 						if (range.start <= start && end <= range.end)
@@ -89,7 +89,7 @@ Get the hyperlink run that contains the specified position
 				}
 
 				Ptr<DocumentHyperlinkRun> startRun, endRun;
-				FOREACH(Ptr<DocumentHyperlinkRun>, run, package->hyperlinks)
+				for (auto run : package->hyperlinks)
 				{
 					auto range = runRanges[run.Obj()];
 					if (package->start == -1 || range.start < package->start)

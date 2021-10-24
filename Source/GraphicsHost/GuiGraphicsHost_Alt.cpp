@@ -232,7 +232,7 @@ GuiAltActionManager
 							continue;
 						}
 
-						FOREACH_INDEXER(IGuiAltAction*, action, index, values)
+						for (auto [action, index] : indexed(values))
 						{
 							WString key = actions.Keys()[i];
 							if (numberLength > 0)
@@ -304,7 +304,7 @@ GuiAltActionManager
 
 			void GuiAltActionManager::ClearAltHost()
 			{
-				FOREACH(GuiControl*, title, currentActiveAltTitles.Values())
+				for (auto title : currentActiveAltTitles.Values())
 				{
 					SafeDeleteControl(title);
 				}

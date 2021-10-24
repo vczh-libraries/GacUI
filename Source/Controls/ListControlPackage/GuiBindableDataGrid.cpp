@@ -580,7 +580,7 @@ DataProvider
 					if (selectedFilters.Count() > 0)
 					{
 						auto andFilter = MakePtr<DataAndFilter>();
-						FOREACH(Ptr<IDataFilter>, filter, selectedFilters)
+						for (auto filter : selectedFilters)
 						{
 							andFilter->AddSubFilter(filter);
 						}

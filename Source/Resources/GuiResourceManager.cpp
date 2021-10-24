@@ -146,7 +146,7 @@ IGuiInstanceResourceManager
 				
 				if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
 				{
-					FOREACH(WString, className, record->classNames)
+					for (auto className : record->classNames)
 					{
 						instanceResources.Add(className, resource);
 					}
@@ -161,7 +161,7 @@ IGuiInstanceResourceManager
 						CopyFrom(prs, depToPendings.GetByIndex(index));
 						depToPendings.Remove(metadata->name);
 
-						FOREACH(Ptr<PendingResource>, pr, prs)
+						for (auto pr : prs)
 						{
 							pr->dependencies.Remove(metadata->name);
 							if (pr->dependencies.Count() == 0)
@@ -197,7 +197,7 @@ IGuiInstanceResourceManager
 
 					if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
 					{
-						FOREACH(WString, className, record->classNames)
+						for (auto className : record->classNames)
 						{
 							instanceResources.Remove(className);
 						}
@@ -239,7 +239,7 @@ IGuiInstanceResourceManager
 				else
 				{
 					pendingResources.Add(pr);
-					FOREACH(WString, dep, pr->dependencies)
+					for (auto dep : pr->dependencies)
 					{
 						depToPendings.Add(dep, pr);
 					}

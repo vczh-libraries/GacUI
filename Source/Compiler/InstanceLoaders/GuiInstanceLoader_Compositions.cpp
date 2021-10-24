@@ -134,7 +134,7 @@ GuiCompositionInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
@@ -292,7 +292,7 @@ GuiTableCompositionInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Rows)
 						{
@@ -421,7 +421,7 @@ GuiCellCompositionInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Site)
 						{
@@ -433,7 +433,7 @@ GuiCellCompositionInstanceLoader
 									if (auto ctorExpr = inferExpr->expression.Cast<WfConstructorExpression>())
 									{
 										auto st = description::GetTypeDescriptor<vint>()->GetSerializableType();
-										FOREACH(Ptr<WfConstructorArgument>, argument, ctorExpr->arguments)
+										for (auto argument : ctorExpr->arguments)
 										{
 											if (auto keyExpr = argument->key.Cast<WfReferenceExpression>())
 											{

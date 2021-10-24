@@ -98,7 +98,7 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged()
 				{
 					arranger->RebuildColumns();
-					FOREACH(ItemStyleRecord, style, arranger->visibleStyles)
+					for (auto style : arranger->visibleStyles)
 					{
 						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style.key))
 						{

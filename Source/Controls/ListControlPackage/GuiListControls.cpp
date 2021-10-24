@@ -243,7 +243,7 @@ GuiListControl
 			void GuiListControl::UpdateDisplayFont()
 			{
 				GuiControl::UpdateDisplayFont();
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetFont(GetDisplayFont());
 				}
@@ -257,7 +257,7 @@ GuiListControl
 
 			void GuiListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetVisuallyEnabled(GetVisuallyEnabled());
 				}
@@ -265,7 +265,7 @@ GuiListControl
 
 			void GuiListControl::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetContext(GetContext());
 				}
@@ -564,7 +564,7 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::OnItemSelectionCleared()
 			{
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetSelected(false);
 				}

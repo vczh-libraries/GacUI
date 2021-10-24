@@ -226,7 +226,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->GetTemplate()->SetFont(GetFont());
 					}
@@ -238,7 +238,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->GetTemplate()->SetContext(GetContext());
 					}
@@ -250,7 +250,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->GetTemplate()->SetVisuallyEnabled(GetVisuallyEnabled());
 					}
@@ -266,7 +266,7 @@ DefaultDataGridItemTemplate
 
 				DefaultDataGridItemTemplate::~DefaultDataGridItemTemplate()
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->NotifyDeletedTemplate();
 					}

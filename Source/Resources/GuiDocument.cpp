@@ -58,7 +58,7 @@ ExtractTextVisitor
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -234,7 +234,7 @@ DocumentModel
 				styles.Values()[indexDst]->styles = sp;
 			}
 
-			FOREACH(Ptr<DocumentStyle>, style, styles.Values())
+			for (auto style : styles.Values())
 			{
 				style->resolvedStyles = nullptr;
 			}

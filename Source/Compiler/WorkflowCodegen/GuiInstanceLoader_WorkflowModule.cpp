@@ -22,7 +22,7 @@ Workflow_CreateModuleWithUsings
 			if (index != -1)
 			{
 				auto nss = context->namespaces.Values()[index];
-				FOREACH(Ptr<GuiInstanceNamespace>, ns, nss->namespaces)
+				for (auto ns : nss->namespaces)
 				{
 					auto path = MakePtr<WfModuleUsingPath>();
 					module->paths.Add(path);

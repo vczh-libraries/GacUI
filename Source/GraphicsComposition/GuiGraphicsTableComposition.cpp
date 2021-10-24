@@ -515,7 +515,7 @@ GuiTableComposition
 
 				bool cellMinSizeModified = false;
 				SortedList<GuiCellComposition*> cells;
-				FOREACH(GuiCellComposition*, cell, cellCompositions)
+				for (auto cell : cellCompositions)
 				{
 					if (cell && !cells.Contains(cell))
 					{

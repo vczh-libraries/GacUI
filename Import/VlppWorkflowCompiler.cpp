@@ -42,7 +42,7 @@ CheckBaseClass
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -55,7 +55,7 @@ CheckBaseClass
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						decl->Accept(this);
 					}
@@ -166,7 +166,7 @@ CheckBaseClass
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						memberDecl->Accept(this);
 					}
@@ -175,9 +175,9 @@ CheckBaseClass
 				void Execute(vint _step)
 				{
 					step = _step;
-					FOREACH(Ptr<WfModule>, module, manager->GetModules())
+					for (auto module : manager->GetModules())
 					{
-						FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+						for (auto declaration : module->declarations)
 						{
 							declaration->Accept(this);
 						}
@@ -452,7 +452,7 @@ WfLexicalScopeName
 
 			void WfLexicalScopeName::RemoveNonTypeDescriptorNames(WfLexicalScopeManager* manager)
 			{
-				FOREACH(Ptr<WfLexicalScopeName>, name, children.Values())
+				for (auto name : children.Values())
 				{
 					name->RemoveNonTypeDescriptorNames(manager);
 				}
@@ -787,7 +787,7 @@ WfLexicalScopeManager
 				}while (0)
 				
 				EXIT_IF_ERRORS_EXIST;
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					ContextFreeModuleDesugar(this, module);
 					ValidateModuleStructure(this, module);
@@ -795,7 +795,7 @@ WfLexicalScopeManager
 				
 				EXIT_IF_ERRORS_EXIST;
 				BuildGlobalNameFromModules(this);
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					BuildScopeForModule(this, module);
 				}
@@ -803,7 +803,7 @@ WfLexicalScopeManager
 				CheckScopes_DuplicatedSymbol(this);
 				
 				EXIT_IF_ERRORS_EXIST;
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					CompleteScopeForModule(this, module);
 				}
@@ -811,7 +811,7 @@ WfLexicalScopeManager
 				CheckScopes_CycleDependency(this);
 				
 				EXIT_IF_ERRORS_EXIST;
-				FOREACH(Ptr<WfModule>, module, modules)
+				for (auto module : modules)
 				{
 					EXECUTE_CALLBACK(OnValidateModule(module));
 					ValidateModuleSemantic(this, module);
@@ -974,7 +974,7 @@ WfLexicalScopeManager
 						{
 							if (scope->ownerNode.Cast<WfNewInterfaceExpression>())
 							{
-								FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+								for (auto symbol : scope->symbols.GetByIndex(index))
 								{
 									if (symbol->creatorNode.Cast<WfVariableDeclaration>())
 									{
@@ -1000,7 +1000,7 @@ WfLexicalScopeManager
 						}
 						else
 						{
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+							for (auto symbol : scope->symbols.GetByIndex(index))
 							{
 								auto result = ResolveExpressionResult::Symbol(symbol);
 								if (!results.Contains(result))
@@ -1056,13 +1056,13 @@ WfLexicalScopeManager
 
 				if (auto module = scope->ownerNode.Cast<WfModule>())
 				{
-					FOREACH(Ptr<WfModuleUsingPath>, path, module->paths)
+					for (auto path : module->paths)
 					{
 						auto scopeName = globalName;
-						FOREACH(Ptr<WfModuleUsingItem>, item, path->items)
+						for (auto item : path->items)
 						{
 							WString fragmentName;
-							FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+							for (auto fragment : item->fragments)
 							{
 								fragmentName += UsingPathToNameVisitor::Execute(fragment, name);
 							}
@@ -1184,7 +1184,7 @@ BuildGlobalNameFromModules
 					}
 					AddCustomType(manager, scopeName, declaration, td);
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, declaration->declarations)
+					for (auto memberDecl : declaration->declarations)
 					{
 						BuildClassMemberVisitor visitor(manager, scopeName, declaration, td);
 						memberDecl->Accept(&visitor);
@@ -1289,7 +1289,7 @@ BuildGlobalNameFromModules
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -1302,13 +1302,13 @@ BuildGlobalNameFromModules
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					for (auto input : node->inputs)
 					{
 						auto info = MakePtr<WfClassMethod>();
 						td->AddMember(input->name.value, info);
 						manager->stateInputMethods.Add(input, info);
 
-						FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+						for (auto argument : input->arguments)
 						{
 							auto info = MakePtr<WfField>(td.Obj(), L"<stateip-" + input->name.value + L">" + argument->name.value);
 							td->AddMember(info);
@@ -1316,9 +1316,9 @@ BuildGlobalNameFromModules
 						}
 					}
 					
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
-						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						for (auto argument : state->arguments)
 						{
 							auto info = MakePtr<WfField>(td.Obj(), L"<statesp-" + state->name.value + L">" + argument->name.value);
 							td->AddMember(info);
@@ -1351,7 +1351,7 @@ BuildGlobalNameFromModules
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -1365,7 +1365,7 @@ BuildGlobalNameFromModules
 				void Visit(WfNamespaceDeclaration* node)override
 				{
 					manager->namespaceNames.Add(node, scopeName);
-					FOREACH(Ptr<WfDeclaration>, subDecl, node->declarations)
+					for (auto subDecl : node->declarations)
 					{
 						BuildNameForDeclaration(manager, scopeName, subDecl.Obj());
 					}
@@ -1400,9 +1400,9 @@ BuildGlobalNameFromModules
 
 			void BuildGlobalNameFromModules(WfLexicalScopeManager* manager)
 			{
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+					for (auto decl : module->declarations)
 					{
 						BuildNameForDeclaration(manager, manager->globalName, decl.Obj());
 					}
@@ -1505,7 +1505,7 @@ BuildScopeForDeclaration
 
 				void Visit(Ptr<WfLexicalScope> scope, List<Ptr<WfAttribute>>& attributes)
 				{
-					FOREACH(Ptr<WfAttribute>, attribute, attributes)
+					for (auto attribute : attributes)
 					{
 						if (attribute->value)
 						{
@@ -1522,7 +1522,7 @@ BuildScopeForDeclaration
 					parentScope->symbols.Add(symbol->name, symbol);
 
 					resultScope = new WfLexicalScope(parentScope);
-					FOREACH(Ptr<WfDeclaration>, declaration, node->declarations)
+					for (auto declaration : node->declarations)
 					{
 						BuildScopeForDeclaration(manager, resultScope, declaration, node);
 					}
@@ -1571,7 +1571,7 @@ BuildScopeForDeclaration
 						{
 							Ptr<WfFunctionType> type = new WfFunctionType;
 							type->result = node->returnType;
-							FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								type->arguments.Add(argument->type);
 							}
@@ -1582,7 +1582,7 @@ BuildScopeForDeclaration
 
 					if (node->statement)
 					{
-						FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
 							argumentSymbol->name = argument->name.value;
@@ -1629,7 +1629,7 @@ BuildScopeForDeclaration
 				{
 					resultScope = new WfLexicalScope(parentScope);
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(resultScope.Obj());
 						argumentSymbol->name = argument->name.value;
@@ -1638,9 +1638,9 @@ BuildScopeForDeclaration
 						resultScope->symbols.Add(argumentSymbol->name, argumentSymbol);
 					}
 
-					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					for (auto call : node->baseConstructorCalls)
 					{
-						FOREACH(Ptr<WfExpression>, argument, call->arguments)
+						for (auto argument : call->arguments)
 						{
 							BuildScopeForExpression(manager, resultScope, argument);
 						}
@@ -1682,7 +1682,7 @@ BuildScopeForDeclaration
 					auto td = manager->declarationTypes[node];
 					resultScope = new WfLexicalScope(parentScope);
 					resultScope->typeOfThisExpr = td.Obj();
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						BuildScopeForDeclaration(manager, resultScope, memberDecl, node);
 					}
@@ -1695,7 +1695,7 @@ BuildScopeForDeclaration
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
 
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						Visit(parentScope, item->attributes);
 					}
@@ -1708,7 +1708,7 @@ BuildScopeForDeclaration
 					symbol->creatorNode = node;
 					parentScope->symbols.Add(symbol->name, symbol);
 
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						Visit(parentScope, member->attributes);
 					}
@@ -1716,7 +1716,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Execute(manager, parentScope, source, decl);
 					}
@@ -1729,7 +1729,7 @@ BuildScopeForDeclaration
 
 				void Visit(WfStateMachineDeclaration* node)override
 				{
-					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					for (auto input : node->inputs)
 					{
 						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
 						stateSymbol->name = input->name.value;
@@ -1737,7 +1737,7 @@ BuildScopeForDeclaration
 						parentScope->symbols.Add(stateSymbol->name, stateSymbol);
 					}
 
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
 						Ptr<WfLexicalSymbol> stateSymbol = new WfLexicalSymbol(parentScope.Obj());
 						stateSymbol->name = state->name.value;
@@ -1756,7 +1756,7 @@ BuildScopeForDeclaration
 						stateScope->ownerNode = state;
 						manager->nodeScopes.Add(state.Obj(), stateScope);
 
-						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						for (auto argument : state->arguments)
 						{
 							Ptr<WfLexicalSymbol> argumentSymbol = new WfLexicalSymbol(stateScope.Obj());
 							argumentSymbol->name = argument->name.value;
@@ -1903,7 +1903,7 @@ BuildScopeForStatement
 				{
 					resultScope = new WfLexicalScope(parentScope);
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						BuildScopeForStatement(manager, resultScope, statement);
 					}
@@ -1931,7 +1931,7 @@ BuildScopeForStatement
 				void Visit(WfSwitchStatement* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->expression);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						BuildScopeForExpression(manager, parentScope, switchCase->expression);
 						BuildScopeForStatement(manager, parentScope, switchCase->statement);
@@ -1996,7 +1996,7 @@ BuildScopeForStatement
 						parentScope->symbols.Add(symbol->name, symbol);
 					}
 
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -2011,13 +2011,13 @@ BuildScopeForStatement
 				{
 					resultScope = new WfLexicalScope(parentScope);
 
-					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						auto caseScope = MakePtr<WfLexicalScope>(resultScope);
 						caseScope->ownerNode = switchCase;
 						manager->nodeScopes.Add(switchCase.Obj(), caseScope);
 
-						FOREACH(Ptr<WfStateSwitchArgument>, argument, switchCase->arguments)
+						for (auto argument : switchCase->arguments)
 						{
 							Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(caseScope.Obj());
 							symbol->name = argument->name.value;
@@ -2031,7 +2031,7 @@ BuildScopeForStatement
 
 				void Visit(WfStateInvokeStatement* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -2105,7 +2105,7 @@ BuildScopeForExpression
 					config->thisAccessable = false;
 					config->parentThisAccessable = true;
 
-					FOREACH(vint, name, names)
+					for (auto name : names)
 					{
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = L"$" + itow(name);
@@ -2156,7 +2156,7 @@ BuildScopeForExpression
 				void Visit(WfLetExpression* node)override
 				{
 					resultScope = new WfLexicalScope(parentScope);
-					FOREACH(Ptr<WfLetVariable>, variable, node->variables)
+					for (auto variable : node->variables)
 					{
 						Ptr<WfLexicalSymbol> symbol = new WfLexicalSymbol(resultScope.Obj());
 						symbol->name = variable->name.value;
@@ -2189,7 +2189,7 @@ BuildScopeForExpression
 
 				void Visit(WfConstructorExpression* node)override
 				{
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument->key);
 						if (argument->value)
@@ -2244,7 +2244,7 @@ BuildScopeForExpression
 					if (node->observeType == WfObserveType::SimpleObserve)
 					{
 						BuildScopeForExpression(manager, parentScope, node->expression);
-						FOREACH(Ptr<WfExpression>, event, node->events)
+						for (auto event : node->events)
 						{
 							BuildScopeForExpression(manager, parentScope, event);
 						}
@@ -2260,7 +2260,7 @@ BuildScopeForExpression
 						}
 
 						BuildScopeForExpression(manager, resultScope, node->expression);
-						FOREACH(Ptr<WfExpression>, event, node->events)
+						for (auto event : node->events)
 						{
 							BuildScopeForExpression(manager, resultScope, event);
 						}
@@ -2270,7 +2270,7 @@ BuildScopeForExpression
 				void Visit(WfCallExpression* node)override
 				{
 					BuildScopeForExpression(manager, parentScope, node->function);
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -2284,7 +2284,7 @@ BuildScopeForExpression
 
 				void Visit(WfNewClassExpression* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						BuildScopeForExpression(manager, parentScope, argument);
 					}
@@ -2305,7 +2305,7 @@ BuildScopeForExpression
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -2328,7 +2328,7 @@ BuildScopeForExpression
 					manager->CreateLambdaCapture(node, capture);
 
 					CreateLambdaCaptureVisitor visitor(manager, capture);
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						memberDecl->Accept(&visitor);
 						BuildScopeForDeclaration(manager, resultScope, memberDecl, node);
@@ -2416,7 +2416,7 @@ BuildScope
 				scope->ownerNode = module;
 				manager->nodeScopes.Add(module.Obj(), scope);
 
-				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+				for (auto declaration : module->declarations)
 				{
 					BuildScopeForDeclaration(manager, scope, declaration, module.Obj());
 				}
@@ -2460,7 +2460,7 @@ CheckScopes_DuplicatedSymbol
 			bool CheckScopes_DuplicatedSymbol(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
+				for (auto scope : manager->nodeScopes.Values())
 				{
 					if (!manager->checkedScopes_DuplicatedSymbol.Contains(scope.Obj()))
 					{
@@ -2475,7 +2475,7 @@ CheckScopes_DuplicatedSymbol
 								{
 									if (symbols.Count() > 1)
 									{
-										FOREACH(Ptr<WfLexicalSymbol>, symbol, From(symbols))
+										for (auto symbol : From(symbols))
 										{
 											if (auto decl = symbol->creatorNode.Cast<WfDeclaration>())
 											{
@@ -2557,7 +2557,7 @@ CheckScopes_SymbolType
 			bool CheckScopes_SymbolType(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				FOREACH(Ptr<WfLexicalScope>, scope, manager->nodeScopes.Values())
+				for (auto scope : manager->nodeScopes.Values())
 				{
 					if (!manager->checkedScopes_SymbolType.Contains(scope.Obj()))
 					{
@@ -2565,7 +2565,7 @@ CheckScopes_SymbolType
 
 						for (vint i = 0; i < scope->symbols.Count(); i++)
 						{
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(i))
+							for (auto symbol : scope->symbols.GetByIndex(i))
 							{
 								if (symbol->type)
 								{
@@ -2635,7 +2635,7 @@ CompleteScopeForClassMember
 					auto scope = manager->nodeScopes[node];
 					auto info = manager->declarationMemberInfos[node].Cast<WfMethodBase>();
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 						{
@@ -2669,7 +2669,7 @@ CompleteScopeForClassMember
 						voidType->name = WfPredefinedTypeName::Void;
 						type->result = voidType;
 					}
-					FOREACH(Ptr<WfType>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						type->arguments.Add(argument);
 					}
@@ -2707,7 +2707,7 @@ CompleteScopeForClassMember
 					auto scope = manager->nodeScopes[node];
 					auto info = manager->declarationMemberInfos[node].Cast<WfClassConstructor>();
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 						{
@@ -2738,7 +2738,7 @@ CompleteScopeForClassMember
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -2752,12 +2752,12 @@ CompleteScopeForClassMember
 				void Visit(WfStateMachineDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
-					FOREACH(Ptr<WfStateInput>, input, node->inputs)
+					for (auto input : node->inputs)
 					{
 						auto method = manager->stateInputMethods[input.Obj()];
 						method->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 
-						FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+						for (auto argument : input->arguments)
 						{
 							if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 							{
@@ -2769,9 +2769,9 @@ CompleteScopeForClassMember
 						}
 					}
 
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
-						FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+						for (auto argument : state->arguments)
 						{
 							if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), argument->type))
 							{
@@ -2814,7 +2814,7 @@ CompleteScopeForDeclaration
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						CompleteScopeForDeclaration(manager, decl);
 					}
@@ -2851,7 +2851,7 @@ CompleteScopeForDeclaration
 
 					if (node->baseTypes.Count() > 0)
 					{
-						FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+						for (auto baseType : node->baseTypes)
 						{
 							if (auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType))
 							{
@@ -2897,7 +2897,7 @@ CompleteScopeForDeclaration
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						CompleteScopeForClassMember(manager, td, node, memberDecl);
 					}
@@ -2907,7 +2907,7 @@ CompleteScopeForDeclaration
 				{
 					auto td = manager->declarationTypes[node].Cast<WfEnum>();
 					Dictionary<WString, vuint64_t> items;
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						vuint64_t value = 0;
 						switch (item->kind)
@@ -2916,7 +2916,7 @@ CompleteScopeForDeclaration
 							TypedValueSerializerProvider<vuint64_t>::Deserialize(item->number.value, value);
 							break;
 						case WfEnumItemKind::Intersection:
-							FOREACH(Ptr<WfEnumItemIntersection>, itemInt, item->intersections)
+							for (auto itemInt : item->intersections)
 							{
 								value |= items[itemInt->name.value];
 							}
@@ -2931,7 +2931,7 @@ CompleteScopeForDeclaration
 				{
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node].Cast<WfStruct>();
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						if (auto typeInfo = CreateTypeInfoFromType(scope.Obj(), member->type))
 						{
@@ -2944,7 +2944,7 @@ CompleteScopeForDeclaration
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -2953,7 +2953,7 @@ CompleteScopeForDeclaration
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
 					node->Accept((WfVirtualCseDeclaration::IVisitor*)this);
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -2986,7 +2986,7 @@ CompleteScope
 
 			void CompleteScopeForModule(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+				for (auto declaration : module->declarations)
 				{
 					CompleteScopeForDeclaration(manager, declaration);
 				}
@@ -3196,7 +3196,7 @@ ContextFreeModuleDesugar
 								}
 								SetCodeRange(expression, { formatPos,formatPos,node->codeRange.codeIndex }, true);
 							}
-							FOREACH(Ptr<ParsingError>, originalError, errors)
+							for (auto originalError : errors)
 							{
 								auto error = WfErrors::WrongFormatStringSyntax(node);
 								error->errorMessage += L" (" + originalError->errorMessage + L")";
@@ -3216,7 +3216,7 @@ ContextFreeModuleDesugar
 					if (expressions.Count() > 0)
 					{
 						Ptr<WfExpression> current = expressions[0];
-						FOREACH(Ptr<WfExpression>, expression, From(expressions).Skip(1))
+						for (auto expression : From(expressions).Skip(1))
 						{
 							Ptr<WfBinaryExpression> binary = new WfBinaryExpression;
 							binary->codeRange = node->codeRange;
@@ -3427,7 +3427,7 @@ ContextFreeModuleDesugar
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						auto classMember = MakePtr<WfClassMember>();
 						decl->classMember = classMember;
@@ -3803,7 +3803,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedFunctions(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				FOREACH_INDEXER(ResolveExpressionResult, result, index, results)
+				for (auto [result, index] : indexed(results))
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
@@ -3982,7 +3982,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates)
 			{
 				WString description;
-				FOREACH(WString, candidate, candidates)
+				for (auto candidate : candidates)
 				{
 					description += L"\r\n\t";
 					description += candidate;
@@ -4030,7 +4030,7 @@ WfErrors
 				else
 				{
 					WString description;
-					FOREACH(ITypeInfo*, type, types)
+					for (auto type : types)
 					{
 						description += L"\r\n\t";
 						description += type->GetTypeFriendlyName();
@@ -4163,7 +4163,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results)
 			{
 				WString description;
-				FOREACH(ResolveExpressionResult, result, results)
+				for (auto result : results)
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
@@ -4239,7 +4239,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -4300,7 +4300,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::TooManyTargets(parsing::ParsingTreeCustomBase* node, collections::List<ResolveExpressionResult>& results, const WString& name)
 			{
 				WString description;
-				FOREACH_INDEXER(ResolveExpressionResult, result, index, results)
+				for (auto [result, index] : indexed(results))
 				{
 					description += L"\r\n\t";
 					description += result.GetFriendlyName();
@@ -4427,7 +4427,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -4438,7 +4438,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -4474,7 +4474,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -4485,7 +4485,7 @@ WfErrors
 			Ptr<parsing::ParsingError> WfErrors::CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				WString description;
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					description += L"\r\n\t";
 					description += td->GetTypeName();
@@ -4566,7 +4566,7 @@ Copy(Type|Expression|Statement|Declaration)
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
 					expanded = true;
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Execute(decls, decl);
 					}
@@ -4575,7 +4575,7 @@ Copy(Type|Expression|Statement|Declaration)
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
 					expanded = true;
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Execute(decls, decl);
 					}
@@ -4600,7 +4600,7 @@ Copy(Type|Expression|Statement|Declaration)
 					CopyFrom(copied, decls);
 					decls.Clear();
 
-					FOREACH(Ptr<WfDeclaration>, decl, copied)
+					for (auto decl : copied)
 					{
 						CopyDeclarationWithExpandVirtualVisitor::Execute(decls, decl);
 					}
@@ -4813,7 +4813,7 @@ CreateBindContext
 					vint index = context.exprCauses.Keys().IndexOf(parent);
 					if (index != -1)
 					{
-						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						for (auto observe : context.exprCauses.GetByIndex(index))
 						{
 							context.observeAffects.Add(observe, expr);
 							context.observeCauses.Add(expr, observe);
@@ -4834,7 +4834,7 @@ CreateBindContext
 					vint index = context.exprCauses.Keys().IndexOf(depended);
 					if (index != -1)
 					{
-						FOREACH(WfExpression*, observe, context.exprCauses.GetByIndex(index))
+						for (auto observe : context.exprCauses.GetByIndex(index))
 						{
 							context.exprCauses.Add(expr, observe);
 							context.exprAffects.Add(observe, expr);
@@ -4962,7 +4962,7 @@ CreateBindContext
 
 				void Visit(WfLetExpression* node)override
 				{
-					FOREACH(Ptr<WfLetVariable>, var, node->variables)
+					for (auto var : node->variables)
 					{
 						DirectDepend(node, var->value.Obj());
 					}
@@ -4993,7 +4993,7 @@ CreateBindContext
 					auto result = manager->expressionResolvings[node];
 					bool isStruct = (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct);
 
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (!isStruct)
 						{
@@ -5045,7 +5045,7 @@ CreateBindContext
 					Call(node->parent.Obj());
 					ObservableDepend(node, node->parent.Obj());
 					Call(node->expression.Obj());
-					FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+					for (auto eventExpr : node->events)
 					{
 						auto result = manager->expressionResolvings[eventExpr.Obj()];
 						context.observeEvents.Add(node, result.eventInfo);
@@ -5056,7 +5056,7 @@ CreateBindContext
 				void Visit(WfCallExpression* node)override
 				{
 					DirectDepend(node, node->function.Obj());
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						DirectDepend(node, argument.Obj());
 					}
@@ -5069,7 +5069,7 @@ CreateBindContext
 
 				void Visit(WfNewClassExpression* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						DirectDepend(node, argument.Obj());
 					}
@@ -5148,7 +5148,7 @@ ExpandObserveExpression
 				void Visit(WfLetExpression* node)override
 				{
 					auto letExpr = MakePtr<WfLetExpression>();
-					FOREACH(Ptr<WfLetVariable>, var, node->variables)
+					for (auto var : node->variables)
 					{
 						if (context.GetCachedExpressionIndexRecursively(var->value.Obj(), false) == -1)
 						{
@@ -5385,7 +5385,7 @@ CreateBindAttachStatement
 
 			void CreateBindAttachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindContext& context, BindCallbackInfo& info)
 			{
-				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
+				for (auto callbackInfo : info.observeCallbackInfos[observe])
 				{
 					auto attach = MakePtr<WfAttachEventExpression>();
 					attach->event = ExpandObserveEvent(manager, observe, callbackInfo.eventIndex, context);
@@ -5416,7 +5416,7 @@ CreateBindDetachStatement
 
 			void CreateBindDetachStatement(Ptr<WfBlockStatement> block, WfLexicalScopeManager* manager, WfExpression* observe, BindContext& context, BindCallbackInfo& info)
 			{
-				FOREACH(CallbackInfo, callbackInfo, info.observeCallbackInfos[observe])
+				for (auto callbackInfo : info.observeCallbackInfos[observe])
 				{
 					auto testNull = MakePtr<WfTypeTestingExpression>();
 					testNull->expression = CreateReference(callbackInfo.handlerName);
@@ -5541,7 +5541,7 @@ IValueSubscription::Open
 									})
 								);
 
-							FOREACH(WfExpression*, observe, context.orderedObserves)
+							for (auto observe : context.orderedObserves)
 							{
 								if (freeObserves.Contains(observe))
 								{
@@ -5554,7 +5554,7 @@ IValueSubscription::Open
 								}
 							}
 
-							FOREACH(WfExpression*, observe, freeObserves)
+							for (auto observe : freeObserves)
 							{
 								observes.Remove(observe);
 							}
@@ -5562,7 +5562,7 @@ IValueSubscription::Open
 						}
 					}
 					{
-						FOREACH(WfExpression*, observe, context.orderedObserves)
+						for (auto observe : context.orderedObserves)
 						{
 							CreateBindAttachStatement(ifBlock, manager, observe, context, info);
 						}
@@ -5694,7 +5694,7 @@ IValueSubscription::Close
 						stat->expression = assign;
 						ifBlock->statements.Add(stat);
 					}
-					FOREACH(WfExpression*, observe, context.orderedObserves)
+					for (auto observe : context.orderedObserves)
 					{
 						CreateBindDetachStatement(ifBlock, manager, observe, context, info);
 					}
@@ -5777,7 +5777,7 @@ ExpandBindExpression
 						});
 					};
 
-					FOREACH_INDEXER(WfExpression*, parent, index, context.cachedExprs)
+					for (auto [parent, index] : indexed(context.cachedExprs))
 					{
 						WString cacheName = context.GetCacheVariableName(index);
 						{
@@ -5786,10 +5786,10 @@ ExpandBindExpression
 						}
 					}
 
-					FOREACH_INDEXER(WfExpression*, observe, observeIndex, context.orderedObserves)
+					for (auto [observe, observeIndex] : indexed(context.orderedObserves))
 					{
 						const auto& events = context.observeEvents[observe];
-						FOREACH_INDEXER(IEventInfo*, ev, eventIndex, events)
+						for (auto [ev, eventIndex] : indexed(events))
 						{
 							WString handlerName = L"<bind-handler>" + itow(observeIndex) + L"_" + itow(eventIndex);
 							{
@@ -5844,9 +5844,9 @@ ExpandBindExpression
 					
 						newSubscription->declarations.Add(AssignNormalMember(func));
 					}
-					FOREACH(WfExpression*, observe, context.orderedObserves)
+					for (auto observe : context.orderedObserves)
 					{
-						FOREACH(CallbackInfo, callbackInfo, bcInfo.observeCallbackInfos[observe])
+						for (auto callbackInfo : bcInfo.observeCallbackInfos[observe])
 						{
 							auto func = MakePtr<WfFunctionDeclaration>();
 							func->name.value = callbackInfo.callbackName;
@@ -5874,7 +5874,7 @@ ExpandBindExpression
 									vint dependencyIndex = context.observeAffects.Keys().IndexOf(current);
 									if (dependencyIndex != -1)
 									{
-										FOREACH(WfExpression*, affectedObserve, context.observeAffects.GetByIndex(dependencyIndex))
+										for (auto affectedObserve : context.observeAffects.GetByIndex(dependencyIndex))
 										{
 											if (affectedObserve && !affected.Contains(affectedObserve))
 											{
@@ -5885,13 +5885,13 @@ ExpandBindExpression
 								}
 								affected.Remove(observe);
 
-								FOREACH(WfExpression*, affectedObserve, From(affected).Reverse())
+								for (auto affectedObserve : From(affected).Reverse())
 								{
 									CreateBindDetachStatement(block, manager, affectedObserve, context, bcInfo);
 								}
 								{
 									SortedList<vint> assignedParents;
-									FOREACH(WfExpression*, affectedObserve, affected)
+									for (auto affectedObserve : affected)
 									{
 										auto parent = context.GetCachedExpressionIndexRecursively(context.observeParents[affectedObserve], true);
 										if (!assignedParents.Contains(parent))
@@ -5901,7 +5901,7 @@ ExpandBindExpression
 										}
 									}
 								}
-								FOREACH(WfExpression*, affectedObserve, affected)
+								for (auto affectedObserve : affected)
 								{
 									CreateBindAttachStatement(block, manager, affectedObserve, context, bcInfo);
 								}
@@ -6201,7 +6201,7 @@ FindCoroutineAwaredStatements
 				void Visit(WfBlockStatement* node)override
 				{
 					bool result = false;
-					FOREACH(Ptr<WfStatement>, stat, node->statements)
+					for (auto stat : node->statements)
 					{
 						bool a = Call(stat);
 						result |= a;
@@ -6283,7 +6283,7 @@ FindCoroutineAwaredVariables
 				void Visit(WfBlockStatement* node)override
 				{
 					FindCoroutineAwaredVariableVisitor visitor(awaredVariables);
-					FOREACH(Ptr<WfStatement>, stat, node->statements)
+					for (auto stat : node->statements)
 					{
 						stat->Accept(&visitor);
 					}
@@ -6318,7 +6318,7 @@ FindCoroutineReferenceRenaming
 					}
 				};
 
-				FOREACH(WfVariableStatement*, stat, awaredVariables)
+				for (auto stat : awaredVariables)
 				{
 					auto scope = manager->nodeScopes[stat];
 					auto symbol = scope->symbols[stat->variable->name.value][0];
@@ -6326,7 +6326,7 @@ FindCoroutineReferenceRenaming
 					referenceRenaming.Add(symbol.Obj(), name);
 				}
 
-				FOREACH(WfStatement*, stat, awaredStatements)
+				for (auto stat : awaredStatements)
 				{
 					if (auto tryStat = dynamic_cast<WfTryStatement*>(stat))
 					{
@@ -6873,7 +6873,7 @@ GenerateFlowChart
 						resultHead = flowChart->EnsureAppendStatement(headNode, catchNode);
 						resultLast = resultHead;
 
-						FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
+						for (auto [stat, index] : indexed(node->statements))
 						{
 							auto pair = Execute(resultLast, catchNode, scopeContext, stat);
 							resultLast = pair.value;
@@ -6892,7 +6892,7 @@ GenerateFlowChart
 						blockContext.enterNode = resultHead;
 						blockContext.leaveNode = blockEnd;
 
-						FOREACH_INDEXER(Ptr<WfStatement>, stat, index, node->statements)
+						for (auto [stat, index] : indexed(node->statements))
 						{
 							auto pair = Execute(resultLast, catchNode, &blockContext, stat);
 							resultLast = pair.value;
@@ -7012,7 +7012,7 @@ RemoveUnnecessaryNodes
 				const auto& keys = enterCounts.Keys();
 				auto& values = const_cast<Dictionary<FlowChartNode*, vint>::ValueContainer&>(enterCounts.Values());
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					enterCounts.Add(node.Obj(), 0);
 				}
@@ -7027,12 +7027,12 @@ RemoveUnnecessaryNodes
 					}
 				};
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					Inc(node->destination);
 					Inc(node->exceptionDestination);
 					Inc(node->pauseDestination);
-					FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+					for (auto branch : node->branches)
 					{
 						Inc(branch->destination);
 					}
@@ -7046,7 +7046,7 @@ RemoveUnnecessaryNodes
 
 				SortedList<FlowChartNode*> mergableNodes;
 				List<Ptr<FlowChartNode>> keepingNodes;
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					bool mergable = false;
 
@@ -7073,7 +7073,7 @@ RemoveUnnecessaryNodes
 				}
 
 				Dictionary<FlowChartNode*, FlowChartNode*> merging;
-				FOREACH(FlowChartNode*, node, mergableNodes)
+				for (auto node : mergableNodes)
 				{
 					auto current = node;
 					while (mergableNodes.Contains(current))
@@ -7107,14 +7107,14 @@ RemoveUnnecessaryNodes
 					if (index != -1) DESTINATION = merging.Values()[index];\
 				}\
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					if (!mergableNodes.Contains(node.Obj()))
 					{
 						MERGE_FLOW_CHART_NODE(node->destination);
 						MERGE_FLOW_CHART_NODE(node->exceptionDestination);
 						MERGE_FLOW_CHART_NODE(node->pauseDestination);
-						FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+						for (auto branch : node->branches)
 						{
 							MERGE_FLOW_CHART_NODE(branch->destination);
 						}
@@ -7139,7 +7139,7 @@ RemoveUnnecessaryNodes
 			{
 				RemoveUnnecessaryNodesPass(flowChart);
 
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
 					if (node->pauseDestination && node->statements.Count() > 0 && node->statements[node->statements.Count() - 1].Cast<WfCoPauseStatement>())
 					{
@@ -7149,9 +7149,9 @@ RemoveUnnecessaryNodes
 
 				Dictionary<FlowChartNode*, vint> enterCounts;
 				CalculateEnterCounts(flowChart, enterCounts);
-				FOREACH(Ptr<FlowChartNode>, node, flowChart->nodes)
+				for (auto node : flowChart->nodes)
 				{
-					FOREACH(Ptr<FlowChartBranch>, branch, node->branches)
+					for (auto branch : node->branches)
 					{
 						if (enterCounts[branch->destination] == 1)
 						{
@@ -7314,7 +7314,7 @@ ExpandFlowChartNode
 				}
 
 				bool exited = false;
-				FOREACH(Ptr<WfStatement>, stat, flowChartNode->statements)
+				for (auto stat : flowChartNode->statements)
 				{
 					if (stat.Cast<WfCoPauseStatement>())
 					{
@@ -7347,7 +7347,7 @@ ExpandFlowChartNode
 					}
 				}
 
-				FOREACH(Ptr<FlowChartBranch>, branch, flowChartNode->branches)
+				for (auto branch : flowChartNode->branches)
 				{
 					Ptr<WfBlockStatement> trueBlock;
 
@@ -7414,7 +7414,7 @@ ExpandNewCoroutineExpression
 				Dictionary<WfLexicalSymbol*, WString> referenceRenaming;
 
 				FindCoroutineAwaredStatements(node->statement, awaredStatements);
-				FOREACH(WfStatement*, stat, awaredStatements)
+				for (auto stat : awaredStatements)
 				{
 					FindCoroutineAwaredVariables(stat, awaredVariables);
 				}
@@ -7444,12 +7444,11 @@ ExpandNewCoroutineExpression
 				// Coroutine Awared Variables
 				/////////////////////////////////////////////////////////////////////////////
 
-				FOREACH(WfLexicalSymbol*, symbol,
-					From(referenceRenaming.Keys())
-						.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
-						{
-							return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
-						}))
+				for (auto symbol : From(referenceRenaming.Keys())
+					.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
+					{
+						return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
+					}))
 				{
 					auto varDecl = MakePtr<WfVariableDeclaration>();
 					newExpr->declarations.Add(varDecl);
@@ -7718,7 +7717,7 @@ ExpandNewCoroutineExpression
 											return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
 										});
 
-									FOREACH(GroupPair, group, nodeByCatches)
+									for (auto group : nodeByCatches)
 									{
 										auto catchNode = group.key;
 										if (!catchNode) continue;
@@ -7726,7 +7725,7 @@ ExpandNewCoroutineExpression
 										Ptr<WfExpression> condition;
 										{
 											List<Tuple<vint, vint>> conditionRanges;
-											FOREACH(FlowChartNode*, flowChartNode, group.value)
+											for (auto flowChartNode : group.value)
 											{
 												vint state = nodeOrders.IndexOf(flowChartNode);
 												if (conditionRanges.Count() == 0)
@@ -7885,7 +7884,7 @@ ExpandNewCoroutineExpression
 									return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
 								});
 
-							FOREACH(GroupPair, group, nodeByCatches)
+							for (auto group : nodeByCatches)
 							{
 								auto catchNode = group.key;
 								auto groupBlock = whileBlock;
@@ -7894,7 +7893,7 @@ ExpandNewCoroutineExpression
 									groupBlock = ExpandExceptionDestination(catchNode, referenceRenaming, nodeOrders, whileBlock);
 								}
 
-								FOREACH(FlowChartNode*, flowChartNode, group.value)
+								for (auto flowChartNode : group.value)
 								{
 									/////////////////////////////////////////////////////////////////////////////
 									// if (<co-state> == THE_CURRENT_STATE) { ... }
@@ -8177,13 +8176,13 @@ ExpandStateMachineStatementVisitor
 					}
 					block->statements.Add(switchStat);
 
-					FOREACH(Ptr<WfStateSwitchCase>, stateSwitchCase, node->caseBranches)
+					for (auto stateSwitchCase : node->caseBranches)
 					{
 						Ptr<WfStateInput> input;
 						Ptr<WfBlockStatement> caseBlock;
 						GenerateStateSwitchCase(stateSwitchCase->name.value, smcScope, switchStat, input, caseBlock);
 
-						FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, stateSwitchCase->arguments)
+						for (auto [argument, index] : indexed(stateSwitchCase->arguments))
 						{
 							auto refThis = MakePtr<WfReferenceExpression>();
 							refThis->name.value = L"<state>stateMachineObject";
@@ -8212,7 +8211,7 @@ ExpandStateMachineStatementVisitor
 								From(node->caseBranches)
 								.Select([](Ptr<WfStateSwitchCase> switchCase) {return switchCase->name.value; })
 								);
-						FOREACH(WString, inputName, invalidInputs)
+						for (auto inputName : invalidInputs)
 						{
 							Ptr<WfStateInput> input;
 							Ptr<WfBlockStatement> caseBlock;
@@ -8284,7 +8283,7 @@ ExpandStateMachineStatementVisitor
 
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, stateDecl->arguments)
+					for (auto [argument, index] : indexed(stateDecl->arguments))
 					{
 						auto refThis = MakePtr<WfReferenceExpression>();
 						refThis->name.value = L"<state>stateMachineObject";
@@ -8370,11 +8369,11 @@ ExpandStateMachine
 			{
 				auto& smInfo = manager->stateMachineInfos[node];
 
-				FOREACH(Ptr<WfStateInput>, input, node->inputs)
+				for (auto input : node->inputs)
 				{
 					smInfo->inputIds.Add(input->name.value, smInfo->inputIds.Count());
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, input->arguments)
+					for (auto argument : input->arguments)
 					{
 						// var <stateip-INPUT>NAME = <DEFAULT-VALUE>;
 						auto fieldInfo = manager->stateInputArguments[argument.Obj()];
@@ -8399,14 +8398,14 @@ ExpandStateMachine
 				}
 
 				smInfo->stateIds.Add(L"", 0);
-				FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+				for (auto state : node->states)
 				{
 					if (state->name.value != L"")
 					{
 						smInfo->stateIds.Add(state->name.value, smInfo->stateIds.Count());
 					}
 
-					FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+					for (auto argument : state->arguments)
 					{
 						// var <statesp-INPUT>NAME = <DEFAULT-VALUE>;
 						auto fieldInfo = manager->stateDeclArguments[argument.Obj()];
@@ -8430,7 +8429,7 @@ ExpandStateMachine
 					}
 				}
 
-				FOREACH(Ptr<WfStateInput>, input, node->inputs)
+				for (auto input : node->inputs)
 				{
 					auto methodInfo = manager->stateInputMethods[input.Obj()];
 
@@ -8439,7 +8438,7 @@ ExpandStateMachine
 					funcDecl->anonymity = WfFunctionAnonymity::Named;
 					funcDecl->name.value = methodInfo->GetName();
 					funcDecl->returnType = GetTypeFromTypeInfo(methodInfo->GetReturn());
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					for (auto [argument, index] : indexed(input->arguments))
 					{
 						auto funcArgument = MakePtr<WfFunctionArgument>();
 						funcArgument->name.value = argument->name.value;
@@ -8541,7 +8540,7 @@ ExpandStateMachine
 						exprStat->expression = assignExpr;
 						block->statements.Add(exprStat);
 					}
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					for (auto [argument, index] : indexed(input->arguments))
 					{
 						// this.<stateip-INPUT>NAME = NAME;
 						auto refField = MakePtr<WfMemberExpression>();
@@ -8733,7 +8732,7 @@ ExpandStateMachine
 									switchStat->expression = refCurrentState;
 									whileBlock->statements.Add(switchStat);
 
-									FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+									for (auto state : node->states)
 									{
 										auto switchCase = MakePtr<WfSwitchCase>();
 										switchStat->caseBranches.Add(switchCase);
@@ -8745,7 +8744,7 @@ ExpandStateMachine
 										auto caseBlock = MakePtr<WfBlockStatement>();
 										switchCase->statement = caseBlock;
 
-										FOREACH(Ptr<WfFunctionArgument>, argument, state->arguments)
+										for (auto argument : state->arguments)
 										{
 											auto refThis = MakePtr<WfReferenceExpression>();
 											refThis->name.value = L"<state>stateMachineObject";
@@ -8841,7 +8840,7 @@ ExpandSwitchStatement
 				Ptr<WfStatement> rootIfStat;
 				auto tailIfStat = &rootIfStat;
 
-				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+				for (auto switchCase : node->caseBranches)
 				{
 					auto ifStat = MakePtr<WfIfStatement>();
 					*tailIfStat = ifStat;
@@ -9249,7 +9248,7 @@ ExpandCoProviderStatement
 						auto callExpr = MakePtr<WfCallExpression>();
 						callExpr->function = funcExpr;
 						callExpr->arguments.Add(refImpl);
-						FOREACH(Ptr<WfExpression>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							callExpr->arguments.Add(CreateField(argument));
 						}
@@ -9361,7 +9360,7 @@ ExpandCoProviderStatement
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						statement = SearchUntilNonVirtualStatement(statement);
 
@@ -9587,7 +9586,7 @@ IsExpressionDependOnExpectedType(Expression)
 						bool unresolvableField = false;
 						auto scope = manager->nodeScopes[node].Obj();
 
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							if (argument->value)
 							{
@@ -9852,7 +9851,7 @@ GetExpressionFromTypeDescriptor
 				GetTypeFragments(typeDescriptor, fragments);
 
 				Ptr<WfExpression> parentExpr;
-				FOREACH(WString, fragment, fragments)
+				for (auto fragment : fragments)
 				{
 					if (!parentExpr)
 					{
@@ -9925,7 +9924,7 @@ GetTypeFromTypeInfo
 						GetTypeFragments(typeInfo->GetTypeDescriptor(), fragments);
 
 						Ptr<WfType> parentType;
-						FOREACH(WString, fragment, fragments)
+						for (auto fragment : fragments)
 						{
 							if (!parentType)
 							{
@@ -10486,7 +10485,7 @@ CreateTypeInfoFromType
 						auto enumerableTypeInfo = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
 						auto genericTypeInfo = MakePtr<GenericTypeInfo>(enumerableTypeInfo);
 						genericTypeInfo->AddGenericArgument(returnType);
-						FOREACH(Ptr<WfType>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							if (Ptr<ITypeInfo> argumentType = Call(argument.Obj(), true))
 							{
@@ -10980,7 +10979,7 @@ ValidateScopeName
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -11000,12 +10999,12 @@ ValidateScopeName
 			void ValidateScopeName(WfLexicalScopeManager* manager, Ptr<WfLexicalScopeName> name)
 			{
 				ValidateScopeNameDeclarationVisitor visitor(manager, name);
-				FOREACH(Ptr<WfDeclaration>, declaration, name->declarations)
+				for (auto declaration : name->declarations)
 				{
 					declaration->Accept(&visitor);
 				}
 
-				FOREACH(Ptr<WfLexicalScopeName>, child, name->children.Values())
+				for (auto child : name->children.Values())
 				{
 					ValidateScopeName(manager, child);
 				}
@@ -11080,7 +11079,7 @@ Helper Functions
 
 				List<bool> resolvables;
 				List<Ptr<ITypeInfo>> types;
-				FOREACH(Ptr<WfExpression>, argument, arguments)
+				for (auto argument : arguments)
 				{
 					if (!argument || IsExpressionDependOnExpectedType(manager, argument))
 					{
@@ -11234,7 +11233,7 @@ ValidateSemantic
 			
 			void ValidateModuleSemantic(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				FOREACH(Ptr<WfDeclaration>, declaration, module->declarations)
+				for (auto declaration : module->declarations)
 				{
 					ValidateDeclarationSemantic(manager, declaration);
 				}
@@ -11362,7 +11361,7 @@ GetExpressionTypes
 
 					if (results.Count() == 0)
 					{
-						FOREACH(Ptr<ITypeInfo>, type, failedTypes)
+						for (auto type : failedTypes)
 						{
 							manager->errors.Add(WfErrors::ExpressionCannotImplicitlyConvertToType(expression.Obj(), type.Obj(), expectedType.Obj()));
 						}
@@ -11581,7 +11580,7 @@ ValidateSemantic(ClassMember)
 						}
 					}
 
-					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					for (auto call : node->baseConstructorCalls)
 					{
 						if (auto scopeName = GetScopeNameFromReferenceType(classScope, call->type))
 						{
@@ -11699,7 +11698,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(List<Ptr<WfAttribute>>& attributes)
 				{
-					FOREACH(Ptr<WfAttribute>, attribute, attributes)
+					for (auto attribute : attributes)
 					{
 						auto key = Pair<WString, WString>(attribute->category.value, attribute->name.value);
 						vint index = manager->attributes.Keys().IndexOf(key);
@@ -11724,7 +11723,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, declaration, node->declarations)
+					for (auto declaration : node->declarations)
 					{
 						ValidateDeclarationSemantic(manager, declaration);
 					}
@@ -11736,7 +11735,7 @@ ValidateSemantic(Declaration)
 					{
 						ValidateStatementSemantic(manager, node->statement);
 					}
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						Visit(argument->attributes);
 					}
@@ -11776,7 +11775,7 @@ ValidateSemantic(Declaration)
 
 					if (node->kind == WfClassKind::Interface)
 					{
-						FOREACH(Ptr<WfType>, baseType, node->baseTypes)
+						for (auto baseType : node->baseTypes)
 						{
 							auto scopeName = GetScopeNameFromReferenceType(scope->parentScope.Obj(), baseType);
 							auto baseTd = scopeName->typeDescriptor;
@@ -11806,7 +11805,7 @@ ValidateSemantic(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						ValidateClassMemberSemantic(manager, td, node, memberDecl);
 					}
@@ -11814,7 +11813,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfEnumDeclaration* node)override
 				{
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						Visit(item->attributes);
 					}
@@ -11824,7 +11823,7 @@ ValidateSemantic(Declaration)
 				{
 					auto scope = manager->nodeScopes[node];
 					auto td = manager->declarationTypes[node].Cast<WfStruct>();
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						auto memberTd = td->GetPropertyByName(member->name.value, false)->GetReturn()->GetTypeDescriptor();
 						if ((memberTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
@@ -11833,7 +11832,7 @@ ValidateSemantic(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						Visit(member->attributes);
 					}
@@ -11841,7 +11840,7 @@ ValidateSemantic(Declaration)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						ValidateDeclarationSemantic(manager, decl);
 					}
@@ -11858,7 +11857,7 @@ ValidateSemantic(Declaration)
 						ExpandVirtualDeclarationVisitor visitor(manager);
 						node->Accept(&visitor);
 
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							SetCodeRange(decl, node->codeRange);
 						}
@@ -11869,11 +11868,11 @@ ValidateSemantic(Declaration)
 							parentScope = parentScope->parentScope;
 						}
 
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							ContextFreeDeclarationDesugar(manager, decl);
 						}
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							BuildScopeForDeclaration(manager, parentScope, decl, manager->declaractionScopeSources[node]);
 						}
@@ -11886,7 +11885,7 @@ ValidateSemantic(Declaration)
 						}
 					}
 
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						ValidateDeclarationSemantic(manager, decl);
 					}
@@ -11896,7 +11895,7 @@ ValidateSemantic(Declaration)
 				{
 					bool foundDefaultState = false;
 
-					FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+					for (auto state : node->states)
 					{
 						if (state->name.value == L"")
 						{
@@ -12229,7 +12228,7 @@ ValidateSemantic(Expression)
 					{
 						if (nameResults.Count() > 0)
 						{
-							FOREACH(ResolveExpressionResult, result, nameResults)
+							for (auto result : nameResults)
 							{
 								manager->errors.Add(WfErrors::ExpressionCannotResolveType(node, result.symbol));
 							}
@@ -12265,7 +12264,7 @@ ValidateSemantic(Expression)
 					}
 
 					ResolveName(node, node->name.value);
-					FOREACH(ResolveExpressionResult, result, results)
+					for (auto result : results)
 					{
 						ITypeDescriptor* td = nullptr;
 						if (result.methodInfo)
@@ -12377,7 +12376,7 @@ ValidateSemantic(Expression)
 						}
 
 						Ptr<ITypeInfo> resultType = type->GetGenericArgument(0);
-						FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, parameterSymbols)
+						for (auto [symbol, index] : indexed(parameterSymbols))
 						{
 							symbol->typeInfo = type->GetGenericArgument(index + 1);
 							symbol->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
@@ -12440,7 +12439,7 @@ ValidateSemantic(Expression)
 
 							if (results.Count() > 0)
 							{
-								FOREACH(ResolveExpressionResult, result, results)
+								for (auto result : results)
 								{
 									if (result.methodInfo)
 									{
@@ -12949,7 +12948,7 @@ ValidateSemantic(Expression)
 				{
 					auto scope = manager->nodeScopes[node].Obj();
 
-					FOREACH(Ptr<WfLetVariable>, variable, node->variables)
+					for (auto variable : node->variables)
 					{
 						auto symbol = scope->symbols[variable->name.value][0];
 						symbol->typeInfo = GetExpressionType(manager, variable->value, 0);
@@ -13113,7 +13112,7 @@ ValidateSemantic(Expression)
 					if (expectedType && expectedType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
 					{
 						SortedList<WString> fields;
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							if (!argument->value)
 							{
@@ -13198,7 +13197,7 @@ ValidateSemantic(Expression)
 
 						bool map = node->arguments[0]->value;
 						Ptr<ITypeInfo> keyType, valueType;
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							{
 								Ptr<ITypeInfo> newKeyType = GetExpressionType(manager, argument->key, expectedKeyType);
@@ -13400,7 +13399,7 @@ ValidateSemantic(Expression)
 							}
 							else
 							{
-								FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+								for (auto eventExpr : node->events)
 								{
 									auto ref = eventExpr.Cast<WfReferenceExpression>();
 									IEventInfo* info = td->GetEventByName(ref->name.value, true);
@@ -13423,7 +13422,7 @@ ValidateSemantic(Expression)
 							symbol->type = GetTypeFromTypeInfo(parentType.Obj());
 
 							observeeType = GetExpressionType(manager, node->expression, 0);
-							FOREACH(Ptr<WfExpression>, eventExpr, node->events)
+							for (auto eventExpr : node->events)
 							{
 								GetExpressionEventInfo(manager, eventExpr);
 							}
@@ -13458,7 +13457,7 @@ ValidateSemantic(Expression)
 					auto classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueFunctionProxy>(), TypeInfoHint::Normal);
 					auto genericType = MakePtr<GenericTypeInfo>(classType);
 					genericType->AddGenericArgument(CreateTypeInfoFromType(scope, node->function->returnType));
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->function->arguments)
+					for (auto argument : node->function->arguments)
 					{
 						genericType->AddGenericArgument(scope->symbols[argument->name.value][0]->typeInfo);
 					}
@@ -13494,7 +13493,7 @@ ValidateSemantic(Expression)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -13528,7 +13527,7 @@ ValidateSemantic(Expression)
 
 					void Execute(WfNewInterfaceExpression* node)
 					{
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+						for (auto memberDecl : node->declarations)
 						{
 							memberDecl->Accept(this);
 							ValidateDeclarationSemantic(manager, memberDecl);
@@ -13635,7 +13634,7 @@ ValidateSemantic(Expression)
 
 									if (declVisitor.lastFunction)
 									{
-										FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
+										for (auto func : declVisitor.overrideFunctions)
 										{
 											implementMethods.Add(func->name.value, func);
 										}
@@ -13687,14 +13686,14 @@ ValidateSemantic(Expression)
 
 								auto discardFirst = [=](const WString& key, const List<IMethodInfo*>& methods)
 									{
-										FOREACH(IMethodInfo*, method, methods)
+										for (auto method : methods)
 										{
 											manager->errors.Add(WfErrors::InterfaceMethodNotImplemented(node, method));
 										}
 									};
 								auto discardSecond = [=](const WString& key, const List<Ptr<WfFunctionDeclaration>>& methods)
 									{
-										FOREACH(Ptr<WfFunctionDeclaration>, decl, methods)
+										for (auto decl : methods)
 										{
 											Ptr<ITypeInfo> declType = GetFunctionDeclarationType(scope, decl);
 											manager->errors.Add(WfErrors::InterfaceMethodNotFound(decl.Obj(), type.Obj(), declType.Obj()));
@@ -13711,13 +13710,13 @@ ValidateSemantic(Expression)
 										Group<WString, IMethodInfo*> typedInterfaceMethods;
 										Group<WString, Ptr<WfFunctionDeclaration>> typedImplementMethods;
 
-										FOREACH(IMethodInfo*, method, interfaces)
+										for (auto method : interfaces)
 										{
 											Ptr<ITypeInfo> methodType = CreateTypeInfoFromMethodInfo(method);
 											typedInterfaceMethods.Add(methodType->GetTypeFriendlyName(), method);
 										}
 
-										FOREACH(Ptr<WfFunctionDeclaration>, decl, implements)
+										for (auto decl : implements)
 										{
 											Ptr<ITypeInfo> methodType = GetFunctionDeclarationType(scope, decl);
 											typedImplementMethods.Add(methodType->GetTypeFriendlyName(), decl);
@@ -13733,7 +13732,7 @@ ValidateSemantic(Expression)
 												if (interfaces.Count() > 1)
 												{
 													List<ResolveExpressionResult> functions;
-													FOREACH(IMethodInfo*, method, interfaces)
+													for (auto method : interfaces)
 													{
 														functions.Add(ResolveExpressionResult::Constructor(method));
 														manager->errors.Add(WfErrors::CannotPickOverloadedInterfaceMethods(node, functions));
@@ -14046,7 +14045,7 @@ IsConstantExpression
 					auto result = manager->expressionResolvings[node];
 					bool isStruct = (result.type->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct);
 
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						if (argument->key && !isStruct)
 						{
@@ -14099,7 +14098,7 @@ ValidateSemantic
 					if (result.scopeName && result.scopeName->declarations.Count() > 0)
 					{
 						List<ResolveExpressionResult> replaces;
-						FOREACH(Ptr<WfDeclaration>, decl, result.scopeName->declarations)
+						for (auto decl : result.scopeName->declarations)
 						{
 							vint index = manager->nodeScopes.Keys().IndexOf(decl.Obj());
 							if (index == -1) continue;
@@ -14111,7 +14110,7 @@ ValidateSemantic
 
 							index = scope->symbols.Keys().IndexOf(decl->name.value);
 							if (index == -1) continue;
-							FOREACH(Ptr<WfLexicalSymbol>, symbol, scope->symbols.GetByIndex(index))
+							for (auto symbol : scope->symbols.GetByIndex(index))
 							{
 								if (symbol->creatorNode == decl && symbol->typeInfo)
 								{
@@ -14123,7 +14122,7 @@ ValidateSemantic
 						if (replaces.Count() > 0)
 						{
 							results.RemoveAt(i);
-							FOREACH_INDEXER(ResolveExpressionResult, replaceResult, index, replaces)
+							for (auto [replaceResult, index] : indexed(replaces))
 							{
 								results.Insert(i + index, replaceResult);
 							}
@@ -14368,7 +14367,7 @@ ValidateSemantic(Statement)
 
 				void Visit(WfBlockStatement* node)override
 				{
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						ValidateStatementSemantic(manager, statement);
 					}
@@ -14448,7 +14447,7 @@ ValidateSemantic(Statement)
 				void Visit(WfSwitchStatement* node)override
 				{
 					Ptr<ITypeInfo> type = GetExpressionType(manager, node->expression, 0);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						Ptr<ITypeInfo> caseType;
 						if (IsExpressionDependOnExpectedType(manager, switchCase->expression))
@@ -14738,7 +14737,7 @@ ValidateSemantic(Statement)
 								}
 
 								List<ResolveExpressionResult> functions;
-								FOREACH(IMethodGroupInfo*, group, groups)
+								for (auto group : groups)
 								{
 									vint count = group->GetMethodCount();
 									for (vint i = 0; i < count; i++)
@@ -14774,7 +14773,7 @@ ValidateSemantic(Statement)
 											auto symbol = scope->symbols[node->varName.value][0];
 											List<ITypeInfo*> types;
 
-											FOREACH(Ptr<WfExpression>, argument, node->arguments)
+											for (auto argument : node->arguments)
 											{
 												vint index = manager->expressionResolvings.Keys().IndexOf(argument.Obj());
 												if (index != -1)
@@ -14829,7 +14828,7 @@ ValidateSemantic(Statement)
 					auto smcScope = manager->nodeScopes[node]->FindFunctionScope()->parentScope.Obj();
 					CHECK_ERROR(smcScope->ownerNode.Cast<WfClassDeclaration>(), L"ValidateSemanticStatementVisitor::Visit(WfStateSwitchStatement*)#ValidateStatementStructure should check state machine statements' location.");
 
-					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						auto caseScope = manager->nodeScopes[switchCase.Obj()].Obj();
 						Ptr<WfLexicalSymbol> inputSymbol;
@@ -14854,7 +14853,7 @@ ValidateSemantic(Statement)
 							}
 							else
 							{
-								FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, switchCase->arguments)
+								for (auto [argument, index] : indexed(switchCase->arguments))
 								{
 									auto argumentSymbol = caseScope->symbols[argument->name.value][0];
 									argumentSymbol->typeInfo = CopyTypeInfo(inputMethod->GetParameter(index)->GetType());
@@ -14894,7 +14893,7 @@ ValidateSemantic(Statement)
 						else
 						{
 							auto stateScope = manager->nodeScopes[stateDecl.Obj()];
-							FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+							for (auto [argument, index] : indexed(node->arguments))
 							{
 								auto typeInfo = stateScope->symbols[stateDecl->arguments[index]->name.value][0]->typeInfo;
 								GetExpressionType(manager, argument, typeInfo);
@@ -14955,12 +14954,12 @@ ValidateStructure
 
 			void ValidateModuleStructure(WfLexicalScopeManager* manager, Ptr<WfModule> module)
 			{
-				FOREACH(Ptr<WfModuleUsingPath>, path, module->paths)
+				for (auto path : module->paths)
 				{
-					FOREACH_INDEXER(Ptr<WfModuleUsingItem>, item, index, path->items)
+					for (auto [item, index] : indexed(path->items))
 					{
 						vint counter = 0;
-						FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+						for (auto fragment : item->fragments)
 						{
 							if (fragment.Cast<WfModuleUsingWildCardFragment>())
 							{
@@ -15125,7 +15124,7 @@ ValidateStructure(Declaration)
 
 
 					ValidateTypeStructure(manager, node->returnType, ValidateTypeStragety::ReturnType);
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateTypeStructure(manager, argument->type);
 					}
@@ -15178,7 +15177,7 @@ ValidateStructure(Declaration)
 							break;
 						}
 
-						FOREACH(Ptr<WfType>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							ValidateTypeStructure(manager, argument);
 						}
@@ -15217,7 +15216,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							Execute(decl);
 						}
@@ -15289,7 +15288,7 @@ ValidateStructure(Declaration)
 						ValidateTypeStructure(manager, node->type);
 						FindPropertyRelatedDeclVisitor visitor(manager, classDecl, node);
 
-						FOREACH(Ptr<WfDeclaration>, memberDecl, classDecl->declarations)
+						for (auto memberDecl : classDecl->declarations)
 						{
 							visitor.Execute(memberDecl);
 						}
@@ -15338,10 +15337,10 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::WrongDeclaration(node));
 						}
 
-						FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+						for (auto call : node->baseConstructorCalls)
 						{
 							ValidateTypeStructure(manager, call->type, ValidateTypeStragety::BaseType, classDecl);
-							FOREACH(Ptr<WfExpression>, argument, call->arguments)
+							for (auto argument : call->arguments)
 							{
 								ValidateStructureContext context;
 								ValidateExpressionStructure(manager, &context, argument);
@@ -15395,7 +15394,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -15429,7 +15428,7 @@ ValidateStructure(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -15482,7 +15481,7 @@ ValidateStructure(Declaration)
 							}
 							{
 								FindCtorVisitor visitor;
-								FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+								for (auto memberDecl : node->declarations)
 								{
 									memberDecl->Accept(&visitor);
 								}
@@ -15508,7 +15507,7 @@ ValidateStructure(Declaration)
 						break;
 					}
 
-					FOREACH(Ptr<WfType>, type, node->baseTypes)
+					for (auto type : node->baseTypes)
 					{
 						ValidateTypeStructure(manager, type, ValidateTypeStragety::BaseType, node);
 					}
@@ -15516,7 +15515,7 @@ ValidateStructure(Declaration)
 					{
 						TooManyDtorVisitor visitor(manager, node);
 						bool hasStateMachine = false;
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+						for (auto memberDecl : node->declarations)
 						{
 							if (auto smDecl = memberDecl.Cast<WfStateMachineDeclaration>())
 							{
@@ -15557,7 +15556,7 @@ ValidateStructure(Declaration)
 					vuint64_t current = 0;
 					bool reportedNotConsecutive = false;
 					SortedList<WString> discoveredItems;
-					FOREACH(Ptr<WfEnumItem>, item, node->items)
+					for (auto item : node->items)
 					{
 						switch (item->kind)
 						{
@@ -15590,7 +15589,7 @@ ValidateStructure(Declaration)
 							}
 							break;
 						case WfEnumItemKind::Intersection:
-							FOREACH(Ptr<WfEnumItemIntersection>, enumInt, item->intersections)
+							for (auto enumInt : item->intersections)
 							{
 								if (!discoveredItems.Contains(enumInt->name.value))
 								{
@@ -15631,7 +15630,7 @@ ValidateStructure(Declaration)
 					}
 
 					SortedList<WString> discoveredItems;
-					FOREACH(Ptr<WfStructMember>, member, node->members)
+					for (auto member : node->members)
 					{
 						if (discoveredItems.Contains(member->name.value))
 						{
@@ -15647,7 +15646,7 @@ ValidateStructure(Declaration)
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
 					node->Accept(static_cast<WfVirtualCfeDeclaration::IVisitor*>(this));
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -15725,7 +15724,7 @@ ValidateStructure(Declaration)
 				{
 					if (classDecl)
 					{
-						FOREACH(Ptr<WfStateDeclaration>, state, node->states)
+						for (auto state : node->states)
 						{
 							ValidateStructureContext context;
 							context.currentStateDeclaration = state.Obj();
@@ -15857,7 +15856,7 @@ ValidateStructure(Expression)
 
 				void Visit(WfLetExpression* node)override
 				{
-					FOREACH(Ptr<WfLetVariable>, variable, node->variables)
+					for (auto variable : node->variables)
 					{
 						ValidateExpressionStructure(manager, context, variable->value);
 					}
@@ -15887,7 +15886,7 @@ ValidateStructure(Expression)
 				{
 					vint listElementCount = 0;
 					vint mapElementCount = 0;
-					FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateExpressionStructure(manager, context, argument->key);
 						if (argument->value)
@@ -15975,7 +15974,7 @@ ValidateStructure(Expression)
 						{
 							manager->errors.Add(WfErrors::WrongSimpleObserveExpression(node->expression.Obj()));
 						}
-						FOREACH(Ptr<WfExpression>, event, node->events)
+						for (auto event : node->events)
 						{
 							if (!event.Cast<WfReferenceExpression>())
 							{
@@ -16024,7 +16023,7 @@ ValidateStructure(Expression)
 				void Visit(WfNewInterfaceExpression* node)override
 				{
 					ValidateTypeStructure(manager, node->type);
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						ValidateDeclarationStructure(manager, memberDecl, nullptr, node);
 					}
@@ -16256,7 +16255,7 @@ ValidateStructure(Statement)
 				void Visit(WfSwitchStatement* node)override
 				{
 					ValidateExpressionStructure(manager, context, node->expression);
-					FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						ValidateExpressionStructure(manager, context, switchCase->expression);
 						ValidateStatementStructure(manager, context, switchCase->statement);
@@ -16324,7 +16323,7 @@ ValidateStructure(Statement)
 						manager->errors.Add(WfErrors::WrongStateSwitchStatement(node));
 					}
 
-					FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+					for (auto switchCase : node->caseBranches)
 					{
 						ValidateStatementStructure(manager, context, switchCase->statement);
 					}
@@ -16337,7 +16336,7 @@ ValidateStructure(Statement)
 						manager->errors.Add(WfErrors::WrongStateInvokeStatement(node));
 					}
 
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateExpressionStructure(manager, context, argument);
 					}
@@ -16614,7 +16613,7 @@ ValidateStructure(Type)
 					}
 
 					ValidateTypeStructure(manager, node->result, ValidateTypeStragety::ReturnType);
-					FOREACH(Ptr<WfType>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						ValidateTypeStructure(manager, argument);
 					}
@@ -17154,7 +17153,7 @@ WfCppConfig::GenerateGlobalDep
 				vint index = classDecls.Keys().IndexOf(parent.Obj());
 				if (index == -1) return;
 
-				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.GetByIndex(index))
+				for (auto subDecl : classDecls.GetByIndex(index))
 				{
 					ExpandClassDeclGroup(subDecl, globalDep);
 				}
@@ -17191,7 +17190,7 @@ WfCppConfig::GenerateGlobalDep
 					auto stringKey = manager->declarationTypes[parent.Obj()]->GetTypeName();
 					ASSIGN_INDEX_KEY(, indexKey, stringKey);
 				}
-				FOREACH(vint, subDecl, directChildren.Concat(indirectChildren))
+				for (auto subDecl : directChildren.Concat(indirectChildren))
 				{
 					globalDep.expandedClassDecls.Add(indexKey, subDecl);
 				}
@@ -17199,7 +17198,7 @@ WfCppConfig::GenerateGlobalDep
 
 			void WfCppConfig::GenerateClassDependencies(GlobalDep& globalDep)
 			{
-				FOREACH_INDEXER(ITypeDescriptor*, td, tdIndex, globalDep.allTds.Values())
+				for (auto [td, tdIndex] : indexed(globalDep.allTds.Values()))
 				{
 					vint count = td->GetBaseTypeDescriptorCount();
 					for (vint i = 0; i < count; i++)
@@ -17216,7 +17215,7 @@ WfCppConfig::GenerateGlobalDep
 
 			void WfCppConfig::GenerateGlobalDep(GlobalDep& globalDep)
 			{
-				FOREACH_INDEXER(ITypeDescriptor*, td, index, tdDecls.Keys())
+				for (auto [td, index] : indexed(tdDecls.Keys()))
 				{
 					if (tdDecls.Values()[index].Cast<WfClassDeclaration>())
 					{
@@ -17235,12 +17234,12 @@ WfCppConfig::GenerateClassLevelDep
 			void WfCppConfig::CollectExpandedDepGroup(vint parentIndexKey, GlobalDep& globalDep, ClassLevelDep& classLevelDep)
 			{
 				const auto& items = globalDep.expandedClassDecls[parentIndexKey];
-				FOREACH(vint, subDecl, items)
+				for (auto subDecl : items)
 				{
 					vint index = globalDep.dependencies.Keys().IndexOf(subDecl);
 					if (index != -1)
 					{
-						FOREACH(vint, dep, globalDep.dependencies.GetByIndex(index))
+						for (auto dep : globalDep.dependencies.GetByIndex(index))
 						{
 							if (items.Contains(dep))
 							{
@@ -17258,7 +17257,7 @@ WfCppConfig::GenerateClassLevelDep
 				vint index = globalDep.expandedClassDecls.Keys().IndexOf(subDeclIndexKey);
 				if (index != -1)
 				{
-					FOREACH(vint, expandDecl, globalDep.expandedClassDecls.GetByIndex(index))
+					for (auto expandDecl : globalDep.expandedClassDecls.GetByIndex(index))
 					{
 						classLevelDep.subClass.Add(expandDecl, subDeclIndexKey);
 					}
@@ -17279,7 +17278,7 @@ WfCppConfig::GenerateClassLevelDep
 				// find all direct and indirect internal classes
 				// copy their dependencies, and generate sub classes by grouping them using the second level of classes
 				CollectExpandedDepGroup(classLevelDep.parentIndexKey, globalDep, classLevelDep);
-				FOREACH(Ptr<WfClassDeclaration>, subDecl, classDecls.Get(parent.Obj()))
+				for (auto subDecl : classDecls.Get(parent.Obj()))
 				{
 					auto subDeclStringKey = manager->declarationTypes[subDecl.Obj()]->GetTypeName();
 					ASSIGN_INDEX_KEY(auto, subDeclIndexKey, subDeclStringKey);
@@ -17388,7 +17387,7 @@ WfCppConfig::Collect
 							WString key = customFilesClasses.Keys()[i];
 							if (key != L"")
 							{
-								FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(i))
+								for (auto decl : customFilesClasses.GetByIndex(i))
 								{
 									auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
 									ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
@@ -17593,7 +17592,7 @@ WfCppConfig::Collect
 
 					auto addToHeaders = [&](const List<Ptr<WfClassDeclaration>>& decls, vint headerIndex)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						for (auto decl : decls)
 						{
 							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
 							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
@@ -17603,7 +17602,7 @@ WfCppConfig::Collect
 
 					auto calculateIncludes = [&](const List<Ptr<WfClassDeclaration>>& decls, SortedList<vint>& includes)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, decls)
+						for (auto decl : decls)
 						{
 							auto stringKey = manager->declarationTypes[decl.Obj()]->GetTypeName();
 							ASSIGN_INDEX_KEY(auto, indexKey, stringKey);
@@ -17859,7 +17858,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -17867,7 +17866,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -17931,7 +17930,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -17939,7 +17938,7 @@ WfGenerateClassMemberDeclVisitor
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -18034,7 +18033,7 @@ WfGenerateClassMemberImplVisitor
 					auto methodInfo = dynamic_cast<IMethodInfo*>(config->manager->declarationMemberInfos[node].Obj());
 
 					List<WString> arguments;
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						arguments.Add(config->ConvertName(argument->name.value));
 					}
@@ -18044,7 +18043,7 @@ WfGenerateClassMemberImplVisitor
 					writer.WriteLine(L"");
 
 					vint callIndex = 0;
-					FOREACH(Ptr<WfBaseConstructorCall>, call, node->baseConstructorCalls)
+					for (auto call : node->baseConstructorCalls)
 					{
 						auto callType = CreateTypeInfoFromType(scope, call->type, false);
 						auto callCtor = config->manager->baseConstructorCallResolvings[{node, callType->GetTypeDescriptor()}].value;
@@ -18061,7 +18060,7 @@ WfGenerateClassMemberImplVisitor
 
 						writer.WriteString(config->ConvertType(callType->GetTypeDescriptor()));
 						writer.WriteString(L"(");
-						FOREACH_INDEXER(Ptr<WfExpression>, argument, argumentIndex, call->arguments)
+						for (auto [argument, argumentIndex] : indexed(call->arguments))
 						{
 							if (argumentIndex) writer.WriteString(L", ");
 							GenerateExpression(config, writer, argument, callCtor->GetParameter(argumentIndex)->GetType());
@@ -18072,7 +18071,7 @@ WfGenerateClassMemberImplVisitor
 					if (classDef)
 					{
 						WfGenerateClassMemberInitVisitor visitor(config, writer, prefix, callIndex);
-						FOREACH(Ptr<WfDeclaration>, member, classDef->declarations)
+						for (auto member : classDef->declarations)
 						{
 							member->Accept(&visitor);
 						}
@@ -18120,7 +18119,7 @@ WfGenerateClassMemberImplVisitor
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -18128,7 +18127,7 @@ WfGenerateClassMemberImplVisitor
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -18320,7 +18319,7 @@ WfCppConfig::CollectClosureInfo
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -18328,7 +18327,7 @@ WfCppConfig::CollectClosureInfo
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -18337,7 +18336,7 @@ WfCppConfig::CollectClosureInfo
 				void Execute(WfNewInterfaceExpression* node)
 				{
 					capture = config->manager->lambdaCaptures[node];
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						memberDecl->Accept(this);
 					}
@@ -18443,19 +18442,19 @@ WfCppConfig::Collect
 
 			void WfCppConfig::Collect()
 			{
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
 					CollectModule(this, module);
 				}
 
-				FOREACH(Ptr<WfExpression>, lambda, lambdaExprs.Keys())
+				for (auto lambda : lambdaExprs.Keys())
 				{
 					auto closureInfo = CollectClosureInfo(lambda);
 					closureInfo->lambdaClassName = lambdaExprs[lambda.Obj()];
 					closureInfos.Add(lambda, closureInfo);
 				}
 
-				FOREACH(Ptr<WfNewInterfaceExpression>, classExpr, classExprs.Keys())
+				for (auto classExpr : classExprs.Keys())
 				{
 					auto closureInfo = CollectClosureInfo(classExpr);
 					closureInfo->lambdaClassName = classExprs[classExpr.Obj()];
@@ -18918,7 +18917,7 @@ WfGenerateExpressionVisitor
 				{
 					List<Ptr<RegexMatch>> matches;
 					config->regexTemplate.Cut(templateValue, false, matches);
-					FOREACH(Ptr<RegexMatch>, match, matches)
+					for (auto match : matches)
 					{
 						WString item = match->Result().Value();
 						if (match->Success())
@@ -18941,7 +18940,7 @@ WfGenerateExpressionVisitor
 				{
 					if (auto closureInfo = GetClosureInfo(node))
 					{
-						FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
+						for (auto [thisType, index] : indexed(closureInfo->thisTypes))
 						{
 							if (thisType->CanConvertTo(td))
 							{
@@ -19015,7 +19014,7 @@ WfGenerateExpressionVisitor
 							writer.WriteString(closureInfo->lambdaClassName);
 							writer.WriteString(L"(");
 
-							FOREACH_INDEXER(WString, symbolName, index, closureInfo->symbols.Keys())
+							for (auto [symbolName, index] : indexed(closureInfo->symbols.Keys()))
 							{
 								if (index > 0)
 								{
@@ -19024,7 +19023,7 @@ WfGenerateExpressionVisitor
 								writer.WriteString(config->ConvertName(symbol->name));
 							}
 
-							FOREACH_INDEXER(ITypeDescriptor*, thisType, index, closureInfo->thisTypes)
+							for (auto [thisType, index] : indexed(closureInfo->thisTypes))
 							{
 								if (index > 0 || closureInfo->symbols.Count() > 0)
 								{
@@ -19439,7 +19438,7 @@ WfGenerateExpressionVisitor
 				{
 					vint index = 0;
 
-					FOREACH(Ptr<WfLexicalSymbol>, symbol, From(closureInfo->symbols.Values()).Union(closureInfo->ctorArgumentSymbols.Values()))
+					for (auto symbol : From(closureInfo->symbols.Values()).Union(closureInfo->ctorArgumentSymbols.Values()))
 					{
 						if (index++ > 0)
 						{
@@ -19448,7 +19447,7 @@ WfGenerateExpressionVisitor
 						VisitSymbol(node, symbol, true);
 					}
 
-					FOREACH(ITypeDescriptor*, thisType, closureInfo->thisTypes)
+					for (auto thisType : closureInfo->thisTypes)
 					{
 						if (index++ > 0)
 						{
@@ -20026,7 +20025,7 @@ WfGenerateExpressionVisitor
 				{
 					auto scope = config->manager->nodeScopes[node];
 					writer.WriteString(L"[&](");
-					FOREACH_INDEXER(Ptr<WfLetVariable>, letVar, index, node->variables)
+					for (auto [letVar, index] : indexed(node->variables))
 					{
 						if (index > 0)
 						{
@@ -20038,7 +20037,7 @@ WfGenerateExpressionVisitor
 					writer.WriteString(L"){ return ");
 					Call(node->expression);
 					writer.WriteString(L"; }(");
-					FOREACH_INDEXER(Ptr<WfLetVariable>, letVar, index, node->variables)
+					for (auto [letVar, index] : indexed(node->variables))
 					{
 						if (index > 0)
 						{
@@ -20155,7 +20154,7 @@ WfGenerateExpressionVisitor
 							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
 							writer.WriteString(L"(::vl::__vwsn::CreateList()");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L".Add(");
 								Call(argument->key);
@@ -20169,7 +20168,7 @@ WfGenerateExpressionVisitor
 							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
 							writer.WriteString(L"(::vl::__vwsn::CreateObservableList()");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L".Add(");
 								Call(argument->key);
@@ -20184,7 +20183,7 @@ WfGenerateExpressionVisitor
 							auto valueType = result.type->GetElementType()->GetGenericArgument(1);
 							writer.WriteString(L"(::vl::__vwsn::CreateDictionary()");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L".Add(");
 								Call(argument->key);
@@ -20201,7 +20200,7 @@ WfGenerateExpressionVisitor
 							writer.WriteString(config->ConvertType(td));
 							writer.WriteString(L" __vwsn_temp__;");
 
-							FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+							for (auto argument : node->arguments)
 							{
 								writer.WriteString(L" __vwsn_temp__.");
 								writer.WriteString(argument->key.Cast<WfReferenceExpression>()->name.value);
@@ -20788,12 +20787,12 @@ namespace vl
 						writer.WriteLine(assemblyNamespace);
 						writer.WriteLine(L"{");
 
-						FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+						for (auto expr : reversedLambdaExprs.Values())
 						{
 							WriteHeader_ClosurePreDecl(writer, expr);
 						}
 
-						FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+						for (auto expr : reversedClassExprs.Values())
 						{
 							WriteHeader_ClosurePreDecl(writer, expr);
 						}
@@ -20810,7 +20809,7 @@ namespace vl
 					WriteHeader_MainHeaderEnums(writer, nss);
 					if (enumDecls.Keys().Contains(nullptr))
 					{
-						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls[nullptr])
+						for (auto decl : enumDecls[nullptr])
 						{
 							WriteHeader_Enum(writer, decl, nss, false);
 						}
@@ -20823,7 +20822,7 @@ namespace vl
 					WriteHeader_MainHeaderStructs(writer, nss);
 					if (structDecls.Keys().Contains(nullptr))
 					{
-						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls[nullptr])
+						for (auto decl : structDecls[nullptr])
 						{
 							WriteHeader_Struct(writer, decl, nss, false);
 						}
@@ -20833,7 +20832,7 @@ namespace vl
 
 				if (classDecls.Keys().Contains(nullptr))
 				{
-					FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+					for (auto decl : classDecls[nullptr])
 					{
 						WriteHeader_ClassPreDecl(writer, decl, nss);
 					}
@@ -20843,7 +20842,7 @@ namespace vl
 						vint index = headerFilesClasses.Keys().IndexOf(0);
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
+							for (auto decl : headerFilesClasses.GetByIndex(index))
 							{
 								WriteHeader_Class(writer, decl, nss);
 								writer.WriteLine(L"");
@@ -20852,7 +20851,7 @@ namespace vl
 					}
 					else
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+						for (auto decl : classDecls[nullptr])
 						{
 							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
@@ -20878,7 +20877,7 @@ namespace vl
 					vint index = headerFilesClasses.Keys().IndexOf(fileIndex);
 					if (index != -1)
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, headerFilesClasses.GetByIndex(index))
+						for (auto decl : headerFilesClasses.GetByIndex(index))
 						{
 							WriteHeader_Class(writer, decl, nss);
 							writer.WriteLine(L"");
@@ -20910,7 +20909,7 @@ namespace vl
 						vint index = customFilesClasses.Keys().IndexOf(L"");
 						if (index != -1)
 						{
-							FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.GetByIndex(index))
+							for (auto decl : customFilesClasses.GetByIndex(index))
 							{
 								WriteCpp_Class(writer, decl, nss);
 							}
@@ -20918,7 +20917,7 @@ namespace vl
 					}
 					else
 					{
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls[nullptr])
+						for (auto decl : classDecls[nullptr])
 						{
 							WriteCpp_Class(writer, decl, nss);
 						}
@@ -20939,7 +20938,7 @@ namespace vl
 				writer.WriteLine(L"");
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
+				for (auto decl : customFilesClasses.Get(fileName))
 				{
 					WriteHeader_Class(writer, decl, nss);
 					writer.WriteLine(L"");
@@ -20969,7 +20968,7 @@ namespace vl
 
 				List<WString> nss;
 
-				FOREACH(Ptr<WfClassDeclaration>, decl, customFilesClasses.Get(fileName))
+				for (auto decl : customFilesClasses.Get(fileName))
 				{
 					WriteCpp_Class(writer, decl, nss);
 				}
@@ -21063,7 +21062,7 @@ GenerateCppFiles
 					}
 					else
 					{
-						FOREACH(WString, include, input->reflectionIncludes)
+						for (auto include : input->reflectionIncludes)
 						{
 							writer.WriteLine(L"/* CodePack:ConditionOff(VCZH_DEBUG_NO_REFLECTION, " + include + L") */");
 							writer.WriteLine(L"#include \"" + include + L"\"");
@@ -21080,7 +21079,7 @@ GenerateCppFiles
 				if (index != -1)
 				{
 					const auto& headers = config.headerIncludes.GetByIndex(index);
-					FOREACH(vint, header, headers)
+					for (auto header : headers)
 					{
 						if (header == 0)
 						{
@@ -21105,7 +21104,7 @@ GenerateCppFiles
 				writer.WriteLine(L"#ifndef " + input->headerGuardPrefix + wupper(input->defaultFileName));
 				writer.WriteLine(L"#define " + input->headerGuardPrefix + wupper(input->defaultFileName));
 				writer.WriteLine(L"");
-				FOREACH(WString, include, input->normalIncludes)
+				for (auto include : input->normalIncludes)
 				{
 					writer.WriteLine(L"#include \"" + include + L"\"");
 				}
@@ -21151,7 +21150,7 @@ GenerateCppFiles
 				if (input->reflectionIncludes.Count() > 0)
 				{
 					writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
-					FOREACH(WString, include, input->reflectionIncludes)
+					for (auto include : input->reflectionIncludes)
 					{
 						writer.WriteLine(L"#include \"" + include + L"\"");
 					}
@@ -21181,14 +21180,14 @@ GenerateCppFiles
 				writer.WriteLine(L"");
 
 				writer.WriteLine(L"#include \"" + input->defaultFileName + L".h\"");
-				FOREACH(WString, fileName, config.customFilesClasses.Keys())
+				for (auto fileName : config.customFilesClasses.Keys())
 				{
 					if (fileName != L"")
 					{
 						writer.WriteLine(L"#include \"" + fileName + L".h\"");
 					}
 				}
-				FOREACH(vint, fileIndex, config.headerFilesClasses.Keys())
+				for (auto fileIndex : config.headerFilesClasses.Keys())
 				{
 					if (fileIndex != 0)
 					{
@@ -21281,7 +21280,7 @@ GenerateCppFiles
 				{
 					WriteHeader(input, output, config, multiFile, reflection, writer);
 				}));
-				FOREACH(vint, fileIndex, config.headerFilesClasses.Keys())
+				for (auto fileIndex : config.headerFilesClasses.Keys())
 				{
 					if (fileIndex != 0)
 					{
@@ -21317,7 +21316,7 @@ GenerateCppFiles
 						WriteIncludesHeader(input, output, config, multiFile, reflection, writer);
 					}));
 
-					FOREACH(WString, fileName, config.customFilesClasses.Keys())
+					for (auto fileName : config.customFilesClasses.Keys())
 					{
 						if (fileName != L"")
 						{
@@ -21579,7 +21578,7 @@ namespace vl
 						prefix += L"\t";
 					}
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						statement = SearchUntilNonVirtualStatement(statement);
 
@@ -21713,7 +21712,7 @@ namespace vl
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -21721,7 +21720,7 @@ namespace vl
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -21791,7 +21790,7 @@ namespace vl
 					List<Ptr<WfClassDeclaration>> unprocessed;
 					unprocessed.Add(decl);
 
-					FOREACH(Ptr<WfAttribute>, attribute, attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
+					for (auto attribute : attributeEvaluator->GetAttributes(decl->attributes, L"cpp", L"Friend"))
 					{
 						auto attValue = attributeEvaluator->GetAttributeValue(attribute);
 						CHECK_ERROR(attValue.type == runtime::WfInsType::Unknown && attValue.typeDescriptor != nullptr, L"Unexpected value in attribute: @cpp.Friend.");
@@ -21846,14 +21845,14 @@ namespace vl
 										closureInfos[closure.Obj()]->lambdaClassName;
 								})
 							);
-							FOREACH(WString, closureName, closureNames)
+							for (auto closureName : closureNames)
 							{
 								writer.WriteLine(prefix + L"\tfriend " + closureName + L";");
 							}
 						}
 
 						WriteHeader_Class_FindClassDeclVisitor visitor(unprocessed);
-						FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
+						for (auto memberDecl : current->declarations)
 						{
 							memberDecl->Accept(&visitor);
 						}
@@ -21877,7 +21876,7 @@ namespace vl
 							accessor = PUBLIC;
 							writer.WriteLine(prefix + L"public:");
 						}
-						FOREACH(Ptr<WfEnumDeclaration>, decl, enumDecls.GetByIndex(index))
+						for (auto decl : enumDecls.GetByIndex(index))
 						{
 							WriteHeader_Enum(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
@@ -21894,7 +21893,7 @@ namespace vl
 							accessor = PUBLIC;
 							writer.WriteLine(prefix + L"public:");
 						}
-						FOREACH(Ptr<WfStructDeclaration>, decl, structDecls.GetByIndex(index))
+						for (auto decl : structDecls.GetByIndex(index))
 						{
 							WriteHeader_Struct(writer, decl, ConvertName(decl->name.value), prefix + L"\t", false);
 							writer.WriteLine(L"");
@@ -21911,19 +21910,19 @@ namespace vl
 							accessor = PUBLIC;
 							writer.WriteLine(prefix + L"public:");
 						}
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
+						for (auto decl : classDecls.GetByIndex(index))
 						{
 							WriteHeader_ClassPreDecl(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
 						}
 						writer.WriteLine(L"");
-						FOREACH(Ptr<WfClassDeclaration>, decl, classDecls.GetByIndex(index))
+						for (auto decl : classDecls.GetByIndex(index))
 						{
 							WriteHeader_Class(writer, decl, ConvertName(decl->name.value), prefix + L"\t");
 						}
 					}
 				}
 
-				FOREACH(Ptr<WfDeclaration>, memberDecl, decl->declarations)
+				for (auto memberDecl : decl->declarations)
 				{
 					vint memberAccessor = PUBLIC;
 					if (attributeEvaluator->GetAttribute(memberDecl->attributes, L"cpp", L"Private"))
@@ -22000,7 +21999,7 @@ namespace vl
 					writer.WriteLine(L"***********************************************************************/");
 					writer.WriteLine(L"");
 
-					FOREACH(Ptr<WfDeclaration>, memberDecl, current->declarations)
+					for (auto memberDecl : current->declarations)
 					{
 						if (WriteCpp_ClassMember(writer, current, memberDecl, nss))
 						{
@@ -22038,7 +22037,7 @@ namespace vl
 				{
 					writer.WriteLine(prefix + L"enum class " + name + L" : vl::vuint64_t");
 					writer.WriteLine(prefix + L"{");
-					FOREACH(Ptr<WfEnumItem>, item, decl->items)
+					for (auto item : decl->items)
 					{
 						switch (item->kind)
 						{
@@ -22047,7 +22046,7 @@ namespace vl
 							break;
 						case WfEnumItemKind::Intersection:
 							writer.WriteString(prefix + L"\t" + ConvertName(item->name.value) + L" = ");
-							FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, enumInt, index, item->intersections)
+							for (auto [enumInt, index] : indexed(item->intersections))
 							{
 								if (index > 0)
 								{
@@ -22124,7 +22123,7 @@ namespace vl
 				CopyFrom(allEnums, Range<vint>(0, enumDecls.Count()).SelectMany([&](vint index) {return From(enumDecls.GetByIndex(index)); }));
 				SortDeclsByName(allEnums);
 
-				FOREACH(Ptr<WfEnumDeclaration>, decl, allEnums)
+				for (auto decl : allEnums)
 				{
 					WriteHeader_Enum(writer, decl, nss, true);
 					writer.WriteLine(L"");
@@ -22339,7 +22338,7 @@ namespace vl
 				if (varDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					for (auto decl : varDecls)
 					{
 						auto scope = manager->nodeScopes[decl.Obj()].Obj();
 						auto symbol = scope->symbols[decl->name.value][0];
@@ -22357,7 +22356,7 @@ namespace vl
 				if (funcDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+					for (auto decl : funcDecls)
 					{
 						writer.WriteString(L"\t\t");
 						WriteFunctionHeader(writer, decl, ConvertName(decl->name.value), true);
@@ -22375,13 +22374,13 @@ namespace vl
 					writer.WriteLine(L"Closures");
 					writer.WriteLine(L"***********************************************************************/");
 
-					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+					for (auto expr : reversedLambdaExprs.Values())
 					{
 						writer.WriteLine(L"");
 						WriteHeader_LambdaExprDecl(writer, expr);
 					}
 
-					FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+					for (auto expr : reversedClassExprs.Values())
 					{
 						writer.WriteLine(L"");
 						WriteHeader_ClassExprDecl(writer, expr);
@@ -22409,7 +22408,7 @@ namespace vl
 				if (varDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					for (auto decl : varDecls)
 					{
 						auto scope = manager->nodeScopes[decl.Obj()].Obj();
 						auto symbol = scope->symbols[decl->name.value][0];
@@ -22426,7 +22425,7 @@ namespace vl
 				if (varDecls.Count() > 0)
 				{
 					writer.WriteLine(L"");
-					FOREACH(Ptr<WfVariableDeclaration>, decl, varDecls)
+					for (auto decl : varDecls)
 					{
 						auto scope = manager->nodeScopes[decl.Obj()].Obj();
 						auto symbol = scope->symbols[decl->name.value][0];
@@ -22465,7 +22464,7 @@ namespace vl
 				writer.WriteLine(L"Global Functions");
 				writer.WriteLine(L"***********************************************************************/");
 
-				FOREACH(Ptr<WfFunctionDeclaration>, decl, funcDecls)
+				for (auto decl : funcDecls)
 				{
 					writer.WriteLine(L"");
 					writer.WriteString(L"\t");
@@ -22487,7 +22486,7 @@ namespace vl
 					writer.WriteLine(L"Closures");
 					writer.WriteLine(L"***********************************************************************/");
 
-					FOREACH(Ptr<WfExpression>, expr, reversedLambdaExprs.Values())
+					for (auto expr : reversedLambdaExprs.Values())
 					{
 						writer.WriteLine(L"");
 						writer.WriteLine(L"\t//-------------------------------------------------------------------");
@@ -22498,7 +22497,7 @@ namespace vl
 					if (reversedClassExprs.Count() > 0)
 					{
 						writer.WriteLine(L"");
-						FOREACH(Ptr<WfNewInterfaceExpression>, expr, reversedClassExprs.Values())
+						for (auto expr : reversedClassExprs.Values())
 						{
 							writer.WriteLine(L"\t//-------------------------------------------------------------------");
 							writer.WriteLine(L"");
@@ -22611,7 +22610,7 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L";");
 				writer.WriteLine(L"");
 
-				FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
+				for (auto memberDecl : lambda->declarations)
 				{
 					GenerateClassMemberDecl(this, writer, name, memberDecl, L"\t\t", true);
 				}
@@ -22622,7 +22621,7 @@ WfCppConfig::WriteCpp
 			{
 				auto info = closureInfos[closure.Obj()];
 
-				FOREACH(Ptr<WfLexicalSymbol>, symbol, info->symbols.Values())
+				for (auto symbol : info->symbols.Values())
 				{
 					writer.WriteString(L"\t\t");
 					writer.WriteString(ConvertType(symbol->typeInfo.Obj()));
@@ -22631,7 +22630,7 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L";");
 				}
 
-				FOREACH_INDEXER(ITypeDescriptor*, thisType, index, info->thisTypes)
+				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
 					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
 
@@ -22654,7 +22653,7 @@ WfCppConfig::WriteCpp
 
 				vint argumentIndex = 0;
 
-				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, From(info->symbols.Values()).Concat(info->ctorArgumentSymbols.Values()))
+				for (auto [symbol, index] : indexed(From(info->symbols.Values()).Concat(info->ctorArgumentSymbols.Values())))
 				{
 					if (argumentIndex++ > 0)
 					{
@@ -22665,7 +22664,7 @@ WfCppConfig::WriteCpp
 					writer.WriteString(ConvertName(symbol->name));
 				}
 
-				FOREACH_INDEXER(ITypeDescriptor*, thisType, index, info->thisTypes)
+				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
 					auto typeInfo = MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(thisType, TypeInfoHint::Normal));
 
@@ -22684,7 +22683,7 @@ WfCppConfig::WriteCpp
 			{
 				auto info = closureInfos[closure.Obj()];
 
-				FOREACH_INDEXER(Ptr<WfLexicalSymbol>, symbol, index, info->symbols.Values())
+				for (auto [symbol, index] : indexed(info->symbols.Values()))
 				{
 					if (index > 0)
 					{
@@ -22700,7 +22699,7 @@ WfCppConfig::WriteCpp
 					writer.WriteLine(L")");
 				}
 
-				FOREACH_INDEXER(ITypeDescriptor*, thisType, index, info->thisTypes)
+				for (auto [thisType, index] : indexed(info->thisTypes))
 				{
 					if (index > 0 || info->symbols.Count() > 0)
 					{
@@ -22771,7 +22770,7 @@ WfCppConfig::WriteCpp
 
 				void Dispatch(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -22779,7 +22778,7 @@ WfCppConfig::WriteCpp
 
 				void Dispatch(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -22813,7 +22812,7 @@ WfCppConfig::WriteCpp
 
 				{
 					WriteCpp_ClassExprImpl_InitFieldVisitor visitor(this, writer);
-					FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
+					for (auto memberDecl : lambda->declarations)
 					{
 						memberDecl->Accept(&visitor);
 					}
@@ -22823,7 +22822,7 @@ WfCppConfig::WriteCpp
 				writer.WriteLine(L"");
 
 				WString classFullName = L"::" + assemblyNamespace + L"::" + name;
-				FOREACH(Ptr<WfDeclaration>, memberDecl, lambda->declarations)
+				for (auto memberDecl : lambda->declarations)
 				{
 					if (GenerateClassMemberImpl(this, writer, nullptr, name, name, classFullName, memberDecl, L"\t"))
 					{
@@ -22882,7 +22881,7 @@ namespace vl
 				writer.WriteLine(L"\t\t{");
 				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
 
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					writer.WriteString(L"\t\t\tDECL_TYPE_INFO(");
 					writer.WriteString(ConvertType(td));
@@ -22923,7 +22922,7 @@ namespace vl
 				{
 					writer.WriteLine(L"");
 					writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
-					FOREACH(ITypeDescriptor*, td, tdInterfaces)
+					for (auto td : tdInterfaces)
 					{
 						List<ITypeDescriptor*> baseTds;
 						CopyFrom(
@@ -22944,7 +22943,7 @@ namespace vl
 						{
 							writer.WriteString(L"\t\t\tBEGIN_INTERFACE_PROXY_SHAREDPTR(");
 							writer.WriteString(ConvertType(td));
-							FOREACH(ITypeDescriptor*, baseTd, baseTds)
+							for (auto baseTd : baseTds)
 							{
 								writer.WriteString(L", ");
 								writer.WriteString(ConvertType(baseTd));
@@ -23041,7 +23040,7 @@ namespace vl
 				writer.WriteLine(L"\t\t{");
 				writer.WriteLine(L"#ifndef VCZH_DEBUG_NO_REFLECTION");
 
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					writer.WriteString(L"\t\t\tIMPL_CPP_TYPE_INFO(");
 					WString type = ConvertType(td);
@@ -23056,7 +23055,7 @@ namespace vl
 
 				writer.WriteLine(L"#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA");
 				writer.WriteLine(L"#define _ ,");
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					switch (td->GetTypeDescriptorFlags())
 					{
@@ -23320,7 +23319,7 @@ namespace vl
 				writer.WriteLine(L"\t\t\t\tvoid Load(ITypeManager* manager)");
 				writer.WriteLine(L"\t\t\t\t{");
 
-				FOREACH(ITypeDescriptor*, td, tds)
+				for (auto td : tds)
 				{
 					writer.WriteString(L"\t\t\t\t\tADD_TYPE_INFO(");
 					writer.WriteString(ConvertType(td));
@@ -23379,7 +23378,7 @@ namespace vl
 					auto td = manager->declarationTypes[decl.Obj()].Obj();
 					writer.WriteLine(prefix + L"struct " + name);
 					writer.WriteLine(prefix + L"{");
-					FOREACH(Ptr<WfStructMember>, member, decl->members)
+					for (auto member : decl->members)
 					{
 						auto prop = td->GetPropertyByName(member->name.value, false);
 						auto defaultValue = DefaultValue(prop->GetReturn());
@@ -23424,7 +23423,7 @@ namespace vl
 					writer.WriteString(prefix);
 					writer.WriteLine(L"{");
 
-					FOREACH(Ptr<WfStructMember>, member, decl->members)
+					for (auto member : decl->members)
 					{
 						writer.WriteString(prefix);
 						writer.WriteString(L"\tif (a.");
@@ -23475,7 +23474,7 @@ namespace vl
 				SortDeclsByName(allStructs);
 
 				Group<Ptr<WfStructDeclaration>, Ptr<WfStructDeclaration>> depGroup;
-				FOREACH(Ptr<WfStructDeclaration>, decl, allStructs)
+				for (auto decl : allStructs)
 				{
 					auto td = manager->declarationTypes[decl.Obj()].Obj();
 					vint count = td->GetPropertyCount();
@@ -23942,7 +23941,7 @@ MergeCpp
 					if (userContentsFull.Count() > 0)
 					{
 						writer.WriteLine(L"// UNUSED_USER_CONTENT:");
-						FOREACH(WString, content, userContentsFull.Values())
+						for (auto content : userContentsFull.Values())
 						{
 							writer.WriteString(content);
 						}
@@ -24314,7 +24313,7 @@ GenerateAssembly
 				assembly->insAfterCodegen = new WfInstructionDebugInfo;
 				
 				WfCodegenContext context(assembly, manager);
-				FOREACH_INDEXER(Ptr<WfModule>, module, index, manager->GetModules())
+				for (auto [module, index] : indexed(manager->GetModules()))
 				{
 					auto codeBeforeCodegen = manager->GetModuleCodes()[index];
 
@@ -24342,7 +24341,7 @@ GenerateAssembly
 				if (manager->declarationTypes.Count() > 0)
 				{
 					assembly->typeImpl = new WfTypeImpl;
-					FOREACH(Ptr<ITypeDescriptor>, td, manager->declarationTypes.Values())
+					for (auto td : manager->declarationTypes.Values())
 					{
 						if (auto tdClass = td.Cast<WfClass>())
 						{
@@ -24363,9 +24362,9 @@ GenerateAssembly
 					}
 				}
 
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+					for (auto decl : module->declarations)
 					{
 						GenerateGlobalDeclarationMetadata(context, decl);
 					}
@@ -24382,9 +24381,9 @@ GenerateAssembly
 					context.functionContext = functionContext;
 					
 					meta->firstInstruction = assembly->instructions.Count();
-					FOREACH(Ptr<WfModule>, module, manager->GetModules())
+					for (auto module : manager->GetModules())
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+						for (auto decl : module->declarations)
 						{
 							GenerateInitializeInstructions(context, decl);
 						}
@@ -24401,10 +24400,10 @@ GenerateAssembly
 					GenerateClosureInstructions(context, functionContext);
 				}
 
-				FOREACH(Ptr<WfModule>, module, manager->GetModules())
+				for (auto module : manager->GetModules())
 				{
 					EXECUTE_CALLBACK(OnGenerateCode(module));
-					FOREACH(Ptr<WfDeclaration>, decl, module->declarations)
+					for (auto decl : module->declarations)
 					{
 						GenerateDeclarationInstructions(context, decl);
 					}
@@ -24427,7 +24426,7 @@ Compile
 			Ptr<runtime::WfAssembly> Compile(Ptr<parsing::tabling::ParsingTable> table, analyzer::WfLexicalScopeManager* manager, collections::List<WString>& moduleCodes, collections::List<Ptr<parsing::ParsingError>>& errors)
 			{
 				manager->Clear(true, true);
-				FOREACH(WString, code, moduleCodes)
+				for (auto code : moduleCodes)
 				{
 					manager->AddModule(code);
 				}
@@ -24494,7 +24493,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						GenerateInitializeInstructions(context, decl);
 					}
@@ -24543,7 +24542,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -24551,7 +24550,7 @@ GenerateInstructions(Initialize)
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -24574,11 +24573,11 @@ GenerateInstructions(Declaration)
 				functionContext->function = meta;
 				context.functionContext = functionContext;
 				{
-					FOREACH_INDEXER(Ptr<WfLexicalSymbol>, argumentSymbol, index, argumentSymbols)
+					for (auto [argumentSymbol, index] : indexed(argumentSymbols))
 					{
 						functionContext->arguments.Add(argumentSymbol.Obj(), index);
 					}
-					FOREACH_INDEXER(Ptr<WfLexicalSymbol>, capturedSymbol, index, capturedSymbols)
+					for (auto [capturedSymbol, index] : indexed(capturedSymbols))
 					{
 						functionContext->capturedVariables.Add(capturedSymbol.Obj(), index);
 					}
@@ -24629,7 +24628,7 @@ GenerateInstructions(Declaration)
 			{
 				List<Ptr<WfLexicalSymbol>> argumentSymbols, capturedSymbols;
 				{
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						auto symbol = scope->symbols[argument->name.value][0];
 						argumentSymbols.Add(symbol);
@@ -24639,7 +24638,7 @@ GenerateInstructions(Declaration)
 					if (index != -1)
 					{
 						auto capture = context.manager->lambdaCaptures.Values()[index];
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+						for (auto symbol : capture->symbols)
 						{
 							capturedSymbols.Add(symbol);
 						}
@@ -24703,7 +24702,7 @@ GenerateInstructions(Declaration)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -24711,7 +24710,7 @@ GenerateInstructions(Declaration)
 
 					void Dispatch(WfVirtualCseDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -24736,7 +24735,7 @@ GenerateInstructions(Declaration)
 					
 					auto scope = context.manager->nodeScopes[node].Obj();
 					{
-						FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+						for (auto [argument, index] : indexed(node->arguments))
 						{
 							auto symbol = scope->symbols[argument->name.value][0];
 							functionContext->arguments.Add(symbol.Obj(), index);
@@ -24753,7 +24752,7 @@ GenerateInstructions(Declaration)
 							auto ctor = context.manager->baseConstructorCallResolvings[{node, baseTd}];
 							if (ctor.key)
 							{
-								FOREACH(Ptr<WfExpression>, argument, ctor.key->arguments)
+								for (auto argument : ctor.key->arguments)
 								{
 									GenerateExpressionInstructions(context, argument);
 								}
@@ -24771,7 +24770,7 @@ GenerateInstructions(Declaration)
 
 					{
 						InitializeFieldVisitor visitor(context);
-						FOREACH(Ptr<WfDeclaration>, memberDecl, classDecl->declarations)
+						for (auto memberDecl : classDecl->declarations)
 						{
 							memberDecl->Accept(&visitor);
 						}
@@ -24818,7 +24817,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -24826,7 +24825,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -24845,7 +24844,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						GenerateDeclarationInstructions(context, decl);
 					}
@@ -24881,7 +24880,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						GenerateClassMemberInstructionsVisitor visitor(context, node);
 						memberDecl->Accept(&visitor);
@@ -24898,7 +24897,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -24906,7 +24905,7 @@ GenerateInstructions(Declaration)
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -24953,13 +24952,13 @@ GenerateInstructions(Closure)
 					);
 
 				auto meta = context.assembly->functions[functionIndex];
-				FOREACH(Ptr<WfLexicalSymbol>, symbol, argumentSymbols)
+				for (auto symbol : argumentSymbols)
 				{
 					meta->argumentNames.Add(symbol->name);
 				}
 				{
 					auto capture = context.manager->lambdaCaptures.Get(node);
-					FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+					for (auto symbol : capture->symbols)
 					{
 						meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
 						capturedSymbols.Add(symbol);
@@ -25286,7 +25285,7 @@ GenerateInstructions(Expression)
 					});
 
 					auto capture = context.manager->lambdaCaptures.Get(node);
-					FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+					for (auto symbol : capture->symbols)
 					{
 						GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 					}
@@ -25648,7 +25647,7 @@ GenerateInstructions(Expression)
 					auto scope = context.manager->nodeScopes[node].Obj();
 					Array<vint> variableIndices(node->variables.Count());
 					auto function = context.functionContext->function;
-					FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
+					for (auto [var, index] : indexed(node->variables))
 					{
 						auto symbol = scope->symbols[var->name.value][0];
 						vint variableIndex = function->argumentNames.Count() + function->localVariableNames.Add(L"<let>" + var->name.value);
@@ -25659,7 +25658,7 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::StoreLocalVar(variableIndex));
 					}
 					GenerateExpressionInstructions(context, node->expression);
-					FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
+					for (auto [var, index] : indexed(node->variables))
 					{
 						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::StoreLocalVar(variableIndices[index]));
@@ -25794,7 +25793,7 @@ GenerateInstructions(Expression)
 						auto td = result.type->GetTypeDescriptor();
 						INSTRUCTION(Ins::CreateStruct(Value::BoxedValue, td));
 
-						FOREACH(Ptr<WfConstructorArgument>, argument, node->arguments)
+						for (auto argument : node->arguments)
 						{
 							auto prop = td->GetPropertyByName(argument->key.Cast<WfReferenceExpression>()->name.value, true);
 							GenerateExpressionInstructions(context, argument->value, CopyTypeInfo(prop->GetReturn()));
@@ -25806,7 +25805,7 @@ GenerateInstructions(Expression)
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
-						FOREACH(Ptr<WfConstructorArgument>, argument, From(node->arguments).Reverse())
+						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
@@ -25815,7 +25814,7 @@ GenerateInstructions(Expression)
 					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
-						FOREACH(Ptr<WfConstructorArgument>, argument, From(node->arguments).Reverse())
+						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
@@ -25825,7 +25824,7 @@ GenerateInstructions(Expression)
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
 						Ptr<ITypeInfo> valueType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(1));
-						FOREACH(Ptr<WfConstructorArgument>, argument, From(node->arguments).Reverse())
+						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 							GenerateExpressionInstructions(context, argument->value, valueType);
@@ -25939,7 +25938,7 @@ GenerateInstructions(Expression)
 
 				void Visit(WfCallExpression* node)override
 				{
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						GenerateExpressionInstructions(context, argument);
 					}
@@ -26016,7 +26015,7 @@ GenerateInstructions(Expression)
 					else
 					{
 						auto capture = context.manager->lambdaCaptures.Get(node);
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+						for (auto symbol : capture->symbols)
 						{
 							GenerateLoadSymbolInstructions(context, symbol.Obj(), node);
 						}
@@ -26054,7 +26053,7 @@ GenerateInstructions(Expression)
 
 					void Dispatch(WfVirtualCfeDeclaration* node)override
 					{
-						FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+						for (auto decl : node->expandedDeclarations)
 						{
 							decl->Accept(this);
 						}
@@ -26089,7 +26088,7 @@ GenerateInstructions(Expression)
 
 					void Execute(WfNewInterfaceExpression* node)
 					{
-						FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+						for (auto memberDecl : node->declarations)
 						{
 							memberDecl->Accept(this);
 						}
@@ -26105,7 +26104,7 @@ GenerateInstructions(Expression)
 				void Visit(WfNewClassExpression* node)override
 				{
 					auto result = context.manager->expressionResolvings[node];
-					FOREACH(Ptr<WfExpression>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						GenerateExpressionInstructions(context, argument);
 					}
@@ -26137,7 +26136,7 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CreateClosureContext(capture->symbols.Count() + thisCount + 1));
 
-						FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.closureFunctions)
+						for (auto func : declVisitor.closureFunctions)
 						{
 							WfCodegenLambdaContext lc;
 							lc.functionDeclaration = func.Obj();
@@ -26151,7 +26150,7 @@ GenerateInstructions(Expression)
 							context.closureFunctions.Add(symbol.Obj(), functionIndex);
 						}
 
-						FOREACH(Ptr<WfFunctionDeclaration>, func, declVisitor.overrideFunctions)
+						for (auto func : declVisitor.overrideFunctions)
 						{
 							auto methodInfo = context.manager->interfaceMethodImpls[func.Obj()];
 							INSTRUCTION(Ins::LoadMethodInfo(methodInfo));
@@ -26235,7 +26234,7 @@ GenerateGlobalDeclarationMetadata
 
 			void GenerateFunctionDeclarationMetadata(WfCodegenContext& context, WfFunctionDeclaration* node, Ptr<WfAssemblyFunction> meta)
 			{
-				FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+				for (auto argument : node->arguments)
 				{
 					meta->argumentNames.Add(argument->name.value);
 				}
@@ -26244,7 +26243,7 @@ GenerateGlobalDeclarationMetadata
 					if (index != -1)
 					{
 						auto capture = context.manager->lambdaCaptures.Values()[index];
-						FOREACH(Ptr<WfLexicalSymbol>, symbol, capture->symbols)
+						for (auto symbol : capture->symbols)
 						{
 							meta->capturedVariableNames.Add(L"<captured>" + symbol->name);
 						}
@@ -26315,7 +26314,7 @@ GenerateGlobalDeclarationMetadata
 				{
 					auto meta = MakePtr<WfAssemblyFunction>();
 					meta->name = namePrefix + L"#ctor";
-					FOREACH(Ptr<WfFunctionArgument>, argument, node->arguments)
+					for (auto argument : node->arguments)
 					{
 						meta->argumentNames.Add(argument->name.value);
 					}
@@ -26358,7 +26357,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -26366,7 +26365,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -26387,7 +26386,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfNamespaceDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+					for (auto decl : node->declarations)
 					{
 						GenerateGlobalDeclarationMetadata(context, decl, namePrefix + node->name.value + L"::");
 					}
@@ -26434,7 +26433,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfClassDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, memberDecl, node->declarations)
+					for (auto memberDecl : node->declarations)
 					{
 						GenerateGlobalClassMemberMetadataVisitor visitor(context, namePrefix + node->name.value + L"::", node);
 						memberDecl->Accept(&visitor);
@@ -26451,7 +26450,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCfeDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -26459,7 +26458,7 @@ GenerateGlobalDeclarationMetadata
 
 				void Visit(WfVirtualCseDeclaration* node)override
 				{
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						decl->Accept(this);
 					}
@@ -26665,11 +26664,11 @@ GenerateInstructions(Statement)
 					INSTRUCTION(Ins::Jump(loopLabelIndex));
 					breakLabelIndex = context.assembly->instructions.Count();
 
-					FOREACH(vint, index, loopContext->continueInstructions)
+					for (auto index : loopContext->continueInstructions)
 					{
 						FILL_LABEL_TO_INS(index, continueLabelIndex);
 					}
-					FOREACH(vint, index, loopContext->breakInstructions)
+					for (auto index : loopContext->breakInstructions)
 					{
 						FILL_LABEL_TO_INS(index, breakLabelIndex);
 					}
@@ -26779,7 +26778,7 @@ GenerateInstructions(Statement)
 						blockContext = context.functionContext->PushScopeContext(WfCodegenScopeType::Block, node->endLabel.value);
 					}
 
-					FOREACH(Ptr<WfStatement>, statement, node->statements)
+					for (auto statement : node->statements)
 					{
 						GenerateStatementInstructions(context, statement);
 					}
@@ -26787,7 +26786,7 @@ GenerateInstructions(Statement)
 					if (blockContext)
 					{
 						vint breakLabelIndex = context.assembly->instructions.Count();
-						FOREACH(vint, index, blockContext->breakInstructions)
+						for (auto index : blockContext->breakInstructions)
 						{
 							FILL_LABEL_TO_INS(index, breakLabelIndex);
 						}
@@ -26868,7 +26867,7 @@ Unescaping Functions
 
 		void SetDefaultClassMember(vl::collections::List<vl::Ptr<WfDeclaration>>& value, const vl::collections::List<vl::regex::RegexToken>& tokens)
 		{
-			FOREACH(Ptr<WfDeclaration>, decl, value)
+			for (auto decl : value)
 			{
 				if (!decl->classMember)
 				{
@@ -27092,7 +27091,7 @@ Print (Type)
 				writer.BeforePrint(node);
 				writer.WriteString(L"(func ");
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfType>, type, index, node->arguments)
+				for (auto [type, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -27349,7 +27348,7 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"let ");
-				FOREACH_INDEXER(Ptr<WfLetVariable>, var, index, node->variables)
+				for (auto [var, index] : indexed(node->variables))
 				{
 					if (index > 0)
 					{
@@ -27433,7 +27432,7 @@ Print (Expression)
 			{
 				writer.BeforePrint(node);
 				writer.WriteString(L"{");
-				FOREACH_INDEXER(Ptr<WfConstructorArgument>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -27575,7 +27574,7 @@ Print (Expression)
 				if (node->events.Count() > 0)
 				{
 					writer.WriteString(L" on ");
-					FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->events)
+					for (auto [argument, index] : indexed(node->events))
 					{
 						if (index > 0)
 						{
@@ -27593,7 +27592,7 @@ Print (Expression)
 				writer.BeforePrint(node);
 				WfPrint(node->function, indent, writer);
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -27620,7 +27619,7 @@ Print (Expression)
 				writer.WriteString(L")");
 
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -27643,7 +27642,7 @@ Print (Expression)
 				writer.WriteLine(L"");
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
+				for (auto [decl, index] : indexed(node->declarations))
 				{
 					if (index > 0)
 					{
@@ -27921,7 +27920,7 @@ Print (Statement)
 			{
 				writer.BeforePrint(node);
 				writer.WriteLine(L"{");
-				FOREACH(Ptr<WfStatement>, statement, node->statements)
+				for (auto statement : node->statements)
 				{
 					writer.WriteString(indent + L"    ");
 					WfPrint(statement, indent + L"    ", writer);
@@ -27987,7 +27986,7 @@ Print (Statement)
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
 
-				FOREACH(Ptr<WfSwitchCase>, switchCase, node->caseBranches)
+				for (auto switchCase : node->caseBranches)
 				{
 					writer.BeforePrint(switchCase.Obj());
 					writer.WriteString(indent);
@@ -28083,7 +28082,7 @@ Print (Statement)
 				}
 				writer.WriteString(node->opName.value);
 
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					writer.WriteString(index == 0 ? L" " : L", ");
 					WfPrint(argument, indent, writer);
@@ -28124,14 +28123,14 @@ Print (Statement)
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
 
-				FOREACH(Ptr<WfStateSwitchCase>, switchCase, node->caseBranches)
+				for (auto switchCase : node->caseBranches)
 				{
 					writer.BeforePrint(switchCase.Obj());
 					writer.WriteString(indent);
 					writer.WriteString(L"    case ");
 					writer.WriteString(switchCase->name.value);
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfStateSwitchArgument>, argument, index, switchCase->arguments)
+					for (auto [argument, index] : indexed(switchCase->arguments))
 					{
 						if (index != 0) writer.WriteString(L", ");
 						writer.BeforePrint(argument.Obj());
@@ -28167,7 +28166,7 @@ Print (Statement)
 
 				writer.WriteString(node->name.value);
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfExpression>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index != 0) writer.WriteString(L", ");
 					WfPrint(argument, indent, writer);
@@ -28202,7 +28201,7 @@ Print (Declaration)
 				writer.WriteLine(L"namespace " + node->name.value);
 				writer.WriteString(indent);
 				writer.WriteLine(L"{");
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
+				for (auto [decl, index] : indexed(node->declarations))
 				{
 					if (index != 0)
 					{
@@ -28233,14 +28232,14 @@ Print (Declaration)
 				}
 
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
 						writer.WriteString(L", ");
 					}
 					writer.BeforePrint(argument.Obj());
-					FOREACH(Ptr<WfAttribute>, attribute, argument->attributes)
+					for (auto attribute : argument->attributes)
 					{
 						WfPrint(attribute, indent, writer);
 						writer.WriteString(L" ");
@@ -28291,7 +28290,7 @@ Print (Declaration)
 				writer.WriteString(L"event ");
 				writer.WriteString(node->name.value);
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfType>, type, index, node->arguments)
+				for (auto [type, index] : indexed(node->arguments))
 				{
 					if (index != 0)
 					{
@@ -28342,7 +28341,7 @@ Print (Declaration)
 				}
 				
 				writer.WriteString(L"(");
-				FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, node->arguments)
+				for (auto [argument, index] : indexed(node->arguments))
 				{
 					if (index > 0)
 					{
@@ -28355,7 +28354,7 @@ Print (Declaration)
 					writer.AfterPrint(argument.Obj());
 				}
 				writer.WriteString(L")");
-				FOREACH_INDEXER(Ptr<WfBaseConstructorCall>, call, callIndex, node->baseConstructorCalls)
+				for (auto [call, callIndex] : indexed(node->baseConstructorCalls))
 				{
 					writer.WriteLine(L"");
 					writer.WriteString(indent + L"    ");
@@ -28370,7 +28369,7 @@ Print (Declaration)
 					writer.BeforePrint(call.Obj());
 					WfPrint(call->type, indent + L"    ", writer);
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfExpression>, argument, argumentIndex, call->arguments)
+					for (auto [argument, argumentIndex] : indexed(call->arguments))
 					{
 						if (argumentIndex != 0)
 						{
@@ -28436,7 +28435,7 @@ Print (Declaration)
 					break;
 				}
 
-				FOREACH_INDEXER(Ptr<WfType>, type, index, node->baseTypes)
+				for (auto [type, index] : indexed(node->baseTypes))
 				{
 					if (index == 0)
 					{
@@ -28452,7 +28451,7 @@ Print (Declaration)
 				writer.WriteLine(L"");
 				writer.WriteLine(indent + L"{");
 
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, node->declarations)
+				for (auto [decl, index] : indexed(node->declarations))
 				{
 					if (index > 0)
 					{
@@ -28486,10 +28485,10 @@ Print (Declaration)
 				writer.WriteLine(indent + L"{");
 
 				auto newIndent = indent + L"    ";
-				FOREACH(Ptr<WfEnumItem>, item, node->items)
+				for (auto item : node->items)
 				{
 					writer.BeforePrint(item.Obj());
-					FOREACH(Ptr<WfAttribute>, attribute, item->attributes)
+					for (auto attribute : item->attributes)
 					{
 						writer.WriteString(newIndent);
 						WfPrint(attribute, newIndent, writer);
@@ -28504,7 +28503,7 @@ Print (Declaration)
 						writer.WriteString(item->number.value);
 						break;
 					case WfEnumItemKind::Intersection:
-						FOREACH_INDEXER(Ptr<WfEnumItemIntersection>, itemInt, index, item->intersections)
+						for (auto [itemInt, index] : indexed(item->intersections))
 						{
 							if (index != 0)writer.WriteString(L" | ");
 							writer.WriteString(itemInt->name.value);
@@ -28529,10 +28528,10 @@ Print (Declaration)
 				writer.WriteLine(indent + L"{");
 
 				auto newIndent = indent + L"    ";
-				FOREACH(Ptr<WfStructMember>, member, node->members)
+				for (auto member : node->members)
 				{
 					writer.BeforePrint(member.Obj());
-					FOREACH(Ptr<WfAttribute>, attribute, member->attributes)
+					for (auto attribute : member->attributes)
 					{
 						writer.WriteString(newIndent);
 						WfPrint(attribute, newIndent, writer);
@@ -28552,7 +28551,7 @@ Print (Declaration)
 
 			void PrintExpandedDeclarations(List<Ptr<WfDeclaration>>& decls)
 			{
-				FOREACH_INDEXER(Ptr<WfDeclaration>, decl, index, decls)
+				for (auto [decl, index] : indexed(decls))
 				{
 					if (index > 0)
 					{
@@ -28661,7 +28660,7 @@ Print (Declaration)
 				writer.WriteLine(L"$state_machine");
 				writer.WriteLine(indent + L"{");
 
-				FOREACH_INDEXER(Ptr<WfStateInput>, input, index, node->inputs)
+				for (auto [input, index] : indexed(node->inputs))
 				{
 					if (index != 0) writer.WriteLine(L"");
 
@@ -28669,7 +28668,7 @@ Print (Declaration)
 					writer.WriteString(indent + L"    $state_input ");
 					writer.WriteString(input->name.value);
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, input->arguments)
+					for (auto [argument, index] : indexed(input->arguments))
 					{
 						if (index > 0)
 						{
@@ -28685,7 +28684,7 @@ Print (Declaration)
 					writer.AfterPrint(input.Obj());
 				}
 
-				FOREACH_INDEXER(Ptr<WfStateDeclaration>, state, index, node->states)
+				for (auto [state, index] : indexed(node->states))
 				{
 					if (index != 0 || node->inputs.Count() > 0) writer.WriteLine(L"");
 
@@ -28700,7 +28699,7 @@ Print (Declaration)
 						writer.WriteString(state->name.value);
 					}
 					writer.WriteString(L"(");
-					FOREACH_INDEXER(Ptr<WfFunctionArgument>, argument, index, state->arguments)
+					for (auto [argument, index] : indexed(state->arguments))
 					{
 						if (index > 0)
 						{
@@ -28764,7 +28763,7 @@ Print (Module)
 
 		void WfPrint(Ptr<WfDeclaration> node, const WString& indent, parsing::ParsingWriter& writer)
 		{
-			FOREACH(Ptr<WfAttribute>, attribute, node->attributes)
+			for (auto attribute : node->attributes)
 			{
 				WfPrint(attribute, indent, writer);
 				writer.WriteLine(L"");
@@ -28807,17 +28806,17 @@ Print (Module)
 				CHECK_FAIL(L"Internal error: Unknown value.");
 			}
 
-			FOREACH(Ptr<WfModuleUsingPath>, path, node->paths)
+			for (auto path : node->paths)
 			{
 				writer.WriteString(indent);
 				writer.WriteString(L"using ");
-				FOREACH_INDEXER(Ptr<WfModuleUsingItem>, item, index, path->items)
+				for (auto [item, index] : indexed(path->items))
 				{
 					if (index > 0)
 					{
 						writer.WriteString(L"::");
 					}
-					FOREACH(Ptr<WfModuleUsingFragment>, fragment, item->fragments)
+					for (auto fragment : item->fragments)
 					{
 						if (auto name = fragment.Cast<WfModuleUsingNameFragment>())
 						{
@@ -28832,7 +28831,7 @@ Print (Module)
 				writer.WriteLine(L";");
 			}
 
-			FOREACH(Ptr<WfDeclaration>, decl, node->declarations)
+			for (auto decl : node->declarations)
 			{
 				writer.WriteLine(L"");
 				writer.WriteString(indent);
@@ -30979,7 +30978,7 @@ TypeVisitor
 			void TypeVisitor::CopyFields(WfFunctionType* from, WfFunctionType* to)
 			{
 				to->result = CreateField(from->result);
-				FOREACH(vl::Ptr<WfType>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31185,7 +31184,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfLetExpression* from, WfLetExpression* to)
 			{
-				FOREACH(vl::Ptr<WfLetVariable>, listItem, from->variables)
+				for (auto listItem : from->variables)
 				{
 					to->variables.Add(CreateField(listItem));
 				}
@@ -31229,7 +31228,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfConstructorExpression* from, WfConstructorExpression* to)
 			{
-				FOREACH(vl::Ptr<WfConstructorArgument>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31300,7 +31299,7 @@ ExpressionVisitor
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
 				to->expression = CreateField(from->expression);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->events)
+				for (auto listItem : from->events)
 				{
 					to->events.Add(CreateField(listItem));
 				}
@@ -31310,7 +31309,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfCallExpression* from, WfCallExpression* to)
 			{
 				to->function = CreateField(from->function);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31326,7 +31325,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
 			{
 				to->anonymity = from->anonymity;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31337,7 +31336,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31368,7 +31367,7 @@ ExpressionVisitor
 
 			void ExpressionVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31382,7 +31381,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfNewClassExpression* from, WfNewClassExpression* to)
 			{
 				to->type = CreateField(from->type);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31392,7 +31391,7 @@ ExpressionVisitor
 			void ExpressionVisitor::CopyFields(WfNewInterfaceExpression* from, WfNewInterfaceExpression* to)
 			{
 				to->type = CreateField(from->type);
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
+				for (auto listItem : from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -31742,7 +31741,7 @@ StatementVisitor
 
 			void StatementVisitor::CopyFields(WfBlockStatement* from, WfBlockStatement* to)
 			{
-				FOREACH(vl::Ptr<WfStatement>, listItem, from->statements)
+				for (auto listItem : from->statements)
 				{
 					to->statements.Add(CreateField(listItem));
 				}
@@ -31775,7 +31774,7 @@ StatementVisitor
 
 			void StatementVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31945,7 +31944,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfNamespaceDeclaration* from, WfNamespaceDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
+				for (auto listItem : from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -31954,7 +31953,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -31986,7 +31985,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfFunctionDeclaration* from, WfFunctionDeclaration* to)
 			{
 				to->anonymity = from->anonymity;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -31997,7 +31996,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32017,7 +32016,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfEventDeclaration* from, WfEventDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfType>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32042,11 +32041,11 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfConstructorDeclaration* from, WfConstructorDeclaration* to)
 			{
 				to->constructorType = from->constructorType;
-				FOREACH(vl::Ptr<WfBaseConstructorCall>, listItem, from->baseConstructorCalls)
+				for (auto listItem : from->baseConstructorCalls)
 				{
 					to->baseConstructorCalls.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32057,7 +32056,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfBaseConstructorCall* from, WfBaseConstructorCall* to)
 			{
 				to->type = CreateField(from->type);
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32074,11 +32073,11 @@ DeclarationVisitor
 			{
 				to->kind = from->kind;
 				to->constructorType = from->constructorType;
-				FOREACH(vl::Ptr<WfType>, listItem, from->baseTypes)
+				for (auto listItem : from->baseTypes)
 				{
 					to->baseTypes.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
+				for (auto listItem : from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -32088,7 +32087,7 @@ DeclarationVisitor
 			void DeclarationVisitor::CopyFields(WfEnumDeclaration* from, WfEnumDeclaration* to)
 			{
 				to->kind = from->kind;
-				FOREACH(vl::Ptr<WfEnumItem>, listItem, from->items)
+				for (auto listItem : from->items)
 				{
 					to->items.Add(CreateField(listItem));
 				}
@@ -32097,7 +32096,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfEnumItem* from, WfEnumItem* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32108,7 +32107,7 @@ DeclarationVisitor
 				to->number.codeRange = from->number.codeRange;
 				to->number.tokenIndex = from->number.tokenIndex;
 				to->number.value = from->number.value;
-				FOREACH(vl::Ptr<WfEnumItemIntersection>, listItem, from->intersections)
+				for (auto listItem : from->intersections)
 				{
 					to->intersections.Add(CreateField(listItem));
 				}
@@ -32125,7 +32124,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfStructDeclaration* from, WfStructDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfStructMember>, listItem, from->members)
+				for (auto listItem : from->members)
 				{
 					to->members.Add(CreateField(listItem));
 				}
@@ -32134,7 +32133,7 @@ DeclarationVisitor
 
 			void DeclarationVisitor::CopyFields(WfStructMember* from, WfStructMember* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32302,7 +32301,7 @@ VirtualCfeDeclarationVisitor
 
 			void VirtualCfeDeclarationVisitor::CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
+				for (auto listItem : from->expandedDeclarations)
 				{
 					to->expandedDeclarations.Add(CreateField(listItem));
 				}
@@ -32311,7 +32310,7 @@ VirtualCfeDeclarationVisitor
 
 			void VirtualCfeDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32389,11 +32388,11 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfStateMachineDeclaration* from, WfStateMachineDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfStateInput>, listItem, from->inputs)
+				for (auto listItem : from->inputs)
 				{
 					to->inputs.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfStateDeclaration>, listItem, from->states)
+				for (auto listItem : from->states)
 				{
 					to->states.Add(CreateField(listItem));
 				}
@@ -32402,7 +32401,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->expandedDeclarations)
+				for (auto listItem : from->expandedDeclarations)
 				{
 					to->expandedDeclarations.Add(CreateField(listItem));
 				}
@@ -32411,7 +32410,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfDeclaration* from, WfDeclaration* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32445,7 +32444,7 @@ VirtualCseDeclarationVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32454,7 +32453,7 @@ VirtualCseDeclarationVisitor
 
 			void VirtualCseDeclarationVisitor::CopyFields(WfFunctionArgument* from, WfFunctionArgument* to)
 			{
-				FOREACH(vl::Ptr<WfAttribute>, listItem, from->attributes)
+				for (auto listItem : from->attributes)
 				{
 					to->attributes.Add(CreateField(listItem));
 				}
@@ -32470,7 +32469,7 @@ VirtualCseDeclarationVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32560,7 +32559,7 @@ VirtualCseStatementVisitor
 			void VirtualCseStatementVisitor::CopyFields(WfSwitchStatement* from, WfSwitchStatement* to)
 			{
 				to->expression = CreateField(from->expression);
-				FOREACH(vl::Ptr<WfSwitchCase>, listItem, from->caseBranches)
+				for (auto listItem : from->caseBranches)
 				{
 					to->caseBranches.Add(CreateField(listItem));
 				}
@@ -32647,7 +32646,7 @@ CoroutineStatementVisitor
 				to->opName.codeRange = from->opName.codeRange;
 				to->opName.tokenIndex = from->opName.tokenIndex;
 				to->opName.value = from->opName.value;
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32679,7 +32678,7 @@ StateMachineStatementVisitor
 			void StateMachineStatementVisitor::CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to)
 			{
 				to->type = from->type;
-				FOREACH(vl::Ptr<WfStateSwitchCase>, listItem, from->caseBranches)
+				for (auto listItem : from->caseBranches)
 				{
 					to->caseBranches.Add(CreateField(listItem));
 				}
@@ -32701,7 +32700,7 @@ StateMachineStatementVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfStateSwitchArgument>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32723,7 +32722,7 @@ StateMachineStatementVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfExpression>, listItem, from->arguments)
+				for (auto listItem : from->arguments)
 				{
 					to->arguments.Add(CreateField(listItem));
 				}
@@ -32948,11 +32947,11 @@ ModuleVisitor
 				to->name.codeRange = from->name.codeRange;
 				to->name.tokenIndex = from->name.tokenIndex;
 				to->name.value = from->name.value;
-				FOREACH(vl::Ptr<WfModuleUsingPath>, listItem, from->paths)
+				for (auto listItem : from->paths)
 				{
 					to->paths.Add(CreateField(listItem));
 				}
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, from->declarations)
+				for (auto listItem : from->declarations)
 				{
 					to->declarations.Add(CreateField(listItem));
 				}
@@ -32961,7 +32960,7 @@ ModuleVisitor
 
 			void ModuleVisitor::CopyFields(WfModuleUsingPath* from, WfModuleUsingPath* to)
 			{
-				FOREACH(vl::Ptr<WfModuleUsingItem>, listItem, from->items)
+				for (auto listItem : from->items)
 				{
 					to->items.Add(CreateField(listItem));
 				}
@@ -32970,7 +32969,7 @@ ModuleVisitor
 
 			void ModuleVisitor::CopyFields(WfModuleUsingItem* from, WfModuleUsingItem* to)
 			{
-				FOREACH(vl::Ptr<WfModuleUsingFragment>, listItem, from->fragments)
+				for (auto listItem : from->fragments)
 				{
 					to->fragments.Add(CreateField(listItem));
 				}
@@ -37911,7 +37910,7 @@ TypeVisitor
 				Traverse(static_cast<WfType*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->result.Obj());
-				FOREACH(vl::Ptr<WfType>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38118,13 +38117,13 @@ ExpressionVisitor
 				Traverse(static_cast<WfFunctionDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
 				VisitField(node->returnType.Obj());
 				VisitField(node->statement.Obj());
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38154,7 +38153,7 @@ ExpressionVisitor
 				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38274,7 +38273,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfLetExpression*>(node));
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfLetVariable>, listItem, node->variables)
+				for (auto listItem : node->variables)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38314,7 +38313,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfConstructorExpression*>(node));
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfConstructorArgument>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38389,7 +38388,7 @@ ExpressionVisitor
 				VisitField(node->parent.Obj());
 				Traverse(node->name);
 				VisitField(node->expression.Obj());
-				FOREACH(vl::Ptr<WfExpression>, listItem, node->events)
+				for (auto listItem : node->events)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38401,7 +38400,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->function.Obj());
-				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38421,7 +38420,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
-				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38433,7 +38432,7 @@ ExpressionVisitor
 				Traverse(static_cast<WfExpression*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
+				for (auto listItem : node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38541,7 +38540,7 @@ StatementVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
 				VisitField(node->expression.Obj());
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38643,7 +38642,7 @@ StatementVisitor
 				Traverse(static_cast<WfBlockStatement*>(node));
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfStatement>, listItem, node->statements)
+				for (auto listItem : node->statements)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38799,7 +38798,7 @@ DeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38813,7 +38812,7 @@ DeclarationVisitor
 				Traverse(static_cast<WfBaseConstructorCall*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
-				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38824,13 +38823,13 @@ DeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfEnumItem*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
 				Traverse(node->name);
 				Traverse(node->number);
-				FOREACH(vl::Ptr<WfEnumItemIntersection>, listItem, node->intersections)
+				for (auto listItem : node->intersections)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38849,7 +38848,7 @@ DeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfStructMember*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38864,11 +38863,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfNamespaceDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
+				for (auto listItem : node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38881,13 +38880,13 @@ DeclarationVisitor
 				Traverse(static_cast<WfFunctionDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
 				VisitField(node->returnType.Obj());
 				VisitField(node->statement.Obj());
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38902,7 +38901,7 @@ DeclarationVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
 				VisitField(node->expression.Obj());
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38915,11 +38914,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfEventDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfType>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38936,7 +38935,7 @@ DeclarationVisitor
 				Traverse(node->getter);
 				Traverse(node->setter);
 				Traverse(node->valueChangedEvent);
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38949,16 +38948,16 @@ DeclarationVisitor
 				Traverse(static_cast<WfConstructorDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfBaseConstructorCall>, listItem, node->baseConstructorCalls)
+				for (auto listItem : node->baseConstructorCalls)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
 				VisitField(node->statement.Obj());
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38972,7 +38971,7 @@ DeclarationVisitor
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->statement.Obj());
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -38985,15 +38984,15 @@ DeclarationVisitor
 				Traverse(static_cast<WfClassDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfType>, listItem, node->baseTypes)
+				for (auto listItem : node->baseTypes)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
+				for (auto listItem : node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39006,11 +39005,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfEnumDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfEnumItem>, listItem, node->items)
+				for (auto listItem : node->items)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39023,11 +39022,11 @@ DeclarationVisitor
 				Traverse(static_cast<WfStructDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfStructMember>, listItem, node->members)
+				for (auto listItem : node->members)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39112,11 +39111,11 @@ VirtualCfeDeclarationVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->type.Obj());
 				VisitField(node->expression.Obj());
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
+				for (auto listItem : node->expandedDeclarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39132,11 +39131,11 @@ VirtualCfeDeclarationVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->baseType.Obj());
 				VisitField(node->elementType.Obj());
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
+				for (auto listItem : node->expandedDeclarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39215,7 +39214,7 @@ VirtualCseDeclarationVisitor
 				Traverse(static_cast<WfStateInput*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39226,7 +39225,7 @@ VirtualCseDeclarationVisitor
 				if (!node) return;
 				Traverse(static_cast<WfFunctionArgument*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39240,7 +39239,7 @@ VirtualCseDeclarationVisitor
 				Traverse(static_cast<WfStateDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				FOREACH(vl::Ptr<WfFunctionArgument>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39255,19 +39254,19 @@ VirtualCseDeclarationVisitor
 				Traverse(static_cast<WfVirtualCseDeclaration*>(node));
 				Traverse(static_cast<WfDeclaration*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfStateInput>, listItem, node->inputs)
+				for (auto listItem : node->inputs)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfStateDeclaration>, listItem, node->states)
+				for (auto listItem : node->states)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->expandedDeclarations)
+				for (auto listItem : node->expandedDeclarations)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfAttribute>, listItem, node->attributes)
+				for (auto listItem : node->attributes)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39345,7 +39344,7 @@ VirtualCseStatementVisitor
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				VisitField(node->expression.Obj());
-				FOREACH(vl::Ptr<WfSwitchCase>, listItem, node->caseBranches)
+				for (auto listItem : node->caseBranches)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39413,7 +39412,7 @@ CoroutineStatementVisitor
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->varName);
 				Traverse(node->opName);
-				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39465,7 +39464,7 @@ StateMachineStatementVisitor
 				Traverse(static_cast<WfStateSwitchCase*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				FOREACH(vl::Ptr<WfStateSwitchArgument>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39488,7 +39487,7 @@ StateMachineStatementVisitor
 				Traverse(static_cast<WfStateMachineStatement*>(node));
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfStateSwitchCase>, listItem, node->caseBranches)
+				for (auto listItem : node->caseBranches)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39501,7 +39500,7 @@ StateMachineStatementVisitor
 				Traverse(static_cast<WfStatement*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				FOREACH(vl::Ptr<WfExpression>, listItem, node->arguments)
+				for (auto listItem : node->arguments)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39693,11 +39692,11 @@ ModuleVisitor
 				Traverse(static_cast<WfModule*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
 				Traverse(node->name);
-				FOREACH(vl::Ptr<WfModuleUsingPath>, listItem, node->paths)
+				for (auto listItem : node->paths)
 				{
 					VisitField(listItem.Obj());
 				}
-				FOREACH(vl::Ptr<WfDeclaration>, listItem, node->declarations)
+				for (auto listItem : node->declarations)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39732,7 +39731,7 @@ ModuleVisitor
 				if (!node) return;
 				Traverse(static_cast<WfModuleUsingPath*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfModuleUsingItem>, listItem, node->items)
+				for (auto listItem : node->items)
 				{
 					VisitField(listItem.Obj());
 				}
@@ -39743,7 +39742,7 @@ ModuleVisitor
 				if (!node) return;
 				Traverse(static_cast<WfModuleUsingItem*>(node));
 				Traverse(static_cast<vl::parsing::ParsingTreeCustomBase*>(node));
-				FOREACH(vl::Ptr<WfModuleUsingFragment>, listItem, node->fragments)
+				for (auto listItem : node->fragments)
 				{
 					VisitField(listItem.Obj());
 				}
