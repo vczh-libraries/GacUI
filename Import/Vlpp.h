@@ -7879,6 +7879,39 @@ LazyList
 		{
 			return FromArray(items);
 		}
+
+/***********************************************************************
+Range-Based For-Loop Iterator with Index for LazyList<T>
+***********************************************************************/
+
+		template<typename T>
+		struct LazyListWithIndex
+		{
+			LazyList<T>				lazyList;
+
+			LazyListWithIndex(const LazyList<T>& _lazyList)
+				: lazyList(_lazyList)
+			{
+			}
+		};
+
+		template<typename T>
+		LazyListWithIndex<T> indexed(const LazyList<T>& lazyList)
+		{
+			return { lazyList };
+		}
+
+		template<typename T>
+		RangeBasedForLoopIteratorWithIndex<T> begin(const LazyListWithIndex<T>& enumerable)
+		{
+			return { enumerable.lazyList };
+		}
+
+		template<typename T>
+		RangeBasedForLoopEnding end(const LazyListWithIndex<T>& enumerable)
+		{
+			return {};
+		}
 	}
 }
 
