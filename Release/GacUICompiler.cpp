@@ -50,7 +50,7 @@ namespace vl
 					if (compiled->assembly)
 					{
 						auto& codes = compiled->assembly->insAfterCodegen->moduleCodes;
-						FOREACH_INDEXER(WString, code, codeIndex, codes)
+						for (auto [code, codeIndex] : indexed(codes))
 						{
 							text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(codes.Count()) + L")================================\r\n";
 							text += code + L"\r\n";
@@ -58,7 +58,7 @@ namespace vl
 					}
 					else
 					{
-						FOREACH_INDEXER(GuiInstanceCompiledWorkflow::ModuleRecord, moduleRecord, codeIndex, compiled->modules)
+						for (auto [moduleRecord, codeIndex] : indexed(compiled->modules))
 						{
 							WString code = GenerateToStream([&](StreamWriter& writer)
 							{
@@ -89,14 +89,14 @@ namespace vl
 
 			if (compiled->metadata->errors.Count() > 0)
 			{
-				FOREACH(Ptr<ParsingError>, error, compiled->metadata->errors)
+				for (auto error : compiled->metadata->errors)
 				{
 					errors.Add(GuiResourceError({ {resource} }, error->errorMessage));
 				}
 				return nullptr;
 			}
 
-			FOREACH_INDEXER(WString, fileName, index, output->cppFiles.Keys())
+			for (auto [fileName, index] : indexed(output->cppFiles.Keys()))
 			{
 				WString code = output->cppFiles.Values()[index];
 				File file(cppFolder / fileName);
@@ -395,7 +395,7 @@ GuiInstanceGradientAnimation::LoadFromXml
 
 			if (auto targetsElement = XmlGetElement(xml->rootElement, L"Targets"))
 			{
-				FOREACH(Ptr<XmlElement>, targetElement, XmlGetElements(targetsElement, L"Target"))
+				for (auto targetElement : XmlGetElements(targetsElement, L"Target"))
 				{
 					Target target;
 
@@ -486,7 +486,7 @@ GuiInstanceGradientAnimation::SaveToXml
 				targetsElement->name.value = L"Targets";
 				gradientElement->subNodes.Add(targetsElement);
 
-				FOREACH(Target, target, targets)
+				for (auto target : targets)
 				{
 					auto targetElement = MakePtr<XmlElement>();
 					targetElement->name.value = L"Target";
@@ -625,7 +625,7 @@ GuiInstanceGradientAnimation::EnumerateMembers
 
 		void GuiInstanceGradientAnimation::EnumerateProperties(EnumerateMemberCallback callback, description::ITypeDescriptor* td)
 		{
-			FOREACH(Target, target, targets)
+			for (auto target : targets)
 			{
 				auto propInfo = td->GetPropertyByName(target.name, true);
 				EnumerateMembers(callback, [](auto x) {return x; }, propInfo, propInfo);
@@ -806,7 +806,7 @@ GuiInstanceGradientAnimation::Compile
 						}
 					};
 					createIntVar(L"", interpolation, interpolationPosition);
-					FOREACH(Target, target, targets)
+					for (auto target : targets)
 					{
 						if (target.interpolation != L"")
 						{
@@ -816,7 +816,7 @@ GuiInstanceGradientAnimation::Compile
 
 					List<IPropertyInfo*> props;
 					List<Ptr<WfExpression>> interpolations;
-					FOREACH(Target, target, targets)
+					for (auto target : targets)
 					{
 						if (auto propInfo = td->GetPropertyByName(target.name, true))
 						{
@@ -1179,7 +1179,7 @@ GuiInstanceGradientAnimation::Compile
 								block->statements.Add(declStat);
 							}, td);
 
-							FOREACH(Target, target, targets)
+							for (auto target : targets)
 							{
 								auto refCurrent = MakePtr<WfReferenceExpression>();
 								refCurrent->name.value = L"<ani>current";
@@ -1330,7 +1330,7 @@ GuiInstanceGradientAnimation::Compile
 								block->statements.Add(varStat);
 							}
 							{
-								FOREACH(Target, target, targets)
+								for (auto target : targets)
 								{
 									auto refBegin = MakePtr<WfReferenceExpression>();
 									refBegin->name.value = L"Begin";
@@ -1475,7 +1475,7 @@ GuiInstanceGradientAnimation::Compile
 								propNames.Add(L"End");
 								propNames.Add(L"Current");
 
-								FOREACH(WString, propName, propNames)
+								for (auto propName : propNames)
 								{
 									{
 										auto newExpr = MakePtr<WfNewClassExpression>();
@@ -1495,7 +1495,7 @@ GuiInstanceGradientAnimation::Compile
 										block->statements.Add(exprStat);
 									}
 									
-									FOREACH(Target, target, targets)
+									for (auto target : targets)
 									{
 										auto refProp = MakePtr<WfReferenceExpression>();
 										refProp->name.value = propName;
@@ -2127,7 +2127,7 @@ GuiDefaultInstanceLoader
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
-				FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
 					PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
 					if (propertyType.f1)
@@ -2179,7 +2179,7 @@ GuiDefaultInstanceLoader
 						case GuiInstancePropertyInfo::SupportArray:
 							{
 								auto refArray = MakePtr<WfConstructorExpression>();
-								FOREACH(ArgumentInfo, item, arguments.GetByIndex(index))
+								for (auto item : arguments.GetByIndex(index))
 								{
 									auto argument = MakePtr<WfConstructorArgument>();
 									argument->key = item.expression;
@@ -2436,7 +2436,7 @@ GuiInstanceLoaderManager
 
 			IGuiInstanceDeserializer* GetInstanceDeserializer(const IGuiInstanceLoader::PropertyInfo& propertyInfo, description::ITypeInfo* typeInfo)override
 			{
-				FOREACH(Ptr<IGuiInstanceDeserializer>, deserializer, deserializers)
+				for (auto deserializer : deserializers)
 				{
 					if (deserializer->CanDeserialize(propertyInfo, typeInfo))
 					{
@@ -2475,7 +2475,7 @@ GuiInstanceLoaderManager
 				typeInfos.Add(typeInfo->typeName, typeInfo);
 				FillParentTypeInfos(typeInfo);
 
-				FOREACH(Ptr<VirtualTypeInfo>, derived, typeInfos.Values())
+				for (auto derived : typeInfos.Values())
 				{
 					if (derived->parentTypes.Contains(typeInfo->typeDescriptor))
 					{
@@ -2561,7 +2561,7 @@ GuiInstanceLoaderManager
 			void ClearReflectionCache()override
 			{
 				rootLoader->ClearReflectionCache();
-				FOREACH(Ptr<VirtualTypeInfo>, info, typeInfos.Values())
+				for (auto info : typeInfos.Values())
 				{
 					info->loader->ClearReflectionCache();
 				}
@@ -3140,7 +3140,7 @@ GuiTemplatePropertyDeserializer
 						L"\" cannot be empty."));
 				}
 
-				FOREACH(WString, controlTemplateName, typeNames)
+				for (auto controlTemplateName : typeNames)
 				{
 					auto controlTemplateTd = description::GetTypeDescriptor(controlTemplateName);
 					if (!controlTemplateTd)
@@ -3197,7 +3197,7 @@ GuiTemplatePropertyDeserializer
 				funcCreateTemplate->statement = block;
 
 				ITypeDescriptor* stopControlTemplateTd = nullptr;
-				FOREACH(ITypeDescriptor*, controlTemplateTd, controlTemplateTds)
+				for (auto controlTemplateTd : controlTemplateTds)
 				{
 					if (!controlTemplateTd->CanConvertTo(expectedTemplateType->GetTypeDescriptor()))
 					{
@@ -3333,7 +3333,7 @@ GuiTemplatePropertyDeserializer
 			{
 				auto templateType = TypeInfoRetriver<GuiGridVisualizerTemplate*>::CreateTypeInfo();
 				Ptr<WfExpression> previousFactory;
-				FOREACH_INDEXER(ITypeDescriptor*, controlTemplateTd, index, controlTemplateTds)
+				for (auto [controlTemplateTd, index] : indexed(controlTemplateTds))
 				{
 					List<ITypeDescriptor*> tds;
 					tds.Add(controlTemplateTd);
@@ -3797,7 +3797,7 @@ GuiDataProcessorDeserializer
 						argumentNames.Add(L"<row2>");
 					}
 
-					FOREACH(WString, name, argumentNames)
+					for (auto name : argumentNames)
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
 						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
@@ -3823,7 +3823,7 @@ GuiDataProcessorDeserializer
 
 					auto callExpr = MakePtr<WfCallExpression>();
 					callExpr->function = inferExpr;
-					FOREACH_INDEXER(WString, name, index, argumentNames)
+					for (auto [name, index] : indexed(argumentNames))
 					{
 						auto refExpr = MakePtr<WfReferenceExpression>();
 						refExpr->name.value = name;
@@ -3946,7 +3946,7 @@ namespace vl
 				if (index != -1)
 				{
 					auto record = sp->nodePositions.Values()[index];
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
 					}
@@ -3960,7 +3960,7 @@ namespace vl
 				if (index != -1)
 				{
 					auto record = sp->nodePositions.Values()[index];
-					FOREACH(Ptr<WfDeclaration>, decl, node->expandedDeclarations)
+					for (auto decl : node->expandedDeclarations)
 					{
 						Workflow_RecordScriptPosition(context, record.position, decl, record.availableAfter);
 					}
@@ -4324,8 +4324,8 @@ Instance Type Resolver (Instance)
 									L"\" should have the class name specified in the ref.Class attribute."));
 							}
 
-							FOREACH_INDEXER(Ptr<GuiInstanceLocalized>, localized, index,
-								From(obj->localizeds).Where([](Ptr<GuiInstanceLocalized> ls) {return ls->defaultStrings; })
+							for (auto [localized, index] :
+								indexed(From(obj->localizeds).Where([](Ptr<GuiInstanceLocalized> ls) {return ls->defaultStrings; }))
 								)
 							{
 								if (index > 0)
@@ -4856,7 +4856,7 @@ GuiInstanceLocalizedStrings
 			}
 
 			SortedList<WString> existingLocales;
-			FOREACH(Ptr<XmlElement>, xmlStrings, XmlGetElements(xml->rootElement))
+			for (auto xmlStrings : XmlGetElements(xml->rootElement))
 			{
 				if (xmlStrings->name.value != L"Strings")
 				{
@@ -4876,7 +4876,7 @@ GuiInstanceLocalizedStrings
 					lss->tagPosition = { { resource },xmlStrings->name.codeRange.start };
 					SplitBySemicolon(attLocales->value.value, lss->locales);
 
-					FOREACH(WString, locale, lss->locales)
+					for (auto locale : lss->locales)
 					{
 						if (!existingLocales.Contains(locale))
 						{
@@ -4888,7 +4888,7 @@ GuiInstanceLocalizedStrings
 						}
 					}
 
-					FOREACH(Ptr<XmlElement>, xmlString, XmlGetElements(xmlStrings))
+					for (auto xmlString : XmlGetElements(xmlStrings))
 					{
 						if (xmlString->name.value != L"String")
 						{
@@ -4953,7 +4953,7 @@ GuiInstanceLocalizedStrings
 				xml->attributes.Add(att);
 			}
 
-			FOREACH(Ptr<GuiInstanceLocalizedStrings::Strings>, lss, strings)
+			for (auto lss : strings)
 			{
 				auto xmlStrings = MakePtr<XmlElement>();
 				xml->subNodes.Add(xmlStrings);
@@ -4965,7 +4965,7 @@ GuiInstanceLocalizedStrings
 					xmlStrings->attributes.Add(att);
 				}
 
-				FOREACH(Ptr<GuiInstanceLocalizedStrings::StringItem>, lssi, lss->items.Values())
+				for (auto lssi : lss->items.Values())
 				{
 					auto xmlString = MakePtr<XmlElement>();
 					xmlStrings->subNodes.Add(xmlString);
@@ -5142,7 +5142,7 @@ GuiInstanceLocalizedStrings
 				textDesc->texts.Add(reading);
 			}
 
-			FOREACH_INDEXER(vint, i, index, From(textDesc->positions).OrderBy([](vint a, vint b) {return a - b; }))
+			for (auto [i, index] : indexed(From(textDesc->positions).OrderBy([](vint a, vint b) {return a - b; })))
 			{
 				if (i != index)
 				{
@@ -5158,7 +5158,7 @@ GuiInstanceLocalizedStrings
 			auto defaultStrings = GetDefaultStrings();
 
 			vint errorCount = errors.Count();
-			FOREACH(Ptr<Strings>, lss, strings)
+			for (auto lss : strings)
 			{
 				if (lss != defaultStrings)
 				{
@@ -5194,7 +5194,7 @@ GuiInstanceLocalizedStrings
 				return;
 			}
 
-			FOREACH(Ptr<StringItem>, lssi, defaultStrings->items.Values())
+			for (auto lssi : defaultStrings->items.Values())
 			{
 				if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
 				{
@@ -5207,13 +5207,13 @@ GuiInstanceLocalizedStrings
 			}
 
 			auto defaultLocalesName = defaultStrings->GetLocalesName();
-			FOREACH(Ptr<Strings>, lss, strings)
+			for (auto lss : strings)
 			{
 				if (lss != defaultStrings)
 				{
 					auto localesName = lss->GetLocalesName();
 
-					FOREACH(Ptr<StringItem>, lssi, lss->items.Values())
+					for (auto lssi : lss->items.Values())
 					{
 						if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
 						{
@@ -5283,7 +5283,7 @@ GuiInstanceLocalizedStrings
 				lsExpr->type = refPointer;
 			}
 
-			FOREACH(Ptr<StringItem>, lss, ls->items.Values())
+			for (auto lss : ls->items.Values())
 			{
 				auto textDesc = textDescs[{ls, lss->name}];
 				auto func = GenerateFunction(textDesc, lss->name, WfClassMemberKind::Override);
@@ -5472,7 +5472,7 @@ GuiInstanceLocalizedStrings
 				lsInterface->constructorType = WfConstructorType::SharedPtr;
 
 				auto defaultStrings = GetDefaultStrings();
-				FOREACH(WString, functionName, defaultStrings->items.Keys())
+				for (auto functionName : defaultStrings->items.Keys())
 				{
 					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfClassMemberKind::Normal);
 					lsInterface->declarations.Add(func);
@@ -5557,12 +5557,12 @@ GuiInstanceLocalizedStrings
 				func->statement = block;
 
 				auto defaultStrings = GetDefaultStrings();
-				FOREACH(Ptr<Strings>, ls, strings)
+				for (auto ls : strings)
 				{
 					if (ls != defaultStrings)
 					{
 						auto listExpr = MakePtr<WfConstructorExpression>();
-						FOREACH(WString, locale, ls->locales)
+						for (auto locale : ls->locales)
 						{
 							auto strExpr = MakePtr<WfStringExpression>();
 							strExpr->value.value = locale;
@@ -5662,14 +5662,14 @@ GuiAttSetterRepr
 		{
 			GuiValueRepr::CloneBody(repr);
 
-			FOREACH_INDEXER(GlobalStringKey, name, index, setters.Keys())
+			for (auto [name, index] : indexed(setters.Keys()))
 			{
 				auto src = setters.Values()[index];
 				auto dst = MakePtr<SetterValue>();
 
 				dst->binding = src->binding;
 				dst->attPosition = src->attPosition;
-				FOREACH(Ptr<GuiValueRepr>, value, src->values)
+				for (auto value : src->values)
 				{
 					dst->values.Add(value->Clone());
 				}
@@ -5677,7 +5677,7 @@ GuiAttSetterRepr
 				repr->setters.Add(name, dst);
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, name, index, eventHandlers.Keys())
+			for (auto [name, index] : indexed(eventHandlers.Keys()))
 			{
 				auto src = eventHandlers.Values()[index];
 				auto dst = MakePtr<EventValue>();
@@ -5691,7 +5691,7 @@ GuiAttSetterRepr
 				repr->eventHandlers.Add(name, dst);
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, name, index, environmentVariables.Keys())
+			for (auto [name, index] : indexed(environmentVariables.Keys()))
 			{
 				auto src = environmentVariables.Values()[index];
 				auto dst = MakePtr<EnvVarValue>();
@@ -5733,7 +5733,7 @@ GuiAttSetterRepr
 					auto value = setters.Values()[i];
 					if (key == GlobalStringKey::Empty)
 					{
-						FOREACH(Ptr<GuiValueRepr>, repr, value->values)
+						for (auto repr : value->values)
 						{
 							repr->FillXml(xml);
 						}
@@ -5755,7 +5755,7 @@ GuiAttSetterRepr
 								xmlProp->name.value += L"-" + value->binding.ToString();
 							}
 
-							FOREACH(Ptr<GuiValueRepr>, repr, value->values)
+							for (auto repr : value->values)
 							{
 								if (!repr.Cast<GuiTextRepr>())
 								{
@@ -5766,7 +5766,7 @@ GuiAttSetterRepr
 						}
 						else
 						{
-							FOREACH(Ptr<GuiValueRepr>, repr, value->values)
+							for (auto repr : value->values)
 							{
 								if (auto textRepr = repr.Cast<GuiTextRepr>())
 								{
@@ -5897,7 +5897,7 @@ GuiInstanceContext
 				}
 
 				// collect default attributes
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
+				for (auto element : XmlGetElements(xml))
 				{
 					if(auto name = parser->Parse({ resource }, element->name.value, element->codeRange.start, errors))
 					{
@@ -5933,7 +5933,7 @@ GuiInstanceContext
 				}
 
 				// collect values
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
+				for (auto element : XmlGetElements(xml))
 				{
 					if(auto name = parser->Parse({ resource }, element->name.value, element->name.codeRange.start, errors))
 					{
@@ -5980,7 +5980,7 @@ GuiInstanceContext
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
 				// collect values
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml))
+				for (auto element : XmlGetElements(xml))
 				{
 					if(auto name = parser->Parse({ resource }, element->name.value, element->name.codeRange.start, errors))
 					{
@@ -6038,7 +6038,7 @@ GuiInstanceContext
 				setter->tagPosition = { {resource},xml->codeRange.start };
 
 				// collect attributes as setters
-				FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
+				for (auto att : xml->attributes)
 				{
 					if(auto name = parser->Parse({ resource }, att->name.value, att->name.codeRange.start, errors))
 					{
@@ -6131,7 +6131,7 @@ GuiInstanceContext
 						ctor->typeNamespace = GlobalStringKey::Get(ctorName->namespaceName);
 						ctor->typeName = GlobalStringKey::Get(ctorName->name);
 						// collect attributes as setters
-						FOREACH(Ptr<XmlAttribute>, att, xml->attributes)
+						for (auto att : xml->attributes)
 						{
 							if(auto attName = parser->Parse({ resource }, att->name.value, att->name.codeRange.start, errors))
 							{
@@ -6210,7 +6210,7 @@ GuiInstanceContext
 						L"presentation::theme::*";
 					namespaceAttributes.Add(att);
 				}
-				FOREACH(Ptr<XmlAttribute>, att, namespaceAttributes)
+				for (auto att : namespaceAttributes)
 				{
 					// check if the attribute defines a namespace
 					WString attName = att->name.value;
@@ -6247,7 +6247,7 @@ GuiInstanceContext
 						// extract all patterns in the namespace, split the value by ';'
 						List<WString> patterns;
 						SplitBySemicolon(att->value.value, patterns);
-						FOREACH(WString, pattern, patterns)
+						for (auto pattern : patterns)
 						{
 							// add the pattern to the namespace
 							Ptr<GuiInstanceNamespace> ns = new GuiInstanceNamespace;
@@ -6267,7 +6267,7 @@ GuiInstanceContext
 				}
 
 				// load instance
-				FOREACH(Ptr<XmlElement>, element, XmlGetElements(xml->rootElement))
+				for (auto element : XmlGetElements(xml->rootElement))
 				{
 					if (element->name.value == L"ref.Parameter")
 					{
@@ -6391,7 +6391,7 @@ GuiInstanceContext
 				}
 			}
 
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, parameters)
+			for (auto parameter : parameters)
 			{
 				auto xmlParameter = MakePtr<XmlElement>();
 				xmlParameter->name.value = L"ref.Parameter";
@@ -6408,7 +6408,7 @@ GuiInstanceContext
 				xmlParameter->attributes.Add(attClass);
 			}
 
-			FOREACH(Ptr<GuiInstanceLocalized>, localized, localizeds)
+			for (auto localized : localizeds)
 			{
 				auto xmlParameter = MakePtr<XmlElement>();
 				xmlParameter->name.value = L"ref.LocalizedStrings";
@@ -6477,7 +6477,7 @@ GuiInstanceContext
 				appliedStyles = true;
 
 				List<Ptr<GuiInstanceStyle>> styles;
-				FOREACH(WString, uri, stylePaths)
+				for (auto uri : stylePaths)
 				{
 					WString protocol, path;
 					if (IsResourceUrl(uri, protocol, path))
@@ -6497,11 +6497,11 @@ GuiInstanceContext
 					}
 				}
 
-				FOREACH(Ptr<GuiInstanceStyle>, style, styles)
+				for (auto style : styles)
 				{
 					List<Ptr<GuiConstructorRepr>> output;
 					ExecuteQuery(style->query, this, output);
-					FOREACH(Ptr<GuiConstructorRepr>, ctor, output)
+					for (auto ctor : output)
 					{
 						ApplyStyle(style, ctor);
 					}
@@ -6532,18 +6532,18 @@ GuiInstanceStyle
 				void Visit(GuiAttSetterRepr* repr)override
 				{
 					repr->fromStyle = true;
-					FOREACH(Ptr<GuiAttSetterRepr::SetterValue>, value, repr->setters.Values())
+					for (auto value : repr->setters.Values())
 					{
-						FOREACH(Ptr<GuiValueRepr>, subValue, value->values)
+						for (auto subValue : value->values)
 						{
 							subValue->Accept(this);
 						}
 					}
-					FOREACH(Ptr<GuiAttSetterRepr::EventValue>, value, repr->eventHandlers.Values())
+					for (auto value : repr->eventHandlers.Values())
 					{
 						value->fromStyle = true;
 					}
-					FOREACH(Ptr<GuiAttSetterRepr::EnvVarValue>, value, repr->environmentVariables.Values())
+					for (auto value : repr->environmentVariables.Values())
 					{
 						value->fromStyle = true;
 					}
@@ -6608,7 +6608,7 @@ GuiInstanceStyleContext
 			auto context = MakePtr<GuiInstanceStyleContext>();
 			if (xml->rootElement->name.value == L"Styles")
 			{
-				FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(xml->rootElement))
+				for (auto styleElement : XmlGetElements(xml->rootElement))
 				{
 					if (styleElement->name.value == L"Style")
 					{
@@ -6635,7 +6635,7 @@ GuiInstanceStyleContext
 			auto xmlStyles = MakePtr<XmlElement>();
 			xmlStyles->name.value = L"Styles";
 
-			FOREACH(Ptr<GuiInstanceStyle>, style, styles)
+			for (auto style : styles)
 			{
 				xmlStyles->subNodes.Add(style->SaveToXml());
 			}
@@ -6831,7 +6831,7 @@ GuiCompositionInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
@@ -6989,7 +6989,7 @@ GuiTableCompositionInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Rows)
 						{
@@ -7118,7 +7118,7 @@ GuiCellCompositionInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Site)
 						{
@@ -7130,7 +7130,7 @@ GuiCellCompositionInstanceLoader
 									if (auto ctorExpr = inferExpr->expression.Cast<WfConstructorExpression>())
 									{
 										auto st = description::GetTypeDescriptor<vint>()->GetSerializableType();
-										FOREACH(Ptr<WfConstructorArgument>, argument, ctorExpr->arguments)
+										for (auto argument : ctorExpr->arguments)
 										{
 											if (auto keyExpr = argument->key.Cast<WfReferenceExpression>())
 											{
@@ -7348,7 +7348,7 @@ GuiDocumentItemInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
@@ -7439,7 +7439,7 @@ GuiDocumentInstanceLoaderBase
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
@@ -7651,7 +7651,7 @@ GuiTreeViewInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Nodes)
 						{
@@ -7827,7 +7827,7 @@ GuiTreeNodeInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == GlobalStringKey::Empty)
 						{
@@ -8059,7 +8059,7 @@ GuiControlInstanceLoader
 				{
 					auto block = MakePtr<WfBlockStatement>();
 
-					FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
@@ -8513,7 +8513,7 @@ namespace vl
 			{
 				auto block = MakePtr<WfBlockStatement>();
 
-				FOREACH_INDEXER(GlobalStringKey, prop, index, arguments.Keys())
+				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
 					const auto& values = arguments.GetByIndex(index);
 					if (prop == GlobalStringKey::Empty)
@@ -8894,10 +8894,10 @@ ExecuteQueryVisitor
 			{
 				if (setter)
 				{
-					FOREACH_INDEXER(GlobalStringKey, attribute, index, setter->setters.Keys())
+					for (auto [attribute, index] : indexed(setter->setters.Keys()))
 					{
 						auto setterValue = setter->setters.Values()[index];
-						FOREACH(Ptr<GuiValueRepr>, value, setterValue->values)
+						for (auto value : setterValue->values)
 						{
 							if (auto ctor = value.Cast<GuiConstructorRepr>())
 							{
@@ -8934,7 +8934,7 @@ ExecuteQueryVisitor
 				auto inputExists = &input;
 				if (inputExists)
 				{
-					FOREACH(Ptr<GuiConstructorRepr>, setter, input)
+					for (auto setter : input)
 					{
 						Traverse(node, setter);
 					}
@@ -9004,7 +9004,7 @@ ApplyStyle
 
 		void ApplyStyleInternal(Ptr<GuiAttSetterRepr> src, Ptr<GuiAttSetterRepr> dst)
 		{
-			FOREACH_INDEXER(GlobalStringKey, attribute, srcIndex, src->setters.Keys())
+			for (auto [attribute, srcIndex] : indexed(src->setters.Keys()))
 			{
 				auto srcValue = src->setters.Values()[srcIndex];
 				vint dstIndex = dst->setters.Keys().IndexOf(attribute);
@@ -9029,7 +9029,7 @@ ApplyStyle
 				}
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, eventName, srcIndex, src->eventHandlers.Keys())
+			for (auto [eventName, srcIndex] : indexed(src->eventHandlers.Keys()))
 			{
 				if (!dst->eventHandlers.Keys().Contains(eventName))
 				{
@@ -9038,7 +9038,7 @@ ApplyStyle
 				}
 			}
 
-			FOREACH_INDEXER(GlobalStringKey, varName, srcIndex, src->environmentVariables.Keys())
+			for (auto [varName, srcIndex] : indexed(src->environmentVariables.Keys()))
 			{
 				if (!dst->environmentVariables.Keys().Contains(varName))
 				{
@@ -9711,7 +9711,7 @@ FindInstanceLoadingSource
 			if (index != -1)
 			{
 				Ptr<GuiInstanceContext::NamespaceInfo> namespaceInfo = context->namespaces.Values()[index];
-				FOREACH(Ptr<GuiInstanceNamespace>, ns, namespaceInfo->namespaces)
+				for (auto ns : namespaceInfo->namespaces)
 				{
 					auto fullName = GlobalStringKey::Get(ns->prefix + typeName + ns->postfix);
 					if (auto nullable = callback(fullName))
@@ -9856,7 +9856,7 @@ WorkflowEventNamesVisitor
 
 			void Visit(GuiAttSetterRepr* repr)override
 			{
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 					List<types::PropertyResolving> possibleInfos;
@@ -9885,7 +9885,7 @@ WorkflowEventNamesVisitor
 						}
 						else
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								WorkflowEventNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, instanceClass, errors);
 								value->Accept(&visitor);
@@ -9894,7 +9894,7 @@ WorkflowEventNamesVisitor
 					}
 				}
 
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
+				for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 				{
 					if (handler->binding == GlobalStringKey::Empty)
 					{
@@ -10281,7 +10281,7 @@ Workflow_GenerateInstanceClass
 				call->type = CopyType(instanceClass->baseTypes[0]);
 				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
 
-				FOREACH(Ptr<GuiInstanceParameter>, parameter, baseTypeContext->parameters)
+				for (auto parameter : baseTypeContext->parameters)
 				{
 					auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
 					auto expression = Workflow_ParseExpression(
@@ -10332,7 +10332,7 @@ Workflow_GenerateInstanceClass
 			// ref.LocalizedString (Property)
 			///////////////////////////////////////////////////////////////
 
-			FOREACH(Ptr<GuiInstanceLocalized>, localized, context->localizeds)
+			for (auto localized : context->localizeds)
 			{
 				if (auto lsTd = GetTypeDescriptor(localized->className.ToString()))
 				{
@@ -10407,7 +10407,7 @@ Workflow_GenerateInstanceClass
 			// ref.Parameter (Variable, Getter, CtorArgument)
 			///////////////////////////////////////////////////////////////
 
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, context->parameters)
+			for (auto parameter : context->parameters)
 			{
 				auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
 				vint errorCount = errors.Count();
@@ -11080,7 +11080,7 @@ WorkflowReferenceNamesVisitor
 			
 				auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 
-				FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					List<types::PropertyResolving> possibleInfos;
 					auto prop = repr->setters.Keys()[index];
@@ -11090,7 +11090,7 @@ WorkflowReferenceNamesVisitor
 					{
 						if (setter->binding == GlobalStringKey::Empty)
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								WorkflowReferenceNamesVisitor visitor(precompileContext, resolvingResult, possibleInfos, generatedNameCount, errors);
 								value->Accept(&visitor);
@@ -11196,7 +11196,7 @@ WorkflowReferenceNamesVisitor
 							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
 						}
 					}
-					FOREACH(GlobalStringKey, prop, From(requiredProps).Distinct())
+					for (auto prop : From(requiredProps).Distinct())
 					{
 						if (!properties.Keys().Contains(prop))
 						{
@@ -11233,7 +11233,7 @@ WorkflowReferenceNamesVisitor
 					if (pairProps.Count() > 0)
 					{
 						List<GlobalStringKey> missingProps;
-						FOREACH(GlobalStringKey, key, pairProps)
+						for (auto key : pairProps)
 						{
 							if (!properties.Contains(key, loader))
 							{
@@ -11249,7 +11249,7 @@ WorkflowReferenceNamesVisitor
 								+ L"\" of type \""
 								+ resolvedTypeInfo.typeName.ToString()
 								+ L"\", the following missing properties are required: ";
-							FOREACH_INDEXER(GlobalStringKey, key, index, missingProps)
+							for (auto [key, index] : indexed(missingProps))
 							{
 								if (index > 0)error += L", ";
 								error += L"\"" + key.ToString() + L"\"";
@@ -11258,7 +11258,7 @@ WorkflowReferenceNamesVisitor
 							errors.Add(GuiResourceError({ resolvingResult.resource }, repr->setters[prop]->attPosition, error));
 						}
 						
-						FOREACH(GlobalStringKey, key, pairProps)
+						for (auto key : pairProps)
 						{
 							properties.Remove(key, loader);
 						}
@@ -11269,7 +11269,7 @@ WorkflowReferenceNamesVisitor
 					}
 				}
 
-				FOREACH(Ptr<GuiAttSetterRepr::EventValue>, handler, repr->eventHandlers.Values())
+				for (auto handler : repr->eventHandlers.Values())
 				{
 					if (handler->binding != GlobalStringKey::Empty)
 					{
@@ -11553,7 +11553,7 @@ WorkflowReferenceNamesVisitor
 
 		IGuiInstanceLoader::TypeInfo Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors)
 		{
-			FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
+			for (auto parameter : resolvingResult.context->parameters)
 			{
 				auto type = GetTypeDescriptor(parameter->className.ToString());
 				if (!type)
@@ -11739,7 +11739,7 @@ WorkflowGenerateBindingVisitor
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
-					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::SetterValue>, setter, index, repr->setters.Values())
+					for (auto [setter, index] : indexed(repr->setters.Values()))
 					{
 						auto propertyName = repr->setters.Keys()[index];
 						if (setter->binding != GlobalStringKey::Empty && setter->binding != GlobalStringKey::_Set)
@@ -11752,14 +11752,14 @@ WorkflowGenerateBindingVisitor
 						}
 						else
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								value->Accept(this);
 							}
 						}
 					}
 
-					FOREACH_INDEXER(Ptr<GuiAttSetterRepr::EventValue>, handler, index, repr->eventHandlers.Values())
+					for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 					{
 						if (reprTypeInfo.typeInfo)
 						{
@@ -11787,7 +11787,7 @@ WorkflowGenerateBindingVisitor
 			WorkflowGenerateBindingVisitor visitor(precompileContext, resolvingResult, statements, errors);
 			resolvingResult.context->instance->Accept(&visitor);
 
-			FOREACH(Ptr<GuiInstanceLocalized>, localized, resolvingResult.context->localizeds)
+			for (auto localized : resolvingResult.context->localizeds)
 			{
 				auto code = L"bind(" + localized->className.ToString() + L"::Get(presentation::controls::GuiApplication::GetApplication().Locale))";
 				if (auto bindExpr = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, localized->tagPosition, errors))
@@ -12010,11 +12010,11 @@ WorkflowGenerateCreatingVisitor
 
 				vint errorCount = errors.Count();
 				IGuiInstanceLoader::ArgumentMap arguments;
-				FOREACH(GlobalStringKey, pairedProp, pairedProps)
+				for (auto pairedProp : pairedProps)
 				{
 					usedProps.Add(pairedProp, info.loader);
 					auto pairedSetter = repr->setters[pairedProp];
-					FOREACH(Ptr<GuiValueRepr>, pairedValue, pairedSetter->values)
+					for (auto pairedValue : pairedSetter->values)
 					{
 						auto pairedInfo = resolvingResult.propertyResolvings[pairedValue.Obj()];
 						if (pairedInfo.loader == info.loader)
@@ -12031,7 +12031,7 @@ WorkflowGenerateCreatingVisitor
 				else if (errorCount == errors.Count())
 				{
 					WString propNames;
-					FOREACH_INDEXER(GlobalStringKey, pairedProp, propIndex, pairedProps)
+					for (auto [pairedProp, propIndex] : indexed(pairedProps))
 					{
 						if (propIndex > 0)propNames += L", ";
 						propNames += L"\"" + pairedProp.ToString() + L"\"";
@@ -12061,7 +12061,7 @@ WorkflowGenerateCreatingVisitor
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
 					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
-					FOREACH(GlobalStringKey, prop, From(repr->setters.Keys()).Reverse())
+					for (auto prop : From(repr->setters.Keys()).Reverse())
 					{
 						auto setter = repr->setters[prop];
 						IGuiInstanceLoader::PropertyInfo propInfo(reprTypeInfo, prop);
@@ -12077,7 +12077,7 @@ WorkflowGenerateCreatingVisitor
 						}
 						else if (setter->binding == GlobalStringKey::Empty)
 						{
-							FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+							for (auto value : setter->values)
 							{
 								auto info = resolvingResult.propertyResolvings[value.Obj()];
 								if (info.info->usage == GuiInstancePropertyInfo::Property)
@@ -12111,7 +12111,7 @@ WorkflowGenerateCreatingVisitor
 			{
 				WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
-				FOREACH_INDEXER(GlobalStringKey, prop, index, repr->setters.Keys())
+				for (auto [prop, index] : indexed(repr->setters.Keys()))
 				{
 					auto setter = repr->setters.Values()[index];
 					auto propertyResolving = resolvingResult.propertyResolvings[setter->values[0].Obj()];
@@ -12119,7 +12119,7 @@ WorkflowGenerateCreatingVisitor
 
 					if (setter->binding == GlobalStringKey::Empty)
 					{
-						FOREACH(Ptr<GuiValueRepr>, value, setter->values)
+						for (auto value : setter->values)
 						{
 							auto argument = GetArgumentInfo(setter->attPosition, value.Obj());
 							if (argument.typeInfo && argument.expression)
@@ -12212,7 +12212,7 @@ WorkflowGenerateCreatingVisitor
 						}
 					}
 
-					FOREACH(Ptr<GuiInstanceParameter>, parameter, resolvingResult.context->parameters)
+					for (auto parameter : resolvingResult.context->parameters)
 					{
 						auto refInstance = MakePtr<WfReferenceExpression>();
 						refInstance->name.value = parameter->name.ToString();
@@ -12773,7 +12773,7 @@ Workflow_CreateModuleWithUsings
 			if (index != -1)
 			{
 				auto nss = context->namespaces.Values()[index];
-				FOREACH(Ptr<GuiInstanceNamespace>, ns, nss->namespaces)
+				for (auto ns : nss->namespaces)
 				{
 					auto path = MakePtr<WfModuleUsingPath>();
 					module->paths.Add(path);

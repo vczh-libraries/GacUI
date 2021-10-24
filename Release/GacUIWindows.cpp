@@ -496,7 +496,7 @@ WindowsDirect2DParagraph (Initialization)
 				~WindowsDirect2DParagraph()
 				{
 					CloseCaret();
-					FOREACH(Color, color, usedColors)
+					for (auto color : usedColors)
 					{
 						renderTarget->DestroyDirect2DBrush(color);
 					}
@@ -5925,7 +5925,7 @@ UniscribeLine
 				ClearUniscribeData();
 				vint current=0;
 				List<vint> fragmentStarts;
-				FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
+				for (auto fragment : documentFragments)
 				{
 					fragmentStarts.Add(current);
 					lineText+=fragment->text;
@@ -6009,7 +6009,7 @@ UniscribeLine
 								bool skip=false;
 								{
 									vint elementCurrent=0;
-									FOREACH(Ptr<UniscribeFragment>, elementFragment, documentFragments)
+									for (auto elementFragment : documentFragments)
 									{
 										vint elementLength=elementFragment->text.Length();
 										if(elementFragment->inlineObjectProperties)
@@ -6106,7 +6106,7 @@ UniscribeLine
 				}
 				else
 				{
-					FOREACH(Ptr<UniscribeRun>, run, scriptRuns)
+					for (auto run : scriptRuns)
 					{
 						run->fragmentBounds.Clear();
 					}
@@ -6286,9 +6286,9 @@ UniscribeLine
 					vint minY=top;
 					vint maxX=0;
 					vint maxY=top;
-					FOREACH(Ptr<UniscribeRun>, run, scriptRuns)
+					for (auto run : scriptRuns)
 					{
-						FOREACH(UniscribeRun::RunFragmentBounds, fragmentBounds, run->fragmentBounds)
+						for (auto fragmentBounds : run->fragmentBounds)
 						{
 							Rect bounds=fragmentBounds.bounds;
 							if(minX>bounds.Left()) minX=bounds.Left();
@@ -6304,7 +6304,7 @@ UniscribeLine
 
 			void UniscribeLine::Render(UniscribeRun::IRendererCallback* callback, vint offsetX, vint offsetY, bool renderBackground)
 			{
-				FOREACH(Ptr<UniscribeRun>, run, scriptRuns)
+				for (auto run : scriptRuns)
 				{
 					for(vint i=0;i<run->fragmentBounds.Count();i++)
 					{
@@ -6335,7 +6335,7 @@ UniscribeParagraph (Initialization)
 
 			void UniscribeParagraph::ClearUniscribeData()
 			{
-				FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
+				for (auto fragment : documentFragments)
 				{
 					GetWindowsGDIResourceManager()->DestroyGdiFont(fragment->fontStyle);
 					fragment->fontObject=0;
@@ -6351,7 +6351,7 @@ UniscribeParagraph (Initialization)
 				built=true;
 				ClearUniscribeData();
 				Dictionary<WString, Ptr<WinFont>> fonts;
-				FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
+				for (auto fragment : documentFragments)
 				{
 					if(!fragment->fontObject)
 					{
@@ -6371,7 +6371,7 @@ UniscribeParagraph (Initialization)
 				{
 					Regex regexLine(L"\r\n");
 					Ptr<UniscribeLine> line;
-					FOREACH(Ptr<UniscribeFragment>, fragment, documentFragments)
+					for (auto fragment : documentFragments)
 					{
 						if(fragment->inlineObjectProperties)
 						{
@@ -6415,13 +6415,13 @@ UniscribeParagraph (Initialization)
 					}
 				}
 
-				FOREACH(Ptr<UniscribeLine>, line, lines)
+				for (auto line : lines)
 				{
 					line->BuildUniscribeData(dc);
 				}
 
 				vint lineStart=0;
-				FOREACH(Ptr<UniscribeLine>, line, lines)
+				for (auto line : lines)
 				{
 					line->startFromParagraph=lineStart;
 					lineStart+=line->lineText.Length()+2;
@@ -6440,7 +6440,7 @@ UniscribeParagraph (Initialization)
 				paragraphAlignment=alignment;
 
 				vint cy=0;
-				FOREACH(Ptr<UniscribeLine>, line, lines)
+				for (auto line : lines)
 				{
 					line->Layout(availableWidth, alignment, cy, cy);
 				}
@@ -6450,7 +6450,7 @@ UniscribeParagraph (Initialization)
 				vint minY=0;
 				vint maxX=0;
 				vint maxY=0;
-				FOREACH(Ptr<UniscribeLine>, line, lines)
+				for (auto line : lines)
 				{
 					Rect bounds=line->bounds;
 					if(minX>bounds.Left()) minX=bounds.Left();
@@ -6460,9 +6460,9 @@ UniscribeParagraph (Initialization)
 				}
 
 				vint offsetY=0;
-				FOREACH(Ptr<UniscribeLine>, line, lines)
+				for (auto line : lines)
 				{
-					FOREACH(Ptr<UniscribeFragment>, fragment, line->documentFragments)
+					for (auto fragment : line->documentFragments)
 					{
 						vint size=fragment->fontStyle.size/3;
 						if(size>offsetY)
@@ -6477,7 +6477,7 @@ UniscribeParagraph (Initialization)
 			void UniscribeParagraph::Render(UniscribeRun::IRendererCallback* callback, bool renderBackground)
 			{
 				auto offset = callback->GetParagraphOffset();
-				FOREACH(Ptr<UniscribeLine>, line, lines)
+				for (auto line : lines)
 				{
 					line->Render(callback, offset.x, offset.y, renderBackground);
 				}
@@ -9076,7 +9076,7 @@ WindowsForm
 					auto flag = flagDisposed;
 					bool skip = false;
 					{
-						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
+						for (auto handler : messageHandlers)
 						{
 							handler->BeforeHandle(hwnd, uMsg, wParam, lParam, skip);
 							CHECK_DISPOSED;
@@ -9090,7 +9090,7 @@ WindowsForm
 					CHECK_DISPOSED;
 					if (GetWindowsFormFromHandle(hwnd))
 					{
-						FOREACH(Ptr<INativeMessageHandler>, handler, messageHandlers)
+						for (auto handler : messageHandlers)
 						{
 							handler->AfterHandle(hwnd, uMsg, wParam, lParam, skip, result);
 							CHECK_DISPOSED;
@@ -9826,7 +9826,7 @@ WindowsController
 				{
 					if (rootWindowOnly)
 					{
-						FOREACH(WindowsForm*, window, windows.Values())
+						for (auto window : windows.Values())
 						{
 							if (window->GetWindowMode() == INativeWindow::Normal)
 							{
@@ -9870,7 +9870,7 @@ WindowsController
 					{
 						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
 						{
-							FOREACH(WindowsForm*, window, windows.Values())
+							for (auto window : windows.Values())
 							{
 								if (window->IsVisible())
 								{
@@ -9886,7 +9886,7 @@ WindowsController
 										return window->GetWindowMode() == INativeWindow::Normal;
 									})
 								);
-							FOREACH(WindowsForm*, window, normalWindows)
+							for (auto window : normalWindows)
 							{
 								DestroyNativeWindow(window);
 							}
@@ -13071,7 +13071,7 @@ WindowsAsyncService
 					}
 				}
 
-				FOREACH(TaskItem, item, items)
+				for (auto item : items)
 				{
 					item.proc();
 					if(item.semaphore)
@@ -13079,7 +13079,7 @@ WindowsAsyncService
 						item.semaphore->Release();
 					}
 				}
-				FOREACH(Ptr<DelayItem>, item, executableDelayItems)
+				for (auto item : executableDelayItems)
 				{
 					if(item->executeInMainThread)
 					{

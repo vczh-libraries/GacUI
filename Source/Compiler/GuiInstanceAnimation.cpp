@@ -69,7 +69,7 @@ GuiInstanceGradientAnimation::LoadFromXml
 
 			if (auto targetsElement = XmlGetElement(xml->rootElement, L"Targets"))
 			{
-				FOREACH(Ptr<XmlElement>, targetElement, XmlGetElements(targetsElement, L"Target"))
+				for (auto targetElement : XmlGetElements(targetsElement, L"Target"))
 				{
 					Target target;
 

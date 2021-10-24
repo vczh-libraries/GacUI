@@ -454,8 +454,8 @@ Instance Type Resolver (Instance)
 									L"\" should have the class name specified in the ref.Class attribute."));
 							}
 
-							FOREACH_INDEXER(Ptr<GuiInstanceLocalized>, localized, index,
-								From(obj->localizeds).Where([](Ptr<GuiInstanceLocalized> ls) {return ls->defaultStrings; })
+							for (auto [localized, index] :
+								indexed(From(obj->localizeds).Where([](Ptr<GuiInstanceLocalized> ls) {return ls->defaultStrings; }))
 								)
 							{
 								if (index > 0)

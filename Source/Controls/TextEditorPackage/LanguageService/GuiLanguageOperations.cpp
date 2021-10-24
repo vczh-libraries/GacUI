@@ -260,7 +260,7 @@ RepeatingParsingExecutor
 					}
 				}
 
-				FOREACH(Ptr<ParsingTable::AttributeInfo>, att, 
+				for (auto att :
 					From(tokenColorAtts.Values())
 						.Concat(tokenContextColorAtts.Values())
 						.Concat(fieldColorAtts.Values())

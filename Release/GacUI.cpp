@@ -193,7 +193,7 @@ GuiApplication
 				{
 					composition->GetEventReceiver()->clipboardNotify.Execute(arguments);
 				}
-				FOREACH(GuiGraphicsComposition*, subComposition, composition->Children())
+				for (auto subComposition : composition->Children())
 				{
 					InvokeClipboardNotify(subComposition, arguments);
 				}
@@ -467,7 +467,7 @@ GuiPluginManager
 					auto name = plugin->GetName();
 					if (name != L"")
 					{
-						FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+						for (auto plugin : plugins)
 						{
 							CHECK_ERROR(plugin->GetName() != name, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Duplicated plugin name.");
 						}
@@ -483,13 +483,13 @@ GuiPluginManager
 					SortedList<WString> loaded;
 					Group<WString, WString> loading;
 					Dictionary<WString, Ptr<IGuiPlugin>> pluginsToLoad;
-					FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+					for (auto plugin : plugins)
 					{
 						auto name = plugin->GetName();
 						pluginsToLoad.Add(name, plugin);
 						List<WString> dependencies;
 						plugin->GetDependencies(dependencies);
-						FOREACH(WString, dependency, dependencies)
+						for (auto dependency : dependencies)
 						{
 							loading.Add(name, dependency);
 						}
@@ -499,7 +499,7 @@ GuiPluginManager
 					{
 						vint count = pluginsToLoad.Count();
 						{
-							FOREACH_INDEXER(WString, name, index, pluginsToLoad.Keys())
+							for (auto [name, index] : indexed(pluginsToLoad.Keys()))
 							{
 								if (!loading.Keys().Contains(name))
 								{
@@ -519,13 +519,13 @@ GuiPluginManager
 						if (count == pluginsToLoad.Count())
 						{
 							WString message;
-							FOREACH(Ptr<IGuiPlugin>, plugin, pluginsToLoad.Values())
+							for (auto plugin : pluginsToLoad.Values())
 							{
 								message += L"Cannot load plugin \"" + plugin->GetName() + L"\" because part of its dependencies are not ready:";
 								List<WString> dependencies;
 								plugin->GetDependencies(dependencies);
 								bool first = true;
-								FOREACH(WString, dependency, dependencies)
+								for (auto dependency : dependencies)
 								{
 									if (!loaded.Contains(dependency))
 									{
@@ -543,7 +543,7 @@ GuiPluginManager
 				{
 					CHECK_ERROR(loaded, L"GuiPluginManager::AddPlugin(Ptr<IGuiPlugin>)#Load function has not been executed.");
 					loaded=false;
-					FOREACH(Ptr<IGuiPlugin>, plugin, plugins)
+					for (auto plugin : plugins)
 					{
 						plugin->Unload();
 					}
@@ -2094,7 +2094,7 @@ GuiTab
 					}
 
 					selectedPage = value;
-					FOREACH(GuiTabPage*, tabPage, tabPages)
+					for (auto tabPage : tabPages)
 					{
 						tabPage->SetVisible(tabPage == selectedPage);
 					}
@@ -5406,7 +5406,7 @@ DataProvider
 					if (selectedFilters.Count() > 0)
 					{
 						auto andFilter = MakePtr<DataAndFilter>();
-						FOREACH(Ptr<IDataFilter>, filter, selectedFilters)
+						for (auto filter : selectedFilters)
 						{
 							andFilter->AddSubFilter(filter);
 						}
@@ -6464,7 +6464,7 @@ GuiBindableTreeView::ItemSourceNode
 					itemChangedEventHandler = nullptr;
 				}
 				childrenVirtualList = nullptr;
-				FOREACH(Ptr<ItemSourceNode>, node, children)
+				for (auto node : children)
 				{
 					node->UnprepareChildren();
 				}
@@ -6541,7 +6541,7 @@ GuiBindableTreeView::ItemSourceNode
 					PrepareChildren(PrepareValueList(itemSource));
 				}
 				vint count = 1;
-				FOREACH(Ptr<ItemSourceNode>, child, children)
+				for (auto child : children)
 				{
 					count += child->CalculateTotalVisibleNodes();
 				}
@@ -7298,7 +7298,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->GetTemplate()->SetFont(GetFont());
 					}
@@ -7310,7 +7310,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->GetTemplate()->SetContext(GetContext());
 					}
@@ -7322,7 +7322,7 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->GetTemplate()->SetVisuallyEnabled(GetVisuallyEnabled());
 					}
@@ -7338,7 +7338,7 @@ DefaultDataGridItemTemplate
 
 				DefaultDataGridItemTemplate::~DefaultDataGridItemTemplate()
 				{
-					FOREACH(Ptr<IDataVisualizer>, visualizer, dataVisualizers)
+					for (auto visualizer : dataVisualizers)
 					{
 						visualizer->NotifyDeletedTemplate();
 					}
@@ -9716,7 +9716,7 @@ GuiListControl
 			void GuiListControl::UpdateDisplayFont()
 			{
 				GuiControl::UpdateDisplayFont();
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetFont(GetDisplayFont());
 				}
@@ -9730,7 +9730,7 @@ GuiListControl
 
 			void GuiListControl::OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetVisuallyEnabled(GetVisuallyEnabled());
 				}
@@ -9738,7 +9738,7 @@ GuiListControl
 
 			void GuiListControl::OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetContext(GetContext());
 				}
@@ -10037,7 +10037,7 @@ GuiSelectableListControl
 
 			void GuiSelectableListControl::OnItemSelectionCleared()
 			{
-				FOREACH(ItemStyle*, style, visibleStyles.Keys())
+				for (auto style : visibleStyles.Keys())
 				{
 					style->SetSelected(false);
 				}
@@ -10495,7 +10495,7 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged()
 				{
 					arranger->RebuildColumns();
-					FOREACH(ItemStyleRecord, style, arranger->visibleStyles)
+					for (auto style : arranger->visibleStyles)
 					{
 						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style.key))
 						{
@@ -13703,7 +13703,7 @@ IGuiAnimationCoroutine
 					}
 					for (vint i = 0; i < groupAnimations.Count(); i++)
 					{
-						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
+						for (auto animation : groupAnimations.GetByIndex(i))
 						{
 							animation->Pause();
 						}
@@ -13718,7 +13718,7 @@ IGuiAnimationCoroutine
 					}
 					for (vint i = 0; i < groupAnimations.Count(); i++)
 					{
-						FOREACH(Ptr<IGuiAnimation>, animation, groupAnimations.GetByIndex(i))
+						for (auto animation : groupAnimations.GetByIndex(i))
 						{
 							animation->Resume();
 						}
@@ -14151,7 +14151,7 @@ GuiCommonDatePickerLook
 			void GuiCommonDatePickerLook::SetDateButtonTemplate(const TemplateProperty<GuiSelectableButtonTemplate>& value)
 			{
 				dateButtonTemplate = value;
-				FOREACH(GuiSelectableButton*, button, buttonDays)
+				for (auto button : buttonDays)
 				{
 					button->SetControlTemplate(value);
 				}
@@ -14232,7 +14232,7 @@ GuiCommonDatePickerLook
 					listYears->SetFont(value);
 					comboMonth->SetFont(value);
 					listMonths->SetFont(value);
-					FOREACH(GuiSolidLabelElement*, label, From(labelDaysOfWeek).Concat(labelDays))
+					for (auto label : From(labelDaysOfWeek).Concat(labelDays))
 					{
 						label->SetFont(value);
 					}
@@ -14634,7 +14634,7 @@ GuiInstanceRootObject
 				auto controlHost = GetControlHostForInstance();
 				if (UninstallTimerCallback(controlHost))
 				{
-					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					for (auto animation : runningAnimations)
 					{
 						animation->Pause();
 					}
@@ -14643,7 +14643,7 @@ GuiInstanceRootObject
 				if (controlHost)
 				{
 					InstallTimerCallback(controlHost);
-					FOREACH(Ptr<IGuiAnimation>, animation, runningAnimations)
+					for (auto animation : runningAnimations)
 					{
 						animation->Resume();
 					}
@@ -14653,7 +14653,7 @@ GuiInstanceRootObject
 
 			void GuiInstanceRootObject::StartPendingAnimations()
 			{
-				FOREACH(Ptr<IGuiAnimation>, animation, pendingAnimations)
+				for (auto animation : pendingAnimations)
 				{
 					animation->Start();
 				}
@@ -14677,11 +14677,11 @@ GuiInstanceRootObject
 				{
 					finalized = true;
 
-					FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+					for (auto subscription : subscriptions)
 					{
 						subscription->Close();
 					}
-					FOREACH(GuiComponent*, component, components)
+					for (auto component : components)
 					{
 						component->Detach(this);
 					}
@@ -14765,7 +14765,7 @@ GuiInstanceRootObject
 
 			void GuiInstanceRootObject::UpdateSubscriptions()
 			{
-				FOREACH(Ptr<IValueSubscription>, subscription, subscriptions)
+				for (auto subscription : subscriptions)
 				{
 					subscription->Update();
 				}
@@ -15354,7 +15354,7 @@ GuiDocumentCommonInterface
 			{
 				if (activeHyperlinks)
 				{
-					FOREACH(Ptr<DocumentHyperlinkRun>, run, activeHyperlinks->hyperlinks)
+					for (auto run : activeHyperlinks->hyperlinks)
 					{
 						run->styleName = activate ? run->activeStyleName : run->normalStyleName;
 					}
@@ -15697,7 +15697,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnStartRender()
 			{
-				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				for (auto item : documentItems.Values())
 				{
 					item->visible = false;
 				}
@@ -15705,7 +15705,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::OnFinishRender()
 			{
-				FOREACH(Ptr<GuiDocumentItem>, item, documentItems.Values())
+				for (auto item : documentItems.Values())
 				{
 					if (item->container->GetVisible() != item->visible)
 					{
@@ -17799,7 +17799,7 @@ GuiTextBoxAutoCompleteBase::TextListControlProvider
 			void GuiTextBoxAutoCompleteBase::TextListControlProvider::SetSortedContent(const collections::List<AutoCompleteItem>& items)
 			{
 				autoCompleteList->GetItems().Clear();
-				FOREACH(AutoCompleteItem, item, items)
+				for (auto item : items)
 				{
 					autoCompleteList->GetItems().Add(new list::TextItem(item.text));
 				}
@@ -18910,9 +18910,9 @@ GuiGrammarAutoComplete
 						Ptr<ParsingTable::TransitionBag> bag=table->GetTransitionBag(i, j);
 						if(bag)
 						{
-							FOREACH(Ptr<ParsingTable::TransitionItem>, item, bag->transitionItems)
+							for (auto item : bag->transitionItems)
 							{
-								FOREACH(ParsingTable::Instruction, ins, item->instructions)
+								for (auto ins : item->instructions)
 								{
 									if(ins.instructionType==ParsingTable::Instruction::LeftRecursiveReduce)
 									{
@@ -18974,7 +18974,7 @@ GuiGrammarAutoComplete
 				RegexToken lastToken;
 				lastToken.reading=0;
 
-				FOREACH(RegexToken, token, tokens)
+				for (auto token : tokens)
 				{
 					// we treat "class| Name" as editing the first token
 					if(TextPos(token.rowEnd, token.columnEnd+1)>=pos)
@@ -19035,7 +19035,7 @@ GuiGrammarAutoComplete
 						ParsingTreeObject* obj = dynamic_cast<ParsingTreeObject*>(current);
 						if (obj)
 						{
-							FOREACH(WString, rule, obj->GetCreatorRules())
+							for (auto rule : obj->GetCreatorRules())
 							{
 								if (leftRecursiveRules.Contains(rule))
 								{
@@ -19154,7 +19154,7 @@ GuiGrammarAutoComplete
 						// initialize a TextLines with the latest modifiedCode
 						text::TextLines lines(nullptr);
 						lines.SetText(newContext.modifiedCode);
-						FOREACH(TextEditNotifyStruct, trace, usedTrace)
+						for (auto trace : usedTrace)
 						{
 							// apply a modification to lines
 							TextPos start = trace.originalStart;
@@ -19196,7 +19196,7 @@ GuiGrammarAutoComplete
 			void GuiGrammarAutoComplete::DeleteFutures(collections::List<parsing::tabling::ParsingState::Future*>& futures)
 			{
 				// delete all futures and clear the list
-				FOREACH(ParsingState::Future*, future, futures)
+				for (auto future : futures)
 				{
 					delete future;
 				}
@@ -19258,14 +19258,14 @@ GuiGrammarAutoComplete
 							List<ParsingState::Future*> possibilities;
 							if (recoveryFutures.Count() > 0)
 							{
-								FOREACH(ParsingState::Future*, future, recoveryFutures)
+								for (auto future : recoveryFutures)
 								{
 									state.Explore(tableTokenIndex, future, possibilities);
 								}
 							}
 							else
 							{
-								FOREACH(ParsingState::Future*, future, nonRecoveryFutures)
+								for (auto future : nonRecoveryFutures)
 								{
 									state.Explore(tableTokenIndex, future, possibilities);
 								}
@@ -19277,7 +19277,7 @@ GuiGrammarAutoComplete
 							{
 								ParsingState::Future* candidateFuture = possibilities[i];
 								bool duplicated = false;
-								FOREACH(ParsingState::Future*, future, selectedPossibilities)
+								for (auto future : selectedPossibilities)
 								{
 									if (
 										candidateFuture->currentState == future->currentState &&
@@ -19357,7 +19357,7 @@ GuiGrammarAutoComplete
 					state.Explore(ParsingTable::NormalReduce, nonRecoveryFutures[i], nonRecoveryFutures);
 					state.Explore(ParsingTable::LeftRecursiveReduce, nonRecoveryFutures[i], nonRecoveryFutures);
 				}
-				FOREACH(ParsingState::Future*, future, nonRecoveryFutures)
+				for (auto future : nonRecoveryFutures)
 				{
 					vint count = state.GetTable()->GetTokenCount();
 					for (vint i = ParsingTable::UserTokenStart; i < count; i++)
@@ -19367,7 +19367,7 @@ GuiGrammarAutoComplete
 				}
 
 				// get all possible tokens that marked using @AutoCompleteCandidate
-				FOREACH(ParsingState::Future*, future, possibilities)
+				for (auto future : possibilities)
 				{
 					if (!tableTokenIndices.Contains(future->selectedToken))
 					{
@@ -19427,7 +19427,7 @@ GuiGrammarAutoComplete
 						ParsingTreeBuilder builder;
 						builder.Reset();
 						bool succeeded = true;
-						FOREACH(ParsingState::TransitionResult, transition, collector.GetTransitions())
+						for (auto transition : collector.GetTransitions())
 						{
 							if (!(succeeded = builder.Run(transition)))
 							{
@@ -19471,7 +19471,7 @@ GuiGrammarAutoComplete
 						// collect all auto complete types
 						{
 							// collect all keywords that can be put into the auto complete list
-							FOREACH(vint, token, tableTokenIndices)
+							for (auto token : tableTokenIndices)
 							{
 								vint regexToken = token - ParsingTable::UserTokenStart;
 								if (regexToken >= 0)
@@ -19673,7 +19673,7 @@ GuiGrammarAutoComplete
 					List<ParsingCandidateItem> itemValues;
 
 					// copy all candidate keywords
-					FOREACH(vint, token, autoComplete->shownCandidates)
+					for (auto token : autoComplete->shownCandidates)
 					{
 						WString literal = parsingExecutor->GetTokenMetaData(token).unescapedRegexText;
 						if (literal != L"" && !itemKeys.Contains(literal))
@@ -19688,7 +19688,7 @@ GuiGrammarAutoComplete
 					// copy all candidate symbols
 					if (autoComplete->acceptableSemanticIds)
 					{
-						FOREACH(ParsingCandidateItem, item, autoComplete->candidateItems)
+						for (auto item : autoComplete->candidateItems)
 						{
 							if (autoComplete->acceptableSemanticIds->Contains(item.semanticId))
 							{
@@ -19980,7 +19980,7 @@ GuiGrammarColorizer
 					}
 				}
 
-				FOREACH_INDEXER(WString, color, index, colorSettings.Keys())
+				for (auto [color, index] : indexed(colorSettings.Keys()))
 				{
 					if(!tokenColors.Contains(color))
 					{
@@ -20243,7 +20243,7 @@ RepeatingParsingExecutor
 				if(node)
 				{
 					OnContextFinishedAsync(result);
-					FOREACH(ICallback*, callback, callbacks)
+					for (auto callback : callbacks)
 					{
 						callback->OnParsingFinishedAsync(result);
 					}
@@ -20305,14 +20305,14 @@ RepeatingParsingExecutor
 					}
 				}
 
-				FOREACH(Ptr<ParsingTable::AttributeInfo>, att, 
+				for (auto att :
 					From(tokenColorAtts.Values())
 						.Concat(tokenContextColorAtts.Values())
 						.Concat(fieldColorAtts.Values())
 						.Concat(fieldSemanticAtts.Values())
 					)
 				{
-					FOREACH(WString, argument, att->arguments)
+					for (auto argument : att->arguments)
 					{
 						if(!semanticIndexMap.Contains(argument))
 						{
@@ -20322,7 +20322,7 @@ RepeatingParsingExecutor
 				}
 
 				vint index=0;
-				FOREACH(vint, tokenIndex, tokenIndexMap.Values())
+				for (auto tokenIndex : tokenIndexMap.Values())
 				{
 					TokenMetaData md;
 					md.tableTokenIndex=tokenIndex+ParsingTable::UserTokenStart;
@@ -20370,7 +20370,7 @@ RepeatingParsingExecutor
 						if((index=fieldSemanticAtts.Keys().IndexOf(fieldDesc))!=-1)
 						{
 							md.semantics=new List<vint>;
-							FOREACH(WString, argument, fieldSemanticAtts.Values()[index]->arguments)
+							for (auto argument : fieldSemanticAtts.Values()[index]->arguments)
 							{
 								md.semantics->Add(semanticIndexMap.IndexOf(argument));
 							}
@@ -21673,7 +21673,7 @@ GuiRibbonButtons
 
 			void GuiRibbonButtons::AfterControlTemplateInstalled_(bool initialize)
 			{
-				FOREACH(GuiControl*, button, buttons)
+				for (auto button : buttons)
 				{
 					SetButtonThemeName(responsiveView->GetCurrentView(), button);
 				}
@@ -21681,7 +21681,7 @@ GuiRibbonButtons
 
 			void GuiRibbonButtons::OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments)
 			{
-				FOREACH(GuiControl*, button, buttons)
+				for (auto button : buttons)
 				{
 					SetButtonThemeName(responsiveView->GetViews()[arguments.itemIndex], button);
 				}
@@ -22298,7 +22298,7 @@ list::GroupedDataSource
 					{
 						if (GetGroupEnabled())
 						{
-							FOREACH_INDEXER(Value, groupValue, index, GetLazyList<Value>(itemSource))
+							for (auto [groupValue, index] : indexed(GetLazyList<Value>(itemSource)))
 							{
 								auto group = MakePtr<GalleryGroup>();
 								group->name = titleProperty(groupValue);
@@ -22833,7 +22833,7 @@ GuiBindableRibbonGalleryList
 			{
 				if (0 <= index && index < joinedItemSource.Count())
 				{
-					FOREACH_INDEXER(Ptr<list::GalleryGroup>, group, groupIndex, groupedItemSource)
+					for (auto [group, groupIndex] : indexed(groupedItemSource))
 					{
 						auto itemValues = group->GetItemValues();
 						vint itemCount = itemValues ? itemValues->GetCount() : 0;
@@ -25866,7 +25866,7 @@ GuiFlowComposition
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
 					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
-					FOREACH(GuiFlowItemComposition*, item, flowItems)
+					for (auto item : flowItems)
 					{
 						auto itemSize = item->GetPreferredBounds().GetSize();
 						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
@@ -26528,7 +26528,7 @@ GuiResponsiveViewComposition
 			{
 				destructing = true;
 
-				FOREACH(GuiResponsiveCompositionBase*, view, views)
+				for (auto view : views)
 				{
 					if (view != currentView)
 					{
@@ -26536,7 +26536,7 @@ GuiResponsiveViewComposition
 					}
 				}
 
-				FOREACH(GuiControl*, shared, From(sharedControls).Except(usedSharedControls))
+				for (auto shared : From(sharedControls).Except(usedSharedControls))
 				{
 					SafeDeleteControl(shared);
 				}
@@ -26756,7 +26756,7 @@ GuiResponsiveStackComposition
 					GuiResponsiveCompositionBase* selected = nullptr;
 					vint size = 0;
 
-					FOREACH(GuiResponsiveCompositionBase*, child, availables)
+					for (auto child : availables)
 					{
 						if (!ignored.Contains(child))
 						{
@@ -26916,7 +26916,7 @@ GuiResponsiveGroupComposition
 			{
 				DEFINE_AVAILABLE;
 				vint level = currentLevel;
-				FOREACH(GuiResponsiveCompositionBase*, child, availables)
+				for (auto child : availables)
 				{
 					if (child->GetCurrentLevel() >= level)
 					{
@@ -26936,7 +26936,7 @@ GuiResponsiveGroupComposition
 			{
 				DEFINE_AVAILABLE;
 				vint level = currentLevel;
-				FOREACH(GuiResponsiveCompositionBase*, child, availables)
+				for (auto child : availables)
 				{
 					while (child->GetCurrentLevel() <= level)
 					{
@@ -27236,7 +27236,7 @@ GuiSharedSizeRootComposition
 
 			void GuiSharedSizeRootComposition::CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
 			{
-				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
+				for (auto item : childItems)
 				{
 					auto group = item->GetGroup();
 					auto minSize = item->GetPreferredMinSize();
@@ -27258,7 +27258,7 @@ GuiSharedSizeRootComposition
 
 			void GuiSharedSizeRootComposition::AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
 			{
-				FOREACH(GuiSharedSizeItemComposition*, item, childItems)
+				for (auto item : childItems)
 				{
 					auto group = item->GetGroup();
 					auto size = item->GetPreferredMinSize();
@@ -28435,7 +28435,7 @@ GuiTableComposition
 
 				bool cellMinSizeModified = false;
 				SortedList<GuiCellComposition*> cells;
-				FOREACH(GuiCellComposition*, cell, cellCompositions)
+				for (auto cell : cellCompositions)
 				{
 					if (cell && !cells.Contains(cell))
 					{
@@ -28969,7 +28969,7 @@ SetPropertiesVisitor
 
 					void VisitContainer(DocumentContainerRun* run)
 					{
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							subRun->Accept(this);
 						}
@@ -32679,7 +32679,7 @@ GuiAltActionManager
 							continue;
 						}
 
-						FOREACH_INDEXER(IGuiAltAction*, action, index, values)
+						for (auto [action, index] : indexed(values))
 						{
 							WString key = actions.Keys()[i];
 							if (numberLength > 0)
@@ -32751,7 +32751,7 @@ GuiAltActionManager
 
 			void GuiAltActionManager::ClearAltHost()
 			{
-				FOREACH(GuiControl*, title, currentActiveAltTitles.Values())
+				for (auto title : currentActiveAltTitles.Values())
 				{
 					SafeDeleteControl(title);
 				}
@@ -32950,7 +32950,7 @@ GuiShortcutKeyManager
 			bool GuiShortcutKeyManager::Execute(const NativeWindowKeyInfo& info)
 			{
 				bool executed=false;
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(info))
 					{
@@ -32964,7 +32964,7 @@ GuiShortcutKeyManager
 
 			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(ctrl, shift, alt, key))
 					{
@@ -32978,7 +32978,7 @@ GuiShortcutKeyManager
 
 			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(ctrl, shift, alt, key))
 					{
@@ -32991,7 +32991,7 @@ GuiShortcutKeyManager
 
 			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				FOREACH(Ptr<GuiShortcutKeyItem>, item, shortcutKeyItems)
+				for (auto item : shortcutKeyItems)
 				{
 					if(item->CanActivate(ctrl, shift, alt, key))
 					{
@@ -33416,7 +33416,7 @@ ExtractTextVisitor
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -33592,7 +33592,7 @@ DocumentModel
 				styles.Values()[indexDst]->styles = sp;
 			}
 
-			FOREACH(Ptr<DocumentStyle>, style, styles.Values())
+			for (auto style : styles.Values())
 			{
 				style->resolvedStyles = nullptr;
 			}
@@ -33741,7 +33741,7 @@ namespace vl
 
 				virtual void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, childRun, run->runs)
+					for (auto childRun : run->runs)
 					{
 						childRun->Accept(this);
 					}
@@ -33822,7 +33822,7 @@ namespace vl
 		void ModifyDocumentForClipboard(Ptr<DocumentModel> model)
 		{
 			ModifyDocumentForClipboardVisitor visitor;
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+			for (auto paragraph : model->paragraphs)
 			{
 				paragraph->Accept(&visitor);
 			}
@@ -33877,7 +33877,7 @@ namespace vl
 		void SaveDocumentToClipboardStream(Ptr<DocumentModel> model, stream::IStream& clipboardStream)
 		{
 			CollectImageRunsVisitor visitor;
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+			for (auto paragraph : model->paragraphs)
 			{
 				paragraph->Accept(&visitor);
 			}
@@ -33900,7 +33900,7 @@ namespace vl
 				vint32_t count = (vint32_t)visitor.imageRuns.Count();
 				writer << count;
 
-				FOREACH(Ptr<DocumentImageRun>, imageRun, visitor.imageRuns)
+				for (auto imageRun : visitor.imageRuns)
 				{
 					MemoryStream memoryStream;
 					if (imageRun->image)
@@ -33955,7 +33955,7 @@ namespace vl
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -34160,7 +34160,7 @@ namespace vl
 				StreamWriter writer(encoderStream);
 				GenerateHtmlVisitor visitor(model.Obj(), writer);
 
-				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+				for (auto paragraph : model->paragraphs)
 				{
 					writer.WriteString(L"<p style=\"text-align:");
 					if (paragraph->alignment)
@@ -34290,7 +34290,7 @@ namespace vl
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -34394,7 +34394,7 @@ namespace vl
 				StreamWriter writer(bodyStream);
 				GenerateRtfVisitor visitor(model.Obj(), fontTable, colorTable, writer);
 
-				FOREACH(Ptr<DocumentParagraphRun>, paragraph, model->paragraphs)
+				for (auto paragraph : model->paragraphs)
 				{
 					if (paragraph->alignment)
 					{
@@ -34421,7 +34421,7 @@ namespace vl
 				StreamWriter writer(encoderStream);
 
 				writer.WriteString(L"{\\rtf1\\ansi\\deff0{\\fonttbl");
-				FOREACH_INDEXER(WString, fontName, index, fontTable)
+				for (auto [fontName, index] : indexed(fontTable))
 				{
 					writer.WriteString(L"{\\f");
 					writer.WriteString(itow(index));
@@ -34431,7 +34431,7 @@ namespace vl
 				}
 
 				writer.WriteString(L"}{\\colortbl");
-				FOREACH_INDEXER(Color, color, index, colorTable)
+				for (auto [color, index] : indexed(colorTable))
 				{
 					writer.WriteString(L";\\red");
 					writer.WriteString(itow(color.r));
@@ -34785,7 +34785,7 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 				bool OnlyImageOrObject(DocumentContainerRun* run)
 				{
 					bool onlyImageOrObject = true;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						if (!subRun.Cast<DocumentImageRun>() && !subRun.Cast<DocumentEmbeddedObjectRun>())
 						{
@@ -34834,7 +34834,7 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 				CONTINUE_PROCESSING:
 					if (From(run->runs).Cast<DocumentStylePropertiesRun>().First(nullptr) != nullptr)
 					{
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							if (auto styleRun = subRun.Cast<DocumentStylePropertiesRun>())
 							{
@@ -35199,7 +35199,7 @@ Clone the current run with its children
 						else
 						{
 							Ptr<DocumentContainerRun> containerRun = CopyRun(run).Cast<DocumentContainerRun>();
-							FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+							for (auto subRun : run->runs)
 							{
 								subRun->Accept(this);
 								if (clonedRun)
@@ -35380,7 +35380,7 @@ Search all used style names
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -35481,7 +35481,7 @@ If a run decides that itself should be cut, then leftRun and rightRun contains n
 					vint leftCount = 0;
 					Ptr<DocumentRun> selectedRun;
 
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						RunRange range = runRanges[subRun.Obj()];
 						if (range.start<position)
@@ -35613,7 +35613,7 @@ Calculate range informations for each run object
 				{
 					RunRange range;
 					range.start = start;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -35714,7 +35714,7 @@ Get the hyperlink run that contains the specified position
 				void VisitContainer(DocumentContainerRun* run)
 				{
 					Ptr<DocumentRun> selectedRun;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						RunRange range = runRanges[subRun.Obj()];
 						if (range.start <= start && end <= range.end)
@@ -35772,7 +35772,7 @@ Get the hyperlink run that contains the specified position
 				}
 
 				Ptr<DocumentHyperlinkRun> startRun, endRun;
-				FOREACH(Ptr<DocumentHyperlinkRun>, run, package->hyperlinks)
+				for (auto run : package->hyperlinks)
 				{
 					auto range = runRanges[run.Obj()];
 					if (package->start == -1 || range.start < package->start)
@@ -35868,7 +35868,7 @@ Get all container runs that contain the specified position from top to bottom
 				{
 					locatedRuns.Add(run);
 					Ptr<DocumentRun> selectedRun;
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						RunRange range = runRanges[subRun.Obj()];
 						if (position == range.start)
@@ -36291,7 +36291,7 @@ Replace a style name with another one
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
-					FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+					for (auto subRun : run->runs)
 					{
 						subRun->Accept(this);
 					}
@@ -36752,7 +36752,7 @@ DocumentModel::EditRangeOperations
 
 			// copy styles
 			List<WString> styleNames;
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, newDocument->paragraphs)
+			for (auto paragraph : newDocument->paragraphs)
 			{
 				CollectStyleName(paragraph.Obj(), styleNames);
 			}
@@ -36921,11 +36921,11 @@ DocumentModel::EditRun
 
 			// rename model's styles
 			typedef Pair<WString, WString> NamePair;
-			FOREACH(NamePair, name, From(oldNames).Pairwise(newNames))
+			for (auto name : From(oldNames).Pairwise(newNames))
 			{
 				model->RenameStyle(name.key, name.value);
 			}
-			FOREACH(WString, name, newNames)
+			for (auto name : newNames)
 			{
 				if((name.Length()==0 || name[0]!=L'#') && !styles.Keys().Contains(name))
 				{
@@ -37113,7 +37113,7 @@ DocumentModel::EditHyperlink
 			auto package = GetHyperlink(paragraphIndex, begin, end);
 			if (package->hyperlinks.Count() > 0)
 			{
-				FOREACH(Ptr<DocumentHyperlinkRun>, run, package->hyperlinks)
+				for (auto run : package->hyperlinks)
 				{
 					run->reference = reference;
 					run->normalStyleName = normalStyleName;
@@ -37188,7 +37188,7 @@ DocumentModel::EditStyleName
 			styles.Remove(oldStyleName);
 			styles.Add(newStyleName, style);
 
-			FOREACH(Ptr<DocumentStyle>, subStyle, styles.Values())
+			for (auto subStyle : styles.Values())
 			{
 				if(subStyle->parentStyleName==oldStyleName)
 				{
@@ -37196,7 +37196,7 @@ DocumentModel::EditStyleName
 				}
 			}
 
-			FOREACH(Ptr<DocumentParagraphRun>, paragraph, paragraphs)
+			for (auto paragraph : paragraphs)
 			{
 				ReplaceStyleName(paragraph.Obj(), oldStyleName, newStyleName);
 			}
@@ -37478,7 +37478,7 @@ document_operation_visitors::DeserializeNodeVisitor
 								}
 							}
 
-							FOREACH(Ptr<XmlAttribute>, att, node->attributes)
+							for (auto att : node->attributes)
 							{
 								if (att->name.value == L"width")
 								{
@@ -37530,7 +37530,7 @@ document_operation_visitors::DeserializeNodeVisitor
 						Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
 						run->style = sp;
 
-						FOREACH(Ptr<XmlAttribute>, att, node->attributes)
+						for (auto att : node->attributes)
 						{
 							if (att->name.value == L"face")
 							{
@@ -37654,7 +37654,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"p")
 					{
-						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
+						for (auto sub : node->subNodes)
 						{
 							sub->Accept(this);
 						}
@@ -37665,7 +37665,7 @@ document_operation_visitors::DeserializeNodeVisitor
 						{
 							errors.Add(GuiResourceError({ {resource},node->codeRange.start }, L"Unknown element in <p>: \"" + node->name.value + L"\"."));
 						}
-						FOREACH(Ptr<XmlNode>, sub, node->subNodes)
+						for (auto sub : node->subNodes)
 						{
 							sub->Accept(this);
 						}
@@ -37675,7 +37675,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					{
 						Ptr<DocumentContainerRun> oldContainer = container;
 						container = createdContainer;
-						FOREACH(Ptr<XmlNode>, subNode, subNodeContainer->subNodes)
+						for (auto subNode : subNodeContainer->subNodes)
 						{
 							subNode->Accept(this);
 						}
@@ -37704,7 +37704,7 @@ document_operation_visitors::DeserializeNodeVisitor
 				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
 				style->styles=sp;
 
-				FOREACH(Ptr<XmlElement>, att, XmlGetElements(styleElement))
+				for (auto att : XmlGetElements(styleElement))
 				{
 					if(att->name.value==L"face")
 					{
@@ -37777,11 +37777,11 @@ DocumentModel
 			Ptr<DocumentModel> model = new DocumentModel;
 			if (xml->rootElement->name.value == L"Doc")
 			{
-				FOREACH(Ptr<XmlElement>, partElement, XmlGetElements(xml->rootElement))
+				for (auto partElement : XmlGetElements(xml->rootElement))
 				{
 					if (partElement->name.value == L"Styles")
 					{
-						FOREACH(Ptr<XmlElement>, styleElement, XmlGetElements(partElement))
+						for (auto styleElement : XmlGetElements(partElement))
 						{
 							if (styleElement->name.value == L"Style")
 							{
@@ -37826,7 +37826,7 @@ DocumentModel
 					}
 					else if (partElement->name.value == L"Content")
 					{
-						FOREACH_INDEXER(Ptr<XmlElement>, p, i, XmlGetElements(partElement))
+						for (auto [p, i] : indexed(XmlGetElements(partElement)))
 						{
 							if (p->name.value == L"p")
 							{
@@ -37910,7 +37910,7 @@ document_operation_visitors::SerializeRunVisitor
 						parent->subNodes.Add(replacedParent);
 						Ptr<XmlElement> oldParent = parent;
 						parent = replacedParent;
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							subRun->Accept(this);
 						}
@@ -37918,7 +37918,7 @@ document_operation_visitors::SerializeRunVisitor
 					}
 					else
 					{
-						FOREACH(Ptr<DocumentRun>, subRun, run->runs)
+						for (auto subRun : run->runs)
 						{
 							subRun->Accept(this);
 						}
@@ -38155,7 +38155,7 @@ DocumentModel
 				content->name.value=L"Content";
 				doc->subNodes.Add(content);
 				
-				FOREACH(Ptr<DocumentParagraphRun>, p, paragraphs)
+				for (auto p : paragraphs)
 				{
 					SerializeRunVisitor visitor(content);
 					p->Accept(&visitor);
@@ -38654,7 +38654,7 @@ GuiResourceError
 				offset.column = 0;
 			}
 
-			FOREACH(Ptr<ParsingError>, error, parsingErrors)
+			for (auto error : parsingErrors)
 			{
 				auto pos = error->codeRange.start;
 				if (pos.row < 0 || pos.column < 0)
@@ -38706,8 +38706,9 @@ GuiResourceError
 				return result;
 			});
 
-			FOREACH_INDEXER(GuiResourceError, error, index, errors)
+			for (vint index = 0; index < errors.Count(); index++)
 			{
+				auto& error = errors[index];
 				bool needHeader = index == 0;
 				if (index > 0)
 				{
@@ -38804,7 +38805,7 @@ GuiResourceFolder
 		{
 			ClearItems();
 			ClearFolders();
-			FOREACH(Ptr<XmlElement>, element, XmlGetElements(folderXml))
+			for (auto element : XmlGetElements(folderXml))
 			{
 				WString name;
 				if (Ptr<XmlAttribute> nameAtt = XmlGetAttribute(element, L"name"))
@@ -38978,7 +38979,7 @@ GuiResourceFolder
 
 		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent)
 		{
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (resolver->XmlSerializable())
@@ -39034,7 +39035,7 @@ GuiResourceFolder
 				}
 			}
 
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				auto attName = MakePtr<XmlAttribute>();
 				attName->name.value = L"name";
@@ -39077,14 +39078,14 @@ GuiResourceFolder
 		void GuiResourceFolder::CollectTypeNames(collections::List<WString>& typeNames)
 		{
 			if (importUri != L"") return;
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				if (!typeNames.Contains(item->GetTypeName()))
 				{
 					typeNames.Add(item->GetTypeName());
 				}
 			}
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				folder->CollectTypeNames(typeNames);
 			}
@@ -39202,7 +39203,7 @@ GuiResourceFolder
 			typedef Tuple<vint, WString, IGuiResourceTypeResolver_DirectLoadStream*, Ptr<GuiResourceItem>, Ptr<DescriptableObject>> ItemTuple;
 			List<ItemTuple> itemTuples;
 
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (resolver->StreamSerializable())
@@ -39232,7 +39233,7 @@ GuiResourceFolder
 
 			vint count = itemTuples.Count();
 			writer << count;
-			FOREACH(ItemTuple, item, itemTuples)
+			for (auto item : itemTuples)
 			{
 				vint typeName = item.f0;
 				WString name = item.f1;
@@ -39246,7 +39247,7 @@ GuiResourceFolder
 
 			count = folders.Count();
 			writer << count;
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				WString name = folder->GetName();
 				WString importUri = folder->GetImportUri();
@@ -39261,7 +39262,7 @@ GuiResourceFolder
 		void GuiResourceFolder::PrecompileResourceFolder(GuiResourcePrecompileContext& context, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			if (importUri != L"") return;
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
@@ -39277,7 +39278,7 @@ GuiResourceFolder
 				}
 			}
 
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				folder->PrecompileResourceFolder(context, callback, errors);
 			}
@@ -39286,7 +39287,7 @@ GuiResourceFolder
 		void GuiResourceFolder::InitializeResourceFolder(GuiResourceInitializeContext& context, GuiResourceError::List& errors)
 		{
 			if (importUri != L"") return;
-			FOREACH(Ptr<GuiResourceItem>, item, items.Values())
+			for (auto item : items.Values())
 			{
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto initialize = typeResolver->Initialize())
@@ -39295,7 +39296,7 @@ GuiResourceFolder
 				}
 			}
 
-			FOREACH(Ptr<GuiResourceFolder>, folder, folders.Values())
+			for (auto folder : folders.Values())
 			{
 				folder->InitializeResourceFolder(context, errors);
 			}
@@ -39528,7 +39529,7 @@ GuiResourceMetadata
 
 			if (auto xmlDeps = XmlGetElement(xml->rootElement, L"Dependencies"))
 			{
-				FOREACH(Ptr<XmlElement>, xmlDep, XmlGetElements(xmlDeps, L"Resource"))
+				for (auto xmlDep : XmlGetElements(xmlDeps, L"Resource"))
 				{
 					auto attrDep = XmlGetAttribute(xmlDep, L"Name");
 					if (!attrDep)
@@ -39561,7 +39562,7 @@ GuiResourceMetadata
 				xmlDeps->name.value = L"Dependencies";
 				root->subNodes.Add(xmlDeps);
 
-				FOREACH(WString, dep, dependencies)
+				for (auto dep : dependencies)
 				{
 					auto xmlDep = MakePtr<XmlElement>();
 					xmlDep->name.value = L"Resource";
@@ -39588,7 +39589,7 @@ GuiResource
 
 		void GuiResource::ProcessDelayLoading(Ptr<GuiResource> resource, DelayLoadingList& delayLoadings, GuiResourceError::List& errors)
 		{
-			FOREACH(DelayLoading, delay, delayLoadings)
+			for (auto delay : delayLoadings)
 			{
 				WString type = delay.type;
 				WString folder = delay.workingDirectory;
@@ -39777,7 +39778,7 @@ GuiResource
 						{
 							callback->OnPerPass(i);
 						}
-						FOREACH(WString, name, resolvers)
+						for (auto name : resolvers)
 						{
 							auto resolver = manager->GetTypeResolver(name);
 							resolver->Precompile()->PerPassPrecompile(context, errors);
@@ -40080,7 +40081,7 @@ IGuiResourceResolverManager
 			vint GetMaxPrecompilePassIndex()override
 			{
 				vint maxPass = -1;
-				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				for (auto resolver : typeResolvers.Values())
 				{
 					if (auto precompile = resolver->Precompile())
 					{
@@ -40097,7 +40098,7 @@ IGuiResourceResolverManager
 			vint GetMaxInitializePassIndex()override
 			{
 				vint maxPass = -1;
-				FOREACH(Ptr<IGuiResourceTypeResolver>, resolver, typeResolvers.Values())
+				for (auto resolver : typeResolvers.Values())
 				{
 					if (auto initialize = resolver->Initialize())
 					{
@@ -40308,7 +40309,7 @@ IGuiInstanceResourceManager
 				
 				if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
 				{
-					FOREACH(WString, className, record->classNames)
+					for (auto className : record->classNames)
 					{
 						instanceResources.Add(className, resource);
 					}
@@ -40323,7 +40324,7 @@ IGuiInstanceResourceManager
 						CopyFrom(prs, depToPendings.GetByIndex(index));
 						depToPendings.Remove(metadata->name);
 
-						FOREACH(Ptr<PendingResource>, pr, prs)
+						for (auto pr : prs)
 						{
 							pr->dependencies.Remove(metadata->name);
 							if (pr->dependencies.Count() == 0)
@@ -40359,7 +40360,7 @@ IGuiInstanceResourceManager
 
 					if (auto record = resource->GetValueByPath(L"Precompiled/ClassNameRecord").Cast<GuiResourceClassNameRecord>())
 					{
-						FOREACH(WString, className, record->classNames)
+						for (auto className : record->classNames)
 						{
 							instanceResources.Remove(className);
 						}
@@ -40401,7 +40402,7 @@ IGuiInstanceResourceManager
 				else
 				{
 					pendingResources.Add(pr);
-					FOREACH(WString, dep, pr->dependencies)
+					for (auto dep : pr->dependencies)
 					{
 						depToPendings.Add(dep, pr);
 					}

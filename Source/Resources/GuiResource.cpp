@@ -390,8 +390,9 @@ GuiResourceError
 				return result;
 			});
 
-			for (auto [error, index] : indexed(errors))
+			for (vint index = 0; index < errors.Count(); index++)
 			{
+				auto& error = errors[index];
 				bool needHeader = index == 0;
 				if (index > 0)
 				{
@@ -1212,7 +1213,7 @@ GuiResourceMetadata
 
 			if (auto xmlDeps = XmlGetElement(xml->rootElement, L"Dependencies"))
 			{
-				FOREACH(Ptr<XmlElement>, xmlDep, XmlGetElements(xmlDeps, L"Resource"))
+				for (auto xmlDep : XmlGetElements(xmlDeps, L"Resource"))
 				{
 					auto attrDep = XmlGetAttribute(xmlDep, L"Name");
 					if (!attrDep)

@@ -24,7 +24,7 @@ void PrintErrors(List<GuiResourceError>& errors)
 {
 	List<WString> output;
 	GuiResourceError::SortAndLog(errors, output);
-	FOREACH(WString, line, output)
+	for (auto line : output)
 	{
 		PrintErrorMessage(line);
 	}
@@ -481,27 +481,27 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 			}
 		}
 
-		FOREACH(FilePath, filePath, cppResourcePaths)
+		for (auto filePath : cppResourcePaths)
 		{
 			PrintSuccessMessage(L"Generating binary resource file (no script): " + filePath.GetFullPath());
 			WriteBinaryResource(resource, false, false, filePath, {});
 		}
-		FOREACH(FilePath, filePath, cppCompressedPaths)
+		for (auto filePath : cppCompressedPaths)
 		{
 			PrintSuccessMessage(L"Generating compressed resource file (no script): " + filePath.GetFullPath());
 			WriteBinaryResource(resource, true, false, filePath, {});
 		}
-		FOREACH(FilePath, filePath, resResourcePaths)
+		for (auto filePath : resResourcePaths)
 		{
 			PrintSuccessMessage(L"Generating binary resource files : " + filePath.GetFullPath());
 			WriteBinaryResource(resource, false, true, filePath, {});
 		}
-		FOREACH(FilePath, filePath, resCompressedPaths)
+		for (auto filePath : resCompressedPaths)
 		{
 			PrintSuccessMessage(L"Generating compressed resource files : " + filePath.GetFullPath());
 			WriteBinaryResource(resource, true, true, filePath, {});
 		}
-		FOREACH(FilePath, filePath, resAssemblyPaths)
+		for (auto filePath : resAssemblyPaths)
 		{
 			PrintSuccessMessage(L"Generating assembly files : " + filePath.GetFullPath());
 			WriteBinaryResource(resource, false, false, {}, filePath);
@@ -560,7 +560,7 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 				paths.Add(currentFolder->GetFileAbsolutePath());
 			}
 
-			FOREACH(Ptr<GuiResourceItem>, item, currentFolder->GetItems())
+			for (auto item : currentFolder->GetItems())
 			{
 				if (item->GetFileAbsolutePath() != L"" && !paths.Contains(item->GetFileAbsolutePath()))
 				{
@@ -568,7 +568,7 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 				}
 			}
 
-			FOREACH(Ptr<GuiResourceFolder>, folder, currentFolder->GetFolders())
+			for (auto folder : currentFolder->GetFolders())
 			{
 				folders.Add(folder);
 			}
@@ -578,7 +578,7 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 		xmlInputs->name.value = L"Inputs";
 		xmlRoot->subNodes.Add(xmlInputs);
 
-		FOREACH(WString, path, paths)
+		for (auto path : paths)
 		{
 			auto xmlInput = MakePtr<XmlElement>();
 			xmlInput->name.value = L"Input";
@@ -608,7 +608,7 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 		xmlOutputs->name.value = L"Outputs";
 		xmlRoot->subNodes.Add(xmlOutputs);
 
-		FOREACH(WString, path, paths)
+		for (auto path : paths)
 		{
 			auto xmlOutput = MakePtr<XmlElement>();
 			xmlOutput->name.value = L"Output";
