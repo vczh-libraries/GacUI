@@ -20721,11 +20721,11 @@ namespace vl
 				writer.WriteLine(L"#if defined( _MSC_VER)");
 				writer.WriteLine(L"#pragma warning(push)");
 				writer.WriteLine(L"#pragma warning(disable:4250)");
-				writer.WriteLine(L"#elif defined(__GNUC__)");
-				writer.WriteLine(L"#pragma GCC diagnostic push");
 				writer.WriteLine(L"#elif defined(__clang__)");
 				writer.WriteLine(L"#pragma clang diagnostic push");
 				writer.WriteLine(L"#pragma clang diagnostic ignored \"-Wparentheses-equality\"");
+				writer.WriteLine(L"#elif defined(__GNUC__)");
+				writer.WriteLine(L"#pragma GCC diagnostic push");
 				writer.WriteLine(L"#endif");
 			}
 
@@ -20733,10 +20733,10 @@ namespace vl
 			{
 				writer.WriteLine(L"#if defined( _MSC_VER)");
 				writer.WriteLine(L"#pragma warning(pop)");
-				writer.WriteLine(L"#elif defined(__GNUC__)");
-				writer.WriteLine(L"#pragma GCC diagnostic pop");
 				writer.WriteLine(L"#elif defined(__clang__)");
 				writer.WriteLine(L"#pragma clang diagnostic pop");
+				writer.WriteLine(L"#elif defined(__GNUC__)");
+				writer.WriteLine(L"#pragma GCC diagnostic pop");
 				writer.WriteLine(L"#endif");
 			}
 			
