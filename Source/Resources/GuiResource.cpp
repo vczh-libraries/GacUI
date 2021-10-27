@@ -1524,9 +1524,9 @@ GuiResource
 
 		WString GuiResource::GetStringByPath(const WString& path)
 		{
-			Ptr<ObjectBox<WString>> result=GetValueByPath(path).Cast<ObjectBox<WString>>();
+			Ptr<GuiTextData> result=GetValueByPath(path).Cast<GuiTextData>();
 			if(!result) throw ArgumentException(L"Path not exists.", L"GuiResource::GetStringByPath", L"path");
-			return result->Unbox();
+			return result->GetText();
 		}
 
 /***********************************************************************

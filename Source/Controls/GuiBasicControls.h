@@ -24,11 +24,11 @@ namespace vl
 
 		namespace controls
 		{
-			template<typename T, typename Enabled = YesType>
+			template<typename T, typename=void>
 			struct QueryServiceHelper;
 
 			template<typename T>
-			struct QueryServiceHelper<T, typename PointerConvertable<decltype(T::Identifier), const wchar_t* const>::YesNoType>
+			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::Identifier), const wchar_t* const>>>
 			{
 				static WString GetIdentifier()
 				{
@@ -37,7 +37,7 @@ namespace vl
 			};
 
 			template<typename T>
-			struct QueryServiceHelper<T, typename PointerConvertable<decltype(T::GetIdentifier()), WString>::YesNoType>
+			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::GetIdentifier()), WString>>>
 			{
 				static WString GetIdentifier()
 				{

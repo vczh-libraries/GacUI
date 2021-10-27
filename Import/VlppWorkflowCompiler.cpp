@@ -21515,9 +21515,9 @@ namespace vl
 						writer.WriteLine(L";");
 
 						writer.WriteString(tryPrefix);
-						writer.WriteString(L"::vl::__vwsn::RunOnExit<::vl::RemoveCVR<decltype(");
+						writer.WriteString(L"::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(");
 						writer.WriteString(blockName);
-						writer.WriteString(L")>::Type> ");
+						writer.WriteString(L")>> ");
 						writer.WriteString(blockName);
 						writer.WriteString(L"_dtor(&");
 						writer.WriteString(blockName);

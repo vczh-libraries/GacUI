@@ -77,15 +77,18 @@ static_assert(false, "wchar_t configuration is not right.");
 #define _UI64_MAX   ((vuint64_t)0xFFFFFFFFFFFFFFFFL)
 #endif
 
+#include <type_traits>
+#include <utility>
+
 #define L_(x) L__(x)
 #define L__(x) L ## x
 
 namespace vl
 {
 
-	/***********************************************************************
-	x86 and x64 Compatbility
-	***********************************************************************/
+/***********************************************************************
+x86 and x64 Compatbility
+***********************************************************************/
 
 #if defined VCZH_MSVC
 	/// <summary>1-byte signed integer.</summary>
@@ -167,19 +170,9 @@ namespace vl
 #endif
 #endif
 
-	/***********************************************************************
-	Basic Types
-	***********************************************************************/
-
-	/// <summary>Base type for all classes to stop generating default copy constructors.</summary>
-	class NotCopyable
-	{
-	private:
-		NotCopyable(const NotCopyable&);
-		NotCopyable& operator=(const NotCopyable&);
-	public:
-		NotCopyable();
-	};
+/***********************************************************************
+Basic Types
+***********************************************************************/
 
 	/// <summary>Base type of all errors. An error is an exception that is not recommended to catch. Raising it means there is a mistake in the code.</summary>
 	class Error
@@ -204,108 +197,10 @@ namespace vl
 	if(bool __scope_variable_flag__=true)\
 		for(TYPE VARIABLE = VALUE;__scope_variable_flag__;__scope_variable_flag__=false)
 
-	/***********************************************************************
-	Type Traits
-	***********************************************************************/
-
-	template<typename T>
-	struct RemoveReference
-	{
-		typedef T			Type;
-	};
-
-	template<typename T>
-	struct RemoveReference<T&>
-	{
-		typedef T			Type;
-	};
-
-	template<typename T>
-	struct RemoveReference<T&&>
-	{
-		typedef T			Type;
-	};
-
-	template<typename T>
-	struct RemoveConst
-	{
-		typedef T			Type;
-	};
-
-	template<typename T>
-	struct RemoveConst<const T>
-	{
-		typedef T			Type;
-	};
-
-	template<typename T>
-	struct RemoveVolatile
-	{
-		typedef T			Type;
-	};
-
-	template<typename T>
-	struct RemoveVolatile<volatile T>
-	{
-		typedef T			Type;
-	};
-
-	template<typename T>
-	struct RemoveCVR
-	{
-		typedef T								Type;
-	};
-
-	template<typename T>
-	struct RemoveCVR<T&>
-	{
-		typedef typename RemoveCVR<T>::Type		Type;
-	};
-
-	template<typename T>
-	struct RemoveCVR<T&&>
-	{
-		typedef typename RemoveCVR<T>::Type		Type;
-	};
-
-	template<typename T>
-	struct RemoveCVR<const T>
-	{
-		typedef typename RemoveCVR<T>::Type		Type;
-	};
-
-	template<typename T>
-	struct RemoveCVR<volatile T>
-	{
-		typedef typename RemoveCVR<T>::Type		Type;
-	};
-
-	template<typename T>
-	typename RemoveReference<T>::Type&& MoveValue(T&& value)
-	{
-		return (typename RemoveReference<T>::Type&&)value;
-	}
-
-	template<typename T>
-	T&& ForwardValue(typename RemoveReference<T>::Type&& value)
-	{
-		return (T&&)value;
-	}
-
-	template<typename T>
-	T&& ForwardValue(typename RemoveReference<T>::Type& value)
-	{
-		return (T&&)value;
-	}
-
 	template<typename ...TArgs>
 	struct TypeTuple
 	{
 	};
-
-	/***********************************************************************
-	Basic Types
-	***********************************************************************/
 
 	/// <summary>
 	/// Base type of all classes.
@@ -315,72 +210,7 @@ namespace vl
 	class Object
 	{
 	public:
-		virtual ~Object();
-	};
-
-	/// <summary>Store data of a value type in a reference type object. It is useful when the data is required to be stored in a pointer to [T:vl.Object].</summary>
-	/// <example><![CDATA[
-	/// int main()
-	/// {
-	///     Ptr<Object> boxed = MakePtr<ObjectBox<vint>>(100);
-	///     vint unboxed = boxed.Cast<ObjectBox<vint>>()->Unbox();
-	///     Console::WriteLine(itow(unboxed));
-	/// }
-	/// ]]></example>
-	/// <typeparam name="T">Value type to use.</typeparam>
-	template<typename T>
-	class ObjectBox : public Object
-	{
-	private:
-		T					object;
-	public:
-		/// <summary>Create a boxed reference object from data of a value type.</summary>
-		/// <param name="_object">The data to box.</param>
-		ObjectBox(const T& _object)
-			:object(_object)
-		{
-		}
-
-		/// <summary>Create a boxed reference object by moving data of a value type.</summary>
-		/// <param name="_object">The data to move and box.</param>
-		ObjectBox(T&& _object)
-			:object(MoveValue(_object))
-		{
-		}
-
-		/// <summary>Copy a boxed reference object.</summary>
-		/// <param name="value">The reference object to copy.</param>
-		ObjectBox(const ObjectBox<T>& value) = default;
-
-		/// <summary>Move a boxed reference object.</summary>
-		/// <param name="value">The reference object to move.</param>
-		ObjectBox(ObjectBox<T>&& value) = default;
-
-		/// <summary>Replace the boxed data of a value type.</summary>
-		/// <returns>The reference object itself.</returns>
-		/// <param name="_object">The data to replace the original data.</param>
-		ObjectBox<T>& operator=(const T& _object)
-		{
-			object = _object;
-			return *this;
-		}
-
-		/// <summary>Replace the boxed data from another reference object.</summary>
-		/// <returns>The reference object itself.</returns>
-		/// <param name="value">The reference object to copy.</param>
-		ObjectBox<T>& operator=(const ObjectBox<T>& value) = default;
-
-		/// <summary>Replace the boxed data by moving from another reference object.</summary>
-		/// <returns>The reference object itself.</returns>
-		/// <param name="value">The reference object to move.</param>
-		ObjectBox<T>& operator=(ObjectBox<T>&& value) = default;
-
-		/// <summary>Get the boxed data of a value type.</summary>
-		/// <returns>The unboxed data of a value type.</returns>
-		const T& Unbox()
-		{
-			return object;
-		}
+		virtual ~Object() = default;
 	};
 
 	/// <summary>Type for representing nullable data.</summary>
@@ -404,7 +234,7 @@ namespace vl
 		/// <summary>Create a non-null value by moving data.</summary>
 		/// <param name="value">The data to move.</param>
 		Nullable(T&& value)
-			:object(new T(MoveValue(value)))
+			:object(new T(std::move(value)))
 		{
 		}
 
@@ -558,9 +388,9 @@ namespace vl
 		char binary[sizeof(T) > minSize ? sizeof(T) : minSize];
 	};
 
-	/***********************************************************************
-	Type Traits
-	***********************************************************************/
+/***********************************************************************
+Type Traits
+***********************************************************************/
 
 	/// <summary>Type for specify and create a representative value for comparing another value of a specific type for containers.</summary>
 	/// <typeparam name="T">The element type for containers.</typeparam>
@@ -580,38 +410,47 @@ namespace vl
 		}
 	};
 
-	/// <summary>Test is a type a Plain-Old-Data type for containers.</summary>
-	/// <typeparam name="T">The type to test.</typeparam>
-	template<typename T>
-	struct POD
+/***********************************************************************
+Interface
+***********************************************************************/
+
+#define NOT_COPYABLE(TYPE)\
+	TYPE(const TYPE&) = delete;\
+	TYPE(TYPE&&) = delete;\
+	TYPE& operator=(const TYPE&) = delete;\
+	TYPE& operator=(TYPE&&) = delete
+
+	/// <summary>Base type of all interfaces. All interface types are encouraged to be virtual inherited.</summary>
+	class Interface
 	{
-		/// <summary>Returns true if the type is a Plain-Old-Data type.</summary>
-		static const bool Result = false;
+	public:
+		NOT_COPYABLE(Interface);
+
+		Interface() = default;
+		virtual ~Interface() = default;
 	};
+}
 
-	template<>struct POD<bool> { static const bool Result = true; };
-	template<>struct POD<vint8_t> { static const bool Result = true; };
-	template<>struct POD<vuint8_t> { static const bool Result = true; };
-	template<>struct POD<vint16_t> { static const bool Result = true; };
-	template<>struct POD<vuint16_t> { static const bool Result = true; };
-	template<>struct POD<vint32_t> { static const bool Result = true; };
-	template<>struct POD<vuint32_t> { static const bool Result = true; };
-	template<>struct POD<vint64_t> { static const bool Result = true; };
-	template<>struct POD<vuint64_t> { static const bool Result = true; };
-	template<>struct POD<char> { static const bool Result = true; };
-	template<>struct POD<wchar_t> { static const bool Result = true; };
-	template<typename T>struct POD<T*> { static const bool Result = true; };
-	template<typename T>struct POD<T&> { static const bool Result = true; };
-	template<typename T>struct POD<T&&> { static const bool Result = true; };
-	template<typename T, typename C>struct POD<T C::*> { static const bool Result = true; };
-	template<typename T, vint _Size>struct POD<T[_Size]> { static const bool Result = POD<T>::Result; };
-	template<typename T>struct POD<const T> { static const bool Result = POD<T>::Result; };
-	template<typename T>struct POD<volatile T> { static const bool Result = POD<T>::Result; };
-	template<typename T>struct POD<const volatile T> { static const bool Result = POD<T>::Result; };
+#endif
 
-	/***********************************************************************
-	Date and Time
-	***********************************************************************/
+
+/***********************************************************************
+.\DATETIME.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_DATETIME
+#define VCZH_DATETIME
+
+
+namespace vl
+{
+/***********************************************************************
+Date and Time
+***********************************************************************/
 
 	/// <summary>A type representing the combination of date and time.</summary>
 	struct DateTime
@@ -700,116 +539,6 @@ namespace vl
 		bool operator>(const DateTime& value)const { return filetime > value.filetime; }
 		bool operator>=(const DateTime& value)const { return filetime >= value.filetime; }
 	};
-
-	/***********************************************************************
-	Interface
-	***********************************************************************/
-
-	/// <summary>Base type of all interfaces. All interface types are encouraged to be virtual inherited.</summary>
-	class Interface : private NotCopyable
-	{
-	public:
-		virtual ~Interface();
-	};
-
-	/***********************************************************************
-	Type Traits
-	***********************************************************************/
-
-	struct YesType {};
-	struct NoType {};
-
-	template<typename T, typename YesOrNo>
-	struct AcceptType
-	{
-	};
-
-	template<typename T>
-	struct AcceptType<T, YesType>
-	{
-		typedef T Type;
-	};
-
-	template<typename T1, typename T2>
-	struct YesNoAnd
-	{
-		typedef NoType Type;
-	};
-
-	template<>
-	struct YesNoAnd<YesType, YesType>
-	{
-		typedef YesType Type;
-	};
-
-	template<typename T1, typename T2>
-	struct YesNoOr
-	{
-		typedef YesType Type;
-	};
-
-	template<>
-	struct YesNoOr<NoType, NoType>
-	{
-		typedef NoType Type;
-	};
-
-	template<typename YesOrNo>
-	struct AcceptValue
-	{
-		static const bool Result = false;
-	};
-
-	template<>
-	struct AcceptValue<YesType>
-	{
-		static const bool Result = true;
-	};
-
-	template<typename T>
-	T ValueOf();
-
-	template<typename TFrom, typename TTo>
-	struct PointerConvertable
-	{
-		static YesType Test(TTo* value);
-		static NoType Test(void* value);
-
-		typedef decltype(Test(ValueOf<TFrom*>())) YesNoType;
-	};
-
-	template<typename TFrom, typename TTo>
-	struct ReturnConvertable
-	{
-		static YesType Test(TTo&& value);
-		static NoType Test(...);
-
-		typedef decltype(Test(ValueOf<TFrom&&>())) YesNoType;
-	};
-
-	template<typename TFrom>
-	struct ReturnConvertable<TFrom, void>
-	{
-		typedef YesType YesNoType;
-	};
-
-	template<typename TTo>
-	struct ReturnConvertable<void, TTo>
-	{
-		typedef NoType YesNoType;
-	};
-
-	template<>
-	struct ReturnConvertable<void, void>
-	{
-		typedef YesType YesNoType;
-	};
-
-	template<typename T, typename U>
-	struct AcceptAlways
-	{
-		typedef T Type;
-	};
 }
 
 #endif
@@ -847,7 +576,7 @@ ReferenceCounterOperator
 	/// [T:vl.Ptr`1] will always use [T:vl.YesType] as the second type parameter.
 	/// This parameter is useful when you want to do partial specialization in the SFINAE way.
 	/// </typeparam>
-	template<typename T, typename Enabled=YesType>
+	template<typename T, typename=void>
 	struct ReferenceCounterOperator
 	{
 		/// <summary>Create the reference counter of an object.</summary>
@@ -985,7 +714,7 @@ Ptr
 		/// <summary>Cast a shared pointer implicitly by copying another shared pointer.</summary>
 		/// <typeparam name="C">The type of the object before casting.</typeparam>
 		/// <param name="pointer">The shared pointer to cast.</param>
-		template<typename C, typename = typename AcceptType<void, typename PointerConvertable<C, T>::YesNoType>::Type>
+		template<typename C, typename=std::enable_if_t<std::is_convertible_v<C*, T*>>>
 		Ptr(const Ptr<C>& pointer)
 		{
 			if (auto converted = pointer.Obj())
@@ -1001,7 +730,7 @@ Ptr
 		/// <summary>Cast a shared pointer implicitly by moving another shared pointer.</summary>
 		/// <typeparam name="C">The type of the object before casting.</typeparam>
 		/// <param name="pointer">The shared pointer to cast.</param>
-		template<typename C, typename = typename AcceptType<void, typename PointerConvertable<C, T>::YesNoType>::Type>
+		template<typename C, typename = std::enable_if_t<std::is_convertible_v<C*, T*>>>
 		Ptr(Ptr<C>&& pointer)
 		{
 			if (auto converted = pointer.Obj())
@@ -1405,12 +1134,6 @@ Traits
 	};
 
 	template<typename T>
-	struct POD<Ptr<T>>
-	{
-		static const bool Result=false;
-	};
-
-	template<typename T>
 	struct KeyType<ComPtr<T>>
 	{
 		typedef T* Type;
@@ -1419,12 +1142,6 @@ Traits
 		{
 			return key.Obj();
 		}
-	};
-
-	template<typename T>
-	struct POD<ComPtr<T>>
-	{
-		static const bool Result=false;
 	};
 }
 
@@ -1524,7 +1241,7 @@ vl::Func<R(TArgs...)>
 
 			R Invoke(TArgs&& ...args)override
 			{
-				return function(ForwardValue<TArgs>(args)...);
+				return function(std::forward<TArgs>(args)...);
 			}
 		};
 
@@ -1546,7 +1263,7 @@ vl::Func<R(TArgs...)>
 
 			R Invoke(TArgs&& ...args)override
 			{
-				return (sender->*function)(ForwardValue<TArgs>(args)...);
+				return (sender->*function)(std::forward<TArgs>(args)...);
 			}
 		};
 
@@ -1565,13 +1282,13 @@ vl::Func<R(TArgs...)>
 			}
 
 			ObjectInvoker(C&& _function)
-				:function(MoveValue(_function))
+				:function(std::move(_function))
 			{
 			}
 
 			R Invoke(TArgs&& ...args)override
 			{
-				return function(ForwardValue<TArgs>(args)...);
+				return function(std::forward<TArgs>(args)...);
 			}
 		};
 
@@ -1590,13 +1307,13 @@ vl::Func<R(TArgs...)>
 			}
 
 			ObjectInvoker(C&& _function)
-				:function(MoveValue(_function))
+				:function(std::move(_function))
 			{
 			}
 
 			void Invoke(TArgs&& ...args)override
 			{
-				function(ForwardValue<TArgs>(args)...);
+				function(std::forward<TArgs>(args)...);
 			}
 		};
 	}
@@ -1662,12 +1379,15 @@ vl::Func<R(TArgs...)>
 		/// <summary>Create a functor from another compatible functor.</summary>
 		/// <typeparam name="C">Type of the functor to copy.</typeparam>
 		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
-		template<typename C, typename = typename AcceptType<void, typename ReturnConvertable<decltype(ValueOf<C>()(ValueOf<TArgs>()...)), R>::YesNoType>::Type>
+		template<typename C, typename=std::enable_if_t<
+			std::is_same_v<void, R> ||
+			std::is_convertible_v<decltype(std::declval<C>()(std::declval<TArgs>()...)), R>
+			>>
 		Func(C&& function)
 		{
 			if (!IsEmptyFunc(function))
 			{
-				invoker = new internal_invokers::ObjectInvoker<typename RemoveCVR<C>::Type, R, TArgs...>(ForwardValue<C&&>(function));
+				invoker = new internal_invokers::ObjectInvoker<std::remove_cvref_t<C>, R, TArgs...>(std::forward<C&&>(function));
 			}
 		}
 
@@ -1676,7 +1396,7 @@ vl::Func<R(TArgs...)>
 		/// <param name="args">Arguments to invoke the function.</param>
 		R operator()(TArgs ...args)const
 		{
-			return invoker->Invoke(ForwardValue<TArgs>(args)...);
+			return invoker->Invoke(std::forward<TArgs>(args)...);
 		}
 
 		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>& function)
@@ -1687,7 +1407,7 @@ vl::Func<R(TArgs...)>
 
 		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>&& function)
 		{
-			invoker = MoveValue(function.invoker);
+			invoker = std::move(function.invoker);
 			return *this;
 		}
 
@@ -1776,7 +1496,7 @@ vl::function_binding::Binding<R(TArgs...)>
 			public:
 				Binder(const Func<FunctionType>& _target, T0 _firstArgument)
 					:target(_target)
-					,firstArgument(ForwardValue<T0>(_firstArgument))
+					,firstArgument(std::forward<T0>(_firstArgument))
 				{
 				}
 
@@ -2396,12 +2116,6 @@ namespace vl
 			}
 		};
 	}
-
-	template<typename K, typename V>
-	struct POD<collections::Pair<K, V>>
-	{
-		static const bool Result=POD<K>::Result && POD<V>::Result;
-	};
 }
 
 #endif
@@ -2592,10 +2306,8 @@ namespace vl
 Memory Management
 ***********************************************************************/
 
-		template<typename T, bool PODType>
-		class ListStore abstract : public Object
-		{
-		};
+		template<typename T, bool PODType = std::is_trivially_constructible_v<T>>
+		class ListStore;
 
 		template<typename T>
 		class ListStore<T, false> abstract : public Object
@@ -2618,7 +2330,7 @@ Memory Management
 
 				for (vint i = 0; i < count; i++)
 				{
-					new(&ds[i])T(MoveValue(ss[i]));
+					new(&ds[i])T(std::move(ss[i]));
 				}
 			}
 
@@ -2642,14 +2354,14 @@ Memory Management
 				{
 					for (vint i = 0; i < count; i++)
 					{
-						ds[i] = MoveValue(ss[i]);
+						ds[i] = std::move(ss[i]);
 					}
 				}
 				else if (ds > ss)
 				{
 					for (vint i = count - 1; i >= 0; i--)
 					{
-						ds[i] = MoveValue(ss[i]);
+						ds[i] = std::move(ss[i]);
 					}
 				}
 			}
@@ -2735,7 +2447,7 @@ ArrayBase
 		/// <summary>Base type of all linear container.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
 		template<typename T>
-		class ArrayBase abstract : public ListStore<T, POD<T>::Result>, public virtual IEnumerable<T>
+		class ArrayBase abstract : public ListStore<T>, public virtual IEnumerable<T>
 		{
 		protected:
 			class Enumerator : public Object, public virtual IEnumerator<T>
@@ -3328,7 +3040,7 @@ Special Containers
 ***********************************************************************/
 
 		template<typename T>
-		class PushOnlyAllocator : public Object, private NotCopyable
+		class PushOnlyAllocator : public Object
 		{
 		protected:
 			vint							blockSize;
@@ -3336,6 +3048,8 @@ Special Containers
 			List<T*>						blocks;
 
 		public:
+			NOT_COPYABLE(PushOnlyAllocator);
+
 			PushOnlyAllocator(vint _blockSize = 65536)
 				:blockSize(_blockSize)
 				, allocatedSize(0)
@@ -3422,7 +3136,7 @@ Special Containers
 		}
 
 		template<typename T>
-		class ByteObjectMap : public Object, private NotCopyable
+		class ByteObjectMap : public Object
 		{
 		public:
 			typedef PushOnlyAllocator<bom_helper::TreeNode>			Allocator;
@@ -3430,6 +3144,7 @@ Special Containers
 			bom_helper::TreeNode*			root = nullptr;
 
 		public:
+			NOT_COPYABLE(ByteObjectMap);
 			ByteObjectMap() = default;
 			~ByteObjectMap() = default;
 
@@ -5636,7 +5351,7 @@ namespace vl
 	/// <summary>An event for being subscribed using multiple callbacks. A callback is any functor that returns void.</summary>
 	/// <typeparam name="TArgs">Types of callback parameters.</typeparam>
 	template<typename ...TArgs>
-	class Event<void(TArgs...)> : public Object, private NotCopyable
+	class Event<void(TArgs...)> : public Object
 	{
 	protected:
 		class EventHandlerImpl : public EventHandler
@@ -5659,6 +5374,9 @@ namespace vl
  
 		collections::SortedList<Ptr<EventHandlerImpl>>	handlers;
 	public:
+		NOT_COPYABLE(Event);
+		Event() = default;
+
 		/// <summary>Add a callback to the event.</summary>
 		/// <returns>The event handler representing the callback.</returns>
 		/// <param name="function">The callback.</param>
@@ -6325,7 +6043,7 @@ namespace vl
 			str.length = _length;
 			str.realLength = realLength;
 			Inc();
-			return MoveValue(str);
+			return std::move(str);
 		}
 
 		ObjectString<T> ReplaceUnsafe(const ObjectString<T>& source, vint index, vint count)const
@@ -6343,7 +6061,7 @@ namespace vl
 			memcpy(str.buffer + index, source.buffer + source.start, sizeof(T) * source.length);
 			memcpy(str.buffer + index + source.length, (buffer + start + index + count), sizeof(T) * (length - index - count));
 			str.buffer[str.length] = 0;
-			return MoveValue(str);
+			return std::move(str);
 		}
 	public:
 		static ObjectString<T>	Empty;
@@ -6411,7 +6129,7 @@ namespace vl
 			str.length = _length;
 			str.realLength = _length;
 			str.buffer = _buffer;
-			return MoveValue(str);
+			return std::move(str);
 		}
 
 		/// <summary>Create a string continaing one code point.</summary>
@@ -6442,7 +6160,7 @@ namespace vl
 				str.start = 0;
 				str.length = _length;
 				str.realLength = _length;
-				return MoveValue(str);
+				return std::move(str);
 			}
 			return {};
 		}
@@ -6461,7 +6179,7 @@ namespace vl
 			str.buffer = (T*)_buffer;
 			str.length = CalculateLength(_buffer);
 			str.realLength = str.length;
-			return MoveValue(str);
+			return std::move(str);
 		}
 
 		/// <summary>
@@ -6482,7 +6200,7 @@ namespace vl
 			str.length = _string.length;
 			str.realLength = _string.realLength;
 			str.Inc();
-			return MoveValue(str);
+			return std::move(str);
 		}
 
 		/// <summary>
@@ -8061,11 +7779,12 @@ namespace vl
 	///     FinalizeGlobalStorage();
 	/// }
 	/// ]]></example>
-	class GlobalStorage : public Object, private NotCopyable
+	class GlobalStorage : public Object
 	{
 	private:
 		bool					cleared = false;
 	public:
+		NOT_COPYABLE(GlobalStorage);
 		GlobalStorage(const wchar_t* key);
 		~GlobalStorage();
 

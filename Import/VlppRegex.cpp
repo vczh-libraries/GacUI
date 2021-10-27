@@ -3422,18 +3422,6 @@ Data Structures for Backtracking
 		};
 	}
 
-	template<>
-	struct POD<regex_internal::StateSaver>
-	{
-		static const bool Result = true;
-	};
-
-	template<>
-	struct POD<regex_internal::ExtensionSaver>
-	{
-		static const bool Result = true;
-	};
-
 	namespace regex_internal
 	{
 		using namespace collections;
