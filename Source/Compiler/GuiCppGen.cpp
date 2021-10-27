@@ -52,9 +52,9 @@ namespace vl
 					{
 						for (auto [moduleRecord, codeIndex] : indexed(compiled->modules))
 						{
-							WString code = GenerateToStream([&](StreamWriter& writer)
+							WString code = GenerateToStream([&, module = moduleRecord.module](StreamWriter& writer)
 							{
-								WfPrint(moduleRecord.module, L"", writer);
+								WfPrint(module, L"", writer);
 							});
 							text += L"================================(" + itow(codeIndex + 1) + L"/" + itow(compiled->modules.Count()) + L")================================\r\n";
 							text += code + L"\r\n";
