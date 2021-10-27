@@ -103,7 +103,7 @@ Alt-Combined Shortcut Key Interfaces Helpers
 				AltActionMap							currentActiveAltActions;
 				AltControlMap							currentActiveAltTitles;
 				WString									currentAltPrefix;
-				VKEY									supressAltKey = VKEY::_UNKNOWN;
+				VKEY									supressAltKey = VKEY::KEY_UNKNOWN;
 
 				void									EnterAltHost(IGuiAltActionHost* host);
 				void									LeaveAltHost();

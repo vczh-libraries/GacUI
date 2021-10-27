@@ -978,10 +978,10 @@ ITEM(BACKSLASH,           0xDC)		/* OEM_5 */									\
 ITEM(LEFT_BRACKET,        0xDD)		/* OEM_6 */									\
 ITEM(APOSTROPHE,          0xDE)		/* OEM_7 */									\
 
-#define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) _##NAME = CODE,
+#define GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM(NAME, CODE) KEY_##NAME = CODE,
 		enum class VKEY
 		{
-			_UNKNOWN = -1,
+			KEY_UNKNOWN = -1,
 			GUI_DEFINE_KEYBOARD_CODE(GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM)
 		};
 #undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
@@ -5905,7 +5905,7 @@ Alt-Combined Shortcut Key Interfaces Helpers
 				AltActionMap							currentActiveAltActions;
 				AltControlMap							currentActiveAltTitles;
 				WString									currentAltPrefix;
-				VKEY									supressAltKey = VKEY::_UNKNOWN;
+				VKEY									supressAltKey = VKEY::KEY_UNKNOWN;
 
 				void									EnterAltHost(IGuiAltActionHost* host);
 				void									LeaveAltHost();
@@ -9838,11 +9838,11 @@ namespace vl
 
 		namespace controls
 		{
-			template<typename T, typename Enabled = YesType>
+			template<typename T, typename=void>
 			struct QueryServiceHelper;
 
 			template<typename T>
-			struct QueryServiceHelper<T, typename PointerConvertable<decltype(T::Identifier), const wchar_t* const>::YesNoType>
+			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::Identifier), const wchar_t* const>>>
 			{
 				static WString GetIdentifier()
 				{
@@ -9851,7 +9851,7 @@ namespace vl
 			};
 
 			template<typename T>
-			struct QueryServiceHelper<T, typename PointerConvertable<decltype(T::GetIdentifier()), WString>::YesNoType>
+			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::GetIdentifier()), WString>>>
 			{
 				static WString GetIdentifier()
 				{

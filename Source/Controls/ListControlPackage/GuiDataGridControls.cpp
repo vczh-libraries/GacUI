@@ -586,7 +586,7 @@ GuiVirtualDataGrid
 			{
 				if (selectedCell.row != -1)
 				{
-					if (arguments.code == VKEY::_RETURN)
+					if (arguments.code == VKEY::KEY_RETURN)
 					{
 						RequestSaveData();
 						SelectCell(selectedCell, !currentEditor);
@@ -597,7 +597,7 @@ GuiVirtualDataGrid
 						}
 						arguments.handled = true;
 					}
-					else if (arguments.code == VKEY::_ESCAPE)
+					else if (arguments.code == VKEY::KEY_ESCAPE)
 					{
 						if (currentEditor)
 						{
@@ -611,11 +611,11 @@ GuiVirtualDataGrid
 						vint columnOffset = 0;
 						switch (arguments.code)
 						{
-						case VKEY::_LEFT:
+						case VKEY::KEY_LEFT:
 							columnOffset = -1;
 							arguments.handled = true;
 							break;
-						case VKEY::_RIGHT:
+						case VKEY::KEY_RIGHT:
 							columnOffset = 1;
 							arguments.handled = true;
 							break;

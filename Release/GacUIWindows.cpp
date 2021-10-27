@@ -8282,11 +8282,11 @@ WindowsForm
 
 					if (nonClient)
 					{
-						info.ctrl = WinIsKeyPressing(VKEY::_CONTROL);
-						info.shift = WinIsKeyPressing(VKEY::_SHIFT);
-						info.left= WinIsKeyPressing(VKEY::_LBUTTON);
-						info.middle= WinIsKeyPressing(VKEY::_MBUTTON);
-						info.right = WinIsKeyPressing(VKEY::_RBUTTON);
+						info.ctrl = WinIsKeyPressing(VKEY::KEY_CONTROL);
+						info.shift = WinIsKeyPressing(VKEY::KEY_SHIFT);
+						info.left= WinIsKeyPressing(VKEY::KEY_LBUTTON);
+						info.middle= WinIsKeyPressing(VKEY::KEY_MBUTTON);
+						info.right = WinIsKeyPressing(VKEY::KEY_RBUTTON);
 						
 						POINTS point = MAKEPOINTS(lParam);
 						NativePoint offset = GetClientBoundsInScreen().LeftTop();
@@ -8295,11 +8295,11 @@ WindowsForm
 					}
 					else
 					{
-						info.ctrl=((VKEY)wParam & VKEY::_CONTROL)!=(VKEY)0;
-						info.shift=((VKEY)wParam & VKEY::_SHIFT)!= (VKEY)0;
-						info.left=((VKEY)wParam & VKEY::_LBUTTON)!= (VKEY)0;
-						info.middle=((VKEY)wParam & VKEY::_MBUTTON)!= (VKEY)0;
-						info.right=((VKEY)wParam & VKEY::_RBUTTON)!= (VKEY)0;
+						info.ctrl=((VKEY)wParam & VKEY::KEY_CONTROL)!=(VKEY)0;
+						info.shift=((VKEY)wParam & VKEY::KEY_SHIFT)!= (VKEY)0;
+						info.left=((VKEY)wParam & VKEY::KEY_LBUTTON)!= (VKEY)0;
+						info.middle=((VKEY)wParam & VKEY::KEY_MBUTTON)!= (VKEY)0;
+						info.right=((VKEY)wParam & VKEY::KEY_RBUTTON)!= (VKEY)0;
 
 						POINTS point = MAKEPOINTS(lParam);
 
@@ -8322,10 +8322,10 @@ WindowsForm
 				{
 					NativeWindowKeyInfo info;
 					info.code=(VKEY)wParam;
-					info.ctrl=WinIsKeyPressing(VKEY::_CONTROL);
-					info.shift=WinIsKeyPressing(VKEY::_SHIFT);
-					info.alt=WinIsKeyPressing(VKEY::_MENU);
-					info.capslock=WinIsKeyToggled(VKEY::_CAPITAL);
+					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
 					info.autoRepeatKeyDown = (((vuint32_t)lParam) >> 30) % 2 == 1;
 					return info;
 				}
@@ -8334,10 +8334,10 @@ WindowsForm
 				{
 					NativeWindowCharInfo info;
 					info.code=(wchar_t)wParam;
-					info.ctrl=WinIsKeyPressing(VKEY::_CONTROL);
-					info.shift=WinIsKeyPressing(VKEY::_SHIFT);
-					info.alt=WinIsKeyPressing(VKEY::_MENU);
-					info.capslock=WinIsKeyToggled(VKEY::_CAPITAL);
+					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
 					return info;
 				}
 #pragma pop_macro("_CONTROL")
@@ -8772,7 +8772,7 @@ WindowsForm
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
 							info.autoRepeatKeyDown = false;
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::_MENU)
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
 							{
 								supressingAlt = false;
 								break;
@@ -8786,7 +8786,7 @@ WindowsForm
 					case WM_SYSKEYDOWN:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::_MENU)
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
 							{
 								break;
 							}
@@ -14610,7 +14610,7 @@ WindowsInputService
 			VKEY WindowsInputService::GetKey(const WString& name)
 			{
 				vint index = keys.Keys().IndexOf(name);
-				return index == -1 ? VKEY::_UNKNOWN : keys.Values()[index];
+				return index == -1 ? VKEY::KEY_UNKNOWN : keys.Values()[index];
 			}
 		}
 	}

@@ -156,11 +156,11 @@ GuiButton
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_RETURN:
+					case VKEY::KEY_RETURN:
 						CheckAndClick(arguments);
 						arguments.handled = true;
 						break;
-					case VKEY::_SPACE:
+					case VKEY::KEY_SPACE:
 						if (!arguments.autoRepeatKeyDown)
 						{
 							keyPressing = true;
@@ -179,7 +179,7 @@ GuiButton
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_SPACE:
+					case VKEY::KEY_SPACE:
 						if (keyPressing)
 						{
 							keyPressing = false;

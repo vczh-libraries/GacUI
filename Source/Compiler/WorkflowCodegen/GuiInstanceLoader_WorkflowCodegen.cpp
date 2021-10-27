@@ -23,7 +23,7 @@ FindInstanceLoadingSource
 
 		template<typename TCallback>
 		auto FindByTag(Ptr<GuiInstanceContext> context, GlobalStringKey namespaceName, const WString& typeName, TCallback callback)
-			-> typename RemoveCVR<decltype(callback({}).Value())>::Type
+			-> std::remove_cvref_t<decltype(callback({}).Value())>
 		{
 			vint index = context->namespaces.Keys().IndexOf(namespaceName);
 			if (index != -1)

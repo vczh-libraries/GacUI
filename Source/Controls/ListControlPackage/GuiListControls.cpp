@@ -790,28 +790,28 @@ GuiSelectableListControl
 				KeyDirection keyDirection = KeyDirection::Up;
 				switch (code)
 				{
-				case VKEY::_UP:
+				case VKEY::KEY_UP:
 					keyDirection = KeyDirection::Up;
 					break;
-				case VKEY::_DOWN:
+				case VKEY::KEY_DOWN:
 					keyDirection = KeyDirection::Down;
 					break;
-				case VKEY::_LEFT:
+				case VKEY::KEY_LEFT:
 					keyDirection = KeyDirection::Left;
 					break;
-				case VKEY::_RIGHT:
+				case VKEY::KEY_RIGHT:
 					keyDirection = KeyDirection::Right;
 					break;
-				case VKEY::_HOME:
+				case VKEY::KEY_HOME:
 					keyDirection = KeyDirection::Home;
 					break;
-				case VKEY::_END:
+				case VKEY::KEY_END:
 					keyDirection = KeyDirection::End;
 					break;
-				case VKEY::_PRIOR:
+				case VKEY::KEY_PRIOR:
 					keyDirection = KeyDirection::PageUp;
 					break;
-				case VKEY::_NEXT:
+				case VKEY::KEY_NEXT:
 					keyDirection = KeyDirection::PageDown;
 					break;
 				default:

@@ -82,29 +82,29 @@ GuiScroll
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_HOME:
+					case VKEY::KEY_HOME:
 						SetPosition(GetMinPosition());
 						arguments.handled = true;
 						break;
-					case VKEY::_END:
+					case VKEY::KEY_END:
 						SetPosition(GetMaxPosition());
 						arguments.handled = true;
 						break;
-					case VKEY::_PRIOR:
+					case VKEY::KEY_PRIOR:
 						commandExecutor->BigDecrease();
 						arguments.handled = true;
 						break;
-					case VKEY::_NEXT:
+					case VKEY::KEY_NEXT:
 						commandExecutor->BigIncrease();
 						arguments.handled = true;
 						break;
-					case VKEY::_LEFT:
-					case VKEY::_UP:
+					case VKEY::KEY_LEFT:
+					case VKEY::KEY_UP:
 						commandExecutor->SmallDecrease();
 						arguments.handled = true;
 						break;
-					case VKEY::_RIGHT:
-					case VKEY::_DOWN:
+					case VKEY::KEY_RIGHT:
+					case VKEY::KEY_DOWN:
 						commandExecutor->SmallIncrease();
 						arguments.handled = true;
 						break;

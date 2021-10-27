@@ -123,7 +123,7 @@ GuiTabActionManager
 
 			bool GuiTabActionManager::KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
 			{
-				if (!info.ctrl && !info.alt && info.code == VKEY::_TAB)
+				if (!info.ctrl && !info.alt && info.code == VKEY::KEY_TAB)
 				{
 					GuiControl* focusedControl = nullptr;
 					if (focusedComposition)

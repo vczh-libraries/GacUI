@@ -336,24 +336,24 @@ GuiAltActionManager
 			{
 				if (!info.ctrl && !info.shift && currentAltHost)
 				{
-					if (info.code == VKEY::_ESCAPE)
+					if (info.code == VKEY::KEY_ESCAPE)
 					{
 						LeaveAltHost();
 						return true;
 					}
-					else if (info.code == VKEY::_BACK)
+					else if (info.code == VKEY::KEY_BACK)
 					{
 						LeaveAltKey();
 					}
-					else if (VKEY::_NUMPAD0 <= info.code && info.code <= VKEY::_NUMPAD9)
+					else if (VKEY::KEY_NUMPAD0 <= info.code && info.code <= VKEY::KEY_NUMPAD9)
 					{
-						if (EnterAltKey((wchar_t)(L'0' + ((vint)info.code - (vint)VKEY::_NUMPAD0))))
+						if (EnterAltKey((wchar_t)(L'0' + ((vint)info.code - (vint)VKEY::KEY_NUMPAD0))))
 						{
 							supressAltKey = info.code;
 							return true;
 						}
 					}
-					else if ((VKEY::_0 <= info.code && info.code <= VKEY::_9) || (VKEY::_A <= info.code && info.code <= VKEY::_Z))
+					else if ((VKEY::KEY_0 <= info.code && info.code <= VKEY::KEY_9) || (VKEY::KEY_A <= info.code && info.code <= VKEY::KEY_Z))
 					{
 						if (EnterAltKey((wchar_t)info.code))
 						{
@@ -374,7 +374,7 @@ GuiAltActionManager
 			{
 				if (!info.ctrl && !info.shift && info.code == supressAltKey)
 				{
-					supressAltKey = VKEY::_UNKNOWN;
+					supressAltKey = VKEY::KEY_UNKNOWN;
 					return true;
 				}
 				return false;
@@ -382,7 +382,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::SysKeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && !currentAltHost)
+				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && !currentAltHost)
 				{
 					if (auto altHost = controlHost->QueryTypedService<IGuiAltActionHost>())
 					{
@@ -407,7 +407,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::Char(const NativeWindowCharInfo& info)
 			{
-				if (currentAltHost || supressAltKey != VKEY::_UNKNOWN)
+				if (currentAltHost || supressAltKey != VKEY::KEY_UNKNOWN)
 				{
 					return true;
 				}

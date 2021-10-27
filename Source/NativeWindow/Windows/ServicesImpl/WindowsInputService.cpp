@@ -125,7 +125,7 @@ WindowsInputService
 			VKEY WindowsInputService::GetKey(const WString& name)
 			{
 				vint index = keys.Keys().IndexOf(name);
-				return index == -1 ? VKEY::_UNKNOWN : keys.Values()[index];
+				return index == -1 ? VKEY::KEY_UNKNOWN : keys.Values()[index];
 			}
 		}
 	}

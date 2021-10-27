@@ -1453,18 +1453,6 @@ UniscribeColor
 		}
 	}
 
-	template<>
-	struct POD<presentation::elements_windows_gdi::UniscribeColorRange>
-	{
-		static const bool Result=true;
-	};
-
-	template<>
-	struct POD<presentation::elements_windows_gdi::UniscribeColor>
-	{
-		static const bool Result=true;
-	};
-
 	namespace presentation
 	{
 		namespace elements_windows_gdi

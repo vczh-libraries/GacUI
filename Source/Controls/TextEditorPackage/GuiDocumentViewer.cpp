@@ -110,31 +110,31 @@ GuiDocumentCommonInterface
 
 				switch(code)
 				{
-				case VKEY::_UP:
+				case VKEY::KEY_UP:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_DOWN:
+				case VKEY::KEY_DOWN:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_LEFT:
+				case VKEY::KEY_LEFT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_RIGHT:
+				case VKEY::KEY_RIGHT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_HOME:
+				case VKEY::KEY_HOME:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
 						if(newCaret==currentCaret)
@@ -144,7 +144,7 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_END:
+				case VKEY::KEY_END:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
 						if(newCaret==currentCaret)
@@ -154,39 +154,39 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_PRIOR:
+				case VKEY::KEY_PRIOR:
 					{
 					}
 					break;
-				case VKEY::_NEXT:
+				case VKEY::KEY_NEXT:
 					{
 					}
 					break;
-				case VKEY::_BACK:
+				case VKEY::KEY_BACK:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY::_LEFT, true, false);
+							ProcessKey(VKEY::KEY_LEFT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY::_DELETE:
+				case VKEY::KEY_DELETE:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY::_RIGHT, true, false);
+							ProcessKey(VKEY::KEY_RIGHT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY::_RETURN:
+				case VKEY::KEY_RETURN:
 					if(editMode==Editable)
 					{
 						if(ctrl)
@@ -450,10 +450,10 @@ GuiDocumentCommonInterface
 				if (documentControl->GetVisuallyEnabled())
 				{
 					if (editMode == Editable &&
-						arguments.code != (wchar_t)VKEY::_ESCAPE &&
-						arguments.code != (wchar_t)VKEY::_BACK &&
-						arguments.code != (wchar_t)VKEY::_RETURN &&
-						(arguments.code != (wchar_t)VKEY::_TAB || documentControl->GetAcceptTabInput()) &&
+						arguments.code != (wchar_t)VKEY::KEY_ESCAPE &&
+						arguments.code != (wchar_t)VKEY::KEY_BACK &&
+						arguments.code != (wchar_t)VKEY::KEY_RETURN &&
+						(arguments.code != (wchar_t)VKEY::KEY_TAB || documentControl->GetAcceptTabInput()) &&
 						!arguments.ctrl)
 					{
 						Array<WString> text(1);
@@ -666,12 +666,12 @@ GuiDocumentCommonInterface
 				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
 
 				internalShortcutKeyManager=new GuiShortcutKeyManager;
-				AddShortcutCommand(VKEY::_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
-				AddShortcutCommand(VKEY::_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
-				AddShortcutCommand(VKEY::_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
-				AddShortcutCommand(VKEY::_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
-				AddShortcutCommand(VKEY::_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
-				AddShortcutCommand(VKEY::_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
+				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
+				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
+				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
+				AddShortcutCommand(VKEY::KEY_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
+				AddShortcutCommand(VKEY::KEY_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
+				AddShortcutCommand(VKEY::KEY_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
 			}
 
 			GuiDocumentCommonInterface::~GuiDocumentCommonInterface()

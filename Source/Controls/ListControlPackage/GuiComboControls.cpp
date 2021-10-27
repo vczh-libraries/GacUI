@@ -202,10 +202,10 @@ GuiComboBoxListControl
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_RETURN:
+					case VKEY::KEY_RETURN:
 						DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
 						arguments.handled = true;
-					case VKEY::_ESCAPE:
+					case VKEY::KEY_ESCAPE:
 						GetSubMenu()->Hide();
 						arguments.handled = true;
 						break;

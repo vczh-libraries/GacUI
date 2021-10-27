@@ -517,7 +517,7 @@ GuiGraphicsHost
 			{
 				if (altActionManager->SysKeyUp(info)) { return; }
 
-				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && hostRecord.nativeWindow)
+				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && hostRecord.nativeWindow)
 				{
 					if (hostRecord.nativeWindow)
 					{

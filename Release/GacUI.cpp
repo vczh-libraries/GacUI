@@ -1631,11 +1631,11 @@ GuiButton
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_RETURN:
+					case VKEY::KEY_RETURN:
 						CheckAndClick(arguments);
 						arguments.handled = true;
 						break;
-					case VKEY::_SPACE:
+					case VKEY::KEY_SPACE:
 						if (!arguments.autoRepeatKeyDown)
 						{
 							keyPressing = true;
@@ -1654,7 +1654,7 @@ GuiButton
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_SPACE:
+					case VKEY::KEY_SPACE:
 						if (keyPressing)
 						{
 							keyPressing = false;
@@ -2021,20 +2021,20 @@ GuiTab
 							switch (hint)
 							{
 							case TabPageOrder::LeftToRight:
-								if (arguments.code == VKEY::_LEFT) tabOffset = -1;
-								else if (arguments.code == VKEY::_RIGHT) tabOffset = 1;
+								if (arguments.code == VKEY::KEY_LEFT) tabOffset = -1;
+								else if (arguments.code == VKEY::KEY_RIGHT) tabOffset = 1;
 								break;
 							case TabPageOrder::RightToLeft:
-								if (arguments.code == VKEY::_LEFT) tabOffset = 1;
-								else if (arguments.code == VKEY::_RIGHT) tabOffset = -1;
+								if (arguments.code == VKEY::KEY_LEFT) tabOffset = 1;
+								else if (arguments.code == VKEY::KEY_RIGHT) tabOffset = -1;
 								break;
 							case TabPageOrder::TopToBottom:
-								if (arguments.code == VKEY::_UP) tabOffset = -1;
-								else if (arguments.code == VKEY::_DOWN) tabOffset = 1;
+								if (arguments.code == VKEY::KEY_UP) tabOffset = -1;
+								else if (arguments.code == VKEY::KEY_DOWN) tabOffset = 1;
 								break;
 							case TabPageOrder::BottomToTop:
-								if (arguments.code == VKEY::_UP) tabOffset = 1;
-								else if (arguments.code == VKEY::_DOWN) tabOffset = -1;
+								if (arguments.code == VKEY::KEY_UP) tabOffset = 1;
+								else if (arguments.code == VKEY::KEY_DOWN) tabOffset = -1;
 								break;
 							default:;
 							}
@@ -3391,29 +3391,29 @@ GuiScroll
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_HOME:
+					case VKEY::KEY_HOME:
 						SetPosition(GetMinPosition());
 						arguments.handled = true;
 						break;
-					case VKEY::_END:
+					case VKEY::KEY_END:
 						SetPosition(GetMaxPosition());
 						arguments.handled = true;
 						break;
-					case VKEY::_PRIOR:
+					case VKEY::KEY_PRIOR:
 						commandExecutor->BigDecrease();
 						arguments.handled = true;
 						break;
-					case VKEY::_NEXT:
+					case VKEY::KEY_NEXT:
 						commandExecutor->BigIncrease();
 						arguments.handled = true;
 						break;
-					case VKEY::_LEFT:
-					case VKEY::_UP:
+					case VKEY::KEY_LEFT:
+					case VKEY::KEY_UP:
 						commandExecutor->SmallDecrease();
 						arguments.handled = true;
 						break;
-					case VKEY::_RIGHT:
-					case VKEY::_DOWN:
+					case VKEY::KEY_RIGHT:
+					case VKEY::KEY_DOWN:
 						commandExecutor->SmallIncrease();
 						arguments.handled = true;
 						break;
@@ -6952,10 +6952,10 @@ GuiComboBoxListControl
 				{
 					switch (arguments.code)
 					{
-					case VKEY::_RETURN:
+					case VKEY::KEY_RETURN:
 						DisplaySelectedContent(containedListControl->GetSelectedItemIndex());
 						arguments.handled = true;
-					case VKEY::_ESCAPE:
+					case VKEY::KEY_ESCAPE:
 						GetSubMenu()->Hide();
 						arguments.handled = true;
 						break;
@@ -7658,7 +7658,7 @@ GuiVirtualDataGrid
 			{
 				if (selectedCell.row != -1)
 				{
-					if (arguments.code == VKEY::_RETURN)
+					if (arguments.code == VKEY::KEY_RETURN)
 					{
 						RequestSaveData();
 						SelectCell(selectedCell, !currentEditor);
@@ -7669,7 +7669,7 @@ GuiVirtualDataGrid
 						}
 						arguments.handled = true;
 					}
-					else if (arguments.code == VKEY::_ESCAPE)
+					else if (arguments.code == VKEY::KEY_ESCAPE)
 					{
 						if (currentEditor)
 						{
@@ -7683,11 +7683,11 @@ GuiVirtualDataGrid
 						vint columnOffset = 0;
 						switch (arguments.code)
 						{
-						case VKEY::_LEFT:
+						case VKEY::KEY_LEFT:
 							columnOffset = -1;
 							arguments.handled = true;
 							break;
-						case VKEY::_RIGHT:
+						case VKEY::KEY_RIGHT:
 							columnOffset = 1;
 							arguments.handled = true;
 							break;
@@ -10263,28 +10263,28 @@ GuiSelectableListControl
 				KeyDirection keyDirection = KeyDirection::Up;
 				switch (code)
 				{
-				case VKEY::_UP:
+				case VKEY::KEY_UP:
 					keyDirection = KeyDirection::Up;
 					break;
-				case VKEY::_DOWN:
+				case VKEY::KEY_DOWN:
 					keyDirection = KeyDirection::Down;
 					break;
-				case VKEY::_LEFT:
+				case VKEY::KEY_LEFT:
 					keyDirection = KeyDirection::Left;
 					break;
-				case VKEY::_RIGHT:
+				case VKEY::KEY_RIGHT:
 					keyDirection = KeyDirection::Right;
 					break;
-				case VKEY::_HOME:
+				case VKEY::KEY_HOME:
 					keyDirection = KeyDirection::Home;
 					break;
-				case VKEY::_END:
+				case VKEY::KEY_END:
 					keyDirection = KeyDirection::End;
 					break;
-				case VKEY::_PRIOR:
+				case VKEY::KEY_PRIOR:
 					keyDirection = KeyDirection::PageUp;
 					break;
-				case VKEY::_NEXT:
+				case VKEY::KEY_NEXT:
 					keyDirection = KeyDirection::PageDown;
 					break;
 				default:
@@ -15179,31 +15179,31 @@ GuiDocumentCommonInterface
 
 				switch(code)
 				{
-				case VKEY::_UP:
+				case VKEY::KEY_UP:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveUp, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_DOWN:
+				case VKEY::KEY_DOWN:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveDown, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_LEFT:
+				case VKEY::KEY_LEFT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveLeft, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_RIGHT:
+				case VKEY::KEY_RIGHT:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretMoveRight, frontSide);
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_HOME:
+				case VKEY::KEY_HOME:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineFirst, frontSide);
 						if(newCaret==currentCaret)
@@ -15213,7 +15213,7 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_END:
+				case VKEY::KEY_END:
 					{
 						TextPos newCaret=documentElement->CalculateCaret(currentCaret, IGuiGraphicsParagraph::CaretLineLast, frontSide);
 						if(newCaret==currentCaret)
@@ -15223,39 +15223,39 @@ GuiDocumentCommonInterface
 						Move(newCaret, shift, frontSide);
 					}
 					break;
-				case VKEY::_PRIOR:
+				case VKEY::KEY_PRIOR:
 					{
 					}
 					break;
-				case VKEY::_NEXT:
+				case VKEY::KEY_NEXT:
 					{
 					}
 					break;
-				case VKEY::_BACK:
+				case VKEY::KEY_BACK:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY::_LEFT, true, false);
+							ProcessKey(VKEY::KEY_LEFT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY::_DELETE:
+				case VKEY::KEY_DELETE:
 					if(editMode==Editable)
 					{
 						if(begin==end)
 						{
-							ProcessKey(VKEY::_RIGHT, true, false);
+							ProcessKey(VKEY::KEY_RIGHT, true, false);
 						}
 						Array<WString> text;
 						EditText(documentElement->GetCaretBegin(), documentElement->GetCaretEnd(), documentElement->IsCaretEndPreferFrontSide(), text);
 						return true;
 					}
 					break;
-				case VKEY::_RETURN:
+				case VKEY::KEY_RETURN:
 					if(editMode==Editable)
 					{
 						if(ctrl)
@@ -15519,10 +15519,10 @@ GuiDocumentCommonInterface
 				if (documentControl->GetVisuallyEnabled())
 				{
 					if (editMode == Editable &&
-						arguments.code != (wchar_t)VKEY::_ESCAPE &&
-						arguments.code != (wchar_t)VKEY::_BACK &&
-						arguments.code != (wchar_t)VKEY::_RETURN &&
-						(arguments.code != (wchar_t)VKEY::_TAB || documentControl->GetAcceptTabInput()) &&
+						arguments.code != (wchar_t)VKEY::KEY_ESCAPE &&
+						arguments.code != (wchar_t)VKEY::KEY_BACK &&
+						arguments.code != (wchar_t)VKEY::KEY_RETURN &&
+						(arguments.code != (wchar_t)VKEY::KEY_TAB || documentControl->GetAcceptTabInput()) &&
 						!arguments.ctrl)
 					{
 						Array<WString> text(1);
@@ -15735,12 +15735,12 @@ GuiDocumentCommonInterface
 				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
 
 				internalShortcutKeyManager=new GuiShortcutKeyManager;
-				AddShortcutCommand(VKEY::_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
-				AddShortcutCommand(VKEY::_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
-				AddShortcutCommand(VKEY::_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
-				AddShortcutCommand(VKEY::_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
-				AddShortcutCommand(VKEY::_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
-				AddShortcutCommand(VKEY::_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
+				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
+				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
+				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
+				AddShortcutCommand(VKEY::KEY_X, Func<bool()>(this, &GuiDocumentCommonInterface::Cut));
+				AddShortcutCommand(VKEY::KEY_C, Func<bool()>(this, &GuiDocumentCommonInterface::Copy));
+				AddShortcutCommand(VKEY::KEY_V, Func<bool()>(this, &GuiDocumentCommonInterface::Paste));
 			}
 
 			GuiDocumentCommonInterface::~GuiDocumentCommonInterface()
@@ -16653,14 +16653,14 @@ GuiTextBoxCommonInterface
 				TextPos end=textElement->GetCaretEnd();
 				switch(code)
 				{
-				case VKEY::_ESCAPE:
+				case VKEY::KEY_ESCAPE:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->CloseList();
 						return true;
 					}
 					break;
-				case VKEY::_RETURN:
+				case VKEY::KEY_RETURN:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						if(autoComplete->ApplySelectedListItem())
@@ -16670,7 +16670,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					break;
-				case VKEY::_UP:
+				case VKEY::KEY_UP:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->SelectPreviousListItem();
@@ -16681,7 +16681,7 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY::_DOWN:
+				case VKEY::KEY_DOWN:
 					if(autoComplete && autoComplete->IsListOpening() && !shift && !ctrl)
 					{
 						autoComplete->SelectNextListItem();
@@ -16692,7 +16692,7 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY::_LEFT:
+				case VKEY::KEY_LEFT:
 					{
 						if(ctrl)
 						{
@@ -16717,7 +16717,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY::_RIGHT:
+				case VKEY::KEY_RIGHT:
 					{
 						if(ctrl)
 						{
@@ -16741,7 +16741,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY::_HOME:
+				case VKEY::KEY_HOME:
 					{
 						if(ctrl)
 						{
@@ -16754,7 +16754,7 @@ GuiTextBoxCommonInterface
 						}
 					}
 					return true;
-				case VKEY::_END:
+				case VKEY::KEY_END:
 					{
 						if(ctrl)
 						{
@@ -16764,60 +16764,60 @@ GuiTextBoxCommonInterface
 						Move(end, shift);
 					}
 					return true;
-				case VKEY::_PRIOR:
+				case VKEY::KEY_PRIOR:
 					{
 						end.row-=callback->GetPageRows();
 						Move(end, shift);
 					}
 					return true;
-				case VKEY::_NEXT:
+				case VKEY::KEY_NEXT:
 					{
 						end.row+=callback->GetPageRows();
 						Move(end, shift);
 					}
 					return true;
-				case VKEY::_BACK:
+				case VKEY::KEY_BACK:
 					if(!readonly)
 					{
 						if(ctrl && !shift)
 						{
-							ProcessKey(VKEY::_LEFT, true, true);
-							ProcessKey(VKEY::_BACK, false, false);
+							ProcessKey(VKEY::KEY_LEFT, true, true);
+							ProcessKey(VKEY::KEY_BACK, false, false);
 						}
 						else if(!ctrl && shift)
 						{
-							ProcessKey(VKEY::_UP, true, false);
-							ProcessKey(VKEY::_BACK, false, false);
+							ProcessKey(VKEY::KEY_UP, true, false);
+							ProcessKey(VKEY::KEY_BACK, false, false);
 						}
 						else
 						{
 							if(begin==end)
 							{
-								ProcessKey(VKEY::_LEFT, true, false);
+								ProcessKey(VKEY::KEY_LEFT, true, false);
 							}
 							SetSelectionTextAsKeyInput(L"");
 						}
 						return true;
 					}
 					break;
-				case VKEY::_DELETE:
+				case VKEY::KEY_DELETE:
 					if(!readonly)
 					{
 						if(ctrl && !shift)
 						{
-							ProcessKey(VKEY::_RIGHT, true, true);
-							ProcessKey(VKEY::_DELETE, false, false);
+							ProcessKey(VKEY::KEY_RIGHT, true, true);
+							ProcessKey(VKEY::KEY_DELETE, false, false);
 						}
 						else if(!ctrl && shift)
 						{
-							ProcessKey(VKEY::_DOWN, true, false);
-							ProcessKey(VKEY::_DELETE, false, false);
+							ProcessKey(VKEY::KEY_DOWN, true, false);
+							ProcessKey(VKEY::KEY_DELETE, false, false);
 						}
 						else
 						{
 							if(begin==end)
 							{
-								ProcessKey(VKEY::_RIGHT, true, false);
+								ProcessKey(VKEY::KEY_RIGHT, true, false);
 							}
 							SetSelectionTextAsKeyInput(L"");
 						}
@@ -16893,7 +16893,7 @@ GuiTextBoxCommonInterface
 				if (preventEnterDueToAutoComplete)
 				{
 					preventEnterDueToAutoComplete = false;
-					if (arguments.code == (wchar_t)VKEY::_RETURN)
+					if (arguments.code == (wchar_t)VKEY::KEY_RETURN)
 					{
 						return;
 					}
@@ -16901,9 +16901,9 @@ GuiTextBoxCommonInterface
 				if (textControl->GetVisuallyEnabled() && arguments.compositionSource == arguments.eventSource)
 				{
 					if (!readonly &&
-						arguments.code != (wchar_t)VKEY::_ESCAPE &&
-						arguments.code != (wchar_t)VKEY::_BACK &&
-						(arguments.code != (wchar_t)VKEY::_TAB || textControl->GetAcceptTabInput()) &&
+						arguments.code != (wchar_t)VKEY::KEY_ESCAPE &&
+						arguments.code != (wchar_t)VKEY::KEY_BACK &&
+						(arguments.code != (wchar_t)VKEY::KEY_TAB || textControl->GetAcceptTabInput()) &&
 						!arguments.ctrl)
 					{
 						SetSelectionTextAsKeyInput(WString::FromChar(arguments.code));
@@ -17027,12 +17027,12 @@ GuiTextBoxCommonInterface
 				AttachTextEditCallback(undoRedoProcessor);
 
 				internalShortcutKeyManager=new GuiShortcutKeyManager;
-				AddShortcutCommand(VKEY::_Z, Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
-				AddShortcutCommand(VKEY::_Y, Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
-				AddShortcutCommand(VKEY::_A, Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
-				AddShortcutCommand(VKEY::_X, Func<bool()>(this, &GuiTextBoxCommonInterface::Cut));
-				AddShortcutCommand(VKEY::_C, Func<bool()>(this, &GuiTextBoxCommonInterface::Copy));
-				AddShortcutCommand(VKEY::_V, Func<bool()>(this, &GuiTextBoxCommonInterface::Paste));
+				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
+				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
+				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
+				AddShortcutCommand(VKEY::KEY_X, Func<bool()>(this, &GuiTextBoxCommonInterface::Cut));
+				AddShortcutCommand(VKEY::KEY_C, Func<bool()>(this, &GuiTextBoxCommonInterface::Copy));
+				AddShortcutCommand(VKEY::KEY_V, Func<bool()>(this, &GuiTextBoxCommonInterface::Paste));
 			}
 
 			GuiTextBoxCommonInterface::~GuiTextBoxCommonInterface()
@@ -23595,7 +23595,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 					WString name = match->Groups()[L"key"][0].Value();
 					builder->key = GetCurrentController()->InputService()->GetKey(name);
 
-					return builder->key == VKEY::_UNKNOWN ? nullptr : builder;
+					return builder->key == VKEY::KEY_UNKNOWN ? nullptr : builder;
 				}
 			};
 
@@ -32180,7 +32180,7 @@ GuiGraphicsHost
 			{
 				if (altActionManager->SysKeyUp(info)) { return; }
 
-				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && hostRecord.nativeWindow)
+				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && hostRecord.nativeWindow)
 				{
 					if (hostRecord.nativeWindow)
 					{
@@ -32783,24 +32783,24 @@ GuiAltActionManager
 			{
 				if (!info.ctrl && !info.shift && currentAltHost)
 				{
-					if (info.code == VKEY::_ESCAPE)
+					if (info.code == VKEY::KEY_ESCAPE)
 					{
 						LeaveAltHost();
 						return true;
 					}
-					else if (info.code == VKEY::_BACK)
+					else if (info.code == VKEY::KEY_BACK)
 					{
 						LeaveAltKey();
 					}
-					else if (VKEY::_NUMPAD0 <= info.code && info.code <= VKEY::_NUMPAD9)
+					else if (VKEY::KEY_NUMPAD0 <= info.code && info.code <= VKEY::KEY_NUMPAD9)
 					{
-						if (EnterAltKey((wchar_t)(L'0' + ((vint)info.code - (vint)VKEY::_NUMPAD0))))
+						if (EnterAltKey((wchar_t)(L'0' + ((vint)info.code - (vint)VKEY::KEY_NUMPAD0))))
 						{
 							supressAltKey = info.code;
 							return true;
 						}
 					}
-					else if ((VKEY::_0 <= info.code && info.code <= VKEY::_9) || (VKEY::_A <= info.code && info.code <= VKEY::_Z))
+					else if ((VKEY::KEY_0 <= info.code && info.code <= VKEY::KEY_9) || (VKEY::KEY_A <= info.code && info.code <= VKEY::KEY_Z))
 					{
 						if (EnterAltKey((wchar_t)info.code))
 						{
@@ -32821,7 +32821,7 @@ GuiAltActionManager
 			{
 				if (!info.ctrl && !info.shift && info.code == supressAltKey)
 				{
-					supressAltKey = VKEY::_UNKNOWN;
+					supressAltKey = VKEY::KEY_UNKNOWN;
 					return true;
 				}
 				return false;
@@ -32829,7 +32829,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::SysKeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY::_MENU && !currentAltHost)
+				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && !currentAltHost)
 				{
 					if (auto altHost = controlHost->QueryTypedService<IGuiAltActionHost>())
 					{
@@ -32854,7 +32854,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::Char(const NativeWindowCharInfo& info)
 			{
-				if (currentAltHost || supressAltKey != VKEY::_UNKNOWN)
+				if (currentAltHost || supressAltKey != VKEY::KEY_UNKNOWN)
 				{
 					return true;
 				}
@@ -33130,7 +33130,7 @@ GuiTabActionManager
 
 			bool GuiTabActionManager::KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition)
 			{
-				if (!info.ctrl && !info.alt && info.code == VKEY::_TAB)
+				if (!info.ctrl && !info.alt && info.code == VKEY::KEY_TAB)
 				{
 					GuiControl* focusedControl = nullptr;
 					if (focusedComposition)
@@ -39840,9 +39840,9 @@ GuiResource
 
 		WString GuiResource::GetStringByPath(const WString& path)
 		{
-			Ptr<ObjectBox<WString>> result=GetValueByPath(path).Cast<ObjectBox<WString>>();
+			Ptr<GuiTextData> result=GetValueByPath(path).Cast<GuiTextData>();
 			if(!result) throw ArgumentException(L"Path not exists.", L"GuiResource::GetStringByPath", L"path");
-			return result->Unbox();
+			return result->GetText();
 		}
 
 /***********************************************************************

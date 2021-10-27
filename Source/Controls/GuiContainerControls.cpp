@@ -148,20 +148,20 @@ GuiTab
 							switch (hint)
 							{
 							case TabPageOrder::LeftToRight:
-								if (arguments.code == VKEY::_LEFT) tabOffset = -1;
-								else if (arguments.code == VKEY::_RIGHT) tabOffset = 1;
+								if (arguments.code == VKEY::KEY_LEFT) tabOffset = -1;
+								else if (arguments.code == VKEY::KEY_RIGHT) tabOffset = 1;
 								break;
 							case TabPageOrder::RightToLeft:
-								if (arguments.code == VKEY::_LEFT) tabOffset = 1;
-								else if (arguments.code == VKEY::_RIGHT) tabOffset = -1;
+								if (arguments.code == VKEY::KEY_LEFT) tabOffset = 1;
+								else if (arguments.code == VKEY::KEY_RIGHT) tabOffset = -1;
 								break;
 							case TabPageOrder::TopToBottom:
-								if (arguments.code == VKEY::_UP) tabOffset = -1;
-								else if (arguments.code == VKEY::_DOWN) tabOffset = 1;
+								if (arguments.code == VKEY::KEY_UP) tabOffset = -1;
+								else if (arguments.code == VKEY::KEY_DOWN) tabOffset = 1;
 								break;
 							case TabPageOrder::BottomToTop:
-								if (arguments.code == VKEY::_UP) tabOffset = 1;
-								else if (arguments.code == VKEY::_DOWN) tabOffset = -1;
+								if (arguments.code == VKEY::KEY_UP) tabOffset = 1;
+								else if (arguments.code == VKEY::KEY_DOWN) tabOffset = -1;
 								break;
 							default:;
 							}

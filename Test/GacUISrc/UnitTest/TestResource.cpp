@@ -45,7 +45,7 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 		if (errors.Count() > 0)\
 		{\
 			WriteErrors(errors, resourceName);\
-			return nullptr;\
+			return;\
 		}\
 	}while(0)\
 
