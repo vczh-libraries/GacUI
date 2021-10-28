@@ -936,7 +936,7 @@ Tokenizer
 		///     RegexLexer lexer(tokenDefs, proc);
 		///     RegexLexerColorizer colorizer = lexer.Colorize();
 		/// 
-		///     ///     for (auto [line, index] : indexed(From(lines)))
+		///     for (auto [line, index] : indexed(From(lines)))
 		///     {
 		///         Console::WriteLine(L"Begin line " + itow(index));
 		///         argument.processingText = line;

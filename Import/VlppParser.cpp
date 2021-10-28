@@ -3148,9 +3148,9 @@ CreateLookAhead
 			void CopyStableLookAheads(List<Ptr<ParsingTable::LookAheadInfo>>& la, List<Ptr<ParsingTable::LookAheadInfo>>& sla, const List<Ptr<ParsingTable::LookAheadInfo>>& la2)
 			{
 				CopyFrom(sla, From(la)
-					.Where([&](Ptr<ParsingTable::LookAheadInfo> lai)
+					.Where([&](auto&& lai)
 					{
-						return From(la2).All([&](Ptr<ParsingTable::LookAheadInfo> lai2)
+						return From(la2).All([&](auto&& lai2)
 						{
 							return ParsingTable::LookAheadInfo::TestPrefix(lai, lai2)==ParsingTable::LookAheadInfo::NotPrefix;
 						});
@@ -3188,9 +3188,9 @@ CreateLookAhead
 			{
 				CopyFrom(sla, t->lookAheads, true);
 				CopyFrom(t->lookAheads, From(sla)
-					.Where([&](Ptr<ParsingTable::LookAheadInfo> lai)
+					.Where([&](auto&& lai)
 					{
-						return From(sla).All([&](Ptr<ParsingTable::LookAheadInfo> lai2)
+						return From(sla).All([&](auto&& lai2)
 						{
 							if(lai==lai2) return true;
 							ParsingTable::LookAheadInfo::PrefixResult result=ParsingTable::LookAheadInfo::TestPrefix(lai, lai2);
@@ -3730,19 +3730,18 @@ GenerateTable
 							CopyFrom(
 								bag->transitionItems,
 								From(bag->transitionItems)
-								.OrderBy([&](Ptr<ParsingTable::TransitionItem> t1, Ptr<ParsingTable::TransitionItem> t2)
-							{
-								// stable transition order
-								vint i1 = bag->transitionItems.IndexOf(t1.Obj());
-								vint i2 = bag->transitionItems.IndexOf(t2.Obj());
-								auto defaultOrder =
-									i1 < i2 ? ParsingTable::TransitionItem::CorrectOrder :
-									i1 > i2 ? ParsingTable::TransitionItem::WrongOrder :
-									ParsingTable::TransitionItem::SameOrder
-									;
-								return ParsingTable::TransitionItem::Compare(t1, t2, defaultOrder);
-							})
-							);
+								.OrderBy([&](auto&& t1, auto&& t2)
+								{
+									// stable transition order
+									vint i1 = bag->transitionItems.IndexOf(t1.Obj());
+									vint i2 = bag->transitionItems.IndexOf(t2.Obj());
+									auto defaultOrder =
+										i1 < i2 ? ParsingTable::TransitionItem::CorrectOrder :
+										i1 > i2 ? ParsingTable::TransitionItem::WrongOrder :
+										ParsingTable::TransitionItem::SameOrder
+										;
+									return ParsingTable::TransitionItem::Compare(t1, t2, defaultOrder);
+								}));
 
 							// build look ahead inside a transition
 							for (vint k1 = 0; k1 < bag->transitionItems.Count() - 1; k1++)
@@ -4510,8 +4509,8 @@ CreateNondeterministicPDAFromEpsilonPDA
 					CopyFrom(
 						newStates,
 						From(epsilonPDA->states)
-							.Where([&](Ptr<State> s) {return oldNewStateMap.Keys().Contains(s.Obj()); })
-							.Select([&](Ptr<State> s) { return oldNewStateMap[s.Obj()]; })
+							.Where([&](auto&& s) {return oldNewStateMap.Keys().Contains(s.Obj()); })
+							.Select([&](auto&& s) { return oldNewStateMap[s.Obj()]; })
 						);
 					DeleteUnnecessaryStates(automaton, newRuleInfo, newStates);
 					MergeStates(automaton, newRuleInfo, newStates);
@@ -8715,7 +8714,7 @@ ParsingTreeNode
 				CopyFrom(
 					cachedOrderedSubNodes,
 					From(subNodes)
-						.Where([=](Ptr<ParsingTreeNode> node)
+						.Where([=](auto&& node)
 						{
 							const auto& range = node->GetCodeRange();
 							return !range.start.IsInvalid() && !range.end.IsInvalid();
@@ -10463,7 +10462,7 @@ Linq To Xml
 			{
 				return From(element->subNodes)
 					.FindType<XmlElement>()
-					.Where([name](Ptr<XmlElement> e){return e->name.value==name;});
+					.Where([name](auto&& e){return e->name.value==name;});
 			}
 
 			WString XmlGetValue(XmlElement* element)
