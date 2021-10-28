@@ -2097,6 +2097,30 @@ namespace vl
 {
 	namespace collections
 	{
+/***********************************************************************
+Reflection
+***********************************************************************/
+
+		/// <summary>
+		/// Collection type
+		/// </summary>
+		enum class CollectionEntity
+		{
+			Array,
+			List,
+			SortedList,
+			Dictionary,
+			Group,
+			ObservableListBase,
+			ObservableList,
+			Unknown,
+		};
+
+		class ICollectionReference : public virtual Interface
+		{
+		public:
+			virtual void								OnDisposed() = 0;
+		};
 
 /***********************************************************************
 Interfaces
@@ -2188,7 +2212,76 @@ Interfaces
 			/// "for (auto x : xs);", "for (auto [x, i] : indexed(xs));", <see cref="CopyFrom`*"/> and <see cref="LazyList`1"/> do all the jobs for you.
 			/// </remarks>
 			/// <returns>The enumerator.</returns>
-			virtual IEnumerator<T>*						CreateEnumerator()const=0;
+			virtual IEnumerator<T>*						CreateEnumerator() const = 0;
+
+			/// <summary>Get the underlying collection type.</summary>
+			/// <returns>The underlying collection type.</returns>
+			virtual CollectionEntity					GetCollectionEntity() const = 0;
+
+			/// <summary>Get the underlying collection object.</summary>
+			/// <returns>
+			/// The underlying collection object.
+			/// It could returns nullptr when <see cref="GetCollectionEntity"/> returns <see cref="CollectionEntity::Unknown"/>.
+			/// </returns>
+			virtual const Object*						GetCollectionObject() const = 0;
+
+			/// <summary>Get the associated collection reference.</summary>
+			/// <returns>The associated collection reference.</returns>
+			virtual Ptr<ICollectionReference>			GetCollectionReference() const = 0;
+
+			/// <summary>
+			/// Associate a collection reference to this collection.
+			/// It will crash if one has been associated.
+			/// <see cref="ICollectionReference::OnDisposed"/> will be called when this collection is no longer available.
+			/// </summary>
+			/// <param name="ref">The associated collection reference.</param>
+			virtual void								SetCollectionReference(Ptr<ICollectionReference> ref) const = 0;
+
+			/// <summary>
+			/// Get the strong-typed associated collection reference.
+			/// It returns nullptr when none has been associated.
+			/// It throws when one has been associated but the type is unexpected.
+			/// </summary>
+			/// <typeparam name="T">The expected type of the associated collection reference.</typeparam>
+			/// <returns>The strong-typed associated collection reference.</returns>
+			template<typename U>
+			Ptr<U> TryGetCollectionReference()
+			{
+				auto ref = GetCollectionReference();
+				if (!ref) return nullptr;
+				auto sref = ref.Cast<U>();
+				CHECK_ERROR(sref, L"IEnumerable<T>::TryGetCollectionReference<U>()#The associated collection reference has an unexpected type.");
+				return sref;
+			}
+		};
+
+		template<typename T>
+		class EnumerableBase : public Object, public virtual IEnumerable<T>
+		{
+		private:
+			mutable Ptr<ICollectionReference>			colref;
+
+		public:
+			~EnumerableBase()
+			{
+				if (colref) colref->OnDisposed();
+			}
+
+			const Object* GetCollectionObject() const override
+			{
+				return this;
+			}
+
+			Ptr<ICollectionReference> GetCollectionReference() const override
+			{
+				return colref;
+			}
+
+			void SetCollectionReference(Ptr<ICollectionReference> ref) const override
+			{
+				CHECK_ERROR(!colref, L"EnumerableBase<T>::SetCollectionReference(Ptr<ICollectionReference>)#Cannot associate another collection reference to this collection.");
+				colref = ref;
+			}
 		};
 
 /***********************************************************************
@@ -2271,7 +2364,7 @@ Memory Management
 		class ListStore;
 
 		template<typename T>
-		class ListStore<T, false> abstract : public Object
+		class ListStore<T, false> abstract : public EnumerableBase<T>
 		{
 		protected:
 			static void InitializeItemsByDefault(void* dst, vint count)
@@ -2352,7 +2445,7 @@ Memory Management
 		};
 
 		template<typename T>
-		class ListStore<T, true> abstract : public Object
+		class ListStore<T, true> abstract : public EnumerableBase<T>
 		{
 		protected:
 			static void InitializeItemsByDefault(void* dst, vint count)
@@ -2408,7 +2501,7 @@ ArrayBase
 		/// <summary>Base type of all linear container.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
 		template<typename T>
-		class ArrayBase abstract : public ListStore<T>, public virtual IEnumerable<T>
+		class ArrayBase abstract : public ListStore<T>
 		{
 		protected:
 			class Enumerator : public Object, public virtual IEnumerator<T>
@@ -2474,9 +2567,6 @@ ArrayBase
 				return *(T*)AddressOf(buffer, index);
 			}
 		public:
-			ArrayBase()
-			{
-			}
 
 			IEnumerator<T>* CreateEnumerator()const
 			{
@@ -2550,6 +2640,11 @@ Array
 			{
 				this->ReleaseItems(this->buffer, this->count);
 				this->DeallocateBuffer(this->buffer);
+			}
+
+			CollectionEntity GetCollectionEntity() const override
+			{
+				return CollectionEntity::Array;
 			}
 
 			/// <summary>Test does the array contain a value or not.</summary>
@@ -2700,9 +2795,6 @@ ListBase
 				}
 			}
 		public:
-			ListBase()
-			{
-			}
 
 			~ListBase()
 			{
@@ -2782,6 +2874,11 @@ List
 		public:
 			/// <summary>Create an empty list.</summary>
 			List() = default;
+
+			CollectionEntity GetCollectionEntity() const override
+			{
+				return CollectionEntity::List;
+			}
 
 			/// <summary>Test does the list contain a value or not.</summary>
 			/// <returns>Returns true if the list contains the specified value.</returns>
@@ -2938,6 +3035,11 @@ SortedList
 		public:
 			/// <summary>Create an empty list.</summary>
 			SortedList() = default;
+
+			CollectionEntity GetCollectionEntity() const override
+			{
+				return CollectionEntity::SortedList;
+			}
 
 			/// <summary>Test does the list contain a value or not.</summary>
 			/// <returns>Returns true if the list contains the specified value.</returns>
@@ -3184,7 +3286,7 @@ namespace vl
 			typename KK=typename KeyType<KT>::Type, 
 			typename VK=typename KeyType<VT>::Type
 		>
-		class Dictionary : public Object, public virtual IEnumerable<Pair<KT, VT>>
+		class Dictionary : public EnumerableBase<Pair<KT, VT>>
 		{
 		public:
 			typedef SortedList<KT, KK>			KeyContainer;
@@ -3251,6 +3353,11 @@ namespace vl
 		public:
 			/// <summary>Create an empty dictionary.</summary>
 			Dictionary() = default;
+
+			CollectionEntity GetCollectionEntity() const override
+			{
+				return CollectionEntity::Dictionary;
+			}
 
 			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
 			{
@@ -3383,7 +3490,7 @@ namespace vl
 			typename KK=typename KeyType<KT>::Type,
 			typename VK=typename KeyType<VT>::Type
 		>
-		class Group : public Object, public virtual IEnumerable<Pair<KT, VT>>
+		class Group : public EnumerableBase<Pair<KT, VT>>
 		{
 		public:
 			typedef SortedList<KT, KK>		KeyContainer;
@@ -3490,6 +3597,11 @@ namespace vl
 			~Group()
 			{
 				Clear();
+			}
+
+			CollectionEntity GetCollectionEntity() const override
+			{
+				return CollectionEntity::Group;
 			}
 
 			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
@@ -4024,44 +4136,35 @@ EmptyEnumerable
 ***********************************************************************/
 
 		template<typename T>
-		class EmptyEnumerable : public Object, public IEnumerable<T>
+		class EmptyEnumerator : public Object, public virtual IEnumerator<T>
 		{
-		private:
-			class Enumerator : public Object, public virtual IEnumerator<T>
+			IEnumerator<T>* Clone()const override
 			{
-				IEnumerator<T>* Clone()const override
-				{
-					return new Enumerator;
-				}
+				return new EmptyEnumerator<T>();
+			}
 
-				const T& Current()const override
-				{
-					CHECK_FAIL(L"EmptyEnumerable<T>::Enumerator::Current()#This collection is empty.");
-				}
-
-				vint Index()const override
-				{
-					return -1;
-				}
-
-				bool Next()override
-				{
-					return false;
-				}
-
-				void Reset()override
-				{
-				}
-
-				bool Evaluated()const override
-				{
-					return true;
-				}
-			};
-		public:
-			IEnumerator<T>* CreateEnumerator()const
+			const T& Current()const override
 			{
-				return new Enumerator;
+				CHECK_FAIL(L"EmptyEnumerable<T>::Enumerator::Current()#This collection is empty.");
+			}
+
+			vint Index()const override
+			{
+				return -1;
+			}
+
+			bool Next()override
+			{
+				return false;
+			}
+
+			void Reset()override
+			{
+			}
+
+			bool Evaluated()const override
+			{
+				return true;
 			}
 		};
 
@@ -5021,7 +5124,7 @@ FromIterator
 ***********************************************************************/
 
 		template<typename T, typename I>
-		class FromIteratorEnumerable : public Object, public IEnumerable<T>
+		class FromIteratorEnumerable : public EnumerableBase<T>
 		{
 		private:
 			class Enumerator : public Object, public IEnumerator<T>
@@ -5074,6 +5177,11 @@ FromIterator
 			I					begin;
 			I					end;
 		public:
+			CollectionEntity GetCollectionEntity() const override
+			{
+				return CollectionEntity::Unknown;
+			}
+
 			IEnumerator<T>* CreateEnumerator()const
 			{
 				return new Enumerator(begin, end, begin - 1);
@@ -6853,7 +6961,7 @@ LazyList
 		/// <p>In this way you get a lazy list with all values copied, they do not rely on other objects.</p>
 		/// </remarks>
 		template<typename T>
-		class LazyList : public Object, public IEnumerable<T>
+		class LazyList : public EnumerableBase<T>
 		{
 		protected:
 			Ptr<IEnumerator<T>>			enumeratorPrototype;
@@ -6891,6 +6999,15 @@ LazyList
 			LazyList(const LazyList<T>& lazyList)
 				:enumeratorPrototype(lazyList.enumeratorPrototype)
 			{
+				// no need to clone enumeratorPrototype as it will never be iterated
+			}
+
+			/// <summary>Create a lazy list from another lazy list.</summary>
+			/// <param name="lazyList">The lazy list.</param>
+			LazyList(LazyList<T>&& lazyList)
+				:enumeratorPrototype(lazyList.enumeratorPrototype)
+			{
+				lazyList.enumeratorPrototype = nullptr;
 			}
 			
 			/// <summary>Create a lazy list from a container. It is very useful to <see cref="MakePtr`2"/> a container as an intermediate result and then put in a lazy list.</summary>
@@ -6904,13 +7021,26 @@ LazyList
 			
 			/// <summary>Create an empty lazy list.</summary>
 			LazyList()
-				:enumeratorPrototype(EmptyEnumerable<T>().CreateEnumerator())
+				:enumeratorPrototype(new EmptyEnumerator<T>())
 			{
+			}
+
+			CollectionEntity GetCollectionEntity() const override
+			{
+				return CollectionEntity::Unknown;
 			}
 
 			LazyList<T>& operator=(const LazyList<T>& lazyList)
 			{
-				enumeratorPrototype=lazyList.enumeratorPrototype;
+				// no need to clone enumeratorPrototype as it will never be iterated
+				enumeratorPrototype = lazyList.enumeratorPrototype;
+				return *this;
+			}
+
+			LazyList<T>& operator=(LazyList<T>&& lazyList)
+			{
+				enumeratorPrototype = lazyList.enumeratorPrototype;
+				lazyList.enumeratorPrototype = nullptr;
 				return *this;
 			}
 
@@ -7013,7 +7143,7 @@ LazyList
 				{
 					SortLambda<T, F>(&sorted->operator[](0), sorted->Count(), f);
 				}
-				return new ContainerEnumerator<T, List<T>>(sorted);
+				return sorted;
 			}
 
 			//-------------------------------------------------------

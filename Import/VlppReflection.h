@@ -5364,7 +5364,7 @@ ParameterAccessor<TContainer>
 		/// </p>
 		/// </remarks>
 		template<typename T, typename K = typename KeyType<T>::Type>
-		class ObservableListBase : public Object, public virtual collections::IEnumerable<T>
+		class ObservableListBase : public collections::EnumerableBase<T>
 		{
 		protected:
 			collections::List<T, K>					items;
@@ -5400,12 +5400,9 @@ ParameterAccessor<TContainer>
 			}
 
 		public:
-			ObservableListBase()
+			collections::CollectionEntity GetCollectionEntity() const override
 			{
-			}
-
-			~ObservableListBase()
-			{
+				return collections::CollectionEntity::ObservableListBase;
 			}
 
 			collections::IEnumerator<T>* CreateEnumerator()const
@@ -5589,6 +5586,10 @@ ParameterAccessor<TContainer>
 				}
 			}
 		public:
+			collections::CollectionEntity GetCollectionEntity() const override
+			{
+				return collections::CollectionEntity::ObservableList;
+			}
 
 			/// <summary>
 			/// Get the maintained observable list.

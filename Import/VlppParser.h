@@ -2269,23 +2269,25 @@ Syntax Analyzer
 					void								Reset()override;
 				};
 
-				class TokenLookAhead : public Object, public collections::IEnumerable<vint>
+				class TokenLookAhead : public collections::EnumerableBase<vint>
 				{
 				protected:
 					const ParsingTokenWalker*			walker;
 				public:
 					TokenLookAhead(const ParsingTokenWalker* _talker);
 
+					collections::CollectionEntity			GetCollectionEntity() const override;
 					collections::IEnumerator<vint>*			CreateEnumerator()const override;
 				};
 
-				class ReduceLookAhead : public Object, public collections::IEnumerable<vint>
+				class ReduceLookAhead : public collections::EnumerableBase<vint>
 				{
 				protected:
 					const ParsingTokenWalker*			walker;
 				public:
 					ReduceLookAhead(const ParsingTokenWalker* _walker);
 
+					collections::CollectionEntity			GetCollectionEntity() const override;
 					collections::IEnumerator<vint>*			CreateEnumerator()const override;
 				};
 
