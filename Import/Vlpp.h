@@ -1160,57 +1160,8 @@ Licensed under https://github.com/vczh-libraries/License
 #include <memory.h>
 namespace vl
 {
-
 	template<typename T>
 	class Func;
- 
-/***********************************************************************
-vl::function_lambda::LambdaRetriveType<R(TArgs...)>
-***********************************************************************/
- 
-	namespace function_lambda
-	{
-		template<typename T>
-		struct LambdaRetriveType
-		{
-		};
-
-		template<typename T>
-		struct FunctionObjectRetriveType
-		{
-			typedef typename LambdaRetriveType<decltype(&T::operator())>::Type Type;
-			typedef typename LambdaRetriveType<decltype(&T::operator())>::FunctionType FunctionType;
-			typedef typename LambdaRetriveType<decltype(&T::operator())>::ResultType ResultType;
-			typedef typename LambdaRetriveType<decltype(&T::operator())>::ParameterTypes ParameterTypes;
-		};
-
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-			typedef TypeTuple<TArgs...> ParameterTypes;
-		};
-
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-			typedef TypeTuple<TArgs...> ParameterTypes;
-		};
-
-		template<typename R, typename ...TArgs>
-		struct FunctionObjectRetriveType<R(*)(TArgs...)>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-			typedef TypeTuple<TArgs...> ParameterTypes;
-		};
-	}
  
 /***********************************************************************
 vl::Func<R(TArgs...)>
@@ -1430,11 +1381,34 @@ vl::Func<R(TArgs...)>
 	};
  
 /***********************************************************************
-LAMBDA
+vl::function_lambda::LambdaRetriveType<R(TArgs...)>
 ***********************************************************************/
  
 	namespace function_lambda
 	{
+		template<typename T>
+		struct LambdaRetriveType
+		{
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
+		{
+			typedef Func<R(TArgs...)> Type;
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
+		{
+			typedef Func<R(TArgs...)> Type;
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+
 		/// <summary>Create a functor in [T:vl.Func`1] from another functor, with all type arguments autotimatically inferred. The "LAMBDA" macro is recommended for the same purpose for writing compact code.</summary>
 		/// <typeparam name="T">Type of the functor to copy.</typeparam>
 		/// <returns>A copied functor in [T:vl.Func`1].</returns>
@@ -1445,20 +1419,7 @@ LAMBDA
 			return functionObject;
 		}
 
-		/// <summary>Create a functor in [T:vl.Func`1] from a function pointer, with all type arguments autotimatically inferred. The "FUNCTION" macro is recommended for the same purpose for writing compact code.</summary>
-		/// <typeparam name="T">Type of the function pointer.</typeparam>
-		/// <returns>A copied functor in [T:vl.Func`1].</returns>
-		/// <param name="functionObject">The function pointer.</param>
-		template<typename T>
-		typename FunctionObjectRetriveType<T>::Type ConvertToFunction(T functionObject)
-		{
-			return functionObject;
-		}
-
 #define LAMBDA vl::function_lambda::Lambda
-#define FUNCTION vl::function_lambda::ConvertToFunction
-#define FUNCTION_TYPE(T) typename vl::function_lambda::FunctionObjectRetriveType<T>::Type
-#define FUNCTION_RESULT_TYPE(T) typename vl::function_lambda::FunctionObjectRetriveType<T>::ResultType
 	}
  
 /***********************************************************************
@@ -4584,9 +4545,9 @@ Pairwise
 		protected:
 			IEnumerator<S>*					enumerator1;
 			IEnumerator<T>*					enumerator2;
-			Pair<S, T>						current;
+			Nullable<Pair<S, T>>			current;
 		public:
-			PairwiseEnumerator(IEnumerator<S>* _enumerator1, IEnumerator<T>* _enumerator2, Pair<S, T> _current=Pair<S, T>())
+			PairwiseEnumerator(IEnumerator<S>* _enumerator1, IEnumerator<T>* _enumerator2, Nullable<Pair<S, T>> _current = {})
 				:enumerator1(_enumerator1)
 				,enumerator2(_enumerator2)
 				,current(_current)
@@ -4606,7 +4567,7 @@ Pairwise
 
 			const Pair<S, T>& Current()const override
 			{
-				return current;
+				return current.Value();
 			}
 
 			vint Index()const override
@@ -4616,9 +4577,9 @@ Pairwise
 
 			bool Next()override
 			{
-				if(enumerator1->Next() && enumerator2->Next())
+				if (enumerator1->Next() && enumerator2->Next())
 				{
-					current=Pair<S, T>(enumerator1->Current(), enumerator2->Current());
+					current = Pair<S, T>(enumerator1->Current(), enumerator2->Current());
 					return true;
 				}
 				else
@@ -4670,9 +4631,9 @@ Select
 		protected:
 			IEnumerator<T>*		enumerator;
 			Func<K(T)>			selector;
-			K					current;
+			Nullable<K>			current;
 		public:
-			SelectEnumerator(IEnumerator<T>* _enumerator, const Func<K(T)>& _selector, K _current=K())
+			SelectEnumerator(IEnumerator<T>* _enumerator, const Func<K(T)>& _selector, Nullable<K> _current = {})
 				:enumerator(_enumerator)
 				,selector(_selector)
 				,current(_current)
@@ -4691,7 +4652,7 @@ Select
 
 			const K& Current()const override
 			{
-				return current;
+				return current.Value();
 			}
 
 			vint Index()const override
@@ -4701,9 +4662,9 @@ Select
 
 			bool Next()override
 			{
-				if(enumerator->Next())
+				if (enumerator->Next())
 				{
-					current=selector(enumerator->Current());
+					current = selector(enumerator->Current());
 					return true;
 				}
 				else
@@ -4939,7 +4900,7 @@ Distinct
 		protected:
 			IEnumerator<T>*		enumerator;
 			SortedList<T>		distinct;
-			T					lastValue;
+			Nullable<T>			lastValue;
 
 		public:
 			DistinctEnumerator(IEnumerator<T>* _enumerator)
@@ -4950,7 +4911,7 @@ Distinct
 			DistinctEnumerator(const DistinctEnumerator& _enumerator)
 				:lastValue(_enumerator.lastValue)
 			{
-				enumerator=_enumerator.enumerator->Clone();
+				enumerator = _enumerator.enumerator->Clone();
 				CopyFrom(distinct, _enumerator.distinct);
 			}
 
@@ -4966,7 +4927,7 @@ Distinct
 
 			const T& Current()const override
 			{
-				return lastValue;
+				return lastValue.Value();
 			}
 
 			vint Index()const override
@@ -4976,12 +4937,12 @@ Distinct
 
 			bool Next()override
 			{
-				while(enumerator->Next())
+				while (enumerator->Next())
 				{
-					const T& current=enumerator->Current();
-					if(!SortedListOperations<T>::Contains(distinct, current))
+					const T& current = enumerator->Current();
+					if (!SortedListOperations<T>::Contains(distinct, current))
 					{
-						lastValue=current;
+						lastValue = current;
 						distinct.Add(current);
 						return true;
 					}
@@ -5115,7 +5076,7 @@ FromIterator
 		public:
 			IEnumerator<T>* CreateEnumerator()const
 			{
-				return new Enumerator(begin, end, begin-1);
+				return new Enumerator(begin, end, begin - 1);
 			}
 
 			FromIteratorEnumerable(I _begin, I _end)
@@ -6840,7 +6801,7 @@ Quick Sort
 				vint candidate = (flag ? left : length - right - 1);
 				vint factor = (flag ? -1 : 1);
 
-				if (orderer(items[pivot], items[candidate])*factor <= 0)
+				if (orderer(items[pivot], items[candidate]) * factor <= 0)
 				{
 					mine++;
 				}
@@ -6901,6 +6862,8 @@ LazyList
 			{
 				return enumeratorPrototype->Clone();
 			}
+
+			using TInput = decltype(std::declval<IEnumerator<T>>().Current());
 		public:
 			/// <summary>Create a lazy list from an enumerator. This enumerator will be deleted when this lazy list is deleted.</summary>
 			/// <param name="enumerator">The enumerator.</param>
@@ -6971,9 +6934,9 @@ LazyList
 			/// }
 			/// ]]></example>
 			template<typename F>
-			LazyList<FUNCTION_RESULT_TYPE(F)> Select(F f)const
+			auto Select(F f) const -> LazyList<decltype(f(std::declval<TInput>()))>
 			{
-				return new SelectEnumerator<T, FUNCTION_RESULT_TYPE(F)>(xs(), f);
+				return new SelectEnumerator<T, decltype(f(std::declval<TInput>()))>(xs(), f);
 			}
 			
 			/// <summary>Create a new lazy list with all elements filtered.</summary>
@@ -7005,7 +6968,7 @@ LazyList
 			template<typename U>
 			LazyList<Ptr<U>> Cast()const
 			{
-				Func<Ptr<U>(T)> f=[](T t)->Ptr<U>{return t.template Cast<U>();};
+				Func<Ptr<U>(T)> f = [](T t)->Ptr<U> {return t.template Cast<U>(); };
 				return new SelectEnumerator<T, Ptr<U>>(xs(), f);
 			}
 			
@@ -7020,7 +6983,7 @@ LazyList
 			template<typename U>
 			LazyList<Ptr<U>> FindType()const
 			{
-				return Cast<U>().Where([](Ptr<U> t){return t;});
+				return Cast<U>().Where([](Ptr<U> t) {return t; });
 			}
 			
 			/// <summary>Create a new lazy list with all elements sorted.</summary>
@@ -7044,9 +7007,9 @@ LazyList
 			template<typename F>
 			LazyList<T> OrderBy(F f)const
 			{
-				Ptr<List<T>> sorted=new List<T>;
+				Ptr<List<T>> sorted = new List<T>;
 				CopyFrom(*sorted.Obj(), *this);
-				if(sorted->Count()>0)
+				if (sorted->Count() > 0)
 				{
 					SortLambda<T, F>(&sorted->operator[](0), sorted->Count(), f);
 				}
@@ -7076,15 +7039,15 @@ LazyList
 			template<typename F>
 			T Aggregate(F f)const
 			{
-				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
-				if(!enumerator->Next())
+				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				if (!enumerator->Next())
 				{
 					throw Error(L"LazyList<T>::Aggregate(F)#Aggregate failed to calculate from an empty container.");
 				}
-				T result=enumerator->Current();
-				while(enumerator->Next())
+				T result = enumerator->Current();
+				while (enumerator->Next())
 				{
-					result=f(result, enumerator->Current());
+					result = f(result, enumerator->Current());
 				}
 				return result;
 			}
@@ -7133,7 +7096,7 @@ LazyList
 			template<typename F>
 			bool All(F f)const
 			{
-				return Select(f).Aggregate(true, [](bool a, bool b){return a&&b;});
+				return Select(f).Aggregate(true, [](bool a, bool b) { return a && b; });
 			}
 			
 			/// <summary>Test if any elements in the lazy list satisfy a filter.</summary>
@@ -7151,7 +7114,7 @@ LazyList
 			template<typename F>
 			bool Any(F f)const
 			{
-				return Select(f).Aggregate(false, [](bool a, bool b){return a||b;});
+				return Select(f).Aggregate(false, [](bool a, bool b) { return a || b; });
 			}
 
 			/// <summary>Get the maximum value in the lazy list. It will crash if the lazy list is empty.</summary>
@@ -7166,7 +7129,7 @@ LazyList
 			/// ]]></example>
 			T Max()const
 			{
-				return Aggregate([](T a, T b){return a>b?a:b;});
+				return Aggregate([](T a, T b) { return a > b ? a : b; });
 			}
 			
 			/// <summary>Get the minimum value in the lazy list. It will crash if the lazy list is empty.</summary>
@@ -7181,15 +7144,15 @@ LazyList
 			/// ]]></example>
 			T Min()const
 			{
-				return Aggregate([](T a, T b){return a<b?a:b;});
+				return Aggregate([](T a, T b) { return a < b ? a : b; });
 			}
 			
 			/// <summary>Get the first value in the lazy list. It will crash if the lazy list is empty.</summary>
 			/// <returns>The first value.</returns>
 			T First()const
 			{
-				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
-				if(!enumerator->Next())
+				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				if (!enumerator->Next())
 				{
 					throw Error(L"LazyList<T>::First(F)#First failed to calculate from an empty container.");
 				}
@@ -7201,8 +7164,8 @@ LazyList
 			/// <param name="defaultValue">The argument to return if the lazy list is empty.</param>
 			T First(T defaultValue)const
 			{
-				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
-				if(!enumerator->Next())
+				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				if (!enumerator->Next())
 				{
 					return defaultValue;
 				}
@@ -7213,17 +7176,17 @@ LazyList
 			/// <returns>The last value.</returns>
 			T Last()const
 			{
-				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
-				if(!enumerator->Next())
+				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				if (!enumerator->Next())
 				{
 					throw Error(L"LazyList<T>::Last(F)#Last failed to calculate from an empty container.");
 				}
 				else
 				{
-					T value=enumerator->Current();
-					while(enumerator->Next())
+					T value = enumerator->Current();
+					while (enumerator->Next())
 					{
-						value=enumerator->Current();
+						value = enumerator->Current();
 					}
 					return value;
 				}
@@ -7234,10 +7197,10 @@ LazyList
 			/// <param name="defaultValue">The argument to return if the lazy list is empty.</param>
 			T Last(T defaultValue)const
 			{
-				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
-				while(enumerator->Next())
+				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				while (enumerator->Next())
 				{
-					defaultValue=enumerator->Current();
+					defaultValue = enumerator->Current();
 				}
 				return defaultValue;
 			}
@@ -7246,9 +7209,9 @@ LazyList
 			/// <returns>The number of elements.</returns>
 			vint Count()const
 			{
-				vint result=0;
-				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
-				while(enumerator->Next())
+				vint result = 0;
+				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				while (enumerator->Next())
 				{
 					result++;
 				}
@@ -7259,7 +7222,7 @@ LazyList
 			/// <returns>Returns true if the lazy list is empty.</returns>
 			bool IsEmpty()const
 			{
-				Ptr<IEnumerator<T>> enumerator=CreateEnumerator();
+				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
 				return !enumerator->Next();
 			}
 
@@ -7487,11 +7450,10 @@ LazyList
 			/// }
 			/// ]]></example>
 			template<typename F>
-			FUNCTION_RESULT_TYPE(F) SelectMany(F f)const
+			auto SelectMany(F f)const -> LazyList<typename decltype(f(std::declval<TInput>()))::ElementType>
 			{
-				typedef FUNCTION_RESULT_TYPE(F) LazyListU;
-				typedef typename LazyListU::ElementType U;
-				return Select(f).Aggregate(LazyList<U>(), [](const LazyList<U>& a, const IEnumerable<U>& b)->LazyList<U>{return a.Concat(b);});
+				using  U = typename decltype(f(std::declval<TInput>()))::ElementType;
+				return Select(f).Aggregate(LazyList<U>(), [](const LazyList<U>& a, const IEnumerable<U>& b)->LazyList<U> {return a.Concat(b); });
 			}
 
 			/// <summary>Create a new lazy list, with elements from this lazy list grouped by a key function.</summary>
@@ -7518,9 +7480,9 @@ LazyList
 			/// }
 			/// ]]></example>
 			template<typename F>
-			LazyList<Pair<FUNCTION_RESULT_TYPE(F), LazyList<T>>> GroupBy(F f)const
+			auto GroupBy(F f)const -> LazyList<Pair<decltype(f(std::declval<TInput>())), LazyList<T>>>
 			{
-				typedef FUNCTION_RESULT_TYPE(F) K;
+				using K = decltype(f(std::declval<TInput>()));
 				auto self = *this;
 				return Select(f)
 					.Distinct()
@@ -7528,7 +7490,7 @@ LazyList
 					{
 						return Pair<K, LazyList<T>>(
 							k,
-							self.Where([=](T t){return k==f(t);})
+							self.Where([=](T t) {return k == f(t); })
 							);
 					});
 			}
