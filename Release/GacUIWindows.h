@@ -1431,12 +1431,14 @@ UniscribeColor
 				UniscribeColorRange(){}
 				UniscribeColorRange(vint _start, vint _end):start(_start),end(_end){}
 
-				bool operator==(const UniscribeColorRange& range) const { return start==range.start; }
-				bool operator!=(const UniscribeColorRange& range) const { return start!=range.start; }
-				bool operator<(const UniscribeColorRange& range) const { return start<range.start; }
-				bool operator<=(const UniscribeColorRange& range) const { return start<=range.start; }
-				bool operator>(const UniscribeColorRange& range) const { return start>range.start; }
-				bool operator>=(const UniscribeColorRange& range) const { return start>=range.start; }
+				inline vint Compare(const UniscribeColorRange& value)const
+				{
+					vint result;
+					if ((result = start - value.start) != 0) return result;
+					if ((result = end - value.end) != 0) return result;
+					return 0;
+				}
+				GUI_DEFINE_COMPARE_OPERATORS(UniscribeColorRange)
 			};
 
 			struct UniscribeColor
@@ -1447,8 +1449,14 @@ UniscribeColor
 				UniscribeColor(){}
 				UniscribeColor(Color _fontColor, Color _backgroundColor):fontColor(_fontColor),backgroundColor(_backgroundColor){}
 
-				bool operator==(const UniscribeColor& color) const { return fontColor==color.fontColor && backgroundColor==color.backgroundColor; }
-				bool operator!=(const UniscribeColor& color) const { return fontColor!=color.fontColor || backgroundColor!=color.backgroundColor; }
+				inline vint Compare(const UniscribeColor& value)const
+				{
+					vint result;
+					if ((result = fontColor.Compare(value.fontColor)) != 0) return result;
+					if ((result = backgroundColor.Compare(value.backgroundColor)) != 0) return result;
+					return 0;
+				}
+				GUI_DEFINE_COMPARE_OPERATORS(UniscribeColor)
 			};
 		}
 	}

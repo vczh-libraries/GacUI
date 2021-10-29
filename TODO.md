@@ -2,10 +2,6 @@
 
 ## Issues
 
-- Search for all `->ItemChanged.Add`:
-  - Check if `Remove` is ensured
-  - When using item sources, ensure that it is still alive
-
 ## OS Provider Features
 
 - Drag and Drop framework.

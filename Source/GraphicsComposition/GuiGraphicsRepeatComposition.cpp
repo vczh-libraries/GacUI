@@ -83,6 +83,10 @@ GuiRepeatCompositionBase
 
 			GuiRepeatCompositionBase::~GuiRepeatCompositionBase()
 			{
+				if (itemChangedHandler)
+				{
+					itemSource.Cast<IValueObservableList>()->ItemChanged.Remove(itemChangedHandler);
+				}
 			}
 
 			GuiRepeatCompositionBase::ItemStyleProperty GuiRepeatCompositionBase::GetItemTemplate()

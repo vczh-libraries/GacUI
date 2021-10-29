@@ -645,7 +645,11 @@ DataProvider
 
 				DataProvider::~DataProvider()
 				{
-					SetItemSource(nullptr);
+					if (itemChangedEventHandler)
+					{
+						auto ol = itemSource.Cast<IValueObservableList>();
+						ol->ItemChanged.Remove(itemChangedEventHandler);
+					}
 				}
 
 				Ptr<IDataFilter> DataProvider::GetAdditionalFilter()

@@ -22,7 +22,11 @@ GuiBindableTextList::ItemSource
 
 			GuiBindableTextList::ItemSource::~ItemSource()
 			{
-				SetItemSource(nullptr);
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
 			}
 
 			Ptr<description::IValueEnumerable> GuiBindableTextList::ItemSource::GetItemSource()
@@ -229,7 +233,11 @@ GuiBindableListView::ItemSource
 
 			GuiBindableListView::ItemSource::~ItemSource()
 			{
-				SetItemSource(nullptr);
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
 			}
 
 			Ptr<description::IValueEnumerable> GuiBindableListView::ItemSource::GetItemSource()
@@ -682,7 +690,11 @@ GuiBindableTreeView::ItemSourceNode
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
-				SetItemSource({});
+				if (itemChangedEventHandler)
+				{
+					auto ol = childrenVirtualList.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
 			}
 
 			description::Value GuiBindableTreeView::ItemSourceNode::GetItemSource()

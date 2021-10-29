@@ -224,12 +224,14 @@ WindowsDirect2DParagraph
 					TextRange(){}
 					TextRange(vint _start, vint _end):start(_start),end(_end){}
 
-					bool operator==(const TextRange& range) const { return start==range.start; }
-					bool operator!=(const TextRange& range) const { return start!=range.start; }
-					bool operator<(const TextRange& range) const { return start<range.start; }
-					bool operator<=(const TextRange& range) const { return start<=range.start; }
-					bool operator>(const TextRange& range) const { return start>range.start; }
-					bool operator>=(const TextRange& range) const { return start>=range.start; }
+					inline vint Compare(const TextRange& value)const
+					{
+						vint result;
+						if ((result = start - value.start) != 0) return result;
+						if ((result = end - value.end) != 0) return result;
+						return 0;
+					}
+					GUI_DEFINE_COMPARE_OPERATORS(TextRange)
 				};
 
 				typedef Dictionary<IGuiGraphicsElement*, ComPtr<WindowsDirect2DElementInlineObject>>	InlineElementMap;

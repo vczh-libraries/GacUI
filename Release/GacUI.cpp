@@ -5472,6 +5472,11 @@ DataProvider
 
 				DataProvider::~DataProvider()
 				{
+					if (itemChangedEventHandler)
+					{
+						auto ol = itemSource.Cast<IValueObservableList>();
+						ol->ItemChanged.Remove(itemChangedEventHandler);
+					}
 				}
 
 				Ptr<IDataFilter> DataProvider::GetAdditionalFilter()
@@ -5829,7 +5834,11 @@ GuiBindableTextList::ItemSource
 
 			GuiBindableTextList::ItemSource::~ItemSource()
 			{
-				SetItemSource(nullptr);
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
 			}
 
 			Ptr<description::IValueEnumerable> GuiBindableTextList::ItemSource::GetItemSource()
@@ -6036,7 +6045,11 @@ GuiBindableListView::ItemSource
 
 			GuiBindableListView::ItemSource::~ItemSource()
 			{
-				SetItemSource(nullptr);
+				if (itemChangedEventHandler)
+				{
+					auto ol = itemSource.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
 			}
 
 			Ptr<description::IValueEnumerable> GuiBindableListView::ItemSource::GetItemSource()
@@ -6489,6 +6502,11 @@ GuiBindableTreeView::ItemSourceNode
 
 			GuiBindableTreeView::ItemSourceNode::~ItemSourceNode()
 			{
+				if (itemChangedEventHandler)
+				{
+					auto ol = childrenVirtualList.Cast<IValueObservableList>();
+					ol->ItemChanged.Remove(itemChangedEventHandler);
+				}
 			}
 
 			description::Value GuiBindableTreeView::ItemSourceNode::GetItemSource()
@@ -26084,6 +26102,10 @@ GuiRepeatCompositionBase
 
 			GuiRepeatCompositionBase::~GuiRepeatCompositionBase()
 			{
+				if (itemChangedHandler)
+				{
+					itemSource.Cast<IValueObservableList>()->ItemChanged.Remove(itemChangedHandler);
+				}
 			}
 
 			GuiRepeatCompositionBase::ItemStyleProperty GuiRepeatCompositionBase::GetItemTemplate()
