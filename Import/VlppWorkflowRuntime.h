@@ -53,9 +53,10 @@ Instruction
 				Duplicate,				// count				: () -> Value														; copy stack[stack.Count()-1-count]
 				Pop,					//						: Value -> ()														;
 				Return,					//						: Value -> Value													; (exit function)
-				CreateArray,			// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
-				CreateObservableList,	// count				: Value-count, ..., Value-1 -> <observable-list>					; {1 2 3} -> <3 2 1>
-				CreateMap,				// count				: Value-count*2, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
+				NewArray,				// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
+				NewList,				// count				: Value-count, ..., Value-1 -> <array>								; {1 2 3} -> <3 2 1>
+				NewObservableList,		// count				: Value-count, ..., Value-1 -> <observable-list>					; {1 2 3} -> <3 2 1>
+				NewDictionary,			// count				: Value-count*2, ..., Value-1 -> <map>								; {1:2 3:4} -> <3 4 1 2>
 				CreateClosureContext,	// count				: Value-1, ..., Value-count -> <closure-context>					;
 				CreateClosure,			//						: <closure-context>, Value-function-index -> <closure>				;
 				CreateInterface,		// IMethodInfo*, count	: <closure-context>, Value-count, ..., Value-1 -> <map>				; {"Get":a "Set":b} -> new TInterface(InterfaceProxy^)
@@ -126,9 +127,10 @@ Instruction
 			APPLY_COUNT(Duplicate)\
 			APPLY(Pop)\
 			APPLY(Return)\
-			APPLY_COUNT(CreateArray)\
-			APPLY_COUNT(CreateObservableList)\
-			APPLY_COUNT(CreateMap)\
+			APPLY_COUNT(NewArray)\
+			APPLY_COUNT(NewList)\
+			APPLY_COUNT(NewObservableList)\
+			APPLY_COUNT(NewDictionary)\
 			APPLY_COUNT(CreateClosureContext)\
 			APPLY(CreateClosure)\
 			APPLY_METHOD_COUNT(CreateInterface)\

@@ -9512,10 +9512,12 @@ IsExpressionDependOnExpectedType(Expression)
 			{
 			public:
 				WfLexicalScopeManager*				manager;
+				bool								hasExpectedType;
 				bool								result = false;
 
-				IsExpressionDependOnExpectedTypeVisitor(WfLexicalScopeManager* _manager)
+				IsExpressionDependOnExpectedTypeVisitor(WfLexicalScopeManager* _manager, bool _hasExpectedType)
 					:manager(_manager)
+					, hasExpectedType(_hasExpectedType)
 				{
 				}
 
@@ -9576,7 +9578,7 @@ IsExpressionDependOnExpectedType(Expression)
 
 				void Visit(WfConstructorExpression* node)override
 				{
-					if (node->arguments.Count() == 0)
+					if (hasExpectedType || node->arguments.Count() == 0)
 					{
 						result = true;
 					}
@@ -9613,9 +9615,9 @@ IsExpressionDependOnExpectedType(Expression)
 				}
 			};
 
-			bool IsExpressionDependOnExpectedType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression)
+			bool IsExpressionDependOnExpectedType(WfLexicalScopeManager* manager, Ptr<WfExpression> expression, bool hasExpectedType)
 			{
-				IsExpressionDependOnExpectedTypeVisitor visitor(manager);
+				IsExpressionDependOnExpectedTypeVisitor visitor(manager, hasExpectedType);
 				expression->Accept(&visitor);
 				return visitor.result;
 			}
@@ -11081,7 +11083,7 @@ Helper Functions
 				List<Ptr<ITypeInfo>> types;
 				for (auto argument : arguments)
 				{
-					if (!argument || IsExpressionDependOnExpectedType(manager, argument))
+					if (!argument || IsExpressionDependOnExpectedType(manager, argument, true))
 					{
 						resolvables.Add(false);
 						types.Add(nullptr);
@@ -12631,6 +12633,12 @@ ValidateSemantic(Expression)
 										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 									}
+									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
+									{
+										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
+										leftValue = true;
+									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
 										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
@@ -12665,6 +12673,12 @@ ValidateSemantic(Expression)
 									{
 										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
+									}
+									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
+									{
+										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
+										leftValue = true;
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
@@ -12767,7 +12781,7 @@ ValidateSemantic(Expression)
 					else if (node->op == WfBinaryOperator::FailedThen)
 					{
 						Ptr<ITypeInfo> firstType = GetExpressionType(manager, node->first, 0);
-						bool depend = IsExpressionDependOnExpectedType(manager, node->second);
+						bool depend = IsExpressionDependOnExpectedType(manager, node->second, firstType);
 						Ptr<ITypeInfo> secondType = GetExpressionType(manager, node->second, (depend ? firstType : nullptr));
 
 						if (firstType && secondType)
@@ -12978,8 +12992,8 @@ ValidateSemantic(Expression)
 					}
 					else
 					{
-						bool resolveFirst = !IsExpressionDependOnExpectedType(manager, node->trueBranch);
-						bool resolveSecond = !IsExpressionDependOnExpectedType(manager, node->falseBranch);
+						bool resolveFirst = !IsExpressionDependOnExpectedType(manager, node->trueBranch, false);
+						bool resolveSecond = !IsExpressionDependOnExpectedType(manager, node->falseBranch, false);
 
 						if (resolveFirst == resolveSecond)
 						{
@@ -13182,6 +13196,7 @@ ValidateSemantic(Expression)
 										}
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>()
+										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
 										|| genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>())
@@ -13250,9 +13265,29 @@ ValidateSemantic(Expression)
 							if (keyType)
 							{
 								Ptr<ITypeInfo> classType;
-								if (expectedType && expectedType->GetTypeDescriptor()==description::GetTypeDescriptor<IValueObservableList>())
+								if (expectedType)
 								{
-									classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueObservableList>(), TypeInfoHint::Normal);
+									switch (expectedType->GetHint())
+									{
+									case TypeInfoHint::ObservableList:
+										classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueObservableList>(), expectedType->GetHint());
+										break;
+									case TypeInfoHint::Array:
+										classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueArray>(), expectedType->GetHint());
+										break;
+									case TypeInfoHint::Normal:
+										if (expectedType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
+										{
+											classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueObservableList>(), expectedType->GetHint());
+										}
+										else
+										{
+											classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), expectedType->GetHint());
+										}
+										break;
+									default:
+										classType = MakePtr<TypeDescriptorTypeInfo>(description::GetTypeDescriptor<IValueList>(), expectedType->GetHint());
+									}
 								}
 								else
 								{
@@ -14450,7 +14485,7 @@ ValidateSemantic(Statement)
 					for (auto switchCase : node->caseBranches)
 					{
 						Ptr<ITypeInfo> caseType;
-						if (IsExpressionDependOnExpectedType(manager, switchCase->expression))
+						if (IsExpressionDependOnExpectedType(manager, switchCase->expression, type))
 						{
 							caseType = GetExpressionType(manager, switchCase->expression, type);
 						}
@@ -25820,14 +25855,23 @@ GenerateInstructions(Expression)
 					}
 					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueEnumerable>()
 						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>()
-						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+						|| result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
 					{
 						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
 						for (auto argument : From(node->arguments).Reverse())
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
-						INSTRUCTION(Ins::CreateArray(node->arguments.Count()));
+						INSTRUCTION(Ins::NewArray(node->arguments.Count()));
+					}
+					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+					{
+						Ptr<ITypeInfo> keyType = CopyTypeInfo(result.type->GetElementType()->GetGenericArgument(0));
+						for (auto argument : From(node->arguments).Reverse())
+						{
+							GenerateExpressionInstructions(context, argument->key, keyType);
+						}
+						INSTRUCTION(Ins::NewList(node->arguments.Count()));
 					}
 					else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 					{
@@ -25836,7 +25880,7 @@ GenerateInstructions(Expression)
 						{
 							GenerateExpressionInstructions(context, argument->key, keyType);
 						}
-						INSTRUCTION(Ins::CreateObservableList(node->arguments.Count()));
+						INSTRUCTION(Ins::NewObservableList(node->arguments.Count()));
 					}
 					else
 					{
@@ -25847,7 +25891,7 @@ GenerateInstructions(Expression)
 							GenerateExpressionInstructions(context, argument->key, keyType);
 							GenerateExpressionInstructions(context, argument->value, valueType);
 						}
-						INSTRUCTION(Ins::CreateMap(node->arguments.Count() * 2));
+						INSTRUCTION(Ins::NewDictionary(node->arguments.Count() * 2));
 					}
 				}
 

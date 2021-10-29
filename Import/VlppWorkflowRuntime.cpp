@@ -3627,7 +3627,23 @@ WfRuntimeThreadContext
 						}
 						return WfRuntimeExecutionAction::ExitStackFrame;
 					}
-				case WfInsCode::CreateArray:
+				case WfInsCode::NewArray:
+					{
+						auto list = IValueArray::Create();
+						if (ins.countParameter > 0)
+						{
+							list->Resize(ins.countParameter);
+							Value operand;
+							for (vint i = 0; i < ins.countParameter; i++)
+							{
+								CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+								list->Set(i, operand);
+							}
+						}
+						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::NewList:
 					{
 						auto list = IValueList::Create();
 						Value operand;
@@ -3639,19 +3655,19 @@ WfRuntimeThreadContext
 						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-				case WfInsCode::CreateObservableList:
-				{
-					auto list = IValueObservableList::Create();
-					Value operand;
-					for (vint i = 0; i < ins.countParameter; i++)
+				case WfInsCode::NewObservableList:
 					{
-						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
-						list->Add(operand);
+						auto list = IValueObservableList::Create();
+						Value operand;
+						for (vint i = 0; i < ins.countParameter; i++)
+						{
+							CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+							list->Add(operand);
+						}
+						CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
-					CONTEXT_ACTION(PushValue(Value::From(list)), L"failed to push a value to the stack.");
-					return WfRuntimeExecutionAction::ExecuteInstruction;
-				}
-				case WfInsCode::CreateMap:
+				case WfInsCode::NewDictionary:
 					{
 						auto map = IValueDictionary::Create();
 						Value key, value;

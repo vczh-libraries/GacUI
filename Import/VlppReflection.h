@@ -6630,11 +6630,19 @@ ParameterAccessor<TContainer>
 			};
 
 			template<typename T>
-			struct ParameterAccessor<collections::ObservableList<T>, TypeFlags::ObservableListType>
+			struct ParameterAccessor<T, TypeFlags::ObservableListType>
 			{
-				static Value BoxParameter(collections::ObservableList<T>& object, ITypeDescriptor* typeDescriptor)
+				static Value BoxParameter(T& object, ITypeDescriptor* typeDescriptor)
 				{
 					return GetValueFromEnumerable<IValueObservableList>(object);
+				}
+
+				static void UnboxParameter(const Value& value, T& result, ITypeDescriptor* typeDescriptor, const WString& valueName)
+				{
+					typedef typename T::ElementType ElementType;
+					Ptr<IValueObservableList> listProxy = UnboxValue<Ptr<IValueObservableList>>(value, typeDescriptor, valueName);
+					collections::LazyList<ElementType> lazyList = GetLazyList<ElementType>(listProxy);
+					collections::CopyFrom(result, lazyList);
 				}
 			};
 
