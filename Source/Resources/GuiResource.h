@@ -74,13 +74,8 @@ Global String Key
 			vint									key = -1;
 
 		public:
-			static vint Compare(GlobalStringKey a, GlobalStringKey b){ return a.key - b.key; }
-			bool operator==(GlobalStringKey g)const{ return key == g.key; }
-			bool operator!=(GlobalStringKey g)const{ return key != g.key; }
-			bool operator<(GlobalStringKey g)const{ return key < g.key; }
-			bool operator<=(GlobalStringKey g)const{ return key <= g.key; }
-			bool operator>(GlobalStringKey g)const{ return key > g.key; }
-			bool operator>=(GlobalStringKey g)const{ return key >= g.key; }
+			inline vint Compare(GlobalStringKey value)const{ return key - value.key; }
+			GUI_DEFINE_COMPARE_OPERATORS(GlobalStringKey)
 
 			static GlobalStringKey					Get(const WString& string);
 			vint									ToKey()const;

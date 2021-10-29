@@ -41,19 +41,14 @@ Ribbon Gallery List
 				{
 				}
 
-				vint Compare(GalleryPos value)const
+				inline vint Compare(const GalleryPos& value)const
 				{
-					vint result = group - value.group;
-					if (result != 0) return result;
-					return item - value.item;
+					vint result;
+					if ((result = group - value.group) != 0) return result;
+					if ((result = item - value.item) != 0) return result;
+					return 0;
 				}
-
-				bool operator==(const GalleryPos& value)const { return Compare(value) == 0; }
-				bool operator!=(const GalleryPos& value)const { return Compare(value) != 0; }
-				bool operator<(const GalleryPos& value)const { return Compare(value)<0; }
-				bool operator<=(const GalleryPos& value)const { return Compare(value) <= 0; }
-				bool operator>(const GalleryPos& value)const { return Compare(value)>0; }
-				bool operator>=(const GalleryPos& value)const { return Compare(value) >= 0; }
+				GUI_DEFINE_COMPARE_OPERATORS(GalleryPos)
 			};
 
 			namespace list

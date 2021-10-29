@@ -5195,6 +5195,22 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     constructor () : presentation::theme::ThemeTemplates^;
 }
 
+@FullName:vl::reflection::description::IValueArray
+interface system::Array : system::ReadonlyList {
+    function Resize(size : system::Int32) : system::Void;
+    function Set(index : system::Int32, value : system::Object) : system::Void;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueArray>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueArray>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::Array^;
+    @InvokeTemplate:::vl::reflection::description::IValueArray::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueArray::Create)
+    constructor () : system::Array^;
+    @InvokeTemplate:::vl::reflection::description::IValueArray::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueArray::Create)
+    constructor (values : system::ReadonlyList^) : system::Array^;
+}
+
 @FullName:vl::reflection::description::IAsync
 interface system::Async : system::Interface {
     property Status : system::AsyncStatus { get:GetStatus }
@@ -6021,13 +6037,13 @@ interface system::reflection::MethodInfo : system::reflection::MemberInfo, syste
     property ParameterCount : system::Int32 { get:GetParameterCount }
     property Return : system::reflection::TypeInfo* { get:GetReturn }
 
-    function CheckArguments(arguments : system::List<system::Object>^) : system::Void;
+    function CheckArguments(arguments : system::Array<system::Object>^) : system::Void;
     function GetOwnerMethodGroup() : system::reflection::MethodGroupInfo*;
     function GetOwnerProperty() : system::reflection::PropertyInfo*;
     function GetParameter(index : system::Int32) : system::reflection::ParameterInfo*;
     function GetParameterCount() : system::Int32;
     function GetReturn() : system::reflection::TypeInfo*;
-    function Invoke(thisObject : system::Object, arguments : system::List<system::Object>^) : system::Object;
+    function Invoke(thisObject : system::Object, arguments : system::Array<system::Object>^) : system::Object;
     function IsStatic() : system::Boolean;
 
 }

@@ -60,6 +60,14 @@ Enumerations
 			UpRight,
 		};
 
+#define GUI_DEFINE_COMPARE_OPERATORS(TYPE)\
+		inline bool operator==(const TYPE& right)const { return Compare(right) == 0; } \
+		inline bool operator!=(const TYPE& right)const { return Compare(right) != 0; } \
+		inline bool operator< (const TYPE& right)const { return Compare(right) < 0; }  \
+		inline bool operator<=(const TYPE& right)const { return Compare(right) <= 0; } \
+		inline bool operator> (const TYPE& right)const { return Compare(right) > 0; }  \
+		inline bool operator>=(const TYPE& right)const { return Compare(right) >= 0; } \
+
 /***********************************************************************
 TextPos
 ***********************************************************************/
@@ -88,21 +96,14 @@ TextPos
 			{
 			}
 
-			vint Compare(const TextPos& value)const
+			inline vint Compare(const TextPos& value)const
 			{
-				if(row<value.row) return -1;
-				if(row>value.row) return 1;
-				if(column<value.column) return -1;
-				if(column>value.column) return 1;
+				vint result;
+				if ((result = row - value.row) != 0) return result;
+				if ((result = column - value.column) != 0) return result;
 				return 0;
 			}
-
-			bool operator==(const TextPos& value)const {return Compare(value)==0;}
-			bool operator!=(const TextPos& value)const {return Compare(value)!=0;}
-			bool operator<(const TextPos& value)const {return Compare(value)<0;}
-			bool operator<=(const TextPos& value)const {return Compare(value)<=0;}
-			bool operator>(const TextPos& value)const {return Compare(value)>0;}
-			bool operator>=(const TextPos& value)const {return Compare(value)>=0;}
+			GUI_DEFINE_COMPARE_OPERATORS(TextPos)
 		};
 
 /***********************************************************************
@@ -133,21 +134,14 @@ GridPos
 			{
 			}
 
-			vint Compare(const GridPos& value)const
+			inline vint Compare(const GridPos& value)const
 			{
-				if(row<value.row) return -1;
-				if(row>value.row) return 1;
-				if(column<value.column) return -1;
-				if(column>value.column) return 1;
+				vint result;
+				if ((result = row - value.row) != 0) return result;
+				if ((result = column - value.column) != 0) return result;
 				return 0;
 			}
-
-			bool operator==(const GridPos& value)const {return Compare(value)==0;}
-			bool operator!=(const GridPos& value)const {return Compare(value)!=0;}
-			bool operator<(const GridPos& value)const {return Compare(value)<0;}
-			bool operator<=(const GridPos& value)const {return Compare(value)<=0;}
-			bool operator>(const GridPos& value)const {return Compare(value)>0;}
-			bool operator>=(const GridPos& value)const {return Compare(value)>=0;}
+			GUI_DEFINE_COMPARE_OPERATORS(GridPos)
 		};
 
 /***********************************************************************
@@ -173,12 +167,8 @@ Coordinate
 			NativeCoordinate& operator=(const NativeCoordinate& _value) = default;
 			NativeCoordinate& operator=(NativeCoordinate&& _value) = default;
 
-			inline bool operator==(NativeCoordinate c)const { return value == c.value; };
-			inline bool operator!=(NativeCoordinate c)const { return value != c.value; };
-			inline bool operator<(NativeCoordinate c)const { return value < c.value; };
-			inline bool operator<=(NativeCoordinate c)const { return value <= c.value; };
-			inline bool operator>(NativeCoordinate c)const { return value > c.value; };
-			inline bool operator>=(NativeCoordinate c)const { return value >= c.value; };
+			inline vint Compare(NativeCoordinate c) const { return value - c.value; }
+			GUI_DEFINE_COMPARE_OPERATORS(NativeCoordinate)
 
 			inline NativeCoordinate operator+(NativeCoordinate c)const { return value + c.value; };
 			inline NativeCoordinate operator-(NativeCoordinate c)const { return value - c.value; };
@@ -190,6 +180,9 @@ Coordinate
 			inline NativeCoordinate& operator*=(NativeCoordinate c) { value *= c.value; return *this; };
 			inline NativeCoordinate& operator/=(NativeCoordinate c) { value /= c.value; return *this; };
 		};
+
+		inline vint CompareCoordinate(vint a, vint b) { return a - b; }
+		inline vint CompareCoordinate(NativeCoordinate a, NativeCoordinate b) { return a.value - b.value; }
 
 /***********************************************************************
 Point
@@ -221,15 +214,14 @@ Point
 			{
 			}
 
-			bool operator==(Point_<T> point)const
+			inline vint Compare(const Point_<T>& value)const
 			{
-				return x == point.x && y == point.y;
+				vint result;
+				if ((result = CompareCoordinate(x, value.x)) != 0) return result;
+				if ((result = CompareCoordinate(y, value.y)) != 0) return result;
+				return 0;
 			}
-
-			bool operator!=(Point_<T> point)const
-			{
-				return x != point.x || y != point.y;
-			}
+			GUI_DEFINE_COMPARE_OPERATORS(Point_<T>)
 		};
 
 		using Point = Point_<GuiCoordinate>;
@@ -265,15 +257,14 @@ Size
 			{
 			}
 
-			bool operator==(Size_<T> size)const
+			inline vint Compare(const Size_<T>& value)const
 			{
-				return x == size.x && y == size.y;
+				vint result;
+				if ((result = CompareCoordinate(x, value.x)) != 0) return result;
+				if ((result = CompareCoordinate(y, value.y)) != 0) return result;
+				return 0;
 			}
-
-			bool operator!=(Size_<T> size)const
-			{
-				return x != size.x || y != size.y;
-			}
+			GUI_DEFINE_COMPARE_OPERATORS(Size_<T>)
 		};
 
 		using Size = Size_<GuiCoordinate>;
@@ -322,15 +313,16 @@ Rectangle
 			{
 			}
 
-			bool operator==(Rect_<T> rect)const
+			inline vint Compare(const Rect_<T>& value)const
 			{
-				return x1 == rect.x1 && y1 == rect.y1 && x2 == rect.x2 && y2 == rect.y2;
+				vint result;
+				if ((result = CompareCoordinate(x1, value.x1)) != 0) return result;
+				if ((result = CompareCoordinate(y1, value.y1)) != 0) return result;
+				if ((result = CompareCoordinate(x2, value.x2)) != 0) return result;
+				if ((result = CompareCoordinate(y2, value.y2)) != 0) return result;
+				return 0;
 			}
-
-			bool operator!=(Rect_<T> rect)const
-			{
-				return x1 != rect.x1 || y1 != rect.y1 || x2 != rect.x2 || y2 != rect.y2;
-			}
+			GUI_DEFINE_COMPARE_OPERATORS(Rect_<T>)
 
 			Point_<T> LeftTop()const
 			{
@@ -533,8 +525,9 @@ Color
 
 			vint Compare(Color color)const
 			{
-				return value-color.value;
+				return value - color.value;
 			}
+			GUI_DEFINE_COMPARE_OPERATORS(Color)
 
 			static Color Parse(const WString& value)
 			{
@@ -582,13 +575,6 @@ Color
 				}
 				return result;
 			}
-
-			bool operator==(Color color)const {return Compare(color)==0;}
-			bool operator!=(Color color)const {return Compare(color)!=0;}
-			bool operator<(Color color)const {return Compare(color)<0;}
-			bool operator<=(Color color)const {return Compare(color)<=0;}
-			bool operator>(Color color)const {return Compare(color)>0;}
-			bool operator>=(Color color)const {return Compare(color)>=0;}
 		};
 
 /***********************************************************************
@@ -629,15 +615,16 @@ Margin
 			{
 			}
 
-			bool operator==(Margin_<T> margin)const
+			inline vint Compare(const Margin_<T>& value)const
 			{
-				return left==margin.left && top==margin.top && right==margin.right && bottom==margin.bottom;
+				vint result;
+				if ((result = CompareCoordinate(left, value.left)) != 0) return result;
+				if ((result = CompareCoordinate(top, value.top)) != 0) return result;
+				if ((result = CompareCoordinate(right, value.right)) != 0) return result;
+				if ((result = CompareCoordinate(bottom, value.bottom)) != 0) return result;
+				return 0;
 			}
-
-			bool operator!=(Margin_<T> margin)const
-			{
-				return left!=margin.left || top!=margin.top || right!=margin.right || bottom!=margin.bottom;
-			}
+			GUI_DEFINE_COMPARE_OPERATORS(Margin_<T>)
 		};
 
 		using Margin = Margin_<GuiCoordinate>;
@@ -723,13 +710,7 @@ Resources
 
 				return 0;
 			}
-
-			bool operator==(const FontProperties& value)const {return Compare(value)==0;}
-			bool operator!=(const FontProperties& value)const {return Compare(value)!=0;}
-			bool operator<(const FontProperties& value)const {return Compare(value)<0;}
-			bool operator<=(const FontProperties& value)const {return Compare(value)<=0;}
-			bool operator>(const FontProperties& value)const {return Compare(value)>0;}
-			bool operator>=(const FontProperties& value)const {return Compare(value)>=0;}
+			GUI_DEFINE_COMPARE_OPERATORS(FontProperties)
 		};
 
 /***********************************************************************

@@ -432,8 +432,14 @@ Colorized Plain Text (model)
 					/// </summary>
 					Color							background;
 
-					bool							operator==(const ColorItem& value)const { return text == value.text && background == value.background; }
-					bool							operator!=(const ColorItem& value)const { return !(*this == value); }
+					inline vint Compare(const ColorItem& value)const
+					{
+						vint result;
+						if ((result = text.Compare(value.text)) != 0) return result;
+						if ((result = background.Compare(value.background)) != 0) return result;
+						return 0;
+					}
+					GUI_DEFINE_COMPARE_OPERATORS(ColorItem)
 				};
 				
 				/// <summary>
@@ -454,8 +460,15 @@ Colorized Plain Text (model)
 					/// </summary>
 					ColorItem						selectedUnfocused;
 
-					bool							operator==(const ColorEntry& value)const {return normal == value.normal && selectedFocused == value.selectedFocused && selectedUnfocused == value.selectedUnfocused;}
-					bool							operator!=(const ColorEntry& value)const {return !(*this == value);}
+					inline vint Compare(const ColorEntry& value)const
+					{
+						vint result;
+						if ((result = normal.Compare(value.normal)) != 0) return result;
+						if ((result = selectedFocused.Compare(value.selectedFocused)) != 0) return result;
+						if ((result = selectedUnfocused.Compare(value.selectedUnfocused)) != 0) return result;
+						return 0;
+					}
+					GUI_DEFINE_COMPARE_OPERATORS(ColorEntry)
 				};
 			}
 
