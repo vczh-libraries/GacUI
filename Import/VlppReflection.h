@@ -6542,23 +6542,32 @@ ParameterAccessor<TContainer>
 			}
 
 			template<typename T>
-			struct ParameterAccessor<collections::LazyList<T>, TypeFlags::EnumerableType>
+			struct ParameterAccessor<const collections::LazyList<T>, TypeFlags::EnumerableType>
 			{
-				static Value BoxParameter(collections::LazyList<T>& object, ITypeDescriptor* typeDescriptor)
+				static Value BoxParameter(const collections::LazyList<T>& object, ITypeDescriptor* typeDescriptor)
 				{
 					Ptr<IValueEnumerable> result = IValueEnumerable::Create(
 						collections::From(object)
-							.Select([](const T& item)
+						.Select([](const T& item)
 							{
 								return BoxValue<T>(item);
 							})
-						);
+					);
 
 					ITypeDescriptor* td = nullptr;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 					td = Description<IValueEnumerable>::GetAssociatedTypeDescriptor();
 #endif
 					return BoxValue(result, td);
+				}
+			};
+
+			template<typename T>
+			struct ParameterAccessor<collections::LazyList<T>, TypeFlags::EnumerableType>
+			{
+				static Value BoxParameter(collections::LazyList<T>& object, ITypeDescriptor* typeDescriptor)
+				{
+					return ParameterAccessor<const collections::LazyList<T>, TypeFlags::EnumerableType>::BoxParameter(object, typeDescriptor);
 				}
 
 				static void UnboxParameter(const Value& value, collections::LazyList<T>& result, ITypeDescriptor* typeDescriptor, const WString& valueName)

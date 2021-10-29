@@ -1815,7 +1815,7 @@ Helper Functions
 			{
 				auto proxy = LoadFunction(context, name);
 				Func<TFunction> function;
-				reflection::description::UnboxParameter<Func<TFunction>>(reflection::description::Value::From(proxy), function);
+				reflection::description::UnboxParameter(reflection::description::Value::From(proxy), function);
 				return function;
 			}
 		}

@@ -149,16 +149,16 @@ namespace vl
 		}
 
 		template<typename T>
-		reflection::description::Value Box(const T& value)
+		reflection::description::Value Box(T&& value)
 		{
-			return reflection::description::BoxParameter<std::remove_cvref_t<T>>(const_cast<T&>(value));
+			return reflection::description::BoxParameter(value);
 		}
 
 		template<typename T>
 		T Unbox(const reflection::description::Value& value)
 		{
 			T result;
-			reflection::description::UnboxParameter<std::remove_cvref_t<T>>(value, result);
+			reflection::description::UnboxParameter(value, result);
 			return result;
 		}
 
@@ -224,22 +224,46 @@ namespace vl
 		}
 
 		template<typename T, typename U>
-		Ptr<T> UnboxCollection(const U& value)
+		Ptr<T> UnboxCollection(U&& value)
 		{
-			auto boxedValue = reflection::description::BoxParameter<U>(const_cast<U&>(value));
+			auto boxedValue = reflection::description::BoxParameter(value);
 			Ptr<T> result;
-			reflection::description::UnboxParameter<Ptr<T>>(boxedValue, result);
+			reflection::description::UnboxParameter(boxedValue, result);
 			return result;
 		}
 
 		template<typename T, typename U>
 		Ptr<T> UnboxCollection(const collections::LazyList<U>& value)
 		{
-			auto boxedValue = reflection::description::BoxParameter<collections::LazyList<U>>(const_cast<collections::LazyList<U>&>(value));
+			auto boxedValue = reflection::description::BoxParameter(const_cast<collections::LazyList<U>&>(value));
 			Ptr<T> result;
-			reflection::description::UnboxParameter<Ptr<T>>(boxedValue, result);
+			reflection::description::UnboxParameter(boxedValue, result);
 			return result;
 		}
+
+		struct CreateArray
+		{
+			using IValueArray = reflection::description::IValueArray;
+
+			Ptr<IValueArray>		list;
+
+			CreateArray();
+			CreateArray(Ptr<IValueArray> _list);
+
+			template<typename T>
+			CreateArray Resize(vint size)
+			{
+				list->Resize(size);
+				return{ list };
+			}
+
+			template<typename T>
+			CreateArray Set(vint index, const T& value)
+			{
+				list->Set(index, Box(value));
+				return{ list };
+			}
+		};
 
 		struct CreateList
 		{

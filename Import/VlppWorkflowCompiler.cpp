@@ -20149,7 +20149,25 @@ WfGenerateExpressionVisitor
 					}
 					else
 					{
-						if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
+						if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
+						{
+							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
+							writer.WriteString(L"(::vl::__vwsn::CreateArray().Resize(");
+							writer.WriteString(itow(node->arguments.Count()));
+							writer.WriteString(L")");
+
+							for (auto&& [argument, index] : indexed(node->arguments))
+							{
+								writer.WriteString(L".Set(");
+								writer.WriteString(itow(index));
+								writer.WriteString(L", ");
+								Call(argument->key);
+								writer.WriteString(L")");
+							}
+
+							writer.WriteString(L").list");
+						}
+						else if (result.type->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 						{
 							auto elementType = result.type->GetElementType()->GetGenericArgument(0);
 							writer.WriteString(L"(::vl::__vwsn::CreateList()");
