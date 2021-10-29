@@ -1,5 +1,11 @@
 # TODO
 
+## Issues
+
+- Check if item source still alive, if not then don't touch it, at destructors in
+  - GuiBindableListControls.h (`GuiBindableTextList::ItemSource::~ItemSource()`, `GuiBindableListView::ItemSource::~ItemSource()`)
+  - GuiBindableDataGrid.h (`GalleryGroup::~GalleryGroup()`)
+
 ## OS Provider Features
 
 - Drag and Drop framework.
