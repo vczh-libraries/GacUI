@@ -645,6 +645,7 @@ DataProvider
 
 				DataProvider::~DataProvider()
 				{
+					SetItemSource(nullptr);
 				}
 
 				Ptr<IDataFilter> DataProvider::GetAdditionalFilter()

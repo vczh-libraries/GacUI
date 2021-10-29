@@ -2,9 +2,9 @@
 
 ## Issues
 
-- Check if item source still alive, if not then don't touch it, at destructors in
-  - GuiBindableListControls.h (`GuiBindableTextList::ItemSource::~ItemSource()`, `GuiBindableListView::ItemSource::~ItemSource()`)
-  - GuiBindableDataGrid.h (`GalleryGroup::~GalleryGroup()`)
+- Search for all `->ItemChanged.Add`:
+  - Check if `Remove` is ensured
+  - When using item sources, ensure that it is still alive
 
 ## OS Provider Features
 
