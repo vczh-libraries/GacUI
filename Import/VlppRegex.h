@@ -650,7 +650,6 @@ Tokenizer
 			RegexTokens(const RegexTokens& tokens);
 			~RegexTokens();
 			
-			collections::CollectionEntity				GetCollectionEntity() const override;
 			collections::IEnumerator<RegexToken>*		CreateEnumerator() const override;
 
 			/// <summary>Copy all tokens.</summary>

@@ -4,8 +4,8 @@ DEVELOPER: Zihan Chen(vczh)
 ***********************************************************************/
 #include "VlppParser.h"
 #include "VlppReflection.h"
-#include "VlppOS.h"
 #include "Vlpp.h"
+#include "VlppOS.h"
 #include "VlppRegex.h"
 
 /***********************************************************************

@@ -2101,21 +2101,6 @@ namespace vl
 Reflection
 ***********************************************************************/
 
-		/// <summary>
-		/// Collection type
-		/// </summary>
-		enum class CollectionEntity
-		{
-			Array,
-			List,
-			SortedList,
-			Dictionary,
-			Group,
-			ObservableListBase,
-			ObservableList,
-			Unknown,
-		};
-
 		class ICollectionReference : public virtual Interface
 		{
 		public:
@@ -2213,10 +2198,6 @@ Interfaces
 			/// </remarks>
 			/// <returns>The enumerator.</returns>
 			virtual IEnumerator<T>*						CreateEnumerator() const = 0;
-
-			/// <summary>Get the underlying collection type.</summary>
-			/// <returns>The underlying collection type.</returns>
-			virtual CollectionEntity					GetCollectionEntity() const = 0;
 
 			/// <summary>Get the underlying collection object.</summary>
 			/// <returns>
@@ -2642,11 +2623,6 @@ Array
 				this->DeallocateBuffer(this->buffer);
 			}
 
-			CollectionEntity GetCollectionEntity() const override
-			{
-				return CollectionEntity::Array;
-			}
-
 			/// <summary>Test does the array contain a value or not.</summary>
 			/// <returns>Returns true if the array contains the specified value.</returns>
 			/// <param name="item">The value to test.</param>
@@ -2875,11 +2851,6 @@ List
 			/// <summary>Create an empty list.</summary>
 			List() = default;
 
-			CollectionEntity GetCollectionEntity() const override
-			{
-				return CollectionEntity::List;
-			}
-
 			/// <summary>Test does the list contain a value or not.</summary>
 			/// <returns>Returns true if the list contains the specified value.</returns>
 			/// <param name="item">The value to test.</param>
@@ -3035,11 +3006,6 @@ SortedList
 		public:
 			/// <summary>Create an empty list.</summary>
 			SortedList() = default;
-
-			CollectionEntity GetCollectionEntity() const override
-			{
-				return CollectionEntity::SortedList;
-			}
 
 			/// <summary>Test does the list contain a value or not.</summary>
 			/// <returns>Returns true if the list contains the specified value.</returns>
@@ -3354,11 +3320,6 @@ namespace vl
 			/// <summary>Create an empty dictionary.</summary>
 			Dictionary() = default;
 
-			CollectionEntity GetCollectionEntity() const override
-			{
-				return CollectionEntity::Dictionary;
-			}
-
 			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
 			{
 				return new Enumerator(this);
@@ -3597,11 +3558,6 @@ namespace vl
 			~Group()
 			{
 				Clear();
-			}
-
-			CollectionEntity GetCollectionEntity() const override
-			{
-				return CollectionEntity::Group;
 			}
 
 			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
@@ -5177,11 +5133,6 @@ FromIterator
 			I					begin;
 			I					end;
 		public:
-			CollectionEntity GetCollectionEntity() const override
-			{
-				return CollectionEntity::Unknown;
-			}
-
 			IEnumerator<T>* CreateEnumerator()const
 			{
 				return new Enumerator(begin, end, begin - 1);
@@ -7023,11 +6974,6 @@ LazyList
 			LazyList()
 				:enumeratorPrototype(new EmptyEnumerator<T>())
 			{
-			}
-
-			CollectionEntity GetCollectionEntity() const override
-			{
-				return CollectionEntity::Unknown;
 			}
 
 			LazyList<T>& operator=(const LazyList<T>& lazyList)

@@ -200,12 +200,14 @@ list::GroupedDataSource
 					GroupTitlePropertyChanged.SetAssociatedComposition(associatedComposition);
 					GroupChildrenPropertyChanged.SetAssociatedComposition(associatedComposition);
 
-					groupChangedHandler = groupedItemSource.GetWrapper()->ItemChanged.Add(this, &GroupedDataSource::OnGroupChanged);
+					auto vol = UnboxValue<Ptr<IValueObservableList>>(BoxParameter(groupedItemSource));
+					groupChangedHandler = vol->ItemChanged.Add(this, &GroupedDataSource::OnGroupChanged);
 				}
 
 				GroupedDataSource::~GroupedDataSource()
 				{
-					joinedItemSource.GetWrapper()->ItemChanged.Remove(groupChangedHandler);
+					auto vol = UnboxValue<Ptr<IValueObservableList>>(BoxParameter(joinedItemSource));
+					vol->ItemChanged.Remove(groupChangedHandler);
 				}
 
 				Ptr<IValueEnumerable> GroupedDataSource::GetItemSource()
@@ -547,7 +549,7 @@ GuiBindableRibbonGalleryList
 					itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
 					itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					itemList->SetArranger(itemListArranger);
-					itemList->SetItemSource(joinedItemSource.GetWrapper());
+					itemList->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(joinedItemSource)));
 					itemList->SelectionChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListSelectionChanged);
 					itemList->ItemMouseEnter.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListItemMouseEnter);
 					itemList->ItemMouseLeave.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListItemMouseLeave);
@@ -565,7 +567,7 @@ GuiBindableRibbonGalleryList
 					groupStack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					groupStack->SetAlignmentToParent(Margin(0, 0, 0, 0));
 					groupStack->SetDirection(GuiStackComposition::Vertical);
-					groupStack->SetItemSource(groupedItemSource.GetWrapper());
+					groupStack->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(groupedItemSource)));
 					groupContainer->GetContainerComposition()->AddChild(groupStack);
 					MenuResetGroupTemplate();
 				}

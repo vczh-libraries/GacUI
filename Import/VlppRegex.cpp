@@ -585,11 +585,6 @@ RegexTokens
 		{
 		}
 
-		collections::CollectionEntity RegexTokens::GetCollectionEntity() const
-		{
-			return CollectionEntity::Unknown;
-		}
-
 		IEnumerator<RegexToken>* RegexTokens::CreateEnumerator() const
 		{
 			return new RegexTokenEnumerator(pure, stateTokens, code.Buffer(), codeIndex, proc);

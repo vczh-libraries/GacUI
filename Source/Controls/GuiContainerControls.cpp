@@ -15,6 +15,7 @@ namespace vl
 
 		namespace controls
 		{
+			using namespace reflection::description;
 
 /***********************************************************************
 GuiTabPage
@@ -130,7 +131,7 @@ GuiTab
 			{
 				auto ct = TypedControlTemplateObject(true);
 				ct->SetCommands(commandExecutor.Obj());
-				ct->SetTabPages(tabPages.GetWrapper());
+				ct->SetTabPages(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(tabPages)));
 				ct->SetSelectedTabPage(selectedPage);
 			}
 

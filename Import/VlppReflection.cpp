@@ -2533,6 +2533,27 @@ IValueEnumerable
 			}
 
 /***********************************************************************
+IValueArray
+***********************************************************************/
+
+			Ptr<IValueArray> IValueArray::Create()
+			{
+				return Create(LazyList<Value>());
+			}
+
+			Ptr<IValueArray> IValueArray::Create(Ptr<IValueReadonlyList> values)
+			{
+				return Create(GetLazyList<Value>(values));
+			}
+
+			Ptr<IValueArray> IValueArray::Create(collections::LazyList<Value> values)
+			{
+				Ptr<Array<Value>> list = new Array<Value>;
+				CopyFrom(*list.Obj(), values);
+				return new ValueArrayWrapper<Ptr<Array<Value>>>(list);
+			}
+
+/***********************************************************************
 IValueList
 ***********************************************************************/
 
@@ -2711,6 +2732,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueEnumerator, system::Enumerator)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueEnumerable, system::Enumerable)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueReadonlyList, system::ReadonlyList)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueArray, system::Array)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueList, system::List)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueObservableList, system::ObservableList)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueReadonlyDictionary, system::ReadonlyDictionary)
@@ -3253,6 +3275,15 @@ LoadPredefinedTypes
 				CLASS_MEMBER_METHOD(Contains, { L"value" })
 				CLASS_MEMBER_METHOD(IndexOf, { L"value" })
 			END_INTERFACE_MEMBER(IValueReadonlyList)
+
+			BEGIN_INTERFACE_MEMBER(IValueArray)
+				CLASS_MEMBER_BASE(IValueReadonlyList)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<IValueArray>(), NO_PARAMETER, vl::reflection::description::IValueArray::Create)
+				CLASS_MEMBER_EXTERNALCTOR(Ptr<IValueArray>(Ptr<IValueReadonlyList>), { L"values" }, vl::reflection::description::IValueArray::Create)
+
+				CLASS_MEMBER_METHOD(Set, { L"index" _ L"value" })
+				CLASS_MEMBER_METHOD(Resize, { L"size" })
+			END_INTERFACE_MEMBER(IValueArray)
 
 			BEGIN_INTERFACE_MEMBER(IValueList)
 				CLASS_MEMBER_BASE(IValueReadonlyList)
