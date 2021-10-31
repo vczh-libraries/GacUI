@@ -385,7 +385,7 @@ Method
 			class WfMethodProxy : public Object, public virtual reflection::description::IValueFunctionProxy
 			{
 				typedef reflection::description::IMethodInfo				IMethodInfo;
-				typedef reflection::description::IValueList					IValueList;
+				typedef reflection::description::IValueReadonlyList			IValueReadonlyList;
 				typedef reflection::description::Value						Value;
 			protected:
 				Value									thisObject;
@@ -395,7 +395,7 @@ Method
 				WfMethodProxy(const Value& _thisObject, IMethodInfo* _methodInfo);
 				~WfMethodProxy();
 				
-				Value									Invoke(Ptr<IValueList> arguments)override;
+				Value									Invoke(Ptr<IValueReadonlyList> arguments)override;
 			};
 
 			class WfMethodBase : public reflection::description::MethodInfoImpl
@@ -495,7 +495,7 @@ Event
 				typedef reflection::description::ITypeInfo					ITypeInfo;
 				typedef reflection::description::IEventHandler				IEventHandler;
 				typedef reflection::description::IValueFunctionProxy		IValueFunctionProxy;
-				typedef reflection::description::IValueList					IValueList;
+				typedef reflection::description::IValueReadonlyList			IValueReadonlyList;
 				typedef reflection::description::Value						Value;
 
 				class EventHandlerImpl : public Object, public IEventHandler
@@ -528,7 +528,7 @@ Event
 				Ptr<EventRecord>						GetEventRecord(DescriptableObject* thisObject, bool createIfNotExist);
 				Ptr<IEventHandler>						AttachInternal(DescriptableObject* thisObject, Ptr<IValueFunctionProxy> handler)override;
 				bool									DetachInternal(DescriptableObject* thisObject, Ptr<IEventHandler> handler)override;
-				void									InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override;
+				void									InvokeInternal(DescriptableObject* thisObject, Ptr<IValueReadonlyList> arguments)override;
 				Ptr<ITypeInfo>							GetHandlerTypeInternal()override;
 			public:
 				WfEvent(ITypeDescriptor* ownerTypeDescriptor, const WString& name);
@@ -1066,8 +1066,8 @@ Lambda
 
 				WfRuntimeLambda(Ptr<WfRuntimeGlobalContext> _globalContext, Ptr<WfRuntimeVariableContext> _capturedVariables, vint _functionIndex);
 
-				Value								Invoke(Ptr<reflection::description::IValueList> arguments)override;
-				static Value						Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueList> arguments);
+				Value								Invoke(Ptr<reflection::description::IValueReadonlyList> arguments)override;
+				static Value						Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueReadonlyList> arguments);
 			};
 			
 /***********************************************************************
@@ -1079,14 +1079,14 @@ InterfaceInstance
 				typedef reflection::description::Value										Value;
 				typedef reflection::description::IMethodInfo								IMethodInfo;
 				typedef reflection::description::IValueFunctionProxy						IValueFunctionProxy;
-				typedef reflection::description::IValueList									IValueList;
+				typedef reflection::description::IValueReadonlyList							IValueReadonlyList;
 				typedef collections::Dictionary<IMethodInfo*, vint>							FunctionMap;
 			public:
 				Ptr<WfRuntimeGlobalContext>			globalContext;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				FunctionMap							functions;
 
-				Value								Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)override;
+				Value								Invoke(IMethodInfo* methodInfo, Ptr<IValueReadonlyList> arguments)override;
 			};
 		}
 	}
@@ -1816,9 +1816,7 @@ Helper Functions
 			Func<TFunction> LoadFunction(Ptr<WfRuntimeGlobalContext> context, const WString& name)
 			{
 				auto proxy = LoadFunction(context, name);
-				Func<TFunction> function;
-				reflection::description::UnboxParameter(reflection::description::Value::From(proxy), function);
-				return function;
+				return reflection::description::UnboxParameter<Func<TFunction>>(reflection::description::Value::From(proxy)).Ref();
 			}
 		}
 	}

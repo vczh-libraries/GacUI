@@ -2349,12 +2349,12 @@ WfRuntimeLambda
 			{
 			}
 
-			Value WfRuntimeLambda::Invoke(Ptr<reflection::description::IValueList> arguments)
+			Value WfRuntimeLambda::Invoke(Ptr<reflection::description::IValueReadonlyList> arguments)
 			{
 				return Invoke(globalContext, capturedVariables, functionIndex, arguments);
 			}
 
-			Value WfRuntimeLambda::Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueList> arguments)
+			Value WfRuntimeLambda::Invoke(Ptr<WfRuntimeGlobalContext> globalContext, Ptr<WfRuntimeVariableContext> capturedVariables, vint functionIndex, Ptr<reflection::description::IValueReadonlyList> arguments)
 			{
 				WfRuntimeThreadContext context(globalContext);
 				vint count = arguments->GetCount();
@@ -2388,7 +2388,7 @@ WfRuntimeLambda
 WfRuntimeInterfaceInstance
 ***********************************************************************/
 
-			Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueList> arguments)
+			Value WfRuntimeInterfaceInstance::Invoke(IMethodInfo* methodInfo, Ptr<IValueReadonlyList> arguments)
 			{
 				vint index = functions.Keys().IndexOf(methodInfo);
 				if (index == -1)
@@ -4679,12 +4679,10 @@ WfMethodProxy
 			{
 			}
 				
-			Value WfMethodProxy::Invoke(Ptr<IValueList> arguments)
+			Value WfMethodProxy::Invoke(Ptr<IValueReadonlyList> arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				Array<Value> values;
-				UnboxParameter(Value::From(arguments), values);
-				return methodInfo->Invoke(thisObject, values);
+				return methodInfo->Invoke(thisObject, UnboxParameter<Array<Value>>(Value::From(arguments)).Ref());
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -4994,7 +4992,7 @@ WfEvent
 #endif
 			}
 
-			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)
+			void WfEvent::InvokeInternal(DescriptableObject* thisObject, Ptr<IValueReadonlyList> arguments)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				auto record = GetEventRecord(thisObject, false);

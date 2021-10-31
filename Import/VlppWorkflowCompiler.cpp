@@ -19117,20 +19117,13 @@ WfGenerateExpressionVisitor
 				template<typename TType, typename TInvoke, typename TArgument, typename TInfo>
 				void WriteInvokeTemplate(vint count, ITypeInfo* returnType, const TType& typeCallback, const TInvoke& invokeCallback, const TArgument& argumentCallback, TInfo* info, bool castReturnValue)
 				{
-					if (Range<vint>(0, count).Any([&](vint index) {return IsCppRefGenericType(typeCallback(index)); }))
+					auto unboxedArgumentCallback = [&](vint index)
 					{
-						writer.WriteString(L"[&]()->decltype(auto){");
-						for (vint i = 0; i < count; i++)
+						auto type = typeCallback(index);
+						if (IsCppRefGenericType(type))
 						{
-							auto type = typeCallback(i);
-							if (IsCppRefGenericType(type))
+							writer.WriteString(L"::vl::reflection::description::UnboxParameter<");
 							{
-								writer.WriteString(L" auto __vwsn_temp_x");
-								writer.WriteString(itow(i));
-								writer.WriteString(L" = ::vl::__vwsn::Box(");
-								argumentCallback(info, i);
-								writer.WriteString(L"); ");
-
 								switch (type->GetHint())
 								{
 								case TypeInfoHint::Array:
@@ -19157,38 +19150,24 @@ WfGenerateExpressionVisitor
 									if (i > 0) writer.WriteString(L", ");
 									writer.WriteString(config->ConvertType(type->GetElementType()->GetGenericArgument(i)));
 								}
-								writer.WriteString(L"> __vwsn_temp_");
-								writer.WriteString(itow(i));
-								writer.WriteString(L"; ::vl::reflection::description::UnboxParameter(__vwsn_temp_x");
-								writer.WriteString(itow(i));
-								writer.WriteString(L", __vwsn_temp_");
-								writer.WriteString(itow(i));
-								writer.WriteString(L");");
 							}
-							else
-							{
-								writer.WriteString(L" auto __vwsn_temp_");
-								writer.WriteString(itow(i));
-								writer.WriteString(L" = ");
-								argumentCallback(info, i);
-								writer.WriteString(L";");
-							}
+							writer.WriteString(L">>(::vl::__vwsn::Box(");
+							argumentCallback(info, index);
+							writer.WriteString(L")).Ref()");
 						}
-						writer.WriteString(L" return ");
-						WriteReturnValue(returnType, [&]() { invokeCallback(true); }, castReturnValue);
-						writer.WriteString(L"; }()");
-					}
-					else
-					{
-						WriteReturnValue(returnType, [&]() { invokeCallback(false); }, castReturnValue);
-					}
+						else
+						{
+							argumentCallback(info, index);
+						}
+					};
+					WriteReturnValue(returnType, [&]() { invokeCallback(unboxedArgumentCallback); }, castReturnValue);
 				}
 
 				template<typename TThis, typename TArgument>
 				void WriteMethodTemplate(const WString& templateValue, IMethodInfo* methodInfo, const TThis& thisCallback, const TArgument& argumentCallback, bool castReturnValue)
 				{
 					WriteInvokeTemplate(methodInfo->GetParameterCount(), methodInfo->GetReturn(), [&](vint index) { return methodInfo->GetParameter(index)->GetType(); },
-						[&](bool useTemporaryArgument)
+						[&](auto&& unboxedArgumentCallback)
 						{
 							WriteTemplate(templateValue, [&](const WString& item)
 							{
@@ -19251,15 +19230,7 @@ WfGenerateExpressionVisitor
 									for (vint i = 0; i < count; i++)
 									{
 										if (i > 0) writer.WriteString(L", ");
-										if (useTemporaryArgument)
-										{
-											writer.WriteString(L"__vwsn_temp_");
-											writer.WriteString(itow(i));
-										}
-										else
-										{
-											argumentCallback(methodInfo, i);
-										}
+										unboxedArgumentCallback(i);
 									}
 									if (cp == CommaPosition::Right) writer.WriteString(L", ");
 								}
@@ -19300,7 +19271,7 @@ WfGenerateExpressionVisitor
 				{
 					auto handlerType = eventInfo->GetHandlerType()->GetElementType();
 					WriteInvokeTemplate(handlerType->GetGenericArgumentCount() - 1, handlerType->GetGenericArgument(0), [&](vint index) { return handlerType->GetGenericArgument(index + 1); },
-						[&](bool useTemporaryArgument)
+						[&](auto&& unboxedArgumentCallback)
 						{
 							WriteTemplate(templateValue, [&](const WString& item)
 							{
@@ -19354,15 +19325,7 @@ WfGenerateExpressionVisitor
 									for (vint i = 0; i < count; i++)
 									{
 										if (i > 0) writer.WriteString(L", ");
-										if (useTemporaryArgument)
-										{
-											writer.WriteString(L"__vwsn_temp_");
-											writer.WriteString(itow(i));
-										}
-										else
-										{
-											argumentCallback(eventInfo, i);
-										}
+										unboxedArgumentCallback(i);
 									}
 									if (cp == CommaPosition::Right) writer.WriteString(L", ");
 								}
