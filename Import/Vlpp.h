@@ -2227,7 +2227,7 @@ Interfaces
 			{
 				auto ref = GetCollectionReference();
 				if (!ref) return nullptr;
-				auto sref = ref.Cast<U>();
+				auto sref = ref.template Cast<U>();
 				CHECK_ERROR(sref, L"IEnumerable<T>::TryGetCollectionReference<U>()#The associated collection reference has an unexpected type.");
 				return sref;
 			}

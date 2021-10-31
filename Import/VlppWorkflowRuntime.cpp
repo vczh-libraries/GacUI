@@ -394,8 +394,9 @@ WfRuntimeThreadContext
 					case WfInsType::U8:
 						CHECK_ERROR(value.typeDescriptor->GetEnumType(), L"WfRuntimeThreadContext::PushValue(const WfRuntimeValue&)#Missing typeDescriptor in WfRuntimeValue!");
 						return PushValue(value.typeDescriptor->GetEnumType()->ToEnum(value.u8Value));
+					default:
+						CHECK_FAIL(L"WfRuntimeThreadContext::PushValue(const WfRuntimeValue&)#Unexpected type in WfRuntimeValue with typeDescriptor!");
 					}
-					CHECK_FAIL(L"WfRuntimeThreadContext::PushValue(const WfRuntimeValue&)#Unexpected type in WfRuntimeValue with typeDescriptor!");
 				}
 				else
 				{

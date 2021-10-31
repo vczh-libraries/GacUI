@@ -1888,6 +1888,9 @@ namespace vl
 		namespace description
 		{
 			class IValueReadonlyList;
+
+			template<typename T>
+			struct TypedValueSerializerProvider;
 		}
 
 		namespace description
@@ -3676,6 +3679,59 @@ namespace vl
 	{
 		namespace description
 		{
+			template<typename T>
+			struct TypeInfoRetriver;
+
+			/// <summary>
+			/// A reference holder to an unboxed object.
+			/// </summary>
+			/// <typeparam name="T">The type of the unboxed object.</typeparam>
+			template<typename T>
+			struct Unboxed
+			{
+			private:
+				T*				object;
+				bool			owned;
+
+			public:
+				Unboxed(T* _object, bool _owned) : object(_object), owned(_owned) {}
+				Unboxed(Unboxed<T>&& unboxed) : object(unboxed.object), owned(unboxed.owned) { unboxed.object = nullptr; }
+				~Unboxed() { if (object && owned) { delete object; } }
+
+				Unboxed() = delete;
+				Unboxed(const Unboxed<T>&&) = delete;
+				Unboxed<T>& operator=(const Unboxed<T>&) = delete;
+				Unboxed<T>& operator=(Unboxed<T>&&) = delete;
+
+				/// <summary>
+				/// Get the reference of the unboxed object.
+				/// It is recommended only to use this reference when the <see cref="Unboxe`1"/> is still alive.
+				/// </summary>
+				/// <returns>The unboxed object.</returns>
+				T& Ref() const { CHECK_ERROR(object, L"vl::reflection::description::Unboxed<T>::Ref()#The object has been moved away.");  return *object; }
+
+				/// <summary>
+				/// Test if the unboxed object is owned.
+				/// </summary>
+				/// <returns></returns>
+				bool IsOwned() const
+				{
+					return owned;
+				}
+			};
+
+			template<typename T>
+			Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor = nullptr);
+
+			template<typename T>
+			T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor = nullptr, const WString& valueName = WString::Unmanaged(L"value"));
+
+			template<typename T>
+			Value BoxParameter(T&& object, ITypeDescriptor* typeDescriptor = nullptr);
+
+			template<typename T>
+			Unboxed<T> UnboxParameter(const Value& value, ITypeDescriptor* typeDescriptor = nullptr, const WString& valueName = WString::Unmanaged(L"value"));
+
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
 /***********************************************************************
@@ -5040,7 +5096,7 @@ BoxValue, UnboxValue
 			/// <param name="object">The object to box.</param>
 			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			template<typename T>
-			Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor = nullptr)
+			Value BoxValue(const T& object, ITypeDescriptor* typeDescriptor)
 			{
 				using Type = std::remove_cvref_t<T>;
 				return ValueAccessor<Type, TypeInfoRetriver<Type>::Decorator>::BoxValue(object, typeDescriptor);
@@ -5053,7 +5109,7 @@ BoxValue, UnboxValue
 			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			/// <param name="valueName">The name of the object to provide a friendly exception message if the conversion is failed (optional).</param>
 			template<typename T>
-			T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor = nullptr, const WString& valueName = WString::Unmanaged(L"value"))
+			T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor, const WString& valueName)
 			{
 				using Type = std::remove_cvref_t<T>;
 				return ValueAccessor<Type, TypeInfoRetriver<Type>::Decorator>::UnboxValue(value, typeDescriptor, valueName);
@@ -5252,49 +5308,11 @@ BoxParameter, UnboxParameter
 			/// <param name="object">The object to box.</param>
 			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			template<typename T>
-			Value BoxParameter(T&& object, ITypeDescriptor* typeDescriptor = nullptr)
+			Value BoxParameter(T&& object, ITypeDescriptor* typeDescriptor)
 			{
 				using TIR = TypeInfoRetriver<std::remove_reference_t<T>>;
 				return ParameterAccessor<std::remove_reference_t<T>, TIR::TypeFlag>::BoxParameter(object, typeDescriptor);
 			}
-
-			/// <summary>
-			/// A reference holder to an unboxed object.
-			/// </summary>
-			/// <typeparam name="T">The type of the unboxed object.</typeparam>
-			template<typename T>
-			struct Unboxed
-			{
-			private:
-				T*				object;
-				bool			owned;
-
-			public:
-				Unboxed(T* _object, bool _owned) : object(_object), owned(_owned) {}
-				Unboxed(Unboxed<T>&& unboxed) : object(unboxed.object), owned(unboxed.owned) { unboxed.object = nullptr; }
-				~Unboxed() { if (object && owned) { delete object; } }
-
-				Unboxed() = delete;
-				Unboxed(const Unboxed<T>&&) = delete;
-				Unboxed<T>& operator=(const Unboxed<T>&) = delete;
-				Unboxed<T>& operator=(Unboxed<T>&&) = delete;
-
-				/// <summary>
-				/// Get the reference of the unboxed object.
-				/// It is recommended only to use this reference when the <see cref="Unboxe`1"/> is still alive.
-				/// </summary>
-				/// <returns>The unboxed object.</returns>
-				T& Ref() const { CHECK_ERROR(object, L"vl::reflection::description::Unboxed<T>::Ref()#The object has been moved away.");  return *object; }
-
-				/// <summary>
-				/// Test if the unboxed object is owned.
-				/// </summary>
-				/// <returns></returns>
-				bool IsOwned() const
-				{
-					return owned;
-				}
-			};
 			
 			/// <summary>Box an reflectable object. It supports generic types such as containers, functions (should be Func&lt;T&gt;), etc.</summary>
 			/// <typeparam name="T">Type of the object.</typeparam>
@@ -5303,7 +5321,7 @@ BoxParameter, UnboxParameter
 			/// <param name="typeDescriptor">The type descriptor of the object (optional).</param>
 			/// <param name="valueName">The name of the object to provide a friendly exception message if the conversion is failed (optional).</param>
 			template<typename T>
-			Unboxed<T> UnboxParameter(const Value& value, ITypeDescriptor* typeDescriptor = nullptr, const WString& valueName = WString::Unmanaged(L"value"))
+			Unboxed<T> UnboxParameter(const Value& value, ITypeDescriptor* typeDescriptor , const WString& valueName)
 			{
 				using TIR = TypeInfoRetriver<std::remove_reference_t<T>>;
 				return ParameterAccessor<T, TIR::TypeFlag>::UnboxParameter(value, typeDescriptor, valueName);
@@ -6126,7 +6144,7 @@ Collection Wrappers
 		template<typename T>
 		void ObservableList<T>::NotifyUpdateInternal(vint start, vint count, vint newCount)
 		{
-			if (auto colref = this->TryGetCollectionReference<reflection::description::IValueObservableList>())
+			if (auto colref = this->template TryGetCollectionReference<reflection::description::IValueObservableList>())
 			{
 				colref->ItemChanged(start, count, newCount);
 			}
@@ -6161,7 +6179,7 @@ Containers
 			template<typename TValueItf, typename TExpectedItf, template<typename T> class TValueImpl, typename T>
 			auto GetValueCollectionFromCollection(T* collection) -> std::enable_if_t<std::is_convertible_v<TValueItf*, TExpectedItf*>, Ptr<TExpectedItf>>
 			{
-				auto colref = collection->TryGetCollectionReference<TValueImpl<T*>>();
+				auto colref = collection->template TryGetCollectionReference<TValueImpl<T*>>();
 				if (colref) return colref;
 				colref = MakePtr<TValueImpl<T*>>(collection);
 				collection->SetCollectionReference(colref);
@@ -7630,9 +7648,6 @@ Predefined Types
 			REFLECTION_PREDEFINED_COMPLEX_TYPES(DECL_TYPE_INFO, void)
 
 #endif
-
-			template<typename T>
-			struct TypedValueSerializerProvider;
 
 #define DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(TYPENAME)\
 			template<>\
