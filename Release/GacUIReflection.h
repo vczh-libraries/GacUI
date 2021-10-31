@@ -7,8 +7,8 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppParser.h"
 #include "VlppWorkflowLibrary.h"
 #include "VlppReflection.h"
-#include "Vlpp.h"
 #include "VlppOS.h"
+#include "Vlpp.h"
 #include "VlppRegex.h"
 #include "VlppWorkflowRuntime.h"
 
@@ -550,7 +550,7 @@ GuiEventInfoImpl
 					return false;
 				}
 
-				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override
+				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueReadonlyList> arguments)override
 				{
 					GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
 					if(eventObject)

@@ -6,8 +6,8 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppParser.h"
 #include "VlppWorkflowLibrary.h"
 #include "VlppReflection.h"
-#include "Vlpp.h"
 #include "VlppOS.h"
+#include "Vlpp.h"
 #include "VlppRegex.h"
 
 /***********************************************************************
