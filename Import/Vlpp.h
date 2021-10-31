@@ -2200,10 +2200,7 @@ Interfaces
 			virtual IEnumerator<T>*						CreateEnumerator() const = 0;
 
 			/// <summary>Get the underlying collection object.</summary>
-			/// <returns>
-			/// The underlying collection object.
-			/// It could returns nullptr when <see cref="GetCollectionEntity"/> returns <see cref="CollectionEntity::Unknown"/>.
-			/// </returns>
+			/// <returns>The underlying collection object, could be nullptr.</returns>
 			virtual const Object*						GetCollectionObject() const = 0;
 
 			/// <summary>Get the associated collection reference.</summary>

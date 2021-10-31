@@ -2957,6 +2957,10 @@ Collections
 				/// <returns>The enumerator.</returns>
 				virtual Ptr<IValueEnumerator>	CreateEnumerator() = 0;
 
+				/// <summary>Get the underlying collection object, which is boxed to be this interface.</summary>
+				/// <returns>The underlying collection object, could be nullptr.</returns>
+				virtual const Object*			GetCollectionObject() { return nullptr; }
+
 				/// <summary>Create an enumerable from another lazy list.</summary>
 				/// <returns>The created enumerable.</returns>
 				/// <param name="values">The lazy list to wrap.</param>
@@ -3377,6 +3381,10 @@ Collections
 				/// <returns>The reference to the value. It will crash if the key does not exist.</returns>
 				/// <param name="key">The key to find.</param>
 				virtual Value					Get(const Value& key) = 0;
+
+				/// <summary>Get the underlying collection object, which is boxed to be this interface.</summary>
+				/// <returns>The underlying collection object, could be nullptr.</returns>
+				virtual const Object*			GetCollectionObject() { return nullptr; }
 			};
 
 			/// <summary>
@@ -5833,6 +5841,25 @@ Collection Wrappers
 						wrapperPointer->CreateEnumerator()
 					);
 				}
+
+				const Object* GetCollectionObject()override
+				{
+					if constexpr (std::is_same_v<typename trait_helper::RemovePtr<T>::Type*, T>)
+					{
+						if (wrapperPointer->GetCollectionReference() == this)
+						{
+							return wrapperPointer;
+						}
+						else
+						{
+							return nullptr;
+						}
+					}
+					else
+					{
+						return nullptr;
+					}
+				}
 			};
 
 			template<typename T>
@@ -6029,6 +6056,25 @@ Collection Wrappers
 					ValueType result = wrapperPointer->Get(item);
 					return BoxValue<ValueType>(result);
 				}
+
+				const Object* GetCollectionObject()override
+				{
+					if constexpr (std::is_same_v<typename trait_helper::RemovePtr<T>::Type*, T>)
+					{
+						if (wrapperPointer->GetCollectionReference() == this)
+						{
+							return wrapperPointer;
+						}
+						else
+						{
+							return nullptr;
+						}
+					}
+					else
+					{
+						return nullptr;
+					}
+				}
 			};
 
 #define KEY_VALUE_TYPE typename ValueReadonlyDictionaryWrapper<T>::KeyValueType
@@ -6197,25 +6243,41 @@ Containers
 				return BoxValue(result, td);
 			}
 
-			template<typename TCollection, typename TValueItf>
-			Unboxed<TCollection> UnboxCollection(const Ptr<TValueItf>& colref)
+			template<typename T, typename TValueItf>
+			Unboxed<T> UnboxCollection(const Ptr<TValueItf>& colref)
 			{
-				auto collection = new TCollection();
-				auto lazyList = GetLazyList<typename TCollection::ElementType>(colref);
-				collections::CopyFrom(*collection, lazyList);
-				return { collection, true };
+				using TCollection = std::remove_const_t<T>;
+				if (auto colobj = dynamic_cast<TCollection*>(const_cast<Object*>(colref->GetCollectionObject())))
+				{
+					return { colobj,false };
+				}
+				else
+				{
+					auto collection = new TCollection();
+					auto lazyList = GetLazyList<typename TCollection::ElementType>(colref);
+					collections::CopyFrom(*collection, lazyList);
+					return { collection, true };
+				}
 			}
 
-			template<typename TCollection, typename TValueItf>
-			Unboxed<TCollection> UnboxDictionary(const Ptr<TValueItf>& colref)
+			template<typename T, typename TValueItf>
+			Unboxed<T> UnboxDictionary(const Ptr<TValueItf>& colref)
 			{
-				auto collection = new TCollection();
-				auto lazyList = GetLazyList<
-					typename TCollection::KeyContainer::ElementType,
-					typename TCollection::ValueContainer::ElementType
+				using TCollection = std::remove_const_t<T>;
+				if (auto colobj = dynamic_cast<TCollection*>(const_cast<Object*>(colref->GetCollectionObject())))
+				{
+					return { colobj,false };
+				}
+				else
+				{
+					auto collection = new TCollection();
+					auto lazyList = GetLazyList<
+						typename TCollection::KeyContainer::ElementType,
+						typename TCollection::ValueContainer::ElementType
 					>(colref);
-				collections::CopyFrom(*collection, lazyList);
-				return { collection, true };
+					collections::CopyFrom(*collection, lazyList);
+					return { collection, true };
+				}
 			}
 
 			template<typename T>
