@@ -471,7 +471,7 @@ GuiEventInfoImpl
 					return false;
 				}
 
-				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueList> arguments)override
+				void InvokeInternal(DescriptableObject* thisObject, Ptr<IValueReadonlyList> arguments)override
 				{
 					GuiGraphicsEvent<T>* eventObject=eventRetriver(thisObject, false);
 					if(eventObject)
