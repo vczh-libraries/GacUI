@@ -1020,7 +1020,7 @@ RegexLexer
 }
 
 /***********************************************************************
-.\REGEXAUTOMATON.CPP
+.\REGEXPURE.CPP
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -1030,456 +1030,687 @@ Licensed under https://github.com/vczh-libraries/License
 
 namespace vl
 {
+	namespace regex_internal
+	{
+
+/***********************************************************************
+PureInterpretor
+***********************************************************************/
+
+		PureInterpretor::PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets)
+			:transition(0)
+			,finalState(0)
+			,relatedFinalState(0)
+		{
+			stateCount=dfa->states.Count();
+			charSetCount=subsets.Count()+1;
+			startState=dfa->states.IndexOf(dfa->startState);
+
+			// Map char to input index (equivalent char class)
+			for(vint i=0;i<SupportedCharCount;i++)
+			{
+				charMap[i]=charSetCount-1;
+			}
+			for(vint i=0;i<subsets.Count();i++)
+			{
+				CharRange range=subsets[i];
+				for(vint j=range.begin;j<=range.end;j++)
+				{
+					charMap[j]=i;
+				}
+			}
+			
+			// Create transitions from DFA, using input index to represent input char
+			transition=new vint*[stateCount];
+			for(vint i=0;i<stateCount;i++)
+			{
+				transition[i]=new vint[charSetCount];
+				for(vint j=0;j<charSetCount;j++)
+				{
+					transition[i][j]=-1;
+				}
+
+				State* state=dfa->states[i].Obj();
+				for(vint j=0;j<state->transitions.Count();j++)
+				{
+					Transition* dfaTransition=state->transitions[j];
+					switch(dfaTransition->type)
+					{
+					case Transition::Chars:
+						{
+							vint index=subsets.IndexOf(dfaTransition->range);
+							if(index==-1)
+							{
+								CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#Specified chars don't appear in the normalized char ranges.");
+							}
+							transition[i][index]=dfa->states.IndexOf(dfaTransition->target);
+						}
+						break;
+					default:
+						CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#PureInterpretor only accepts Transition::Chars transitions.");
+					}
+				}
+			}
+
+			// Mark final states
+			finalState=new bool[stateCount];
+			for(vint i=0;i<stateCount;i++)
+			{
+				finalState[i]=dfa->states[i]->finalState;
+			}
+		}
+
+		PureInterpretor::~PureInterpretor()
+		{
+			if(relatedFinalState) delete[] relatedFinalState;
+			delete[] finalState;
+			for(vint i=0;i<stateCount;i++)
+			{
+				delete[] transition[i];
+			}
+			delete[] transition;
+		}
+
+		bool PureInterpretor::MatchHead(const wchar_t* input, const wchar_t* start, PureResult& result)
+		{
+			result.start=input-start;
+			result.length=-1;
+			result.finalState=-1;
+			result.terminateState=-1;
+
+			vint currentState=startState;
+			vint terminateState=-1;
+			vint terminateLength=-1;
+			const wchar_t* read=input;
+			while(currentState!=-1)
+			{
+				terminateState=currentState;
+				terminateLength=read-input;
+				if(finalState[currentState])
+				{
+					result.length=terminateLength;
+					result.finalState=currentState;
+				}
+				if(!*read)break;
+#ifdef VCZH_GCC
+				if(*read>=SupportedCharCount)break;
+#endif
+				vint charIndex=charMap[*read++];
+				currentState=transition[currentState][charIndex];
+			}
+
+			if(result.finalState==-1)
+			{
+				if(terminateLength>0)
+				{
+					result.terminateState=terminateState;
+				}
+				result.length=terminateLength;
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		bool PureInterpretor::Match(const wchar_t* input, const wchar_t* start, PureResult& result)
+		{
+			const wchar_t* read=input;
+			while(*read)
+			{
+				if(MatchHead(read, start, result))
+				{
+					return true;
+				}
+				read++;
+			}
+			return false;
+		}
+
+		vint PureInterpretor::GetStartState()
+		{
+			return startState;
+		}
+
+		vint PureInterpretor::Transit(wchar_t input, vint state)
+		{
+			if(0<=state && state<stateCount)
+			{
+				vint charIndex=charMap[input];
+				vint nextState=transition[state][charIndex];
+				return nextState;
+			}
+			else
+			{
+				return -1;
+			}
+		}
+
+		bool PureInterpretor::IsFinalState(vint state)
+		{
+			return 0<=state && state<stateCount && finalState[state];
+		}
+
+		bool PureInterpretor::IsDeadState(vint state)
+		{
+			if(state==-1) return true;
+			for(vint i=0;i<charSetCount;i++)
+			{
+				if(transition[state][i]!=-1)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		void PureInterpretor::PrepareForRelatedFinalStateTable()
+		{
+			if(!relatedFinalState)
+			{
+				relatedFinalState=new vint[stateCount];
+				for(vint i=0;i<stateCount;i++)
+				{
+					relatedFinalState[i]=finalState[i]?i:-1;
+				}
+				while(true)
+				{
+					vint modifyCount=0;
+					for(vint i=0;i<stateCount;i++)
+					{
+						if(relatedFinalState[i]==-1)
+						{
+							vint state=-1;
+							for(vint j=0;j<charSetCount;j++)
+							{
+								vint nextState=transition[i][j];
+								if(nextState!=-1)
+								{
+									state=relatedFinalState[nextState];
+									if(state!=-1)
+									{
+										break;
+									}
+								}
+							}
+							if(state!=-1)
+							{
+								relatedFinalState[i]=state;
+								modifyCount++;
+							}
+						}
+					}
+					if(modifyCount==0)
+					{
+						break;
+					}
+				}
+			}
+		}
+
+		vint PureInterpretor::GetRelatedFinalState(vint state)
+		{
+			return relatedFinalState?relatedFinalState[state]:-1;
+		}
+	}
+}
+
+/***********************************************************************
+.\REGEXRICH.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+
+/***********************************************************************
+Data Structures for Backtracking
+***********************************************************************/
+
+		class StateSaver
+		{
+		public:
+			enum StateStoreType
+			{
+				Positive,
+				Negative,
+				Other
+			};
+
+			const wchar_t*			reading;					// Current reading position
+			State*					currentState;				// Current state
+			vint					minTransition;				// The first transition to backtrack
+			vint					captureCount;				// Available capture count			(the list size may larger than this)
+			vint					stateSaverCount;			// Available saver count			(the list size may larger than this)
+			vint					extensionSaverAvailable;	// Available extension saver count	(the list size may larger than this)
+			vint					extensionSaverCount;		// Available extension saver count	(during executing)
+			StateStoreType			storeType;					// Reason to keep this record
+
+			bool operator==(const StateSaver& saver)const
+			{
+				return
+					reading == saver.reading &&
+					currentState == saver.currentState &&
+					minTransition == saver.minTransition &&
+					captureCount == saver.captureCount;
+			}
+		};
+
+		class ExtensionSaver
+		{
+		public:
+			vint					previous;					// Previous extension saver index
+			vint					captureListIndex;			// Where to write the captured text
+			Transition*				transition;					// The extension begin transition (Capture, Positive, Negative)
+			const wchar_t*			reading;					// The reading position
+
+			bool operator==(const ExtensionSaver& saver)const
+			{
+				return
+					captureListIndex == saver.captureListIndex &&
+					transition == saver.transition &&
+					reading == saver.reading;
+			}
+		};
+	}
+
 	namespace regex_internal
 	{
 		using namespace collections;
 
+		void Push(List<ExtensionSaver>& elements, vint& available, vint& count, const ExtensionSaver& element)
+		{
+			if(elements.Count()==count)
+			{
+				elements.Add(element);
+			}
+			else
+			{
+				elements[count]=element;
+			}
+			ExtensionSaver& current=elements[count];
+			current.previous=available;
+			available=count++;
+		}
+
+		ExtensionSaver Pop(List<ExtensionSaver>& elements, vint& available, vint& count)
+		{
+			ExtensionSaver& current=elements[available];
+			available=current.previous;
+			return current;
+		}
+
+		template<typename T, typename K>
+		void PushNonSaver(List<T, K>& elements, vint& count, const T& element)
+		{
+			if(elements.Count()==count)
+			{
+				elements.Add(element);
+			}
+			else
+			{
+				elements[count]=element;
+			}
+			count++;
+		}
+
+		template<typename T, typename K>
+		T PopNonSaver(List<T, K>& elements, vint& count)
+		{
+			return elements[--count];
+		}
+	}
+
+	namespace regex_internal
+	{
 /***********************************************************************
-Automaton
+CaptureRecord
 ***********************************************************************/
-		
-		Automaton::Automaton()
-		{
-			startState=0;
-		}
 
-		State* Automaton::NewState()
+		bool CaptureRecord::operator==(const CaptureRecord& record)const
 		{
-			State* state=new State;
-			state->finalState=false;
-			state->userData=0;
-			states.Add(state);
-			return state;
-		}
-
-		Transition* Automaton::NewTransition(State* start, State* end)
-		{
-			Transition* transition=new Transition;
-			transition->source=start;
-			transition->target=end;
-			start->transitions.Add(transition);
-			end->inputs.Add(transition);
-			transitions.Add(transition);
-			return transition;
-		}
-
-		Transition* Automaton::NewChars(State* start, State* end, CharRange range)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Chars;
-			transition->range=range;
-			return transition;
-		}
-
-		Transition* Automaton::NewEpsilon(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Epsilon;
-			return transition;
-		}
-
-		Transition* Automaton::NewBeginString(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::BeginString;
-			return transition;
-		}
-
-		Transition* Automaton::NewEndString(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::EndString;
-			return transition;
-		}
-
-		Transition* Automaton::NewNop(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Nop;
-			return transition;
-		}
-
-		Transition* Automaton::NewCapture(State* start, State* end, vint capture)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Capture;
-			transition->capture=capture;
-			return transition;
-		}
-
-		Transition* Automaton::NewMatch(State* start, State* end, vint capture, vint index)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Match;
-			transition->capture=capture;
-			transition->index=index;
-			return transition;
-		}
-
-		Transition* Automaton::NewPositive(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Positive;
-			return transition;
-		}
-
-		Transition* Automaton::NewNegative(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Negative;
-			return transition;
-		}
-
-		Transition* Automaton::NewNegativeFail(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::NegativeFail;
-			return transition;
-		}
-
-		Transition* Automaton::NewEnd(State* start, State* end)
-		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::End;
-			return transition;
+			return capture==record.capture && start==record.start && length==record.length;
 		}
 
 /***********************************************************************
-Helpers
+RichInterpretor
 ***********************************************************************/
 
-		bool PureEpsilonChecker(Transition* transition)
+		RichInterpretor::RichInterpretor(Automaton::Ref _dfa)
+			:dfa(_dfa)
 		{
-			switch(transition->type)
-			{
-			case Transition::Epsilon:
-			case Transition::Nop:
-			case Transition::Capture:
-			case Transition::End:
-				return true;
-			default:
-				return false;
-			}
-		}
+			datas=new UserData[dfa->states.Count()];
 
-		bool RichEpsilonChecker(Transition* transition)
-		{
-			switch(transition->type)
+			for(vint i=0;i<dfa->states.Count();i++)
 			{
-			case Transition::Epsilon:
-				return true;
-			default:
-				return false;
-			}
-		}
-
-		bool AreEqual(Transition* transA, Transition* transB)
-		{
-			if(transA->type!=transB->type)return false;
-			switch(transA->type)
-			{
-			case Transition::Chars:
-				return transA->range==transB->range;
-			case Transition::Capture:
-				return transA->capture==transB->capture;
-			case Transition::Match:
-				return transA->capture==transB->capture && transA->index==transB->index;
-			default:
-				return true;
-			}
-		}
-
-		// Collect epsilon states and non-epsilon transitions, their order are maintained to match the e-NFA
-		void CollectEpsilon(State* targetState, State* sourceState, bool(*epsilonChecker)(Transition*), List<State*>& epsilonStates, List<Transition*>& transitions)
-		{
-			if(!epsilonStates.Contains(sourceState))
-			{
-				epsilonStates.Add(sourceState);
-				for(vint i=0;i<sourceState->transitions.Count();i++)
+				State* state=dfa->states[i].Obj();
+				vint charEdges=0;
+				vint nonCharEdges=0;
+				bool mustSave=false;
+				for(vint j=0;j<state->transitions.Count();j++)
 				{
-					Transition* transition=sourceState->transitions[i];
-					if(epsilonChecker(transition))
+					if(state->transitions[j]->type==Transition::Chars)
 					{
-						if(!epsilonStates.Contains(transition->target))
+						charEdges++;
+					}
+					else
+					{
+						if(state->transitions[j]->type==Transition::Negative ||
+						   state->transitions[j]->type==Transition::Positive)
 						{
-							if(transition->target->finalState)
+							mustSave=true;
+						}
+						nonCharEdges++;
+					}
+				}
+				datas[i].NeedKeepState=mustSave || nonCharEdges>1 || (nonCharEdges!=0 && charEdges!=0);
+				state->userData=&datas[i];
+			}
+		}
+
+		RichInterpretor::~RichInterpretor()
+		{
+			delete[] datas;
+		}
+
+		bool RichInterpretor::MatchHead(const wchar_t* input, const wchar_t* start, RichResult& result)
+		{
+			List<StateSaver> stateSavers;
+			List<ExtensionSaver> extensionSavers;
+
+			StateSaver currentState;
+			currentState.captureCount=0;
+			currentState.currentState=dfa->startState;
+			currentState.extensionSaverAvailable=-1;
+			currentState.extensionSaverCount=0;
+			currentState.minTransition=0;
+			currentState.reading=input;
+			currentState.stateSaverCount=0;
+			currentState.storeType=StateSaver::Other;
+
+			while (!currentState.currentState->finalState)
+			{
+				bool found = false; // true means at least one transition matches the input
+				StateSaver oldState = currentState;
+				// Iterate through all transitions from the current state
+				for (vint i = currentState.minTransition; i < currentState.currentState->transitions.Count(); i++)
+				{
+					Transition* transition = currentState.currentState->transitions[i];
+					switch (transition->type)
+					{
+					case Transition::Chars:
+						{
+							// match the input if the current character fall into the range
+							CharRange range = transition->range;
+							found =
+								range.begin <= *currentState.reading &&
+								range.end >= *currentState.reading;
+							if (found)
 							{
-								targetState->finalState=true;
+								currentState.reading++;
 							}
-							CollectEpsilon(targetState, transition->target, epsilonChecker, epsilonStates, transitions);
+						}
+						break;
+					case Transition::BeginString:
+						{
+							// match the input if this is the first character, and it is not consumed
+							found = currentState.reading == start;
+						}
+						break;
+					case Transition::EndString:
+						{
+							// match the input if this is after the last character, and it is not consumed
+							found = *currentState.reading == L'\0';
+						}
+						break;
+					case Transition::Nop:
+						{
+							// match without any condition
+							found = true;
+						}
+						break;
+					case Transition::Capture:
+						{
+							// Push the capture information
+							ExtensionSaver saver;
+							saver.captureListIndex = currentState.captureCount;
+							saver.reading = currentState.reading;
+							saver.transition = transition;
+							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
+
+							// Push the capture record, and it will be written if the input matches the regex
+							CaptureRecord capture;
+							capture.capture = transition->capture;
+							capture.start = currentState.reading - start;
+							capture.length = -1;
+							PushNonSaver(result.captures, currentState.captureCount, capture);
+
+							found = true;
+						}
+						break;
+					case Transition::Match:
+						{
+							vint index = 0;
+							for (vint j = 0; j < currentState.captureCount; j++)
+							{
+								CaptureRecord& capture = result.captures[j];
+								// If the capture name matched
+								if (capture.capture == transition->capture)
+								{
+									// If the capture index matched, or it is -1
+									if (capture.length != -1 && (transition->index == -1 || transition->index == index))
+									{
+										// If the captured text matched
+										if (wcsncmp(start + capture.start, currentState.reading, capture.length) == 0)
+										{
+											// Consume so much input
+											currentState.reading += capture.length;
+											found = true;
+											break;
+										}
+									}
+
+									// Fail if f the captured text with the specified name and index doesn't match
+									if (transition->index != -1 && index == transition->index)
+									{
+										break;
+									}
+									else
+									{
+										index++;
+									}
+								}
+							}
+						}
+						break;
+					case Transition::Positive:
+						{
+							// Push the positive lookahead information
+							ExtensionSaver saver;
+							saver.captureListIndex = -1;
+							saver.reading = currentState.reading;
+							saver.transition = transition;
+							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
+
+							// Set found = true so that PushNonSaver(oldState) happens later
+							oldState.storeType = StateSaver::Positive;
+							found = true;
+						}
+						break;
+					case Transition::Negative:
+						{
+							// Push the positive lookahead information
+
+							ExtensionSaver saver;
+							saver.captureListIndex = -1;
+							saver.reading = currentState.reading;
+							saver.transition = transition;
+							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
+
+							// Set found = true so that PushNonSaver(oldState) happens later
+							oldState.storeType = StateSaver::Negative;
+							found = true;
+						}
+						break;
+					case Transition::NegativeFail:
+						{
+							// NegativeFail will be used when the nagative lookahead failed
+						}
+						break;
+					case Transition::End:
+						{
+							// Find the corresponding extension saver so that we can know how to deal with a matched sub regex that ends here
+							ExtensionSaver extensionSaver = Pop(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount);
+							switch (extensionSaver.transition->type)
+							{
+							case Transition::Capture:
+								{
+									// Write the captured text
+									CaptureRecord& capture = result.captures[extensionSaver.captureListIndex];
+									capture.length = (currentState.reading - start) - capture.start;
+									found = true;
+								}
+								break;
+							case Transition::Positive:
+								// Find the last positive lookahead state saver
+								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
+								{
+									StateSaver& stateSaver = stateSavers[j];
+									if (stateSaver.storeType == StateSaver::Positive)
+									{
+										// restore the parsing state just before matching the positive lookahead, since positive lookahead doesn't consume input
+										oldState.reading = stateSaver.reading;
+										oldState.stateSaverCount = j;
+										currentState.reading = stateSaver.reading;
+										currentState.stateSaverCount = j;
+										break;
+									}
+								}
+								found = true;
+								break;
+							case Transition::Negative:
+								// Find the last negative lookahead state saver
+								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
+								{
+									StateSaver& stateSaver = stateSavers[j];
+									if (stateSaver.storeType == StateSaver::Negative)
+									{
+										// restore the parsing state just before matching the negative lookahead, since positive lookahead doesn't consume input
+										oldState = stateSaver;
+										oldState.storeType = StateSaver::Other;
+										currentState = stateSaver;
+										currentState.storeType = StateSaver::Other;
+										i = currentState.minTransition - 1;
+										break;
+									}
+								}
+								break;
+							default:;
+							}
+						}
+						break;
+					default:;
+					}
+					
+					// Save the parsing state when necessary
+					if (found)
+					{
+						UserData* data = (UserData*)currentState.currentState->userData;
+						if (data->NeedKeepState)
+						{
+							oldState.minTransition = i + 1;
+							PushNonSaver(stateSavers, currentState.stateSaverCount, oldState);
+						}
+						currentState.currentState = transition->target;
+						currentState.minTransition = 0;
+						break;
+					}
+				}
+
+				// If no transition from the current state can be used
+				if (!found)
+				{
+					// If there is a chance to do backtracking
+					if (currentState.stateSaverCount)
+					{
+						currentState = PopNonSaver(stateSavers, currentState.stateSaverCount);
+						// minTransition - 1 is always valid since the value is stored with adding 1
+						// So minTransition - 1 record the transition, which is the reason the parsing state is saved
+						if (currentState.currentState->transitions[currentState.minTransition - 1]->type == Transition::Negative)
+						{
+							// Find the next NegativeFail transition
+							// Because when a negative lookahead regex failed to match, it is actually succeeded
+							// Since a negative lookahead means we don't want to match this regex
+							for (vint i = 0; i < currentState.currentState->transitions.Count(); i++)
+							{
+								Transition* transition = currentState.currentState->transitions[i];
+								if (transition->type == Transition::NegativeFail)
+								{
+									// Restore the state to the target of NegativeFail to let the parsing continue
+									currentState.currentState = transition->target;
+									currentState.minTransition = 0;
+									currentState.storeType = StateSaver::Other;
+									break;
+								}
+							}
 						}
 					}
 					else
 					{
-						transitions.Add(transition);
+						break;
 					}
 				}
+			}
+
+			if (currentState.currentState->finalState)
+			{
+				// Keep available captures if succeeded
+				result.start = input - start;
+				result.length = (currentState.reading - start) - result.start;
+				for (vint i = result.captures.Count() - 1; i >= currentState.captureCount; i--)
+				{
+					result.captures.RemoveAt(i);
+				}
+				return true;
+			}
+			else
+			{
+				// Clear captures if failed
+				result.captures.Clear();
+				return false;
 			}
 		}
 
-		Automaton::Ref EpsilonNfaToNfa(Automaton::Ref source, bool(*epsilonChecker)(Transition*), Dictionary<State*, State*>& nfaStateMap)
+		bool RichInterpretor::Match(const wchar_t* input, const wchar_t* start, RichResult& result)
 		{
-			Automaton::Ref target=new Automaton;
-			Dictionary<State*, State*> stateMap;	// source->target
-			List<State*> epsilonStates;				// current epsilon closure
-			List<Transition*> transitions;			// current non-epsilon transitions
-
-			stateMap.Add(source->startState, target->NewState());
-			nfaStateMap.Add(stateMap[source->startState], source->startState);
-			target->startState=target->states[0].Obj();
-			CopyFrom(target->captureNames, source->captureNames);
-
-			for(vint i=0;i<target->states.Count();i++)
+			const wchar_t* read=input;
+			while(*read)
 			{
-				// Clear cache
-				State* targetState=target->states[i].Obj();
-				State* sourceState=nfaStateMap[targetState];
-				if(sourceState->finalState)
+				if(MatchHead(read, start, result))
 				{
-					targetState->finalState=true;
+					return true;
 				}
-				epsilonStates.Clear();
-				transitions.Clear();
-
-				// Collect epsilon states and non-epsilon transitions
-				CollectEpsilon(targetState, sourceState, epsilonChecker, epsilonStates, transitions);
-
-				// Iterate through all non-epsilon transitions
-				for(vint j=0;j<transitions.Count();j++)
-				{
-					Transition* transition=transitions[j];
-					// Create and map a new target state if a new non-epsilon state is found in the e-NFA
-					if(!stateMap.Keys().Contains(transition->target))
-					{
-						stateMap.Add(transition->target, target->NewState());
-						nfaStateMap.Add(stateMap[transition->target], transition->target);
-					}
-					// Copy transition to connect between two non-epsilon state
-					Transition* newTransition=target->NewTransition(targetState, stateMap[transition->target]);
-					newTransition->capture=transition->capture;
-					newTransition->index=transition->index;
-					newTransition->range=transition->range;
-					newTransition->type=transition->type;
-				}
+				read++;
 			}
-			return target;
+			return false;
 		}
 
-		Automaton::Ref NfaToDfa(Automaton::Ref source, Group<State*, State*>& dfaStateMap)
+		const List<WString>& RichInterpretor::CaptureNames()
 		{
-			Automaton::Ref target=new Automaton;
-			Group<Transition*, Transition*> nfaTransitions;
-			List<Transition*> transitionClasses; // Maintain order for nfaTransitions.Keys
-
-			CopyFrom(target->captureNames, source->captureNames);
-			State* startState=target->NewState();
-			target->startState=startState;
-			dfaStateMap.Add(startState, source->startState);
-
-			SortedList<State*> transitionTargets;
-			SortedList<State*> relativeStates;
-			transitionTargets.SetLessMemoryMode(false);
-			relativeStates.SetLessMemoryMode(false);
-
-			for(vint i=0;i<target->states.Count();i++)
-			{
-				State* currentState=target->states[i].Obj();
-				nfaTransitions.Clear();
-				transitionClasses.Clear();
-
-				// Iterate through all NFA states which represent the DFA state
-				const List<State*>& nfaStates=dfaStateMap[currentState];
-				for(vint j=0;j<nfaStates.Count();j++)
-				{
-					State* nfaState=nfaStates.Get(j);
-					// Iterate through all transitions from those NFA states
-					for(vint k=0;k<nfaState->transitions.Count();k++)
-					{
-						Transition* nfaTransition=nfaState->transitions[k];
-						// Check if there is any key in nfaTransitions that has the same input as the current transition
-						Transition* transitionClass=0;
-						for(vint l=0;l<nfaTransitions.Keys().Count();l++)
-						{
-							Transition* key=nfaTransitions.Keys()[l];
-							if(AreEqual(key, nfaTransition))
-							{
-								transitionClass=key;
-								break;
-							}
-						}
-						// Create a new key if not
-						if(transitionClass==0)
-						{
-							transitionClass=nfaTransition;
-							transitionClasses.Add(transitionClass);
-						}
-						// Group the transition
-						nfaTransitions.Add(transitionClass, nfaTransition);
-					}
-				}
-
-				// Iterate through all key transition that represent all existing transition inputs from the same state
-				for(vint j=0;j<transitionClasses.Count();j++)
-				{
-					const List<Transition*>& transitionSet=nfaTransitions[transitionClasses[j]];
-					// Sort all target states and keep unique
-					transitionTargets.Clear();
-					for(vint l=0;l<transitionSet.Count();l++)
-					{
-						State* nfaState=transitionSet.Get(l)->target;
-						if(!transitionTargets.Contains(nfaState))
-						{
-							transitionTargets.Add(nfaState);
-						}
-					}
-					// Check if these NFA states represent a created DFA state
-					State* dfaState=0;
-					for(vint k=0;k<dfaStateMap.Count();k++)
-					{
-						// Sort NFA states for a certain DFA state
-						CopyFrom(relativeStates, dfaStateMap.GetByIndex(k));
-						// Compare two NFA states set
-						if(relativeStates.Count()==transitionTargets.Count())
-						{
-							bool equal=true;
-							for(vint l=0;l<relativeStates.Count();l++)
-							{
-								if(relativeStates[l]!=transitionTargets[l])
-								{
-									equal=false;
-									break;
-								}
-							}
-							if(equal)
-							{
-								dfaState=dfaStateMap.Keys()[k];
-								break;
-							}
-						}
-					}
-					// Create a new DFA state if there is not
-					if(!dfaState)
-					{
-						dfaState=target->NewState();
-						for(vint k=0;k<transitionTargets.Count();k++)
-						{
-							dfaStateMap.Add(dfaState, transitionTargets[k]);
-							if(transitionTargets[k]->finalState)
-							{
-								dfaState->finalState=true;
-							}
-						}
-					}
-					// Create corresponding DFA transition
-					Transition* transitionClass=transitionClasses[j];
-					Transition* newTransition=target->NewTransition(currentState, dfaState);
-					newTransition->capture=transitionClass->capture;
-					newTransition->index=transitionClass->index;
-					newTransition->range=transitionClass->range;
-					newTransition->type=transitionClass->type;
-				}
-			}
-
-			return target;
+			return dfa->captureNames;
 		}
 	}
 }
 
 /***********************************************************************
-.\REGEXDATA.CPP
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-
-namespace vl
-{
-	namespace regex_internal
-	{
-
-/***********************************************************************
-CharRange
-***********************************************************************/
-
-		CharRange::CharRange()
-			:begin(L'\0')
-			,end(L'\0')
-		{
-		}
-
-		CharRange::CharRange(wchar_t _begin, wchar_t _end)
-			:begin(_begin)
-			,end(_end)
-		{
-		}
-
-		bool CharRange::operator<(CharRange item)const
-		{
-			return end<item.begin;
-		}
-
-		bool CharRange::operator<=(CharRange item)const
-		{
-			return *this<item || *this==item;
-		}
-
-		bool CharRange::operator>(CharRange item)const
-		{
-			return item.end<begin;
-		}
-
-		bool CharRange::operator>=(CharRange item)const
-		{
-			return *this>item || *this==item;
-		}
-
-		bool CharRange::operator==(CharRange item)const
-		{
-			return begin==item.begin && end==item.end;
-		}
-
-		bool CharRange::operator!=(CharRange item)const
-		{
-			return begin!=item.begin || item.end!=end;
-		}
-
-		bool CharRange::operator<(wchar_t item)const
-		{
-			return end<item;
-		}
-
-		bool CharRange::operator<=(wchar_t item)const
-		{
-			return begin<=item;
-		}
-
-		bool CharRange::operator>(wchar_t item)const
-		{
-			return item<begin;
-		}
-
-		bool CharRange::operator>=(wchar_t item)const
-		{
-			return item<=end;
-		}
-
-		bool CharRange::operator==(wchar_t item)const
-		{
-			return begin<=item && item<=end;
-		}
-
-		bool CharRange::operator!=(wchar_t item)const
-		{
-			return item<begin || end<item;
-		}
-
-	}
-}
-
-/***********************************************************************
-.\REGEXEXPRESSION.CPP
+.\AST\REGEXEXPRESSION.CPP
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -2418,7 +2649,7 @@ Expression::Apply
 }
 
 /***********************************************************************
-.\REGEXPARSER.CPP
+.\AST\REGEXPARSER.CPP
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -3121,697 +3352,7 @@ Helper Functions
 }
 
 /***********************************************************************
-.\REGEXPURE.CPP
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-
-namespace vl
-{
-	namespace regex_internal
-	{
-
-/***********************************************************************
-PureInterpretor
-***********************************************************************/
-
-		PureInterpretor::PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets)
-			:transition(0)
-			,finalState(0)
-			,relatedFinalState(0)
-		{
-			stateCount=dfa->states.Count();
-			charSetCount=subsets.Count()+1;
-			startState=dfa->states.IndexOf(dfa->startState);
-
-			// Map char to input index (equivalent char class)
-			for(vint i=0;i<SupportedCharCount;i++)
-			{
-				charMap[i]=charSetCount-1;
-			}
-			for(vint i=0;i<subsets.Count();i++)
-			{
-				CharRange range=subsets[i];
-				for(vint j=range.begin;j<=range.end;j++)
-				{
-					charMap[j]=i;
-				}
-			}
-			
-			// Create transitions from DFA, using input index to represent input char
-			transition=new vint*[stateCount];
-			for(vint i=0;i<stateCount;i++)
-			{
-				transition[i]=new vint[charSetCount];
-				for(vint j=0;j<charSetCount;j++)
-				{
-					transition[i][j]=-1;
-				}
-
-				State* state=dfa->states[i].Obj();
-				for(vint j=0;j<state->transitions.Count();j++)
-				{
-					Transition* dfaTransition=state->transitions[j];
-					switch(dfaTransition->type)
-					{
-					case Transition::Chars:
-						{
-							vint index=subsets.IndexOf(dfaTransition->range);
-							if(index==-1)
-							{
-								CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#Specified chars don't appear in the normalized char ranges.");
-							}
-							transition[i][index]=dfa->states.IndexOf(dfaTransition->target);
-						}
-						break;
-					default:
-						CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#PureInterpretor only accepts Transition::Chars transitions.");
-					}
-				}
-			}
-
-			// Mark final states
-			finalState=new bool[stateCount];
-			for(vint i=0;i<stateCount;i++)
-			{
-				finalState[i]=dfa->states[i]->finalState;
-			}
-		}
-
-		PureInterpretor::~PureInterpretor()
-		{
-			if(relatedFinalState) delete[] relatedFinalState;
-			delete[] finalState;
-			for(vint i=0;i<stateCount;i++)
-			{
-				delete[] transition[i];
-			}
-			delete[] transition;
-		}
-
-		bool PureInterpretor::MatchHead(const wchar_t* input, const wchar_t* start, PureResult& result)
-		{
-			result.start=input-start;
-			result.length=-1;
-			result.finalState=-1;
-			result.terminateState=-1;
-
-			vint currentState=startState;
-			vint terminateState=-1;
-			vint terminateLength=-1;
-			const wchar_t* read=input;
-			while(currentState!=-1)
-			{
-				terminateState=currentState;
-				terminateLength=read-input;
-				if(finalState[currentState])
-				{
-					result.length=terminateLength;
-					result.finalState=currentState;
-				}
-				if(!*read)break;
-#ifdef VCZH_GCC
-				if(*read>=SupportedCharCount)break;
-#endif
-				vint charIndex=charMap[*read++];
-				currentState=transition[currentState][charIndex];
-			}
-
-			if(result.finalState==-1)
-			{
-				if(terminateLength>0)
-				{
-					result.terminateState=terminateState;
-				}
-				result.length=terminateLength;
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		}
-
-		bool PureInterpretor::Match(const wchar_t* input, const wchar_t* start, PureResult& result)
-		{
-			const wchar_t* read=input;
-			while(*read)
-			{
-				if(MatchHead(read, start, result))
-				{
-					return true;
-				}
-				read++;
-			}
-			return false;
-		}
-
-		vint PureInterpretor::GetStartState()
-		{
-			return startState;
-		}
-
-		vint PureInterpretor::Transit(wchar_t input, vint state)
-		{
-			if(0<=state && state<stateCount)
-			{
-				vint charIndex=charMap[input];
-				vint nextState=transition[state][charIndex];
-				return nextState;
-			}
-			else
-			{
-				return -1;
-			}
-		}
-
-		bool PureInterpretor::IsFinalState(vint state)
-		{
-			return 0<=state && state<stateCount && finalState[state];
-		}
-
-		bool PureInterpretor::IsDeadState(vint state)
-		{
-			if(state==-1) return true;
-			for(vint i=0;i<charSetCount;i++)
-			{
-				if(transition[state][i]!=-1)
-				{
-					return false;
-				}
-			}
-			return true;
-		}
-
-		void PureInterpretor::PrepareForRelatedFinalStateTable()
-		{
-			if(!relatedFinalState)
-			{
-				relatedFinalState=new vint[stateCount];
-				for(vint i=0;i<stateCount;i++)
-				{
-					relatedFinalState[i]=finalState[i]?i:-1;
-				}
-				while(true)
-				{
-					vint modifyCount=0;
-					for(vint i=0;i<stateCount;i++)
-					{
-						if(relatedFinalState[i]==-1)
-						{
-							vint state=-1;
-							for(vint j=0;j<charSetCount;j++)
-							{
-								vint nextState=transition[i][j];
-								if(nextState!=-1)
-								{
-									state=relatedFinalState[nextState];
-									if(state!=-1)
-									{
-										break;
-									}
-								}
-							}
-							if(state!=-1)
-							{
-								relatedFinalState[i]=state;
-								modifyCount++;
-							}
-						}
-					}
-					if(modifyCount==0)
-					{
-						break;
-					}
-				}
-			}
-		}
-
-		vint PureInterpretor::GetRelatedFinalState(vint state)
-		{
-			return relatedFinalState?relatedFinalState[state]:-1;
-		}
-	}
-}
-
-/***********************************************************************
-.\REGEXRICH.CPP
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-
-namespace vl
-{
-	namespace regex_internal
-	{
-
-/***********************************************************************
-Data Structures for Backtracking
-***********************************************************************/
-
-		class StateSaver
-		{
-		public:
-			enum StateStoreType
-			{
-				Positive,
-				Negative,
-				Other
-			};
-
-			const wchar_t*			reading;					// Current reading position
-			State*					currentState;				// Current state
-			vint					minTransition;				// The first transition to backtrack
-			vint					captureCount;				// Available capture count			(the list size may larger than this)
-			vint					stateSaverCount;			// Available saver count			(the list size may larger than this)
-			vint					extensionSaverAvailable;	// Available extension saver count	(the list size may larger than this)
-			vint					extensionSaverCount;		// Available extension saver count	(during executing)
-			StateStoreType			storeType;					// Reason to keep this record
-
-			bool operator==(const StateSaver& saver)const
-			{
-				return
-					reading == saver.reading &&
-					currentState == saver.currentState &&
-					minTransition == saver.minTransition &&
-					captureCount == saver.captureCount;
-			}
-		};
-
-		class ExtensionSaver
-		{
-		public:
-			vint					previous;					// Previous extension saver index
-			vint					captureListIndex;			// Where to write the captured text
-			Transition*				transition;					// The extension begin transition (Capture, Positive, Negative)
-			const wchar_t*			reading;					// The reading position
-
-			bool operator==(const ExtensionSaver& saver)const
-			{
-				return
-					captureListIndex == saver.captureListIndex &&
-					transition == saver.transition &&
-					reading == saver.reading;
-			}
-		};
-	}
-
-	namespace regex_internal
-	{
-		using namespace collections;
-
-		void Push(List<ExtensionSaver>& elements, vint& available, vint& count, const ExtensionSaver& element)
-		{
-			if(elements.Count()==count)
-			{
-				elements.Add(element);
-			}
-			else
-			{
-				elements[count]=element;
-			}
-			ExtensionSaver& current=elements[count];
-			current.previous=available;
-			available=count++;
-		}
-
-		ExtensionSaver Pop(List<ExtensionSaver>& elements, vint& available, vint& count)
-		{
-			ExtensionSaver& current=elements[available];
-			available=current.previous;
-			return current;
-		}
-
-		template<typename T, typename K>
-		void PushNonSaver(List<T, K>& elements, vint& count, const T& element)
-		{
-			if(elements.Count()==count)
-			{
-				elements.Add(element);
-			}
-			else
-			{
-				elements[count]=element;
-			}
-			count++;
-		}
-
-		template<typename T, typename K>
-		T PopNonSaver(List<T, K>& elements, vint& count)
-		{
-			return elements[--count];
-		}
-	}
-
-	namespace regex_internal
-	{
-/***********************************************************************
-CaptureRecord
-***********************************************************************/
-
-		bool CaptureRecord::operator==(const CaptureRecord& record)const
-		{
-			return capture==record.capture && start==record.start && length==record.length;
-		}
-
-/***********************************************************************
-RichInterpretor
-***********************************************************************/
-
-		RichInterpretor::RichInterpretor(Automaton::Ref _dfa)
-			:dfa(_dfa)
-		{
-			datas=new UserData[dfa->states.Count()];
-
-			for(vint i=0;i<dfa->states.Count();i++)
-			{
-				State* state=dfa->states[i].Obj();
-				vint charEdges=0;
-				vint nonCharEdges=0;
-				bool mustSave=false;
-				for(vint j=0;j<state->transitions.Count();j++)
-				{
-					if(state->transitions[j]->type==Transition::Chars)
-					{
-						charEdges++;
-					}
-					else
-					{
-						if(state->transitions[j]->type==Transition::Negative ||
-						   state->transitions[j]->type==Transition::Positive)
-						{
-							mustSave=true;
-						}
-						nonCharEdges++;
-					}
-				}
-				datas[i].NeedKeepState=mustSave || nonCharEdges>1 || (nonCharEdges!=0 && charEdges!=0);
-				state->userData=&datas[i];
-			}
-		}
-
-		RichInterpretor::~RichInterpretor()
-		{
-			delete[] datas;
-		}
-
-		bool RichInterpretor::MatchHead(const wchar_t* input, const wchar_t* start, RichResult& result)
-		{
-			List<StateSaver> stateSavers;
-			List<ExtensionSaver> extensionSavers;
-
-			StateSaver currentState;
-			currentState.captureCount=0;
-			currentState.currentState=dfa->startState;
-			currentState.extensionSaverAvailable=-1;
-			currentState.extensionSaverCount=0;
-			currentState.minTransition=0;
-			currentState.reading=input;
-			currentState.stateSaverCount=0;
-			currentState.storeType=StateSaver::Other;
-
-			while (!currentState.currentState->finalState)
-			{
-				bool found = false; // true means at least one transition matches the input
-				StateSaver oldState = currentState;
-				// Iterate through all transitions from the current state
-				for (vint i = currentState.minTransition; i < currentState.currentState->transitions.Count(); i++)
-				{
-					Transition* transition = currentState.currentState->transitions[i];
-					switch (transition->type)
-					{
-					case Transition::Chars:
-						{
-							// match the input if the current character fall into the range
-							CharRange range = transition->range;
-							found =
-								range.begin <= *currentState.reading &&
-								range.end >= *currentState.reading;
-							if (found)
-							{
-								currentState.reading++;
-							}
-						}
-						break;
-					case Transition::BeginString:
-						{
-							// match the input if this is the first character, and it is not consumed
-							found = currentState.reading == start;
-						}
-						break;
-					case Transition::EndString:
-						{
-							// match the input if this is after the last character, and it is not consumed
-							found = *currentState.reading == L'\0';
-						}
-						break;
-					case Transition::Nop:
-						{
-							// match without any condition
-							found = true;
-						}
-						break;
-					case Transition::Capture:
-						{
-							// Push the capture information
-							ExtensionSaver saver;
-							saver.captureListIndex = currentState.captureCount;
-							saver.reading = currentState.reading;
-							saver.transition = transition;
-							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
-
-							// Push the capture record, and it will be written if the input matches the regex
-							CaptureRecord capture;
-							capture.capture = transition->capture;
-							capture.start = currentState.reading - start;
-							capture.length = -1;
-							PushNonSaver(result.captures, currentState.captureCount, capture);
-
-							found = true;
-						}
-						break;
-					case Transition::Match:
-						{
-							vint index = 0;
-							for (vint j = 0; j < currentState.captureCount; j++)
-							{
-								CaptureRecord& capture = result.captures[j];
-								// If the capture name matched
-								if (capture.capture == transition->capture)
-								{
-									// If the capture index matched, or it is -1
-									if (capture.length != -1 && (transition->index == -1 || transition->index == index))
-									{
-										// If the captured text matched
-										if (wcsncmp(start + capture.start, currentState.reading, capture.length) == 0)
-										{
-											// Consume so much input
-											currentState.reading += capture.length;
-											found = true;
-											break;
-										}
-									}
-
-									// Fail if f the captured text with the specified name and index doesn't match
-									if (transition->index != -1 && index == transition->index)
-									{
-										break;
-									}
-									else
-									{
-										index++;
-									}
-								}
-							}
-						}
-						break;
-					case Transition::Positive:
-						{
-							// Push the positive lookahead information
-							ExtensionSaver saver;
-							saver.captureListIndex = -1;
-							saver.reading = currentState.reading;
-							saver.transition = transition;
-							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
-
-							// Set found = true so that PushNonSaver(oldState) happens later
-							oldState.storeType = StateSaver::Positive;
-							found = true;
-						}
-						break;
-					case Transition::Negative:
-						{
-							// Push the positive lookahead information
-
-							ExtensionSaver saver;
-							saver.captureListIndex = -1;
-							saver.reading = currentState.reading;
-							saver.transition = transition;
-							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
-
-							// Set found = true so that PushNonSaver(oldState) happens later
-							oldState.storeType = StateSaver::Negative;
-							found = true;
-						}
-						break;
-					case Transition::NegativeFail:
-						{
-							// NegativeFail will be used when the nagative lookahead failed
-						}
-						break;
-					case Transition::End:
-						{
-							// Find the corresponding extension saver so that we can know how to deal with a matched sub regex that ends here
-							ExtensionSaver extensionSaver = Pop(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount);
-							switch (extensionSaver.transition->type)
-							{
-							case Transition::Capture:
-								{
-									// Write the captured text
-									CaptureRecord& capture = result.captures[extensionSaver.captureListIndex];
-									capture.length = (currentState.reading - start) - capture.start;
-									found = true;
-								}
-								break;
-							case Transition::Positive:
-								// Find the last positive lookahead state saver
-								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
-								{
-									StateSaver& stateSaver = stateSavers[j];
-									if (stateSaver.storeType == StateSaver::Positive)
-									{
-										// restore the parsing state just before matching the positive lookahead, since positive lookahead doesn't consume input
-										oldState.reading = stateSaver.reading;
-										oldState.stateSaverCount = j;
-										currentState.reading = stateSaver.reading;
-										currentState.stateSaverCount = j;
-										break;
-									}
-								}
-								found = true;
-								break;
-							case Transition::Negative:
-								// Find the last negative lookahead state saver
-								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
-								{
-									StateSaver& stateSaver = stateSavers[j];
-									if (stateSaver.storeType == StateSaver::Negative)
-									{
-										// restore the parsing state just before matching the negative lookahead, since positive lookahead doesn't consume input
-										oldState = stateSaver;
-										oldState.storeType = StateSaver::Other;
-										currentState = stateSaver;
-										currentState.storeType = StateSaver::Other;
-										i = currentState.minTransition - 1;
-										break;
-									}
-								}
-								break;
-							default:;
-							}
-						}
-						break;
-					default:;
-					}
-					
-					// Save the parsing state when necessary
-					if (found)
-					{
-						UserData* data = (UserData*)currentState.currentState->userData;
-						if (data->NeedKeepState)
-						{
-							oldState.minTransition = i + 1;
-							PushNonSaver(stateSavers, currentState.stateSaverCount, oldState);
-						}
-						currentState.currentState = transition->target;
-						currentState.minTransition = 0;
-						break;
-					}
-				}
-
-				// If no transition from the current state can be used
-				if (!found)
-				{
-					// If there is a chance to do backtracking
-					if (currentState.stateSaverCount)
-					{
-						currentState = PopNonSaver(stateSavers, currentState.stateSaverCount);
-						// minTransition - 1 is always valid since the value is stored with adding 1
-						// So minTransition - 1 record the transition, which is the reason the parsing state is saved
-						if (currentState.currentState->transitions[currentState.minTransition - 1]->type == Transition::Negative)
-						{
-							// Find the next NegativeFail transition
-							// Because when a negative lookahead regex failed to match, it is actually succeeded
-							// Since a negative lookahead means we don't want to match this regex
-							for (vint i = 0; i < currentState.currentState->transitions.Count(); i++)
-							{
-								Transition* transition = currentState.currentState->transitions[i];
-								if (transition->type == Transition::NegativeFail)
-								{
-									// Restore the state to the target of NegativeFail to let the parsing continue
-									currentState.currentState = transition->target;
-									currentState.minTransition = 0;
-									currentState.storeType = StateSaver::Other;
-									break;
-								}
-							}
-						}
-					}
-					else
-					{
-						break;
-					}
-				}
-			}
-
-			if (currentState.currentState->finalState)
-			{
-				// Keep available captures if succeeded
-				result.start = input - start;
-				result.length = (currentState.reading - start) - result.start;
-				for (vint i = result.captures.Count() - 1; i >= currentState.captureCount; i--)
-				{
-					result.captures.RemoveAt(i);
-				}
-				return true;
-			}
-			else
-			{
-				// Clear captures if failed
-				result.captures.Clear();
-				return false;
-			}
-		}
-
-		bool RichInterpretor::Match(const wchar_t* input, const wchar_t* start, RichResult& result)
-		{
-			const wchar_t* read=input;
-			while(*read)
-			{
-				if(MatchHead(read, start, result))
-				{
-					return true;
-				}
-				read++;
-			}
-			return false;
-		}
-
-		const List<WString>& RichInterpretor::CaptureNames()
-		{
-			return dfa->captureNames;
-		}
-	}
-}
-
-/***********************************************************************
-.\REGEXWRITER.CPP
+.\AST\REGEXWRITER.CPP
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -3994,5 +3535,464 @@ Regex Writer
 		{
 			return rC(1, 65535);
 		}
+	}
+}
+
+/***********************************************************************
+.\AUTOMATON\REGEXAUTOMATON.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+		using namespace collections;
+
+/***********************************************************************
+Automaton
+***********************************************************************/
+		
+		Automaton::Automaton()
+		{
+			startState=0;
+		}
+
+		State* Automaton::NewState()
+		{
+			State* state=new State;
+			state->finalState=false;
+			state->userData=0;
+			states.Add(state);
+			return state;
+		}
+
+		Transition* Automaton::NewTransition(State* start, State* end)
+		{
+			Transition* transition=new Transition;
+			transition->source=start;
+			transition->target=end;
+			start->transitions.Add(transition);
+			end->inputs.Add(transition);
+			transitions.Add(transition);
+			return transition;
+		}
+
+		Transition* Automaton::NewChars(State* start, State* end, CharRange range)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::Chars;
+			transition->range=range;
+			return transition;
+		}
+
+		Transition* Automaton::NewEpsilon(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::Epsilon;
+			return transition;
+		}
+
+		Transition* Automaton::NewBeginString(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::BeginString;
+			return transition;
+		}
+
+		Transition* Automaton::NewEndString(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::EndString;
+			return transition;
+		}
+
+		Transition* Automaton::NewNop(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::Nop;
+			return transition;
+		}
+
+		Transition* Automaton::NewCapture(State* start, State* end, vint capture)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::Capture;
+			transition->capture=capture;
+			return transition;
+		}
+
+		Transition* Automaton::NewMatch(State* start, State* end, vint capture, vint index)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::Match;
+			transition->capture=capture;
+			transition->index=index;
+			return transition;
+		}
+
+		Transition* Automaton::NewPositive(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::Positive;
+			return transition;
+		}
+
+		Transition* Automaton::NewNegative(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::Negative;
+			return transition;
+		}
+
+		Transition* Automaton::NewNegativeFail(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::NegativeFail;
+			return transition;
+		}
+
+		Transition* Automaton::NewEnd(State* start, State* end)
+		{
+			Transition* transition=NewTransition(start, end);
+			transition->type=Transition::End;
+			return transition;
+		}
+
+/***********************************************************************
+Helpers
+***********************************************************************/
+
+		bool PureEpsilonChecker(Transition* transition)
+		{
+			switch(transition->type)
+			{
+			case Transition::Epsilon:
+			case Transition::Nop:
+			case Transition::Capture:
+			case Transition::End:
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		bool RichEpsilonChecker(Transition* transition)
+		{
+			switch(transition->type)
+			{
+			case Transition::Epsilon:
+				return true;
+			default:
+				return false;
+			}
+		}
+
+		bool AreEqual(Transition* transA, Transition* transB)
+		{
+			if(transA->type!=transB->type)return false;
+			switch(transA->type)
+			{
+			case Transition::Chars:
+				return transA->range==transB->range;
+			case Transition::Capture:
+				return transA->capture==transB->capture;
+			case Transition::Match:
+				return transA->capture==transB->capture && transA->index==transB->index;
+			default:
+				return true;
+			}
+		}
+
+		// Collect epsilon states and non-epsilon transitions, their order are maintained to match the e-NFA
+		void CollectEpsilon(State* targetState, State* sourceState, bool(*epsilonChecker)(Transition*), List<State*>& epsilonStates, List<Transition*>& transitions)
+		{
+			if(!epsilonStates.Contains(sourceState))
+			{
+				epsilonStates.Add(sourceState);
+				for(vint i=0;i<sourceState->transitions.Count();i++)
+				{
+					Transition* transition=sourceState->transitions[i];
+					if(epsilonChecker(transition))
+					{
+						if(!epsilonStates.Contains(transition->target))
+						{
+							if(transition->target->finalState)
+							{
+								targetState->finalState=true;
+							}
+							CollectEpsilon(targetState, transition->target, epsilonChecker, epsilonStates, transitions);
+						}
+					}
+					else
+					{
+						transitions.Add(transition);
+					}
+				}
+			}
+		}
+
+		Automaton::Ref EpsilonNfaToNfa(Automaton::Ref source, bool(*epsilonChecker)(Transition*), Dictionary<State*, State*>& nfaStateMap)
+		{
+			Automaton::Ref target=new Automaton;
+			Dictionary<State*, State*> stateMap;	// source->target
+			List<State*> epsilonStates;				// current epsilon closure
+			List<Transition*> transitions;			// current non-epsilon transitions
+
+			stateMap.Add(source->startState, target->NewState());
+			nfaStateMap.Add(stateMap[source->startState], source->startState);
+			target->startState=target->states[0].Obj();
+			CopyFrom(target->captureNames, source->captureNames);
+
+			for(vint i=0;i<target->states.Count();i++)
+			{
+				// Clear cache
+				State* targetState=target->states[i].Obj();
+				State* sourceState=nfaStateMap[targetState];
+				if(sourceState->finalState)
+				{
+					targetState->finalState=true;
+				}
+				epsilonStates.Clear();
+				transitions.Clear();
+
+				// Collect epsilon states and non-epsilon transitions
+				CollectEpsilon(targetState, sourceState, epsilonChecker, epsilonStates, transitions);
+
+				// Iterate through all non-epsilon transitions
+				for(vint j=0;j<transitions.Count();j++)
+				{
+					Transition* transition=transitions[j];
+					// Create and map a new target state if a new non-epsilon state is found in the e-NFA
+					if(!stateMap.Keys().Contains(transition->target))
+					{
+						stateMap.Add(transition->target, target->NewState());
+						nfaStateMap.Add(stateMap[transition->target], transition->target);
+					}
+					// Copy transition to connect between two non-epsilon state
+					Transition* newTransition=target->NewTransition(targetState, stateMap[transition->target]);
+					newTransition->capture=transition->capture;
+					newTransition->index=transition->index;
+					newTransition->range=transition->range;
+					newTransition->type=transition->type;
+				}
+			}
+			return target;
+		}
+
+		Automaton::Ref NfaToDfa(Automaton::Ref source, Group<State*, State*>& dfaStateMap)
+		{
+			Automaton::Ref target=new Automaton;
+			Group<Transition*, Transition*> nfaTransitions;
+			List<Transition*> transitionClasses; // Maintain order for nfaTransitions.Keys
+
+			CopyFrom(target->captureNames, source->captureNames);
+			State* startState=target->NewState();
+			target->startState=startState;
+			dfaStateMap.Add(startState, source->startState);
+
+			SortedList<State*> transitionTargets;
+			SortedList<State*> relativeStates;
+			transitionTargets.SetLessMemoryMode(false);
+			relativeStates.SetLessMemoryMode(false);
+
+			for(vint i=0;i<target->states.Count();i++)
+			{
+				State* currentState=target->states[i].Obj();
+				nfaTransitions.Clear();
+				transitionClasses.Clear();
+
+				// Iterate through all NFA states which represent the DFA state
+				const List<State*>& nfaStates=dfaStateMap[currentState];
+				for(vint j=0;j<nfaStates.Count();j++)
+				{
+					State* nfaState=nfaStates.Get(j);
+					// Iterate through all transitions from those NFA states
+					for(vint k=0;k<nfaState->transitions.Count();k++)
+					{
+						Transition* nfaTransition=nfaState->transitions[k];
+						// Check if there is any key in nfaTransitions that has the same input as the current transition
+						Transition* transitionClass=0;
+						for(vint l=0;l<nfaTransitions.Keys().Count();l++)
+						{
+							Transition* key=nfaTransitions.Keys()[l];
+							if(AreEqual(key, nfaTransition))
+							{
+								transitionClass=key;
+								break;
+							}
+						}
+						// Create a new key if not
+						if(transitionClass==0)
+						{
+							transitionClass=nfaTransition;
+							transitionClasses.Add(transitionClass);
+						}
+						// Group the transition
+						nfaTransitions.Add(transitionClass, nfaTransition);
+					}
+				}
+
+				// Iterate through all key transition that represent all existing transition inputs from the same state
+				for(vint j=0;j<transitionClasses.Count();j++)
+				{
+					const List<Transition*>& transitionSet=nfaTransitions[transitionClasses[j]];
+					// Sort all target states and keep unique
+					transitionTargets.Clear();
+					for(vint l=0;l<transitionSet.Count();l++)
+					{
+						State* nfaState=transitionSet.Get(l)->target;
+						if(!transitionTargets.Contains(nfaState))
+						{
+							transitionTargets.Add(nfaState);
+						}
+					}
+					// Check if these NFA states represent a created DFA state
+					State* dfaState=0;
+					for(vint k=0;k<dfaStateMap.Count();k++)
+					{
+						// Sort NFA states for a certain DFA state
+						CopyFrom(relativeStates, dfaStateMap.GetByIndex(k));
+						// Compare two NFA states set
+						if(relativeStates.Count()==transitionTargets.Count())
+						{
+							bool equal=true;
+							for(vint l=0;l<relativeStates.Count();l++)
+							{
+								if(relativeStates[l]!=transitionTargets[l])
+								{
+									equal=false;
+									break;
+								}
+							}
+							if(equal)
+							{
+								dfaState=dfaStateMap.Keys()[k];
+								break;
+							}
+						}
+					}
+					// Create a new DFA state if there is not
+					if(!dfaState)
+					{
+						dfaState=target->NewState();
+						for(vint k=0;k<transitionTargets.Count();k++)
+						{
+							dfaStateMap.Add(dfaState, transitionTargets[k]);
+							if(transitionTargets[k]->finalState)
+							{
+								dfaState->finalState=true;
+							}
+						}
+					}
+					// Create corresponding DFA transition
+					Transition* transitionClass=transitionClasses[j];
+					Transition* newTransition=target->NewTransition(currentState, dfaState);
+					newTransition->capture=transitionClass->capture;
+					newTransition->index=transitionClass->index;
+					newTransition->range=transitionClass->range;
+					newTransition->type=transitionClass->type;
+				}
+			}
+
+			return target;
+		}
+	}
+}
+
+/***********************************************************************
+.\AUTOMATON\REGEXDATA.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+
+/***********************************************************************
+CharRange
+***********************************************************************/
+
+		CharRange::CharRange()
+			:begin(L'\0')
+			,end(L'\0')
+		{
+		}
+
+		CharRange::CharRange(wchar_t _begin, wchar_t _end)
+			:begin(_begin)
+			,end(_end)
+		{
+		}
+
+		bool CharRange::operator<(CharRange item)const
+		{
+			return end<item.begin;
+		}
+
+		bool CharRange::operator<=(CharRange item)const
+		{
+			return *this<item || *this==item;
+		}
+
+		bool CharRange::operator>(CharRange item)const
+		{
+			return item.end<begin;
+		}
+
+		bool CharRange::operator>=(CharRange item)const
+		{
+			return *this>item || *this==item;
+		}
+
+		bool CharRange::operator==(CharRange item)const
+		{
+			return begin==item.begin && end==item.end;
+		}
+
+		bool CharRange::operator!=(CharRange item)const
+		{
+			return begin!=item.begin || item.end!=end;
+		}
+
+		bool CharRange::operator<(wchar_t item)const
+		{
+			return end<item;
+		}
+
+		bool CharRange::operator<=(wchar_t item)const
+		{
+			return begin<=item;
+		}
+
+		bool CharRange::operator>(wchar_t item)const
+		{
+			return item<begin;
+		}
+
+		bool CharRange::operator>=(wchar_t item)const
+		{
+			return item<=end;
+		}
+
+		bool CharRange::operator==(wchar_t item)const
+		{
+			return begin<=item && item<=end;
+		}
+
+		bool CharRange::operator!=(wchar_t item)const
+		{
+			return item<begin || end<item;
+		}
+
 	}
 }
