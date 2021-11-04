@@ -4701,9 +4701,17 @@ DateTimeValueSerializer
 
 			BEGIN_GLOBAL_STORAGE_CLASS(DateTimeSerializerStorage)
 				Regex* regexDateTime = nullptr;
+				vint _Y, _M, _D, _h, _m, _s, _ms;
 
 				INITIALIZE_GLOBAL_STORAGE_CLASS
 					regexDateTime = new Regex(L"(<Y>/d/d/d/d)-(<M>/d/d)-(<D>/d/d) (<h>/d/d):(<m>/d/d):(<s>/d/d).(<ms>/d/d/d)");
+					_Y = regexDateTime->CaptureNames().IndexOf(L"Y");
+					_M = regexDateTime->CaptureNames().IndexOf(L"M");
+					_D = regexDateTime->CaptureNames().IndexOf(L"D");
+					_h = regexDateTime->CaptureNames().IndexOf(L"H");
+					_m = regexDateTime->CaptureNames().IndexOf(L"M");
+					_s = regexDateTime->CaptureNames().IndexOf(L"S");
+					_ms = regexDateTime->CaptureNames().IndexOf(L"MS");
 
 				FINALIZE_GLOBAL_STORAGE_CLASS
 					delete regexDateTime;
@@ -4737,19 +4745,20 @@ DateTimeValueSerializer
 
 			bool TypedValueSerializerProvider<DateTime>::Deserialize(const WString& input, DateTime& output)
 			{
-				Ptr<RegexMatch> match = GetDateTimeSerializerStorage().regexDateTime->Match(input);
+				auto& dts = GetDateTimeSerializerStorage();
+				Ptr<RegexMatch> match = dts.regexDateTime->Match(input);
 				if (!match) return false;
 				if (!match->Success()) return false;
 				if (match->Result().Start() != 0) return false;
 				if (match->Result().Length() != input.Length()) return false;
 
-				vint year = wtoi(match->Groups()[L"Y"].Get(0).Value());
-				vint month = wtoi(match->Groups()[L"M"].Get(0).Value());
-				vint day = wtoi(match->Groups()[L"D"].Get(0).Value());
-				vint hour = wtoi(match->Groups()[L"h"].Get(0).Value());
-				vint minute = wtoi(match->Groups()[L"m"].Get(0).Value());
-				vint second = wtoi(match->Groups()[L"s"].Get(0).Value());
-				vint milliseconds = wtoi(match->Groups()[L"ms"].Get(0).Value());
+				vint year = wtoi(match->Groups()[dts._Y].Get(0).Value());
+				vint month = wtoi(match->Groups()[dts._M].Get(0).Value());
+				vint day = wtoi(match->Groups()[dts._D].Get(0).Value());
+				vint hour = wtoi(match->Groups()[dts._h].Get(0).Value());
+				vint minute = wtoi(match->Groups()[dts._m].Get(0).Value());
+				vint second = wtoi(match->Groups()[dts._s].Get(0).Value());
+				vint milliseconds = wtoi(match->Groups()[dts._ms].Get(0).Value());
 
 				output = DateTime::FromDateTime(year, month, day, hour, minute, second, milliseconds);
 				return true;

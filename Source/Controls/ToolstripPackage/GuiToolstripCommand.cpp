@@ -274,9 +274,17 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				typedef GuiToolstripCommand::ShortcutBuilder			ShortcutBuilder;
 			public:
 				Regex						regexShortcut;
+				const vint					_ctrl;
+				const vint					_shift;
+				const vint					_alt;
+				const vint					_key;
 
 				GuiToolstripCommandShortcutParser()
-					:regexShortcut(L"((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					: regexShortcut(L"((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					, _ctrl(regexShortcut.CaptureNames().IndexOf(L"ctrl"))
+					, _shift(regexShortcut.CaptureNames().IndexOf(L"shift"))
+					, _alt(regexShortcut.CaptureNames().IndexOf(L"alt"))
+					, _key(regexShortcut.CaptureNames().IndexOf(L"key"))
 				{
 				}
 
@@ -291,11 +299,11 @@ GuiToolstripCommand::ShortcutBuilder Parser
 
 					Ptr<ShortcutBuilder> builder = new ShortcutBuilder;
 					builder->text = text;
-					builder->ctrl = match->Groups().Contains(L"ctrl");
-					builder->shift = match->Groups().Contains(L"shift");
-					builder->alt = match->Groups().Contains(L"alt");
+					builder->ctrl = match->Groups().Contains(_ctrl);
+					builder->shift = match->Groups().Contains(_shift);
+					builder->alt = match->Groups().Contains(_alt);
 
-					WString name = match->Groups()[L"key"][0].Value();
+					WString name = match->Groups()[_key][0].Value();
 					builder->key = GetCurrentController()->InputService()->GetKey(name);
 
 					return builder->key == VKEY::KEY_UNKNOWN ? nullptr : builder;

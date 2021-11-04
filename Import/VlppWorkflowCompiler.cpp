@@ -16708,6 +16708,8 @@ WfCppConfig
 				, regexSplitName(L"::")
 				, regexSpecialName(L"/<(<category>/w+)(-(<category>/w+))*/>(<name>/w*)")
 				, regexTemplate(L", /$Arguments|/$Arguments, |/$/l+")
+				, specialName_category(regexSpecialName.CaptureNames().IndexOf(L"category"))
+				, specialName_name(regexSpecialName.CaptureNames().IndexOf(L"name"))
 				, assemblyName(_assemblyName)
 				, assemblyNamespace(_assemblyNamespace)
 			{
@@ -16764,7 +16766,7 @@ WfCppConfig
 				if (match)
 				{
 					return specialNameCategory
-						+ From(match->Groups()[L"category"])
+						+ From(match->Groups()[specialName_category])
 							.Select([](const RegexString& rs)
 							{
 								return rs.Value();
@@ -16773,7 +16775,7 @@ WfCppConfig
 							{
 								return a + L"_" + b;
 							})
-						+ L"_" + match->Groups()[L"name"][0].Value();
+						+ L"_" + match->Groups()[specialName_name][0].Value();
 				}
 				else if (alwaysUseCategory)
 				{
@@ -23567,6 +23569,7 @@ MergeCpp
 			void ProcessCppContent(const WString& code, const TCallback& callback)
 			{
 				Regex regexUserContentBegin(L"/.*?(?/{)?///* USER_CONTENT_BEGIN/((<name>[^)]*?)/) /*//");
+				vint _name = regexUserContentBegin.CaptureNames().IndexOf(L"name");
 
 				vint state = NORMAL;
 				vint counter = 0;
@@ -23599,7 +23602,7 @@ MergeCpp
 						case NORMAL:
 							if (auto match = regexUserContentBegin.MatchHead(content))
 							{
-								content = L"USERIMPL(/* " + match->Groups()[L"name"][0].Value() + L" */)";
+								content = L"USERIMPL(/* " + match->Groups()[_name][0].Value() + L" */)";
 								if (match->Captures().Count() > 0)
 								{
 									content += previousContent;

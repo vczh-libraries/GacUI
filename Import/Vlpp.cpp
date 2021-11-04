@@ -424,27 +424,6 @@ ArgumentException
 	{
 		return name;
 	}
-
-/***********************************************************************
-ParsingException
-***********************************************************************/
-
-	ParsingException::ParsingException(const WString& _message, const WString& _expression, vint _position)
-		:Exception(_message)
-		,expression(_expression)
-		,position(_position)
-	{
-	}
-
-	const WString& ParsingException::GetExpression()const
-	{
-		return expression;
-	}
-
-	vint ParsingException::GetPosition()const
-	{
-		return position;
-	}
 }
 
 /***********************************************************************

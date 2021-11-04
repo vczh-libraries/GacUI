@@ -28,55 +28,78 @@ namespace vl
 
 	namespace regex
 	{
+		class RegexBase_;
+		class RegexLexerBase_;
+
+		template<typename T>
+		class RegexLexer_;
 
 /***********************************************************************
 Data Structure
 ***********************************************************************/
 
 		/// <summary>A sub string of the string that a <see cref="Regex"/> is matched against.</summary>
-		class RegexString : public Object
+		/// <typeparam name="T>The character type.</typeparam>
+		template<typename T>
+		class RegexString_ : public Object
 		{
 		protected:
-			WString										value;
-			vint										start;
-			vint										length;
+			ObjectString<T>								value;
+			vint										start = 0;
+			vint										length = 0;
 
 		public:
-			RegexString(vint _start=0);
-			RegexString(const WString& _string, vint _start, vint _length);
+			RegexString_() = default;
+			RegexString_(vint _start) : start(_start) {}
+
+			RegexString_(const ObjectString<T>& _string, vint _start, vint _length)
+				: start(_start)
+				, length(_length > 0 ? _length : 0)
+			{
+				if (_length > 0)
+				{
+					value = _string.Sub(_start, _length);
+				}
+			}
 
 			/// <summary>The position of the input string in characters.</summary>
 			/// <returns>The position.</returns>
-			vint										Start()const;
+			vint Start() const { return start; }
 			/// <summary>The size of the sub string in characters.</summary>
 			/// <returns>The size.</returns>
-			vint										Length()const;
-			/// <summary>Get the sub string as a <see cref="WString"/>.</summary>
+			vint Length() const { return length; }
+			/// <summary>Get the sub string as a <see cref="U32String"/>.</summary>
 			/// <returns>The sub string.</returns>
-			const WString&								Value()const;
-			bool										operator==(const RegexString& string)const;
+			const ObjectString<T>& Value() const { return value; }
+
+			bool operator==(const RegexString_<T>& string) const
+			{
+				return start == string.start && length == string.length && value == string.value;
+			}
 		};
 
 		/// <summary>A match produces by a <see cref="Regex"/>.</summary>
-		class RegexMatch : public Object
+		/// <typeparam name="T>The character type.</typeparam>
+		template<typename T>
+		class RegexMatch_ : public Object
 		{
-			friend class Regex;
+			friend class RegexBase_;
 		public:
-			typedef Ptr<RegexMatch>										Ref;
-			typedef collections::List<Ref>								List;
-			typedef collections::List<RegexString>						CaptureList;
-			typedef collections::Group<WString, RegexString>			CaptureGroup;
+			typedef Ptr<RegexMatch_<T>>										Ref;
+			typedef collections::List<Ref>									List;
+			typedef collections::List<RegexString_<T>>						CaptureList;
+			typedef collections::Group<vint, RegexString_<T>>				CaptureGroup;
 		protected:
-			collections::List<RegexString>				captures;
-			collections::Group<WString, RegexString>	groups;
-			bool										success;
-			RegexString									result;
+			CaptureList														captures;
+			CaptureGroup													groups;
+			bool															success;
+			RegexString_<T>													result;
 
-			RegexMatch(const WString& _string, regex_internal::PureResult* _result);
-			RegexMatch(const WString& _string, regex_internal::RichResult* _result, regex_internal::RichInterpretor* _rich);
-			RegexMatch(const RegexString& _result);
+			RegexMatch_(const ObjectString<T>& _string, regex_internal::PureResult* _result);
+			RegexMatch_(const ObjectString<T>& _string, regex_internal::RichResult* _result);
+			RegexMatch_(const RegexString_<T>& _result);
 		public:
-			NOT_COPYABLE(RegexMatch);
+			NOT_COPYABLE(RegexMatch_<T>);
 			
 			/// <summary>
 			/// Test if this match is a succeeded match or a failed match.
@@ -84,10 +107,10 @@ Data Structure
 			/// In other cases, failed matches are either not included in the result.
 			/// </summary>
 			/// <returns>Returns true if this match is a succeeded match.</returns>
-			bool										Success()const;
+			bool															Success()const;
 			/// <summary>Get the matched sub string.</summary>
 			/// <returns>The matched sub string.</returns>
-			const RegexString&							Result()const;
+			const RegexString_<T>&											Result()const;
 			/// <summary>Get all sub strings that are captured anonymously.</summary>
 			/// <returns>All sub strings that are captured anonymously.</returns>
 			/// <example><![CDATA[
@@ -101,7 +124,7 @@ Data Structure
 			///     }
 			/// }
 			/// ]]></example>
-			const CaptureList&							Captures()const;
+			const CaptureList&												Captures()const;
 			/// <summary>Get all sub strings that are captured by named groups.</summary>
 			/// <returns>All sub strings that are captured by named groups.</returns>
 			/// <example><![CDATA[
@@ -109,20 +132,158 @@ Data Structure
 			/// {
 			///     Regex regex(L"^/.*?((<lang>C/S+)(/.*?))+$");
 			///     auto match = regex.MatchHead(L"C++ and C# are my favorite programing languages");
-			///     for (auto capture : match->Groups().Get(L"lang"))
+			///     for (auto capture : match->Groups().Get(regex.CaptureNames().IndexOf(L"lang")))
 			///     {
 			///         Console::WriteLine(capture.Value());
 			///     }
 			/// }
 			/// ]]></example>
-			const CaptureGroup&							Groups()const;
+			const CaptureGroup&												Groups()const;
 		};
 
 /***********************************************************************
 Regex
 ***********************************************************************/
 
+		class RegexBase_ abstract : public Object
+		{
+		protected:
+			regex_internal::PureInterpretor*			pure = nullptr;
+			regex_internal::RichInterpretor*			rich = nullptr;
+
+			template<typename T>
+			void										Process(const ObjectString<T>& text, bool keepEmpty, bool keepSuccess, bool keepFail, typename RegexMatch_<T>::List& matches)const;
+		public:
+			RegexBase_() = default;
+			~RegexBase_();
+
+			/// <summary>Test is a DFA used to match a string.</summary>
+			/// <returns>Returns true if a DFA is used.</returns>
+			bool										IsPureMatch() const { return rich ? false : true; }
+			/// <summary>Test is a DFA used to test a string. It ignores all capturing.</summary>
+			/// <returns>Returns true if a DFA is used.</returns>
+			bool										IsPureTest() const { return pure ? true : false; }
+
+			/// <summary>Match a prefix of the text.</summary>
+			/// <typeparam name="T>The character type of the text to match.</typeparam>
+			/// <returns>Returns the match. Returns null if failed.</returns>
+			/// <param name="text">The text to match.</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     Regex regex(L"C/S+");
+			///     auto match = regex.MatchHead(L"C++ and C# are my favorite programing languages");
+			///     Console::WriteLine(match->Result().Value());
+			/// }
+			/// ]]></example>
+			template<typename T>
+			typename RegexMatch_<T>::Ref				MatchHead(const ObjectString<T>& text)const;
+			template<typename T>
+			typename RegexMatch_<T>::Ref				MatchHead(const T* text) const { return MatchHead<T>(ObjectString<T>(text)); }
+
+			/// <summary>Match a sub string of the text.</summary>
+			/// <typeparam name="T>The character type of the text to match.</typeparam>
+			/// <returns>Returns the first match. Returns null if failed.</returns>
+			/// <param name="text">The text to match.</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     Regex regex(L"C/S+");
+			///     auto match = regex.Match(L"C++ and C# are my favorite programing languages");
+			///     Console::WriteLine(match->Result().Value());
+			/// }
+			/// ]]></example>
+			template<typename T>
+			typename RegexMatch_<T>::Ref				Match(const ObjectString<T>& text)const;
+			template<typename T>
+			typename RegexMatch_<T>::Ref				Match(const T* text) const { return Match<T>(ObjectString<T>(text)); }
+
+			/// <summary>Match a prefix of the text, ignoring all capturing.</summary>
+			/// <typeparam name="T>The character type of the text to match.</typeparam>
+			/// <returns>Returns true if it succeeded.</returns>
+			/// <param name="text">The text to match.</param>
+			template<typename T>
+			bool										TestHead(const ObjectString<T>& text)const;
+			template<typename T>
+			bool										TestHead(const T* text) const { return TestHead<T>(ObjectString<T>(text)); }
+
+			/// <summary>Match a sub string of the text, ignoring all capturing.</summary>
+			/// <typeparam name="T>The character type of the text to match.</typeparam>
+			/// <returns>Returns true if succeeded.</returns>
+			/// <param name="text">The text to match.</param>
+			template<typename T>
+			bool										Test(const ObjectString<T>& text)const;
+			template<typename T>
+			bool										Test(const T* text) const { return Test<T>(ObjectString<T>(text)); }
+
+			/// <summary>Find all matched fragments in the given text, returning all matched sub strings.</summary>
+			/// <typeparam name="T>The character type of the text to match.</typeparam>
+			/// <param name="text">The text to match.</param>
+			/// <param name="matches">Returns all succeeded matches.</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     Regex regex(L"C/S+");
+			///     RegexMatch::List matches;
+			///     regex.Search(L"C++ and C# are my favorite programing languages", matches);
+			///     for (auto match : matches)
+			///     {
+			///         Console::WriteLine(match->Result().Value());
+			///     }
+			/// }
+			/// ]]></example>
+			template<typename T>
+			void										Search(const ObjectString<T>& text, typename RegexMatch_<T>::List& matches)const;
+			template<typename T>
+			void										Search(const T* text, typename RegexMatch_<T>::List& matches) const { return Search<T>(ObjectString<T>(text), matches); }
+
+			/// <summary>Split the text by matched sub strings, returning all unmatched sub strings.</summary>
+			/// <typeparam name="T>The character type of the text to match.</typeparam>
+			/// <param name="text">The text to match.</param>
+			/// <param name="keepEmptyMatch">Set to true to keep all empty unmatched sub strings. This could happen when there is nothing between two matched sub strings.</param>
+			/// <param name="matches">Returns all failed matches.</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     Regex regex(L"C/S+");
+			///     RegexMatch::List matches;
+			///     regex.Split(L"C++ and C# are my favorite programing languages", false, matches);
+			///     for (auto match : matches)
+			///     {
+			///         Console::WriteLine(match->Result().Value());
+			///     }
+			/// }
+			/// ]]></example>
+			template<typename T>
+			void										Split(const ObjectString<T>& text, bool keepEmptyMatch, typename RegexMatch_<T>::List& matches)const;
+			template<typename T>
+			void										Split(const T* text, bool keepEmptyMatch, typename RegexMatch_<T>::List& matches) const { return Split<T>(ObjectString<T>(text), keepEmptyMatch, matches); }
+
+			/// <summary>Cut the text by matched sub strings, returning all matched and unmatched sub strings.</summary>
+			/// <typeparam name="T>The character type of the text to match.</typeparam>
+			/// <param name="text">The text to match.</param>
+			/// <param name="keepEmptyMatch">Set to true to keep all empty matches. This could happen when there is nothing between two matched sub strings.</param>
+			/// <param name="matches">Returns all succeeded and failed matches.</param>
+			/// <example><![CDATA[
+			/// int main()
+			/// {
+			///     Regex regex(L"C/S+");
+			///     RegexMatch::List matches;
+			///     regex.Cut(L"C++ and C# are my favorite programing languages", false, matches);
+			///     for (auto match : matches)
+			///     {
+			///         Console::WriteLine(match->Result().Value());
+			///     }
+			/// }
+			/// ]]></example>
+			template<typename T>
+			void										Cut(const ObjectString<T>& text, bool keepEmptyMatch, typename RegexMatch_<T>::List& matches)const;
+			template<typename T>
+			void										Cut(const T* text, bool keepEmptyMatch, typename RegexMatch_<T>::List& matches) const { return Cut<T>(ObjectString<T>(text), keepEmptyMatch, matches); }
+		};
+
 		/// <summary>
+		/// <typeparam name="T>The character type of the regular expression itself.</typeparam>
 		/// <p>
 		///     Regular Expression. Here is a brief description of the regular expression grammar.
 		/// </p>
@@ -217,110 +378,28 @@ Regex
 		///     Testing only returns a bool very indicating success or failure.
 		/// </p>
 		/// </summary>
-		class Regex : public Object
+		template<typename T>
+		class Regex_ : public RegexBase_
 		{
+			template<typename T2>
+			friend class RegexLexer_;
 		protected:
-			regex_internal::PureInterpretor*			pure = nullptr;
-			regex_internal::RichInterpretor*			rich = nullptr;
+			collections::List<ObjectString<T>>			captureNames;
 
-			void										Process(const WString& text, bool keepEmpty, bool keepSuccess, bool keepFail, RegexMatch::List& matches)const;
+			static U32String							ToU32(const ObjectString<T>& text);
+			static ObjectString<T>						FromU32(const U32String& text);
 		public:
-			NOT_COPYABLE(Regex);
+			NOT_COPYABLE(Regex_<T>);
+
 			/// <summary>Create a regular expression. It will crash if the regular expression produces syntax error.</summary>
 			/// <param name="code">The regular expression in a string.</param>
 			/// <param name="preferPure">Set to true to use DFA if possible.</param>
-			Regex(const WString& code, bool preferPure = true);
-			~Regex();
+			Regex_(const ObjectString<T>& code, bool preferPure = true);
+			~Regex_() = default;
 
-			/// <summary>Test is a DFA used to match a string.</summary>
-			/// <returns>Returns true if a DFA is used.</returns>
-			bool										IsPureMatch()const;
-			/// <summary>Test is a DFA used to test a string. It ignores all capturing.</summary>
-			/// <returns>Returns true if a DFA is used.</returns>
-			bool										IsPureTest()const;
-
-			/// <summary>Match a prefix of the text.</summary>
-			/// <returns>Returns the match. Returns null if failed.</returns>
-			/// <param name="text">The text to match.</param>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     Regex regex(L"C/S+");
-			///     auto match = regex.MatchHead(L"C++ and C# are my favorite programing languages");
-			///     Console::WriteLine(match->Result().Value());
-			/// }
-			/// ]]></example>
-			RegexMatch::Ref								MatchHead(const WString& text)const;
-			/// <summary>Match a sub string of the text.</summary>
-			/// <returns>Returns the first match. Returns null if failed.</returns>
-			/// <param name="text">The text to match.</param>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     Regex regex(L"C/S+");
-			///     auto match = regex.Match(L"C++ and C# are my favorite programing languages");
-			///     Console::WriteLine(match->Result().Value());
-			/// }
-			/// ]]></example>
-			RegexMatch::Ref								Match(const WString& text)const;
-			/// <summary>Match a prefix of the text, ignoring all capturing.</summary>
-			/// <returns>Returns true if it succeeded.</returns>
-			/// <param name="text">The text to match.</param>
-			bool										TestHead(const WString& text)const;
-			/// <summary>Match a sub string of the text, ignoring all capturing.</summary>
-			/// <returns>Returns true if succeeded.</returns>
-			/// <param name="text">The text to match.</param>
-			bool										Test(const WString& text)const;
-			/// <summary>Find all matched fragments in the given text, returning all matched sub strings.</summary>
-			/// <param name="text">The text to match.</param>
-			/// <param name="matches">Returns all succeeded matches.</param>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     Regex regex(L"C/S+");
-			///     RegexMatch::List matches;
-			///     regex.Search(L"C++ and C# are my favorite programing languages", matches);
-			///     for (auto match : matches)
-			///     {
-			///         Console::WriteLine(match->Result().Value());
-			///     }
-			/// }
-			/// ]]></example>
-			void										Search(const WString& text, RegexMatch::List& matches)const;
-			/// <summary>Split the text by matched sub strings, returning all unmatched sub strings.</summary>
-			/// <param name="text">The text to match.</param>
-			/// <param name="keepEmptyMatch">Set to true to keep all empty unmatched sub strings. This could happen when there is nothing between two matched sub strings.</param>
-			/// <param name="matches">Returns all failed matches.</param>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     Regex regex(L"C/S+");
-			///     RegexMatch::List matches;
-			///     regex.Split(L"C++ and C# are my favorite programing languages", false, matches);
-			///     for (auto match : matches)
-			///     {
-			///         Console::WriteLine(match->Result().Value());
-			///     }
-			/// }
-			/// ]]></example>
-			void										Split(const WString& text, bool keepEmptyMatch, RegexMatch::List& matches)const;
-			/// <summary>Cut the text by matched sub strings, returning all matched and unmatched sub strings.</summary>
-			/// <param name="text">The text to match.</param>
-			/// <param name="keepEmptyMatch">Set to true to keep all empty matches. This could happen when there is nothing between two matched sub strings.</param>
-			/// <param name="matches">Returns all succeeded and failed matches.</param>
-			/// <example><![CDATA[
-			/// int main()
-			/// {
-			///     Regex regex(L"C/S+");
-			///     RegexMatch::List matches;
-			///     regex.Cut(L"C++ and C# are my favorite programing languages", false, matches);
-			///     for (auto match : matches)
-			///     {
-			///         Console::WriteLine(match->Result().Value());
-			///     }
-			/// }
-			/// ]]></example>
-			void										Cut(const WString& text, bool keepEmptyMatch, RegexMatch::List& matches)const;
+			/// <summary>Get all names of named captures</summary>
+			/// <returns>All names of named captures.</summary>
+			const collections::List<ObjectString<T>>&	CaptureNames()const { return captureNames; }
 		};
 
 /***********************************************************************
@@ -328,7 +407,9 @@ Tokenizer
 ***********************************************************************/
 
 		/// <summary>A token.</summary>
-		struct RegexToken
+		/// <typeparam name="T>The character type.</typeparam>
+		template<typename T>
+		struct RegexToken_
 		{
 			/// <summary>Position in the input string in characters.</summary>
 			vint										start;
@@ -337,8 +418,8 @@ Tokenizer
 			/// <summary>The token id, begins at 0, represents the regular expression in the list (the first argument in the contructor of <see cref="RegexLexer"/>) that matches this token. -1 means this token is produced by an error.</summary>
 			vint										token;
 			/// <summary>The pointer to where this token starts in the input string .</summary>
-			/// <remarks>This pointer comes from a <see cref="WString"/> that used to be analyzed. You should keep a variable to that string alive, so that to keep this pointer alive.</remarks>
-			const wchar_t*								reading;
+			/// <remarks>This pointer comes from a <see cref="U32String"/> that used to be analyzed. You should keep a variable to that string alive, so that to keep this pointer alive.</remarks>
+			const T*									reading;
 			/// <summary>The "codeIndex" argument from [M:vl.regex.RegexLexer.Parse].</summary>
 			vint										codeIndex;
 			/// <summary>True if this token is complete. False if this token does not end here. This could happend when colorizing a text line by line.</summary>
@@ -353,8 +434,10 @@ Tokenizer
 			/// <summary>Column number of the last character, begins at 0.</summary>
 			vint										columnEnd;
 
-			bool										operator==(const RegexToken& _token)const;
-			bool										operator==(const wchar_t* _token)const;
+			bool operator==(const RegexToken_<T>& _token)const
+			{
+				return length == _token.length && token == _token.token && reading == _token.reading;
+			}
 		};
 
 		/// <summary>Token information for <see cref="RegexProc::extendProc"/>.</summary>
@@ -401,11 +484,14 @@ Tokenizer
 		};
 
 		using RegexInterTokenStateDeleter = void(*)(void* interTokenState);
-		using RegexTokenExtendProc = void(*)(void* argument, const wchar_t* reading, vint length, bool completeText, RegexProcessingToken& processingToken);
+		template<typename T>
+		using RegexTokenExtendProc = void(*)(void* argument, const T* reading, vint length, bool completeText, RegexProcessingToken& processingToken);
 		using RegexTokenColorizeProc =  void(*)(void* argument, vint start, vint length, vint token);
 
 		/// <summary>Callback procedures</summary>
-		struct RegexProc
+		/// <typeparam name="T>The character type.</typeparam>
+		template<typename T>
+		struct RegexProc_
 		{
 			/// <summary>
 			/// The deleter which deletes <see cref="RegexProcessingToken::interTokenState"/> created by <see cref="extendProc"/>.
@@ -589,7 +675,7 @@ Tokenizer
 			///     }
 			/// }
 			/// ]]></example>
-			RegexTokenExtendProc						extendProc = nullptr;
+			RegexTokenExtendProc<T>						extendProc = nullptr;
 			/// <summary>
 			/// <p>
 			/// The colorizer callback. It is called when a token is recognized.
@@ -615,6 +701,7 @@ Tokenizer
 		};
 
 		/// <summary>Token collection representing the result from the lexical analyzer. Call <see cref="RegexLexer::Parse"/> to create this object.</summary>
+		/// <typeparam name="T>The character type.</typeparam>
 		/// <example><![CDATA[
 		/// int main()
 		/// {
@@ -635,22 +722,23 @@ Tokenizer
 		///     }
 		/// }
 		/// ]]></example>
-		class RegexTokens : public collections::EnumerableBase<RegexToken>
+		template<typename T>
+		class RegexTokens_ : public collections::EnumerableBase<RegexToken_<T>>
 		{
-			friend class RegexLexer;
+			friend class RegexLexerBase_;
 		protected:
 			regex_internal::PureInterpretor*			pure;
 			const collections::Array<vint>&				stateTokens;
-			WString										code;
+			ObjectString<T>								code;
 			vint										codeIndex;
-			RegexProc									proc;
+			RegexProc_<T>								proc;
 			
-			RegexTokens(regex_internal::PureInterpretor* _pure, const collections::Array<vint>& _stateTokens, const WString& _code, vint _codeIndex, RegexProc _proc);
+			RegexTokens_(regex_internal::PureInterpretor* _pure, const collections::Array<vint>& _stateTokens, const ObjectString<T>& _code, vint _codeIndex, RegexProc_<T> _proc);
 		public:
-			RegexTokens(const RegexTokens& tokens);
-			~RegexTokens();
+			RegexTokens_(const RegexTokens_<T>& tokens);
+			~RegexTokens_() = default;
 			
-			collections::IEnumerator<RegexToken>*		CreateEnumerator() const override;
+			collections::IEnumerator<RegexToken_<T>>*	CreateEnumerator() const override;
 
 			/// <summary>Copy all tokens.</summary>
 			/// <param name="tokens">Returns all tokens.</param>
@@ -678,10 +766,15 @@ Tokenizer
 			///     }
 			/// }
 			/// ]]></example>
-			void										ReadToEnd(collections::List<RegexToken>& tokens, bool(*discard)(vint)=0)const;
+			void										ReadToEnd(collections::List<RegexToken_<T>>& tokens, bool(*discard)(vint)=0)const;
 		};
+
+/***********************************************************************
+RegexLexerWalker
+***********************************************************************/
 		
 		/// <summary>A type for walking through a text against a <see cref="RegexLexer"/>. Call <see cref="RegexLexer::Walk"/> to create this object.</summary>
+		/// <typeparam name="T>The character type.</typeparam>
 		/// <example><![CDATA[
 		/// int main()
 		/// {
@@ -745,17 +838,18 @@ Tokenizer
 		///     }
 		/// }
 		/// ]]></example>
-		class RegexLexerWalker : public Object
+		template<typename T>
+		class RegexLexerWalker_ : public Object
 		{
-			friend class RegexLexer;
+			friend class RegexLexerBase_;
 		protected:
 			regex_internal::PureInterpretor*			pure;
 			const collections::Array<vint>&				stateTokens;
 			
-			RegexLexerWalker(regex_internal::PureInterpretor* _pure, const collections::Array<vint>& _stateTokens);
+			RegexLexerWalker_(regex_internal::PureInterpretor* _pure, const collections::Array<vint>& _stateTokens);
 		public:
-			RegexLexerWalker(const RegexLexerWalker& tokens);
-			~RegexLexerWalker();
+			RegexLexerWalker_(const RegexLexerWalker_<T>& tokens);
+			~RegexLexerWalker_() = default;
 			
 			/// <summary>Get the start DFA state number, which represents the correct state before parsing any input.</summary>
 			/// <returns>The DFA state number.</returns>
@@ -784,12 +878,12 @@ Tokenizer
 			/// See the example for <see cref="RegexLexerWalker"/> about how to use this function.
 			/// </p>
 			/// </remarks>
-			void										Walk(wchar_t input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const;
+			void										Walk(T input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const;
 			/// <summary>Step forward by one character.</summary>
 			/// <returns>Returns the new current state. It is used to walk the next character.</returns>
 			/// <param name="input">The input character.</param>
 			/// <param name="state">The current state.</param>
-			vint										Walk(wchar_t input, vint state)const;
+			vint										Walk(T input, vint state)const;
 			/// <summary>Test if the input text is a closed token.</summary>
 			/// <returns>Returns true if the input text is a closed token.</returns>
 			/// <param name="input">The input text.</param>
@@ -840,7 +934,7 @@ Tokenizer
 			///     }
 			/// }
 			/// ]]></example>
-			bool										IsClosedToken(const wchar_t* input, vint length)const;
+			bool										IsClosedToken(const T* input, vint length)const;
 			/// <summary>Test if the input is a closed token.</summary>
 			/// <returns>Returns true if the input text is a closed token.</returns>
 			/// <param name="input">The input text.</param>
@@ -890,10 +984,15 @@ Tokenizer
 			///     }
 			/// }
 			/// ]]></example>
-			bool										IsClosedToken(const WString& input)const;
+			bool										IsClosedToken(const ObjectString<T>& input)const;
 		};
 
+/***********************************************************************
+RegexLexerColorizer
+***********************************************************************/
+
 		/// <summary>Lexical colorizer. Call <see cref="RegexLexer::Colorize"/> to create this object.</summary>
+		/// <typeparam name="T>The character type.</typeparam>
 		/// <example><![CDATA[
 		/// int main()
 		/// {
@@ -949,9 +1048,10 @@ Tokenizer
 		///     }
 		/// }
 		/// ]]></example>
-		class RegexLexerColorizer : public Object
+		template<typename T>
+		class RegexLexerColorizer_ : public Object
 		{
-			friend class RegexLexer;
+			friend class RegexLexerBase_;
 		public:
 			struct InternalState
 			{
@@ -961,17 +1061,17 @@ Tokenizer
 			};
 
 		protected:
-			RegexLexerWalker							walker;
-			RegexProc									proc;
+			RegexLexerWalker_<T>						walker;
+			RegexProc_<T>								proc;
 			InternalState								internalState;
 
-			void										CallExtendProcAndColorizeProc(const wchar_t* input, vint length, RegexProcessingToken& token, bool colorize);
-			vint										WalkOneToken(const wchar_t* input, vint length, vint start, bool colorize);
+			void										CallExtendProcAndColorizeProc(const T* input, vint length, RegexProcessingToken& token, bool colorize);
+			vint										WalkOneToken(const T* input, vint length, vint start, bool colorize);
 
-			RegexLexerColorizer(const RegexLexerWalker& _walker, RegexProc _proc);
+			RegexLexerColorizer_(const RegexLexerWalker_<T>& _walker, RegexProc_<T> _proc);
 		public:
-			RegexLexerColorizer(const RegexLexerColorizer& colorizer);
-			~RegexLexerColorizer();
+			RegexLexerColorizer_(const RegexLexerColorizer_<T>& colorizer) = default;
+			~RegexLexerColorizer_() = default;
 
 			/// <summary>Get the internal state.</summary>
 			/// <returns>The internal state.</returns>
@@ -995,7 +1095,7 @@ Tokenizer
 			/// <summary>Step forward by one character.</summary>
 			/// <param name="input">The input character.</param>
 			/// <remarks>Callbacks in <see cref="RegexProc"/> will be called <b>except colorizeProc</b>, which is from the second argument of the constructor of <see cref="RegexLexer"/>.</remarks>
-			void										Pass(wchar_t input);
+			void										Pass(T input);
 			/// <summary>Get the start DFA state number, which represents the correct state before colorizing any characters.</summary>
 			/// <returns>The DFA state number.</returns>
 			vint										GetStartState()const;
@@ -1007,38 +1107,232 @@ Tokenizer
 			/// <p>See <see cref="RegexProcessingToken::interTokenState"/> and <see cref="RegexProc::extendProc"/> for more information about the return value.</p>
 			/// <p>Callbacks in <see cref="RegexProc"/> will be called, which is from the second argument of the constructor of <see cref="RegexLexer"/>.</p>
 			/// </remarks>
-			void*										Colorize(const wchar_t* input, vint length);
+			void*										Colorize(const T* input, vint length);
 		};
 
-		/// <summary>Lexical analyzer.</summary>
-		class RegexLexer : public Object
+/***********************************************************************
+RegexLexer
+***********************************************************************/
+
+		class RegexLexerBase_ abstract : public Object
 		{
 		protected:
 			regex_internal::PureInterpretor*			pure = nullptr;
 			collections::Array<vint>					ids;
 			collections::Array<vint>					stateTokens;
-			RegexProc									proc;
 
 		public:
-			NOT_COPYABLE(RegexLexer);
-			/// <summary>Create a lexical analyzer by a set of regular expressions. [F:vl.regex.RegexToken.token] will be the index of the matched regular expression in the first argument.</summary>
-			/// <param name="tokens">ALl regular expression, each one represent a kind of tokens.</param>
-			/// <param name="_proc">Configuration of all callbacks.</param>
-			RegexLexer(const collections::IEnumerable<WString>& tokens, RegexProc _proc);
-			~RegexLexer();
+			~RegexLexerBase_();
 
 			/// <summary>Tokenize an input text.</summary>
+			/// <typeparam name="T>The character type of the text to parse.</typeparam>
 			/// <returns>All tokens, including recognized tokens or unrecognized tokens. For unrecognized tokens, [F:vl.regex.RegexToken.token] will be -1.</returns>
 			/// <param name="code">The text to tokenize.</param>
+			/// <param name="proc">Configuration of all callbacks.</param>
 			/// <param name="codeIndex">Extra information that will be copied to [F:vl.regex.RegexToken.codeIndex].</param>
 			/// <remarks>Callbacks in <see cref="RegexProc"/> will be called when iterating through tokens, which is from the second argument of the constructor of <see cref="RegexLexer"/>.</remarks>
-			RegexTokens									Parse(const WString& code, vint codeIndex=-1)const;
+			template<typename T>
+			RegexTokens_<T>								Parse(const ObjectString<T>& code, RegexProc_<T> proc = {}, vint codeIndex = -1)const;
+			template<typename T>
+			RegexTokens_<T>								Parse(const T* code, RegexProc_<T> proc = {}, vint codeIndex = -1) const { return Parse<T>(ObjectString<T>(code), proc, codeIndex); }
 			/// <summary>Create a equivalence walker from this lexical analyzer. A walker enable you to walk throught characters one by one,</summary>
+			/// <typeparam name="TInput>The character type of the text to parse.</typeparam>
 			/// <returns>The walker.</returns>
-			RegexLexerWalker							Walk()const;
+			template<typename T>
+			RegexLexerWalker_<T>						Walk()const;
+			RegexLexerWalker_<wchar_t>					Walk()const;
 			/// <summary>Create a equivalence colorizer from this lexical analyzer.</summary>
+			/// <typeparam name="TInput>The character type of the text to parse.</typeparam>
 			/// <returns>The colorizer.</returns>
-			RegexLexerColorizer							Colorize()const;
+			/// <param name="proc">Configuration of all callbacks.</param>
+			template<typename T>
+			RegexLexerColorizer_<T>						Colorize(RegexProc_<T> proc)const;
+		};
+
+		/// <summary>Lexical analyzer.</summary>
+		/// <typeparam name="T>The character type of the regular expression itself.</typeparam>
+		template<typename T>
+		class RegexLexer_ : public RegexLexerBase_
+		{
+		public:
+			NOT_COPYABLE(RegexLexer_<T>);
+			/// <summary>Create a lexical analyzer by a set of regular expressions. [F:vl.regex.RegexToken.token] will be the index of the matched regular expression in the first argument.</summary>
+			/// <param name="tokens">ALl regular expression, each one represent a kind of tokens.</param>
+			
+			RegexLexer_(const collections::IEnumerable<ObjectString<T>>& tokens);
+			~RegexLexer_() = default;
+		};
+
+/***********************************************************************
+Template Instantiation
+***********************************************************************/
+
+		extern template class RegexString_<wchar_t>;
+		extern template class RegexString_<char8_t>;
+		extern template class RegexString_<char16_t>;
+		extern template class RegexString_<char32_t>;
+
+		extern template class RegexMatch_<wchar_t>;
+		extern template class RegexMatch_<char8_t>;
+		extern template class RegexMatch_<char16_t>;
+		extern template class RegexMatch_<char32_t>;
+
+		extern template RegexMatch_<wchar_t>::Ref			RegexBase_::MatchHead<wchar_t>	(const ObjectString<wchar_t>& text)const;
+		extern template RegexMatch_<wchar_t>::Ref			RegexBase_::Match<wchar_t>		(const ObjectString<wchar_t>& text)const;
+		extern template bool								RegexBase_::TestHead<wchar_t>	(const ObjectString<wchar_t>& text)const;
+		extern template bool								RegexBase_::Test<wchar_t>		(const ObjectString<wchar_t>& text)const;
+		extern template void								RegexBase_::Search<wchar_t>		(const ObjectString<wchar_t>& text, RegexMatch_<wchar_t>::List& matches)const;
+		extern template void								RegexBase_::Split<wchar_t>		(const ObjectString<wchar_t>& text, bool keepEmptyMatch, RegexMatch_<wchar_t>::List& matches)const;
+		extern template void								RegexBase_::Cut<wchar_t>		(const ObjectString<wchar_t>& text, bool keepEmptyMatch, RegexMatch_<wchar_t>::List& matches)const;
+
+		extern template RegexMatch_<char8_t>::Ref			RegexBase_::MatchHead<char8_t>	(const ObjectString<char8_t>& text)const;
+		extern template RegexMatch_<char8_t>::Ref			RegexBase_::Match<char8_t>		(const ObjectString<char8_t>& text)const;
+		extern template bool								RegexBase_::TestHead<char8_t>	(const ObjectString<char8_t>& text)const;
+		extern template bool								RegexBase_::Test<char8_t>		(const ObjectString<char8_t>& text)const;
+		extern template void								RegexBase_::Search<char8_t>		(const ObjectString<char8_t>& text, RegexMatch_<char8_t>::List& matches)const;
+		extern template void								RegexBase_::Split<char8_t>		(const ObjectString<char8_t>& text, bool keepEmptyMatch, RegexMatch_<char8_t>::List& matches)const;
+		extern template void								RegexBase_::Cut<char8_t>		(const ObjectString<char8_t>& text, bool keepEmptyMatch, RegexMatch_<char8_t>::List& matches)const;
+
+		extern template RegexMatch_<char16_t>::Ref			RegexBase_::MatchHead<char16_t>	(const ObjectString<char16_t>& text)const;
+		extern template RegexMatch_<char16_t>::Ref			RegexBase_::Match<char16_t>		(const ObjectString<char16_t>& text)const;
+		extern template bool								RegexBase_::TestHead<char16_t>	(const ObjectString<char16_t>& text)const;
+		extern template bool								RegexBase_::Test<char16_t>		(const ObjectString<char16_t>& text)const;
+		extern template void								RegexBase_::Search<char16_t>	(const ObjectString<char16_t>& text, RegexMatch_<char16_t>::List& matches)const;
+		extern template void								RegexBase_::Split<char16_t>		(const ObjectString<char16_t>& text, bool keepEmptyMatch, RegexMatch_<char16_t>::List& matches)const;
+		extern template void								RegexBase_::Cut<char16_t>		(const ObjectString<char16_t>& text, bool keepEmptyMatch, RegexMatch_<char16_t>::List& matches)const;
+
+		extern template RegexMatch_<char32_t>::Ref			RegexBase_::MatchHead<char32_t>	(const ObjectString<char32_t>& text)const;
+		extern template RegexMatch_<char32_t>::Ref			RegexBase_::Match<char32_t>		(const ObjectString<char32_t>& text)const;
+		extern template bool								RegexBase_::TestHead<char32_t>	(const ObjectString<char32_t>& text)const;
+		extern template bool								RegexBase_::Test<char32_t>		(const ObjectString<char32_t>& text)const;
+		extern template void								RegexBase_::Search<char32_t>	(const ObjectString<char32_t>& text, RegexMatch_<char32_t>::List& matches)const;
+		extern template void								RegexBase_::Split<char32_t>		(const ObjectString<char32_t>& text, bool keepEmptyMatch, RegexMatch_<char32_t>::List& matches)const;
+		extern template void								RegexBase_::Cut<char32_t>		(const ObjectString<char32_t>& text, bool keepEmptyMatch, RegexMatch_<char32_t>::List& matches)const;
+
+		extern template class Regex_<wchar_t>;
+		extern template class Regex_<char8_t>;
+		extern template class Regex_<char16_t>;
+		extern template class Regex_<char32_t>;
+
+		extern template class RegexTokens_<wchar_t>;
+		extern template class RegexTokens_<char8_t>;
+		extern template class RegexTokens_<char16_t>;
+		extern template class RegexTokens_<char32_t>;
+
+		extern template class RegexLexerWalker_<wchar_t>;
+		extern template class RegexLexerWalker_<char8_t>;
+		extern template class RegexLexerWalker_<char16_t>;
+		extern template class RegexLexerWalker_<char32_t>;
+
+		extern template class RegexLexerColorizer_<wchar_t>;
+		extern template class RegexLexerColorizer_<char8_t>;
+		extern template class RegexLexerColorizer_<char16_t>;
+		extern template class RegexLexerColorizer_<char32_t>;
+
+		extern template RegexTokens_<wchar_t>				RegexLexerBase_::Parse			(const ObjectString<wchar_t>& code, RegexProc_<wchar_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<wchar_t>			RegexLexerBase_::Walk			()const;
+		extern template RegexLexerColorizer_<wchar_t>		RegexLexerBase_::Colorize		(RegexProc_<wchar_t> _proc)const;
+
+		extern template RegexTokens_<char8_t>				RegexLexerBase_::Parse			(const ObjectString<char8_t>& code, RegexProc_<char8_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<char8_t>			RegexLexerBase_::Walk			()const;
+		extern template RegexLexerColorizer_<char8_t>		RegexLexerBase_::Colorize		(RegexProc_<char8_t> _proc)const;
+
+		extern template RegexTokens_<char16_t>				RegexLexerBase_::Parse			(const ObjectString<char16_t>& code, RegexProc_<char16_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<char16_t>			RegexLexerBase_::Walk			()const;
+		extern template RegexLexerColorizer_<char16_t>		RegexLexerBase_::Colorize		(RegexProc_<char16_t> _proc)const;
+
+		extern template RegexTokens_<char32_t>				RegexLexerBase_::Parse			(const ObjectString<char32_t>& code, RegexProc_<char32_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<char32_t>			RegexLexerBase_::Walk			()const;
+		extern template RegexLexerColorizer_<char32_t>		RegexLexerBase_::Colorize		(RegexProc_<char32_t> _proc)const;
+
+		extern template class RegexLexer_<wchar_t>;
+		extern template class RegexLexer_<char8_t>;
+		extern template class RegexLexer_<char16_t>;
+		extern template class RegexLexer_<char32_t>;
+		
+		using RegexString = RegexString_<wchar_t>;
+		using RegexMatch = RegexMatch_<wchar_t>;
+		using Regex = Regex_<wchar_t>;
+		using RegexToken = RegexToken_<wchar_t>;
+		using RegexProc = RegexProc_<wchar_t>;
+		using RegexTokens = RegexTokens_<wchar_t>;
+		using RegexLexerWalker = RegexLexerWalker_<wchar_t>;
+		using RegexLexerColorizer = RegexLexerColorizer_<wchar_t>;
+		using RegexLexer = RegexLexer_<wchar_t>;
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\REGEXCHARREADER.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_REGEX_REGEXCHARREADER
+#define VCZH_REGEX_REGEXCHARREADER
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+		template<typename T>
+		struct CharReader
+		{
+		private:
+			encoding::UtfStringTo32Reader<T>	reader;
+			const T*							input;
+
+		public:
+			CharReader(const T* _input)
+				: reader(_input)
+				, input(_input)
+			{
+			}
+
+			const T* Reading() { return input + reader.SourceCluster().index; }
+			vint Index() { return reader.SourceCluster().index; }
+
+			char32_t Read()
+			{
+				return reader.Read();
+			}
+		};
+
+		template<>
+		struct CharReader<char32_t>
+		{
+		private:
+			const char32_t*						input;
+			vint								index = 0;
+			bool								finished = false;
+		public:
+			CharReader(const char32_t* _input)
+				: input(_input)
+			{
+			}
+
+			char32_t Read()
+			{
+				if (finished) return 0;
+				if (auto c = input[index])
+				{
+					index++;
+					return c;
+				}
+				else
+				{
+					finished = true;
+					return 0;
+				}
+			}
+
+			const char32_t* Reading() { return input + Index(); }
+			vint Index() { return finished ? index : index - 1; }
 		};
 	}
 }
@@ -1063,7 +1357,7 @@ namespace vl
 	{
 
 /***********************************************************************
-Data Structure
+CharRange
 ***********************************************************************/
 
 		class CharRange
@@ -1071,25 +1365,71 @@ Data Structure
 		public:
 			typedef collections::SortedList<CharRange>		List;
 
-			wchar_t					begin;
-			wchar_t					end;
+			char32_t				begin = 0;
+			char32_t				end = 0;
 
-			CharRange();
-			CharRange(wchar_t _begin, wchar_t _end);
+			CharRange() = default;
+			CharRange(char32_t _begin, char32_t _end) : begin(_begin), end(_end) {}
 
-			bool					operator<(CharRange item)const;
-			bool					operator<=(CharRange item)const;
-			bool					operator>(CharRange item)const;
-			bool					operator>=(CharRange item)const;
-			bool					operator==(CharRange item)const;
-			bool					operator!=(CharRange item)const;
+			bool operator<(CharRange item) const
+			{
+				return end < item.begin;
+			}
 
-			bool					operator<(wchar_t item)const;
-			bool					operator<=(wchar_t item)const;
-			bool					operator>(wchar_t item)const;
-			bool					operator>=(wchar_t item)const;
-			bool					operator==(wchar_t item)const;
-			bool					operator!=(wchar_t item)const;
+			bool operator<=(CharRange item) const
+			{
+				return *this < item || *this == item;
+			}
+
+			bool operator>(CharRange item) const
+			{
+				return item.end < begin;
+			}
+
+			bool operator>=(CharRange item) const
+			{
+				return *this > item || *this == item;
+			}
+
+			bool operator==(CharRange item) const
+			{
+				return begin == item.begin && end == item.end;
+			}
+
+			bool operator!=(CharRange item) const
+			{
+				return begin != item.begin || item.end != end;
+			}
+
+			bool operator<(char32_t item) const
+			{
+				return end < item;
+			}
+
+			bool operator<=(char32_t item) const
+			{
+				return begin <= item;
+			}
+
+			bool operator>(char32_t item) const
+			{
+				return item < begin;
+			}
+
+			bool operator>=(char32_t item) const
+			{
+				return item <= end;
+			}
+
+			bool operator==(char32_t item) const
+			{
+				return begin <= item && item <= end;
+			}
+
+			bool operator!=(char32_t item) const
+			{
+				return item < begin || end < item;
+			}
 		};
 	}
 }
@@ -1112,6 +1452,8 @@ namespace vl
 {
 	namespace regex_internal
 	{
+		constexpr char32_t						MaxChar32 = 0x10FFFF;
+
 		class State;
 		class Transition;
 
@@ -1157,7 +1499,7 @@ namespace vl
 
 			collections::List<Ptr<State>>		states;
 			collections::List<Ptr<Transition>>	transitions;
-			collections::List<WString>			captureNames;
+			collections::List<U32String>		captureNames;
 			State*								startState;
 
 			Automaton();
@@ -1235,7 +1577,7 @@ Regex Expression AST
 			Expression() = default;
 
 			typedef Ptr<Expression>											Ref;
-			typedef collections::Dictionary<WString, Expression::Ref>		Map;
+			typedef collections::Dictionary<U32String, Expression::Ref>		Map;
 
 			virtual void				Apply(IRegexExpressionAlgorithm& algorithm)=0;
 			bool						IsEqual(Expression* expression);
@@ -1303,7 +1645,7 @@ Regex Expression AST
 		class CaptureExpression : public Expression
 		{
 		public:
-			WString						name;			// Capture name, empty for anonymous capture
+			U32String					name;			// Capture name, empty for anonymous capture
 			Expression::Ref				expression;		// Regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
@@ -1312,7 +1654,7 @@ Regex Expression AST
 		class MatchExpression : public Expression
 		{
 		public:
-			WString						name;			// Capture name, empty for anonymous
+			U32String					name;			// Capture name, empty for anonymous
 			vint						index;			// The index of captured text to match associated the name, -1 for all of them
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
@@ -1337,7 +1679,7 @@ Regex Expression AST
 		class UsingExpression : public Expression
 		{
 		public:
-			WString						name;			// Name of the regex to refer
+			U32String					name;			// Name of the regex to refer
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -1557,19 +1899,36 @@ Visitor
 Helper Functions
 ***********************************************************************/
 
-		extern Ptr<LoopExpression>		ParseLoop(const wchar_t*& input);
-		extern Ptr<Expression>			ParseCharSet(const wchar_t*& input);
-		extern Ptr<Expression>			ParseFunction(const wchar_t*& input);
-		extern Ptr<Expression>			ParseUnit(const wchar_t*& input);
-		extern Ptr<Expression>			ParseJoin(const wchar_t*& input);
-		extern Ptr<Expression>			ParseAlt(const wchar_t*& input);
-		extern Ptr<Expression>			ParseExpression(const wchar_t*& input);
-		extern RegexExpression::Ref		ParseRegexExpression(const WString& code);
+		extern Ptr<LoopExpression>		ParseLoop(const char32_t*& input);
+		extern Ptr<Expression>			ParseCharSet(const char32_t*& input);
+		extern Ptr<Expression>			ParseFunction(const char32_t*& input);
+		extern Ptr<Expression>			ParseUnit(const char32_t*& input);
+		extern Ptr<Expression>			ParseJoin(const char32_t*& input);
+		extern Ptr<Expression>			ParseAlt(const char32_t*& input);
+		extern Ptr<Expression>			ParseExpression(const char32_t*& input);
+		extern RegexExpression::Ref		ParseRegexExpression(const U32String& code);
 
-		extern WString					EscapeTextForRegex(const WString& literalString);
-		extern WString					UnescapeTextForRegex(const WString& escapedText);
-		extern WString					NormalizeEscapedTextForRegex(const WString& escapedText);
-		extern bool						IsRegexEscapedLiteralString(const WString& regex);
+		extern U32String				EscapeTextForRegex(const U32String& literalString);
+		extern U32String				UnescapeTextForRegex(const U32String& escapedText);
+		extern U32String				NormalizeEscapedTextForRegex(const U32String& escapedText);
+		extern bool						IsRegexEscapedLiteralString(const U32String& regex);
+
+		class RegexException : public Exception
+		{
+		public:
+			U32String					code;
+			vint						position;
+
+		public:
+			RegexException(const WString& _message, const U32String& _code, vint _position)
+				: code(_code)
+				, position(_position)
+			{
+			}
+
+			const U32String& GetCode() const { return code; }
+			vint GetPosition() const { return position; }
+		};
 	}
 }
 
@@ -1611,13 +1970,13 @@ namespace vl
 			RegexNode					operator%(const RegexNode& node)const;
 		};
 
-		extern RegexNode				rCapture(const WString& name, const RegexNode& node);
-		extern RegexNode				rUsing(const WString& name);
-		extern RegexNode				rMatch(const WString& name, vint index=-1);
+		extern RegexNode				rCapture(const U32String& name, const RegexNode& node);
+		extern RegexNode				rUsing(const U32String& name);
+		extern RegexNode				rMatch(const U32String& name, vint index=-1);
 		extern RegexNode				rMatch(vint index);
 		extern RegexNode				rBegin();
 		extern RegexNode				rEnd();
-		extern RegexNode				rC(wchar_t a, wchar_t b=L'\0');
+		extern RegexNode				rC(char32_t a, char32_t b=0);
 		extern RegexNode				r_d();
 		extern RegexNode				r_l();
 		extern RegexNode				r_w();
@@ -1655,11 +2014,7 @@ namespace vl
 		class PureInterpretor : public Object
 		{
 		protected:
-#if defined VCZH_MSVC
-			static const vint	SupportedCharCount = 0x10000;		// UTF-16
-#elif defined VCZH_GCC
-			static const vint	SupportedCharCount = 0x110000;		// UTF-32
-#endif
+			static const vint	SupportedCharCount = MaxChar32 + 1;
 
 			vint				charMap[SupportedCharCount];		// char -> char set index
 			vint**				transition;							// (state * char set index) -> state*
@@ -1672,17 +2027,30 @@ namespace vl
 			PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets);
 			~PureInterpretor();
 
-			bool				MatchHead(const wchar_t* input, const wchar_t* start, PureResult& result);
-			bool				Match(const wchar_t* input, const wchar_t* start, PureResult& result);
+			template<typename TChar>
+			bool				MatchHead(const TChar* input, const TChar* start, PureResult& result);
+
+			template<typename TChar>
+			bool				Match(const TChar* input, const TChar* start, PureResult& result);
 
 			vint				GetStartState();
-			vint				Transit(wchar_t input, vint state);
+			vint				Transit(char32_t input, vint state);
 			bool				IsFinalState(vint state);
 			bool				IsDeadState(vint state);
 
 			void				PrepareForRelatedFinalStateTable();
 			vint				GetRelatedFinalState(vint state);
 		};
+
+		extern template bool	PureInterpretor::MatchHead<wchar_t>(const wchar_t* input, const wchar_t* start, PureResult& result);
+		extern template bool	PureInterpretor::MatchHead<char8_t>(const char8_t* input, const char8_t* start, PureResult& result);
+		extern template bool	PureInterpretor::MatchHead<char16_t>(const char16_t* input, const char16_t* start, PureResult& result);
+		extern template bool	PureInterpretor::MatchHead<char32_t>(const char32_t* input, const char32_t* start, PureResult& result);
+
+		extern template bool	PureInterpretor::Match<wchar_t>(const wchar_t* input, const wchar_t* start, PureResult& result);
+		extern template bool	PureInterpretor::Match<char8_t>(const char8_t* input, const char8_t* start, PureResult& result);
+		extern template bool	PureInterpretor::Match<char16_t>(const char16_t* input, const char16_t* start, PureResult& result);
+		extern template bool	PureInterpretor::Match<char32_t>(const char32_t* input, const char32_t* start, PureResult& result);
 	}
 }
 
@@ -1707,11 +2075,11 @@ namespace vl
 		class CaptureRecord
 		{
 		public:
-			vint								capture;
-			vint								start;
-			vint								length;
+			vint									capture;
+			vint									start;
+			vint									length;
 
-			bool								operator==(const CaptureRecord& record)const;
+			bool									operator==(const CaptureRecord& record)const;
 		};
 	}
 
@@ -1720,9 +2088,9 @@ namespace vl
 		class RichResult
 		{
 		public:
-			vint								start;
-			vint								length;
-			collections::List<CaptureRecord>	captures;
+			vint									start;
+			vint									length;
+			collections::List<CaptureRecord>		captures;
 		};
 
 		class RichInterpretor : public Object
@@ -1732,19 +2100,33 @@ namespace vl
 			class UserData
 			{
 			public:
-				bool							NeedKeepState;
+				bool								NeedKeepState;
 			};
 
-			Automaton::Ref						dfa;
-			UserData*							datas;
+			Automaton::Ref							dfa;
+			UserData*								datas;
 		public:
 			RichInterpretor(Automaton::Ref _dfa);
 			~RichInterpretor();
 
-			bool								MatchHead(const wchar_t* input, const wchar_t* start, RichResult& result);
-			bool								Match(const wchar_t* input, const wchar_t* start, RichResult& result);
-			const collections::List<WString>&	CaptureNames();
+			template<typename TChar>
+			bool									MatchHead(const TChar* input, const TChar* start, RichResult& result);
+
+			template<typename TChar>
+			bool									Match(const TChar* input, const TChar* start, RichResult& result);
+
+			const collections::List<U32String>&		CaptureNames();
 		};
+
+		extern template bool	RichInterpretor::MatchHead<wchar_t>(const wchar_t* input, const wchar_t* start, RichResult& result);
+		extern template bool	RichInterpretor::MatchHead<char8_t>(const char8_t* input, const char8_t* start, RichResult& result);
+		extern template bool	RichInterpretor::MatchHead<char16_t>(const char16_t* input, const char16_t* start, RichResult& result);
+		extern template bool	RichInterpretor::MatchHead<char32_t>(const char32_t* input, const char32_t* start, RichResult& result);
+
+		extern template bool	RichInterpretor::Match<wchar_t>(const wchar_t* input, const wchar_t* start, RichResult& result);
+		extern template bool	RichInterpretor::Match<char8_t>(const char8_t* input, const char8_t* start, RichResult& result);
+		extern template bool	RichInterpretor::Match<char16_t>(const char16_t* input, const char16_t* start, RichResult& result);
+		extern template bool	RichInterpretor::Match<char32_t>(const char32_t* input, const char32_t* start, RichResult& result);
 	};
 }
 

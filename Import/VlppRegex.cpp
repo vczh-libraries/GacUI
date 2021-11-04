@@ -21,252 +21,152 @@ namespace vl
 		using namespace regex_internal;
 
 /***********************************************************************
-RegexString
-***********************************************************************/
-
-		RegexString::RegexString(vint _start)
-			:start(_start)
-			,length(0)
-		{
-		}
-
-		RegexString::RegexString(const WString& _string, vint _start, vint _length)
-			:value(_length==0?L"":_string.Sub(_start, _length))
-			,start(_start)
-			,length(_length)
-		{
-		}
-
-		vint RegexString::Start()const
-		{
-			return start;
-		}
-
-		vint RegexString::Length()const
-		{
-			return length;
-		}
-
-		const WString& RegexString::Value()const
-		{
-			return value;
-		}
-
-		bool RegexString::operator==(const RegexString& string)const
-		{
-			return start==string.start && length==string.length && value==string.value;
-		}
-
-/***********************************************************************
-RegexMatch
+RegexMatch_<T>
 ***********************************************************************/
 		
-		RegexMatch::RegexMatch(const WString& _string, PureResult* _result)
+		template<typename T>
+		RegexMatch_<T>::RegexMatch_(const ObjectString<T>& _string, PureResult* _result)
 			:success(true)
-			,result(_string, _result->start, _result->length)
+			, result(_string, _result->start, _result->length)
 		{
 		}
 
-		RegexMatch::RegexMatch(const WString& _string, RichResult* _result, RichInterpretor* _rich)
-			:success(true)
-			,result(_string, _result->start, _result->length)
+		template<typename T>
+		RegexMatch_<T>::RegexMatch_(const ObjectString<T>& _string, RichResult* _result)
+			: success(true)
+			, result(_string, _result->start, _result->length)
 		{
-			for(vint i=0;i<_result->captures.Count();i++)
+			for (vint i = 0; i < _result->captures.Count(); i++)
 			{
-				CaptureRecord& capture=_result->captures[i];
-				if(capture.capture==-1)
+				CaptureRecord& capture = _result->captures[i];
+				if (capture.capture == -1)
 				{
-					captures.Add(RegexString(_string, capture.start, capture.length));
+					captures.Add(RegexString_<T>(_string, capture.start, capture.length));
 				}
 				else
 				{
-					groups.Add(_rich->CaptureNames().Get(capture.capture), RegexString(_string, capture.start, capture.length));
+					groups.Add(capture.capture, RegexString_<T>(_string, capture.start, capture.length));
 				}
 			}
 		}
 
-		RegexMatch::RegexMatch(const RegexString& _result)
+		template<typename T>
+		RegexMatch_<T>::RegexMatch_(const RegexString_<T>& _result)
 			:success(false)
-			,result(_result)
+			, result(_result)
 		{
 		}
-			
-		bool RegexMatch::Success()const
+
+		template<typename T>
+		bool RegexMatch_<T>::Success()const
 		{
 			return success;
 		}
 
-		const RegexString& RegexMatch::Result()const
+		template<typename T>
+		const typename RegexString_<T>& RegexMatch_<T>::Result()const
 		{
 			return result;
 		}
 
-		const RegexMatch::CaptureList& RegexMatch::Captures()const
+		template<typename T>
+		const typename RegexMatch_<T>::CaptureList& RegexMatch_<T>::Captures()const
 		{
 			return captures;
 		}
 
-		const RegexMatch::CaptureGroup& RegexMatch::Groups()const
+		template<typename T>
+		const typename RegexMatch_<T>::CaptureGroup& RegexMatch_<T>::Groups()const
 		{
 			return groups;
 		}
 
 /***********************************************************************
-Regex
+RegexBase_
 ***********************************************************************/
 
-		void Regex::Process(const WString& text, bool keepEmpty, bool keepSuccess, bool keepFail, RegexMatch::List& matches)const
+		template<typename T>
+		void RegexBase_::Process(const ObjectString<T>& text, bool keepEmpty, bool keepSuccess, bool keepFail, typename RegexMatch_<T>::List& matches)const
 		{
-			if(rich)
+			if (rich)
 			{
-				const wchar_t* start=text.Buffer();
-				const wchar_t* input=start;
+				const T* start = text.Buffer();
+				const T* input = start;
 				RichResult result;
-				while(rich->Match(input, start, result))
+				while (rich->Match(input, start, result))
 				{
-					vint offset=input-start;
-					if(keepFail)
+					vint offset = input - start;
+					if (keepFail)
 					{
-						if(result.start>offset || keepEmpty)
+						if (result.start > offset || keepEmpty)
 						{
-							matches.Add(new RegexMatch(RegexString(text, offset, result.start-offset)));
+							matches.Add(new RegexMatch_<T>(RegexString_<T>(text, offset, result.start - offset)));
 						}
 					}
-					if(keepSuccess)
+					if (keepSuccess)
 					{
-						matches.Add(new RegexMatch(text, &result, rich));
+						matches.Add(new RegexMatch_<T>(text, &result));
 					}
-					input=start+result.start+result.length;
+					input = start + result.start + result.length;
 				}
-				if(keepFail)
+				if (keepFail)
 				{
-					vint remain=input-start;
-					vint length=text.Length()-remain;
-					if(length || keepEmpty)
+					vint remain = input - start;
+					vint length = text.Length() - remain;
+					if (length || keepEmpty)
 					{
-						matches.Add(new RegexMatch(RegexString(text, remain, length)));
+						matches.Add(new RegexMatch_<T>(RegexString_<T>(text, remain, length)));
 					}
 				}
 			}
 			else
 			{
-				const wchar_t* start=text.Buffer();
-				const wchar_t* input=start;
+				const T* start = text.Buffer();
+				const T* input = start;
 				PureResult result;
-				while(pure->Match(input, start, result))
+				while (pure->Match(input, start, result))
 				{
-					vint offset=input-start;
-					if(keepFail)
+					vint offset = input - start;
+					if (keepFail)
 					{
-						if(result.start>offset || keepEmpty)
+						if (result.start > offset || keepEmpty)
 						{
-							matches.Add(new RegexMatch(RegexString(text, offset, result.start-offset)));
+							matches.Add(new RegexMatch_<T>(RegexString_<T>(text, offset, result.start - offset)));
 						}
 					}
-					if(keepSuccess)
+					if (keepSuccess)
 					{
-						matches.Add(new RegexMatch(text, &result));
+						matches.Add(new RegexMatch_<T>(text, &result));
 					}
-					input=start+result.start+result.length;
+					input = start + result.start + result.length;
 				}
-				if(keepFail)
+				if (keepFail)
 				{
-					vint remain=input-start;
-					vint length=text.Length()-remain;
-					if(length || keepEmpty)
+					vint remain = input - start;
+					vint length = text.Length() - remain;
+					if (length || keepEmpty)
 					{
-						matches.Add(new RegexMatch(RegexString(text, remain, length)));
-					}
-				}
-			}
-		}
-		
-		Regex::Regex(const WString& code, bool preferPure)
-		{
-			CharRange::List subsets;
-			RegexExpression::Ref regex=ParseRegexExpression(code);
-			Expression::Ref expression=regex->Merge();
-			expression->NormalizeCharSet(subsets);
-
-			bool pureRequired=false;
-			bool richRequired=false;
-			if(preferPure)
-			{
-				if(expression->HasNoExtension())
-				{
-					pureRequired=true;
-				}
-				else
-				{
-					if(expression->CanTreatAsPure())
-					{
-						pureRequired=true;
-						richRequired=true;
-					}
-					else
-					{
-						richRequired=true;
+						matches.Add(new RegexMatch_<T>(RegexString_<T>(text, remain, length)));
 					}
 				}
 			}
-			else
-			{
-				richRequired=true;
-			}
-
-			try
-			{
-				if(pureRequired)
-				{
-					Dictionary<State*, State*> nfaStateMap;
-					Group<State*, State*> dfaStateMap;
-					Automaton::Ref eNfa=expression->GenerateEpsilonNfa();
-					Automaton::Ref nfa=EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
-					Automaton::Ref dfa=NfaToDfa(nfa, dfaStateMap);
-					pure=new PureInterpretor(dfa, subsets);
-				}
-				if(richRequired)
-				{
-					Dictionary<State*, State*> nfaStateMap;
-					Group<State*, State*> dfaStateMap;
-					Automaton::Ref eNfa=expression->GenerateEpsilonNfa();
-					Automaton::Ref nfa=EpsilonNfaToNfa(eNfa, RichEpsilonChecker, nfaStateMap);
-					Automaton::Ref dfa=NfaToDfa(nfa, dfaStateMap);
-					rich=new RichInterpretor(dfa);
-				}
-			}
-			catch(...)
-			{
-				if(pure)delete pure;
-				if(rich)delete rich;
-				throw;
-			}
 		}
 
-		Regex::~Regex()
+		RegexBase_::~RegexBase_()
 		{
-			if(pure)delete pure;
-			if(rich)delete rich;
+			if (pure) delete pure;
+			if (rich) delete rich;
 		}
 
-		bool Regex::IsPureMatch()const
+		template<typename T>
+		typename RegexMatch_<T>::Ref RegexBase_::MatchHead(const ObjectString<T>& text)const
 		{
-			return rich?false:true;
-		}
-
-		bool Regex::IsPureTest()const
-		{
-			return pure?true:false;
-		}
-
-		RegexMatch::Ref Regex::MatchHead(const WString& text)const
-		{
-			if(rich)
+			if (rich)
 			{
 				RichResult result;
-				if(rich->MatchHead(text.Buffer(), text.Buffer(), result))
+				if (rich->MatchHead(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch(text, &result, rich);
+					return new RegexMatch_<T>(text, &result);
 				}
 				else
 				{
@@ -276,9 +176,9 @@ Regex
 			else
 			{
 				PureResult result;
-				if(pure->MatchHead(text.Buffer(), text.Buffer(), result))
+				if (pure->MatchHead(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch(text, &result);
+					return new RegexMatch_<T>(text, &result);
 				}
 				else
 				{
@@ -287,14 +187,15 @@ Regex
 			}
 		}
 
-		RegexMatch::Ref Regex::Match(const WString& text)const
+		template<typename T>
+		typename RegexMatch_<T>::Ref RegexBase_::Match(const ObjectString<T>& text)const
 		{
-			if(rich)
+			if (rich)
 			{
 				RichResult result;
-				if(rich->Match(text.Buffer(), text.Buffer(), result))
+				if (rich->Match(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch(text, &result, rich);
+					return new RegexMatch_<T>(text, &result);
 				}
 				else
 				{
@@ -304,9 +205,9 @@ Regex
 			else
 			{
 				PureResult result;
-				if(pure->Match(text.Buffer(), text.Buffer(), result))
+				if (pure->Match(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch(text, &result);
+					return new RegexMatch_<T>(text, &result);
 				}
 				else
 				{
@@ -315,9 +216,10 @@ Regex
 			}
 		}
 
-		bool Regex::TestHead(const WString& text)const
+		template<typename T>
+		bool RegexBase_::TestHead(const ObjectString<T>& text)const
 		{
-			if(pure)
+			if (pure)
 			{
 				PureResult result;
 				return pure->MatchHead(text.Buffer(), text.Buffer(), result);
@@ -329,9 +231,10 @@ Regex
 			}
 		}
 
-		bool Regex::Test(const WString& text)const
+		template<typename T>
+		bool RegexBase_::Test(const ObjectString<T>& text)const
 		{
-			if(pure)
+			if (pure)
 			{
 				PureResult result;
 				return pure->Match(text.Buffer(), text.Buffer(), result);
@@ -343,71 +246,185 @@ Regex
 			}
 		}
 
-		void Regex::Search(const WString& text, RegexMatch::List& matches)const
+		template<typename T>
+		void RegexBase_::Search(const ObjectString<T>& text, typename RegexMatch_<T>::List& matches)const
 		{
 			Process(text, false, true, false, matches);
 		}
 
-		void Regex::Split(const WString& text, bool keepEmptyMatch, RegexMatch::List& matches)const
+		template<typename T>
+		void RegexBase_::Split(const ObjectString<T>& text, bool keepEmptyMatch, typename RegexMatch_<T>::List& matches)const
 		{
 			Process(text, keepEmptyMatch, false, true, matches);
 		}
 
-		void Regex::Cut(const WString& text, bool keepEmptyMatch, RegexMatch::List& matches)const
+		template<typename T>
+		void RegexBase_::Cut(const ObjectString<T>& text, bool keepEmptyMatch, typename RegexMatch_<T>::List& matches)const
 		{
 			Process(text, keepEmptyMatch, true, true, matches);
 		}
 
 /***********************************************************************
-RegexTokens
+Regex_<T>
 ***********************************************************************/
 
-		bool RegexToken::operator==(const RegexToken& _token)const
+		template<>
+		U32String Regex_<wchar_t>::ToU32(const ObjectString<wchar_t>& text)
 		{
-			return length==_token.length && token==_token.token && reading==_token.reading;
-		}
-		
-		bool RegexToken::operator==(const wchar_t* _token)const
-		{
-			return wcslen(_token)==length && wcsncmp(reading, _token, length)==0;
+			return wtou32(text);
 		}
 
-		class RegexTokenEnumerator : public Object, public IEnumerator<RegexToken>
+		template<>
+		ObjectString<wchar_t> Regex_<wchar_t>::FromU32(const U32String& text)
+		{
+			return u32tow(text);
+		}
+
+		template<>
+		U32String Regex_<char8_t>::ToU32(const ObjectString<char8_t>& text)
+		{
+			return u8tou32(text);
+		}
+
+		template<>
+		ObjectString<char8_t> Regex_<char8_t>::FromU32(const U32String& text)
+		{
+			return u32tou8(text);
+		}
+
+		template<>
+		U32String Regex_<char16_t>::ToU32(const ObjectString<char16_t>& text)
+		{
+			return u16tou32(text);
+		}
+
+		template<>
+		ObjectString<char16_t> Regex_<char16_t>::FromU32(const U32String& text)
+		{
+			return u32tou16(text);
+		}
+
+		template<>
+		U32String Regex_<char32_t>::ToU32(const ObjectString<char32_t>& text)
+		{
+			return text;
+		}
+
+		template<>
+		ObjectString<char32_t> Regex_<char32_t>::FromU32(const U32String& text)
+		{
+			return text;
+		}
+		
+		template<typename T>
+		Regex_<T>::Regex_(const ObjectString<T>& code, bool preferPure)
+		{
+			CharRange::List subsets;
+			RegexExpression::Ref regex = ParseRegexExpression(ToU32(code));
+			Expression::Ref expression = regex->Merge();
+			expression->NormalizeCharSet(subsets);
+
+			bool pureRequired = false;
+			bool richRequired = false;
+			if (preferPure)
+			{
+				if (expression->HasNoExtension())
+				{
+					pureRequired = true;
+				}
+				else
+				{
+					if (expression->CanTreatAsPure())
+					{
+						pureRequired = true;
+						richRequired = true;
+					}
+					else
+					{
+						richRequired = true;
+					}
+				}
+			}
+			else
+			{
+				richRequired = true;
+			}
+
+			try
+			{
+				if (pureRequired)
+				{
+					Dictionary<State*, State*> nfaStateMap;
+					Group<State*, State*> dfaStateMap;
+					Automaton::Ref eNfa = expression->GenerateEpsilonNfa();
+					Automaton::Ref nfa = EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
+					Automaton::Ref dfa = NfaToDfa(nfa, dfaStateMap);
+					pure = new PureInterpretor(dfa, subsets);
+				}
+				if (richRequired)
+				{
+					Dictionary<State*, State*> nfaStateMap;
+					Group<State*, State*> dfaStateMap;
+					Automaton::Ref eNfa = expression->GenerateEpsilonNfa();
+					Automaton::Ref nfa = EpsilonNfaToNfa(eNfa, RichEpsilonChecker, nfaStateMap);
+					Automaton::Ref dfa = NfaToDfa(nfa, dfaStateMap);
+					rich = new RichInterpretor(dfa);
+
+					for (auto&& name : rich->CaptureNames())
+					{
+						captureNames.Add(FromU32(name));
+					}
+				}
+			}
+			catch (...)
+			{
+				if (pure)delete pure;
+				if (rich)delete rich;
+				throw;
+			}
+		}
+
+/***********************************************************************
+RegexTokens_<T>
+***********************************************************************/
+
+		template<typename T>
+		class RegexTokenEnumerator : public Object, public IEnumerator<RegexToken_<T>>
 		{
 		protected:
-			RegexToken				token;
+			RegexToken_<T>			token;
 			vint					index = -1;
 
 			PureInterpretor*		pure;
 			const Array<vint>&		stateTokens;
-			const wchar_t*			start;
+			const T*				start;
 			vint					codeIndex;
-			RegexProc				proc;
+			RegexProc_<T>			proc;
 
-			const wchar_t*			reading;
+			const T*				reading;
 			vint					rowStart = 0;
 			vint					columnStart = 0;
 			bool					cacheAvailable = false;
-			RegexToken				cacheToken;
+			RegexToken_<T>			cacheToken;
 
 		public:
 			RegexTokenEnumerator(const RegexTokenEnumerator& enumerator)
-				:token(enumerator.token)
+				: token(enumerator.token)
 				, index(enumerator.index)
 				, pure(enumerator.pure)
 				, stateTokens(enumerator.stateTokens)
+				, start(enumerator.start)
+				, codeIndex(enumerator.codeIndex)
 				, proc(enumerator.proc)
 				, reading(enumerator.reading)
-				, start(enumerator.start)
 				, rowStart(enumerator.rowStart)
 				, columnStart(enumerator.columnStart)
-				, codeIndex(enumerator.codeIndex)
 				, cacheAvailable(enumerator.cacheAvailable)
 				, cacheToken(enumerator.cacheToken)
 			{
 			}
 
-			RegexTokenEnumerator(PureInterpretor* _pure, const Array<vint>& _stateTokens, const wchar_t* _start, vint _codeIndex, RegexProc _proc)
+			RegexTokenEnumerator(PureInterpretor* _pure, const Array<vint>& _stateTokens, const T* _start, vint _codeIndex, RegexProc_<T> _proc)
 				:index(-1)
 				, pure(_pure)
 				, stateTokens(_stateTokens)
@@ -418,12 +435,12 @@ RegexTokens
 			{
 			}
 
-			IEnumerator<RegexToken>* Clone()const
+			IEnumerator<RegexToken_<T>>* Clone()const
 			{
-				return new RegexTokenEnumerator(*this);
+				return new RegexTokenEnumerator<T>(*this);
 			}
 
-			const RegexToken& Current()const
+			const RegexToken_<T>& Current()const
 			{
 				return token;
 			}
@@ -555,7 +572,7 @@ RegexTokens
 				cacheAvailable = false;
 			}
 
-			void ReadToEnd(List<RegexToken>& tokens, bool(*discard)(vint))
+			void ReadToEnd(List<RegexToken_<T>>& tokens, bool(*discard)(vint))
 			{
 				while (Next())
 				{
@@ -567,7 +584,8 @@ RegexTokens
 			}
 		};
 
-		RegexTokens::RegexTokens(PureInterpretor* _pure, const Array<vint>& _stateTokens, const WString& _code, vint _codeIndex, RegexProc _proc)
+		template<typename T>
+		RegexTokens_<T>::RegexTokens_(PureInterpretor* _pure, const Array<vint>& _stateTokens, const ObjectString<T>& _code, vint _codeIndex, RegexProc_<T> _proc)
 			:pure(_pure)
 			, stateTokens(_stateTokens)
 			, code(_code)
@@ -576,7 +594,8 @@ RegexTokens
 		{
 		}
 
-		RegexTokens::RegexTokens(const RegexTokens& tokens)
+		template<typename T>
+		RegexTokens_<T>::RegexTokens_(const RegexTokens_<T>& tokens)
 			:pure(tokens.pure)
 			, stateTokens(tokens.stateTokens)
 			, code(tokens.code)
@@ -585,9 +604,10 @@ RegexTokens
 		{
 		}
 
-		IEnumerator<RegexToken>* RegexTokens::CreateEnumerator() const
+		template<typename T>
+		IEnumerator<RegexToken_<T>>* RegexTokens_<T>::CreateEnumerator() const
 		{
-			return new RegexTokenEnumerator(pure, stateTokens, code.Buffer(), codeIndex, proc);
+			return new RegexTokenEnumerator<T>(pure, stateTokens, code.Buffer(), codeIndex, proc);
 		}
 
 		bool DefaultDiscard(vint token)
@@ -595,157 +615,154 @@ RegexTokens
 			return false;
 		}
 
-		void RegexTokens::ReadToEnd(collections::List<RegexToken>& tokens, bool(*discard)(vint))const
+		template<typename T>
+		void RegexTokens_<T>::ReadToEnd(collections::List<RegexToken_<T>>& tokens, bool(*discard)(vint))const
 		{
-			if(discard==0)
+			if (discard == 0)
 			{
-				discard=&DefaultDiscard;
+				discard = &DefaultDiscard;
 			}
-			RegexTokenEnumerator(pure, stateTokens, code.Buffer(), codeIndex, proc).ReadToEnd(tokens, discard);
+			RegexTokenEnumerator<T>(pure, stateTokens, code.Buffer(), codeIndex, proc).ReadToEnd(tokens, discard);
 		}
 
 /***********************************************************************
-RegexLexerWalker
+RegexLexerWalker_<T>
 ***********************************************************************/
 
-		RegexLexerWalker::RegexLexerWalker(PureInterpretor* _pure, const Array<vint>& _stateTokens)
+		template<typename T>
+		RegexLexerWalker_<T>::RegexLexerWalker_(PureInterpretor* _pure, const Array<vint>& _stateTokens)
 			:pure(_pure)
 			, stateTokens(_stateTokens)
 		{
 		}
 
-		RegexLexerWalker::RegexLexerWalker(const RegexLexerWalker& tokens)
+		template<typename T>
+		RegexLexerWalker_<T>::RegexLexerWalker_(const RegexLexerWalker_<T>& tokens)
 			: pure(tokens.pure)
 			, stateTokens(tokens.stateTokens)
 		{
 		}
 
-		RegexLexerWalker::~RegexLexerWalker()
-		{
-		}
-
-		RegexTokens::~RegexTokens()
-		{
-		}
-
-		vint RegexLexerWalker::GetStartState()const
+		template<typename T>
+		vint RegexLexerWalker_<T>::GetStartState()const
 		{
 			return pure->GetStartState();
 		}
 
-		vint RegexLexerWalker::GetRelatedToken(vint state)const
+		template<typename T>
+		vint RegexLexerWalker_<T>::GetRelatedToken(vint state)const
 		{
 			vint finalState = state == -1 ? -1 : pure->GetRelatedFinalState(state);
 			return finalState == -1 ? -1 : stateTokens.Get(finalState);
 		}
 
-		void RegexLexerWalker::Walk(wchar_t input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const
+		template<typename T>
+		void RegexLexerWalker_<T>::Walk(T input, vint& state, vint& token, bool& finalState, bool& previousTokenStop)const
 		{
-			vint previousState=state;
-			token=-1;
-			finalState=false;
-			previousTokenStop=false;
-			if(state==-1)
+			vint previousState = state;
+			token = -1;
+			finalState = false;
+			previousTokenStop = false;
+			if (state == -1)
 			{
-				state=pure->GetStartState();
-				previousTokenStop=true;
+				state = pure->GetStartState();
+				previousTokenStop = true;
 			}
 
-			state=pure->Transit(input, state);
-			if(state==-1)
+			state = pure->Transit(input, state);
+			if (state == -1)
 			{
-				previousTokenStop=true;
-				if(previousState==-1)
+				previousTokenStop = true;
+				if (previousState == -1)
 				{
-					finalState=true;
+					finalState = true;
 					return;
 				}
-				else if(pure->IsFinalState(previousState))
+				else if (pure->IsFinalState(previousState))
 				{
-					state=pure->Transit(input, pure->GetStartState());
+					state = pure->Transit(input, pure->GetStartState());
 				}
 			}
-			if(pure->IsFinalState(state))
+			if (pure->IsFinalState(state))
 			{
-				token=stateTokens.Get(state);
-				finalState=true;
+				token = stateTokens.Get(state);
+				finalState = true;
 				return;
 			}
 			else
 			{
-				finalState=state==-1;
+				finalState = state == -1;
 				return;
 			}
 		}
 
-		vint RegexLexerWalker::Walk(wchar_t input, vint state)const
+		template<typename T>
+		vint RegexLexerWalker_<T>::Walk(T input, vint state)const
 		{
-			vint token=-1;
-			bool finalState=false;
-			bool previousTokenStop=false;
+			vint token = -1;
+			bool finalState = false;
+			bool previousTokenStop = false;
 			Walk(input, state, token, finalState, previousTokenStop);
 			return state;
 		}
 
-		bool RegexLexerWalker::IsClosedToken(const wchar_t* input, vint length)const
+		template<typename T>
+		bool RegexLexerWalker_<T>::IsClosedToken(const T* input, vint length)const
 		{
-			vint state=pure->GetStartState();
-			for(vint i=0;i<length;i++)
+			vint state = pure->GetStartState();
+			for (vint i = 0; i < length; i++)
 			{
-				state=pure->Transit(input[i], state);
-				if(state==-1) return true;
-				if(pure->IsDeadState(state)) return true;
+				state = pure->Transit(input[i], state);
+				if (state == -1) return true;
+				if (pure->IsDeadState(state)) return true;
 			}
 			return false;
 		}
 
-		bool RegexLexerWalker::IsClosedToken(const WString& input)const
+		template<typename T>
+		bool RegexLexerWalker_<T>::IsClosedToken(const ObjectString<T>& input)const
 		{
 			return IsClosedToken(input.Buffer(), input.Length());
 		}
 
 /***********************************************************************
-RegexLexerColorizer
+RegexLexerColorizer_<T>
 ***********************************************************************/
 
-		RegexLexerColorizer::RegexLexerColorizer(const RegexLexerWalker& _walker, RegexProc _proc)
+		template<typename T>
+		RegexLexerColorizer_<T>::RegexLexerColorizer_(const RegexLexerWalker_<T>& _walker, RegexProc_<T> _proc)
 			:walker(_walker)
 			, proc(_proc)
 		{
 			internalState.currentState = walker.GetStartState();
 		}
 
-		RegexLexerColorizer::RegexLexerColorizer(const RegexLexerColorizer& colorizer)
-			:walker(colorizer.walker)
-			, proc(colorizer.proc)
-			, internalState(colorizer.internalState)
-		{
-		}
-
-		RegexLexerColorizer::~RegexLexerColorizer()
-		{
-		}
-
-		RegexLexerColorizer::InternalState RegexLexerColorizer::GetInternalState()
+		template<typename T>
+		typename RegexLexerColorizer_<T>::InternalState RegexLexerColorizer_<T>::GetInternalState()
 		{
 			return internalState;
 		}
-		void RegexLexerColorizer::SetInternalState(InternalState state)
+
+		template<typename T>
+		void RegexLexerColorizer_<T>::SetInternalState(InternalState state)
 		{
 			internalState = state;
 		}
 
-		void RegexLexerColorizer::Pass(wchar_t input)
+		template<typename T>
+		void RegexLexerColorizer_<T>::Pass(T input)
 		{
 			WalkOneToken(&input, 1, 0, false);
 		}
 
-		vint RegexLexerColorizer::GetStartState()const
+		template<typename T>
+		vint RegexLexerColorizer_<T>::GetStartState()const
 		{
 			return walker.GetStartState();
 		}
 
-		void RegexLexerColorizer::CallExtendProcAndColorizeProc(const wchar_t* input, vint length, RegexProcessingToken& token, bool colorize)
+		template<typename T>
+		void RegexLexerColorizer_<T>::CallExtendProcAndColorizeProc(const T* input, vint length, RegexProcessingToken& token, bool colorize)
 		{
 			vint oldTokenLength = token.length;
 			proc.extendProc(proc.argument, input + token.start, length - token.start, false, token);
@@ -754,19 +771,19 @@ RegexLexerColorizer
 				bool pausedAtTheEnd = token.start + token.length == length && !token.completeToken;
 				CHECK_ERROR(
 					token.completeToken || pausedAtTheEnd,
-					L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed pause before the end of the input."
+					L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed pause before the end of the input."
 				);
 				CHECK_ERROR(
 					token.completeToken || token.token != -1,
-					L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to pause without a valid token id."
+					L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to pause without a valid token id."
 				);
 				CHECK_ERROR(
 					oldTokenLength <= token.length,
-					L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to decrease the token length."
+					L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to decrease the token length."
 				);
 				CHECK_ERROR(
 					(token.interTokenState == nullptr) == !pausedAtTheEnd,
-					L"RegexLexerColorizer::Colorize(const wchar_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
+					L"RegexLexerColorizer::Colorize(const char32_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
 				);
 			}
 #endif
@@ -780,7 +797,8 @@ RegexLexerColorizer
 			}
 		}
 
-		vint RegexLexerColorizer::WalkOneToken(const wchar_t* input, vint length, vint start, bool colorize)
+		template<typename T>
+		vint RegexLexerColorizer_<T>::WalkOneToken(const T* input, vint length, vint start, bool colorize)
 		{
 			if (internalState.interTokenState)
 			{
@@ -791,15 +809,15 @@ RegexLexerColorizer
 					bool pausedAtTheEnd = token.length == length && !token.completeToken;
 					CHECK_ERROR(
 						token.completeToken || pausedAtTheEnd,
-						L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to pause before the end of the input."
+						L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to pause before the end of the input."
 					);
 					CHECK_ERROR(
 						token.completeToken || token.token == internalState.interTokenId,
-						L"RegexLexerColorizer::WalkOneToken(const wchar_t*, vint, vint, bool)#The extendProc is not allowed to continue pausing with a different token id."
+						L"RegexLexerColorizer::WalkOneToken(const char32_t*, vint, vint, bool)#The extendProc is not allowed to continue pausing with a different token id."
 					);
 					CHECK_ERROR(
 						(token.interTokenState == nullptr) == !pausedAtTheEnd,
-						L"RegexLexerColorizer::Colorize(const wchar_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
+						L"RegexLexerColorizer::Colorize(const char32_t*, vint, void*)#The extendProc should return an inter token state object if and only if a valid token does not end at the end of the input."
 					);
 				}
 #endif
@@ -888,7 +906,8 @@ RegexLexerColorizer
 			return length;
 		}
 
-		void* RegexLexerColorizer::Colorize(const wchar_t* input, vint length)
+		template<typename T>
+		void* RegexLexerColorizer_<T>::Colorize(const T* input, vint length)
 		{
 			vint index = 0;
 			while (index != length)
@@ -899,22 +918,54 @@ RegexLexerColorizer
 		}
 
 /***********************************************************************
-RegexLexer
+RegexLexerBase_
 ***********************************************************************/
 
-		RegexLexer::RegexLexer(const collections::IEnumerable<WString>& tokens, RegexProc _proc)
-			:proc(_proc)
+		RegexLexerBase_::~RegexLexerBase_()
+		{
+			if (pure) delete pure;
+		}
+
+		template<typename T>
+		RegexTokens_<T> RegexLexerBase_::Parse(const ObjectString<T>& code, RegexProc_<T> proc, vint codeIndex)const
+		{
+			pure->PrepareForRelatedFinalStateTable();
+			return RegexTokens_<T>(pure, stateTokens, code, codeIndex, proc);
+		}
+
+		template<typename T>
+		RegexLexerWalker_<T> RegexLexerBase_::Walk()const
+		{
+			pure->PrepareForRelatedFinalStateTable();
+			return RegexLexerWalker_<T>(pure, stateTokens);
+		}
+
+		RegexLexerWalker_<wchar_t> RegexLexerBase_::Walk()const
+		{
+			pure->PrepareForRelatedFinalStateTable();
+			return RegexLexerWalker_<wchar_t>(pure, stateTokens);
+		}
+
+		template<typename T>
+		RegexLexerColorizer_<T> RegexLexerBase_::Colorize(RegexProc_<T> proc)const
+		{
+			return RegexLexerColorizer_<T>(Walk<T>(), proc);
+		}
+
+/***********************************************************************
+RegexLexer_<T>
+***********************************************************************/
+
+		template<typename T>
+		RegexLexer_<T>::RegexLexer_(const collections::IEnumerable<ObjectString<T>>& tokens)
 		{
 			// Build DFA for all tokens
 			List<Expression::Ref> expressions;
 			List<Automaton::Ref> dfas;
 			CharRange::List subsets;
-			Ptr<IEnumerator<WString>> enumerator = tokens.CreateEnumerator();
-			while (enumerator->Next())
+			for (auto&& code : tokens)
 			{
-				const WString& code = enumerator->Current();
-
-				RegexExpression::Ref regex = ParseRegexExpression(code);
+				RegexExpression::Ref regex = ParseRegexExpression(Regex_<T>::ToU32(code));
 				Expression::Ref expression = regex->Merge();
 				expression->CollectCharSet(subsets);
 				expressions.Add(expression);
@@ -995,27 +1046,92 @@ RegexLexer
 			}
 		}
 
-		RegexLexer::~RegexLexer()
-		{
-			if (pure)delete pure;
-		}
+/***********************************************************************
+Template Instantiation
+***********************************************************************/
 
-		RegexTokens RegexLexer::Parse(const WString& code, vint codeIndex)const
-		{
-			pure->PrepareForRelatedFinalStateTable();
-			return RegexTokens(pure, stateTokens, code, codeIndex, proc);
-		}
+		template class RegexString_<wchar_t>;
+		template class RegexString_<char8_t>;
+		template class RegexString_<char16_t>;
+		template class RegexString_<char32_t>;
 
-		RegexLexerWalker RegexLexer::Walk()const
-		{
-			pure->PrepareForRelatedFinalStateTable();
-			return RegexLexerWalker(pure, stateTokens);
-		}
+		template class RegexMatch_<wchar_t>;
+		template class RegexMatch_<char8_t>;
+		template class RegexMatch_<char16_t>;
+		template class RegexMatch_<char32_t>;
+		
+		template RegexMatch_<wchar_t>::Ref		RegexBase_::MatchHead<wchar_t>	(const ObjectString<wchar_t>& text)const;
+		template RegexMatch_<wchar_t>::Ref		RegexBase_::Match<wchar_t>		(const ObjectString<wchar_t>& text)const;
+		template bool							RegexBase_::TestHead<wchar_t>	(const ObjectString<wchar_t>& text)const;
+		template bool							RegexBase_::Test<wchar_t>		(const ObjectString<wchar_t>& text)const;
+		template void							RegexBase_::Search<wchar_t>		(const ObjectString<wchar_t>& text, RegexMatch_<wchar_t>::List& matches)const;
+		template void							RegexBase_::Split<wchar_t>		(const ObjectString<wchar_t>& text, bool keepEmptyMatch, RegexMatch_<wchar_t>::List& matches)const;
+		template void							RegexBase_::Cut<wchar_t>		(const ObjectString<wchar_t>& text, bool keepEmptyMatch, RegexMatch_<wchar_t>::List& matches)const;
 
-		RegexLexerColorizer RegexLexer::Colorize()const
-		{
-			return RegexLexerColorizer(Walk(), proc);
-		}
+		template RegexMatch_<char8_t>::Ref		RegexBase_::MatchHead<char8_t>	(const ObjectString<char8_t>& text)const;
+		template RegexMatch_<char8_t>::Ref		RegexBase_::Match<char8_t>		(const ObjectString<char8_t>& text)const;
+		template bool							RegexBase_::TestHead<char8_t>	(const ObjectString<char8_t>& text)const;
+		template bool							RegexBase_::Test<char8_t>		(const ObjectString<char8_t>& text)const;
+		template void							RegexBase_::Search<char8_t>		(const ObjectString<char8_t>& text, RegexMatch_<char8_t>::List& matches)const;
+		template void							RegexBase_::Split<char8_t>		(const ObjectString<char8_t>& text, bool keepEmptyMatch, RegexMatch_<char8_t>::List& matches)const;
+		template void							RegexBase_::Cut<char8_t>		(const ObjectString<char8_t>& text, bool keepEmptyMatch, RegexMatch_<char8_t>::List& matches)const;
+
+		template RegexMatch_<char16_t>::Ref		RegexBase_::MatchHead<char16_t>	(const ObjectString<char16_t>& text)const;
+		template RegexMatch_<char16_t>::Ref		RegexBase_::Match<char16_t>		(const ObjectString<char16_t>& text)const;
+		template bool							RegexBase_::TestHead<char16_t>	(const ObjectString<char16_t>& text)const;
+		template bool							RegexBase_::Test<char16_t>		(const ObjectString<char16_t>& text)const;
+		template void							RegexBase_::Search<char16_t>	(const ObjectString<char16_t>& text, RegexMatch_<char16_t>::List& matches)const;
+		template void							RegexBase_::Split<char16_t>		(const ObjectString<char16_t>& text, bool keepEmptyMatch, RegexMatch_<char16_t>::List& matches)const;
+		template void							RegexBase_::Cut<char16_t>		(const ObjectString<char16_t>& text, bool keepEmptyMatch, RegexMatch_<char16_t>::List& matches)const;
+
+		template RegexMatch_<char32_t>::Ref		RegexBase_::MatchHead<char32_t>	(const ObjectString<char32_t>& text)const;
+		template RegexMatch_<char32_t>::Ref		RegexBase_::Match<char32_t>		(const ObjectString<char32_t>& text)const;
+		template bool							RegexBase_::TestHead<char32_t>	(const ObjectString<char32_t>& text)const;
+		template bool							RegexBase_::Test<char32_t>		(const ObjectString<char32_t>& text)const;
+		template void							RegexBase_::Search<char32_t>	(const ObjectString<char32_t>& text, RegexMatch_<char32_t>::List& matches)const;
+		template void							RegexBase_::Split<char32_t>		(const ObjectString<char32_t>& text, bool keepEmptyMatch, RegexMatch_<char32_t>::List& matches)const;
+		template void							RegexBase_::Cut<char32_t>		(const ObjectString<char32_t>& text, bool keepEmptyMatch, RegexMatch_<char32_t>::List& matches)const;
+
+		template class Regex_<wchar_t>;
+		template class Regex_<char8_t>;
+		template class Regex_<char16_t>;
+		template class Regex_<char32_t>;
+
+		template class RegexTokens_<wchar_t>;
+		template class RegexTokens_<char8_t>;
+		template class RegexTokens_<char16_t>;
+		template class RegexTokens_<char32_t>;
+
+		template class RegexLexerWalker_<wchar_t>;
+		template class RegexLexerWalker_<char8_t>;
+		template class RegexLexerWalker_<char16_t>;
+		template class RegexLexerWalker_<char32_t>;
+
+		template class RegexLexerColorizer_<wchar_t>;
+		template class RegexLexerColorizer_<char8_t>;
+		template class RegexLexerColorizer_<char16_t>;
+		template class RegexLexerColorizer_<char32_t>;
+
+		template RegexTokens_<wchar_t>				RegexLexerBase_::Parse		(const ObjectString<wchar_t>& code, RegexProc_<wchar_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<wchar_t>			RegexLexerBase_::Walk		()const;
+		template RegexLexerColorizer_<wchar_t>		RegexLexerBase_::Colorize	(RegexProc_<wchar_t> _proc)const;
+
+		template RegexTokens_<char8_t>				RegexLexerBase_::Parse		(const ObjectString<char8_t>& code, RegexProc_<char8_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<char8_t>			RegexLexerBase_::Walk		()const;
+		template RegexLexerColorizer_<char8_t>		RegexLexerBase_::Colorize	(RegexProc_<char8_t> _proc)const;
+
+		template RegexTokens_<char16_t>				RegexLexerBase_::Parse		(const ObjectString<char16_t>& code, RegexProc_<char16_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<char16_t>		RegexLexerBase_::Walk		()const;
+		template RegexLexerColorizer_<char16_t>		RegexLexerBase_::Colorize	(RegexProc_<char16_t> _proc)const;
+
+		template RegexTokens_<char32_t>				RegexLexerBase_::Parse		(const ObjectString<char32_t>& code, RegexProc_<char32_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<char32_t>		RegexLexerBase_::Walk		()const;
+		template RegexLexerColorizer_<char32_t>		RegexLexerBase_::Colorize	(RegexProc_<char32_t> _proc)const;
+
+		template class RegexLexer_<wchar_t>;
+		template class RegexLexer_<char8_t>;
+		template class RegexLexer_<char16_t>;
+		template class RegexLexer_<char32_t>;
 	}
 }
 
@@ -1039,51 +1155,52 @@ PureInterpretor
 
 		PureInterpretor::PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets)
 			:transition(0)
-			,finalState(0)
-			,relatedFinalState(0)
+			, finalState(0)
+			, relatedFinalState(0)
 		{
-			stateCount=dfa->states.Count();
-			charSetCount=subsets.Count()+1;
-			startState=dfa->states.IndexOf(dfa->startState);
+			stateCount = dfa->states.Count();
+			charSetCount = subsets.Count() + 1;
+			startState = dfa->states.IndexOf(dfa->startState);
 
 			// Map char to input index (equivalent char class)
-			for(vint i=0;i<SupportedCharCount;i++)
+			for (vint i = 0; i < SupportedCharCount; i++)
 			{
-				charMap[i]=charSetCount-1;
+				charMap[i] = charSetCount - 1;
 			}
-			for(vint i=0;i<subsets.Count();i++)
+			for (vint i = 0; i < subsets.Count(); i++)
 			{
-				CharRange range=subsets[i];
-				for(vint j=range.begin;j<=range.end;j++)
+				CharRange range = subsets[i];
+				for (char32_t j = range.begin; j <= range.end; j++)
 				{
-					charMap[j]=i;
+					if (j > MaxChar32) break;
+					charMap[j] = i;
 				}
 			}
-			
+
 			// Create transitions from DFA, using input index to represent input char
-			transition=new vint*[stateCount];
-			for(vint i=0;i<stateCount;i++)
+			transition = new vint * [stateCount];
+			for (vint i = 0; i < stateCount; i++)
 			{
-				transition[i]=new vint[charSetCount];
-				for(vint j=0;j<charSetCount;j++)
+				transition[i] = new vint[charSetCount];
+				for (vint j = 0; j < charSetCount; j++)
 				{
-					transition[i][j]=-1;
+					transition[i][j] = -1;
 				}
 
-				State* state=dfa->states[i].Obj();
-				for(vint j=0;j<state->transitions.Count();j++)
+				State* state = dfa->states[i].Obj();
+				for (vint j = 0; j < state->transitions.Count(); j++)
 				{
-					Transition* dfaTransition=state->transitions[j];
-					switch(dfaTransition->type)
+					Transition* dfaTransition = state->transitions[j];
+					switch (dfaTransition->type)
 					{
 					case Transition::Chars:
 						{
-							vint index=subsets.IndexOf(dfaTransition->range);
-							if(index==-1)
+							vint index = subsets.IndexOf(dfaTransition->range);
+							if (index == -1)
 							{
 								CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#Specified chars don't appear in the normalized char ranges.");
 							}
-							transition[i][index]=dfa->states.IndexOf(dfaTransition->target);
+							transition[i][index] = dfa->states.IndexOf(dfaTransition->target);
 						}
 						break;
 					default:
@@ -1093,59 +1210,63 @@ PureInterpretor
 			}
 
 			// Mark final states
-			finalState=new bool[stateCount];
-			for(vint i=0;i<stateCount;i++)
+			finalState = new bool[stateCount];
+			for (vint i = 0; i < stateCount; i++)
 			{
-				finalState[i]=dfa->states[i]->finalState;
+				finalState[i] = dfa->states[i]->finalState;
 			}
 		}
 
 		PureInterpretor::~PureInterpretor()
 		{
-			if(relatedFinalState) delete[] relatedFinalState;
+			if (relatedFinalState) delete[] relatedFinalState;
 			delete[] finalState;
-			for(vint i=0;i<stateCount;i++)
+			for (vint i = 0; i < stateCount; i++)
 			{
 				delete[] transition[i];
 			}
 			delete[] transition;
 		}
 
-		bool PureInterpretor::MatchHead(const wchar_t* input, const wchar_t* start, PureResult& result)
+		template<typename TChar>
+		bool PureInterpretor::MatchHead(const TChar* input, const TChar* start, PureResult& result)
 		{
-			result.start=input-start;
-			result.length=-1;
-			result.finalState=-1;
-			result.terminateState=-1;
+			CharReader<TChar> reader(input);
+			vint currentState = startState;
+			vint terminateState = -1;
+			vint terminateLength = -1;
 
-			vint currentState=startState;
-			vint terminateState=-1;
-			vint terminateLength=-1;
-			const wchar_t* read=input;
-			while(currentState!=-1)
+			result.start = input - start;
+			result.length = -1;
+			result.finalState = -1;
+			result.terminateState = -1;
+
+			while (currentState != -1)
 			{
-				terminateState=currentState;
-				terminateLength=read-input;
-				if(finalState[currentState])
+				auto c = reader.Read();
+
+				terminateState = currentState;
+				terminateLength = reader.Index();
+				if (finalState[currentState])
 				{
-					result.length=terminateLength;
-					result.finalState=currentState;
+					result.length = terminateLength;
+					result.finalState = currentState;
 				}
-				if(!*read)break;
-#ifdef VCZH_GCC
-				if(*read>=SupportedCharCount)break;
-#endif
-				vint charIndex=charMap[*read++];
-				currentState=transition[currentState][charIndex];
+
+				if (!c) break;
+				if (c >= SupportedCharCount) break;
+
+				vint charIndex = charMap[c];
+				currentState = transition[currentState][charIndex];
 			}
 
-			if(result.finalState==-1)
+			if (result.finalState == -1)
 			{
-				if(terminateLength>0)
+				if (terminateLength > 0)
 				{
-					result.terminateState=terminateState;
+					result.terminateState = terminateState;
 				}
-				result.length=terminateLength;
+				result.length = terminateLength;
 				return false;
 			}
 			else
@@ -1154,16 +1275,16 @@ PureInterpretor
 			}
 		}
 
-		bool PureInterpretor::Match(const wchar_t* input, const wchar_t* start, PureResult& result)
+		template<typename TChar>
+		bool PureInterpretor::Match(const TChar* input, const TChar* start, PureResult& result)
 		{
-			const wchar_t* read=input;
-			while(*read)
+			CharReader<TChar> reader(input);
+			while (reader.Read())
 			{
-				if(MatchHead(read, start, result))
+				if (MatchHead(reader.Reading(), start, result))
 				{
 					return true;
 				}
-				read++;
 			}
 			return false;
 		}
@@ -1173,12 +1294,12 @@ PureInterpretor
 			return startState;
 		}
 
-		vint PureInterpretor::Transit(wchar_t input, vint state)
+		vint PureInterpretor::Transit(char32_t input, vint state)
 		{
-			if(0<=state && state<stateCount)
+			if (0 <= state && state < stateCount && 0 <= input && input <= MaxChar32)
 			{
-				vint charIndex=charMap[input];
-				vint nextState=transition[state][charIndex];
+				vint charIndex = charMap[input];
+				vint nextState = transition[state][charIndex];
 				return nextState;
 			}
 			else
@@ -1189,15 +1310,15 @@ PureInterpretor
 
 		bool PureInterpretor::IsFinalState(vint state)
 		{
-			return 0<=state && state<stateCount && finalState[state];
+			return 0 <= state && state < stateCount&& finalState[state];
 		}
 
 		bool PureInterpretor::IsDeadState(vint state)
 		{
-			if(state==-1) return true;
-			for(vint i=0;i<charSetCount;i++)
+			if (state == -1) return true;
+			for (vint i = 0; i < charSetCount; i++)
 			{
-				if(transition[state][i]!=-1)
+				if (transition[state][i] != -1)
 				{
 					return false;
 				}
@@ -1207,41 +1328,41 @@ PureInterpretor
 
 		void PureInterpretor::PrepareForRelatedFinalStateTable()
 		{
-			if(!relatedFinalState)
+			if (!relatedFinalState)
 			{
-				relatedFinalState=new vint[stateCount];
-				for(vint i=0;i<stateCount;i++)
+				relatedFinalState = new vint[stateCount];
+				for (vint i = 0; i < stateCount; i++)
 				{
-					relatedFinalState[i]=finalState[i]?i:-1;
+					relatedFinalState[i] = finalState[i] ? i : -1;
 				}
-				while(true)
+				while (true)
 				{
-					vint modifyCount=0;
-					for(vint i=0;i<stateCount;i++)
+					vint modifyCount = 0;
+					for (vint i = 0; i < stateCount; i++)
 					{
-						if(relatedFinalState[i]==-1)
+						if (relatedFinalState[i] == -1)
 						{
-							vint state=-1;
-							for(vint j=0;j<charSetCount;j++)
+							vint state = -1;
+							for (vint j = 0; j < charSetCount; j++)
 							{
-								vint nextState=transition[i][j];
-								if(nextState!=-1)
+								vint nextState = transition[i][j];
+								if (nextState != -1)
 								{
-									state=relatedFinalState[nextState];
-									if(state!=-1)
+									state = relatedFinalState[nextState];
+									if (state != -1)
 									{
 										break;
 									}
 								}
 							}
-							if(state!=-1)
+							if (state != -1)
 							{
-								relatedFinalState[i]=state;
+								relatedFinalState[i] = state;
 								modifyCount++;
 							}
 						}
 					}
-					if(modifyCount==0)
+					if (modifyCount == 0)
 					{
 						break;
 					}
@@ -1251,8 +1372,18 @@ PureInterpretor
 
 		vint PureInterpretor::GetRelatedFinalState(vint state)
 		{
-			return relatedFinalState?relatedFinalState[state]:-1;
+			return relatedFinalState ? relatedFinalState[state] : -1;
 		}
+
+		template bool			PureInterpretor::MatchHead<wchar_t>(const wchar_t* input, const wchar_t* start, PureResult& result);
+		template bool			PureInterpretor::MatchHead<char8_t>(const char8_t* input, const char8_t* start, PureResult& result);
+		template bool			PureInterpretor::MatchHead<char16_t>(const char16_t* input, const char16_t* start, PureResult& result);
+		template bool			PureInterpretor::MatchHead<char32_t>(const char32_t* input, const char32_t* start, PureResult& result);
+
+		template bool			PureInterpretor::Match<wchar_t>(const wchar_t* input, const wchar_t* start, PureResult& result);
+		template bool			PureInterpretor::Match<char8_t>(const char8_t* input, const char8_t* start, PureResult& result);
+		template bool			PureInterpretor::Match<char16_t>(const char16_t* input, const char16_t* start, PureResult& result);
+		template bool			PureInterpretor::Match<char32_t>(const char32_t* input, const char32_t* start, PureResult& result);
 	}
 }
 
@@ -1274,49 +1405,78 @@ namespace vl
 Data Structures for Backtracking
 ***********************************************************************/
 
+		enum class StateStoreType
+		{
+			Positive,
+			Negative,
+			Other
+		};
+
+		template<typename TChar>
 		class StateSaver
 		{
 		public:
-			enum StateStoreType
-			{
-				Positive,
-				Negative,
-				Other
-			};
 
-			const wchar_t*			reading;					// Current reading position
-			State*					currentState;				// Current state
-			vint					minTransition;				// The first transition to backtrack
-			vint					captureCount;				// Available capture count			(the list size may larger than this)
-			vint					stateSaverCount;			// Available saver count			(the list size may larger than this)
-			vint					extensionSaverAvailable;	// Available extension saver count	(the list size may larger than this)
-			vint					extensionSaverCount;		// Available extension saver count	(during executing)
-			StateStoreType			storeType;					// Reason to keep this record
+			CharReader<TChar>		reader;										// Current reading position
+			char32_t				ch;											// Current character
+			State*					currentState;								// Current state
+			vint					minTransition = 0;							// The first transition to backtrack
+			vint					captureCount = 0;							// Available capture count			(the list size may larger than this)
+			vint					stateSaverCount = 0;						// Available saver count			(the list size may larger than this)
+			vint					extensionSaverAvailable = -1;				// Available extension saver count	(the list size may larger than this)
+			vint					extensionSaverCount = 0;					// Available extension saver count	(during executing)
+			StateStoreType			storeType = StateStoreType::Other;			// Reason to keep this record
+
+			StateSaver(const TChar* input, State* _currentState)
+				: reader(input)
+				, currentState(_currentState)
+			{
+				ch = reader.Read();
+			}
+
+			StateSaver(const StateSaver&) = default;
+			StateSaver& operator=(const StateSaver&) = default;
 
 			bool operator==(const StateSaver& saver)const
 			{
-				return
-					reading == saver.reading &&
-					currentState == saver.currentState &&
-					minTransition == saver.minTransition &&
-					captureCount == saver.captureCount;
+				CHECK_FAIL(L"This function is only created to satisfy List<T>.");
+			}
+
+			void RestoreReaderTo(StateSaver<TChar>& saver)
+			{
+				saver.reader = reader;
+				saver.ch = ch;
 			}
 		};
 
+		template<typename TChar>
 		class ExtensionSaver
 		{
 		public:
-			vint					previous;					// Previous extension saver index
-			vint					captureListIndex;			// Where to write the captured text
-			Transition*				transition;					// The extension begin transition (Capture, Positive, Negative)
-			const wchar_t*			reading;					// The reading position
+			CharReader<TChar>		reader;										// The reading position
+			char32_t				ch;											// Current character
+			vint					previous;									// Previous extension saver index
+			vint					captureListIndex;							// Where to write the captured text
+			Transition*				transition;									// The extension begin transition (Capture, Positive, Negative)
+
+			ExtensionSaver(const StateSaver<TChar>& saver)
+				: reader(saver.reader)
+				, ch(saver.ch)
+			{
+			}
+
+			ExtensionSaver(const ExtensionSaver&) = default;
+			ExtensionSaver& operator=(const ExtensionSaver&) = default;
 
 			bool operator==(const ExtensionSaver& saver)const
 			{
-				return
-					captureListIndex == saver.captureListIndex &&
-					transition == saver.transition &&
-					reading == saver.reading;
+				CHECK_FAIL(L"This function is only created to satisfy List<T>.");
+			}
+
+			void RestoreReaderTo(StateSaver<TChar>& saver)
+			{
+				saver.reader = reader;
+				saver.ch = ch;
 			}
 		};
 	}
@@ -1325,38 +1485,40 @@ Data Structures for Backtracking
 	{
 		using namespace collections;
 
-		void Push(List<ExtensionSaver>& elements, vint& available, vint& count, const ExtensionSaver& element)
+		template<typename TChar>
+		void Push(List<ExtensionSaver<TChar>>& elements, vint& available, vint& count, const ExtensionSaver<TChar>& element)
 		{
-			if(elements.Count()==count)
+			if (elements.Count() == count)
 			{
 				elements.Add(element);
 			}
 			else
 			{
-				elements[count]=element;
+				elements[count] = element;
 			}
-			ExtensionSaver& current=elements[count];
-			current.previous=available;
-			available=count++;
+			auto& current = elements[count];
+			current.previous = available;
+			available = count++;
 		}
 
-		ExtensionSaver Pop(List<ExtensionSaver>& elements, vint& available, vint& count)
+		template<typename TChar>
+		ExtensionSaver<TChar> Pop(List<ExtensionSaver<TChar>>& elements, vint& available, vint& count)
 		{
-			ExtensionSaver& current=elements[available];
-			available=current.previous;
+			auto& current = elements[available];
+			available = current.previous;
 			return current;
 		}
 
 		template<typename T, typename K>
 		void PushNonSaver(List<T, K>& elements, vint& count, const T& element)
 		{
-			if(elements.Count()==count)
+			if (elements.Count() == count)
 			{
 				elements.Add(element);
 			}
 			else
 			{
-				elements[count]=element;
+				elements[count] = element;
 			}
 			count++;
 		}
@@ -1376,7 +1538,7 @@ CaptureRecord
 
 		bool CaptureRecord::operator==(const CaptureRecord& record)const
 		{
-			return capture==record.capture && start==record.start && length==record.length;
+			return capture == record.capture && start == record.start && length == record.length;
 		}
 
 /***********************************************************************
@@ -1386,32 +1548,32 @@ RichInterpretor
 		RichInterpretor::RichInterpretor(Automaton::Ref _dfa)
 			:dfa(_dfa)
 		{
-			datas=new UserData[dfa->states.Count()];
+			datas = new UserData[dfa->states.Count()];
 
-			for(vint i=0;i<dfa->states.Count();i++)
+			for (vint i = 0; i < dfa->states.Count(); i++)
 			{
-				State* state=dfa->states[i].Obj();
-				vint charEdges=0;
-				vint nonCharEdges=0;
-				bool mustSave=false;
-				for(vint j=0;j<state->transitions.Count();j++)
+				State* state = dfa->states[i].Obj();
+				vint charEdges = 0;
+				vint nonCharEdges = 0;
+				bool mustSave = false;
+				for (vint j = 0; j < state->transitions.Count(); j++)
 				{
-					if(state->transitions[j]->type==Transition::Chars)
+					if (state->transitions[j]->type == Transition::Chars)
 					{
 						charEdges++;
 					}
 					else
 					{
-						if(state->transitions[j]->type==Transition::Negative ||
-						   state->transitions[j]->type==Transition::Positive)
+						if (state->transitions[j]->type == Transition::Negative ||
+							state->transitions[j]->type == Transition::Positive)
 						{
-							mustSave=true;
+							mustSave = true;
 						}
 						nonCharEdges++;
 					}
 				}
-				datas[i].NeedKeepState=mustSave || nonCharEdges>1 || (nonCharEdges!=0 && charEdges!=0);
-				state->userData=&datas[i];
+				datas[i].NeedKeepState = mustSave || nonCharEdges > 1 || (nonCharEdges != 0 && charEdges != 0);
+				state->userData = &datas[i];
 			}
 		}
 
@@ -1420,25 +1582,18 @@ RichInterpretor
 			delete[] datas;
 		}
 
-		bool RichInterpretor::MatchHead(const wchar_t* input, const wchar_t* start, RichResult& result)
+		template<typename TChar>
+		bool RichInterpretor::MatchHead(const TChar* input, const TChar* start, RichResult& result)
 		{
-			List<StateSaver> stateSavers;
-			List<ExtensionSaver> extensionSavers;
+			List<StateSaver<TChar>> stateSavers;
+			List<ExtensionSaver<TChar>> extensionSavers;
 
-			StateSaver currentState;
-			currentState.captureCount=0;
-			currentState.currentState=dfa->startState;
-			currentState.extensionSaverAvailable=-1;
-			currentState.extensionSaverCount=0;
-			currentState.minTransition=0;
-			currentState.reading=input;
-			currentState.stateSaverCount=0;
-			currentState.storeType=StateSaver::Other;
+			StateSaver<TChar> currentState(input, dfa->startState);
 
 			while (!currentState.currentState->finalState)
 			{
 				bool found = false; // true means at least one transition matches the input
-				StateSaver oldState = currentState;
+				StateSaver<TChar> oldState = currentState;
 				// Iterate through all transitions from the current state
 				for (vint i = currentState.minTransition; i < currentState.currentState->transitions.Count(); i++)
 				{
@@ -1450,24 +1605,24 @@ RichInterpretor
 							// match the input if the current character fall into the range
 							CharRange range = transition->range;
 							found =
-								range.begin <= *currentState.reading &&
-								range.end >= *currentState.reading;
+								range.begin <= currentState.ch &&
+								range.end >= currentState.ch;
 							if (found)
 							{
-								currentState.reading++;
+								currentState.ch = currentState.reader.Read();
 							}
 						}
 						break;
 					case Transition::BeginString:
 						{
 							// match the input if this is the first character, and it is not consumed
-							found = currentState.reading == start;
+							found = currentState.reader.Index() == 0 && input == start;
 						}
 						break;
 					case Transition::EndString:
 						{
 							// match the input if this is after the last character, and it is not consumed
-							found = *currentState.reading == L'\0';
+							found = currentState.ch == 0;
 						}
 						break;
 					case Transition::Nop:
@@ -1479,16 +1634,15 @@ RichInterpretor
 					case Transition::Capture:
 						{
 							// Push the capture information
-							ExtensionSaver saver;
+							ExtensionSaver<TChar> saver(currentState);
 							saver.captureListIndex = currentState.captureCount;
-							saver.reading = currentState.reading;
 							saver.transition = transition;
 							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
 
 							// Push the capture record, and it will be written if the input matches the regex
 							CaptureRecord capture;
 							capture.capture = transition->capture;
-							capture.start = currentState.reading - start;
+							capture.start = currentState.reader.Index() + (input - start);
 							capture.length = -1;
 							PushNonSaver(result.captures, currentState.captureCount, capture);
 
@@ -1508,10 +1662,15 @@ RichInterpretor
 									if (capture.length != -1 && (transition->index == -1 || transition->index == index))
 									{
 										// If the captured text matched
-										if (wcsncmp(start + capture.start, currentState.reading, capture.length) == 0)
+										if (memcmp(start + capture.start, input + currentState.reader.Index(), sizeof(TChar) * capture.length) == 0)
 										{
 											// Consume so much input
-											currentState.reading += capture.length;
+											vint targetIndex = currentState.reader.Index() + capture.length;
+											while (currentState.reader.Index() < targetIndex)
+											{
+												currentState.ch = currentState.reader.Read();
+											}
+											CHECK_ERROR(currentState.reader.Index() == targetIndex, L"vl::regex_internal::RichInterpretor::MatchHead<TChar>(const TChar*, const TChar*, RichResult&)#Input code could be an incorrect unicode sequence.");
 											found = true;
 											break;
 										}
@@ -1533,14 +1692,13 @@ RichInterpretor
 					case Transition::Positive:
 						{
 							// Push the positive lookahead information
-							ExtensionSaver saver;
+							ExtensionSaver<TChar> saver(currentState);
 							saver.captureListIndex = -1;
-							saver.reading = currentState.reading;
 							saver.transition = transition;
 							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
 
 							// Set found = true so that PushNonSaver(oldState) happens later
-							oldState.storeType = StateSaver::Positive;
+							oldState.storeType = StateStoreType::Positive;
 							found = true;
 						}
 						break;
@@ -1548,14 +1706,13 @@ RichInterpretor
 						{
 							// Push the positive lookahead information
 
-							ExtensionSaver saver;
+							ExtensionSaver<TChar> saver(currentState);
 							saver.captureListIndex = -1;
-							saver.reading = currentState.reading;
 							saver.transition = transition;
 							Push(extensionSavers, currentState.extensionSaverAvailable, currentState.extensionSaverCount, saver);
 
 							// Set found = true so that PushNonSaver(oldState) happens later
-							oldState.storeType = StateSaver::Negative;
+							oldState.storeType = StateStoreType::Negative;
 							found = true;
 						}
 						break;
@@ -1574,7 +1731,7 @@ RichInterpretor
 								{
 									// Write the captured text
 									CaptureRecord& capture = result.captures[extensionSaver.captureListIndex];
-									capture.length = (currentState.reading - start) - capture.start;
+									capture.length = currentState.reader.Index() + (input - start) - capture.start;
 									found = true;
 								}
 								break;
@@ -1582,13 +1739,13 @@ RichInterpretor
 								// Find the last positive lookahead state saver
 								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
 								{
-									StateSaver& stateSaver = stateSavers[j];
-									if (stateSaver.storeType == StateSaver::Positive)
+									auto& stateSaver = stateSavers[j];
+									if (stateSaver.storeType == StateStoreType::Positive)
 									{
 										// restore the parsing state just before matching the positive lookahead, since positive lookahead doesn't consume input
-										oldState.reading = stateSaver.reading;
+										stateSaver.RestoreReaderTo(oldState);
 										oldState.stateSaverCount = j;
-										currentState.reading = stateSaver.reading;
+										stateSaver.RestoreReaderTo(currentState);
 										currentState.stateSaverCount = j;
 										break;
 									}
@@ -1599,14 +1756,14 @@ RichInterpretor
 								// Find the last negative lookahead state saver
 								for (vint j = currentState.stateSaverCount - 1; j >= 0; j--)
 								{
-									StateSaver& stateSaver = stateSavers[j];
-									if (stateSaver.storeType == StateSaver::Negative)
+									auto& stateSaver = stateSavers[j];
+									if (stateSaver.storeType == StateStoreType::Negative)
 									{
 										// restore the parsing state just before matching the negative lookahead, since positive lookahead doesn't consume input
 										oldState = stateSaver;
-										oldState.storeType = StateSaver::Other;
+										oldState.storeType = StateStoreType::Other;
 										currentState = stateSaver;
-										currentState.storeType = StateSaver::Other;
+										currentState.storeType = StateStoreType::Other;
 										i = currentState.minTransition - 1;
 										break;
 									}
@@ -1618,7 +1775,7 @@ RichInterpretor
 						break;
 					default:;
 					}
-					
+
 					// Save the parsing state when necessary
 					if (found)
 					{
@@ -1656,7 +1813,7 @@ RichInterpretor
 									// Restore the state to the target of NegativeFail to let the parsing continue
 									currentState.currentState = transition->target;
 									currentState.minTransition = 0;
-									currentState.storeType = StateSaver::Other;
+									currentState.storeType = StateStoreType::Other;
 									break;
 								}
 							}
@@ -1673,7 +1830,7 @@ RichInterpretor
 			{
 				// Keep available captures if succeeded
 				result.start = input - start;
-				result.length = (currentState.reading - start) - result.start;
+				result.length = currentState.reader.Index();
 				for (vint i = result.captures.Count() - 1; i >= currentState.captureCount; i--)
 				{
 					result.captures.RemoveAt(i);
@@ -1688,24 +1845,34 @@ RichInterpretor
 			}
 		}
 
-		bool RichInterpretor::Match(const wchar_t* input, const wchar_t* start, RichResult& result)
+		template<typename TChar>
+		bool RichInterpretor::Match(const TChar* input, const TChar* start, RichResult& result)
 		{
-			const wchar_t* read=input;
-			while(*read)
+			CharReader<TChar> reader(input);
+			while (reader.Read())
 			{
-				if(MatchHead(read, start, result))
+				if (MatchHead(reader.Reading(), start, result))
 				{
 					return true;
 				}
-				read++;
 			}
 			return false;
 		}
 
-		const List<WString>& RichInterpretor::CaptureNames()
+		const List<U32String>& RichInterpretor::CaptureNames()
 		{
 			return dfa->captureNames;
 		}
+
+		template bool			RichInterpretor::MatchHead<wchar_t>(const wchar_t* input, const wchar_t* start, RichResult& result);
+		template bool			RichInterpretor::MatchHead<char8_t>(const char8_t* input, const char8_t* start, RichResult& result);
+		template bool			RichInterpretor::MatchHead<char16_t>(const char16_t* input, const char16_t* start, RichResult& result);
+		template bool			RichInterpretor::MatchHead<char32_t>(const char32_t* input, const char32_t* start, RichResult& result);
+								
+		template bool			RichInterpretor::Match<wchar_t>(const wchar_t* input, const wchar_t* start, RichResult& result);
+		template bool			RichInterpretor::Match<char8_t>(const char8_t* input, const char8_t* start, RichResult& result);
+		template bool			RichInterpretor::Match<char16_t>(const char16_t* input, const char16_t* start, RichResult& result);
+		template bool			RichInterpretor::Match<char32_t>(const char32_t* input, const char32_t* start, RichResult& result);
 	}
 }
 
@@ -1724,449 +1891,6 @@ namespace vl
 	{
 
 /***********************************************************************
-IsEqualAlgorithm
-***********************************************************************/
-
-		class IsEqualAlgorithm : public RegexExpressionAlgorithm<bool, Expression*>
-		{
-		public:
-			bool Apply(CharSetExpression* expression, Expression* target)
-			{
-				CharSetExpression* expected=dynamic_cast<CharSetExpression*>(target);
-				if(expected)
-				{
-					if(expression->reverse!=expected->reverse)return false;
-					if(expression->ranges.Count()!=expected->ranges.Count())return false;
-					for(vint i=0;i<expression->ranges.Count();i++)
-					{
-						if(expression->ranges[i]!=expected->ranges[i])return false;
-					}
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(LoopExpression* expression, Expression* target)
-			{
-				LoopExpression* expected=dynamic_cast<LoopExpression*>(target);
-				if(expected)
-				{
-					if(expression->min!=expected->min)return false;
-					if(expression->max!=expected->max)return false;
-					if(expression->preferLong!=expected->preferLong)return false;
-					if(!Invoke(expression->expression, expected->expression.Obj()))return false;
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(SequenceExpression* expression, Expression* target)
-			{
-				SequenceExpression* expected=dynamic_cast<SequenceExpression*>(target);
-				if(expected)
-				{
-					if(!Invoke(expression->left, expected->left.Obj()))return false;
-					if(!Invoke(expression->right, expected->right.Obj()))return false;
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(AlternateExpression* expression, Expression* target)
-			{
-				AlternateExpression* expected=dynamic_cast<AlternateExpression*>(target);
-				if(expected)
-				{
-					if(!Invoke(expression->left, expected->left.Obj()))return false;
-					if(!Invoke(expression->right, expected->right.Obj()))return false;
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(BeginExpression* expression, Expression* target)
-			{
-				BeginExpression* expected=dynamic_cast<BeginExpression*>(target);
-				if(expected)
-				{
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(EndExpression* expression, Expression* target)
-			{
-				EndExpression* expected=dynamic_cast<EndExpression*>(target);
-				if(expected)
-				{
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(CaptureExpression* expression, Expression* target)
-			{
-				CaptureExpression* expected=dynamic_cast<CaptureExpression*>(target);
-				if(expected)
-				{
-					if(expression->name!=expected->name)return false;
-					if(!Invoke(expression->expression, expected->expression.Obj()))return false;
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(MatchExpression* expression, Expression* target)
-			{
-				MatchExpression* expected=dynamic_cast<MatchExpression*>(target);
-				if(expected)
-				{
-					if(expression->name!=expected->name)return false;
-					if(expression->index!=expected->index)return false;
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(PositiveExpression* expression, Expression* target)
-			{
-				PositiveExpression* expected=dynamic_cast<PositiveExpression*>(target);
-				if(expected)
-				{
-					if(!Invoke(expression->expression, expected->expression.Obj()))return false;
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(NegativeExpression* expression, Expression* target)
-			{
-				NegativeExpression* expected=dynamic_cast<NegativeExpression*>(target);
-				if(expected)
-				{
-					if(!Invoke(expression->expression, expected->expression.Obj()))return false;
-					return true;
-				}
-				return false;
-			}
-
-			bool Apply(UsingExpression* expression, Expression* target)
-			{
-				UsingExpression* expected=dynamic_cast<UsingExpression*>(target);
-				if(expected)
-				{
-					if(expression->name!=expected->name)return false;
-					return true;
-				}
-				return false;
-			}
-		};
-
-/***********************************************************************
-HasNoExtensionAlgorithm
-***********************************************************************/
-
-		class HasNoExtensionAlgorithm : public RegexExpressionAlgorithm<bool, void*>
-		{
-		public:
-			bool Apply(CharSetExpression* expression, void* target)
-			{
-				return true;
-			}
-
-			bool Apply(LoopExpression* expression, void* target)
-			{
-				return expression->preferLong && Invoke(expression->expression, 0);
-			}
-
-			bool Apply(SequenceExpression* expression, void* target)
-			{
-				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
-			}
-
-			bool Apply(AlternateExpression* expression, void* target)
-			{
-				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
-			}
-
-			bool Apply(BeginExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(EndExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(CaptureExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(MatchExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(PositiveExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(NegativeExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(UsingExpression* expression, void* target)
-			{
-				return false;
-			}
-		};
-
-/***********************************************************************
-CanTreatAsPureAlgorithm
-***********************************************************************/
-
-		class CanTreatAsPureAlgorithm : public RegexExpressionAlgorithm<bool, void*>
-		{
-		public:
-			bool Apply(CharSetExpression* expression, void* target)
-			{
-				return true;
-			}
-
-			bool Apply(LoopExpression* expression, void* target)
-			{
-				return expression->preferLong && Invoke(expression->expression, 0);
-			}
-
-			bool Apply(SequenceExpression* expression, void* target)
-			{
-				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
-			}
-
-			bool Apply(AlternateExpression* expression, void* target)
-			{
-				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
-			}
-
-			bool Apply(BeginExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(EndExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(CaptureExpression* expression, void* target)
-			{
-				return Invoke(expression->expression, 0);
-			}
-
-			bool Apply(MatchExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(PositiveExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(NegativeExpression* expression, void* target)
-			{
-				return false;
-			}
-
-			bool Apply(UsingExpression* expression, void* target)
-			{
-				return false;
-			}
-		};
-
-/***********************************************************************
-CharSetNormalizationAlgorithm
-***********************************************************************/
-
-		class NormalizedCharSet
-		{
-		public:
-			CharRange::List			ranges;
-		};
-
-		class CharSetAlgorithm : public RegexExpressionAlgorithm<void, NormalizedCharSet*>
-		{
-		public:
-			virtual void Process(CharSetExpression* expression, NormalizedCharSet* target, CharRange range)=0;
-
-			void Loop(CharSetExpression* expression, CharRange::List& ranges, NormalizedCharSet* target)
-			{
-				if(expression->reverse)
-				{
-					wchar_t begin=1;
-					for(vint i=0;i<ranges.Count();i++)
-					{
-						CharRange range=ranges[i];
-						if(range.begin>begin)
-						{
-							Process(expression, target, CharRange(begin, range.begin-1));
-						}
-						begin=range.end+1;
-					}
-					if(begin<=65535)
-					{
-						Process(expression, target, CharRange(begin, 65535));
-					}
-				}
-				else
-				{
-					for(vint i=0;i<ranges.Count();i++)
-					{
-						Process(expression, target, ranges[i]);
-					}
-				}
-			}
-
-			void Apply(LoopExpression* expression, NormalizedCharSet* target)
-			{
-				Invoke(expression->expression, target);
-			}
-
-			void Apply(SequenceExpression* expression, NormalizedCharSet* target)
-			{
-				Invoke(expression->left, target);
-				Invoke(expression->right, target);
-			}
-
-			void Apply(AlternateExpression* expression, NormalizedCharSet* target)
-			{
-				Invoke(expression->left, target);
-				Invoke(expression->right, target);
-			}
-
-			void Apply(BeginExpression* expression, NormalizedCharSet* target)
-			{
-			}
-
-			void Apply(EndExpression* expression, NormalizedCharSet* target)
-			{
-			}
-
-			void Apply(CaptureExpression* expression, NormalizedCharSet* target)
-			{
-				Invoke(expression->expression, target);
-			}
-
-			void Apply(MatchExpression* expression, NormalizedCharSet* target)
-			{
-			}
-
-			void Apply(PositiveExpression* expression, NormalizedCharSet* target)
-			{
-				Invoke(expression->expression, target);
-			}
-
-			void Apply(NegativeExpression* expression, NormalizedCharSet* target)
-			{
-				Invoke(expression->expression, target);
-			}
-
-			void Apply(UsingExpression* expression, NormalizedCharSet* target)
-			{
-			}
-		};
-
-		class BuildNormalizedCharSetAlgorithm : public CharSetAlgorithm
-		{
-		public:
-			void Process(CharSetExpression* expression, NormalizedCharSet* target, CharRange range)
-			{
-				vint index=0;
-				while(index<target->ranges.Count())
-				{
-					CharRange current=target->ranges[index];
-					if(current<range || current>range)
-					{
-						index++;
-					}
-					else if(current.begin<range.begin)
-					{
-						// range   :    [    ?
-						// current : [       ]
-						target->ranges.RemoveAt(index);
-						target->ranges.Add(CharRange(current.begin, range.begin-1));
-						target->ranges.Add(CharRange(range.begin, current.end));
-						index++;
-					}
-					else if(current.begin>range.begin)
-					{
-						// range  :  [       ]
-						// current  :   [    ?
-						target->ranges.Add(CharRange(range.begin, current.begin-1));
-						range.begin=current.begin;
-					}
-					else if(current.end<range.end)
-					{
-						// range   : [       ]
-						// current : [    ]
-						range.begin=current.end+1;
-						index++;
-					}
-					else if(current.end>range.end)
-					{
-						// range   : [    ]
-						// current : [       ]
-						target->ranges.RemoveAt(index);
-						target->ranges.Add(range);
-						target->ranges.Add(CharRange(range.end+1, current.end));
-						return;
-					}
-					else
-					{
-						// range   : [       ]
-						// current : [       ]
-						return;
-					}
-				}
-				target->ranges.Add(range);
-			}
-
-			void Apply(CharSetExpression* expression, NormalizedCharSet* target)
-			{
-				Loop(expression, expression->ranges, target);
-			}
-		};
-
-		class SetNormalizedCharSetAlgorithm : public CharSetAlgorithm
-		{
-		public:
-			void Process(CharSetExpression* expression, NormalizedCharSet* target, CharRange range)
-			{
-				for(vint j=0;j<target->ranges.Count();j++)
-				{
-					CharRange targetRange=target->ranges[j];
-					if(range.begin<=targetRange.begin && targetRange.end<=range.end)
-					{
-						expression->ranges.Add(targetRange);
-					}
-				}
-			}
-
-			void Apply(CharSetExpression* expression, NormalizedCharSet* target)
-			{
-				CharRange::List source;
-				CopyFrom(source, expression->ranges);
-				expression->ranges.Clear();
-				Loop(expression, source, target);
-				expression->reverse=false;
-			}
-		};
-
-/***********************************************************************
 MergeAlgorithm
 ***********************************************************************/
 
@@ -2174,7 +1898,7 @@ MergeAlgorithm
 		{
 		public:
 			Expression::Map			definitions;
-			RegexExpression*		regex;
+			RegexExpression* regex;
 		};
 
 		class MergeAlgorithm : public RegexExpressionAlgorithm<Expression::Ref, MergeParameter*>
@@ -2182,35 +1906,35 @@ MergeAlgorithm
 		public:
 			Expression::Ref Apply(CharSetExpression* expression, MergeParameter* target)
 			{
-				Ptr<CharSetExpression> result=new CharSetExpression;
+				Ptr<CharSetExpression> result = new CharSetExpression;
 				CopyFrom(result->ranges, expression->ranges);
-				result->reverse=expression->reverse;
+				result->reverse = expression->reverse;
 				return result;
 			}
 
 			Expression::Ref Apply(LoopExpression* expression, MergeParameter* target)
 			{
-				Ptr<LoopExpression> result=new LoopExpression;
-				result->max=expression->max;
-				result->min=expression->min;
-				result->preferLong=expression->preferLong;
-				result->expression=Invoke(expression->expression, target);
+				Ptr<LoopExpression> result = new LoopExpression;
+				result->max = expression->max;
+				result->min = expression->min;
+				result->preferLong = expression->preferLong;
+				result->expression = Invoke(expression->expression, target);
 				return result;
 			}
 
 			Expression::Ref Apply(SequenceExpression* expression, MergeParameter* target)
 			{
-				Ptr<SequenceExpression> result=new SequenceExpression;
-				result->left=Invoke(expression->left, target);
-				result->right=Invoke(expression->right, target);
+				Ptr<SequenceExpression> result = new SequenceExpression;
+				result->left = Invoke(expression->left, target);
+				result->right = Invoke(expression->right, target);
 				return result;
 			}
 
 			Expression::Ref Apply(AlternateExpression* expression, MergeParameter* target)
 			{
-				Ptr<AlternateExpression> result=new AlternateExpression;
-				result->left=Invoke(expression->left, target);
-				result->right=Invoke(expression->right, target);
+				Ptr<AlternateExpression> result = new AlternateExpression;
+				result->left = Invoke(expression->left, target);
+				result->right = Invoke(expression->right, target);
 				return result;
 			}
 
@@ -2226,332 +1950,61 @@ MergeAlgorithm
 
 			Expression::Ref Apply(CaptureExpression* expression, MergeParameter* target)
 			{
-				Ptr<CaptureExpression> result=new CaptureExpression;
-				result->expression=Invoke(expression->expression, target);
-				result->name=expression->name;
+				Ptr<CaptureExpression> result = new CaptureExpression;
+				result->expression = Invoke(expression->expression, target);
+				result->name = expression->name;
 				return result;
 			}
 
 			Expression::Ref Apply(MatchExpression* expression, MergeParameter* target)
 			{
-				Ptr<MatchExpression> result=new MatchExpression;
-				result->name=expression->name;
-				result->index=expression->index;
+				Ptr<MatchExpression> result = new MatchExpression;
+				result->name = expression->name;
+				result->index = expression->index;
 				return result;
 			}
 
 			Expression::Ref Apply(PositiveExpression* expression, MergeParameter* target)
 			{
-				Ptr<PositiveExpression> result=new PositiveExpression;
-				result->expression=Invoke(expression->expression, target);
+				Ptr<PositiveExpression> result = new PositiveExpression;
+				result->expression = Invoke(expression->expression, target);
 				return result;
 			}
 
 			Expression::Ref Apply(NegativeExpression* expression, MergeParameter* target)
 			{
-				Ptr<NegativeExpression> result=new NegativeExpression;
-				result->expression=Invoke(expression->expression, target);
+				Ptr<NegativeExpression> result = new NegativeExpression;
+				result->expression = Invoke(expression->expression, target);
 				return result;
 			}
 
 			Expression::Ref Apply(UsingExpression* expression, MergeParameter* target)
 			{
-				if(target->definitions.Keys().Contains(expression->name))
+				if (target->definitions.Keys().Contains(expression->name))
 				{
-					Expression::Ref reference=target->definitions[expression->name];
-					if(reference)
+					Expression::Ref reference = target->definitions[expression->name];
+					if (reference)
 					{
 						return reference;
 					}
 					else
 					{
-						throw ArgumentException(L"Regular expression syntax error: Found reference loops in\""+expression->name+L"\".", L"vl::regex_internal::RegexExpression::Merge", L"");
+						throw ArgumentException(L"Regular expression syntax error: Found reference loops in\"" + u32tow(expression->name) + L"\".", L"vl::regex_internal::RegexExpression::Merge", L"");
 					}
 				}
-				else if(target->regex->definitions.Keys().Contains(expression->name))
+				else if (target->regex->definitions.Keys().Contains(expression->name))
 				{
 					target->definitions.Add(expression->name, 0);
-					Expression::Ref result=Invoke(target->regex->definitions[expression->name], target);
+					Expression::Ref result = Invoke(target->regex->definitions[expression->name], target);
 					target->definitions.Set(expression->name, result);
 					return result;
 				}
 				else
 				{
-					throw ArgumentException(L"Regular expression syntax error: Cannot find sub expression reference\""+expression->name+L"\".", L"vl::regex_internal::RegexExpression::Merge", L"");
+					throw ArgumentException(L"Regular expression syntax error: Cannot find sub expression reference\"" + u32tow(expression->name) + L"\".", L"vl::regex_internal::RegexExpression::Merge", L"");
 				}
 			}
 		};
-
-/***********************************************************************
-EpsilonNfaAlgorithm
-***********************************************************************/
-
-		class EpsilonNfaInfo
-		{
-		public:
-			Automaton::Ref		automaton;
-		};
-
-		class EpsilonNfa
-		{
-		public:
-			State*				start;
-			State*				end;
-
-			EpsilonNfa()
-			{
-				start=0;
-				end=0;
-			}
-		};
-
-		class EpsilonNfaAlgorithm : public RegexExpressionAlgorithm<EpsilonNfa, Automaton*>
-		{
-		public:
-			EpsilonNfa Connect(EpsilonNfa a, EpsilonNfa b, Automaton* target)
-			{
-				if(a.start)
-				{
-					target->NewEpsilon(a.end, b.start);
-					a.end=b.end;
-					return a;
-				}
-				else
-				{
-					return b;
-				}
-			}
-
-			EpsilonNfa Apply(CharSetExpression* expression, Automaton* target)
-			{
-				EpsilonNfa nfa;
-				nfa.start=target->NewState();
-				nfa.end=target->NewState();
-				for(vint i=0;i<expression->ranges.Count();i++)
-				{
-					target->NewChars(nfa.start, nfa.end, expression->ranges[i]);
-				}
-				return nfa;
-			}
-
-			EpsilonNfa Apply(LoopExpression* expression, Automaton* target)
-			{
-				EpsilonNfa head;
-				for(vint i=0;i<expression->min;i++)
-				{
-					EpsilonNfa body=Invoke(expression->expression, target);
-					head=Connect(head, body, target);
-				}
-				if(expression->max==-1)
-				{
-					EpsilonNfa body=Invoke(expression->expression, target);
-					if(!head.start)
-					{
-						head.start=head.end=target->NewState();
-					}
-					State* loopBegin=head.end;
-					State* loopEnd=target->NewState();
-					if(expression->preferLong)
-					{
-						target->NewEpsilon(loopBegin, body.start);
-						target->NewEpsilon(body.end, loopBegin);
-						target->NewNop(loopBegin, loopEnd);
-					}
-					else
-					{
-						target->NewNop(loopBegin, loopEnd);
-						target->NewEpsilon(loopBegin, body.start);
-						target->NewEpsilon(body.end, loopBegin);
-					}
-					head.end=loopEnd;
-				}
-				else if(expression->max>expression->min)
-				{
-					for(vint i=expression->min;i<expression->max;i++)
-					{
-						EpsilonNfa body=Invoke(expression->expression, target);
-						State* start=target->NewState();
-						State* end=target->NewState();
-						if(expression->preferLong)
-						{
-							target->NewEpsilon(start, body.start);
-							target->NewEpsilon(body.end, end);
-							target->NewNop(start, end);
-						}
-						else
-						{
-							target->NewNop(start, end);
-							target->NewEpsilon(start, body.start);
-							target->NewEpsilon(body.end, end);
-						}
-						body.start=start;
-						body.end=end;
-						head=Connect(head, body, target);
-					}
-				}
-				return head;
-			}
-
-			EpsilonNfa Apply(SequenceExpression* expression, Automaton* target)
-			{
-				EpsilonNfa a=Invoke(expression->left, target);
-				EpsilonNfa b=Invoke(expression->right, target);
-				return Connect(a, b, target);
-			}
-
-			EpsilonNfa Apply(AlternateExpression* expression, Automaton* target)
-			{
-				EpsilonNfa result;
-				result.start=target->NewState();
-				result.end=target->NewState();
-				EpsilonNfa a=Invoke(expression->left, target);
-				EpsilonNfa b=Invoke(expression->right, target);
-				target->NewEpsilon(result.start, a.start);
-				target->NewEpsilon(a.end, result.end);
-				target->NewEpsilon(result.start, b.start);
-				target->NewEpsilon(b.end, result.end);
-				return result;
-			}
-
-			EpsilonNfa Apply(BeginExpression* expression, Automaton* target)
-			{
-				EpsilonNfa result;
-				result.start=target->NewState();
-				result.end=target->NewState();
-				target->NewBeginString(result.start, result.end);
-				return result;
-			}
-
-			EpsilonNfa Apply(EndExpression* expression, Automaton* target)
-			{
-				EpsilonNfa result;
-				result.start=target->NewState();
-				result.end=target->NewState();
-				target->NewEndString(result.start, result.end);
-				return result;
-			}
-
-			EpsilonNfa Apply(CaptureExpression* expression, Automaton* target)
-			{
-				EpsilonNfa result;
-				result.start=target->NewState();
-				result.end=target->NewState();
-
-				vint capture=-1;
-				if(expression->name!=L"")
-				{
-					capture=target->captureNames.IndexOf(expression->name);
-					if(capture==-1)
-					{
-						capture=target->captureNames.Count();
-						target->captureNames.Add(expression->name);
-					}
-				}
-
-				EpsilonNfa body=Invoke(expression->expression, target);
-				target->NewCapture(result.start, body.start, capture);
-				target->NewEnd(body.end, result.end);
-				return result;
-			}
-
-			EpsilonNfa Apply(MatchExpression* expression, Automaton* target)
-			{
-				vint capture=-1;
-				if(expression->name!=L"")
-				{
-					capture=target->captureNames.IndexOf(expression->name);
-					if(capture==-1)
-					{
-						capture=target->captureNames.Count();
-						target->captureNames.Add(expression->name);
-					}
-				}
-				EpsilonNfa result;
-				result.start=target->NewState();
-				result.end=target->NewState();
-				target->NewMatch(result.start, result.end, capture, expression->index);
-				return result;
-			}
-
-			EpsilonNfa Apply(PositiveExpression* expression, Automaton* target)
-			{
-				EpsilonNfa result;
-				result.start=target->NewState();
-				result.end=target->NewState();
-				EpsilonNfa body=Invoke(expression->expression, target);
-				target->NewPositive(result.start, body.start);
-				target->NewEnd(body.end, result.end);
-				return result;
-			}
-
-			EpsilonNfa Apply(NegativeExpression* expression, Automaton* target)
-			{
-				EpsilonNfa result;
-				result.start=target->NewState();
-				result.end=target->NewState();
-				EpsilonNfa body=Invoke(expression->expression, target);
-				target->NewNegative(result.start, body.start);
-				target->NewEnd(body.end, result.end);
-				target->NewNegativeFail(result.start, result.end);
-				return result;
-			}
-
-			EpsilonNfa Apply(UsingExpression* expression, Automaton* target)
-			{
-				CHECK_FAIL(L"RegexExpression::GenerateEpsilonNfa()#UsingExpression cannot create state machine.");
-			}
-		};
-
-/***********************************************************************
-Expression
-***********************************************************************/
-
-		bool Expression::IsEqual(vl::regex_internal::Expression *expression)
-		{
-			return IsEqualAlgorithm().Invoke(this, expression);
-		}
-
-		bool Expression::HasNoExtension()
-		{
-			return HasNoExtensionAlgorithm().Invoke(this, 0);
-		}
-
-		bool Expression::CanTreatAsPure()
-		{
-			return CanTreatAsPureAlgorithm().Invoke(this, 0);
-		}
-
-		void Expression::NormalizeCharSet(CharRange::List& subsets)
-		{
-			NormalizedCharSet normalized;
-			BuildNormalizedCharSetAlgorithm().Invoke(this, &normalized);
-			SetNormalizedCharSetAlgorithm().Invoke(this, &normalized);
-			CopyFrom(subsets, normalized.ranges);
-		}
-
-		void Expression::CollectCharSet(CharRange::List& subsets)
-		{
-			NormalizedCharSet normalized;
-			CopyFrom(normalized.ranges, subsets);
-			BuildNormalizedCharSetAlgorithm().Invoke(this, &normalized);
-			CopyFrom(subsets, normalized.ranges);
-		}
-
-		void Expression::ApplyCharSet(CharRange::List& subsets)
-		{
-			NormalizedCharSet normalized;
-			CopyFrom(normalized.ranges, subsets);
-			SetNormalizedCharSetAlgorithm().Invoke(this, &normalized);
-		}
-
-		Automaton::Ref Expression::GenerateEpsilonNfa()
-		{
-			Automaton::Ref automaton=new Automaton;
-			EpsilonNfa result=EpsilonNfaAlgorithm().Invoke(this, automaton.Obj());
-			automaton->startState=result.start;
-			result.end->finalState=true;
-			return automaton;
-		}
 
 /***********************************************************************
 CharSetExpression
@@ -2559,15 +2012,15 @@ CharSetExpression
 
 		bool CharSetExpression::AddRangeWithConflict(CharRange range)
 		{
-			if(range.begin>range.end)
+			if (range.begin > range.end)
 			{
-				wchar_t t=range.begin;
-				range.begin=range.end;
-				range.end=t;
+				char32_t t = range.begin;
+				range.begin = range.end;
+				range.end = t;
 			}
-			for(vint i=0;i<ranges.Count();i++)
+			for (vint i = 0; i < ranges.Count(); i++)
 			{
-				if(!(range<ranges[i] || range>ranges[i]))
+				if (!(range<ranges[i] || range>ranges[i]))
 				{
 					return false;
 				}
@@ -2583,7 +2036,7 @@ RegexExpression
 		Expression::Ref RegexExpression::Merge()
 		{
 			MergeParameter merge;
-			merge.regex=this;
+			merge.regex = this;
 			return MergeAlgorithm().Invoke(expression, &merge);
 		}
 
@@ -2649,6 +2102,823 @@ Expression::Apply
 }
 
 /***********************************************************************
+.\AST\REGEXEXPRESSION_CANTREATASPURE.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+
+/***********************************************************************
+CanTreatAsPureAlgorithm
+***********************************************************************/
+
+		class CanTreatAsPureAlgorithm : public RegexExpressionAlgorithm<bool, void*>
+		{
+		public:
+			bool Apply(CharSetExpression* expression, void* target)
+			{
+				return true;
+			}
+
+			bool Apply(LoopExpression* expression, void* target)
+			{
+				return expression->preferLong && Invoke(expression->expression, 0);
+			}
+
+			bool Apply(SequenceExpression* expression, void* target)
+			{
+				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
+			}
+
+			bool Apply(AlternateExpression* expression, void* target)
+			{
+				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
+			}
+
+			bool Apply(BeginExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(EndExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(CaptureExpression* expression, void* target)
+			{
+				return Invoke(expression->expression, 0);
+			}
+
+			bool Apply(MatchExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(PositiveExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(NegativeExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(UsingExpression* expression, void* target)
+			{
+				return false;
+			}
+		};
+
+/***********************************************************************
+Expression
+***********************************************************************/
+
+		bool Expression::CanTreatAsPure()
+		{
+			return CanTreatAsPureAlgorithm().Invoke(this, 0);
+		}
+	}
+}
+
+/***********************************************************************
+.\AST\REGEXEXPRESSION_CHARSET.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+		class NormalizedCharSet
+		{
+		public:
+			CharRange::List			ranges;
+		};
+
+/***********************************************************************
+CharSetAlgorithm
+***********************************************************************/
+
+		class CharSetAlgorithm : public RegexExpressionAlgorithm<void, NormalizedCharSet*>
+		{
+		public:
+			virtual void Process(CharSetExpression* expression, NormalizedCharSet* target, CharRange range) = 0;
+
+			void Loop(CharSetExpression* expression, CharRange::List& ranges, NormalizedCharSet* target)
+			{
+				if (expression->reverse)
+				{
+					char32_t begin = 1;
+					for (vint i = 0; i < ranges.Count(); i++)
+					{
+						CharRange range = ranges[i];
+						if (range.begin > begin)
+						{
+							Process(expression, target, CharRange(begin, range.begin - 1));
+						}
+						begin = range.end + 1;
+					}
+					if (begin <= MaxChar32)
+					{
+						Process(expression, target, CharRange(begin, MaxChar32));
+					}
+				}
+				else
+				{
+					for (vint i = 0; i < ranges.Count(); i++)
+					{
+						Process(expression, target, ranges[i]);
+					}
+				}
+			}
+
+			void Apply(LoopExpression* expression, NormalizedCharSet* target)
+			{
+				Invoke(expression->expression, target);
+			}
+
+			void Apply(SequenceExpression* expression, NormalizedCharSet* target)
+			{
+				Invoke(expression->left, target);
+				Invoke(expression->right, target);
+			}
+
+			void Apply(AlternateExpression* expression, NormalizedCharSet* target)
+			{
+				Invoke(expression->left, target);
+				Invoke(expression->right, target);
+			}
+
+			void Apply(BeginExpression* expression, NormalizedCharSet* target)
+			{
+			}
+
+			void Apply(EndExpression* expression, NormalizedCharSet* target)
+			{
+			}
+
+			void Apply(CaptureExpression* expression, NormalizedCharSet* target)
+			{
+				Invoke(expression->expression, target);
+			}
+
+			void Apply(MatchExpression* expression, NormalizedCharSet* target)
+			{
+			}
+
+			void Apply(PositiveExpression* expression, NormalizedCharSet* target)
+			{
+				Invoke(expression->expression, target);
+			}
+
+			void Apply(NegativeExpression* expression, NormalizedCharSet* target)
+			{
+				Invoke(expression->expression, target);
+			}
+
+			void Apply(UsingExpression* expression, NormalizedCharSet* target)
+			{
+			}
+		};
+
+/***********************************************************************
+BuildNormalizedCharSetAlgorithm
+***********************************************************************/
+
+		class BuildNormalizedCharSetAlgorithm : public CharSetAlgorithm
+		{
+		public:
+			void Process(CharSetExpression* expression, NormalizedCharSet* target, CharRange range)
+			{
+				vint index = 0;
+				while (index < target->ranges.Count())
+				{
+					CharRange current = target->ranges[index];
+					if (current<range || current>range)
+					{
+						index++;
+					}
+					else if (current.begin < range.begin)
+					{
+						// range   :    [    ?
+						// current : [       ]
+						target->ranges.RemoveAt(index);
+						target->ranges.Add(CharRange(current.begin, range.begin - 1));
+						target->ranges.Add(CharRange(range.begin, current.end));
+						index++;
+					}
+					else if (current.begin > range.begin)
+					{
+						// range  :  [       ]
+						// current  :   [    ?
+						target->ranges.Add(CharRange(range.begin, current.begin - 1));
+						range.begin = current.begin;
+					}
+					else if (current.end < range.end)
+					{
+						// range   : [       ]
+						// current : [    ]
+						range.begin = current.end + 1;
+						index++;
+					}
+					else if (current.end > range.end)
+					{
+						// range   : [    ]
+						// current : [       ]
+						target->ranges.RemoveAt(index);
+						target->ranges.Add(range);
+						target->ranges.Add(CharRange(range.end + 1, current.end));
+						return;
+					}
+					else
+					{
+						// range   : [       ]
+						// current : [       ]
+						return;
+					}
+				}
+				target->ranges.Add(range);
+			}
+
+			void Apply(CharSetExpression* expression, NormalizedCharSet* target)
+			{
+				Loop(expression, expression->ranges, target);
+			}
+		};
+
+/***********************************************************************
+SetNormalizedCharSetAlgorithm
+***********************************************************************/
+
+		class SetNormalizedCharSetAlgorithm : public CharSetAlgorithm
+		{
+		public:
+			void Process(CharSetExpression* expression, NormalizedCharSet* target, CharRange range)
+			{
+				for (vint j = 0; j < target->ranges.Count(); j++)
+				{
+					CharRange targetRange = target->ranges[j];
+					if (range.begin <= targetRange.begin && targetRange.end <= range.end)
+					{
+						expression->ranges.Add(targetRange);
+					}
+				}
+			}
+
+			void Apply(CharSetExpression* expression, NormalizedCharSet* target)
+			{
+				CharRange::List source;
+				CopyFrom(source, expression->ranges);
+				expression->ranges.Clear();
+				Loop(expression, source, target);
+				expression->reverse = false;
+			}
+		};
+
+/***********************************************************************
+Expression
+***********************************************************************/
+
+		void Expression::NormalizeCharSet(CharRange::List& subsets)
+		{
+			NormalizedCharSet normalized;
+			BuildNormalizedCharSetAlgorithm().Invoke(this, &normalized);
+			SetNormalizedCharSetAlgorithm().Invoke(this, &normalized);
+			CopyFrom(subsets, normalized.ranges);
+		}
+
+		void Expression::CollectCharSet(CharRange::List& subsets)
+		{
+			NormalizedCharSet normalized;
+			CopyFrom(normalized.ranges, subsets);
+			BuildNormalizedCharSetAlgorithm().Invoke(this, &normalized);
+			CopyFrom(subsets, normalized.ranges);
+		}
+
+		void Expression::ApplyCharSet(CharRange::List& subsets)
+		{
+			NormalizedCharSet normalized;
+			CopyFrom(normalized.ranges, subsets);
+			SetNormalizedCharSetAlgorithm().Invoke(this, &normalized);
+		}
+	}
+}
+
+/***********************************************************************
+.\AST\REGEXEXPRESSION_GENERATEEPSILONNFA.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+
+/***********************************************************************
+EpsilonNfaAlgorithm
+***********************************************************************/
+
+		class EpsilonNfaInfo
+		{
+		public:
+			Automaton::Ref		automaton;
+		};
+
+		class EpsilonNfa
+		{
+		public:
+			State* start;
+			State* end;
+
+			EpsilonNfa()
+			{
+				start = 0;
+				end = 0;
+			}
+		};
+
+		class EpsilonNfaAlgorithm : public RegexExpressionAlgorithm<EpsilonNfa, Automaton*>
+		{
+		public:
+			EpsilonNfa Connect(EpsilonNfa a, EpsilonNfa b, Automaton* target)
+			{
+				if (a.start)
+				{
+					target->NewEpsilon(a.end, b.start);
+					a.end = b.end;
+					return a;
+				}
+				else
+				{
+					return b;
+				}
+			}
+
+			EpsilonNfa Apply(CharSetExpression* expression, Automaton* target)
+			{
+				EpsilonNfa nfa;
+				nfa.start = target->NewState();
+				nfa.end = target->NewState();
+				for (vint i = 0; i < expression->ranges.Count(); i++)
+				{
+					target->NewChars(nfa.start, nfa.end, expression->ranges[i]);
+				}
+				return nfa;
+			}
+
+			EpsilonNfa Apply(LoopExpression* expression, Automaton* target)
+			{
+				EpsilonNfa head;
+				for (vint i = 0; i < expression->min; i++)
+				{
+					EpsilonNfa body = Invoke(expression->expression, target);
+					head = Connect(head, body, target);
+				}
+				if (expression->max == -1)
+				{
+					EpsilonNfa body = Invoke(expression->expression, target);
+					if (!head.start)
+					{
+						head.start = head.end = target->NewState();
+					}
+					State* loopBegin = head.end;
+					State* loopEnd = target->NewState();
+					if (expression->preferLong)
+					{
+						target->NewEpsilon(loopBegin, body.start);
+						target->NewEpsilon(body.end, loopBegin);
+						target->NewNop(loopBegin, loopEnd);
+					}
+					else
+					{
+						target->NewNop(loopBegin, loopEnd);
+						target->NewEpsilon(loopBegin, body.start);
+						target->NewEpsilon(body.end, loopBegin);
+					}
+					head.end = loopEnd;
+				}
+				else if (expression->max > expression->min)
+				{
+					for (vint i = expression->min; i < expression->max; i++)
+					{
+						EpsilonNfa body = Invoke(expression->expression, target);
+						State* start = target->NewState();
+						State* end = target->NewState();
+						if (expression->preferLong)
+						{
+							target->NewEpsilon(start, body.start);
+							target->NewEpsilon(body.end, end);
+							target->NewNop(start, end);
+						}
+						else
+						{
+							target->NewNop(start, end);
+							target->NewEpsilon(start, body.start);
+							target->NewEpsilon(body.end, end);
+						}
+						body.start = start;
+						body.end = end;
+						head = Connect(head, body, target);
+					}
+				}
+				return head;
+			}
+
+			EpsilonNfa Apply(SequenceExpression* expression, Automaton* target)
+			{
+				EpsilonNfa a = Invoke(expression->left, target);
+				EpsilonNfa b = Invoke(expression->right, target);
+				return Connect(a, b, target);
+			}
+
+			EpsilonNfa Apply(AlternateExpression* expression, Automaton* target)
+			{
+				EpsilonNfa result;
+				result.start = target->NewState();
+				result.end = target->NewState();
+				EpsilonNfa a = Invoke(expression->left, target);
+				EpsilonNfa b = Invoke(expression->right, target);
+				target->NewEpsilon(result.start, a.start);
+				target->NewEpsilon(a.end, result.end);
+				target->NewEpsilon(result.start, b.start);
+				target->NewEpsilon(b.end, result.end);
+				return result;
+			}
+
+			EpsilonNfa Apply(BeginExpression* expression, Automaton* target)
+			{
+				EpsilonNfa result;
+				result.start = target->NewState();
+				result.end = target->NewState();
+				target->NewBeginString(result.start, result.end);
+				return result;
+			}
+
+			EpsilonNfa Apply(EndExpression* expression, Automaton* target)
+			{
+				EpsilonNfa result;
+				result.start = target->NewState();
+				result.end = target->NewState();
+				target->NewEndString(result.start, result.end);
+				return result;
+			}
+
+			EpsilonNfa Apply(CaptureExpression* expression, Automaton* target)
+			{
+				EpsilonNfa result;
+				result.start = target->NewState();
+				result.end = target->NewState();
+
+				vint capture = -1;
+				if (expression->name != U32String::Empty)
+				{
+					capture = target->captureNames.IndexOf(expression->name);
+					if (capture == -1)
+					{
+						capture = target->captureNames.Count();
+						target->captureNames.Add(expression->name);
+					}
+				}
+
+				EpsilonNfa body = Invoke(expression->expression, target);
+				target->NewCapture(result.start, body.start, capture);
+				target->NewEnd(body.end, result.end);
+				return result;
+			}
+
+			EpsilonNfa Apply(MatchExpression* expression, Automaton* target)
+			{
+				vint capture = -1;
+				if (expression->name != U32String::Empty)
+				{
+					capture = target->captureNames.IndexOf(expression->name);
+					if (capture == -1)
+					{
+						capture = target->captureNames.Count();
+						target->captureNames.Add(expression->name);
+					}
+				}
+				EpsilonNfa result;
+				result.start = target->NewState();
+				result.end = target->NewState();
+				target->NewMatch(result.start, result.end, capture, expression->index);
+				return result;
+			}
+
+			EpsilonNfa Apply(PositiveExpression* expression, Automaton* target)
+			{
+				EpsilonNfa result;
+				result.start = target->NewState();
+				result.end = target->NewState();
+				EpsilonNfa body = Invoke(expression->expression, target);
+				target->NewPositive(result.start, body.start);
+				target->NewEnd(body.end, result.end);
+				return result;
+			}
+
+			EpsilonNfa Apply(NegativeExpression* expression, Automaton* target)
+			{
+				EpsilonNfa result;
+				result.start = target->NewState();
+				result.end = target->NewState();
+				EpsilonNfa body = Invoke(expression->expression, target);
+				target->NewNegative(result.start, body.start);
+				target->NewEnd(body.end, result.end);
+				target->NewNegativeFail(result.start, result.end);
+				return result;
+			}
+
+			EpsilonNfa Apply(UsingExpression* expression, Automaton* target)
+			{
+				CHECK_FAIL(L"RegexExpression::GenerateEpsilonNfa()#UsingExpression cannot create state machine.");
+			}
+		};
+
+/***********************************************************************
+Expression
+***********************************************************************/
+
+		Automaton::Ref Expression::GenerateEpsilonNfa()
+		{
+			Automaton::Ref automaton = new Automaton;
+			EpsilonNfa result = EpsilonNfaAlgorithm().Invoke(this, automaton.Obj());
+			automaton->startState = result.start;
+			result.end->finalState = true;
+			return automaton;
+		}
+	}
+}
+
+/***********************************************************************
+.\AST\REGEXEXPRESSION_HASNOEXTENSION.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+
+/***********************************************************************
+HasNoExtensionAlgorithm
+***********************************************************************/
+
+		class HasNoExtensionAlgorithm : public RegexExpressionAlgorithm<bool, void*>
+		{
+		public:
+			bool Apply(CharSetExpression* expression, void* target)
+			{
+				return true;
+			}
+
+			bool Apply(LoopExpression* expression, void* target)
+			{
+				return expression->preferLong && Invoke(expression->expression, 0);
+			}
+
+			bool Apply(SequenceExpression* expression, void* target)
+			{
+				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
+			}
+
+			bool Apply(AlternateExpression* expression, void* target)
+			{
+				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
+			}
+
+			bool Apply(BeginExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(EndExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(CaptureExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(MatchExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(PositiveExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(NegativeExpression* expression, void* target)
+			{
+				return false;
+			}
+
+			bool Apply(UsingExpression* expression, void* target)
+			{
+				return false;
+			}
+		};
+
+/***********************************************************************
+Expression
+***********************************************************************/
+
+		bool Expression::HasNoExtension()
+		{
+			return HasNoExtensionAlgorithm().Invoke(this, 0);
+		}
+	}
+}
+
+/***********************************************************************
+.\AST\REGEXEXPRESSION_ISEQUAL.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	namespace regex_internal
+	{
+
+/***********************************************************************
+IsEqualAlgorithm
+***********************************************************************/
+
+		class IsEqualAlgorithm : public RegexExpressionAlgorithm<bool, Expression*>
+		{
+		public:
+			bool Apply(CharSetExpression* expression, Expression* target)
+			{
+				CharSetExpression* expected = dynamic_cast<CharSetExpression*>(target);
+				if (expected)
+				{
+					if (expression->reverse != expected->reverse)return false;
+					if (expression->ranges.Count() != expected->ranges.Count())return false;
+					for (vint i = 0; i < expression->ranges.Count(); i++)
+					{
+						if (expression->ranges[i] != expected->ranges[i])return false;
+					}
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(LoopExpression* expression, Expression* target)
+			{
+				LoopExpression* expected = dynamic_cast<LoopExpression*>(target);
+				if (expected)
+				{
+					if (expression->min != expected->min)return false;
+					if (expression->max != expected->max)return false;
+					if (expression->preferLong != expected->preferLong)return false;
+					if (!Invoke(expression->expression, expected->expression.Obj()))return false;
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(SequenceExpression* expression, Expression* target)
+			{
+				SequenceExpression* expected = dynamic_cast<SequenceExpression*>(target);
+				if (expected)
+				{
+					if (!Invoke(expression->left, expected->left.Obj()))return false;
+					if (!Invoke(expression->right, expected->right.Obj()))return false;
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(AlternateExpression* expression, Expression* target)
+			{
+				AlternateExpression* expected = dynamic_cast<AlternateExpression*>(target);
+				if (expected)
+				{
+					if (!Invoke(expression->left, expected->left.Obj()))return false;
+					if (!Invoke(expression->right, expected->right.Obj()))return false;
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(BeginExpression* expression, Expression* target)
+			{
+				BeginExpression* expected = dynamic_cast<BeginExpression*>(target);
+				if (expected)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(EndExpression* expression, Expression* target)
+			{
+				EndExpression* expected = dynamic_cast<EndExpression*>(target);
+				if (expected)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(CaptureExpression* expression, Expression* target)
+			{
+				CaptureExpression* expected = dynamic_cast<CaptureExpression*>(target);
+				if (expected)
+				{
+					if (expression->name != expected->name)return false;
+					if (!Invoke(expression->expression, expected->expression.Obj()))return false;
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(MatchExpression* expression, Expression* target)
+			{
+				MatchExpression* expected = dynamic_cast<MatchExpression*>(target);
+				if (expected)
+				{
+					if (expression->name != expected->name)return false;
+					if (expression->index != expected->index)return false;
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(PositiveExpression* expression, Expression* target)
+			{
+				PositiveExpression* expected = dynamic_cast<PositiveExpression*>(target);
+				if (expected)
+				{
+					if (!Invoke(expression->expression, expected->expression.Obj()))return false;
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(NegativeExpression* expression, Expression* target)
+			{
+				NegativeExpression* expected = dynamic_cast<NegativeExpression*>(target);
+				if (expected)
+				{
+					if (!Invoke(expression->expression, expected->expression.Obj()))return false;
+					return true;
+				}
+				return false;
+			}
+
+			bool Apply(UsingExpression* expression, Expression* target)
+			{
+				UsingExpression* expected = dynamic_cast<UsingExpression*>(target);
+				if (expected)
+				{
+					if (expression->name != expected->name)return false;
+					return true;
+				}
+				return false;
+			}
+		};
+
+/***********************************************************************
+Expression
+***********************************************************************/
+
+		bool Expression::IsEqual(vl::regex_internal::Expression* expression)
+		{
+			return IsEqualAlgorithm().Invoke(this, expression);
+		}
+	}
+}
+
+/***********************************************************************
 .\AST\REGEXPARSER.CPP
 ***********************************************************************/
 /***********************************************************************
@@ -2666,9 +2936,9 @@ namespace vl
 Helper Functions
 ***********************************************************************/
 
-		bool IsChar(const wchar_t*& input, wchar_t c)
+		bool IsChar(const char32_t*& input, char32_t c)
 		{
-			if(*input==c)
+			if (*input == c)
 			{
 				input++;
 				return true;
@@ -2679,114 +2949,105 @@ Helper Functions
 			}
 		}
 
-		bool IsChars(const wchar_t*& input, const wchar_t* chars, wchar_t& c)
+		template<vint Size>
+		bool IsChars(const char32_t*& input, const char32_t(&chars)[Size])
 		{
-			const wchar_t* position=::wcschr(chars, *input);
-			if(position)
+			for (char32_t c : chars)
 			{
-				c=*input++;
-				return true;
+				if (*input == c)
+				{
+					input++;
+					return true;
+				}
 			}
-			else
-			{
-				return false;
-			}
+			return false;
 		}
 
-		bool IsStr(const wchar_t*& input, const wchar_t* str)
+		template<vint Size>
+		bool IsStr(const char32_t*& input, const char32_t(&str)[Size])
 		{
-			size_t len=wcslen(str);
-			if(wcsncmp(input, str, len)==0)
+			for (vint i = 0; i < Size - 1; i++)
 			{
-				input+=len;
-				return true;
+				if (input[i] != str[i]) return false;
 			}
-			else
-			{
-				return false;
-			}
+			input += Size - 1;
+			return true;
 		}
 
-		bool IsChars(const wchar_t*& input, const wchar_t* chars)
+		bool IsPositiveInteger(const char32_t*& input, vint& number)
 		{
-			wchar_t c;
-			return IsChars(input, chars, c);
-		}
-
-		bool IsPositiveInteger(const wchar_t*& input, vint& number)
-		{
-			bool readed=false;
-			number=0;
-			while(L'0'<=*input && *input<=L'9')
+			bool readed = false;
+			number = 0;
+			while (U'0' <= *input && *input <= U'9')
 			{
-				number=number*10+(*input++)-L'0';
-				readed=true;
+				number = number * 10 + (*input++) - U'0';
+				readed = true;
 			}
 			return readed;
 		}
 
-		bool IsName(const wchar_t*& input, WString& name)
+		bool IsName(const char32_t*& input, U32String& name)
 		{
-			const wchar_t* read=input;
-			if((L'A'<=*read && *read<=L'Z') || (L'a'<=*read && *read<=L'z') || *read==L'_')
+			const char32_t* read = input;
+			if ((U'A' <= *read && *read <= U'Z') || (U'a' <= *read && *read <= U'z') || *read == U'_')
 			{
 				read++;
-				while((L'A'<=*read && *read<=L'Z') || (L'a'<=*read && *read<=L'z') || (L'0'<=*read && *read<=L'9') || *read==L'_')
+				while ((U'A' <= *read && *read <= U'Z') || (U'a' <= *read && *read <= U'z') || (U'0' <= *read && *read <= U'9') || *read == U'_')
 				{
 					read++;
 				}
 			}
-			if(input==read)
+			if (input == read)
 			{
 				return false;
 			}
 			else
 			{
-				name=WString::CopyFrom(input, vint(read-input));
-				input=read;
+				name = U32String::CopyFrom(input, vint(read - input));
+				input = read;
 				return true;
 			}
 		}
 
-		Ptr<LoopExpression> ParseLoop(const wchar_t*& input)
+		Ptr<LoopExpression> ParseLoop(const char32_t*& input)
 		{
-			vint min=0;
-			vint max=0;
-			if(!*input)
+			vint min = 0;
+			vint max = 0;
+			if (!*input)
 			{
 				return 0;
 			}
-			else if(IsChar(input, L'+'))
+			else if (IsChar(input, U'+'))
 			{
-				min=1;
-				max=-1;
+				min = 1;
+				max = -1;
 			}
-			else if(IsChar(input, L'*'))
+			else if (IsChar(input, U'*'))
 			{
-				min=0;
-				max=-1;
+				min = 0;
+				max = -1;
 			}
-			else if(IsChar(input, L'?'))
+			else if (IsChar(input, U'?'))
 			{
-				min=0;
-				max=1;
+				min = 0;
+				max = 1;
 			}
-			else if(IsChar(input, L'{'))
+			else if (IsChar(input, U'{'))
 			{
-				if(IsPositiveInteger(input, min))
+				if (IsPositiveInteger(input, min))
 				{
-					if(IsChar(input, L','))
+					if (IsChar(input, U','))
 					{
-						if(!IsPositiveInteger(input, max))
+						if (!IsPositiveInteger(input, max))
 						{
-							max=-1;
+							max = -1;
 						}
 					}
 					else
 					{
-						max=min;
+						max = min;
 					}
-					if(!IsChar(input, L'}'))
+					if (!IsChar(input, U'}'))
 					{
 						goto THROW_EXCEPTION;
 					}
@@ -2802,80 +3063,80 @@ Helper Functions
 			}
 
 			{
-				LoopExpression* expression=new LoopExpression;
-				expression->min=min;
-				expression->max=max;
-				expression->preferLong=!IsChar(input, L'?');
+				LoopExpression* expression = new LoopExpression;
+				expression->min = min;
+				expression->max = max;
+				expression->preferLong = !IsChar(input, U'?');
 				return expression;
 			}
 		THROW_EXCEPTION:
 			throw ArgumentException(L"Regular expression syntax error: Illegal loop expression.", L"vl::regex_internal::ParseLoop", L"input");
 		}
 
-		Ptr<Expression> ParseCharSet(const wchar_t*& input)
+		Ptr<Expression> ParseCharSet(const char32_t*& input)
 		{
-			if(!*input)
+			if (!*input)
 			{
 				return 0;
 			}
-			else if(IsChar(input, L'^'))
+			else if (IsChar(input, U'^'))
 			{
 				return new BeginExpression;
 			}
-			else if(IsChar(input, L'$'))
+			else if (IsChar(input, U'$'))
 			{
 				return new EndExpression;
 			}
-			else if(IsChar(input, L'\\') || IsChar(input, L'/'))
+			else if (IsChar(input, U'\\') || IsChar(input, U'/'))
 			{
-				Ptr<CharSetExpression> expression=new CharSetExpression;
-				expression->reverse=false;
-				switch(*input)
+				Ptr<CharSetExpression> expression = new CharSetExpression;
+				expression->reverse = false;
+				switch (*input)
 				{
-				case L'.':
-					expression->ranges.Add(CharRange(1, 65535));
+				case U'.':
+					expression->ranges.Add(CharRange(1, MaxChar32));
 					break;
-				case L'r':
-					expression->ranges.Add(CharRange(L'\r', L'\r'));
+				case U'r':
+					expression->ranges.Add(CharRange(U'\r', U'\r'));
 					break;
-				case L'n':
-					expression->ranges.Add(CharRange(L'\n', L'\n'));
+				case U'n':
+					expression->ranges.Add(CharRange(U'\n', U'\n'));
 					break;
-				case L't':
-					expression->ranges.Add(CharRange(L'\t', L'\t'));
+				case U't':
+					expression->ranges.Add(CharRange(U'\t', U'\t'));
 					break;
-				case L'\\':case L'/':case L'(':case L')':case L'+':case L'*':case L'?':case L'|':
-				case L'{':case L'}':case L'[':case L']':case L'<':case L'>':
-				case L'^':case L'$':case L'!':case L'=':
+				case U'\\':case U'/':case U'(':case U')':case U'+':case U'*':case U'?':case U'|':
+				case U'{':case U'}':case U'[':case U']':case U'<':case U'>':
+				case U'^':case U'$':case U'!':case U'=':
 					expression->ranges.Add(CharRange(*input, *input));
 					break;
-				case L'S':
-					expression->reverse=true;
-				case L's':
-					expression->ranges.Add(CharRange(L' ', L' '));
-					expression->ranges.Add(CharRange(L'\r', L'\r'));
-					expression->ranges.Add(CharRange(L'\n', L'\n'));
-					expression->ranges.Add(CharRange(L'\t', L'\t'));
+				case U'S':
+					expression->reverse = true;
+				case U's':
+					expression->ranges.Add(CharRange(U' ', U' '));
+					expression->ranges.Add(CharRange(U'\r', U'\r'));
+					expression->ranges.Add(CharRange(U'\n', U'\n'));
+					expression->ranges.Add(CharRange(U'\t', U'\t'));
 					break;
-				case L'D':
-					expression->reverse=true;
-				case L'd':
-					expression->ranges.Add(CharRange(L'0', L'9'));
+				case U'D':
+					expression->reverse = true;
+				case U'd':
+					expression->ranges.Add(CharRange(U'0', U'9'));
 					break;
-				case L'L':
-					expression->reverse=true;
-				case L'l':
-					expression->ranges.Add(CharRange(L'_', L'_'));
-					expression->ranges.Add(CharRange(L'A', L'Z'));
-					expression->ranges.Add(CharRange(L'a', L'z'));
+				case U'L':
+					expression->reverse = true;
+				case U'l':
+					expression->ranges.Add(CharRange(U'_', U'_'));
+					expression->ranges.Add(CharRange(U'A', U'Z'));
+					expression->ranges.Add(CharRange(U'a', U'z'));
 					break;
-				case L'W':
-					expression->reverse=true;
-				case L'w':
-					expression->ranges.Add(CharRange(L'_', L'_'));
-					expression->ranges.Add(CharRange(L'0', L'9'));
-					expression->ranges.Add(CharRange(L'A', L'Z'));
-					expression->ranges.Add(CharRange(L'a', L'z'));
+				case U'W':
+					expression->reverse = true;
+				case U'w':
+					expression->ranges.Add(CharRange(U'_', U'_'));
+					expression->ranges.Add(CharRange(U'0', U'9'));
+					expression->ranges.Add(CharRange(U'A', U'Z'));
+					expression->ranges.Add(CharRange(U'a', U'z'));
 					break;
 				default:
 					throw ArgumentException(L"Regular expression syntax error: Illegal character escaping.", L"vl::regex_internal::ParseCharSet", L"input");
@@ -2883,87 +3144,87 @@ Helper Functions
 				input++;
 				return expression;
 			}
-			else if(IsChar(input, L'['))
+			else if (IsChar(input, U'['))
 			{
-				Ptr<CharSetExpression> expression=new CharSetExpression;
-				if(IsChar(input, L'^'))
+				Ptr<CharSetExpression> expression = new CharSetExpression;
+				if (IsChar(input, U'^'))
 				{
-					expression->reverse=true;
+					expression->reverse = true;
 				}
 				else
 				{
-					expression->reverse=false;
+					expression->reverse = false;
 				}
-				bool midState=false;
-				wchar_t a=L'\0';
-				wchar_t b=L'\0';
-				while(true)
+				bool midState = false;
+				char32_t a = U'\0';
+				char32_t b = U'\0';
+				while (true)
 				{
-					if(IsChar(input, L'\\') || IsChar(input, L'/'))
+					if (IsChar(input, U'\\') || IsChar(input, U'/'))
 					{
-						wchar_t c=L'\0';
-						switch(*input)
+						char32_t c = U'\0';
+						switch (*input)
 						{
-						case L'r':
-							c=L'\r';
+						case U'r':
+							c = U'\r';
 							break;
-						case L'n':
-							c=L'\n';
+						case U'n':
+							c = U'\n';
 							break;
-						case L't':
-							c=L'\t';
+						case U't':
+							c = U'\t';
 							break;
-						case L'-':case L'[':case L']':case L'\\':case L'/':case L'^':case L'$':
-							c=*input;
+						case U'-':case U'[':case U']':case U'\\':case U'/':case U'^':case U'$':
+							c = *input;
 							break;
 						default:
 							throw ArgumentException(L"Regular expression syntax error: Illegal character escaping, only \"rnt-[]\\/\" are legal escaped characters in [].", L"vl::regex_internal::ParseCharSet", L"input");
 						}
 						input++;
-						midState?b=c:a=c;
-						midState=!midState;
+						midState ? b = c : a = c;
+						midState = !midState;
 					}
-					else if(IsChars(input, L"-]"))
+					else if (IsChars(input, U"-]"))
 					{
 						goto THROW_EXCEPTION;
 					}
-					else if(*input)
+					else if (*input)
 					{
-						midState?b=*input++:a=*input++;
-						midState=!midState;
+						midState ? b = *input++ : a = *input++;
+						midState = !midState;
 					}
 					else
 					{
 						goto THROW_EXCEPTION;
 					}
-					if(IsChar(input, L']'))
+					if (IsChar(input, U']'))
 					{
-						if(midState)
+						if (midState)
 						{
-							b=a;
+							b = a;
 						}
-						if(!expression->AddRangeWithConflict(CharRange(a, b)))
+						if (!expression->AddRangeWithConflict(CharRange(a, b)))
 						{
 							goto THROW_EXCEPTION;
 						}
 						break;
 					}
-					else if(IsChar(input, L'-'))
+					else if (IsChar(input, U'-'))
 					{
-						if(!midState)
+						if (!midState)
 						{
 							goto THROW_EXCEPTION;
 						}
 					}
 					else
 					{
-						if(midState)
+						if (midState)
 						{
-							b=a;
+							b = a;
 						}
-						if(expression->AddRangeWithConflict(CharRange(a, b)))
+						if (expression->AddRangeWithConflict(CharRange(a, b)))
 						{
-							midState=false;
+							midState = false;
 						}
 						else
 						{
@@ -2972,134 +3233,134 @@ Helper Functions
 					}
 				}
 				return expression;
-		THROW_EXCEPTION:
+			THROW_EXCEPTION:
 				throw ArgumentException(L"Regular expression syntax error: Illegal character set definition.");
 			}
-			else if(IsChars(input, L"()+*?{}|"))
+			else if (IsChars(input, U"()+*?{}|"))
 			{
 				input--;
 				return 0;
 			}
 			else
 			{
-				CharSetExpression* expression=new CharSetExpression;
-				expression->reverse=false;
+				CharSetExpression* expression = new CharSetExpression;
+				expression->reverse = false;
 				expression->ranges.Add(CharRange(*input, *input));
 				input++;
 				return expression;
 			}
 		}
 
-		Ptr<Expression> ParseFunction(const wchar_t*& input)
+		Ptr<Expression> ParseFunction(const char32_t*& input)
 		{
-			if(IsStr(input, L"(="))
+			if (IsStr(input, U"(="))
 			{
-				Ptr<Expression> sub=ParseExpression(input);
-				if(!IsChar(input, L')'))
+				Ptr<Expression> sub = ParseExpression(input);
+				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				PositiveExpression* expression=new PositiveExpression;
-				expression->expression=sub;
+				PositiveExpression* expression = new PositiveExpression;
+				expression->expression = sub;
 				return expression;
 			}
-			else if(IsStr(input, L"(!"))
+			else if (IsStr(input, U"(!"))
 			{
-				Ptr<Expression> sub=ParseExpression(input);
-				if(!IsChar(input, L')'))
+				Ptr<Expression> sub = ParseExpression(input);
+				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				NegativeExpression* expression=new NegativeExpression;
-				expression->expression=sub;
+				NegativeExpression* expression = new NegativeExpression;
+				expression->expression = sub;
 				return expression;
 			}
-			else if(IsStr(input, L"(<&"))
+			else if (IsStr(input, U"(<&"))
 			{
-				WString name;
-				if(!IsName(input, name))
+				U32String name;
+				if (!IsName(input, name))
 				{
 					goto NEED_NAME;
 				}
-				if(!IsChar(input, L'>'))
+				if (!IsChar(input, U'>'))
 				{
 					goto NEED_GREATER;
 				}
-				if(!IsChar(input, L')'))
+				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				UsingExpression* expression=new UsingExpression;
-				expression->name=name;
+				UsingExpression* expression = new UsingExpression;
+				expression->name = name;
 				return expression;
 			}
-			else if(IsStr(input, L"(<$"))
+			else if (IsStr(input, U"(<$"))
 			{
-				WString name;
-				vint index=-1;
-				if(IsName(input, name))
+				U32String name;
+				vint index = -1;
+				if (IsName(input, name))
 				{
-					if(IsChar(input, L';'))
+					if (IsChar(input, U';'))
 					{
-						if(!IsPositiveInteger(input, index))
+						if (!IsPositiveInteger(input, index))
 						{
 							goto NEED_NUMBER;
 						}
 					}
 				}
-				else if(!IsPositiveInteger(input, index))
+				else if (!IsPositiveInteger(input, index))
 				{
 					goto NEED_NUMBER;
 				}
-				if(!IsChar(input, L'>'))
+				if (!IsChar(input, U'>'))
 				{
 					goto NEED_GREATER;
 				}
-				if(!IsChar(input, L')'))
+				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				MatchExpression* expression=new MatchExpression;
-				expression->name=name;
-				expression->index=index;
+				MatchExpression* expression = new MatchExpression;
+				expression->name = name;
+				expression->index = index;
 				return expression;
 			}
-			else if(IsStr(input, L"(<"))
+			else if (IsStr(input, U"(<"))
 			{
-				WString name;
-				if(!IsName(input, name))
+				U32String name;
+				if (!IsName(input, name))
 				{
 					goto NEED_NAME;
 				}
-				if(!IsChar(input, L'>'))
+				if (!IsChar(input, U'>'))
 				{
 					goto NEED_GREATER;
 				}
-				Ptr<Expression> sub=ParseExpression(input);
-				if(!IsChar(input, L')'))
+				Ptr<Expression> sub = ParseExpression(input);
+				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				CaptureExpression* expression=new CaptureExpression;
-				expression->name=name;
-				expression->expression=sub;
+				CaptureExpression* expression = new CaptureExpression;
+				expression->name = name;
+				expression->expression = sub;
 				return expression;
 			}
-			else if(IsStr(input, L"(?"))
+			else if (IsStr(input, U"(?"))
 			{
-				Ptr<Expression> sub=ParseExpression(input);
-				if(!IsChar(input, L')'))
+				Ptr<Expression> sub = ParseExpression(input);
+				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				CaptureExpression* expression=new CaptureExpression;
-				expression->expression=sub;
+				CaptureExpression* expression = new CaptureExpression;
+				expression->expression = sub;
 				return expression;
 			}
-			else if(IsChar(input, L'('))
+			else if (IsChar(input, U'('))
 			{
-				Ptr<Expression> sub=ParseExpression(input);
-				if(!IsChar(input, L')'))
+				Ptr<Expression> sub = ParseExpression(input);
+				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
@@ -3119,38 +3380,38 @@ Helper Functions
 			throw ArgumentException(L"Regular expression syntax error: Number expected.", L"vl::regex_internal::ParseFunction", L"input");
 		}
 
-		Ptr<Expression> ParseUnit(const wchar_t*& input)
+		Ptr<Expression> ParseUnit(const char32_t*& input)
 		{
-			Ptr<Expression> unit=ParseCharSet(input);
-			if(!unit)
+			Ptr<Expression> unit = ParseCharSet(input);
+			if (!unit)
 			{
-				unit=ParseFunction(input);
+				unit = ParseFunction(input);
 			}
-			if(!unit)
+			if (!unit)
 			{
 				return 0;
 			}
 			Ptr<LoopExpression> loop;
-			while((loop=ParseLoop(input)))
+			while ((loop = ParseLoop(input)))
 			{
-				loop->expression=unit;
-				unit=loop;
+				loop->expression = unit;
+				unit = loop;
 			}
 			return unit;
 		}
 
-		Ptr<Expression> ParseJoin(const wchar_t*& input)
+		Ptr<Expression> ParseJoin(const char32_t*& input)
 		{
-			Ptr<Expression> expression=ParseUnit(input);
-			while(true)
+			Ptr<Expression> expression = ParseUnit(input);
+			while (true)
 			{
-				Ptr<Expression> right=ParseUnit(input);
-				if(right)
+				Ptr<Expression> right = ParseUnit(input);
+				if (right)
 				{
-					SequenceExpression* sequence=new SequenceExpression;
-					sequence->left=expression;
-					sequence->right=right;
-					expression=sequence;
+					SequenceExpression* sequence = new SequenceExpression;
+					sequence->left = expression;
+					sequence->right = right;
+					expression = sequence;
 				}
 				else
 				{
@@ -3160,20 +3421,20 @@ Helper Functions
 			return expression;
 		}
 
-		Ptr<Expression> ParseAlt(const wchar_t*& input)
+		Ptr<Expression> ParseAlt(const char32_t*& input)
 		{
-			Ptr<Expression> expression=ParseJoin(input);
-			while(true)
+			Ptr<Expression> expression = ParseJoin(input);
+			while (true)
 			{
-				if(IsChar(input, L'|'))
+				if (IsChar(input, U'|'))
 				{
-					Ptr<Expression> right=ParseJoin(input);
-					if(right)
+					Ptr<Expression> right = ParseJoin(input);
+					if (right)
 					{
-						AlternateExpression* alternate=new AlternateExpression;
-						alternate->left=expression;
-						alternate->right=right;
-						expression=alternate;
+						AlternateExpression* alternate = new AlternateExpression;
+						alternate->left = expression;
+						alternate->right = right;
+						expression = alternate;
 					}
 					else
 					{
@@ -3188,160 +3449,160 @@ Helper Functions
 			return expression;
 		}
 
-		Ptr<Expression> ParseExpression(const wchar_t*& input)
+		Ptr<Expression> ParseExpression(const char32_t*& input)
 		{
 			return ParseAlt(input);
 		}
 
-		RegexExpression::Ref ParseRegexExpression(const WString& code)
+		RegexExpression::Ref ParseRegexExpression(const U32String& code)
 		{
-			RegexExpression::Ref regex=new RegexExpression;
-			const wchar_t* start=code.Buffer();
-			const wchar_t* input=start;
+			RegexExpression::Ref regex = new RegexExpression;
+			const char32_t* start = code.Buffer();
+			const char32_t* input = start;
 			try
 			{
-				while(IsStr(input, L"(<#"))
+				while (IsStr(input, U"(<#"))
 				{
-					WString name;
-					if(!IsName(input, name))
+					U32String name;
+					if (!IsName(input, name))
 					{
 						throw ArgumentException(L"Regular expression syntax error: Identifier expected.", L"vl::regex_internal::ParseRegexExpression", L"code");
 					}
-					if(!IsChar(input, L'>'))
+					if (!IsChar(input, U'>'))
 					{
 						throw ArgumentException(L"Regular expression syntax error: \">\" expected.", L"vl::regex_internal::ParseFunction", L"input");
 					}
-					Ptr<Expression> sub=ParseExpression(input);
-					if(!IsChar(input, L')'))
+					Ptr<Expression> sub = ParseExpression(input);
+					if (!IsChar(input, U')'))
 					{
 						throw ArgumentException(L"Regular expression syntax error: \")\" expected.", L"vl::regex_internal::ParseFunction", L"input");
 					}
-					if(regex->definitions.Keys().Contains(name))
+					if (regex->definitions.Keys().Contains(name))
 					{
-						throw ArgumentException(L"Regular expression syntax error: Found duplicated sub expression name: \""+name+L"\". ", L"vl::regex_internal::ParseFunction", L"input");
+						throw ArgumentException(L"Regular expression syntax error: Found duplicated sub expression name: \"" + u32tow(name) + L"\". ", L"vl::regex_internal::ParseFunction", L"input");
 					}
 					else
 					{
 						regex->definitions.Add(name, sub);
 					}
 				}
-				regex->expression=ParseExpression(input);
-				if(!regex->expression)
+				regex->expression = ParseExpression(input);
+				if (!regex->expression)
 				{
 					throw ArgumentException(L"Regular expression syntax error: Expression expected.", L"vl::regex_internal::ParseUnit", L"input");
 				}
-				if(*input)
+				if (*input)
 				{
 					throw ArgumentException(L"Regular expression syntax error: Found unnecessary tokens.", L"vl::regex_internal::ParseUnit", L"input");
 				}
 				return regex;
 			}
-			catch(const ArgumentException& e)
+			catch (const ArgumentException& e)
 			{
-				throw ParsingException(e.Message(), code, input-start);
+				throw RegexException(e.Message(), code, input - start);
 			}
 		}
 
-		WString EscapeTextForRegex(const WString& literalString)
+		U32String EscapeTextForRegex(const U32String& literalString)
 		{
-			WString result;
-			for(vint i=0;i<literalString.Length();i++)
+			U32String result;
+			for (vint i = 0; i < literalString.Length(); i++)
 			{
-				wchar_t c=literalString[i];
-				switch(c)
+				char32_t c = literalString[i];
+				switch (c)
 				{
-				case L'\\':case L'/':case L'(':case L')':case L'+':case L'*':case L'?':case L'|':
-				case L'{':case L'}':case L'[':case L']':case L'<':case L'>':
-				case L'^':case L'$':case L'!':case L'=':
-					result+=WString(L"\\")+WString::FromChar(c);
+				case U'\\':case U'/':case U'(':case U')':case U'+':case U'*':case U'?':case U'|':
+				case U'{':case U'}':case U'[':case U']':case U'<':case U'>':
+				case U'^':case U'$':case U'!':case U'=':
+					result += U32String(U"\\") + U32String::FromChar(c);
 					break;
-				case L'\r':
-					result+=L"\\r";
+				case U'\r':
+					result += U"\\r";
 					break;
-				case L'\n':
-					result+=L"\\n";
+				case U'\n':
+					result += U"\\n";
 					break;
-				case L'\t':
-					result+=L"\\t";
+				case U'\t':
+					result += U"\\t";
 					break;
 				default:
-					result+=WString::FromChar(c);
+					result += U32String::FromChar(c);
 				}
 			}
 			return result;
 		}
 
-		WString UnescapeTextForRegex(const WString& escapedText)
+		U32String UnescapeTextForRegex(const U32String& escapedText)
 		{
-			WString result;
-			for(vint i=0;i<escapedText.Length();i++)
+			U32String result;
+			for (vint i = 0; i < escapedText.Length(); i++)
 			{
-				wchar_t c=escapedText[i];
-				if(c==L'\\' || c==L'/')
+				char32_t c = escapedText[i];
+				if (c == U'\\' || c == U'/')
 				{
-					if(i<escapedText.Length()-1)
+					if (i < escapedText.Length() - 1)
 					{
 						i++;
-						c=escapedText[i];
-						switch(c)
+						c = escapedText[i];
+						switch (c)
 						{
-						case L'r':
-							result+=L"\r";
+						case U'r':
+							result += U"\r";
 							break;
-						case L'n':
-							result+=L"\n";
+						case U'n':
+							result += U"\n";
 							break;
-						case L't':
-							result+=L"\t";
+						case U't':
+							result += U"\t";
 							break;
 						default:
-							result+=WString::FromChar(c);
+							result += U32String::FromChar(c);
 						}
 						continue;
 					}
 				}
-				result+=WString::FromChar(c);
+				result += U32String::FromChar(c);
 			}
 			return result;
 		}
 
-		WString NormalizeEscapedTextForRegex(const WString& escapedText)
+		U32String NormalizeEscapedTextForRegex(const U32String& escapedText)
 		{
-			WString result;
-			for(vint i=0;i<escapedText.Length();i++)
+			U32String result;
+			for (vint i = 0; i < escapedText.Length(); i++)
 			{
-				wchar_t c=escapedText[i];
-				if(c==L'\\' || c==L'/')
+				char32_t c = escapedText[i];
+				if (c == U'\\' || c == U'/')
 				{
-					if(i<escapedText.Length()-1)
+					if (i < escapedText.Length() - 1)
 					{
 						i++;
-						c=escapedText[i];
-						result+=WString(L"\\")+WString::FromChar(c);
+						c = escapedText[i];
+						result += U32String(U"\\") + U32String::FromChar(c);
 						continue;
 					}
 				}
-				result+=WString::FromChar(c);
+				result += U32String::FromChar(c);
 			}
 			return result;
 		}
 
-		bool IsRegexEscapedLiteralString(const WString& regex)
+		bool IsRegexEscapedLiteralString(const U32String& regex)
 		{
-			for(vint i=0;i<regex.Length();i++)
+			for (vint i = 0; i < regex.Length(); i++)
 			{
-				wchar_t c=regex[i];
-				if(c==L'\\' || c==L'/')
+				char32_t c = regex[i];
+				if (c == U'\\' || c == U'/')
 				{
 					i++;
 				}
 				else
 				{
-					switch(c)
+					switch (c)
 					{
-					case L'\\':case L'/':case L'(':case L')':case L'+':case L'*':case L'?':case L'|':
-					case L'{':case L'}':case L'[':case L']':case L'<':case L'>':
-					case L'^':case L'$':case L'!':case L'=':
+					case U'\\':case U'/':case U'(':case U')':case U'+':case U'*':case U'?':case U'|':
+					case U'{':case U'}':case U'[':case U']':case U'<':case U'>':
+					case U'^':case U'$':case U'!':case U'=':
 						return false;
 					}
 				}
@@ -3392,11 +3653,11 @@ RegexNode
 
 		RegexNode RegexNode::Loop(vint min, vint max)const
 		{
-			LoopExpression* target=new LoopExpression;
-			target->min=min;
-			target->max=max;
-			target->preferLong=true;
-			target->expression=expression;
+			LoopExpression* target = new LoopExpression;
+			target->min = min;
+			target->max = max;
+			target->preferLong = true;
+			target->expression = expression;
 			return RegexNode(target);
 		}
 
@@ -3407,55 +3668,55 @@ RegexNode
 
 		RegexNode RegexNode::operator+(const RegexNode& node)const
 		{
-			SequenceExpression* target=new SequenceExpression;
-			target->left=expression;
-			target->right=node.expression;
+			SequenceExpression* target = new SequenceExpression;
+			target->left = expression;
+			target->right = node.expression;
 			return RegexNode(target);
 		}
 
 		RegexNode RegexNode::operator|(const RegexNode& node)const
 		{
-			AlternateExpression* target=new AlternateExpression;
-			target->left=expression;
-			target->right=node.expression;
+			AlternateExpression* target = new AlternateExpression;
+			target->left = expression;
+			target->right = node.expression;
 			return RegexNode(target);
 		}
 
 		RegexNode RegexNode::operator+()const
 		{
-			PositiveExpression* target=new PositiveExpression;
-			target->expression=expression;
+			PositiveExpression* target = new PositiveExpression;
+			target->expression = expression;
 			return RegexNode(target);
 		}
 
 		RegexNode RegexNode::operator-()const
 		{
-			NegativeExpression* target=new NegativeExpression;
-			target->expression=expression;
+			NegativeExpression* target = new NegativeExpression;
+			target->expression = expression;
 			return RegexNode(target);
 		}
 
 		RegexNode RegexNode::operator!()const
 		{
-			CharSetExpression* source=dynamic_cast<CharSetExpression*>(expression.Obj());
+			CharSetExpression* source = dynamic_cast<CharSetExpression*>(expression.Obj());
 			CHECK_ERROR(source, L"RegexNode::operator!()#operator ! can only applies on charset expressions.");
-			Ptr<CharSetExpression> target=new CharSetExpression;
+			Ptr<CharSetExpression> target = new CharSetExpression;
 			CopyFrom(target->ranges, source->ranges);
-			target->reverse=!source->reverse;
+			target->reverse = !source->reverse;
 			return RegexNode(target);
 		}
 
 		RegexNode RegexNode::operator%(const RegexNode& node)const
 		{
-			CharSetExpression* left=dynamic_cast<CharSetExpression*>(expression.Obj());
-			CharSetExpression* right=dynamic_cast<CharSetExpression*>(node.expression.Obj());
+			CharSetExpression* left = dynamic_cast<CharSetExpression*>(expression.Obj());
+			CharSetExpression* right = dynamic_cast<CharSetExpression*>(node.expression.Obj());
 			CHECK_ERROR(left && right && !left->reverse && !right->reverse, L"RegexNode::operator%(const RegexNode&)#operator % only connects non-reverse charset expressions.");
-			Ptr<CharSetExpression> target=new CharSetExpression;
-			target->reverse=false;
+			Ptr<CharSetExpression> target = new CharSetExpression;
+			target->reverse = false;
 			CopyFrom(target->ranges, left->ranges);
-			for(vint i=0;i<right->ranges.Count();i++)
+			for (vint i = 0; i < right->ranges.Count(); i++)
 			{
-				if(!target->AddRangeWithConflict(right->ranges[i]))
+				if (!target->AddRangeWithConflict(right->ranges[i]))
 				{
 					CHECK_ERROR(false, L"RegexNode::operator%(const RegexNode&)#Failed to create charset expression from operator %.");
 				}
@@ -3467,33 +3728,33 @@ RegexNode
 Regex Writer
 ***********************************************************************/
 
-		RegexNode rCapture(const WString& name, const RegexNode& node)
+		RegexNode rCapture(const U32String& name, const RegexNode& node)
 		{
-			CaptureExpression* target=new CaptureExpression;
-			target->name=name;
-			target->expression=node.expression;
+			CaptureExpression* target = new CaptureExpression;
+			target->name = name;
+			target->expression = node.expression;
 			return RegexNode(target);
 		}
 
-		RegexNode rUsing(const WString& name)
+		RegexNode rUsing(const U32String& name)
 		{
-			UsingExpression* target=new UsingExpression;
-			target->name=name;
+			UsingExpression* target = new UsingExpression;
+			target->name = name;
 			return RegexNode(target);
 		}
 
-		RegexNode rMatch(const WString& name, vint index)
+		RegexNode rMatch(const U32String& name, vint index)
 		{
-			MatchExpression* target=new MatchExpression;
-			target->name=name;
-			target->index=index;
+			MatchExpression* target = new MatchExpression;
+			target->name = name;
+			target->index = index;
 			return RegexNode(target);
 		}
 
 		RegexNode rMatch(vint index)
 		{
-			MatchExpression* target=new MatchExpression;
-			target->index=index;
+			MatchExpression* target = new MatchExpression;
+			target->index = index;
 			return RegexNode(target);
 		}
 
@@ -3507,33 +3768,33 @@ Regex Writer
 			return RegexNode(new EndExpression);
 		}
 
-		RegexNode rC(wchar_t a, wchar_t b)
+		RegexNode rC(char32_t a, char32_t b)
 		{
-			if(!b)b=a;
-			CharSetExpression* target=new CharSetExpression;
-			target->reverse=false;
+			if (!b)b = a;
+			CharSetExpression* target = new CharSetExpression;
+			target->reverse = false;
 			target->AddRangeWithConflict(CharRange(a, b));
 			return RegexNode(target);
 		}
 
 		RegexNode r_d()
 		{
-			return rC(L'0', L'9');
+			return rC(U'0', U'9');
 		}
 
 		RegexNode r_l()
 		{
-			return rC(L'a', L'z')%rC(L'A', L'Z')%rC(L'_');
+			return rC(U'a', U'z') % rC(U'A', U'Z') % rC(U'_');
 		}
 
 		RegexNode r_w()
 		{
-			return rC(L'0', L'9')%rC(L'a', L'z')%rC(L'A', L'Z')%rC(L'_');
+			return rC(U'0', U'9') % rC(U'a', U'z') % rC(U'A', U'Z') % rC(U'_');
 		}
 
 		RegexNode rAnyChar()
 		{
-			return rC(1, 65535);
+			return rC(1, MaxChar32);
 		}
 	}
 }
@@ -3556,26 +3817,26 @@ namespace vl
 /***********************************************************************
 Automaton
 ***********************************************************************/
-		
+
 		Automaton::Automaton()
 		{
-			startState=0;
+			startState = 0;
 		}
 
 		State* Automaton::NewState()
 		{
-			State* state=new State;
-			state->finalState=false;
-			state->userData=0;
+			State* state = new State;
+			state->finalState = false;
+			state->userData = 0;
 			states.Add(state);
 			return state;
 		}
 
 		Transition* Automaton::NewTransition(State* start, State* end)
 		{
-			Transition* transition=new Transition;
-			transition->source=start;
-			transition->target=end;
+			Transition* transition = new Transition;
+			transition->source = start;
+			transition->target = end;
 			start->transitions.Add(transition);
 			end->inputs.Add(transition);
 			transitions.Add(transition);
@@ -3584,82 +3845,82 @@ Automaton
 
 		Transition* Automaton::NewChars(State* start, State* end, CharRange range)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Chars;
-			transition->range=range;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::Chars;
+			transition->range = range;
 			return transition;
 		}
 
 		Transition* Automaton::NewEpsilon(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Epsilon;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::Epsilon;
 			return transition;
 		}
 
 		Transition* Automaton::NewBeginString(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::BeginString;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::BeginString;
 			return transition;
 		}
 
 		Transition* Automaton::NewEndString(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::EndString;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::EndString;
 			return transition;
 		}
 
 		Transition* Automaton::NewNop(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Nop;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::Nop;
 			return transition;
 		}
 
 		Transition* Automaton::NewCapture(State* start, State* end, vint capture)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Capture;
-			transition->capture=capture;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::Capture;
+			transition->capture = capture;
 			return transition;
 		}
 
 		Transition* Automaton::NewMatch(State* start, State* end, vint capture, vint index)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Match;
-			transition->capture=capture;
-			transition->index=index;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::Match;
+			transition->capture = capture;
+			transition->index = index;
 			return transition;
 		}
 
 		Transition* Automaton::NewPositive(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Positive;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::Positive;
 			return transition;
 		}
 
 		Transition* Automaton::NewNegative(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::Negative;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::Negative;
 			return transition;
 		}
 
 		Transition* Automaton::NewNegativeFail(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::NegativeFail;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::NegativeFail;
 			return transition;
 		}
 
 		Transition* Automaton::NewEnd(State* start, State* end)
 		{
-			Transition* transition=NewTransition(start, end);
-			transition->type=Transition::End;
+			Transition* transition = NewTransition(start, end);
+			transition->type = Transition::End;
 			return transition;
 		}
 
@@ -3669,7 +3930,7 @@ Helpers
 
 		bool PureEpsilonChecker(Transition* transition)
 		{
-			switch(transition->type)
+			switch (transition->type)
 			{
 			case Transition::Epsilon:
 			case Transition::Nop:
@@ -3683,7 +3944,7 @@ Helpers
 
 		bool RichEpsilonChecker(Transition* transition)
 		{
-			switch(transition->type)
+			switch (transition->type)
 			{
 			case Transition::Epsilon:
 				return true;
@@ -3694,15 +3955,15 @@ Helpers
 
 		bool AreEqual(Transition* transA, Transition* transB)
 		{
-			if(transA->type!=transB->type)return false;
-			switch(transA->type)
+			if (transA->type != transB->type)return false;
+			switch (transA->type)
 			{
 			case Transition::Chars:
-				return transA->range==transB->range;
+				return transA->range == transB->range;
 			case Transition::Capture:
-				return transA->capture==transB->capture;
+				return transA->capture == transB->capture;
 			case Transition::Match:
-				return transA->capture==transB->capture && transA->index==transB->index;
+				return transA->capture == transB->capture && transA->index == transB->index;
 			default:
 				return true;
 			}
@@ -3711,19 +3972,19 @@ Helpers
 		// Collect epsilon states and non-epsilon transitions, their order are maintained to match the e-NFA
 		void CollectEpsilon(State* targetState, State* sourceState, bool(*epsilonChecker)(Transition*), List<State*>& epsilonStates, List<Transition*>& transitions)
 		{
-			if(!epsilonStates.Contains(sourceState))
+			if (!epsilonStates.Contains(sourceState))
 			{
 				epsilonStates.Add(sourceState);
-				for(vint i=0;i<sourceState->transitions.Count();i++)
+				for (vint i = 0; i < sourceState->transitions.Count(); i++)
 				{
-					Transition* transition=sourceState->transitions[i];
-					if(epsilonChecker(transition))
+					Transition* transition = sourceState->transitions[i];
+					if (epsilonChecker(transition))
 					{
-						if(!epsilonStates.Contains(transition->target))
+						if (!epsilonStates.Contains(transition->target))
 						{
-							if(transition->target->finalState)
+							if (transition->target->finalState)
 							{
-								targetState->finalState=true;
+								targetState->finalState = true;
 							}
 							CollectEpsilon(targetState, transition->target, epsilonChecker, epsilonStates, transitions);
 						}
@@ -3738,24 +3999,24 @@ Helpers
 
 		Automaton::Ref EpsilonNfaToNfa(Automaton::Ref source, bool(*epsilonChecker)(Transition*), Dictionary<State*, State*>& nfaStateMap)
 		{
-			Automaton::Ref target=new Automaton;
+			Automaton::Ref target = new Automaton;
 			Dictionary<State*, State*> stateMap;	// source->target
 			List<State*> epsilonStates;				// current epsilon closure
 			List<Transition*> transitions;			// current non-epsilon transitions
 
 			stateMap.Add(source->startState, target->NewState());
 			nfaStateMap.Add(stateMap[source->startState], source->startState);
-			target->startState=target->states[0].Obj();
+			target->startState = target->states[0].Obj();
 			CopyFrom(target->captureNames, source->captureNames);
 
-			for(vint i=0;i<target->states.Count();i++)
+			for (vint i = 0; i < target->states.Count(); i++)
 			{
 				// Clear cache
-				State* targetState=target->states[i].Obj();
-				State* sourceState=nfaStateMap[targetState];
-				if(sourceState->finalState)
+				State* targetState = target->states[i].Obj();
+				State* sourceState = nfaStateMap[targetState];
+				if (sourceState->finalState)
 				{
-					targetState->finalState=true;
+					targetState->finalState = true;
 				}
 				epsilonStates.Clear();
 				transitions.Clear();
@@ -3764,21 +4025,21 @@ Helpers
 				CollectEpsilon(targetState, sourceState, epsilonChecker, epsilonStates, transitions);
 
 				// Iterate through all non-epsilon transitions
-				for(vint j=0;j<transitions.Count();j++)
+				for (vint j = 0; j < transitions.Count(); j++)
 				{
-					Transition* transition=transitions[j];
+					Transition* transition = transitions[j];
 					// Create and map a new target state if a new non-epsilon state is found in the e-NFA
-					if(!stateMap.Keys().Contains(transition->target))
+					if (!stateMap.Keys().Contains(transition->target))
 					{
 						stateMap.Add(transition->target, target->NewState());
 						nfaStateMap.Add(stateMap[transition->target], transition->target);
 					}
 					// Copy transition to connect between two non-epsilon state
-					Transition* newTransition=target->NewTransition(targetState, stateMap[transition->target]);
-					newTransition->capture=transition->capture;
-					newTransition->index=transition->index;
-					newTransition->range=transition->range;
-					newTransition->type=transition->type;
+					Transition* newTransition = target->NewTransition(targetState, stateMap[transition->target]);
+					newTransition->capture = transition->capture;
+					newTransition->index = transition->index;
+					newTransition->range = transition->range;
+					newTransition->type = transition->type;
 				}
 			}
 			return target;
@@ -3786,13 +4047,13 @@ Helpers
 
 		Automaton::Ref NfaToDfa(Automaton::Ref source, Group<State*, State*>& dfaStateMap)
 		{
-			Automaton::Ref target=new Automaton;
+			Automaton::Ref target = new Automaton;
 			Group<Transition*, Transition*> nfaTransitions;
 			List<Transition*> transitionClasses; // Maintain order for nfaTransitions.Keys
 
 			CopyFrom(target->captureNames, source->captureNames);
-			State* startState=target->NewState();
-			target->startState=startState;
+			State* startState = target->NewState();
+			target->startState = startState;
 			dfaStateMap.Add(startState, source->startState);
 
 			SortedList<State*> transitionTargets;
@@ -3800,36 +4061,36 @@ Helpers
 			transitionTargets.SetLessMemoryMode(false);
 			relativeStates.SetLessMemoryMode(false);
 
-			for(vint i=0;i<target->states.Count();i++)
+			for (vint i = 0; i < target->states.Count(); i++)
 			{
-				State* currentState=target->states[i].Obj();
+				State* currentState = target->states[i].Obj();
 				nfaTransitions.Clear();
 				transitionClasses.Clear();
 
 				// Iterate through all NFA states which represent the DFA state
-				const List<State*>& nfaStates=dfaStateMap[currentState];
-				for(vint j=0;j<nfaStates.Count();j++)
+				const List<State*>& nfaStates = dfaStateMap[currentState];
+				for (vint j = 0; j < nfaStates.Count(); j++)
 				{
-					State* nfaState=nfaStates.Get(j);
+					State* nfaState = nfaStates.Get(j);
 					// Iterate through all transitions from those NFA states
-					for(vint k=0;k<nfaState->transitions.Count();k++)
+					for (vint k = 0; k < nfaState->transitions.Count(); k++)
 					{
-						Transition* nfaTransition=nfaState->transitions[k];
+						Transition* nfaTransition = nfaState->transitions[k];
 						// Check if there is any key in nfaTransitions that has the same input as the current transition
-						Transition* transitionClass=0;
-						for(vint l=0;l<nfaTransitions.Keys().Count();l++)
+						Transition* transitionClass = 0;
+						for (vint l = 0; l < nfaTransitions.Keys().Count(); l++)
 						{
-							Transition* key=nfaTransitions.Keys()[l];
-							if(AreEqual(key, nfaTransition))
+							Transition* key = nfaTransitions.Keys()[l];
+							if (AreEqual(key, nfaTransition))
 							{
-								transitionClass=key;
+								transitionClass = key;
 								break;
 							}
 						}
 						// Create a new key if not
-						if(transitionClass==0)
+						if (transitionClass == 0)
 						{
-							transitionClass=nfaTransition;
+							transitionClass = nfaTransition;
 							transitionClasses.Add(transitionClass);
 						}
 						// Group the transition
@@ -3838,161 +4099,68 @@ Helpers
 				}
 
 				// Iterate through all key transition that represent all existing transition inputs from the same state
-				for(vint j=0;j<transitionClasses.Count();j++)
+				for (vint j = 0; j < transitionClasses.Count(); j++)
 				{
-					const List<Transition*>& transitionSet=nfaTransitions[transitionClasses[j]];
+					const List<Transition*>& transitionSet = nfaTransitions[transitionClasses[j]];
 					// Sort all target states and keep unique
 					transitionTargets.Clear();
-					for(vint l=0;l<transitionSet.Count();l++)
+					for (vint l = 0; l < transitionSet.Count(); l++)
 					{
-						State* nfaState=transitionSet.Get(l)->target;
-						if(!transitionTargets.Contains(nfaState))
+						State* nfaState = transitionSet.Get(l)->target;
+						if (!transitionTargets.Contains(nfaState))
 						{
 							transitionTargets.Add(nfaState);
 						}
 					}
 					// Check if these NFA states represent a created DFA state
-					State* dfaState=0;
-					for(vint k=0;k<dfaStateMap.Count();k++)
+					State* dfaState = 0;
+					for (vint k = 0; k < dfaStateMap.Count(); k++)
 					{
 						// Sort NFA states for a certain DFA state
 						CopyFrom(relativeStates, dfaStateMap.GetByIndex(k));
 						// Compare two NFA states set
-						if(relativeStates.Count()==transitionTargets.Count())
+						if (relativeStates.Count() == transitionTargets.Count())
 						{
-							bool equal=true;
-							for(vint l=0;l<relativeStates.Count();l++)
+							bool equal = true;
+							for (vint l = 0; l < relativeStates.Count(); l++)
 							{
-								if(relativeStates[l]!=transitionTargets[l])
+								if (relativeStates[l] != transitionTargets[l])
 								{
-									equal=false;
+									equal = false;
 									break;
 								}
 							}
-							if(equal)
+							if (equal)
 							{
-								dfaState=dfaStateMap.Keys()[k];
+								dfaState = dfaStateMap.Keys()[k];
 								break;
 							}
 						}
 					}
 					// Create a new DFA state if there is not
-					if(!dfaState)
+					if (!dfaState)
 					{
-						dfaState=target->NewState();
-						for(vint k=0;k<transitionTargets.Count();k++)
+						dfaState = target->NewState();
+						for (vint k = 0; k < transitionTargets.Count(); k++)
 						{
 							dfaStateMap.Add(dfaState, transitionTargets[k]);
-							if(transitionTargets[k]->finalState)
+							if (transitionTargets[k]->finalState)
 							{
-								dfaState->finalState=true;
+								dfaState->finalState = true;
 							}
 						}
 					}
 					// Create corresponding DFA transition
-					Transition* transitionClass=transitionClasses[j];
-					Transition* newTransition=target->NewTransition(currentState, dfaState);
-					newTransition->capture=transitionClass->capture;
-					newTransition->index=transitionClass->index;
-					newTransition->range=transitionClass->range;
-					newTransition->type=transitionClass->type;
+					Transition* transitionClass = transitionClasses[j];
+					Transition* newTransition = target->NewTransition(currentState, dfaState);
+					newTransition->capture = transitionClass->capture;
+					newTransition->index = transitionClass->index;
+					newTransition->range = transitionClass->range;
+					newTransition->type = transitionClass->type;
 				}
 			}
 
 			return target;
 		}
-	}
-}
-
-/***********************************************************************
-.\AUTOMATON\REGEXDATA.CPP
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-
-namespace vl
-{
-	namespace regex_internal
-	{
-
-/***********************************************************************
-CharRange
-***********************************************************************/
-
-		CharRange::CharRange()
-			:begin(L'\0')
-			,end(L'\0')
-		{
-		}
-
-		CharRange::CharRange(wchar_t _begin, wchar_t _end)
-			:begin(_begin)
-			,end(_end)
-		{
-		}
-
-		bool CharRange::operator<(CharRange item)const
-		{
-			return end<item.begin;
-		}
-
-		bool CharRange::operator<=(CharRange item)const
-		{
-			return *this<item || *this==item;
-		}
-
-		bool CharRange::operator>(CharRange item)const
-		{
-			return item.end<begin;
-		}
-
-		bool CharRange::operator>=(CharRange item)const
-		{
-			return *this>item || *this==item;
-		}
-
-		bool CharRange::operator==(CharRange item)const
-		{
-			return begin==item.begin && end==item.end;
-		}
-
-		bool CharRange::operator!=(CharRange item)const
-		{
-			return begin!=item.begin || item.end!=end;
-		}
-
-		bool CharRange::operator<(wchar_t item)const
-		{
-			return end<item;
-		}
-
-		bool CharRange::operator<=(wchar_t item)const
-		{
-			return begin<=item;
-		}
-
-		bool CharRange::operator>(wchar_t item)const
-		{
-			return item<begin;
-		}
-
-		bool CharRange::operator>=(wchar_t item)const
-		{
-			return item<=end;
-		}
-
-		bool CharRange::operator==(wchar_t item)const
-		{
-			return begin<=item && item<=end;
-		}
-
-		bool CharRange::operator!=(wchar_t item)const
-		{
-			return item<begin || end<item;
-		}
-
 	}
 }

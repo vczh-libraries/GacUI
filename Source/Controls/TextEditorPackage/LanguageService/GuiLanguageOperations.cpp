@@ -293,16 +293,17 @@ RepeatingParsingExecutor
 					}
 					md.hasContextColor=tokenContextColorAtts.Keys().Contains(tokenIndex);
 					md.hasAutoComplete=tokenAutoCompleteAtts.Keys().Contains(tokenIndex);
-					if((md.isCandidate=tokenCandidateAtts.Keys().Contains(tokenIndex)))
+					if ((md.isCandidate = tokenCandidateAtts.Keys().Contains(tokenIndex)))
 					{
-						const ParsingTable::TokenInfo& tokenInfo=table->GetTokenInfo(md.tableTokenIndex);
-						if(IsRegexEscapedLiteralString(tokenInfo.regex))
+						const ParsingTable::TokenInfo& tokenInfo = table->GetTokenInfo(md.tableTokenIndex);
+						auto regex = wtou32(tokenInfo.regex);
+						if (IsRegexEscapedLiteralString(regex))
 						{
-							md.unescapedRegexText=UnescapeTextForRegex(tokenInfo.regex);
+							md.unescapedRegexText = u32tow(UnescapeTextForRegex(regex));
 						}
 						else
 						{
-							md.isCandidate=false;
+							md.isCandidate = false;
 						}
 					}
 

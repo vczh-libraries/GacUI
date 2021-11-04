@@ -4811,6 +4811,8 @@ namespace vl
 				regex::Regex										regexSplitName;
 				regex::Regex										regexSpecialName;
 				regex::Regex										regexTemplate;
+				const vint											specialName_category;
+				const vint											specialName_name;
 
 			protected:
 				Ptr<ClosureInfo>									CollectClosureInfo(Ptr<WfExpression> closure);

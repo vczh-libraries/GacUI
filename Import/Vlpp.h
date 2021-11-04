@@ -7758,19 +7758,6 @@ namespace vl
 		const WString&				GetFunction()const;
 		const WString&				GetName()const;
 	};
-
-	class ParsingException : public Exception
-	{
-	protected:
-		vint						position;
-		WString						expression;
-
-	public:
-		ParsingException(const WString& _message, const WString& _expression, vint _position);
-
-		const WString&				GetExpression()const;
-		vint						GetPosition()const;
-	};
 }
 
 #endif
