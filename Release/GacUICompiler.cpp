@@ -1686,9 +1686,17 @@ GuiInstanceContext::ElementName Parser
 			typedef GuiInstanceContext::ElementName			ElementName;
 		public:
 			Regex						regexElementName;
+			const vint					_namespaceName;
+			const vint					_category;
+			const vint					_name;
+			const vint					_binding;
 
 			GuiInstanceContextElementNameParser()
-				:regexElementName(L"((<namespaceName>[a-zA-Z_]/w*):)?((<category>[a-zA-Z_]/w*).)?(<name>[a-zA-Z_]/w*)(-(<binding>[a-zA-Z_]/w*))?")
+				: regexElementName(L"((<namespaceName>[a-zA-Z_]/w*):)?((<category>[a-zA-Z_]/w*).)?(<name>[a-zA-Z_]/w*)(-(<binding>[a-zA-Z_]/w*))?")
+				, _namespaceName(regexElementName.CaptureNames().IndexOf(L"namespaceName"))
+				, _category(regexElementName.CaptureNames().IndexOf(L"category"))
+				, _name(regexElementName.CaptureNames().IndexOf(L"name"))
+				, _binding(regexElementName.CaptureNames().IndexOf(L"binding"))
 			{
 			}
 
@@ -1702,21 +1710,21 @@ GuiInstanceContext::ElementName Parser
 				}
 
 				Ptr<ElementName> elementName = new ElementName;
-				if (match->Groups().Keys().Contains(L"namespaceName"))
+				if (match->Groups().Keys().Contains(_namespaceName))
 				{
-					elementName->namespaceName = match->Groups()[L"namespaceName"][0].Value();
+					elementName->namespaceName = match->Groups()[_namespaceName][0].Value();
 				}
-				if (match->Groups().Keys().Contains(L"category"))
+				if (match->Groups().Keys().Contains(_category))
 				{
-					elementName->category = match->Groups()[L"category"][0].Value();
+					elementName->category = match->Groups()[_category][0].Value();
 				}
-				if (match->Groups().Keys().Contains(L"name"))
+				if (match->Groups().Keys().Contains(_name))
 				{
-					elementName->name = match->Groups()[L"name"][0].Value();
+					elementName->name = match->Groups()[_name][0].Value();
 				}
-				if (match->Groups().Keys().Contains(L"binding"))
+				if (match->Groups().Keys().Contains(_binding))
 				{
-					elementName->binding = match->Groups()[L"binding"][0].Value();
+					elementName->binding = match->Groups()[_binding][0].Value();
 				}
 				return elementName;
 			}
