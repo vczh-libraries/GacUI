@@ -381,13 +381,9 @@ Regex
 		template<typename T>
 		class Regex_ : public RegexBase_
 		{
-			template<typename T2>
-			friend class RegexLexer_;
 		protected:
 			collections::List<ObjectString<T>>			captureNames;
 
-			static U32String							ToU32(const ObjectString<T>& text);
-			static ObjectString<T>						FromU32(const U32String& text);
 		public:
 			NOT_COPYABLE(Regex_<T>);
 
@@ -1229,21 +1225,21 @@ Template Instantiation
 		extern template class RegexLexerColorizer_<char16_t>;
 		extern template class RegexLexerColorizer_<char32_t>;
 
-		extern template RegexTokens_<wchar_t>				RegexLexerBase_::Parse			(const ObjectString<wchar_t>& code, RegexProc_<wchar_t> _proc, vint codeIndex)const;
-		extern template RegexLexerWalker_<wchar_t>			RegexLexerBase_::Walk			()const;
-		extern template RegexLexerColorizer_<wchar_t>		RegexLexerBase_::Colorize		(RegexProc_<wchar_t> _proc)const;
+		extern template RegexTokens_<wchar_t>				RegexLexerBase_::Parse<wchar_t>			(const ObjectString<wchar_t>& code, RegexProc_<wchar_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<wchar_t>			RegexLexerBase_::Walk<wchar_t>			()const;
+		extern template RegexLexerColorizer_<wchar_t>		RegexLexerBase_::Colorize<wchar_t>		(RegexProc_<wchar_t> _proc)const;
 
-		extern template RegexTokens_<char8_t>				RegexLexerBase_::Parse			(const ObjectString<char8_t>& code, RegexProc_<char8_t> _proc, vint codeIndex)const;
-		extern template RegexLexerWalker_<char8_t>			RegexLexerBase_::Walk			()const;
-		extern template RegexLexerColorizer_<char8_t>		RegexLexerBase_::Colorize		(RegexProc_<char8_t> _proc)const;
+		extern template RegexTokens_<char8_t>				RegexLexerBase_::Parse<char8_t>			(const ObjectString<char8_t>& code, RegexProc_<char8_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<char8_t>			RegexLexerBase_::Walk<char8_t>			()const;
+		extern template RegexLexerColorizer_<char8_t>		RegexLexerBase_::Colorize<char8_t>		(RegexProc_<char8_t> _proc)const;
 
-		extern template RegexTokens_<char16_t>				RegexLexerBase_::Parse			(const ObjectString<char16_t>& code, RegexProc_<char16_t> _proc, vint codeIndex)const;
-		extern template RegexLexerWalker_<char16_t>			RegexLexerBase_::Walk			()const;
-		extern template RegexLexerColorizer_<char16_t>		RegexLexerBase_::Colorize		(RegexProc_<char16_t> _proc)const;
+		extern template RegexTokens_<char16_t>				RegexLexerBase_::Parse<char16_t>		(const ObjectString<char16_t>& code, RegexProc_<char16_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<char16_t>			RegexLexerBase_::Walk<char16_t>			()const;
+		extern template RegexLexerColorizer_<char16_t>		RegexLexerBase_::Colorize<char16_t>		(RegexProc_<char16_t> _proc)const;
 
-		extern template RegexTokens_<char32_t>				RegexLexerBase_::Parse			(const ObjectString<char32_t>& code, RegexProc_<char32_t> _proc, vint codeIndex)const;
-		extern template RegexLexerWalker_<char32_t>			RegexLexerBase_::Walk			()const;
-		extern template RegexLexerColorizer_<char32_t>		RegexLexerBase_::Colorize		(RegexProc_<char32_t> _proc)const;
+		extern template RegexTokens_<char32_t>				RegexLexerBase_::Parse<char32_t>		(const ObjectString<char32_t>& code, RegexProc_<char32_t> _proc, vint codeIndex)const;
+		extern template RegexLexerWalker_<char32_t>			RegexLexerBase_::Walk<char32_t>			()const;
+		extern template RegexLexerColorizer_<char32_t>		RegexLexerBase_::Colorize<char32_t>		(RegexProc_<char32_t> _proc)const;
 
 		extern template class RegexLexer_<wchar_t>;
 		extern template class RegexLexer_<char8_t>;

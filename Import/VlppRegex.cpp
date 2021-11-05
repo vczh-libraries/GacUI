@@ -21,6 +21,41 @@ namespace vl
 		using namespace regex_internal;
 
 /***********************************************************************
+String Conversion
+***********************************************************************/
+
+		template<typename T>
+		struct U32;
+
+		template<>
+		struct U32<wchar_t>
+		{
+			static constexpr U32String(*ToU32)(const WString&) = &wtou32;
+			static constexpr WString(*FromU32)(const U32String&) = &u32tow;
+		};
+
+		template<>
+		struct U32<char8_t>
+		{
+			static constexpr U32String(*ToU32)(const U8String&) = &u8tou32;
+			static constexpr U8String(*FromU32)(const U32String&) = &u32tou8;
+		};
+
+		template<>
+		struct U32<char16_t>
+		{
+			static constexpr U32String(*ToU32)(const U16String&) = &u16tou32;
+			static constexpr U16String(*FromU32)(const U32String&) = &u32tou16;
+		};
+
+		template<>
+		struct U32<char32_t>
+		{
+			static U32String ToU32(const U32String& text) { return text; }
+			static U32String FromU32(const U32String& text) { return text; }
+		};
+
+/***********************************************************************
 RegexMatch_<T>
 ***********************************************************************/
 		
@@ -64,7 +99,7 @@ RegexMatch_<T>
 		}
 
 		template<typename T>
-		const typename RegexString_<T>& RegexMatch_<T>::Result()const
+		const RegexString_<T>& RegexMatch_<T>::Result()const
 		{
 			return result;
 		}
@@ -267,60 +302,12 @@ RegexBase_
 /***********************************************************************
 Regex_<T>
 ***********************************************************************/
-
-		template<>
-		U32String Regex_<wchar_t>::ToU32(const ObjectString<wchar_t>& text)
-		{
-			return wtou32(text);
-		}
-
-		template<>
-		ObjectString<wchar_t> Regex_<wchar_t>::FromU32(const U32String& text)
-		{
-			return u32tow(text);
-		}
-
-		template<>
-		U32String Regex_<char8_t>::ToU32(const ObjectString<char8_t>& text)
-		{
-			return u8tou32(text);
-		}
-
-		template<>
-		ObjectString<char8_t> Regex_<char8_t>::FromU32(const U32String& text)
-		{
-			return u32tou8(text);
-		}
-
-		template<>
-		U32String Regex_<char16_t>::ToU32(const ObjectString<char16_t>& text)
-		{
-			return u16tou32(text);
-		}
-
-		template<>
-		ObjectString<char16_t> Regex_<char16_t>::FromU32(const U32String& text)
-		{
-			return u32tou16(text);
-		}
-
-		template<>
-		U32String Regex_<char32_t>::ToU32(const ObjectString<char32_t>& text)
-		{
-			return text;
-		}
-
-		template<>
-		ObjectString<char32_t> Regex_<char32_t>::FromU32(const U32String& text)
-		{
-			return text;
-		}
 		
 		template<typename T>
 		Regex_<T>::Regex_(const ObjectString<T>& code, bool preferPure)
 		{
 			CharRange::List subsets;
-			RegexExpression::Ref regex = ParseRegexExpression(ToU32(code));
+			RegexExpression::Ref regex = ParseRegexExpression(U32<T>::ToU32(code));
 			Expression::Ref expression = regex->Merge();
 			expression->NormalizeCharSet(subsets);
 
@@ -372,7 +359,7 @@ Regex_<T>
 
 					for (auto&& name : rich->CaptureNames())
 					{
-						captureNames.Add(FromU32(name));
+						captureNames.Add(U32<T>::FromU32(name));
 					}
 				}
 			}
@@ -965,7 +952,7 @@ RegexLexer_<T>
 			CharRange::List subsets;
 			for (auto&& code : tokens)
 			{
-				RegexExpression::Ref regex = ParseRegexExpression(Regex_<T>::ToU32(code));
+				RegexExpression::Ref regex = ParseRegexExpression(U32<T>::ToU32(code));
 				Expression::Ref expression = regex->Merge();
 				expression->CollectCharSet(subsets);
 				expressions.Add(expression);
@@ -1112,21 +1099,21 @@ Template Instantiation
 		template class RegexLexerColorizer_<char16_t>;
 		template class RegexLexerColorizer_<char32_t>;
 
-		template RegexTokens_<wchar_t>				RegexLexerBase_::Parse		(const ObjectString<wchar_t>& code, RegexProc_<wchar_t> _proc, vint codeIndex)const;
-		template RegexLexerWalker_<wchar_t>			RegexLexerBase_::Walk		()const;
-		template RegexLexerColorizer_<wchar_t>		RegexLexerBase_::Colorize	(RegexProc_<wchar_t> _proc)const;
+		template RegexTokens_<wchar_t>				RegexLexerBase_::Parse<wchar_t>		(const ObjectString<wchar_t>& code, RegexProc_<wchar_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<wchar_t>			RegexLexerBase_::Walk<wchar_t>		()const;
+		template RegexLexerColorizer_<wchar_t>		RegexLexerBase_::Colorize<wchar_t>	(RegexProc_<wchar_t> _proc)const;
 
-		template RegexTokens_<char8_t>				RegexLexerBase_::Parse		(const ObjectString<char8_t>& code, RegexProc_<char8_t> _proc, vint codeIndex)const;
-		template RegexLexerWalker_<char8_t>			RegexLexerBase_::Walk		()const;
-		template RegexLexerColorizer_<char8_t>		RegexLexerBase_::Colorize	(RegexProc_<char8_t> _proc)const;
+		template RegexTokens_<char8_t>				RegexLexerBase_::Parse<char8_t>		(const ObjectString<char8_t>& code, RegexProc_<char8_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<char8_t>			RegexLexerBase_::Walk<char8_t>		()const;
+		template RegexLexerColorizer_<char8_t>		RegexLexerBase_::Colorize<char8_t>	(RegexProc_<char8_t> _proc)const;
 
-		template RegexTokens_<char16_t>				RegexLexerBase_::Parse		(const ObjectString<char16_t>& code, RegexProc_<char16_t> _proc, vint codeIndex)const;
-		template RegexLexerWalker_<char16_t>		RegexLexerBase_::Walk		()const;
-		template RegexLexerColorizer_<char16_t>		RegexLexerBase_::Colorize	(RegexProc_<char16_t> _proc)const;
+		template RegexTokens_<char16_t>				RegexLexerBase_::Parse<char16_t>	(const ObjectString<char16_t>& code, RegexProc_<char16_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<char16_t>		RegexLexerBase_::Walk<char16_t>		()const;
+		template RegexLexerColorizer_<char16_t>		RegexLexerBase_::Colorize<char16_t>	(RegexProc_<char16_t> _proc)const;
 
-		template RegexTokens_<char32_t>				RegexLexerBase_::Parse		(const ObjectString<char32_t>& code, RegexProc_<char32_t> _proc, vint codeIndex)const;
-		template RegexLexerWalker_<char32_t>		RegexLexerBase_::Walk		()const;
-		template RegexLexerColorizer_<char32_t>		RegexLexerBase_::Colorize	(RegexProc_<char32_t> _proc)const;
+		template RegexTokens_<char32_t>				RegexLexerBase_::Parse<char32_t>	(const ObjectString<char32_t>& code, RegexProc_<char32_t> _proc, vint codeIndex)const;
+		template RegexLexerWalker_<char32_t>		RegexLexerBase_::Walk<char32_t>		()const;
+		template RegexLexerColorizer_<char32_t>		RegexLexerBase_::Colorize<char32_t>	(RegexProc_<char32_t> _proc)const;
 
 		template class RegexLexer_<wchar_t>;
 		template class RegexLexer_<char8_t>;
