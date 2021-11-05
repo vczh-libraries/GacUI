@@ -4708,10 +4708,10 @@ DateTimeValueSerializer
 					_Y = regexDateTime->CaptureNames().IndexOf(L"Y");
 					_M = regexDateTime->CaptureNames().IndexOf(L"M");
 					_D = regexDateTime->CaptureNames().IndexOf(L"D");
-					_h = regexDateTime->CaptureNames().IndexOf(L"H");
-					_m = regexDateTime->CaptureNames().IndexOf(L"M");
-					_s = regexDateTime->CaptureNames().IndexOf(L"S");
-					_ms = regexDateTime->CaptureNames().IndexOf(L"MS");
+					_h = regexDateTime->CaptureNames().IndexOf(L"h");
+					_m = regexDateTime->CaptureNames().IndexOf(L"m");
+					_s = regexDateTime->CaptureNames().IndexOf(L"s");
+					_ms = regexDateTime->CaptureNames().IndexOf(L"ms");
 
 				FINALIZE_GLOBAL_STORAGE_CLASS
 					delete regexDateTime;
