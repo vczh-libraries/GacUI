@@ -1885,6 +1885,8 @@ namespace vl
 		protected:
 			WString						fullPath;
 
+			static void					NormalizeDelimiters(collections::Array<wchar_t>& buffer);
+			static void					TrimLastDelimiter(WString& fullPath);
 			void						Initialize();
 
 			static void					GetPathComponents(WString path, collections::List<WString>& components);
@@ -1904,7 +1906,7 @@ namespace vl
 
 			/// <summary>Create a root path.</summary>
 			/// <remarks><see cref="GetFullPath"/> returns different values for root path on different platforms. Do not rely on the value.</remarks>
-			FilePath();
+			FilePath() = default;
 			/// <summary>Create a file path.</summary>
 			/// <param name="_filePath">Content of the file path. If it is a relative path, it will be converted to an absolute path.</param>
 			FilePath(const WString& _filePath);
@@ -1914,7 +1916,7 @@ namespace vl
 			/// <summary>Copy a file path.</summary>
 			/// <param name="_filePath">The file path to copy.</param>
 			FilePath(const FilePath& _filePath);
-			~FilePath();
+			~FilePath() = default;
 
 			static vint					Compare(const FilePath& a, const FilePath& b);
 			bool						operator==(const FilePath& filePath)const{ return Compare(*this, filePath) == 0; }
@@ -1964,11 +1966,11 @@ namespace vl
 
 		public:
 			/// <summary>Create an empty reference. An empty reference does not refer to any file.</summary>
-			File();
+			File() = default;
 			/// <summary>Create a reference to a specified file. The file is not required to exist.</summary>
 			/// <param name="_filePath">The specified file.</param>
 			File(const FilePath& _filePath);
-			~File();
+			~File() = default;
 
 			/// <summary>Get the file path of the file.</summary>
 			/// <returns>The file path.</returns>
@@ -2031,13 +2033,15 @@ namespace vl
 		private:
 			FilePath					filePath;
 
+			bool						CreateNonRecursively()const;
+			bool						DeleteNonRecursively()const;
 		public:
 			/// <summary>Create a reference to the root folder.</summary>
-			Folder();
+			Folder() = default;
 			/// <summary>Create a reference to a specified folder. The folder is not required to exist.</summary>
 			/// <param name="_filePath">The specified folder.</param>
 			Folder(const FilePath& _filePath);
-			~Folder();
+			~Folder() = default;
 			
 			/// <summary>Get the file path of the folder.</summary>
 			/// <returns>The file path.</returns>

@@ -40,13 +40,6 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#if defined VCZH_MSVC
-#include <Windows.h>
-#elif defined VCZH_GCC
-#include <iostream>
-#include <string>
-using namespace std;
-#endif
 
 namespace vl
 {
@@ -56,31 +49,6 @@ namespace vl
 /***********************************************************************
 Console
 ***********************************************************************/
-
-		void Console::Write(const wchar_t* string, vint length)
-		{
-#if defined VCZH_MSVC
-			HANDLE outHandle=GetStdHandle(STD_OUTPUT_HANDLE);
-			DWORD fileMode=0;
-			DWORD written=0;
-			if((GetFileType(outHandle) & FILE_TYPE_CHAR) && GetConsoleMode(outHandle, &fileMode))
-			{
-				WriteConsole(outHandle, string, (int)length, &written,0);
-			}
-			else
-			{
-				int codePage = GetConsoleOutputCP();
-				int charCount = WideCharToMultiByte(codePage, 0, string, -1, 0, 0, 0, 0);
-				char* codePageBuffer = new char[charCount];
-				WideCharToMultiByte(codePage, 0, string, -1, codePageBuffer, charCount, 0, 0);
-				WriteFile(outHandle, codePageBuffer, charCount-1, &written, 0);
-				delete[] codePageBuffer;
-			}
-#elif defined VCZH_GCC
-			wstring s(string, string+length);
-			wcout<<s<<ends;
-#endif
-		}
 
 		void Console::Write(const wchar_t* string)
 		{
@@ -97,284 +65,6 @@ Console
 			Write(string);
 			Write(L"\r\n");
 		}
-
-		WString Console::Read()
-		{
-#if defined VCZH_MSVC
-			WString result;
-			DWORD count;
-			for(;;)
-			{
-				wchar_t buffer;
-				ReadConsole(GetStdHandle(STD_INPUT_HANDLE),&buffer,1,&count,0);
-				if(buffer==L'\r')
-				{
-					ReadConsole(GetStdHandle(STD_INPUT_HANDLE),&buffer,1,&count,0);
-					break;
-				}
-				else if(buffer==L'\n')
-				{
-					break;
-				}
-				else
-				{
-					result=result+WString::FromChar(buffer);
-				}
-			}
-			return result;
-#elif defined VCZH_GCC
-			wstring s;
-			getline(wcin, s, L'\n');
-			return s.c_str();
-#endif
-		}
-
-		void Console::SetColor(bool red, bool green, bool blue, bool light)
-		{
-#if defined VCZH_MSVC
-			WORD attribute=0;
-			if(red)attribute		|=FOREGROUND_RED;
-			if(green)attribute		|=FOREGROUND_GREEN;
-			if(blue)attribute		|=FOREGROUND_BLUE;
-			if(light)attribute		|=FOREGROUND_INTENSITY;
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),attribute);
-			SetConsoleTextAttribute(GetStdHandle(STD_INPUT_HANDLE),attribute);
-#elif defined VCZH_GCC
-			int color = (blue?1:0)*4 + (green?1:0)*2 + (red?1:0);
-			if(light)
-				wprintf(L"\x1B[00;3%dm", color);
-			else
-				wprintf(L"\x1B[01;3%dm", color);
-#endif
-		}
-
-		void Console::SetTitle(const WString& string)
-		{
-#if defined VCZH_MSVC
-			SetConsoleTitle(string.Buffer());
-#endif
-		}
-	}
-}
-
-
-/***********************************************************************
-.\DATETIME.CPP
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#include <time.h>
-#if defined VCZH_MSVC
-#elif defined VCZH_GCC
-#include <sys/time.h>
-#endif
-
-namespace vl
-{
-
-/***********************************************************************
-DateTime
-***********************************************************************/
-
-#if defined VCZH_MSVC
-	DateTime SystemTimeToDateTime(const SYSTEMTIME& systemTime)
-	{
-		DateTime dateTime;
-		dateTime.year=systemTime.wYear;
-		dateTime.month=systemTime.wMonth;
-		dateTime.dayOfWeek=systemTime.wDayOfWeek;
-		dateTime.day=systemTime.wDay;
-		dateTime.hour=systemTime.wHour;
-		dateTime.minute=systemTime.wMinute;
-		dateTime.second=systemTime.wSecond;
-		dateTime.milliseconds=systemTime.wMilliseconds;
-
-		FILETIME fileTime;
-		SystemTimeToFileTime(&systemTime, &fileTime);
-		ULARGE_INTEGER largeInteger;
-		largeInteger.HighPart=fileTime.dwHighDateTime;
-		largeInteger.LowPart=fileTime.dwLowDateTime;
-		dateTime.filetime=largeInteger.QuadPart;
-		dateTime.totalMilliseconds=dateTime.filetime/10000;
-
-		return dateTime;
-	}
-
-	SYSTEMTIME DateTimeToSystemTime(const DateTime& dateTime)
-	{
-		ULARGE_INTEGER largeInteger;
-		largeInteger.QuadPart=dateTime.filetime;
-		FILETIME fileTime;
-		fileTime.dwHighDateTime=largeInteger.HighPart;
-		fileTime.dwLowDateTime=largeInteger.LowPart;
-
-		SYSTEMTIME systemTime;
-		FileTimeToSystemTime(&fileTime, &systemTime);
-		return systemTime;
-	}
-#elif defined VCZH_GCC
-	DateTime ConvertTMToDateTime(tm* timeinfo, vint milliseconds)
-	{
-		time_t timer = mktime(timeinfo);
-		DateTime dt;
-		dt.year = timeinfo->tm_year+1900;
-		dt.month = timeinfo->tm_mon+1;
-		dt.day = timeinfo->tm_mday;
-		dt.dayOfWeek = timeinfo->tm_wday;
-		dt.hour = timeinfo->tm_hour;
-		dt.minute = timeinfo->tm_min;
-		dt.second = timeinfo->tm_sec;
-		dt.milliseconds = milliseconds;
-
-		// in Linux and macOS, filetime will be mktime(t) * 1000 + gettimeofday().tv_usec / 1000
-        dt.filetime = (vuint64_t)timer * 1000 + milliseconds;
-		dt.totalMilliseconds = (vuint64_t)timer * 1000 + milliseconds;
-		return dt;
-	}
-#endif
-
-	DateTime DateTime::LocalTime()
-	{
-#if defined VCZH_MSVC
-		SYSTEMTIME systemTime;
-		GetLocalTime(&systemTime);
-		return SystemTimeToDateTime(systemTime);
-#elif defined VCZH_GCC
-		struct timeval tv;
-		gettimeofday(&tv, nullptr);
-		tm* timeinfo = localtime(&tv.tv_sec);
-		return ConvertTMToDateTime(timeinfo, tv.tv_usec / 1000);
-#endif
-	}
-
-	DateTime DateTime::UtcTime()
-	{
-#if defined VCZH_MSVC
-		SYSTEMTIME utcTime;
-		GetSystemTime(&utcTime);
-		return SystemTimeToDateTime(utcTime);
-#elif defined VCZH_GCC
-		struct timeval tv;
-		gettimeofday(&tv, nullptr);
-		tm* timeinfo = gmtime(&tv.tv_sec);
-		return ConvertTMToDateTime(timeinfo, tv.tv_usec / 1000);
-#endif
-	}
-
-	DateTime DateTime::FromDateTime(vint _year, vint _month, vint _day, vint _hour, vint _minute, vint _second, vint _milliseconds)
-	{
-#if defined VCZH_MSVC
-		SYSTEMTIME systemTime;
-		memset(&systemTime, 0, sizeof(systemTime));
-		systemTime.wYear=(WORD)_year;
-		systemTime.wMonth=(WORD)_month;
-		systemTime.wDay=(WORD)_day;
-		systemTime.wHour=(WORD)_hour;
-		systemTime.wMinute=(WORD)_minute;
-		systemTime.wSecond=(WORD)_second;
-		systemTime.wMilliseconds=(WORD)_milliseconds;
-
-		FILETIME fileTime;
-		SystemTimeToFileTime(&systemTime, &fileTime);
-		FileTimeToSystemTime(&fileTime, &systemTime);
-		return SystemTimeToDateTime(systemTime);
-#elif defined VCZH_GCC
-		tm timeinfo;
-		memset(&timeinfo, 0, sizeof(timeinfo));
-		timeinfo.tm_year = _year-1900;
-		timeinfo.tm_mon = _month-1;
-		timeinfo.tm_mday = _day;
-		timeinfo.tm_hour = _hour;
-		timeinfo.tm_min = _minute;
-		timeinfo.tm_sec = _second;
-		timeinfo.tm_isdst = -1;
-
-		return ConvertTMToDateTime(&timeinfo, _milliseconds);
-#endif
-	}
-
-    DateTime DateTime::FromFileTime(vuint64_t filetime)
-	{
-#if defined VCZH_MSVC
-		ULARGE_INTEGER largeInteger;
-		largeInteger.QuadPart=filetime;
-		FILETIME fileTime;
-		fileTime.dwHighDateTime=largeInteger.HighPart;
-		fileTime.dwLowDateTime=largeInteger.LowPart;
-
-		SYSTEMTIME systemTime;
-		FileTimeToSystemTime(&fileTime, &systemTime);
-		return SystemTimeToDateTime(systemTime);
-#elif defined VCZH_GCC
-		time_t timer = (time_t)(filetime / 1000);
-		tm* timeinfo = localtime(&timer);
-		return ConvertTMToDateTime(timeinfo, filetime % 1000);
-#endif
-	}
-
-	DateTime::DateTime()
-		:year(0)
-		,month(0)
-		,day(0)
-		,hour(0)
-		,minute(0)
-		,second(0)
-		,milliseconds(0)
-		,filetime(0)
-	{
-	}
-
-	DateTime DateTime::ToLocalTime()
-	{
-#if defined VCZH_MSVC
-		SYSTEMTIME utcTime=DateTimeToSystemTime(*this);
-		SYSTEMTIME localTime;
-		SystemTimeToTzSpecificLocalTime(NULL, &utcTime, &localTime);
-		return SystemTimeToDateTime(localTime);
-#elif defined VCZH_GCC
-		time_t localTimer = time(nullptr);
-		time_t utcTimer = mktime(gmtime(&localTimer));
-		time_t timer = (time_t)(filetime / 1000) + localTimer - utcTimer;
-		tm* timeinfo = localtime(&timer);
-
-		return ConvertTMToDateTime(timeinfo, milliseconds);
-#endif
-	}
-
-	DateTime DateTime::ToUtcTime()
-	{
-#if defined VCZH_MSVC
-		SYSTEMTIME localTime=DateTimeToSystemTime(*this);
-		SYSTEMTIME utcTime;
-		TzSpecificLocalTimeToSystemTime(NULL, &localTime, &utcTime);
-		return SystemTimeToDateTime(utcTime);
-#elif defined VCZH_GCC
-		time_t timer = (time_t)(filetime / 1000);
-		tm* timeinfo = gmtime(&timer);
-
-		return ConvertTMToDateTime(timeinfo, milliseconds);
-#endif
-	}
-
-	DateTime DateTime::Forward(vuint64_t milliseconds)
-	{
-#if defined VCZH_MSVC
-		return FromFileTime(filetime+milliseconds*10000);
-#elif defined VCZH_GCC
-		return FromFileTime(filetime+milliseconds);
-#endif
-	}
-
-	DateTime DateTime::Backward(vuint64_t milliseconds)
-	{
-#if defined VCZH_MSVC
-		return FromFileTime(filetime-milliseconds*10000);
-#elif defined VCZH_GCC
-		return FromFileTime(filetime-milliseconds);
-#endif
 	}
 }
 
@@ -630,8 +320,7 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#if defined VCZH_MSVC
-#elif defined VCZH_GCC
+#if defined VCZH_GCC
 #include <stdio.h>
 #include <ctype.h>
 #include <wctype.h>
@@ -878,24 +567,6 @@ UtfConversion<char16_t>
 String Conversions (buffer walkthrough)
 ***********************************************************************/
 
-	vint _wtoa(const wchar_t* w, char* a, vint chars)
-	{
-#if defined VCZH_MSVC
-		return WideCharToMultiByte(CP_THREAD_ACP, 0, w, -1, a, (int)(a ? chars : 0), 0, 0);
-#elif defined VCZH_GCC
-		return wcstombs(a, w, chars - 1) + 1;
-#endif
-	}
-
-	vint _atow(const char* a, wchar_t* w, vint chars)
-	{
-#if defined VCZH_MSVC
-		return MultiByteToWideChar(CP_THREAD_ACP, 0, a, -1, w, (int)(w ? chars : 0));
-#elif defined VCZH_GCC
-		return mbstowcs(w, a, chars - 1) + 1;
-#endif
-	}
-
 	template<typename TFrom, typename TTo, typename TReader>
 	vint _utftoutf_reader(const TFrom* s, TTo* d, vint chars)
 	{
@@ -1012,6 +683,7 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+#include <time.h>
 
 namespace vl
 {
@@ -1532,8 +1204,6 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#ifdef VCZH_MSVC
-#endif
 
 namespace vl
 {
@@ -1627,7 +1297,7 @@ UnitTest
 				{
 					SuppressCppFailure(std::forward<TCallback&&>(callback));
 				}
-				__except (EXCEPTION_EXECUTE_HANDLER)
+				__except (/*EXCEPTION_EXECUTE_HANDLER*/ 1)
 				{
 					RecordFailure(L"Runtime exception occurred!");
 				}
@@ -1680,50 +1350,39 @@ UnitTest
 			Console::SetColor(true, true, true, false);
 		}
 
-#ifdef VCZH_MSVC
-		int UnitTest::RunAndDisposeTests(int argc, wchar_t* argv[])
-#else
-		int UnitTest::RunAndDisposeTests(int argc, char* argv[])
-#endif
+		int UnitTest::PrintUsages()
 		{
-			if (argc < 3)
+			PrintMessage(L"Usage: [/D | /R]", MessageKind::Error);
+			return 1;
+		}
+
+		int UnitTest::RunAndDisposeTests(Nullable<WString> option)
+		{
+			if (option)
 			{
-				if (argc == 2)
+				if (option.Value() == L"/D")
 				{
-#ifdef VCZH_MSVC
-					WString option = argv[1];
-#else
-					WString option = atow(argv[1]);
-#endif
-					if (option == L"/D")
-					{
-						suppressFailure = false;
-					}
-					else if (option == L"/R")
-					{
-						suppressFailure = true;
-					}
-					else
-					{
-						goto PRINT_USAGE;
-					}
+					suppressFailure = false;
+				}
+				else if (option.Value() == L"/R")
+				{
+					suppressFailure = true;
 				}
 				else
 				{
-#ifdef VCZH_MSVC
-					if (IsDebuggerPresent())
-					{
-						suppressFailure = false;
-					}
-					else
-					{
-						suppressFailure = true;
-					}
-#else
-					suppressFailure = true;
-#endif
+					return PrintUsages();
 				}
+			}
+			else if (IsDebuggerAttached())
+			{
+				suppressFailure = false;
+			}
+			else
+			{
+				suppressFailure = true;
+			}
 
+			{
 				auto current = testHead;
 				testHead = nullptr;
 				testTail = nullptr;
@@ -1765,9 +1424,44 @@ UnitTest
 				testContext = nullptr;
 				return passed ? 0 : 1;
 			}
-		PRINT_USAGE:
-			PrintMessage(L"Usage: [/D | /R]", MessageKind::Error);
-			return 1;
+		}
+
+		int UnitTest::RunAndDisposeTests(int argc, wchar_t* argv[])
+		{
+			if (argc < 3)
+			{
+				if (argc == 2)
+				{
+					return RunAndDisposeTests({ argv[1] });
+				}
+				else
+				{
+					return RunAndDisposeTests({});
+				}
+			}
+			else
+			{
+				return PrintUsages();
+			}
+		}
+
+		int UnitTest::RunAndDisposeTests(int argc, char* argv[])
+		{
+			if (argc < 3)
+			{
+				if (argc == 2)
+				{
+					return RunAndDisposeTests({ atow(argv[1]) });
+				}
+				else
+				{
+					return RunAndDisposeTests({});
+				}
+			}
+			else
+			{
+				return PrintUsages();
+			}
 		}
 
 		void UnitTest::RegisterTestFile(const char* fileName, UnitTestFileProc testProc)

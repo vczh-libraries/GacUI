@@ -435,7 +435,110 @@ Interface
 
 
 /***********************************************************************
-.\DATETIME.H
+.\COLLECTIONS\PAIR.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_PAIR
+#define VCZH_COLLECTIONS_PAIR
+
+
+namespace vl
+{
+	namespace collections
+	{
+		/// <summary>A type representing a pair of key and value.</summary>
+		/// <typeparam name="K">Type of the key.</typeparam>
+		/// <typeparam name="V">Type of the value.</typeparam>
+		template<typename K, typename V>
+		class Pair
+		{
+		public:
+			/// <summary>The key.</summary>
+			K				key;
+			/// <summary>The value.</summary>
+			V				value;
+
+			Pair()
+			{
+			}
+
+			Pair(const K& _key, const V& _value)
+			{
+				key=_key;
+				value=_value;
+			}
+
+			Pair(const Pair<K, V>& pair)
+			{
+				key=pair.key;
+				value=pair.value;
+			}
+
+			vint CompareTo(const Pair<K, V>& pair)const
+			{
+				if(key<pair.key)
+				{
+					return -1;
+				}
+				else if(key>pair.key)
+				{
+					return 1;
+				}
+				else if(value<pair.value)
+				{
+					return -1;
+				}
+				else if(value>pair.value)
+				{
+					return 1;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+
+			bool operator==(const Pair<K, V>& pair)const
+			{
+				return CompareTo(pair)==0;
+			}
+
+			bool operator!=(const Pair<K, V>& pair)const
+			{
+				return CompareTo(pair)!=0;
+			}
+
+			bool operator<(const Pair<K, V>& pair)const
+			{
+				return CompareTo(pair)<0;
+			}
+
+			bool operator<=(const Pair<K, V>& pair)const
+			{
+				return CompareTo(pair)<=0;
+			}
+
+			bool operator>(const Pair<K, V>& pair)const
+			{
+				return CompareTo(pair)>0;
+			}
+
+			bool operator>=(const Pair<K, V>& pair)const
+			{
+				return CompareTo(pair)>=0;
+			}
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PRIMITIVES\DATETIME.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -456,39 +559,39 @@ Date and Time
 	struct DateTime
 	{
 		/// <summary>The year.</summary>
-		vint				year;
+		vint				year = 0;
 		/// <summary>The month, from 1 to 12.</summary>
-		vint				month;
+		vint				month = 0;
 		/// <summary>The day, from 1 to 31.</summary>
-		vint				day;
+		vint				day = 0;
 		/// <summary>The hour, from 0 to 23.</summary>
-		vint				hour;
+		vint				hour = 0;
 		/// <summary>The minute, from 0 to 59.</summary>
-		vint				minute;
+		vint				minute = 0;
 		/// <summary>The second, from 0 to 60.</summary>
-		vint				second;
+		vint				second = 0;
 		/// <summary>The milliseconds, from 0 to 999.</summary>
-		vint				milliseconds;
+		vint				milliseconds = 0;
 
 		/// <summary>
 		/// The calculated total milliseconds. It is OS dependent because the start time is different.
 		/// It is from 0 to 6, representing Sunday to Saturday.
 		/// </summary>
-		vint				dayOfWeek;
+		vint				dayOfWeek = 0;
 
 		/// <summary>
 		/// The calculated total milliseconds. It is OS dependent because the start time is different.
 		/// You should not rely on the fact about how this value is created.
 		/// The only invariant thing is that, when an date time is earlier than another, the totalMilliseconds is lesser.
 		/// </summary>
-		vuint64_t			totalMilliseconds;
+		vuint64_t			totalMilliseconds = 0;
 
 		/// <summary>
 		/// The calculated file time for the date and time. It is OS dependent.
 		/// You should not rely on the fact about how this value is created.
 		/// The only invariant thing is that, when an date time is earlier than another, the filetime is lesser.
 		/// </summary>
-		vuint64_t			filetime;
+		vuint64_t			filetime = 0;
 
 		/// <summary>Get the current local time.</summary>
 		/// <returns>The current local time.</returns>
@@ -515,7 +618,7 @@ Date and Time
 		static DateTime		FromFileTime(vuint64_t filetime);
 
 		/// <summary>Create an empty date time value that is not meaningful.</summary>
-		DateTime();
+		DateTime() = default;
 
 		/// <summary>Convert the UTC time to the local time.</summary>
 		/// <returns>The UTC time.</returns>
@@ -545,7 +648,7 @@ Date and Time
 
 
 /***********************************************************************
-.\POINTER.H
+.\PRIMITIVES\POINTER.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -1143,940 +1246,6 @@ Traits
 			return key.Obj();
 		}
 	};
-}
-
-#endif
-
-/***********************************************************************
-.\FUNCTION.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_FUNCTION
-#define VCZH_FUNCTION
-#include <memory.h>
-namespace vl
-{
-	template<typename T>
-	class Func;
- 
-/***********************************************************************
-vl::Func<R(TArgs...)>
-***********************************************************************/
-
-	namespace internal_invokers
-	{
-		template<typename R, typename ...TArgs>
-		class Invoker : public Object
-		{
-		public:
-			virtual R Invoke(TArgs&& ...args) = 0;
-		};
-
-		//------------------------------------------------------
-		
-		template<typename R, typename ...TArgs>
-		class StaticInvoker : public Invoker<R, TArgs...>
-		{
-		protected:
-			R(*function)(TArgs ...args);
-
-		public:
-			StaticInvoker(R(*_function)(TArgs...))
-				:function(_function)
-			{
-			}
-
-			R Invoke(TArgs&& ...args)override
-			{
-				return function(std::forward<TArgs>(args)...);
-			}
-		};
-
-		//------------------------------------------------------
-		
-		template<typename C, typename R, typename ...TArgs>
-		class MemberInvoker : public Invoker<R, TArgs...>
-		{
-		protected:
-			C*							sender;
-			R(C::*function)(TArgs ...args);
-
-		public:
-			MemberInvoker(C* _sender, R(C::*_function)(TArgs ...args))
-				:sender(_sender)
-				,function(_function)
-			{
-			}
-
-			R Invoke(TArgs&& ...args)override
-			{
-				return (sender->*function)(std::forward<TArgs>(args)...);
-			}
-		};
-
-		//------------------------------------------------------
-
-		template<typename C, typename R, typename ...TArgs>
-		class ObjectInvoker : public Invoker<R, TArgs...>
-		{
-		protected:
-			C							function;
-
-		public:
-			ObjectInvoker(const C& _function)
-				:function(_function)
-			{
-			}
-
-			ObjectInvoker(C&& _function)
-				:function(std::move(_function))
-			{
-			}
-
-			R Invoke(TArgs&& ...args)override
-			{
-				return function(std::forward<TArgs>(args)...);
-			}
-		};
-
-		//------------------------------------------------------
-
-		template<typename C, typename ...TArgs>
-		class ObjectInvoker<C, void, TArgs...> : public Invoker<void, TArgs...>
-		{
-		protected:
-			C							function;
-
-		public:
-			ObjectInvoker(const C& _function)
-				:function(_function)
-			{
-			}
-
-			ObjectInvoker(C&& _function)
-				:function(std::move(_function))
-			{
-			}
-
-			void Invoke(TArgs&& ...args)override
-			{
-				function(std::forward<TArgs>(args)...);
-			}
-		};
-	}
-
-	/// <summary>A type for functors.</summary>
-	/// <typeparam name="R">The return type.</typeparam>
-	/// <typeparam name="TArgs">Types of parameters.</typeparam>
-	template<typename R, typename ...TArgs>
-	class Func<R(TArgs...)> : public Object
-	{
-	protected:
-		Ptr<internal_invokers::Invoker<R, TArgs...>>		invoker;
-
-		template<typename R2, typename ...TArgs2>
-		static bool IsEmptyFunc(const Func<R2(TArgs2...)>& function)
-		{
-			return !function;
-		}
-
-		template<typename R2, typename ...TArgs2>
-		static bool IsEmptyFunc(Func<R2(TArgs2...)>& function)
-		{
-			return !function;
-		}
-
-		template<typename C>
-		static bool IsEmptyFunc(C&&)
-		{
-			return false;
-		}
-	public:
-		typedef R FunctionType(TArgs...);
-		typedef R ResultType;
-
-		/// <summary>Create a null functor.</summary>
-		Func() = default;
-
-		/// <summary>Copy a functor.</summary>
-		/// <param name="function">The functor to copy.</param>
-		Func(const Func<R(TArgs...)>& function) = default;
-
-		/// <summary>Move a functor.</summary>
-		/// <param name="function">The functor to move.</param>
-		Func(Func<R(TArgs...)>&& function) = default;
-
-		/// <summary>Create a functor from a function pointer.</summary>
-		/// <param name="function">The function pointer.</param>
-		Func(R(*function)(TArgs...))
-		{
-			invoker = new internal_invokers::StaticInvoker<R, TArgs...>(function);
-		}
-
-		/// <summary>Create a functor from a method.</summary>
-		/// <typeparam name="C">Type of the class that this method belongs to.</typeparam>
-		/// <param name="sender">The object that this method belongs to.</param>
-		/// <param name="function">The method pointer.</param>
-		template<typename C>
-		Func(C* sender, R(C::*function)(TArgs...))
-		{
-			invoker = new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function);
-		}
-
-		/// <summary>Create a functor from another compatible functor.</summary>
-		/// <typeparam name="C">Type of the functor to copy.</typeparam>
-		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
-		template<typename C, typename=std::enable_if_t<
-			std::is_same_v<void, R> ||
-			std::is_convertible_v<decltype(std::declval<C>()(std::declval<TArgs>()...)), R>
-			>>
-		Func(C&& function)
-		{
-			if (!IsEmptyFunc(function))
-			{
-				invoker = new internal_invokers::ObjectInvoker<std::remove_cvref_t<C>, R, TArgs...>(std::forward<C&&>(function));
-			}
-		}
-
-		/// <summary>Invoke the function.</summary>
-		/// <returns>Returns the function result. It crashes when the functor is null.</returns>
-		/// <param name="args">Arguments to invoke the function.</param>
-		R operator()(TArgs ...args)const
-		{
-			return invoker->Invoke(std::forward<TArgs>(args)...);
-		}
-
-		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>& function)
-		{
-			invoker = function.invoker;
-			return *this;
-		}
-
-		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>&& function)
-		{
-			invoker = std::move(function.invoker);
-			return *this;
-		}
-
-		bool operator==(const Func<R(TArgs...)>& function)const
-		{
-			return invoker == function.invoker;
-		}
-
-		bool operator!=(const Func<R(TArgs...)>& function)const
-		{
-			return invoker != function.invoker;
-		}
-
-		/// <summary>Test is the functor is non-null.</summary>
-		/// <returns>Returns true if the functor is non-null.</returns>
-		operator bool()const
-		{
-			return invoker;
-		}
-	};
- 
-/***********************************************************************
-vl::function_lambda::LambdaRetriveType<R(TArgs...)>
-***********************************************************************/
- 
-	namespace function_lambda
-	{
-		template<typename T>
-		struct LambdaRetriveType
-		{
-		};
-
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-			typedef TypeTuple<TArgs...> ParameterTypes;
-		};
-
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
-		{
-			typedef Func<R(TArgs...)> Type;
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-			typedef TypeTuple<TArgs...> ParameterTypes;
-		};
-
-		/// <summary>Create a functor in [T:vl.Func`1] from another functor, with all type arguments autotimatically inferred. The "LAMBDA" macro is recommended for the same purpose for writing compact code.</summary>
-		/// <typeparam name="T">Type of the functor to copy.</typeparam>
-		/// <returns>A copied functor in [T:vl.Func`1].</returns>
-		/// <param name="functionObject">The functor to copy.</param>
-		template<typename T>
-		typename LambdaRetriveType<decltype(&T::operator())>::Type Lambda(T functionObject)
-		{
-			return functionObject;
-		}
-
-#define LAMBDA vl::function_lambda::Lambda
-	}
- 
-/***********************************************************************
-vl::function_binding::Binding<R(TArgs...)>
-***********************************************************************/
-
-	namespace function_binding
-	{
-		template<typename T>
-		struct Binding
-		{
-		};
-		 
-		template<typename T>
-		struct CR{typedef const T& Type;};
-		template<typename T>
-		struct CR<T&>{typedef T& Type;};
-		template<typename T>
-		struct CR<const T>{typedef const T& Type;};
-		template<typename T>
-		struct CR<const T&>{typedef const T& Type;};
- 
-		template<typename R, typename T0, typename ...TArgs>
-		struct Binding<R(T0, TArgs...)>
-		{
-			typedef R FunctionType(T0, TArgs...);
-			typedef R CurriedType(TArgs...);
-			typedef T0 FirstParameterType;
-
-			class Binder : public Object
-			{
-			protected:
-				Func<FunctionType>				target;
-				T0								firstArgument;
-			public:
-				Binder(const Func<FunctionType>& _target, T0 _firstArgument)
-					:target(_target)
-					,firstArgument(std::forward<T0>(_firstArgument))
-				{
-				}
-
-				R operator()(TArgs ...args)const
-				{
-					return target(firstArgument, args...);
-				}
-			};
-
-			class Currier : public Object
-			{
-			protected:
-				Func<FunctionType>		target;
-			public:
-				Currier(const Func<FunctionType>& _target)
-					:target(_target)
-				{
-				}
-
-				Func<CurriedType> operator()(T0 firstArgument)const
-				{
-					return Binder(target, firstArgument);
-				}
-			};
-		}; 
-	}
- 
-	/// <summary>
-	/// Currize a function pointer.
-	/// Currizing means to create a new functor whose argument is the first argument of the original function.
-	/// Calling this functor will return another functor whose arguments are all remaining arguments of the original function.
-	/// Calling the returned function will call the original function.
-	/// </summary>
-	/// <typeparam name="T">Type of the function pointer.</typeparam>
-	/// <returns>The currized functor.</returns>
-	/// <param name="function">The function pointer to currize.</param>
-	template<typename T>
-	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
-	Curry(T* function)
-	{
-		return typename function_binding::Binding<T>::Currier(function);
-	}
-
-	/// <summary>
-	/// Currize a functor in [T:vl.Func`1].
-	/// Currizing means to create a new functor whose argument is the first argument of the original function.
-	/// Calling this functor will return another functor whose arguments are all remaining arguments of the original function.
-	/// Calling the returned function will call the original function.
-	/// </summary>
-	/// <typeparam name="T">Type of the functor.</typeparam>
-	/// <returns>The currized functor.</returns>
-	/// <param name="function">The functor to currize.</param>
-	template<typename T>
-	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
-	Curry(const Func<T>& function)
-	{
-		return typename function_binding::Binding<T>::Currier(function);
-	}
-}
-#endif
-
-/***********************************************************************
-.\LAZY.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_LAZY
-#define VCZH_LAZY
-
-
-namespace vl
-{
-	/// <summary>A type representing a lazy evaluation.</summary>
-	/// <typeparam name="T">The type of the evaluation result.</typeparam>
-	template<typename T>
-	class Lazy : public Object
-	{
-	protected:
-		class Internal
-		{
-		public:
-			Func<T()>			evaluator;
-			T					value;
-			bool				evaluated;
-		};
-
-		Ptr<Internal>			internalValue;
-	public:
-		/// <summary>Create an empty evaluation.</summary>
-		Lazy() = default;
-
-		/// <summary>Create an evaluation using a function, which produces the evaluation result.</summary>
-		/// <param name="evaluator">The function.</param>
-		Lazy(const Func<T()>& evaluator)
-		{
-			internalValue=new Internal;
-			internalValue->evaluated=false;
-			internalValue->evaluator=evaluator;
-		}
-
-		/// <summary>Create an evaluation with the immediate result.</summary>
-		/// <param name="value">The result.</param>0
-		Lazy(const T& value)
-		{
-			internalValue=new Internal;
-			internalValue->evaluated=true;
-			internalValue->value=value;
-		}
-
-		/// <summary>Create an evaluation by copying another one.</summary>
-		/// <param name="lazy">The evaluation to copy.</param>
-		Lazy(const Lazy<T>& lazy) = default;
-
-		/// <summary>Create an evaluation by moving another one.</summary>
-		/// <param name="lazy">The evaluation to move.</param>
-		Lazy(Lazy<T>&& lazy) = default;
-
-		Lazy<T>& operator=(const Func<T()>& evaluator)
-		{
-			internalValue=new Internal;
-			internalValue->evaluated=false;
-			internalValue->evaluator=evaluator;
-			return *this;
-		}
-
-		Lazy<T>& operator=(const T& value)
-		{
-			internalValue=new Internal;
-			internalValue->evaluated=true;
-			internalValue->value=value;
-			return *this;
-		}
-
-		Lazy<T>& operator=(const Lazy<T>& lazy)
-		{
-			internalValue=lazy.internalValue;
-			return *this;
-		}
-
-		/// <summary>Get the evaluation result. If the evaluation has not been performed, it will run the evaluation function and cache the result.</summary>
-		/// <returns>The evaluation result.</returns>
-		const T& Value()const
-		{
-			if(!internalValue->evaluated)
-			{
-				internalValue->evaluated=true;
-				internalValue->value=internalValue->evaluator();
-				internalValue->evaluator=Func<T()>();
-			}
-			return internalValue->value;
-		}
-
-		/// <summary>Test if it has already been evaluated or not.</summary>
-		/// <returns>Returns true if it has already been evaluated.</returns>
-		bool IsEvaluated()const
-		{
-			return internalValue->evaluated;
-		}
-
-		/// <summary>Test if it is an empty evaluation or not.</summary>
-		/// <returns>Returns true if it is not empty.</returns>
-		operator bool()const
-		{
-			return internalValue;
-		}
-	};
-}
-
-#endif
-
-
-/***********************************************************************
-.\TUPLE.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-	
-This file is generated by: Vczh Functional Macro
-***********************************************************************/
-#ifndef VCZH_TUPLE
-#define VCZH_TUPLE
-
-
-namespace vl
-{
-	class TupleNullItem
-	{
-	};
-	template<typename T0 = TupleNullItem,typename T1 = TupleNullItem,typename T2 = TupleNullItem,typename T3 = TupleNullItem,typename T4 = TupleNullItem,typename T5 = TupleNullItem,typename T6 = TupleNullItem,typename T7 = TupleNullItem,typename T8 = TupleNullItem,typename T9 = TupleNullItem,typename T10 = TupleNullItem>
-	class Tuple
-	{
-	};
- 
-/***********************************************************************
-vl::Tuple<T0>
-***********************************************************************/
-	template<typename T0>
-	class Tuple<T0> : public Object
-	{
-	public:
-		T0 f0;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0)
-			:f0(p0)
-		{
-		}
- 
-		static int Compare(const Tuple<T0>& a, const Tuple<T0>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1>
-***********************************************************************/
-	template<typename T0,typename T1>
-	class Tuple<T0,T1> : public Object
-	{
-	public:
-		T0 f0;T1 f1;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1)
-			:f0(p0),f1(p1)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1>& a, const Tuple<T0,T1>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2>
-	class Tuple<T0,T1,T2> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2)
-			:f0(p0),f1(p1),f2(p2)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2>& a, const Tuple<T0,T1,T2>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2,T3>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2,typename T3>
-	class Tuple<T0,T1,T2,T3> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;T3 f3;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2,T3 p3)
-			:f0(p0),f1(p1),f2(p2),f3(p3)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2,T3>& a, const Tuple<T0,T1,T2,T3>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2,T3,T4>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2,typename T3,typename T4>
-	class Tuple<T0,T1,T2,T3,T4> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4)
-			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2,T3,T4>& a, const Tuple<T0,T1,T2,T3,T4>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2,T3,T4,T5>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5>
-	class Tuple<T0,T1,T2,T3,T4,T5> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5)
-			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5>& a, const Tuple<T0,T1,T2,T3,T4,T5>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2,T3,T4,T5,T6>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6>
-	class Tuple<T0,T1,T2,T3,T4,T5,T6> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6)
-			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2,T3,T4,T5,T6,T7>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6,typename T7>
-	class Tuple<T0,T1,T2,T3,T4,T5,T6,T7> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;T7 f7;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6,T7 p7)
-			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6),f7(p7)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;if (a.f7 < b.f7) return -1; else if (a.f7 > b.f7) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6,typename T7,typename T8>
-	class Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;T7 f7;T8 f8;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6,T7 p7,T8 p8)
-			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6),f7(p7),f8(p8)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;if (a.f7 < b.f7) return -1; else if (a.f7 > b.f7) return 1;if (a.f8 < b.f8) return -1; else if (a.f8 > b.f8) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) >= 0; }
-	};
-  
-/***********************************************************************
-vl::Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>
-***********************************************************************/
-	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6,typename T7,typename T8,typename T9>
-	class Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9> : public Object
-	{
-	public:
-		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;T7 f7;T8 f8;T9 f9;
- 
-		Tuple()
-		{
-		}
- 
-		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6,T7 p7,T8 p8,T9 p9)
-			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6),f7(p7),f8(p8),f9(p9)
-		{
-		}
- 
-		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& b)
-		{
-			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;if (a.f7 < b.f7) return -1; else if (a.f7 > b.f7) return 1;if (a.f8 < b.f8) return -1; else if (a.f8 > b.f8) return 1;if (a.f9 < b.f9) return -1; else if (a.f9 > b.f9) return 1;
-			return 0;
-		}
- 
-		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) == 0; }
-		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) != 0; }
-		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) < 0; }
-		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) <= 0; }
-		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) > 0; }
-		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) >= 0; }
-	};
- 
-}
-#endif
-
-/***********************************************************************
-.\COLLECTIONS\PAIR.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_PAIR
-#define VCZH_COLLECTIONS_PAIR
-
-
-namespace vl
-{
-	namespace collections
-	{
-		/// <summary>A type representing a pair of key and value.</summary>
-		/// <typeparam name="K">Type of the key.</typeparam>
-		/// <typeparam name="V">Type of the value.</typeparam>
-		template<typename K, typename V>
-		class Pair
-		{
-		public:
-			/// <summary>The key.</summary>
-			K				key;
-			/// <summary>The value.</summary>
-			V				value;
-
-			Pair()
-			{
-			}
-
-			Pair(const K& _key, const V& _value)
-			{
-				key=_key;
-				value=_value;
-			}
-
-			Pair(const Pair<K, V>& pair)
-			{
-				key=pair.key;
-				value=pair.value;
-			}
-
-			vint CompareTo(const Pair<K, V>& pair)const
-			{
-				if(key<pair.key)
-				{
-					return -1;
-				}
-				else if(key>pair.key)
-				{
-					return 1;
-				}
-				else if(value<pair.value)
-				{
-					return -1;
-				}
-				else if(value>pair.value)
-				{
-					return 1;
-				}
-				else
-				{
-					return 0;
-				}
-			}
-
-			bool operator==(const Pair<K, V>& pair)const
-			{
-				return CompareTo(pair)==0;
-			}
-
-			bool operator!=(const Pair<K, V>& pair)const
-			{
-				return CompareTo(pair)!=0;
-			}
-
-			bool operator<(const Pair<K, V>& pair)const
-			{
-				return CompareTo(pair)<0;
-			}
-
-			bool operator<=(const Pair<K, V>& pair)const
-			{
-				return CompareTo(pair)<=0;
-			}
-
-			bool operator>(const Pair<K, V>& pair)const
-			{
-				return CompareTo(pair)>0;
-			}
-
-			bool operator>=(const Pair<K, V>& pair)const
-			{
-				return CompareTo(pair)>=0;
-			}
-		};
-	}
 }
 
 #endif
@@ -4661,85 +3830,6 @@ Pairwise
 #endif
 
 /***********************************************************************
-.\COLLECTIONS\OPERATIONSELECT.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_OPERATIONSELECT
-#define VCZH_COLLECTIONS_OPERATIONSELECT
-
-
-namespace vl
-{
-	namespace collections
-	{
-
-/***********************************************************************
-Select
-***********************************************************************/
-
-		template<typename T, typename K>
-		class SelectEnumerator : public virtual IEnumerator<K>
-		{
-		protected:
-			IEnumerator<T>*		enumerator;
-			Func<K(T)>			selector;
-			Nullable<K>			current;
-		public:
-			SelectEnumerator(IEnumerator<T>* _enumerator, const Func<K(T)>& _selector, Nullable<K> _current = {})
-				:enumerator(_enumerator)
-				,selector(_selector)
-				,current(_current)
-			{
-			}
-
-			~SelectEnumerator()
-			{
-				delete enumerator;
-			}
-
-			IEnumerator<K>* Clone()const override
-			{
-				return new SelectEnumerator(enumerator->Clone(), selector, current);
-			}
-
-			const K& Current()const override
-			{
-				return current.Value();
-			}
-
-			vint Index()const override
-			{
-				return enumerator->Index();
-			}
-
-			bool Next()override
-			{
-				if (enumerator->Next())
-				{
-					current = selector(enumerator->Current());
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void Reset()override
-			{
-				enumerator->Reset();
-			}
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\COLLECTIONS\OPERATIONSEQUENCE.H
 ***********************************************************************/
 /***********************************************************************
@@ -5264,194 +4354,6 @@ Intersect/Except
 #endif
 
 /***********************************************************************
-.\COLLECTIONS\OPERATIONWHERE.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_OPERATIONWHERE
-#define VCZH_COLLECTIONS_OPERATIONWHERE
-
-
-namespace vl
-{
-	namespace collections
-	{
-/***********************************************************************
-Where
-***********************************************************************/
-
-		template<typename T>
-		class WhereEnumerator : public virtual IEnumerator<T>
-		{
-		protected:
-			IEnumerator<T>*			enumerator;
-			Func<bool(T)>			selector;
-			vint					index;
-
-		public:
-			WhereEnumerator(IEnumerator<T>* _enumerator, const Func<bool(T)>& _selector, vint _index=-1)
-				:enumerator(_enumerator)
-				,selector(_selector)
-				,index(_index)
-			{
-			}
-
-			~WhereEnumerator()
-			{
-				delete enumerator;
-			}
-
-			IEnumerator<T>* Clone()const override
-			{
-				return new WhereEnumerator(enumerator->Clone(), selector, index);
-			}
-
-			const T& Current()const override
-			{
-				return enumerator->Current();
-			}
-
-			vint Index()const override
-			{
-				return index;
-			}
-
-			bool Next()override
-			{
-				while(enumerator->Next())
-				{
-					if(selector(enumerator->Current()))
-					{
-						index++;
-						return true;
-					}
-				}
-				return false;
-			}
-
-			void Reset()override
-			{
-				enumerator->Reset();
-				index=-1;
-			}
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\EVENT.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-#ifndef VCZH_EVENT
-#define VCZH_EVENT
-
-
-namespace vl
-{
-	template<typename T>
-	class Event;
- 
-	class EventHandler : public Object
-	{
-	public:
-		virtual bool							IsAttached() = 0;
-	};
-
-	/// <summary>An event for being subscribed using multiple callbacks. A callback is any functor that returns void.</summary>
-	/// <typeparam name="TArgs">Types of callback parameters.</typeparam>
-	template<typename ...TArgs>
-	class Event<void(TArgs...)> : public Object
-	{
-	protected:
-		class EventHandlerImpl : public EventHandler
-		{
-		public:
-			bool								attached;
-			Func<void(TArgs...)>				function;
-
-			EventHandlerImpl(const Func<void(TArgs...)>& _function)
-				:attached(true)
-				, function(_function)
-			{
-			}
- 
-			bool IsAttached()override
-			{
-				return attached;
-			}
-		};
- 
-		collections::SortedList<Ptr<EventHandlerImpl>>	handlers;
-	public:
-		NOT_COPYABLE(Event);
-		Event() = default;
-
-		/// <summary>Add a callback to the event.</summary>
-		/// <returns>The event handler representing the callback.</returns>
-		/// <param name="function">The callback.</param>
-		Ptr<EventHandler> Add(const Func<void(TArgs...)>& function)
-		{
-			Ptr<EventHandlerImpl> handler = new EventHandlerImpl(function);
-			handlers.Add(handler);
-			return handler;
-		}
- 
-		/// <summary>Add a callback to the event.</summary>
-		/// <returns>The event handler representing the callback.</returns>
-		/// <param name="function">The callback.</param>
-		Ptr<EventHandler> Add(void(*function)(TArgs...))
-		{
-			return Add(Func<void(TArgs...)>(function));
-		}
- 
-		/// <summary>Add a method callback to the event.</summary>
-		/// <typeparam name="C">Type of the class that the callback belongs to.</typeparam>
-		/// <returns>The event handler representing the callback.</returns>
-		/// <param name="sender">The object that the callback belongs to.</param>
-		/// <param name="function">The method callback.</param>
-		template<typename C>
-		Ptr<EventHandler> Add(C* sender, void(C::*function)(TArgs...))
-		{
-			return Add(Func<void(TArgs...)>(sender, function));
-		}
- 
-		/// <summary>Remove a callback by an event handler returns from <see cref="Add"/>.</summary>
-		/// <returns>Returns true if this operation succeeded.</returns>
-		/// <param name="handler">The event handler representing the callback.</param>
-		bool Remove(Ptr<EventHandler> handler)
-		{
-			auto impl = handler.Cast<EventHandlerImpl>();
-			if (!impl) return false;
-			vint index = handlers.IndexOf(impl.Obj());
-			if (index == -1) return false;
-			impl->attached = false;
-			handlers.RemoveAt(index);
-			return true;
-		}
- 
-		/// <summary>Invoke all callbacks in the event.</summary>
-		/// <param name="args">Arguments to invoke all callbacks.</param>
-		void operator()(TArgs ...args)const
-		{
-			for(vint i = 0; i < handlers.Count(); i++)
-			{
-				handlers[i]->function(args...);
-			}
-		}
-	};
-}
-#endif
-
-
-/***********************************************************************
 .\COLLECTIONS\PARTIALORDERING.H
 ***********************************************************************/
 /***********************************************************************
@@ -5938,6 +4840,1104 @@ Partial Ordering
 
 #endif
 
+
+/***********************************************************************
+.\PRIMITIVES\FUNCTION.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_FUNCTION
+#define VCZH_FUNCTION
+#include <memory.h>
+namespace vl
+{
+	template<typename T>
+	class Func;
+ 
+/***********************************************************************
+vl::Func<R(TArgs...)>
+***********************************************************************/
+
+	namespace internal_invokers
+	{
+		template<typename R, typename ...TArgs>
+		class Invoker : public Object
+		{
+		public:
+			virtual R Invoke(TArgs&& ...args) = 0;
+		};
+
+		//------------------------------------------------------
+		
+		template<typename R, typename ...TArgs>
+		class StaticInvoker : public Invoker<R, TArgs...>
+		{
+		protected:
+			R(*function)(TArgs ...args);
+
+		public:
+			StaticInvoker(R(*_function)(TArgs...))
+				:function(_function)
+			{
+			}
+
+			R Invoke(TArgs&& ...args)override
+			{
+				return function(std::forward<TArgs>(args)...);
+			}
+		};
+
+		//------------------------------------------------------
+		
+		template<typename C, typename R, typename ...TArgs>
+		class MemberInvoker : public Invoker<R, TArgs...>
+		{
+		protected:
+			C*							sender;
+			R(C::*function)(TArgs ...args);
+
+		public:
+			MemberInvoker(C* _sender, R(C::*_function)(TArgs ...args))
+				:sender(_sender)
+				,function(_function)
+			{
+			}
+
+			R Invoke(TArgs&& ...args)override
+			{
+				return (sender->*function)(std::forward<TArgs>(args)...);
+			}
+		};
+
+		//------------------------------------------------------
+
+		template<typename C, typename R, typename ...TArgs>
+		class ObjectInvoker : public Invoker<R, TArgs...>
+		{
+		protected:
+			C							function;
+
+		public:
+			ObjectInvoker(const C& _function)
+				:function(_function)
+			{
+			}
+
+			ObjectInvoker(C&& _function)
+				:function(std::move(_function))
+			{
+			}
+
+			R Invoke(TArgs&& ...args)override
+			{
+				return function(std::forward<TArgs>(args)...);
+			}
+		};
+
+		//------------------------------------------------------
+
+		template<typename C, typename ...TArgs>
+		class ObjectInvoker<C, void, TArgs...> : public Invoker<void, TArgs...>
+		{
+		protected:
+			C							function;
+
+		public:
+			ObjectInvoker(const C& _function)
+				:function(_function)
+			{
+			}
+
+			ObjectInvoker(C&& _function)
+				:function(std::move(_function))
+			{
+			}
+
+			void Invoke(TArgs&& ...args)override
+			{
+				function(std::forward<TArgs>(args)...);
+			}
+		};
+	}
+
+	/// <summary>A type for functors.</summary>
+	/// <typeparam name="R">The return type.</typeparam>
+	/// <typeparam name="TArgs">Types of parameters.</typeparam>
+	template<typename R, typename ...TArgs>
+	class Func<R(TArgs...)> : public Object
+	{
+	protected:
+		Ptr<internal_invokers::Invoker<R, TArgs...>>		invoker;
+
+		template<typename R2, typename ...TArgs2>
+		static bool IsEmptyFunc(const Func<R2(TArgs2...)>& function)
+		{
+			return !function;
+		}
+
+		template<typename R2, typename ...TArgs2>
+		static bool IsEmptyFunc(Func<R2(TArgs2...)>& function)
+		{
+			return !function;
+		}
+
+		template<typename C>
+		static bool IsEmptyFunc(C&&)
+		{
+			return false;
+		}
+	public:
+		typedef R FunctionType(TArgs...);
+		typedef R ResultType;
+
+		/// <summary>Create a null functor.</summary>
+		Func() = default;
+
+		/// <summary>Copy a functor.</summary>
+		/// <param name="function">The functor to copy.</param>
+		Func(const Func<R(TArgs...)>& function) = default;
+
+		/// <summary>Move a functor.</summary>
+		/// <param name="function">The functor to move.</param>
+		Func(Func<R(TArgs...)>&& function) = default;
+
+		/// <summary>Create a functor from a function pointer.</summary>
+		/// <param name="function">The function pointer.</param>
+		Func(R(*function)(TArgs...))
+		{
+			invoker = new internal_invokers::StaticInvoker<R, TArgs...>(function);
+		}
+
+		/// <summary>Create a functor from a method.</summary>
+		/// <typeparam name="C">Type of the class that this method belongs to.</typeparam>
+		/// <param name="sender">The object that this method belongs to.</param>
+		/// <param name="function">The method pointer.</param>
+		template<typename C>
+		Func(C* sender, R(C::*function)(TArgs...))
+		{
+			invoker = new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function);
+		}
+
+		/// <summary>Create a functor from another compatible functor.</summary>
+		/// <typeparam name="C">Type of the functor to copy.</typeparam>
+		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
+		template<typename C, typename=std::enable_if_t<
+			std::is_same_v<void, R> ||
+			std::is_convertible_v<decltype(std::declval<C>()(std::declval<TArgs>()...)), R>
+			>>
+		Func(C&& function)
+		{
+			if (!IsEmptyFunc(function))
+			{
+				invoker = new internal_invokers::ObjectInvoker<std::remove_cvref_t<C>, R, TArgs...>(std::forward<C&&>(function));
+			}
+		}
+
+		/// <summary>Invoke the function.</summary>
+		/// <returns>Returns the function result. It crashes when the functor is null.</returns>
+		/// <param name="args">Arguments to invoke the function.</param>
+		R operator()(TArgs ...args)const
+		{
+			return invoker->Invoke(std::forward<TArgs>(args)...);
+		}
+
+		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>& function)
+		{
+			invoker = function.invoker;
+			return *this;
+		}
+
+		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>&& function)
+		{
+			invoker = std::move(function.invoker);
+			return *this;
+		}
+
+		bool operator==(const Func<R(TArgs...)>& function)const
+		{
+			return invoker == function.invoker;
+		}
+
+		bool operator!=(const Func<R(TArgs...)>& function)const
+		{
+			return invoker != function.invoker;
+		}
+
+		/// <summary>Test is the functor is non-null.</summary>
+		/// <returns>Returns true if the functor is non-null.</returns>
+		operator bool()const
+		{
+			return invoker;
+		}
+	};
+ 
+/***********************************************************************
+vl::function_lambda::LambdaRetriveType<R(TArgs...)>
+***********************************************************************/
+ 
+	namespace function_lambda
+	{
+		template<typename T>
+		struct LambdaRetriveType
+		{
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
+		{
+			typedef Func<R(TArgs...)> Type;
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
+		{
+			typedef Func<R(TArgs...)> Type;
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+
+		/// <summary>Create a functor in [T:vl.Func`1] from another functor, with all type arguments autotimatically inferred. The "LAMBDA" macro is recommended for the same purpose for writing compact code.</summary>
+		/// <typeparam name="T">Type of the functor to copy.</typeparam>
+		/// <returns>A copied functor in [T:vl.Func`1].</returns>
+		/// <param name="functionObject">The functor to copy.</param>
+		template<typename T>
+		typename LambdaRetriveType<decltype(&T::operator())>::Type Lambda(T functionObject)
+		{
+			return functionObject;
+		}
+
+#define LAMBDA vl::function_lambda::Lambda
+	}
+ 
+/***********************************************************************
+vl::function_binding::Binding<R(TArgs...)>
+***********************************************************************/
+
+	namespace function_binding
+	{
+		template<typename T>
+		struct Binding
+		{
+		};
+		 
+		template<typename T>
+		struct CR{typedef const T& Type;};
+		template<typename T>
+		struct CR<T&>{typedef T& Type;};
+		template<typename T>
+		struct CR<const T>{typedef const T& Type;};
+		template<typename T>
+		struct CR<const T&>{typedef const T& Type;};
+ 
+		template<typename R, typename T0, typename ...TArgs>
+		struct Binding<R(T0, TArgs...)>
+		{
+			typedef R FunctionType(T0, TArgs...);
+			typedef R CurriedType(TArgs...);
+			typedef T0 FirstParameterType;
+
+			class Binder : public Object
+			{
+			protected:
+				Func<FunctionType>				target;
+				T0								firstArgument;
+			public:
+				Binder(const Func<FunctionType>& _target, T0 _firstArgument)
+					:target(_target)
+					,firstArgument(std::forward<T0>(_firstArgument))
+				{
+				}
+
+				R operator()(TArgs ...args)const
+				{
+					return target(firstArgument, args...);
+				}
+			};
+
+			class Currier : public Object
+			{
+			protected:
+				Func<FunctionType>		target;
+			public:
+				Currier(const Func<FunctionType>& _target)
+					:target(_target)
+				{
+				}
+
+				Func<CurriedType> operator()(T0 firstArgument)const
+				{
+					return Binder(target, firstArgument);
+				}
+			};
+		}; 
+	}
+ 
+	/// <summary>
+	/// Currize a function pointer.
+	/// Currizing means to create a new functor whose argument is the first argument of the original function.
+	/// Calling this functor will return another functor whose arguments are all remaining arguments of the original function.
+	/// Calling the returned function will call the original function.
+	/// </summary>
+	/// <typeparam name="T">Type of the function pointer.</typeparam>
+	/// <returns>The currized functor.</returns>
+	/// <param name="function">The function pointer to currize.</param>
+	template<typename T>
+	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
+	Curry(T* function)
+	{
+		return typename function_binding::Binding<T>::Currier(function);
+	}
+
+	/// <summary>
+	/// Currize a functor in [T:vl.Func`1].
+	/// Currizing means to create a new functor whose argument is the first argument of the original function.
+	/// Calling this functor will return another functor whose arguments are all remaining arguments of the original function.
+	/// Calling the returned function will call the original function.
+	/// </summary>
+	/// <typeparam name="T">Type of the functor.</typeparam>
+	/// <returns>The currized functor.</returns>
+	/// <param name="function">The functor to currize.</param>
+	template<typename T>
+	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
+	Curry(const Func<T>& function)
+	{
+		return typename function_binding::Binding<T>::Currier(function);
+	}
+}
+#endif
+
+/***********************************************************************
+.\COLLECTIONS\OPERATIONSELECT.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_OPERATIONSELECT
+#define VCZH_COLLECTIONS_OPERATIONSELECT
+
+
+namespace vl
+{
+	namespace collections
+	{
+
+/***********************************************************************
+Select
+***********************************************************************/
+
+		template<typename T, typename K>
+		class SelectEnumerator : public virtual IEnumerator<K>
+		{
+		protected:
+			IEnumerator<T>*		enumerator;
+			Func<K(T)>			selector;
+			Nullable<K>			current;
+		public:
+			SelectEnumerator(IEnumerator<T>* _enumerator, const Func<K(T)>& _selector, Nullable<K> _current = {})
+				:enumerator(_enumerator)
+				,selector(_selector)
+				,current(_current)
+			{
+			}
+
+			~SelectEnumerator()
+			{
+				delete enumerator;
+			}
+
+			IEnumerator<K>* Clone()const override
+			{
+				return new SelectEnumerator(enumerator->Clone(), selector, current);
+			}
+
+			const K& Current()const override
+			{
+				return current.Value();
+			}
+
+			vint Index()const override
+			{
+				return enumerator->Index();
+			}
+
+			bool Next()override
+			{
+				if (enumerator->Next())
+				{
+					current = selector(enumerator->Current());
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void Reset()override
+			{
+				enumerator->Reset();
+			}
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\COLLECTIONS\OPERATIONWHERE.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_OPERATIONWHERE
+#define VCZH_COLLECTIONS_OPERATIONWHERE
+
+
+namespace vl
+{
+	namespace collections
+	{
+/***********************************************************************
+Where
+***********************************************************************/
+
+		template<typename T>
+		class WhereEnumerator : public virtual IEnumerator<T>
+		{
+		protected:
+			IEnumerator<T>*			enumerator;
+			Func<bool(T)>			selector;
+			vint					index;
+
+		public:
+			WhereEnumerator(IEnumerator<T>* _enumerator, const Func<bool(T)>& _selector, vint _index=-1)
+				:enumerator(_enumerator)
+				,selector(_selector)
+				,index(_index)
+			{
+			}
+
+			~WhereEnumerator()
+			{
+				delete enumerator;
+			}
+
+			IEnumerator<T>* Clone()const override
+			{
+				return new WhereEnumerator(enumerator->Clone(), selector, index);
+			}
+
+			const T& Current()const override
+			{
+				return enumerator->Current();
+			}
+
+			vint Index()const override
+			{
+				return index;
+			}
+
+			bool Next()override
+			{
+				while(enumerator->Next())
+				{
+					if(selector(enumerator->Current()))
+					{
+						index++;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			void Reset()override
+			{
+				enumerator->Reset();
+				index=-1;
+			}
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PRIMITIVES\EVENT.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+#ifndef VCZH_EVENT
+#define VCZH_EVENT
+
+
+namespace vl
+{
+	template<typename T>
+	class Event;
+ 
+	class EventHandler : public Object
+	{
+	public:
+		virtual bool							IsAttached() = 0;
+	};
+
+	/// <summary>An event for being subscribed using multiple callbacks. A callback is any functor that returns void.</summary>
+	/// <typeparam name="TArgs">Types of callback parameters.</typeparam>
+	template<typename ...TArgs>
+	class Event<void(TArgs...)> : public Object
+	{
+	protected:
+		class EventHandlerImpl : public EventHandler
+		{
+		public:
+			bool								attached;
+			Func<void(TArgs...)>				function;
+
+			EventHandlerImpl(const Func<void(TArgs...)>& _function)
+				:attached(true)
+				, function(_function)
+			{
+			}
+ 
+			bool IsAttached()override
+			{
+				return attached;
+			}
+		};
+ 
+		collections::SortedList<Ptr<EventHandlerImpl>>	handlers;
+	public:
+		NOT_COPYABLE(Event);
+		Event() = default;
+
+		/// <summary>Add a callback to the event.</summary>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="function">The callback.</param>
+		Ptr<EventHandler> Add(const Func<void(TArgs...)>& function)
+		{
+			Ptr<EventHandlerImpl> handler = new EventHandlerImpl(function);
+			handlers.Add(handler);
+			return handler;
+		}
+ 
+		/// <summary>Add a callback to the event.</summary>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="function">The callback.</param>
+		Ptr<EventHandler> Add(void(*function)(TArgs...))
+		{
+			return Add(Func<void(TArgs...)>(function));
+		}
+ 
+		/// <summary>Add a method callback to the event.</summary>
+		/// <typeparam name="C">Type of the class that the callback belongs to.</typeparam>
+		/// <returns>The event handler representing the callback.</returns>
+		/// <param name="sender">The object that the callback belongs to.</param>
+		/// <param name="function">The method callback.</param>
+		template<typename C>
+		Ptr<EventHandler> Add(C* sender, void(C::*function)(TArgs...))
+		{
+			return Add(Func<void(TArgs...)>(sender, function));
+		}
+ 
+		/// <summary>Remove a callback by an event handler returns from <see cref="Add"/>.</summary>
+		/// <returns>Returns true if this operation succeeded.</returns>
+		/// <param name="handler">The event handler representing the callback.</param>
+		bool Remove(Ptr<EventHandler> handler)
+		{
+			auto impl = handler.Cast<EventHandlerImpl>();
+			if (!impl) return false;
+			vint index = handlers.IndexOf(impl.Obj());
+			if (index == -1) return false;
+			impl->attached = false;
+			handlers.RemoveAt(index);
+			return true;
+		}
+ 
+		/// <summary>Invoke all callbacks in the event.</summary>
+		/// <param name="args">Arguments to invoke all callbacks.</param>
+		void operator()(TArgs ...args)const
+		{
+			for(vint i = 0; i < handlers.Count(); i++)
+			{
+				handlers[i]->function(args...);
+			}
+		}
+	};
+}
+#endif
+
+
+/***********************************************************************
+.\PRIMITIVES\LAZY.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_LAZY
+#define VCZH_LAZY
+
+
+namespace vl
+{
+	/// <summary>A type representing a lazy evaluation.</summary>
+	/// <typeparam name="T">The type of the evaluation result.</typeparam>
+	template<typename T>
+	class Lazy : public Object
+	{
+	protected:
+		class Internal
+		{
+		public:
+			Func<T()>			evaluator;
+			T					value;
+			bool				evaluated;
+		};
+
+		Ptr<Internal>			internalValue;
+	public:
+		/// <summary>Create an empty evaluation.</summary>
+		Lazy() = default;
+
+		/// <summary>Create an evaluation using a function, which produces the evaluation result.</summary>
+		/// <param name="evaluator">The function.</param>
+		Lazy(const Func<T()>& evaluator)
+		{
+			internalValue=new Internal;
+			internalValue->evaluated=false;
+			internalValue->evaluator=evaluator;
+		}
+
+		/// <summary>Create an evaluation with the immediate result.</summary>
+		/// <param name="value">The result.</param>0
+		Lazy(const T& value)
+		{
+			internalValue=new Internal;
+			internalValue->evaluated=true;
+			internalValue->value=value;
+		}
+
+		/// <summary>Create an evaluation by copying another one.</summary>
+		/// <param name="lazy">The evaluation to copy.</param>
+		Lazy(const Lazy<T>& lazy) = default;
+
+		/// <summary>Create an evaluation by moving another one.</summary>
+		/// <param name="lazy">The evaluation to move.</param>
+		Lazy(Lazy<T>&& lazy) = default;
+
+		Lazy<T>& operator=(const Func<T()>& evaluator)
+		{
+			internalValue=new Internal;
+			internalValue->evaluated=false;
+			internalValue->evaluator=evaluator;
+			return *this;
+		}
+
+		Lazy<T>& operator=(const T& value)
+		{
+			internalValue=new Internal;
+			internalValue->evaluated=true;
+			internalValue->value=value;
+			return *this;
+		}
+
+		Lazy<T>& operator=(const Lazy<T>& lazy)
+		{
+			internalValue=lazy.internalValue;
+			return *this;
+		}
+
+		/// <summary>Get the evaluation result. If the evaluation has not been performed, it will run the evaluation function and cache the result.</summary>
+		/// <returns>The evaluation result.</returns>
+		const T& Value()const
+		{
+			if(!internalValue->evaluated)
+			{
+				internalValue->evaluated=true;
+				internalValue->value=internalValue->evaluator();
+				internalValue->evaluator=Func<T()>();
+			}
+			return internalValue->value;
+		}
+
+		/// <summary>Test if it has already been evaluated or not.</summary>
+		/// <returns>Returns true if it has already been evaluated.</returns>
+		bool IsEvaluated()const
+		{
+			return internalValue->evaluated;
+		}
+
+		/// <summary>Test if it is an empty evaluation or not.</summary>
+		/// <returns>Returns true if it is not empty.</returns>
+		operator bool()const
+		{
+			return internalValue;
+		}
+	};
+}
+
+#endif
+
+
+/***********************************************************************
+.\PRIMITIVES\TUPLE.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+	
+This file is generated by: Vczh Functional Macro
+***********************************************************************/
+#ifndef VCZH_TUPLE
+#define VCZH_TUPLE
+
+
+namespace vl
+{
+	class TupleNullItem
+	{
+	};
+	template<typename T0 = TupleNullItem,typename T1 = TupleNullItem,typename T2 = TupleNullItem,typename T3 = TupleNullItem,typename T4 = TupleNullItem,typename T5 = TupleNullItem,typename T6 = TupleNullItem,typename T7 = TupleNullItem,typename T8 = TupleNullItem,typename T9 = TupleNullItem,typename T10 = TupleNullItem>
+	class Tuple
+	{
+	};
+ 
+/***********************************************************************
+vl::Tuple<T0>
+***********************************************************************/
+	template<typename T0>
+	class Tuple<T0> : public Object
+	{
+	public:
+		T0 f0;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0)
+			:f0(p0)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0>& a, const Tuple<T0>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1>
+***********************************************************************/
+	template<typename T0,typename T1>
+	class Tuple<T0,T1> : public Object
+	{
+	public:
+		T0 f0;T1 f1;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1)
+			:f0(p0),f1(p1)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1>& a, const Tuple<T0,T1>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2>
+	class Tuple<T0,T1,T2> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2)
+			:f0(p0),f1(p1),f2(p2)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2>& a, const Tuple<T0,T1,T2>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2,T3>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2,typename T3>
+	class Tuple<T0,T1,T2,T3> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;T3 f3;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2,T3 p3)
+			:f0(p0),f1(p1),f2(p2),f3(p3)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2,T3>& a, const Tuple<T0,T1,T2,T3>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2,T3>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2,T3,T4>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2,typename T3,typename T4>
+	class Tuple<T0,T1,T2,T3,T4> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4)
+			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2,T3,T4>& a, const Tuple<T0,T1,T2,T3,T4>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2,T3,T4>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2,T3,T4,T5>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5>
+	class Tuple<T0,T1,T2,T3,T4,T5> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5)
+			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5>& a, const Tuple<T0,T1,T2,T3,T4,T5>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2,T3,T4,T5,T6>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6>
+	class Tuple<T0,T1,T2,T3,T4,T5,T6> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6)
+			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2,T3,T4,T5,T6,T7>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6,typename T7>
+	class Tuple<T0,T1,T2,T3,T4,T5,T6,T7> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;T7 f7;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6,T7 p7)
+			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6),f7(p7)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;if (a.f7 < b.f7) return -1; else if (a.f7 > b.f7) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6,typename T7,typename T8>
+	class Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;T7 f7;T8 f8;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6,T7 p7,T8 p8)
+			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6),f7(p7),f8(p8)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;if (a.f7 < b.f7) return -1; else if (a.f7 > b.f7) return 1;if (a.f8 < b.f8) return -1; else if (a.f8 > b.f8) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8>& value)const{ return Compare(*this, value) >= 0; }
+	};
+  
+/***********************************************************************
+vl::Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>
+***********************************************************************/
+	template<typename T0,typename T1,typename T2,typename T3,typename T4,typename T5,typename T6,typename T7,typename T8,typename T9>
+	class Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9> : public Object
+	{
+	public:
+		T0 f0;T1 f1;T2 f2;T3 f3;T4 f4;T5 f5;T6 f6;T7 f7;T8 f8;T9 f9;
+ 
+		Tuple()
+		{
+		}
+ 
+		Tuple(T0 p0,T1 p1,T2 p2,T3 p3,T4 p4,T5 p5,T6 p6,T7 p7,T8 p8,T9 p9)
+			:f0(p0),f1(p1),f2(p2),f3(p3),f4(p4),f5(p5),f6(p6),f7(p7),f8(p8),f9(p9)
+		{
+		}
+ 
+		static int Compare(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& a, const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& b)
+		{
+			if (a.f0 < b.f0) return -1; else if (a.f0 > b.f0) return 1;if (a.f1 < b.f1) return -1; else if (a.f1 > b.f1) return 1;if (a.f2 < b.f2) return -1; else if (a.f2 > b.f2) return 1;if (a.f3 < b.f3) return -1; else if (a.f3 > b.f3) return 1;if (a.f4 < b.f4) return -1; else if (a.f4 > b.f4) return 1;if (a.f5 < b.f5) return -1; else if (a.f5 > b.f5) return 1;if (a.f6 < b.f6) return -1; else if (a.f6 > b.f6) return 1;if (a.f7 < b.f7) return -1; else if (a.f7 > b.f7) return 1;if (a.f8 < b.f8) return -1; else if (a.f8 > b.f8) return 1;if (a.f9 < b.f9) return -1; else if (a.f9 > b.f9) return 1;
+			return 0;
+		}
+ 
+		bool operator==(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) == 0; }
+		bool operator!=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) != 0; }
+		bool operator< (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) < 0; }
+		bool operator<=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) <= 0; }
+		bool operator> (const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) > 0; }
+		bool operator>=(const Tuple<T0,T1,T2,T3,T4,T5,T6,T7,T8,T9>& value)const{ return Compare(*this, value) >= 0; }
+	};
+ 
+}
+#endif
 
 /***********************************************************************
 .\STRINGS\STRING.H
@@ -8348,6 +8348,11 @@ namespace vl
 		/// ]]></example>
 		class UnitTest
 		{
+		protected:
+			static bool IsDebuggerAttached();
+			static int PrintUsages();
+			static int RunAndDisposeTests(Nullable<WString> option);
+
 		public:
 			UnitTest() = delete;
 
@@ -8366,11 +8371,13 @@ namespace vl
 			/// <returns>The return value for the main function. If any assertion fails, it is non-zero.</returns>
 			/// <param name="argc">Accept the first argument of the main function.</param>
 			/// <param name="argv">Accept the second argument of the main function.</param>
-#ifdef VCZH_MSVC
 			static int RunAndDisposeTests(int argc, wchar_t* argv[]);
-#else
+
+			/// <summary>Run all test cases.</summary>
+			/// <returns>The return value for the main function. If any assertion fails, it is non-zero.</returns>
+			/// <param name="argc">Accept the first argument of the main function.</param>
+			/// <param name="argv">Accept the second argument of the main function.</param>
 			static int RunAndDisposeTests(int argc, char* argv[]);
-#endif
 
 			static void RegisterTestFile(const char* fileName, UnitTestFileProc testProc);
 			static void RunCategoryOrCase(const WString& description, bool isCategory, Func<void()>&& callback);
