@@ -98,10 +98,10 @@ ParserParsingAnalyzer
 				}
 				if (auto regex = def->GetMember(L"regex").Cast<ParsingTreeToken>())
 				{
-					auto escaped = DeserializeString(regex->GetValue());
+					auto escaped = wtou32(DeserializeString(regex->GetValue()));
 					if (IsRegexEscapedLiteralString(escaped))
 					{
-						cache->literalNames.Add(SerializeString(UnescapeTextForRegex(escaped)));
+						cache->literalNames.Add(SerializeString(u32tow(UnescapeTextForRegex(escaped))));
 					}
 				}
 			}

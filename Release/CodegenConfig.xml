@@ -42,7 +42,7 @@
     <codepair category="wfruntime" filename="VlppWorkflowRuntime" generate="false"/>
     <codepair category="wfcompiler" filename="VlppWorkflowCompiler" generate="false"/>
     <codepair category="gacui" filename="GacUI" generate="true"/>
-    <codepair category="windows" filename="GacUIWindows" generate="true"/>
+    <codepair category="windows" filename="GacUI.Windows" generate="true"/>
     <codepair category="reflection" filename="GacUIReflection" generate="true"/>
     <codepair category="compiler" filename="GacUICompiler" generate="true"/>
     <codepair category="darkskin" filename="DarkSkin" generate="true"/>
