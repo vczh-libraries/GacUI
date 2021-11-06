@@ -1,0 +1,11 @@
+<#
+CPP_TARGET=./Bin/GacGen
+CPP_VCXPROJ=./GacGen/GacGen.vcxproj
+CPP_REMOVES=(
+    "../../Import/Vlpp.Windows.cpp"
+    "../../Import/VlppOS.Windows.cpp"
+    )
+CPP_COMPILE_OPTIONS="-DVCZH_DEBUG_METAONLY_REFLECTION -I ../../Import -I ../../Release"
+TARGETS=("${CPP_TARGET}")
+#>
+<#@ include "${VCPROOT}/vl/vmake-cpp" #>

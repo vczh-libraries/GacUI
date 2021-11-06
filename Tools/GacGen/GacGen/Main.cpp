@@ -6,8 +6,9 @@ using namespace vl::presentation::controls;
 Array<WString>* arguments = 0;
 
 extern int SetupGacGenNativeController();
-const wchar_t* executablePath = nullptr;
+WString executablePath;
 
+#if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 {
 	executablePath = argv[0];
@@ -19,6 +20,19 @@ int wmain(int argc, wchar_t* argv[])
 	arguments = &_arguments;
 	return SetupGacGenNativeController();
 }
+#elif defined VCZH_GCC
+int main(int argc, char* argv[])
+{
+	executablePath = atow(argv[0]);
+	Array<WString> _arguments(argc - 1);
+	for (vint i = 1; i < argc; i++)
+	{
+		_arguments[i - 1] = atow(argv[i]);
+	}
+	arguments = &_arguments;
+	return SetupGacGenNativeController();
+}
+#endif
 
 void PrintErrors(List<GuiResourceError>& errors)
 {
