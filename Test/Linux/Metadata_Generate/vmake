@@ -7,6 +7,10 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI_Reflection/Source_GacUI_Reflection.vcxitems"
     "../../GacUISrc/Metadata_Generate/Metadata_Generate.vcxproj"
     )
+CPP_REMOVES=(
+    "../../../Import/Vlpp.Windows.cpp"
+    "../../../Import/VlppOS.Windows.cpp"
+    )
 TARGETS=("${CPP_TARGET}")
 CPP_COMPILE_OPTIONS="-I ../../../Import"
 #>

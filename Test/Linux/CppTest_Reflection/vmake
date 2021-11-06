@@ -11,6 +11,10 @@ CPP_ADDS=(
     "../../GacUISrc/Generated_FullControlTest/Source_Linux64/*.cpp"
     "../Main.cpp"
     )
+CPP_REMOVES=(
+    "../../../Import/Vlpp.Windows.cpp"
+    "../../../Import/VlppOS.Windows.cpp"
+    )
 TARGETS=("${CPP_TARGET}")
 CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_Linux64 -I ../../GacUISrc/Generated_FullControlTest/Source_Linux64"
 #>

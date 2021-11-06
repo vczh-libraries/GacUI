@@ -9,6 +9,10 @@ CPP_VCXPROJS=(
     "../../GacUISrc/GacUI_Compiler/GacUI_Compiler.vcxproj"
     )
 CPP_ADDS=("../../../Tools/GacGen/GacGen/NativeController.cpp")
+CPP_REMOVES=(
+    "../../../Import/Vlpp.Windows.cpp"
+    "../../../Import/VlppOS.Windows.cpp"
+    )
 TARGETS=("${CPP_TARGET}")
 CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../../Source -DVCZH_DEBUG_METAONLY_REFLECTION"
 #>
