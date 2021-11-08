@@ -462,20 +462,63 @@ namespace vl
 			/// <summary>The value.</summary>
 			V				value;
 
-			Pair()
+			Pair() = default;
+
+			template<typename TKey, typename TValue>
+			Pair(TKey&& _key, TValue&& _value)
+				: key(std::forward<TKey&&>(_key))
+				, value(std::forward<TValue&&>(_value))
 			{
 			}
 
 			Pair(const K& _key, const V& _value)
+				: key(_key)
+				, value(_value)
 			{
-				key=_key;
-				value=_value;
+			}
+
+			Pair(const K& _key, V&& _value)
+				: key(_key)
+				, value(std::move(_value))
+			{
+			}
+
+			Pair(K&& _key, const V& _value)
+				: key(std::move(_key))
+				, value(_value)
+			{
+			}
+
+			Pair(K&& _key, V&& _value)
+				: key(std::move(_key))
+				, value(std::move(_value))
+			{
 			}
 
 			Pair(const Pair<K, V>& pair)
+				: key(pair.key)
+				, value(pair.value)
 			{
-				key=pair.key;
-				value=pair.value;
+			}
+
+			Pair(Pair<K, V>&& pair)
+				: key(std::move(pair.key))
+				, value(std::move(pair.value))
+			{
+			}
+
+			Pair<K, V>& operator=(const Pair<K, V>& pair)
+			{
+				key = pair.key;
+				value = pair.value;
+				return *this;
+			}
+
+			Pair<K, V>& operator=(Pair<K, V>&& pair)
+			{
+				key = std::move(pair.key);
+				value = std::move(pair.value);
+				return *this;
 			}
 
 			vint CompareTo(const Pair<K, V>& pair)const
@@ -1507,139 +1550,190 @@ namespace vl
 Memory Management
 ***********************************************************************/
 
-		template<typename T, bool PODType = std::is_trivially_constructible_v<T>>
-		class ListStore;
-
-		template<typename T>
-		class ListStore<T, false> abstract : public EnumerableBase<T>
+		namespace memory_management
 		{
-		protected:
-			static void InitializeItemsByDefault(void* dst, vint count)
+			template<typename T>
+			void CallDefaultCtors(T* items, vint count)
 			{
-				T* ds = (T*)dst;
-
-				for (vint i = 0; i < count; i++)
-				{
-					new(&ds[i])T();
-				}
-			}
-
-			static void InitializeItemsByMove(void* dst, void* src, vint count)
-			{
-				T* ds = (T*)dst;
-				T* ss = (T*)src;
-
-				for (vint i = 0; i < count; i++)
-				{
-					new(&ds[i])T(std::move(ss[i]));
-				}
-			}
-
-			static void InitializeItemsByCopy(void* dst, void* src, vint count)
-			{
-				T* ds = (T*)dst;
-				T* ss = (T*)src;
-
-				for (vint i = 0; i < count; i++)
-				{
-					new(&ds[i])T(ss[i]);
-				}
-			}
-
-			static void MoveItemsInTheSameBuffer(void* dst, void* src, vint count)
-			{
-				T* ds = (T*)dst;
-				T* ss = (T*)src;
-
-				if (ds < ss)
+				if constexpr (!std::is_trivially_constructible_v<T>)
 				{
 					for (vint i = 0; i < count; i++)
 					{
-						ds[i] = std::move(ss[i]);
+						new(&items[i])T();
 					}
 				}
-				else if (ds > ss)
+			}
+
+			template<typename T>
+			void CallCopyCtors(T* items, const T* source, vint count)
+			{
+				if constexpr (!std::is_trivially_copy_constructible_v<T>)
 				{
-					for (vint i = count - 1; i >= 0; i--)
+					for (vint i = 0; i < count; i++)
 					{
-						ds[i] = std::move(ss[i]);
+						new(&items[i])T(source[i]);
+					}
+				}
+				else
+				{
+					memcpy(items, source, sizeof(T) * count);
+				}
+			}
+
+			template<typename T>
+			void CallMoveCtors(T* items, T* source, vint count)
+			{
+				if constexpr (!std::is_trivially_move_constructible_v<T>)
+				{
+					for (vint i = 0; i < count; i++)
+					{
+						new(&items[i])T(std::move(source[i]));
+					}
+				}
+				else
+				{
+					memcpy(items, source, sizeof(T) * count);
+				}
+			}
+
+			template<typename T>
+			void CallMoveAssignmentsOverlapped(T* items, T* source, vint count)
+			{
+				if constexpr (!std::is_trivially_move_assignable_v<T>)
+				{
+					if (items < source)
+					{
+						for (vint i = 0; i < count; i++)
+						{
+							items[i] = std::move(source[i]);
+						}
+					}
+					else if (items > source)
+					{
+						for (vint i = count - 1; i >= 0; i--)
+						{
+							items[i] = std::move(source[i]);
+						}
+					}
+				}
+				else
+				{
+					memmove(items, source, sizeof(T) * count);
+				}
+			}
+
+			template<typename T>
+			void CallDtors(T* items, vint count)
+			{
+				if constexpr (!std::is_trivially_destructible_v<T>)
+				{
+					for (vint i = 0; i < count; i++)
+					{
+						items[i].~T();
 					}
 				}
 			}
 
-			static void ReleaseItems(void* dst, vint count)
-			{
-				T* ds = (T*)dst;
-
-				for (vint i = 0; i < count; i++)
-				{
-					ds[i].~T();
-				}
-			}
-			
-			static void* AllocateBuffer(vint size)
+			template<typename T>
+			T* AllocateBuffer(vint size)
 			{
 				if (size <= 0) return nullptr;
-				return (void*)malloc(sizeof(T) * size);
+				return (T*)malloc(sizeof(T) * size);
 			}
 
-			static void DeallocateBuffer(void* buffer)
-			{
-				if (buffer == nullptr)return;
-				free(buffer);
-			}
-		public:
-		};
-
-		template<typename T>
-		class ListStore<T, true> abstract : public EnumerableBase<T>
-		{
-		protected:
-			static void InitializeItemsByDefault(void* dst, vint count)
-			{
-			}
-
-			static void InitializeItemsByMove(void* dst, void* src, vint count)
-			{
-				if (count > 0)
-				{
-					memcpy(dst, src, sizeof(T) * count);
-				}
-			}
-
-			static void InitializeItemsByCopy(void* dst, void* src, vint count)
-			{
-				if (count > 0)
-				{
-					memcpy(dst, src, sizeof(T) * count);
-				}
-			}
-
-			static void MoveItemsInTheSameBuffer(void* dst, void* src, vint count)
-			{
-				if (count > 0)
-				{
-					memmove(dst, src, sizeof(T) * count);
-				}
-			}
-
-			static void ReleaseItems(void* dst, vint count)
-			{
-			}
-
-			static void* AllocateBuffer(vint size)
-			{
-				if (size <= 0) return nullptr;
-				return (void*)malloc(sizeof(T) * size);
-			}
-
-			static void DeallocateBuffer(void* buffer)
+			template<typename T>
+			void DeallocateBuffer(T* buffer)
 			{
 				if (buffer == nullptr) return;
 				free(buffer);
 			}
-		public:
-		};
+
+			template<typename T>
+			void ReleaseUnnecessaryBuffer(T*& items, vint& capacity, vint oldCount, vint newCount)
+			{
+				if (!items) return;
+
+				if(newCount < oldCount)
+				{
+					CallDtors(&items[newCount], oldCount - newCount);
+				}
+
+				if (newCount <= capacity / 2 && newCount <= 8)
+				{
+					vint newCapacity = capacity * 5 / 8;
+					if (newCount < newCapacity)
+					{
+						T* newBuffer = AllocateBuffer<T>(newCapacity);
+						CallMoveCtors(newBuffer, items, newCount);
+						CallDtors(items, newCount);
+						DeallocateBuffer(items);
+						capacity = newCapacity;
+						items = newBuffer;
+					}
+				}
+			}
+
+			template<typename T>
+			void InsertUninitializedItems(T*& items, vint& capacity, vint& count, vint index, vint insertCount)
+			{
+				vint newCount = count + insertCount;
+				if (newCount > capacity)
+				{
+					vint newCapacity = newCount < capacity ? capacity : (newCount * 5 / 4 + 1);
+					T* newBuffer = AllocateBuffer<T>(newCapacity);
+					CallMoveCtors(newBuffer, items, index);
+					CallMoveCtors(&newBuffer[index + insertCount], &items[index], count - index);
+					CallDtors(items, count);
+					DeallocateBuffer(items);
+					capacity = newCapacity;
+					items = newBuffer;
+				}
+				else if (index < count)
+				{
+					if (insertCount >= (count - index))
+					{
+						CallMoveCtors(&items[index + insertCount], &items[index], count - index);
+						CallDtors(&items[index], count - index);
+					}
+					else
+					{
+						CallMoveCtors(&items[count], &items[count - insertCount], insertCount);
+						CallMoveAssignmentsOverlapped(&items[index + insertCount], &items[index], count - index - insertCount);
+						CallDtors(&items[index], insertCount);
+					}
+				}
+				count = newCount;
+			}
+
+			template<typename TItem, typename TArg, bool = std::is_same_v<std::remove_cvref_t<TArg>, std::remove_cvref_t<TItem>>>
+			struct Accept_;
+
+			template<typename TItem, typename TArg>
+			struct Accept_<TItem, TArg, true>
+			{
+				using TAccept = TArg;
+				using TForward = TArg;
+			};
+
+			template<typename TItem, typename TArg>
+			struct Accept_<TItem, TArg, false>
+			{
+				using TAccept = TItem;
+				using TForward = TItem&&;
+			};
+
+			template<typename TItem, typename TArg>
+			using AcceptType = typename Accept_<TItem, TArg>::TAccept;
+
+			template<typename TItem, typename TArg>
+			using ForwardType = typename Accept_<TItem, TArg>::TForward;
+
+			template<typename TItem, typename TArg>
+			AcceptType<TItem, TArg&&> RefOrConvert(TArg&& arg)
+			{
+				return std::forward<TArg&&>(arg);
+			}
+		}
 
 /***********************************************************************
 ArrayBase
@@ -1648,7 +1742,7 @@ ArrayBase
 		/// <summary>Base type of all linear container.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
 		template<typename T>
-		class ArrayBase abstract : public ListStore<T>
+		class ArrayBase abstract : public EnumerableBase<T>
 		{
 		protected:
 			class Enumerator : public Object, public virtual IEnumerator<T>
@@ -1696,23 +1790,10 @@ ArrayBase
 				}
 			};
 
-			void*					buffer = nullptr;
+			T*						buffer = nullptr;
 			vint					count = 0;
 
-			static void* AddressOf(void* bufferOfTs, vint index)
-			{
-				return (void*)((char*)bufferOfTs + sizeof(T) * index);
-			}
-
-			const T& ItemOf(vint index)const
-			{
-				return *(const T*)AddressOf(buffer, index);
-			}
-
-			T& ItemOf(vint index)
-			{
-				return *(T*)AddressOf(buffer, index);
-			}
+			ArrayBase() = default;
 		public:
 
 			IEnumerator<T>* CreateEnumerator()const
@@ -1733,7 +1814,7 @@ ArrayBase
 			const T& Get(vint index)const
 			{
 				CHECK_ERROR(index >= 0 && index < this->count, L"ArrayBase<T, K>::Get(vint)#Argument index not in range.");
-				return ItemOf(index);
+				return this->buffer[index];
 			}
 
 			/// <summary>Get the reference to the specified element.</summary>
@@ -1742,7 +1823,7 @@ ArrayBase
 			const T& operator[](vint index)const
 			{
 				CHECK_ERROR(index >= 0 && index < this->count, L"ArrayBase<T, K>::operator[](vint)#Argument index not in range.");
-				return ItemOf(index);
+				return this->buffer[index];
 			}
 		};
 
@@ -1766,8 +1847,8 @@ Array
 			Array(vint size = 0)
 			{
 				CHECK_ERROR(size >= 0, L"Array<T>::Array(vint)#Size should not be negative.");
-				this->buffer = this->AllocateBuffer(size);
-				this->InitializeItemsByDefault(this->buffer, size);
+				this->buffer = memory_management::AllocateBuffer<T>(size);
+				memory_management::CallDefaultCtors(this->buffer, size);
 				this->count = size;
 			}
 
@@ -1778,15 +1859,42 @@ Array
 			Array(const T* _buffer, vint size)
 			{
 				CHECK_ERROR(size >= 0, L"Array<T>::Array(const T*, vint)#Size should not be negative.");
-				this->buffer = this->AllocateBuffer(size);
-				this->InitializeItemsByCopy(this->buffer, (void*)_buffer, size);
+				this->buffer = memory_management::AllocateBuffer<T>(size);
+				memory_management::CallCopyCtors(this->buffer, _buffer, size);
 				this->count = size;
 			}
 
 			~Array()
 			{
-				this->ReleaseItems(this->buffer, this->count);
-				this->DeallocateBuffer(this->buffer);
+				if (this->buffer)
+				{
+					memory_management::CallDtors(this->buffer, this->count);
+					memory_management::DeallocateBuffer(this->buffer);
+				}
+			}
+
+			Array(const Array<T, K>&) = delete;
+			Array(Array<T, K>&& _move)
+			{
+				this->buffer = _move.buffer;
+				this->count = _move.count;
+				_move.buffer = nullptr;
+				_move.count = 0;
+			}
+
+			Array<T, K>& operator=(const Array<T, K>&) = delete;
+			Array<T, K>& operator=(Array<T, K>&& _move)
+			{
+				if (this->buffer)
+				{
+					memory_management::CallDtors(this->buffer, this->count);
+					memory_management::DeallocateBuffer(this->buffer);
+				}
+				this->buffer = _move.buffer;
+				this->count = _move.count;
+				_move.buffer = nullptr;
+				_move.count = 0;
+				return *this;
 			}
 
 			/// <summary>Test does the array contain a value or not.</summary>
@@ -1804,7 +1912,7 @@ Array
 			{
 				for (vint i = 0; i < this->count; i++)
 				{
-					if (this->ItemOf(i) == item)
+					if (this->buffer[i] == item)
 					{
 						return i;
 					}
@@ -1813,14 +1921,21 @@ Array
 			}
 
 			/// <summary>Replace an element in the specified position.</summary>
+			/// <typeparam name="TItem">The type of the new value.</typeparam>
 			/// <returns>Returns true if this operation succeeded. It will crash when the index is out of range</returns>
 			/// <param name="index">The position of the element to replace.</param>
 			/// <param name="item">The new value to replace.</param>
-			bool Set(vint index, const T& item)
+			template<typename TItem>
+			bool Set(vint index, TItem&& item)
 			{
 				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T, K>::Set(vint)#Argument index not in range.");
-				this->ItemOf(index) = item;
+				this->buffer[index] = std::forward<TItem&&>(item);
 				return true;
+			}
+
+			bool Set(vint index, T&& item)
+			{
+				return Set<T>(index, std::move(item));
 			}
 
 			using ArrayBase<T>::operator[];
@@ -1831,7 +1946,7 @@ Array
 			T& operator[](vint index)
 			{
 				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T, K>::operator[](vint)#Argument index not in range.");
-				return this->ItemOf(index);
+				return this->buffer[index];
 			}
 
 			/// <summary>Change the size of the array. This function can be called multiple times to change the size.</summary>
@@ -1840,19 +1955,19 @@ Array
 			void Resize(vint size)
 			{
 				CHECK_ERROR(size >= 0, L"Array<T>::Resize(vint)#Size should not be negative.");
-				void* newBuffer = this->AllocateBuffer(size);
+				T* newBuffer = memory_management::AllocateBuffer<T>(size);
 				if (size < this->count)
 				{
-					this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), size);
+					memory_management::CallMoveCtors(newBuffer, this->buffer, size);
 				}
 				else
 				{
-					this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), this->count);
-					this->InitializeItemsByDefault(this->AddressOf(newBuffer, this->count), size - this->count);
+					memory_management::CallMoveCtors(newBuffer, this->buffer, this->count);
+					memory_management::CallDefaultCtors(&newBuffer[this->count], size - this->count);
 				}
 
-				this->ReleaseItems(this->buffer, this->count);
-				this->DeallocateBuffer(this->buffer);
+				memory_management::CallDtors(this->buffer, this->count);
+				memory_management::DeallocateBuffer(this->buffer);
 				this->buffer = newBuffer;
 				this->count = size;
 			}
@@ -1870,88 +1985,44 @@ ListBase
 		{
 		protected:
 			vint					capacity = 0;
-			bool					lessMemoryMode = false;
 
-			vint CalculateCapacity(vint expected)
-			{
-				vint result = capacity;
-				while (result < expected)
-				{
-					result = result * 5 / 4 + 1;
-				}
-				return result;
-			}
-
-			void MakeRoom(vint index, vint _count, bool& uninitialized)
-			{
-				vint newCount = this->count + _count;
-				if (newCount > capacity)
-				{
-					vint newCapacity = CalculateCapacity(newCount);
-					void* newBuffer = this->AllocateBuffer(newCapacity);
-					this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), index);
-					this->InitializeItemsByMove(this->AddressOf(newBuffer, index + _count), this->AddressOf(this->buffer, index), this->count - index);
-					this->ReleaseItems(this->buffer, this->count);
-					this->DeallocateBuffer(this->buffer);
-					this->capacity = newCapacity;
-					this->buffer = newBuffer;
-					uninitialized = true;
-				}
-				else if (index >= this->count)
-				{
-					uninitialized = true;
-				}
-				else if (this->count - index < _count)
-				{
-					this->InitializeItemsByMove(this->AddressOf(this->buffer, index + _count), this->AddressOf(this->buffer, index), this->count - index);
-					this->ReleaseItems(this->AddressOf(this->buffer, index), _count - (this->count - index));
-					uninitialized = true;
-				}
-				else
-				{
-					this->InitializeItemsByMove(this->AddressOf(this->buffer, this->count), this->AddressOf(this->buffer, this->count - _count), _count);
-					this->MoveItemsInTheSameBuffer(this->AddressOf(this->buffer, index + _count), this->AddressOf(this->buffer, index), this->count - index - _count);
-					uninitialized = false;
-				}
-				this->count = newCount;
-			}
-
-			void ReleaseUnnecessaryBuffer(vint previousCount)
-			{
-				if (this->buffer && this->count < previousCount)
-				{
-					this->ReleaseItems(this->AddressOf(this->buffer, this->count), previousCount - this->count);
-				}
-				if (this->lessMemoryMode && this->count <= this->capacity / 2)
-				{
-					vint newCapacity = capacity * 5 / 8;
-					if (this->count < newCapacity)
-					{
-						void* newBuffer = this->AllocateBuffer(newCapacity);
-						this->InitializeItemsByMove(this->AddressOf(newBuffer, 0), this->AddressOf(this->buffer, 0), this->count);
-						this->ReleaseItems(this->buffer, this->count);
-						this->DeallocateBuffer(this->buffer);
-						this->capacity = newCapacity;
-						this->buffer = newBuffer;
-					}
-				}
-			}
 		public:
-
+			ListBase() = default;
 			~ListBase()
 			{
-				this->ReleaseItems(this->buffer, this->count);
-				this->DeallocateBuffer(this->buffer);
+				if (this->buffer)
+				{
+					memory_management::CallDtors(this->buffer, this->count);
+					memory_management::DeallocateBuffer(this->buffer);
+				}
 			}
 
-			/// <summary>Set a preference of using memory.</summary>
-			/// <param name="mode">
-			/// Set to true (by default) to let the container actively reduce memories when there is too much room for unused elements.
-			/// This could happen after removing a lot of elements.
-			/// </param>
-			void SetLessMemoryMode(bool mode)
+			ListBase(const ListBase<T, K>&) = delete;
+			ListBase(ListBase<T, K>&& _move)
 			{
-				this->lessMemoryMode = mode;
+				this->buffer = _move.buffer;
+				this->count = _move.count;
+				this->capacity = _move.capacity;
+				_move.buffer = nullptr;
+				_move.count = 0;
+				_move.capacity = 0;
+			}
+
+			ListBase<T, K>& operator=(const ListBase<T, K>&) = delete;
+			ListBase<T, K>& operator=(ListBase<T, K>&& _move)
+			{
+				if (this->buffer)
+				{
+					memory_management::CallDtors(this->buffer, this->count);
+					memory_management::DeallocateBuffer(this->buffer);
+				}
+				this->buffer = _move.buffer;
+				this->count = _move.count;
+				this->capacity = _move.capacity;
+				_move.buffer = nullptr;
+				_move.count = 0;
+				_move.capacity = 0;
+				return *this;
 			}
 
 			/// <summary>Remove an element at a specified position.</summary>
@@ -1961,9 +2032,9 @@ ListBase
 			{
 				vint previousCount = this->count;
 				CHECK_ERROR(index >= 0 && index < this->count, L"ListBase<T, K>::RemoveAt(vint)#Argument index not in range.");
-				this->MoveItemsInTheSameBuffer(this->AddressOf(this->buffer, index), this->AddressOf(this->buffer, index + 1), this->count - index - 1);
+				memory_management::CallMoveAssignmentsOverlapped(&this->buffer[index], &this->buffer[index + 1], this->count - index - 1);
 				this->count--;
-				ReleaseUnnecessaryBuffer(previousCount);
+				memory_management::ReleaseUnnecessaryBuffer(this->buffer, this->capacity, previousCount, this->count);
 				return true;
 			}
 
@@ -1976,9 +2047,9 @@ ListBase
 				vint previousCount = this->count;
 				CHECK_ERROR(index >= 0 && index <= this->count, L"ListBase<T, K>::RemoveRange(vint, vint)#Argument index not in range.");
 				CHECK_ERROR(index + _count >= 0 && index + _count <= this->count, L"ListBase<T,K>::RemoveRange(vint, vint)#Argument _count not in range.");
-				this->MoveItemsInTheSameBuffer(this->AddressOf(this->buffer, index), this->AddressOf(this->buffer, index + _count), this->count - index - _count);
+				memory_management::CallMoveAssignmentsOverlapped(&this->buffer[index], &this->buffer[index + _count], this->count - index - _count);
 				this->count -= _count;
-				ReleaseUnnecessaryBuffer(previousCount);
+				memory_management::ReleaseUnnecessaryBuffer(this->buffer, this->capacity, previousCount, this->count);
 				return true;
 			}
 
@@ -1988,17 +2059,10 @@ ListBase
 			{
 				vint previousCount = this->count;
 				this->count = 0;
-				if (lessMemoryMode)
-				{
-					this->capacity = 0;
-					this->ReleaseItems(this->buffer, this->count);
-					this->DeallocateBuffer(this->buffer);
-					this->buffer = nullptr;
-				}
-				else
-				{
-					ReleaseUnnecessaryBuffer(previousCount);
-				}
+				this->capacity = 0;
+				memory_management::CallDtors(this->buffer, previousCount);
+				memory_management::DeallocateBuffer(this->buffer);
+				this->buffer = nullptr;
 				return true;
 			}
 		};
@@ -2032,7 +2096,7 @@ List
 			{
 				for (vint i = 0; i < this->count; i++)
 				{
-					if (this->ItemOf(i) == item)
+					if (this->buffer[i] == item)
 					{
 						return i;
 					}
@@ -2041,11 +2105,18 @@ List
 			}
 
 			/// <summary>Append a value at the end of the list.</summary>
+			/// <typeparam name="TItem">The type of the new value.</typeparam>
 			/// <returns>The index of the added item.</returns>
 			/// <param name="item">The value to add.</param>
-			vint Add(const T& item)
+			template<typename TItem>
+			vint Add(TItem&& item)
 			{
-				return Insert(this->count, item);
+				return Insert(this->count, std::forward<TItem&&>(item));
+			}
+
+			vint Add(T&& item)
+			{
+				return Add<T>(std::move(item));
 			}
 
 			/// <summary>Insert a value at the specified position.</summary>
@@ -2055,16 +2126,20 @@ List
 			vint Insert(vint index, const T& item)
 			{
 				CHECK_ERROR(index >= 0 && index <= this->count, L"List<T, K>::Insert(vint, const T&)#Argument index not in range.");
-				bool uninitialized = false;
-				this->MakeRoom(index, 1, uninitialized);
-				if (uninitialized)
-				{
-					new(&this->ItemOf(index))T(item);
-				}
-				else
-				{
-					this->ItemOf(index) = item;
-				}
+				memory_management::InsertUninitializedItems(this->buffer, this->capacity, this->count, index, 1);
+				memory_management::CallCopyCtors(&this->buffer[index], &item, 1);
+				return index;
+			}
+
+			/// <summary>Insert a value at the specified position.</summary>
+			/// <returns>The index of the added item. It will crash if the index is out of range</returns>
+			/// <param name="index">The position to insert the value.</param>
+			/// <param name="item">The value to add.</param>
+			vint Insert(vint index, T&& item)
+			{
+				CHECK_ERROR(index >= 0 && index <= this->count, L"List<T, K>::Insert(vint, const T&)#Argument index not in range.");
+				memory_management::InsertUninitializedItems(this->buffer, this->capacity, this->count, index, 1);
+				memory_management::CallMoveCtors(&this->buffer[index], &item, 1);
 				return index;
 			}
 
@@ -2086,14 +2161,21 @@ List
 			}
 
 			/// <summary>Replace an element in the specified position.</summary>
+			/// <typeparam name="TItem">The type of the new value.</typeparam>
 			/// <returns>Returns true if this operation succeeded. It will crash when the index is out of range</returns>
 			/// <param name="index">The position of the element to replace.</param>
 			/// <param name="item">The new value to replace.</param>
-			bool Set(vint index, const T& item)
+			template<typename TItem>
+			bool Set(vint index, TItem&& item)
 			{
 				CHECK_ERROR(index >= 0 && index < this->count, L"List<T, K>::Set(vint)#Argument index not in range.");
-				this->ItemOf(index) = item;
+				this->buffer[index] = std::forward<TItem&&>(item);
 				return true;
+			}
+
+			bool Set(vint index, T&& item)
+			{
+				return Set<T>(index, std::move(item));
 			}
 
 			using ListBase<T, K>::operator[];
@@ -2104,7 +2186,7 @@ List
 			T& operator[](vint index)
 			{
 				CHECK_ERROR(index >= 0 && index < this->count, L"List<T, K>::operator[](vint)#Argument index not in range.");
-				return this->ItemOf(index);
+				return this->buffer[index];
 			}
 		};
 
@@ -2139,11 +2221,11 @@ SortedList
 				while (start <= end)
 				{
 					index = start + (end - start) / 2;
-					if (this->ItemOf(index) == item)
+					if (this->buffer[index] == item)
 					{
 						return index;
 					}
-					else if (this->ItemOf(index) > item)
+					else if (this->buffer[index] > item)
 					{
 						end = index - 1;
 					}
@@ -2158,15 +2240,16 @@ SortedList
 			vint Insert(vint index, const T& item)
 			{
 				bool uninitialized = false;
-				this->MakeRoom(index, 1, uninitialized);
-				if (uninitialized)
-				{
-					new(&this->ItemOf(index))T(item);
-				}
-				else
-				{
-					this->ItemOf(index) = item;
-				}
+				memory_management::InsertUninitializedItems(this->buffer, this->capacity, this->count, index, 1);
+				memory_management::CallCopyCtors(&this->buffer[index], &item, 1);
+				return index;
+			}
+
+			vint Insert(vint index, T&& item)
+			{
+				bool uninitialized = false;
+				memory_management::InsertUninitializedItems(this->buffer, this->capacity, this->count, index, 1);
+				memory_management::CallMoveCtors(&this->buffer[index], &item, 1);
 				return index;
 			}
 		public:
@@ -2191,25 +2274,32 @@ SortedList
 			}
 
 			/// <summary>Add a value at the correct position, all elements will be kept in order.</summary>
+			/// <typeparam name="TItem">The type of the new value.</typeparam>
 			/// <returns>The index of the added item.</returns>
 			/// <param name="item">The value to add.</param>
-			vint Add(const T& item)
+			template<typename TItem>
+			vint Add(TItem&& item)
 			{
 				if (ArrayBase<T>::count == 0)
 				{
-					return Insert(0, item);
+					return Insert(0, std::forward<TItem&&>(item));
 				}
 				else
 				{
 					vint outputIndex = -1;
 					IndexOfInternal<T>(item, outputIndex);
 					CHECK_ERROR(outputIndex >= 0 && outputIndex < this->count, L"SortedList<T, K>::Add(const T&)#Internal error, index not in range.");
-					if (this->ItemOf(outputIndex) < item)
+					if (this->buffer[outputIndex] < item)
 					{
 						outputIndex++;
 					}
-					return Insert(outputIndex, item);
+					return Insert(outputIndex, std::forward<TItem&&>(item));
 				}
+			}
+
+			vint Add(T&& item)
+			{
+				return Add<T>(std::move(item));
 			}
 
 			/// <summary>Remove an element from the list. If multiple elements equal to the specified value, only the first one will be removed</summary>
@@ -2485,21 +2575,26 @@ namespace vl
 		public:
 			/// <summary>Create an empty dictionary.</summary>
 			Dictionary() = default;
+			~Dictionary() = default;
+
+			Dictionary(const Dictionary<KT, VT, KK, VK>&) = delete;
+			Dictionary(Dictionary<KT, VT, KK, VK> && _move)
+				: keys(std::move(_move.keys))
+				, values(std::move(_move.values))
+			{
+			}
+
+			Dictionary<KT, VT, KK, VK>& operator=(const Dictionary<KT, VT, KK, VK>&) = delete;
+			Dictionary<KT, VT, KK, VK>& operator=(Dictionary<KT, VT, KK, VK> && _move)
+			{
+				keys = std::move(_move.keys);
+				values = std::move(_move.values);
+				return* this;
+			}
 
 			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
 			{
 				return new Enumerator(this);
-			}
-
-			/// <summary>Set a preference of using memory.</summary>
-			/// <param name="mode">
-			/// Set to true (by default) to let the container actively reduce memories when there is too much room for unused elements.
-			/// This could happen after removing a lot of elements.
-			/// </param>
-			void SetLessMemoryMode(bool mode)
-			{
-				keys.SetLessMemoryMode(mode);
-				values.SetLessMemoryMode(mode);
 			}
 
 			/// <summary>Get all keys.</summary>
@@ -2540,23 +2635,35 @@ namespace vl
 			}
 			
 			/// <summary>Replace the value associated to a specified key.</summary>
+			/// <typeparam name="TKeyItem">The type of the new key.</typeparam>
+			/// <typeparam name="TValueItem">The type of the new value.</typeparam>
 			/// <returns>Returns true if the value is replaced.</returns>
 			/// <param name="key">The key to find. If the key does not exist, it will be added to the dictionary.</param>
 			/// <param name="value">The associated value to replace.</param>
-			bool Set(const KT& key, const VT& value)
+			template<typename TKeyItem, typename TValueItem>
+			bool Set(TKeyItem&& key, TValueItem&& value)
 			{
-				vint index=keys.IndexOf(KeyType<KT>::GetKeyValue(key));
-				if(index==-1)
+				using TKeyAccept = memory_management::AcceptType<KT, TKeyItem&&>;
+				using TKeyForward = memory_management::ForwardType<KT, TKeyItem&&>;
+				TKeyAccept keyAccept = memory_management::RefOrConvert<KT>(std::forward<TKeyItem&&>(key));
+
+				vint index = keys.IndexOf(KeyType<KT>::GetKeyValue(keyAccept));
+				if (index == -1)
 				{
-					index=keys.Add(key);
-					values.Insert(index, value);
+					index = keys.Add(std::forward<TKeyForward>(keyAccept));
+					values.Insert(index, std::forward<TValueItem&&>(value));
 				}
 				else
 				{
-					values[index]=value;
+					values[index] = std::forward<TValueItem&&>(value);
 				}
 				return true;
 			}
+
+			bool Set(const KT& key, const VT& value) { return Set<const KT&, const VT&>(key, value); }
+			bool Set(const KT& key, VT&& value) { return Set<const KT&, VT>(key, std::move(value)); }
+			bool Set(KT&& key, const VT& value) { return Set<KT, const VT&>(std::move(key), value); }
+			bool Set(KT&& key, VT&& value) { return Set<KT, VT>(std::move(key), std::move(value)); }
 
 			/// <summary>Add a key with an associated value.</summary>
 			/// <returns>Returns true if the pair is added. If will crash if the key exists.</returns>
@@ -2568,15 +2675,36 @@ namespace vl
 
 			/// <summary>Add a key with an associated value.</summary>
 			/// <returns>Returns true if the pair is added. If will crash if the key exists.</returns>
+			/// <param name="value">The pair of key and value.</param>
+			bool Add(Pair<KT, VT>&& value)
+			{
+				return Add(std::move(value.key), std::move(value.value));
+			}
+
+			/// <summary>Add a key with an associated value.</summary>
+			/// <typeparam name="TKeyItem">The type of the new key.</typeparam>
+			/// <typeparam name="TValueItem">The type of the new value.</typeparam>
+			/// <returns>Returns true if the pair is added. If will crash if the key exists.</returns>
 			/// <param name="key">The key to add.</param>
 			/// <param name="value">The value to add.</param>
-			bool Add(const KT& key, const VT& value)
+			template<typename TKeyItem, typename TValueItem>
+			bool Add(TKeyItem&& key, TValueItem&& value)
 			{
-				CHECK_ERROR(!keys.Contains(KeyType<KT>::GetKeyValue(key)), L"Dictionary<KT, KK, ValueContainer, VT, VK>::Add(const KT&, const VT&)#Key already exists.");
-				vint index=keys.Add(key);
-				values.Insert(index, value);
+				using TKeyAccept = memory_management::AcceptType<KT, TKeyItem&&>;
+				using TKeyForward = memory_management::ForwardType<KT, TKeyItem&&>;
+				TKeyAccept keyAccept = memory_management::RefOrConvert<KT>(std::forward<TKeyItem&&>(key));
+
+				CHECK_ERROR(!keys.Contains(KeyType<KT>::GetKeyValue(keyAccept)), L"Dictionary<KT, KK, ValueContainer, VT, VK>::Add(const KT&, const VT&)#Key already exists.");
+				vint index = keys.Add(std::forward<TKeyForward>(keyAccept));
+				values.Insert(index, std::forward<TValueItem&&>(value));
+
 				return true;
 			}
+
+			bool Add(const KT& key, const VT& value) { return Add<const KT&, const VT&>(key, value); }
+			bool Add(const KT& key, VT&& value) { return Add<const KT&, VT>(key, std::move(value)); }
+			bool Add(KT&& key, const VT& value) { return Add<KT, const VT&>(std::move(key), value); }
+			bool Add(KT&& key, VT&& value) { return Add<KT, VT>(std::move(key), std::move(value)); }
 
 			/// <summary>Remove a key with the associated value.</summary>
 			/// <returns>Returns true if the key and the value is removed.</returns>
@@ -2726,6 +2854,22 @@ namespace vl
 				Clear();
 			}
 
+			Group(const Group<KT, VT, KK, VK>&) = delete;
+			Group(Group<KT, VT, KK, VK> && _move)
+				: keys(std::move(_move.keys))
+				, values(std::move(_move.values))
+			{
+			}
+
+			Group<KT, VT, KK, VK>& operator=(const Group<KT, VT, KK, VK>&) = delete;
+			Group<KT, VT, KK, VK>& operator=(Group<KT, VT, KK, VK> && _move)
+			{
+				Clear();
+				keys = std::move(_move.keys);
+				values = std::move(_move.values);
+				return*this;
+			}
+
 			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
 			{
 				return new Enumerator(this);
@@ -2811,25 +2955,49 @@ namespace vl
 			/// If the key already exists, the value will be associated to the key with other values.
 			/// If this value has already been associated to the key, it will still be duplicated.
 			/// </summary>
+			/// <returns>Returns true if the pair is added.</returns>
+			/// <param name="value">The pair of key and value to add.</param>
+			bool Add(Pair<KT, VT>&& value)
+			{
+				return Add(std::move(value.key), std::move(value.value));
+			}
+
+			/// <summary>
+			/// Add a key with an associated value.
+			/// If the key already exists, the value will be associated to the key with other values.
+			/// If this value has already been associated to the key, it will still be duplicated.
+			/// </summary>
+			/// <typeparam name="TKeyItem">The type of the new key.</typeparam>
+			/// <typeparam name="TValueItem">The type of the new value.</typeparam>
 			/// <returns>Returns true if the key and the value are added.</returns>
 			/// <param name="key">The key to add.</param>
 			/// <param name="value">The value to add.</param>
-			bool Add(const KT& key, const VT& value)
+			template<typename TKeyItem, typename TValueItem>
+			bool Add(TKeyItem&& key, TValueItem&& value)
 			{
-				ValueContainer* target=0;
-				vint index=keys.IndexOf(KeyType<KT>::GetKeyValue(key));
-				if(index==-1)
+				using TKeyAccept = memory_management::AcceptType<KT, TKeyItem&&>;
+				using TKeyForward = memory_management::ForwardType<KT, TKeyItem&&>;
+				TKeyAccept keyAccept = memory_management::RefOrConvert<KT>(std::forward<TKeyItem&&>(key));
+
+				ValueContainer* target = nullptr;
+				vint index = keys.IndexOf(KeyType<KT>::GetKeyValue(keyAccept));
+				if (index == -1)
 				{
-					target=new ValueContainer;
-					values.Insert(keys.Add(key), target);
+					target = new ValueContainer;
+					values.Insert(keys.Add(std::forward<TKeyForward>(keyAccept)), target);
 				}
 				else
 				{
-					target=values[index];
+					target = values[index];
 				}
-				target->Add(value);
+				target->Add(std::forward<TValueItem&&>(value));
 				return true;
 			}
+
+			bool Add(const KT& key, const VT& value) { return Add<const KT&, const VT&>(key, value); }
+			bool Add(const KT& key, VT&& value) { return Add<const KT&, VT>(key, std::move(value)); }
+			bool Add(KT&& key, const VT& value) { return Add<KT, const VT&>(std::move(key), value); }
+			bool Add(KT&& key, VT&& value) { return Add<KT, VT>(std::move(key), std::move(value)); }
 			
 			/// <summary>Remove a key with all associated values.</summary>
 			/// <returns>Returns true if the key and all associated values are removed.</returns>

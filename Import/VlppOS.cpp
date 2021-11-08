@@ -2491,7 +2491,7 @@ LzwDecoder
 			}
 			if (eofIndex != -1)
 			{
-				dictionary.Add(0);
+				dictionary.Add(nullptr);
 			}
 		}
 

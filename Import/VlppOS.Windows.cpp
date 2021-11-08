@@ -438,7 +438,7 @@ Utilities
 		{
 			acceptTypes.Add(request.acceptTypes.Get(i).Buffer());
 		}
-		acceptTypes.Add(0);
+		acceptTypes.Add(nullptr);
 		requestInternet = WinHttpOpenRequest(connectedInternet, request.method.Buffer(), request.query.Buffer(), NULL, WINHTTP_NO_REFERER, &acceptTypes[0], (request.secure ? WINHTTP_FLAG_SECURE : 0));
 		error = GetLastError();
 		if (!requestInternet) goto CLEANUP;
