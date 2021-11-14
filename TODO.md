@@ -2,6 +2,8 @@
 
 ## Issues
 
+- Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
+
 ## OS Provider Features
 
 - Drag and Drop framework.

@@ -489,7 +489,7 @@ WindowsDirect2DParagraph (Initialization)
 						textLayout->SetMaxWidth(65536);
 						textLayout->SetWordWrapping(DWRITE_WORD_WRAPPING_WRAP);
 					}
-					graphicsElements.Add(TextRange(0, _text.Length()), 0);
+					graphicsElements.Add(TextRange(0, _text.Length()), nullptr);
 					backgroundColors.Add(TextRange(0, _text.Length()), Color(0, 0, 0, 0));
 
 					GetWindowsDirect2DResourceManager()->DestroyDirect2DTextFormat(defaultFont);

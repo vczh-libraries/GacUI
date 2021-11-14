@@ -249,15 +249,11 @@ WfRuntimeThreadContext
 			WfRuntimeThreadContext::WfRuntimeThreadContext(Ptr<WfRuntimeGlobalContext> _context)
 				:globalContext(_context)
 			{
-				stack.SetLessMemoryMode(false);
-				stackFrames.SetLessMemoryMode(false);
 			}
 
 			WfRuntimeThreadContext::WfRuntimeThreadContext(Ptr<WfAssembly> _assembly)
 				:globalContext(new WfRuntimeGlobalContext(_assembly))
 			{
-				stack.SetLessMemoryMode(false);
-				stackFrames.SetLessMemoryMode(false);
 			}
 
 			WfRuntimeStackFrame& WfRuntimeThreadContext::GetCurrentStackFrame()
