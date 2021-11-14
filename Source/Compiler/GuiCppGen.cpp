@@ -184,7 +184,8 @@ namespace vl
 			vint length = (vint)compressedStream.Size();
 			const vint block = 1024;
 			vint remain = length % block;
-			vint rows = length / block + (remain ? 1 : 0);
+			vint solidRows = length / block;
+			vint rows = solidRows + (remain ? 1 : 0);
 
 #define PREFIX writer.WriteString(prefix);
 
@@ -212,7 +213,7 @@ namespace vl
 			const wchar_t* hex = L"0123456789ABCDEF";
 			for (vint i = 0; i < rows; i++)
 			{
-				vint size = i == rows - 1 ? remain : block;
+				vint size = i == solidRows ? remain : block;
 				compressedStream.Read(buffer, size);
 				PREFIX writer.WriteString(L"\t\"");
 				for (vint j = 0; j < size; j++)
