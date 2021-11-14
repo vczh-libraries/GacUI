@@ -1835,7 +1835,7 @@ Helpers
 			{
 				for (vint i = 0; i < rows; i++)
 				{
-					vint size = i == rows - 1 ? remain : block;
+					vint size = (i == rows - 1 && remain > 0) ? remain : block;
 					outputStream.Write((void*)buffer[i], size);
 				}
 			}
