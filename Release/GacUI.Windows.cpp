@@ -10719,7 +10719,9 @@ OS Supporting
 
 				IWindowsDirect2DRenderTarget* GetBindedRenderTarget(INativeWindow* window)override
 				{
-					return dynamic_cast<IWindowsDirect2DRenderTarget*>(vl::presentation::windows::GetWindowsForm(window)->GetGraphicsHandler());
+					auto windowsForm = vl::presentation::windows::GetWindowsForm(window);
+					auto graphicsHandler = windowsForm->GetGraphicsHandler();
+					return dynamic_cast<IWindowsDirect2DRenderTarget*>(graphicsHandler);
 				}
 
 				void SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget)override
