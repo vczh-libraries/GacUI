@@ -450,6 +450,9 @@ namespace vl
 {
 	namespace collections
 	{
+		template<typename K, typename V>
+		class Pair;
+
 		/// <summary>A type representing a pair of key and value.</summary>
 		/// <typeparam name="K">Type of the key.</typeparam>
 		/// <typeparam name="V">Type of the value.</typeparam>
@@ -495,6 +498,12 @@ namespace vl
 			{
 			}
 
+			Pair(const Pair<const K&, const V&>& pair)
+				: key(pair.key)
+				, value(pair.value)
+			{
+			}
+
 			Pair(const Pair<K, V>& pair)
 				: key(pair.key)
 				, value(pair.value)
@@ -521,21 +530,25 @@ namespace vl
 				return *this;
 			}
 
-			vint CompareTo(const Pair<K, V>& pair)const
+			template<typename K2, typename V2>
+			auto CompareTo(const Pair<K2, V2>& pair) const -> std::enable_if_t<
+				std::is_same_v<std::remove_cvref_t<K>, std::remove_cvref_t<K2>> &&
+				std::is_same_v<std::remove_cvref_t<V>, std::remove_cvref_t<V2>>,
+				vint>
 			{
-				if(key<pair.key)
+				if (key < pair.key)
 				{
 					return -1;
 				}
-				else if(key>pair.key)
+				else if (key > pair.key)
 				{
 					return 1;
 				}
-				else if(value<pair.value)
+				else if (value < pair.value)
 				{
 					return -1;
 				}
-				else if(value>pair.value)
+				else if (value > pair.value)
 				{
 					return 1;
 				}
@@ -545,34 +558,144 @@ namespace vl
 				}
 			}
 
-			bool operator==(const Pair<K, V>& pair)const
+			template<typename TPair>
+			bool operator==(TPair&& pair)const
 			{
-				return CompareTo(pair)==0;
+				return CompareTo(std::forward<TPair&&>(pair)) == 0;
 			}
 
-			bool operator!=(const Pair<K, V>& pair)const
+			template<typename TPair>
+			bool operator!=(TPair&& pair)const
 			{
-				return CompareTo(pair)!=0;
+				return CompareTo(std::forward<TPair&&>(pair)) != 0;
 			}
 
-			bool operator<(const Pair<K, V>& pair)const
+			template<typename TPair>
+			bool operator<(TPair&& pair)const
 			{
-				return CompareTo(pair)<0;
+				return CompareTo(std::forward<TPair&&>(pair)) < 0;
 			}
 
-			bool operator<=(const Pair<K, V>& pair)const
+			template<typename TPair>
+			bool operator<=(TPair&& pair)const
 			{
-				return CompareTo(pair)<=0;
+				return CompareTo(std::forward<TPair&&>(pair)) <= 0;
 			}
 
-			bool operator>(const Pair<K, V>& pair)const
+			template<typename TPair>
+			bool operator>(TPair&& pair)const
 			{
-				return CompareTo(pair)>0;
+				return CompareTo(std::forward<TPair&&>(pair)) > 0;
 			}
 
-			bool operator>=(const Pair<K, V>& pair)const
+			template<typename TPair>
+			bool operator>=(TPair&& pair)const
 			{
-				return CompareTo(pair)>=0;
+				return CompareTo(std::forward<TPair&&>(pair)) >= 0;
+			}
+		};
+
+		template<typename K, typename V>
+		class Pair<const K&, const V&>
+		{
+		public:
+			const K&		key;
+			const V&		value;
+
+			Pair()
+				: key(*(const K*)nullptr)
+				, value(*(const V*)nullptr)
+			{
+			}
+
+			Pair(const K& _key, const V& _value)
+				: key(_key)
+				, value(_value)
+			{
+			}
+
+			Pair(const Pair<const K&, const V&>& pair)
+				: key(pair.key)
+				, value(pair.value)
+			{
+			}
+
+			Pair<const K&, const V&>& operator=(const Pair<const K&, const V&>& pair)
+			{
+
+#ifdef VCZH_CHECK_MEMORY_LEAKS_NEW
+#undef new
+#endif
+				this->~Pair<const K&, const V&>();
+				new(this) Pair<const K&, const V&>(pair);
+				return *this;
+#ifdef VCZH_CHECK_MEMORY_LEAKS_NEW
+#define new VCZH_CHECK_MEMORY_LEAKS_NEW
+#endif
+			}
+
+			template<typename K2, typename V2>
+			auto CompareTo(const Pair<K2, V2>& pair) const -> std::enable_if_t<
+				std::is_same_v<std::remove_cvref_t<K>, std::remove_cvref_t<K2>>&&
+				std::is_same_v<std::remove_cvref_t<V>, std::remove_cvref_t<V2>>,
+				vint>
+			{
+				if (key < pair.key)
+				{
+					return -1;
+				}
+				else if (key > pair.key)
+				{
+					return 1;
+				}
+				else if (value < pair.value)
+				{
+					return -1;
+				}
+				else if (value > pair.value)
+				{
+					return 1;
+				}
+				else
+				{
+					return 0;
+				}
+			}
+
+			template<typename TPair>
+			bool operator==(TPair&& pair)const
+			{
+				return CompareTo(std::forward<TPair&&>(pair)) == 0;
+			}
+
+			template<typename TPair>
+			bool operator!=(TPair&& pair)const
+			{
+				return CompareTo(std::forward<TPair&&>(pair)) != 0;
+			}
+
+			template<typename TPair>
+			bool operator<(TPair&& pair)const
+			{
+				return CompareTo(std::forward<TPair&&>(pair)) < 0;
+			}
+
+			template<typename TPair>
+			bool operator<=(TPair&& pair)const
+			{
+				return CompareTo(std::forward<TPair&&>(pair)) <= 0;
+			}
+
+			template<typename TPair>
+			bool operator>(TPair&& pair)const
+			{
+				return CompareTo(std::forward<TPair&&>(pair)) > 0;
+			}
+
+			template<typename TPair>
+			bool operator>=(TPair&& pair)const
+			{
+				return CompareTo(std::forward<TPair&&>(pair)) >= 0;
 			}
 		};
 	}
@@ -1510,7 +1633,8 @@ Random Access
 					t.Set(index, value);
 				}
 
-				static void AppendValue(T& t, const typename T::ElementType& value)
+				template<typename V>
+				static void AppendValue(T& t, V&& value)
 				{
 					t.Add(value);
 				}
@@ -2080,6 +2204,8 @@ List
 		public:
 			/// <summary>Create an empty list.</summary>
 			List() = default;
+			List(List<T, K>&& container) : ListBase<T, K>(std::move(container)) {}
+			List<T, K>& operator=(List<T, K>&& _move) = default;
 
 			/// <summary>Test does the list contain a value or not.</summary>
 			/// <returns>Returns true if the list contains the specified value.</returns>
@@ -2255,6 +2381,13 @@ SortedList
 		public:
 			/// <summary>Create an empty list.</summary>
 			SortedList() = default;
+			SortedList(SortedList<T, K>&& container) : ListBase<T, K>(std::move(container)) {}
+			SortedList<T, K>& operator=(SortedList<T, K> && _move) = default;
+
+			SortedList(const SortedList<T, K>&xs)
+				: ListBase<T, K>(std::move(const_cast<ListBase<T, K>&>(static_cast<const ListBase<T, K>&>(xs))))
+			{
+			}
 
 			/// <summary>Test does the list contain a value or not.</summary>
 			/// <returns>Returns true if the list contains the specified value.</returns>
@@ -2508,25 +2641,25 @@ namespace vl
 			typename KK=typename KeyType<KT>::Type, 
 			typename VK=typename KeyType<VT>::Type
 		>
-		class Dictionary : public EnumerableBase<Pair<KT, VT>>
+		class Dictionary : public EnumerableBase<Pair<const KT&, const VT&>>
 		{
+			using KVPair = Pair<const KT&, const VT&>;
 		public:
 			typedef SortedList<KT, KK>			KeyContainer;
 			typedef List<VT, VK>				ValueContainer;
 		protected:
-			class Enumerator : public Object, public virtual IEnumerator<Pair<KT, VT>>
+			class Enumerator : public Object, public virtual IEnumerator<KVPair>
 			{
 			private:
 				const Dictionary<KT, VT, KK, VK>*	container;
 				vint								index;
-				Pair<KT, VT>						current;
+				KVPair								current;
 
 				void UpdateCurrent()
 				{
 					if(index<container->Count())
 					{
-						current.key=container->Keys().Get(index);
-						current.value=container->Values().Get(index);
+						current = { container->Keys().Get(index),container->Values().Get(index) };
 					}
 				}
 			public:
@@ -2536,12 +2669,12 @@ namespace vl
 					index=_index;
 				}
 				
-				IEnumerator<Pair<KT, VT>>* Clone()const override
+				IEnumerator<KVPair>* Clone()const override
 				{
 					return new Enumerator(container, index);
 				}
 
-				const Pair<KT, VT>& Current()const override
+				const KVPair& Current()const override
 				{
 					return current;
 				}
@@ -2578,7 +2711,7 @@ namespace vl
 			~Dictionary() = default;
 
 			Dictionary(const Dictionary<KT, VT, KK, VK>&) = delete;
-			Dictionary(Dictionary<KT, VT, KK, VK> && _move)
+			Dictionary(Dictionary<KT, VT, KK, VK>&& _move)
 				: keys(std::move(_move.keys))
 				, values(std::move(_move.values))
 			{
@@ -2592,7 +2725,7 @@ namespace vl
 				return* this;
 			}
 
-			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
+			IEnumerator<KVPair>* CreateEnumerator()const
 			{
 				return new Enumerator(this);
 			}
@@ -2745,29 +2878,29 @@ namespace vl
 			typename KK=typename KeyType<KT>::Type,
 			typename VK=typename KeyType<VT>::Type
 		>
-		class Group : public EnumerableBase<Pair<KT, VT>>
+		class Group : public EnumerableBase<Pair<const KT&, const VT&>>
 		{
+			using KVPair = Pair<const KT&, const VT&>;
 		public:
 			typedef SortedList<KT, KK>		KeyContainer;
 			typedef List<VT, VK>			ValueContainer;
 		protected:
-			class Enumerator : public Object, public virtual IEnumerator<Pair<KT, VT>>
+			class Enumerator : public Object, public virtual IEnumerator<KVPair>
 			{
 			private:
 				const Group<KT, VT, KK, VK>*		container;
 				vint								keyIndex;
 				vint								valueIndex;
-				Pair<KT, VT>						current;
+				KVPair								current;
 
 				void UpdateCurrent()
 				{
-					if(keyIndex<container->Count())
+					if (keyIndex < container->Count())
 					{
-						const ValueContainer& values=container->GetByIndex(keyIndex);
-						if(valueIndex<values.Count())
+						const ValueContainer& values = container->GetByIndex(keyIndex);
+						if (valueIndex < values.Count())
 						{
-							current.key=container->Keys().Get(keyIndex);
-							current.value=values.Get(valueIndex);
+							current = { container->Keys().Get(keyIndex) ,values.Get(valueIndex) };
 						}
 					}
 				}
@@ -2779,12 +2912,12 @@ namespace vl
 					valueIndex=_valueIndex;
 				}
 				
-				IEnumerator<Pair<KT, VT>>* Clone()const override
+				IEnumerator<KVPair>* Clone()const override
 				{
 					return new Enumerator(container, keyIndex, valueIndex);
 				}
 
-				const Pair<KT, VT>& Current()const override
+				const KVPair& Current()const override
 				{
 					return current;
 				}
@@ -2855,7 +2988,7 @@ namespace vl
 			}
 
 			Group(const Group<KT, VT, KK, VK>&) = delete;
-			Group(Group<KT, VT, KK, VK> && _move)
+			Group(Group<KT, VT, KK, VK>&& _move)
 				: keys(std::move(_move.keys))
 				, values(std::move(_move.values))
 			{
@@ -2870,7 +3003,7 @@ namespace vl
 				return*this;
 			}
 
-			IEnumerator<Pair<KT, VT>>* CreateEnumerator()const
+			IEnumerator<KVPair>* CreateEnumerator()const
 			{
 				return new Enumerator(this);
 			}
@@ -3215,6 +3348,11 @@ Random Access
 				{
 					t.Set(value.key, value.value);
 				}
+
+				static void AppendValue(Dictionary<KT, VT, KK, VK>& t, const Pair<const KT&, const VT&>& value)
+				{
+					t.Set(value.key, value.value);
+				}
 			};
 		}
 	}
@@ -3316,12 +3454,12 @@ Copy Functions for Containers
 			{
 				static void Perform(Ds& ds, const Ss& ss, bool append)
 				{
-					if(!append)
+					if (!append)
 					{
 						ds.Clear();
 					}
-					Ptr<IEnumerator<typename Ss::ElementType>> enumerator=ss.CreateEnumerator();
-					while(enumerator->Next())
+					auto enumerator = ss.CreateEnumerator();
+					while (enumerator->Next())
 					{
 						RandomAccess<Ds>::AppendValue(ds, enumerator->Current());
 					}

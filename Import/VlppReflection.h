@@ -6204,23 +6204,23 @@ Containers
 			Ptr<TValueItf> ChooseValueCollectionFromNonDictionaryEnumerable(const collections::IEnumerable<T>* enumerable)
 			{
 				auto writable = const_cast<Object*>(enumerable->GetCollectionObject());
-				if (auto xs = dynamic_cast<collections::ObservableList<T>*>(writable))
+				if (auto xs = dynamic_cast<collections::ObservableList<std::remove_cvref_t<T>>*>(writable))
 				{
 					return GetValueCollectionFromCollection<IValueObservableList, TValueItf, ValueObservableListWrapper>(xs);
 				}
-				else if (auto xs = dynamic_cast<collections::ObservableListBase<T>*>(writable))
+				else if (auto xs = dynamic_cast<collections::ObservableListBase<std::remove_cvref_t<T>>*>(writable))
 				{
 					return GetValueCollectionFromCollection<IValueList, TValueItf, ValueListWrapper>(xs);
 				}
-				else if (auto xs = dynamic_cast<collections::List<T>*>(writable))
+				else if (auto xs = dynamic_cast<collections::List<std::remove_cvref_t<T>>*>(writable))
 				{
 					return GetValueCollectionFromCollection<IValueList, TValueItf, ValueListWrapper>(xs);
 				}
-				else if (auto xs = dynamic_cast<collections::Array<T>*>(writable))
+				else if (auto xs = dynamic_cast<collections::Array<std::remove_cvref_t<T>>*>(writable))
 				{
 					return GetValueCollectionFromCollection<IValueArray, TValueItf, ValueArrayWrapper>(xs);
 				}
-				else if (auto xs = dynamic_cast<collections::SortedList<T>*>(writable))
+				else if (auto xs = dynamic_cast<collections::SortedList<std::remove_cvref_t<T>>*>(writable))
 				{
 					return GetValueCollectionFromCollection<IValueReadonlyList, TValueItf, ValueReadonlyListWrapper>(xs);
 				}
@@ -6240,7 +6240,7 @@ Containers
 			Ptr<TValueItf> ChooseValueCollectionFromEnumerable(const collections::IEnumerable<collections::Pair<K, V>>* enumerable)
 			{
 				auto writable = const_cast<Object*>(enumerable->GetCollectionObject());
-				if (auto xs = dynamic_cast<collections::Dictionary<K, V>*>(writable))
+				if (auto xs = dynamic_cast<collections::Dictionary<std::remove_cvref_t<K>, std::remove_cvref_t<V>>*>(writable))
 				{
 					return GetValueCollectionFromCollection<IValueDictionary, TValueItf, ValueDictionaryWrapper>(xs);
 				}
