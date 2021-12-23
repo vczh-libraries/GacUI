@@ -1300,14 +1300,20 @@ PureInterpretor (Serialization)
 			ReadInt(inputStream, stateCount);
 			ReadInt(inputStream, charSetCount);
 			ReadInt(inputStream, startState);
-			ReadInts(inputStream, SupportedCharCount, charMap);
-
-			transition = new vint* [stateCount];
-			for (vint i = 0; i < stateCount; i++)
 			{
-				transition[i] = new vint[charSetCount];
-				ReadInts(inputStream, charSetCount, transition[i]);
+				vint count = 0;
+				ReadInt(inputStream, count);
+				charRanges.Resize(count);
+				if (count > 0)
+				{
+					vint size = charRanges.Count() * sizeof(CharRange);
+					CHECK_ERROR(inputStream.Read(&charRanges[0], size) == size, L"Failed to serialize RegexLexer.");
+				}
+				ExpandCharRanges();
 			}
+
+			transitions = new vint[stateCount * charSetCount];
+			ReadInts(inputStream, stateCount * charSetCount, transitions);
 
 			finalState = new bool[stateCount];
 			ReadBools(inputStream, stateCount, finalState);
@@ -1318,17 +1324,38 @@ PureInterpretor (Serialization)
 			WriteInt(outputStream, stateCount);
 			WriteInt(outputStream, charSetCount);
 			WriteInt(outputStream, startState);
-			WriteInts(outputStream, SupportedCharCount, charMap);
-			for (vint i = 0; i < stateCount; i++)
 			{
-				WriteInts(outputStream, charSetCount, transition[i]);
+				WriteInt(outputStream, charRanges.Count());
+				if (charRanges.Count() > 0)
+				{
+					vint size = charRanges.Count() * sizeof(CharRange);
+					CHECK_ERROR(outputStream.Write(&charRanges[0], size) == size, L"Failed to serialize RegexLexer.");
+				}
 			}
+			WriteInts(outputStream, stateCount * charSetCount, transitions);
 			WriteBools(outputStream, stateCount, finalState);
 		}
 
 /***********************************************************************
 PureInterpretor
 ***********************************************************************/
+
+		void PureInterpretor::ExpandCharRanges()
+		{
+			for (vint i = 0; i < SupportedCharCount; i++)
+			{
+				charMap[i] = charSetCount - 1;
+			}
+			for (vint i = 0; i < charRanges.Count(); i++)
+			{
+				CharRange range = charRanges[i];
+				for (char32_t j = range.begin; j <= range.end; j++)
+				{
+					if (j > MaxChar32) break;
+					charMap[j] = i;
+				}
+			}
+		}
 
 		PureInterpretor::PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets)
 		{
@@ -1337,28 +1364,16 @@ PureInterpretor
 			startState = dfa->states.IndexOf(dfa->startState);
 
 			// Map char to input index (equivalent char class)
-			for (vint i = 0; i < SupportedCharCount; i++)
-			{
-				charMap[i] = charSetCount - 1;
-			}
-			for (vint i = 0; i < subsets.Count(); i++)
-			{
-				CharRange range = subsets[i];
-				for (char32_t j = range.begin; j <= range.end; j++)
-				{
-					if (j > MaxChar32) break;
-					charMap[j] = i;
-				}
-			}
+			CopyFrom(charRanges, subsets);
+			ExpandCharRanges();
 
 			// Create transitions from DFA, using input index to represent input char
-			transition = new vint* [stateCount];
+			transitions = new vint[stateCount * charSetCount];
 			for (vint i = 0; i < stateCount; i++)
 			{
-				transition[i] = new vint[charSetCount];
 				for (vint j = 0; j < charSetCount; j++)
 				{
-					transition[i][j] = -1;
+					transitions[i * charSetCount + j] = -1;
 				}
 
 				State* state = dfa->states[i].Obj();
@@ -1374,7 +1389,7 @@ PureInterpretor
 							{
 								CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#Specified chars don't appear in the normalized char ranges.");
 							}
-							transition[i][index] = dfa->states.IndexOf(dfaTransition->target);
+							transitions[i * charSetCount + index] = dfa->states.IndexOf(dfaTransition->target);
 						}
 						break;
 					default:
@@ -1395,11 +1410,7 @@ PureInterpretor
 		{
 			if (relatedFinalState) delete[] relatedFinalState;
 			delete[] finalState;
-			for (vint i = 0; i < stateCount; i++)
-			{
-				delete[] transition[i];
-			}
-			delete[] transition;
+			delete[] transitions;
 		}
 
 		template<typename TChar>
@@ -1431,7 +1442,7 @@ PureInterpretor
 				if (c >= SupportedCharCount) break;
 
 				vint charIndex = charMap[c];
-				currentState = transition[currentState][charIndex];
+				currentState = transitions[currentState * charSetCount + charIndex];
 			}
 
 			if (result.finalState == -1)
@@ -1473,7 +1484,7 @@ PureInterpretor
 			if (0 <= state && state < stateCount && 0 <= input && input <= MaxChar32)
 			{
 				vint charIndex = charMap[input];
-				vint nextState = transition[state][charIndex];
+				vint nextState = transitions[state * charSetCount + charIndex];
 				return nextState;
 			}
 			else
@@ -1492,7 +1503,7 @@ PureInterpretor
 			if (state == -1) return true;
 			for (vint i = 0; i < charSetCount; i++)
 			{
-				if (transition[state][i] != -1)
+				if (transitions[state * charSetCount + i] != -1)
 				{
 					return false;
 				}
@@ -1519,7 +1530,7 @@ PureInterpretor
 							vint state = -1;
 							for (vint j = 0; j < charSetCount; j++)
 							{
-								vint nextState = transition[i][j];
+								vint nextState = transitions[i * charSetCount + j];
 								if (nextState != -1)
 								{
 									state = relatedFinalState[nextState];
@@ -4222,91 +4233,80 @@ Helpers
 		Automaton::Ref NfaToDfa(Automaton::Ref source, Group<State*, State*>& dfaStateMap)
 		{
 			Automaton::Ref target = new Automaton;
-			Group<Transition*, Transition*> nfaTransitions;
-			List<Transition*> transitionClasses; // Maintain order for nfaTransitions.Keys
-
 			CopyFrom(target->captureNames, source->captureNames);
 			State* startState = target->NewState();
 			target->startState = startState;
 			dfaStateMap.Add(startState, source->startState);
 
-			SortedList<State*> transitionTargets;
-			SortedList<State*> relativeStates;
-
-			for (vint i = 0; i < target->states.Count(); i++)
+			for (auto currentState_ : target->states)
 			{
-				State* currentState = target->states[i].Obj();
-				nfaTransitions.Clear();
-				transitionClasses.Clear();
+				Group<Transition*, Transition*>			nfaClassToTransitions;
+				Dictionary<Transition*, Transition*>	nfaTransitionToClass;
+				List<Transition*>						orderedTransitionClasses;
+
+				State* currentState = currentState_.Obj();
 
 				// Iterate through all NFA states which represent the DFA state
-				const List<State*>& nfaStates = dfaStateMap[currentState];
-				for (vint j = 0; j < nfaStates.Count(); j++)
+				for (auto nfaState : dfaStateMap[currentState])
 				{
-					State* nfaState = nfaStates.Get(j);
 					// Iterate through all transitions from those NFA states
-					for (vint k = 0; k < nfaState->transitions.Count(); k++)
+					for (auto nfaTransition : nfaState->transitions)
 					{
-						Transition* nfaTransition = nfaState->transitions[k];
+						Transition* transitionClass = nullptr;
+
 						// Check if there is any key in nfaTransitions that has the same input as the current transition
-						Transition* transitionClass = 0;
-						for (vint l = 0; l < nfaTransitions.Keys().Count(); l++)
 						{
-							Transition* key = nfaTransitions.Keys()[l];
-							if (AreEqual(key, nfaTransition))
+							vint index = nfaTransitionToClass.Keys().IndexOf(nfaTransition);
+							if (index != -1) transitionClass = nfaTransitionToClass.Values()[index];
+						}
+
+						if (transitionClass == nullptr)
+						{
+							for (vint l = 0; l < orderedTransitionClasses.Count(); l++)
 							{
-								transitionClass = key;
-								break;
+								Transition* key = orderedTransitionClasses[l];
+								if (AreEqual(key, nfaTransition))
+								{
+									transitionClass = key;
+									break;
+								}
 							}
 						}
+
 						// Create a new key if not
-						if (transitionClass == 0)
+						if (transitionClass == nullptr)
 						{
 							transitionClass = nfaTransition;
-							transitionClasses.Add(transitionClass);
+							orderedTransitionClasses.Add(transitionClass);
 						}
 						// Group the transition
-						nfaTransitions.Add(transitionClass, nfaTransition);
+						nfaClassToTransitions.Add(transitionClass, nfaTransition);
+						nfaTransitionToClass.Add(nfaTransition, transitionClass);
 					}
 				}
 
 				// Iterate through all key transition that represent all existing transition inputs from the same state
-				for (vint j = 0; j < transitionClasses.Count(); j++)
+				for (auto transitionClass : orderedTransitionClasses)
 				{
-					const List<Transition*>& transitionSet = nfaTransitions[transitionClasses[j]];
+					auto&& equivalentTransitions = nfaClassToTransitions[transitionClass];
+
 					// Sort all target states and keep unique
-					transitionTargets.Clear();
-					for (vint l = 0; l < transitionSet.Count(); l++)
-					{
-						State* nfaState = transitionSet.Get(l)->target;
-						if (!transitionTargets.Contains(nfaState))
-						{
-							transitionTargets.Add(nfaState);
-						}
-					}
+					List<State*> transitionTargets;
+					CopyFrom(
+						transitionTargets,
+						From(equivalentTransitions)
+							.Select([](auto t) { return t->target; })
+							.Distinct()
+						);
+
 					// Check if these NFA states represent a created DFA state
 					State* dfaState = 0;
 					for (vint k = 0; k < dfaStateMap.Count(); k++)
 					{
-						// Sort NFA states for a certain DFA state
-						CopyFrom(relativeStates, dfaStateMap.GetByIndex(k));
 						// Compare two NFA states set
-						if (relativeStates.Count() == transitionTargets.Count())
+						if (CompareEnumerable(transitionTargets, dfaStateMap.GetByIndex(k)) == 0)
 						{
-							bool equal = true;
-							for (vint l = 0; l < relativeStates.Count(); l++)
-							{
-								if (relativeStates[l] != transitionTargets[l])
-								{
-									equal = false;
-									break;
-								}
-							}
-							if (equal)
-							{
-								dfaState = dfaStateMap.Keys()[k];
-								break;
-							}
+							dfaState = dfaStateMap.Keys()[k];
 						}
 					}
 					// Create a new DFA state if there is not
@@ -4323,7 +4323,6 @@ Helpers
 						}
 					}
 					// Create corresponding DFA transition
-					Transition* transitionClass = transitionClasses[j];
 					Transition* newTransition = target->NewTransition(currentState, dfaState);
 					newTransition->capture = transitionClass->capture;
 					newTransition->index = transitionClass->index;

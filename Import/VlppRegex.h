@@ -1925,7 +1925,8 @@ Helper Functions
 
 		public:
 			RegexException(const WString& _message, const U32String& _code, vint _position)
-				: code(_code)
+				: Exception(_message)
+				, code(_code)
 				, position(_position)
 			{
 			}
@@ -2022,16 +2023,20 @@ namespace vl
 
 		class PureInterpretor : public Object
 		{
+			using CharRangeArray = collections::Array<CharRange>;
 		protected:
 			static const vint	SupportedCharCount = MaxChar32 + 1;
 
+			CharRangeArray		charRanges;
 			vint				charMap[SupportedCharCount];		// char -> char set index
-			vint**				transition = nullptr;				// (state * char set index) -> state*
+			vint*				transitions = nullptr;				// (state * charSetCount + charSetIndex) -> state
 			bool*				finalState = nullptr;				// state -> bool
-			vint*				relatedFinalState = nullptr;		// sate -> (finalState or -1)
+			vint*				relatedFinalState = nullptr;		// state -> (finalState or -1)
 			vint				stateCount;
 			vint				charSetCount;
 			vint				startState;
+
+			void				ExpandCharRanges();
 		public:
 			PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets);
 			PureInterpretor(stream::IStream& inputStream);
