@@ -12,6 +12,7 @@
     <category name="vlppreflection" pattern="\Import\VlppReflection."/>
     <category name="vlppparser" pattern="\Import\VlppParser."/>
     <category name="vlppparser2" pattern="\Import\VlppGlrParser."/>
+    <category name="vlppparser2compiler" pattern="\Import\VlppGlrParserCompiler."/>
     <category name="wflibrary" pattern="\Import\VlppWorkflowLibrary."/>
     <category name="wfruntime" pattern="\Import\VlppWorkflowRuntime."/>
     <category name="wfcompiler" pattern="\Import\VlppWorkflowCompiler."/>
@@ -40,6 +41,7 @@
     <codepair category="vlppreflection" filename="VlppReflection" generate="false"/>
     <codepair category="vlppparser" filename="VlppParser" generate="false"/>
     <codepair category="vlppparser2" filename="VlppGlrParser" generate="false"/>
+    <codepair category="vlppparser2compiler" filename="VlppGlrParserCompiler" generate="false"/>
     <codepair category="wflibrary" filename="VlppWorkflowLibrary" generate="false"/>
     <codepair category="wfruntime" filename="VlppWorkflowRuntime" generate="false"/>
     <codepair category="wfcompiler" filename="VlppWorkflowCompiler" generate="false"/>
