@@ -7,7 +7,6 @@ namespace vl
 		using namespace collections;
 		using namespace stream;
 		using namespace filesystem;
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::cppcodegen;
 
@@ -83,7 +82,7 @@ namespace vl
 			{
 				for (auto error : compiled->metadata->errors)
 				{
-					errors.Add(GuiResourceError({ {resource} }, error->errorMessage));
+					errors.Add(GuiResourceError({ {resource} }, error.message));
 				}
 				return nullptr;
 			}

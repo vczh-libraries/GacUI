@@ -54,11 +54,11 @@ namespace vl
 WorkflowCompiler (Parser)
 ***********************************************************************/
 
-		extern Ptr<workflow::WfType>							Workflow_ParseType					(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression			(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement				(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern Ptr<workflow::WfStatement>						Workflow_ParseCoProviderStatement	(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern Ptr<workflow::WfModule>							Workflow_ParseModule				(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfType>							Workflow_ParseType					(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfExpression>						Workflow_ParseExpression			(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfStatement>						Workflow_ParseStatement				(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfStatement>						Workflow_ParseCoProviderStatement	(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern Ptr<workflow::WfModule>							Workflow_ParseModule				(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter = { 0,0 });
 
 		extern WString											Workflow_ModuleToString(Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfExpression>						Workflow_ParseTextValue(GuiResourcePrecompileContext& precompileContext, description::ITypeDescriptor* typeDescriptor, GuiResourceLocation location, const WString& textValue, GuiResourceTextPos position, collections::List<GuiResourceError>& errors);
@@ -153,23 +153,23 @@ WorkflowCompiler (ScriptPosition)
 			struct ScriptPositionRecord
 			{
 				GuiResourceTextPos								position;
-				parsing::ParsingTextPos							availableAfter;
+				glr::ParsingTextPos								availableAfter;
 				GuiResourceTextPos								computedPosition;
 			};
 
 			class ScriptPosition : public Object, public Description<ScriptPosition>
 			{
-				using NodePositionMap = collections::Dictionary<Ptr<parsing::ParsingTreeCustomBase>, ScriptPositionRecord>;
+				using NodePositionMap = collections::Dictionary<Ptr<glr::ParsingAstBase>, ScriptPositionRecord>;
 			public:
 				NodePositionMap									nodePositions;
 			};
 		}
 
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, parsing::ParsingTextPos availableAfter = { 0,0 });
-		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, parsing::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter = { 0,0 });
+		extern void												Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, glr::ParsingTextPos availableAfter = { 0,0 });
 		extern Ptr<types::ScriptPosition>						Workflow_GetScriptPosition(GuiResourcePrecompileContext& context);
 		extern void												Workflow_ClearScriptPosition(GuiResourcePrecompileContext& context);
 

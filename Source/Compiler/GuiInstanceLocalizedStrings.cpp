@@ -6,8 +6,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace reflection::description;
@@ -24,7 +23,7 @@ GuiInstanceLocalizedStrings
 			});
 		}
 
-		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto ls = MakePtr<GuiInstanceLocalizedStrings>();
 
@@ -141,7 +140,7 @@ GuiInstanceLocalizedStrings
 			return ls;
 		}
 
-		Ptr<parsing::xml::XmlElement> GuiInstanceLocalizedStrings::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStrings::SaveToXml()
 		{
 			auto xml = MakePtr<XmlElement>();
 			xml->name.value = L"LocalizedStrings";
@@ -221,7 +220,7 @@ GuiInstanceLocalizedStrings
 		{
 			const wchar_t* reading = text.Buffer();
 			const wchar_t* textPosCounter = reading;
-			ParsingTextPos formatPos(0, 0);
+			glr::ParsingTextPos formatPos(0, 0);
 			auto textDesc = MakePtr<TextDesc>();
 
 			auto addError = [&](const WString& message)
@@ -451,17 +450,13 @@ GuiInstanceLocalizedStrings
 			}
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind)
 		{
 			auto func = MakePtr<WfFunctionDeclaration>();
+			func->functionKind = functionKind;
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = functionName;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-			{
-				auto member = MakePtr<WfClassMember>();
-				member->kind = classMemberKind;
-				func->classMember = member;
-			}
 			for (vint i = 0; i < textDesc->positions.Count(); i++)
 			{
 				auto type = textDesc->parameters[textDesc->positions[i]];
@@ -491,7 +486,7 @@ GuiInstanceLocalizedStrings
 			for (auto lss : ls->items.Values())
 			{
 				auto textDesc = textDescs[{ls, lss->name}];
-				auto func = GenerateFunction(textDesc, lss->name, WfClassMemberKind::Override);
+				auto func = GenerateFunction(textDesc, lss->name, WfFunctionKind::Override);
 				lsExpr->declarations.Add(func);
 
 				auto block = MakePtr<WfBlockStatement>();
@@ -679,7 +674,7 @@ GuiInstanceLocalizedStrings
 				auto defaultStrings = GetDefaultStrings();
 				for (auto functionName : defaultStrings->items.Keys())
 				{
-					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfClassMemberKind::Normal);
+					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfFunctionKind::Normal);
 					lsInterface->declarations.Add(func);
 				}
 			}
@@ -687,6 +682,7 @@ GuiInstanceLocalizedStrings
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				lsClass->declarations.Add(func);
+				func->functionKind = WfFunctionKind::Static;
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"<ls>First";
 				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
@@ -695,11 +691,6 @@ GuiInstanceLocalizedStrings
 					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<LazyList<WString>>::CreateTypeInfo().Obj());
 					argument->name.value = L"<ls>formats";
 					func->arguments.Add(argument);
-				}
-				{
-					auto member = MakePtr<WfClassMember>();
-					member->kind = WfClassMemberKind::Static;
-					func->classMember = member;
 				}
 				auto block = MakePtr<WfBlockStatement>();
 				func->statement = block;
@@ -735,6 +726,7 @@ GuiInstanceLocalizedStrings
 				auto func = MakePtr<WfFunctionDeclaration>();
 				lsClass->declarations.Add(func);
 
+				func->functionKind = WfFunctionKind::Static;
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"Get";
 				{
@@ -745,11 +737,6 @@ GuiInstanceLocalizedStrings
 					refPointer->element = refType;
 
 					func->returnType = refPointer;
-				}
-				{
-					auto member = MakePtr<WfClassMember>();
-					member->kind = WfClassMemberKind::Static;
-					func->classMember = member;
 				}
 				{
 					auto argument = MakePtr<WfFunctionArgument>();
@@ -806,7 +793,7 @@ GuiInstanceLocalizedStrings
 				block->statements.Add(returnStat);
 			}
 
-			ParsingTextPos pos(tagPosition.row, tagPosition.column);
+			glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
 			SetCodeRange(module, { pos,pos });
 			return module;
 		}

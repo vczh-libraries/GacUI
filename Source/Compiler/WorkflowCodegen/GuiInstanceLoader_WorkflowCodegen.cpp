@@ -6,7 +6,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
@@ -120,6 +119,7 @@ WorkflowEventNamesVisitor
 				if (auto eventInfo = resolvedTypeInfo.typeInfo->GetTypeDescriptor()->GetEventByName(propertyName.ToString(), true))
 				{
 					auto decl = Workflow_GenerateEventHandler(precompileContext, eventInfo);
+					decl->functionKind = WfFunctionKind::Normal;
 					decl->anonymity = WfFunctionAnonymity::Named;
 					decl->name.value = handler->value;
 
@@ -149,9 +149,6 @@ WorkflowEventNamesVisitor
 						raiseStat->expression = stringExpr;
 						block->statements.Add(raiseStat);
 					}
-
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Normal;
 					return decl;
 				}
 				else
@@ -513,13 +510,6 @@ Workflow_GenerateInstanceClass
 				}
 			};
 
-			auto addDecl = [=](Ptr<WfDeclaration> decl)
-			{
-				decl->classMember = MakePtr<WfClassMember>();
-				decl->classMember->kind = WfClassMemberKind::Normal;
-				instanceClass->declarations.Add(decl);
-			};
-
 			auto notImplemented = []()
 			{
 				auto block = MakePtr<WfBlockStatement>();
@@ -676,8 +666,9 @@ Workflow_GenerateInstanceClass
 					if (lsiTd)
 					{
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						instanceClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = localized->name.ToString();
 						prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(lsiTd).Obj());
 						prop->configConst = WfAPConst::Writable;
@@ -743,7 +734,7 @@ Workflow_GenerateInstanceClass
 					if (needFunctionBody)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						decl->name.value = L"<parameter>" + parameter->name.ToString();
 						decl->type = CopyType(type);
@@ -753,8 +744,9 @@ Workflow_GenerateInstanceClass
 					}
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + parameter->name.ToString();
 						decl->returnType = CopyType(type);
@@ -779,7 +771,7 @@ Workflow_GenerateInstanceClass
 					}
 					{
 						auto decl = MakePtr<WfPropertyDeclaration>();
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						decl->name.value = parameter->name.ToString();
 						decl->type = type;
@@ -827,7 +819,7 @@ Workflow_GenerateInstanceClass
 				context->instance->Accept(&visitor);
 			}
 
-			addDecl(ctor);
+			instanceClass->declarations.Add(ctor);
 
 			///////////////////////////////////////////////////////////////
 			// Calling Constructor Class
@@ -943,11 +935,12 @@ Workflow_GenerateInstanceClass
 						}
 
 						auto decl = MakePtr<WfFunctionDeclaration>();
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"<instance-ctor>";
 						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 						decl->statement = stat;
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						{
 							auto refCtor = MakePtr<WfReferenceExpression>();
@@ -990,11 +983,12 @@ Workflow_GenerateInstanceClass
 						}
 
 						auto decl = MakePtr<WfFunctionDeclaration>();
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"<instance-dtor>";
 						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 						decl->statement = stat;
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						{
 							auto refDtor = MakePtr<WfReferenceExpression>();
@@ -1070,7 +1064,7 @@ Workflow_GenerateInstanceClass
 				dtorBlock->statements.Add(stat);
 			}
 
-			addDecl(dtor);
+			instanceClass->declarations.Add(dtor);
 
 			return module;
 		}

@@ -130,6 +130,7 @@ Workflow_InstallCtorClass
 			auto block = MakePtr<WfBlockStatement>();
 
 			auto func = MakePtr<WfFunctionDeclaration>();
+			func->functionKind = WfFunctionKind::Normal;
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->arguments.Add(thisParam);
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
@@ -147,10 +148,7 @@ Workflow_InstallCtorClass
 				func->attributes.Add(att);
 			}
 
-			func->classMember = MakePtr<WfClassMember>();
-			func->classMember->kind = WfClassMemberKind::Normal;
 			ctorClass->declarations.Add(func);
-
 			return block;
 		}
 
@@ -184,9 +182,6 @@ Variable
 			}
 
 			var->expression = CreateDefaultValue(typeInfo);
-
-			var->classMember = MakePtr<WfClassMember>();
-			var->classMember->kind = WfClassMemberKind::Normal;
 			ctorClass->declarations.Add(var);
 		}
 		

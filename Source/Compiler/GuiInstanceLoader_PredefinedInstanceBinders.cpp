@@ -9,7 +9,6 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace reflection::description;
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
@@ -398,8 +397,8 @@ GuiPredefinedInstanceBindersPlugin
 
 			void Load()override
 			{
-				WfLoadTypes();
-				GuiIqLoadTypes();
+				WorkflowAstLoadTypes();
+				GuiInstanceQueryAstLoadTypes();
 				{
 					IGuiParserManager* manager = GetParserManager();
 					manager->SetParsingTable(L"WORKFLOW", &WfLoadTable);

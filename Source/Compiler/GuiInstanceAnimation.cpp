@@ -8,7 +8,7 @@ namespace vl
 	{
 		using namespace reflection::description;
 		using namespace collections;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace presentation::controls;
@@ -17,7 +17,7 @@ namespace vl
 GuiInstanceGradientAnimation::LoadFromXml
 ***********************************************************************/
 
-		Ptr<GuiInstanceGradientAnimation> GuiInstanceGradientAnimation::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceGradientAnimation> GuiInstanceGradientAnimation::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto animation = MakePtr<GuiInstanceGradientAnimation>();
 			animation->tagPosition = { {resource},xml->rootElement->codeRange.start };
@@ -130,7 +130,7 @@ GuiInstanceGradientAnimation::LoadFromXml
 GuiInstanceGradientAnimation::SaveToXml
 ***********************************************************************/
 
-		Ptr<parsing::xml::XmlElement> GuiInstanceGradientAnimation::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceGradientAnimation::SaveToXml()
 		{
 			auto gradientElement = MakePtr<XmlElement>();
 			{
@@ -396,13 +396,6 @@ GuiInstanceGradientAnimation::Compile
 					auto typeInfo = MakePtr<SharedPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
 					auto typeInfoDouble = CreateTypeInfoFromTypeFlag(TypeFlag::F8);
 
-					auto addDecl = [=](Ptr<WfDeclaration> decl)
-					{
-						decl->classMember = MakePtr<WfClassMember>();
-						decl->classMember->kind = WfClassMemberKind::Normal;
-						animationClass->declarations.Add(decl);
-					};
-
 					auto notImplemented = []()
 					{
 						auto block = MakePtr<WfBlockStatement>();
@@ -420,8 +413,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop Begin : <TYPE> = <DEFAULT> {}
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						animationClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = L"Begin";
 						prop->type = GetTypeFromTypeInfo(typeInfo.Obj());
 						prop->expression = CreateDefaultValue(typeInfo.Obj());
@@ -431,8 +425,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop End : <TYPE> = <DEFAULT> {}
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						animationClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = L"End";
 						prop->type = GetTypeFromTypeInfo(typeInfo.Obj());
 						prop->expression = CreateDefaultValue(typeInfo.Obj());
@@ -442,8 +437,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop Current : <TYPE> = <DEFAULT> {}
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						animationClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = L"Current";
 						prop->type = GetTypeFromTypeInfo(typeInfo.Obj());
 						prop->expression = CreateDefaultValue(typeInfo.Obj());
@@ -455,7 +451,7 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop <ani-int> : (func(double):double) = <VALUE> {const, not observe}
 						auto var = MakePtr<WfVariableDeclaration>();
-						addDecl(var);
+						animationClass->declarations.Add(var);
 
 						auto att = MakePtr<WfAttribute>();
 						att->category.value = L"cpp";
@@ -526,8 +522,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func GetTimeScale(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>) : double
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"GetTimeScale";
 						{
@@ -691,8 +688,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func Interpolate(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>, <ani>ratio : double) : void
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"Interpolate";
 						{
@@ -880,8 +878,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func Interpolate(<ani>ratio : double) : void
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"Interpolate";
 						{
@@ -932,8 +931,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func CreateAnimation(<ani>target : <TYPE>, <ani>time : UInt64) : IGuiAnimation^
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"CreateAnimation";
 						{
@@ -1058,6 +1058,7 @@ GuiInstanceGradientAnimation::Compile
 									auto funcDecl = MakePtr<WfFunctionDeclaration>();
 									funcExpr->function = funcDecl;
 
+									funcDecl->functionKind = WfFunctionKind::Normal;
 									funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
 									{
 										auto argument = MakePtr<WfFunctionArgument>();
@@ -1128,7 +1129,7 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// new (<ani>current : <TYPE>)
 						auto func = MakePtr<WfConstructorDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
 						func->constructorType = WfConstructorType::SharedPtr;
 						{

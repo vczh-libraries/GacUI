@@ -142,6 +142,7 @@ Workflow_InstallBindProperty
 			}
 			{
 				auto callback = MakePtr<WfFunctionDeclaration>();
+				callback->functionKind = WfFunctionKind::Normal;
 				callback->anonymity = WfFunctionAnonymity::Anonymous;
 				callback->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());;
 				{
@@ -348,6 +349,7 @@ Workflow_GenerateEventHandler
 		Ptr<workflow::WfFunctionDeclaration> Workflow_GenerateEventHandler(GuiResourcePrecompileContext& precompileContext, description::IEventInfo* eventInfo)
 		{
 			auto func = MakePtr<WfFunctionDeclaration>();
+			func->functionKind = WfFunctionKind::Normal;
 			func->anonymity = WfFunctionAnonymity::Anonymous;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 

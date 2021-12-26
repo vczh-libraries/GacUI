@@ -9,7 +9,7 @@ Classes:
 #ifndef VCZH_PRESENTATION_GUITYPES
 #define VCZH_PRESENTATION_GUITYPES
 
-#include <VlppParser.h>
+#include <VlppGlrParser.h>
 #include <VlppWorkflowLibrary.h>
 
 namespace vl

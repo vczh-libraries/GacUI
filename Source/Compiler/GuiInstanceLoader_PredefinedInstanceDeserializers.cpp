@@ -137,6 +137,7 @@ GuiTemplatePropertyDeserializer
 				)
 			{
 				auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
+				funcCreateTemplate->functionKind = WfFunctionKind::Normal;
 				funcCreateTemplate->anonymity = WfFunctionAnonymity::Anonymous;
 				funcCreateTemplate->returnType = GetTypeFromTypeInfo(returnTemplateType);
 
@@ -519,6 +520,7 @@ GuiItemPropertyDeserializer
 
 				auto funcDecl = MakePtr<WfFunctionDeclaration>();
 				ITypeInfo* acceptValueType = nullptr;
+				funcDecl->functionKind = WfFunctionKind::Normal;
 				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
 				{
 					auto genericType = typeInfo->GetElementType();
@@ -714,9 +716,9 @@ GuiDataProcessorDeserializer
 				{
 					auto decl = MakePtr<WfFunctionDeclaration>();
 					newExpr->declarations.Add(decl);
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Override;
+					decl->functionKind = WfFunctionKind::Override;
 					decl->name.value = L"SetCallback";
+					decl->anonymity = WfFunctionAnonymity::Named;
 					decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
@@ -731,8 +733,8 @@ GuiDataProcessorDeserializer
 				{
 					auto decl = MakePtr<WfFunctionDeclaration>();
 					newExpr->declarations.Add(decl);
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Override;
+					decl->functionKind = WfFunctionKind::Override;
+					decl->anonymity = WfFunctionAnonymity::Named;
 
 					List<WString> argumentNames;
 					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>())

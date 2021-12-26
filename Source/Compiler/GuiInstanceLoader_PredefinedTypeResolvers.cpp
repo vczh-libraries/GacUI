@@ -12,8 +12,7 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::emitter;
@@ -24,8 +23,9 @@ namespace vl
 
 		using namespace controls;
 
-		class WorkflowVirtualScriptPositionVisitor : public traverse_visitor::ModuleVisitor
+		class WorkflowVirtualScriptPositionVisitor : public workflow::traverse_visitor::AstVisitor
 		{
+			using BaseVisitor = workflow::traverse_visitor::AstVisitor;
 		public:
 			GuiResourcePrecompileContext&						context;
 			Ptr<types::ScriptPosition>							sp;
@@ -38,7 +38,7 @@ namespace vl
 
 			void Visit(WfVirtualCfeExpression* node)override
 			{
-				traverse_visitor::ExpressionVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -49,7 +49,7 @@ namespace vl
 
 			void Visit(WfVirtualCseExpression* node)override
 			{
-				traverse_visitor::ExpressionVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -60,7 +60,7 @@ namespace vl
 
 			void Visit(WfVirtualCseStatement* node)override
 			{
-				traverse_visitor::StatementVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -71,7 +71,7 @@ namespace vl
 
 			void Visit(WfVirtualCfeDeclaration* node)override
 			{
-				traverse_visitor::DeclarationVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -85,7 +85,7 @@ namespace vl
 
 			void Visit(WfVirtualCseDeclaration* node)override
 			{
-				traverse_visitor::DeclarationVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -168,7 +168,7 @@ namespace vl
 					WfAssemblyLoadErrors loadErrors;
 					if (!compiled->Initialize(true, loadErrors))
 					{
-						manager->errors.Add(new ParsingError(L"Internal error happened during loading an assembly that just passed type verification."));
+						manager->errors.Add(glr::ParsingError({}, L"Internal error happened during loading an assembly that just passed type verification."));
 					}
 				}
 				else
@@ -177,7 +177,7 @@ namespace vl
 					{
 						auto module = compiled->modules[i];
 						WorkflowVirtualScriptPositionVisitor visitor(context);
-						visitor.VisitField(module.module.Obj());
+						visitor.InspectInto(module.module.Obj());
 						Workflow_RecordScriptPosition(context, module.position, module.module);
 					}
 
@@ -185,7 +185,7 @@ namespace vl
 					for (vint i = 0; i < manager->errors.Count(); i++)
 					{
 						auto error = manager->errors[i];
-						errors.Add({ sp->nodePositions[error->parsingTree].computedPosition, error->errorMessage });
+						errors.Add({ sp->nodePositions[error->parsingTree].computedPosition, error.message });
 					}
 				}
 

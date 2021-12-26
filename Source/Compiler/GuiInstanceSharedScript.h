@@ -22,8 +22,8 @@ namespace vl
 			WString										code;
 			GuiResourceTextPos							codePosition;
 
-			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlElement>				SaveToXml();
+			static Ptr<GuiInstanceSharedScript>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<glr::xml::XmlElement>					SaveToXml();
 		};
 	}
 }

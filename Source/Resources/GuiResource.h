@@ -189,11 +189,11 @@ Resource Structure
 		struct GuiResourceTextPos
 		{
 			GuiResourceLocation						originalLocation;
-			vint									row = parsing::ParsingTextPos::UnknownValue;
-			vint									column = parsing::ParsingTextPos::UnknownValue;
+			vint									row = glr::ParsingTextPos::UnknownValue;
+			vint									column = glr::ParsingTextPos::UnknownValue;
 
 			GuiResourceTextPos() = default;
-			GuiResourceTextPos(GuiResourceLocation location, parsing::ParsingTextPos position);
+			GuiResourceTextPos(GuiResourceLocation location, glr::ParsingTextPos position);
 
 			bool operator==(const GuiResourceTextPos& b)const { return originalLocation == b.originalLocation && row == b.row && column == b.column; }
 			bool operator!=(const GuiResourceTextPos& b)const { return !(*this == b); }
@@ -216,9 +216,9 @@ Resource Structure
 			bool operator==(const GuiResourceError& b)const { return location == b.location && position == b.position && message == b.message; }
 			bool operator!=(const GuiResourceError& b)const { return !(*this == b); }
 
-			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors);
-			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset);
-			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset);
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors);
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, glr::ParsingTextPos offset);
+			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, GuiResourceTextPos offset);
 			static void								SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory = WString::Empty);
 		};
 
@@ -258,7 +258,7 @@ Resource Structure
 			Ptr<GuiImageData>						AsImage();
 			/// <summary>Get the contained object as an xml.</summary>
 			/// <returns>The contained object.</returns>
-			Ptr<parsing::xml::XmlDocument>			AsXml();
+			Ptr<glr::xml::XmlDocument>				AsXml();
 			/// <summary>Get the contained object as a string.</summary>
 			/// <returns>The contained object.</returns>
 			Ptr<GuiTextData>						AsString();
@@ -289,8 +289,8 @@ Resource Structure
 			ItemMap									items;
 			FolderMap								folders;
 
-			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, GuiResourceError::List& errors);
-			void									SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent);
+			void									LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<glr::xml::XmlElement> folderXml, GuiResourceError::List& errors);
+			void									SaveResourceFolderToXml(Ptr<glr::xml::XmlElement> xmlParent);
 			void									CollectTypeNames(collections::List<WString>& typeNames);
 			void									LoadResourceFolderFromBinary(DelayLoadingList& delayLoadings, stream::internal::ContextFreeReader& reader, collections::List<WString>& typeNames, GuiResourceError::List& errors);
 			void									SaveResourceFolderToBinary(stream::internal::ContextFreeWriter& writer, collections::List<WString>& typeNames);
@@ -381,8 +381,8 @@ Resource
 			WString									version;
 			collections::List<WString>				dependencies;
 
-			void									LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlDocument>			SaveToXml();
+			void									LoadFromXml(Ptr<glr::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors);
+			Ptr<glr::xml::XmlDocument>				SaveToXml();
 		};
 		
 		/// <summary>Resource. A resource is a root resource folder that does not have a name.</summary>
@@ -414,7 +414,7 @@ Resource
 			/// <param name="filePath">The file path of the resource.</param>
 			/// <param name="workingDirectory">The working directory for loading external resources.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			static Ptr<GuiResource>					LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors);
+			static Ptr<GuiResource>					LoadFromXml(Ptr<glr::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors);
 
 			/// <summary>Load a resource from an xml file. If the xml file refers other files, they will be loaded as well.</summary>
 			/// <returns>The loaded resource.</returns>
@@ -424,7 +424,7 @@ Resource
 
 			/// <summary>Save the resource to xml.</summary>
 			/// <returns>The xml.</returns>
-			Ptr<parsing::xml::XmlDocument>			SaveToXml();
+			Ptr<glr::xml::XmlDocument>				SaveToXml();
 			
 			/// <summary>Load a precompiled resource from a stream.</summary>
 			/// <returns>The loaded resource.</returns>
@@ -463,7 +463,7 @@ Resource
 			/// <summary>Get a contained xml using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
 			/// <returns>The containd resource object.</returns>
 			/// <param name="path">The path.</param>
-			Ptr<parsing::xml::XmlDocument>			GetXmlByPath(const WString& path);
+			Ptr<glr::xml::XmlDocument>				GetXmlByPath(const WString& path);
 			/// <summary>Get a contained string object using a path like "Packages\Application\Name". If the path does not exists or the type does not match, an exception will be thrown.</summary>
 			/// <returns>The containd resource object.</returns>
 			/// <param name="path">The path.</param>
@@ -681,14 +681,14 @@ Resource Type Resolver
 			/// <returns>The serialized xml element.</returns>
 			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="content">The object to serialize.</param>
-			virtual Ptr<parsing::xml::XmlElement>				Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
+			virtual Ptr<glr::xml::XmlElement>					Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content) = 0;
 
 			/// <summary>Load a resource for a type inside an xml element.</summary>
 			/// <returns>The resource.</returns>
 			/// <param name="resource">The resource item containing the resource.</param>
 			/// <param name="element">The xml element.</param>
 			/// <param name="errors">All collected errors during loading a resource.</param>
-			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors) = 0;
+			virtual Ptr<DescriptableObject>						ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors) = 0;
 
 			/// <summary>Load a resource for a type from a file.</summary>
 			/// <returns>The resource.</returns>

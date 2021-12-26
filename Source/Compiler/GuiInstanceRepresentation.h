@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_REFLECTION_GUIINSTANCEREPRESENTATION
 
 #include "../Resources/GuiResource.h"
-#include "InstanceQuery/GuiInstanceQuery.h"
+#include "InstanceQuery/Generated/GuiInstanceQueryAst.h"
 
 namespace vl
 {
@@ -44,7 +44,7 @@ Instance Representation
 
 			virtual void							Accept(IVisitor* visitor) = 0;
 			virtual Ptr<GuiValueRepr>				Clone() = 0;
-			virtual void							FillXml(Ptr<parsing::xml::XmlElement> xml) = 0;
+			virtual void							FillXml(Ptr<glr::xml::XmlElement> xml) = 0;
 		};
 
 		class GuiTextRepr : public GuiValueRepr, public Description<GuiTextRepr>
@@ -56,7 +56,7 @@ Instance Representation
 
 			void									Accept(IVisitor* visitor)override{visitor->Visit(this);}
 			Ptr<GuiValueRepr>						Clone()override;
-			void									FillXml(Ptr<parsing::xml::XmlElement> xml)override;
+			void									FillXml(Ptr<glr::xml::XmlElement> xml)override;
 		};
 
 		class GuiAttSetterRepr : public GuiValueRepr, public Description<GuiAttSetterRepr>
@@ -101,7 +101,7 @@ Instance Representation
 			void									Accept(IVisitor* visitor)override{visitor->Visit(this);}
 			void									CloneBody(Ptr<GuiAttSetterRepr> repr);
 			Ptr<GuiValueRepr>						Clone()override;
-			void									FillXml(Ptr<parsing::xml::XmlElement> xml)override;
+			void									FillXml(Ptr<glr::xml::XmlElement> xml)override;
 		};
 
 		class GuiConstructorRepr : public GuiAttSetterRepr, public Description<GuiConstructorRepr>
@@ -115,7 +115,7 @@ Instance Representation
 
 			void									Accept(IVisitor* visitor)override{visitor->Visit(this);}
 			Ptr<GuiValueRepr>						Clone()override;
-			void									FillXml(Ptr<parsing::xml::XmlElement> xml)override;
+			void									FillXml(Ptr<glr::xml::XmlElement> xml)override;
 		};
 
 /***********************************************************************
@@ -211,13 +211,13 @@ Instance Context
 			bool									appliedStyles = false;
 			StyleContextList						styles;
 
-			static void								CollectDefaultAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::ValueList& values, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
-			static void								CollectAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::SetteValuerMap& setters, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
-			static void								CollectEvents(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
-			static void								FillAttSetter(Ptr<GuiResourceItem> resource, Ptr<GuiAttSetterRepr> setter, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
-			static Ptr<GuiConstructorRepr>			LoadCtor(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
-			static Ptr<GuiInstanceContext>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlDocument>			SaveToXml();
+			static void								CollectDefaultAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::ValueList& values, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static void								CollectAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::SetteValuerMap& setters, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static void								CollectEvents(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static void								FillAttSetter(Ptr<GuiResourceItem> resource, Ptr<GuiAttSetterRepr> setter, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static Ptr<GuiConstructorRepr>			LoadCtor(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors);
+			static Ptr<GuiInstanceContext>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<glr::xml::XmlDocument>				SaveToXml();
 			bool									ApplyStyles(Ptr<GuiResourceItem> resource, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors);
 		};
 
@@ -231,8 +231,8 @@ Instance Style Context
 			Ptr<GuiIqQuery>							query;
 			Ptr<GuiAttSetterRepr>					setter;
 
-			static Ptr<GuiInstanceStyle>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlElement>			SaveToXml();
+			static Ptr<GuiInstanceStyle>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors);
+			Ptr<glr::xml::XmlElement>				SaveToXml();
 		};
 
 		class GuiInstanceStyleContext : public Object, public Description<GuiInstanceStyleContext>
@@ -241,8 +241,8 @@ Instance Style Context
 		public:
 			StyleList								styles;
 
-			static Ptr<GuiInstanceStyleContext>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlDocument>			SaveToXml();
+			static Ptr<GuiInstanceStyleContext>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<glr::xml::XmlDocument>				SaveToXml();
 		};
 	}
 }

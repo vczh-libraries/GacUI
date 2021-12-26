@@ -46,8 +46,8 @@ namespace vl
 			GuiResourceTextPos							typePosition;
 			GuiResourceTextPos							interpolationPosition;
 
-			static Ptr<GuiInstanceGradientAnimation>	LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors);
-			Ptr<parsing::xml::XmlElement>				SaveToXml();
+			static Ptr<GuiInstanceGradientAnimation>	LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors);
+			Ptr<glr::xml::XmlElement>					SaveToXml();
 
 			bool										IsSupportedPrimitiveType(description::ITypeDescriptor* td);
 			vint										ValidateStructMembers(GuiResourceTextPos namePosition, description::ITypeDescriptor* td, const WString& prefix, GuiResourceError::List& errors);
