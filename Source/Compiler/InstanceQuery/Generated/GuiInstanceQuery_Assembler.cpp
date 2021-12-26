@@ -10,145 +10,148 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace instancequery
+		{
 
 /***********************************************************************
 GuiInstanceQueryAstInsReceiver : public vl::glr::AstInsReceiverBase
 ***********************************************************************/
 
-		vl::Ptr<vl::glr::ParsingAstBase> GuiInstanceQueryAstInsReceiver::CreateAstNode(vl::vint32_t type)
-		{
-			auto cppTypeName = GuiInstanceQueryCppTypeName((GuiInstanceQueryClasses)type);
-			switch((GuiInstanceQueryClasses)type)
+			vl::Ptr<vl::glr::ParsingAstBase> GuiInstanceQueryAstInsReceiver::CreateAstNode(vl::vint32_t type)
 			{
-			case GuiInstanceQueryClasses::CascadeQuery:
-				return new vl::presentation::GuiIqCascadeQuery();
-			case GuiInstanceQueryClasses::PrimaryQuery:
-				return new vl::presentation::GuiIqPrimaryQuery();
-			case GuiInstanceQueryClasses::SetQuery:
-				return new vl::presentation::GuiIqSetQuery();
-			default:
-				return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
+				auto cppTypeName = GuiInstanceQueryCppTypeName((GuiInstanceQueryClasses)type);
+				switch((GuiInstanceQueryClasses)type)
+				{
+				case GuiInstanceQueryClasses::CascadeQuery:
+					return new vl::presentation::instancequery::GuiIqCascadeQuery();
+				case GuiInstanceQueryClasses::PrimaryQuery:
+					return new vl::presentation::instancequery::GuiIqPrimaryQuery();
+				case GuiInstanceQueryClasses::SetQuery:
+					return new vl::presentation::instancequery::GuiIqSetQuery();
+				default:
+					return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
+				}
 			}
-		}
 
-		void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value)
-		{
-			auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
-			switch((GuiInstanceQueryFields)field)
+			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value)
 			{
-			case GuiInstanceQueryFields::CascadeQuery_child:
-				return vl::glr::AssemblerSetObjectField(&vl::presentation::GuiIqCascadeQuery::child, object, field, value, cppFieldName);
-			case GuiInstanceQueryFields::CascadeQuery_parent:
-				return vl::glr::AssemblerSetObjectField(&vl::presentation::GuiIqCascadeQuery::parent, object, field, value, cppFieldName);
-			case GuiInstanceQueryFields::SetQuery_first:
-				return vl::glr::AssemblerSetObjectField(&vl::presentation::GuiIqSetQuery::first, object, field, value, cppFieldName);
-			case GuiInstanceQueryFields::SetQuery_second:
-				return vl::glr::AssemblerSetObjectField(&vl::presentation::GuiIqSetQuery::second, object, field, value, cppFieldName);
-			default:
-				return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
+				auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
+				switch((GuiInstanceQueryFields)field)
+				{
+				case GuiInstanceQueryFields::CascadeQuery_child:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqCascadeQuery::child, object, field, value, cppFieldName);
+				case GuiInstanceQueryFields::CascadeQuery_parent:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqCascadeQuery::parent, object, field, value, cppFieldName);
+				case GuiInstanceQueryFields::SetQuery_first:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqSetQuery::first, object, field, value, cppFieldName);
+				case GuiInstanceQueryFields::SetQuery_second:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqSetQuery::second, object, field, value, cppFieldName);
+				default:
+					return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
+				}
 			}
-		}
 
-		void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex)
-		{
-			auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
-			switch((GuiInstanceQueryFields)field)
+			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex)
 			{
-			case GuiInstanceQueryFields::PrimaryQuery_attributeName:
-				return vl::glr::AssemblerSetTokenField(&vl::presentation::GuiIqPrimaryQuery::attributeName, object, field, token, tokenIndex, cppFieldName);
-			case GuiInstanceQueryFields::PrimaryQuery_referenceName:
-				return vl::glr::AssemblerSetTokenField(&vl::presentation::GuiIqPrimaryQuery::referenceName, object, field, token, tokenIndex, cppFieldName);
-			case GuiInstanceQueryFields::PrimaryQuery_typeName:
-				return vl::glr::AssemblerSetTokenField(&vl::presentation::GuiIqPrimaryQuery::typeName, object, field, token, tokenIndex, cppFieldName);
-			default:
-				return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
+				auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
+				switch((GuiInstanceQueryFields)field)
+				{
+				case GuiInstanceQueryFields::PrimaryQuery_attributeName:
+					return vl::glr::AssemblerSetTokenField(&vl::presentation::instancequery::GuiIqPrimaryQuery::attributeName, object, field, token, tokenIndex, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_referenceName:
+					return vl::glr::AssemblerSetTokenField(&vl::presentation::instancequery::GuiIqPrimaryQuery::referenceName, object, field, token, tokenIndex, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_typeName:
+					return vl::glr::AssemblerSetTokenField(&vl::presentation::instancequery::GuiIqPrimaryQuery::typeName, object, field, token, tokenIndex, cppFieldName);
+				default:
+					return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
+				}
 			}
-		}
 
-		void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)
-		{
-			auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
-			switch((GuiInstanceQueryFields)field)
+			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)
 			{
-			case GuiInstanceQueryFields::PrimaryQuery_attributeNameOption:
-				return vl::glr::AssemblerSetEnumField(&vl::presentation::GuiIqPrimaryQuery::attributeNameOption, object, field, enumItem, cppFieldName);
-			case GuiInstanceQueryFields::PrimaryQuery_childOption:
-				return vl::glr::AssemblerSetEnumField(&vl::presentation::GuiIqPrimaryQuery::childOption, object, field, enumItem, cppFieldName);
-			case GuiInstanceQueryFields::PrimaryQuery_typeNameOption:
-				return vl::glr::AssemblerSetEnumField(&vl::presentation::GuiIqPrimaryQuery::typeNameOption, object, field, enumItem, cppFieldName);
-			case GuiInstanceQueryFields::SetQuery_op:
-				return vl::glr::AssemblerSetEnumField(&vl::presentation::GuiIqSetQuery::op, object, field, enumItem, cppFieldName);
-			default:
-				return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
+				auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
+				switch((GuiInstanceQueryFields)field)
+				{
+				case GuiInstanceQueryFields::PrimaryQuery_attributeNameOption:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::attributeNameOption, object, field, enumItem, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_childOption:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::childOption, object, field, enumItem, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_typeNameOption:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::typeNameOption, object, field, enumItem, cppFieldName);
+				case GuiInstanceQueryFields::SetQuery_op:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqSetQuery::op, object, field, enumItem, cppFieldName);
+				default:
+					return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
+				}
 			}
-		}
 
-		const wchar_t* GuiInstanceQueryTypeName(GuiInstanceQueryClasses type)
-		{
-			const wchar_t* results[] = {
-				L"CascadeQuery",
-				L"PrimaryQuery",
-				L"Query",
-				L"SetQuery",
-			};
-			vl::vint index = (vl::vint)type;
-			return 0 <= index && index < 4 ? results[index] : nullptr;
-		}
+			const wchar_t* GuiInstanceQueryTypeName(GuiInstanceQueryClasses type)
+			{
+				const wchar_t* results[] = {
+					L"CascadeQuery",
+					L"PrimaryQuery",
+					L"Query",
+					L"SetQuery",
+				};
+				vl::vint index = (vl::vint)type;
+				return 0 <= index && index < 4 ? results[index] : nullptr;
+			}
 
-		const wchar_t* GuiInstanceQueryCppTypeName(GuiInstanceQueryClasses type)
-		{
-			const wchar_t* results[] = {
-				L"vl::presentation::GuiIqCascadeQuery",
-				L"vl::presentation::GuiIqPrimaryQuery",
-				L"vl::presentation::GuiIqQuery",
-				L"vl::presentation::GuiIqSetQuery",
-			};
-			vl::vint index = (vl::vint)type;
-			return 0 <= index && index < 4 ? results[index] : nullptr;
-		}
+			const wchar_t* GuiInstanceQueryCppTypeName(GuiInstanceQueryClasses type)
+			{
+				const wchar_t* results[] = {
+					L"vl::presentation::instancequery::GuiIqCascadeQuery",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery",
+					L"vl::presentation::instancequery::GuiIqQuery",
+					L"vl::presentation::instancequery::GuiIqSetQuery",
+				};
+				vl::vint index = (vl::vint)type;
+				return 0 <= index && index < 4 ? results[index] : nullptr;
+			}
 
-		const wchar_t* GuiInstanceQueryFieldName(GuiInstanceQueryFields field)
-		{
-			const wchar_t* results[] = {
-				L"CascadeQuery::child",
-				L"CascadeQuery::parent",
-				L"PrimaryQuery::attributeName",
-				L"PrimaryQuery::attributeNameOption",
-				L"PrimaryQuery::childOption",
-				L"PrimaryQuery::referenceName",
-				L"PrimaryQuery::typeName",
-				L"PrimaryQuery::typeNameOption",
-				L"SetQuery::first",
-				L"SetQuery::op",
-				L"SetQuery::second",
-			};
-			vl::vint index = (vl::vint)field;
-			return 0 <= index && index < 11 ? results[index] : nullptr;
-		}
+			const wchar_t* GuiInstanceQueryFieldName(GuiInstanceQueryFields field)
+			{
+				const wchar_t* results[] = {
+					L"CascadeQuery::child",
+					L"CascadeQuery::parent",
+					L"PrimaryQuery::attributeName",
+					L"PrimaryQuery::attributeNameOption",
+					L"PrimaryQuery::childOption",
+					L"PrimaryQuery::referenceName",
+					L"PrimaryQuery::typeName",
+					L"PrimaryQuery::typeNameOption",
+					L"SetQuery::first",
+					L"SetQuery::op",
+					L"SetQuery::second",
+				};
+				vl::vint index = (vl::vint)field;
+				return 0 <= index && index < 11 ? results[index] : nullptr;
+			}
 
-		const wchar_t* GuiInstanceQueryCppFieldName(GuiInstanceQueryFields field)
-		{
-			const wchar_t* results[] = {
-				L"vl::presentation::GuiIqCascadeQuery::child",
-				L"vl::presentation::GuiIqCascadeQuery::parent",
-				L"vl::presentation::GuiIqPrimaryQuery::attributeName",
-				L"vl::presentation::GuiIqPrimaryQuery::attributeNameOption",
-				L"vl::presentation::GuiIqPrimaryQuery::childOption",
-				L"vl::presentation::GuiIqPrimaryQuery::referenceName",
-				L"vl::presentation::GuiIqPrimaryQuery::typeName",
-				L"vl::presentation::GuiIqPrimaryQuery::typeNameOption",
-				L"vl::presentation::GuiIqSetQuery::first",
-				L"vl::presentation::GuiIqSetQuery::op",
-				L"vl::presentation::GuiIqSetQuery::second",
-			};
-			vl::vint index = (vl::vint)field;
-			return 0 <= index && index < 11 ? results[index] : nullptr;
-		}
+			const wchar_t* GuiInstanceQueryCppFieldName(GuiInstanceQueryFields field)
+			{
+				const wchar_t* results[] = {
+					L"vl::presentation::instancequery::GuiIqCascadeQuery::child",
+					L"vl::presentation::instancequery::GuiIqCascadeQuery::parent",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::attributeName",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::attributeNameOption",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::childOption",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::referenceName",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::typeName",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::typeNameOption",
+					L"vl::presentation::instancequery::GuiIqSetQuery::first",
+					L"vl::presentation::instancequery::GuiIqSetQuery::op",
+					L"vl::presentation::instancequery::GuiIqSetQuery::second",
+				};
+				vl::vint index = (vl::vint)field;
+				return 0 <= index && index < 11 ? results[index] : nullptr;
+			}
 
-		vl::Ptr<vl::glr::ParsingAstBase> GuiInstanceQueryAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
-		{
-			auto cppTypeName = GuiInstanceQueryCppTypeName((GuiInstanceQueryClasses)type);
-			return vl::glr::AssemblyThrowTypeNotAllowAmbiguity(type, cppTypeName);
+			vl::Ptr<vl::glr::ParsingAstBase> GuiInstanceQueryAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
+			{
+				auto cppTypeName = GuiInstanceQueryCppTypeName((GuiInstanceQueryClasses)type);
+				return vl::glr::AssemblyThrowTypeNotAllowAmbiguity(type, cppTypeName);
+			}
 		}
 	}
 }

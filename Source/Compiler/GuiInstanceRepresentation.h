@@ -228,7 +228,7 @@ Instance Style Context
 		class GuiInstanceStyle : public Object, public Description<GuiInstanceStyle>
 		{
 		public:
-			Ptr<GuiIqQuery>							query;
+			Ptr<instancequery::GuiIqQuery>			query;
 			Ptr<GuiAttSetterRepr>					setter;
 
 			static Ptr<GuiInstanceStyle>			LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors);

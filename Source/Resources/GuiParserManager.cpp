@@ -22,6 +22,36 @@ IGuiParserManager
 			return parserManager;
 		}
 
+		class GuiParser_Xml : public IGuiParser<XmlDocument>
+		{
+		protected:
+			glr::xml::Parser							parser;
+
+		public:
+			Ptr<XmlDocument> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+				auto ast = XmlParseDocument(text, parser);
+				parser.OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_Json : public IGuiParser<JsonNode>
+		{
+		protected:
+			glr::json::Parser							parser;
+
+		public:
+			Ptr<JsonNode> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+				auto ast = JsonParse(text, parser);
+				parser.OnError.Remove(handler);
+				return ast;
+			}
+		};
+
 		class GuiParserManager : public Object, public IGuiParserManager, public IGuiPlugin
 		{
 		protected:
@@ -37,8 +67,8 @@ IGuiParserManager
 			void Load()override
 			{
 				parserManager = this;
-				SetTableParser(L"XML", L"XML", &XmlParseDocument);
-				SetTableParser(L"JSON", L"JSON", &JsonParse);
+				SetParser(L"XML", new GuiParser_Xml());
+				SetParser(L"JSON", new GuiParser_Json());
 			}
 
 			void Unload()override

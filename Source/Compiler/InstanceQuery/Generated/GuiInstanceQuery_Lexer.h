@@ -13,29 +13,32 @@ namespace vl
 {
 	namespace presentation
 	{
-		enum class GuiInstanceQueryTokens : vl::vint32_t
+		namespace instancequery
 		{
-			INDIRECT = 0,
-			DIRECT = 1,
-			NAME = 2,
-			WILDCARD_INTERSECT = 3,
-			OPEN = 4,
-			CLOSE = 5,
-			XOR = 6,
-			UNION = 7,
-			SUBSTRACT = 8,
-			ATTRIBUTE = 9,
-			COLON = 10,
-			DOT = 11,
-			SPACE = 12,
-		};
+			enum class GuiInstanceQueryTokens : vl::vint32_t
+			{
+				INDIRECT = 0,
+				DIRECT = 1,
+				NAME = 2,
+				WILDCARD_INTERSECT = 3,
+				OPEN = 4,
+				CLOSE = 5,
+				XOR = 6,
+				UNION = 7,
+				SUBSTRACT = 8,
+				ATTRIBUTE = 9,
+				COLON = 10,
+				DOT = 11,
+				SPACE = 12,
+			};
 
-		constexpr vl::vint GuiInstanceQueryTokenCount = 13;
-		extern bool GuiInstanceQueryTokenDeleter(vl::vint token);
-		extern const wchar_t* GuiInstanceQueryTokenId(GuiInstanceQueryTokens token);
-		extern const wchar_t* GuiInstanceQueryTokenDisplayText(GuiInstanceQueryTokens token);
-		extern const wchar_t* GuiInstanceQueryTokenRegex(GuiInstanceQueryTokens token);
-		extern void GuiInstanceQueryLexerData(vl::stream::IStream& outputStream);
+			constexpr vl::vint GuiInstanceQueryTokenCount = 13;
+			extern bool GuiInstanceQueryTokenDeleter(vl::vint token);
+			extern const wchar_t* GuiInstanceQueryTokenId(GuiInstanceQueryTokens token);
+			extern const wchar_t* GuiInstanceQueryTokenDisplayText(GuiInstanceQueryTokens token);
+			extern const wchar_t* GuiInstanceQueryTokenRegex(GuiInstanceQueryTokens token);
+			extern void GuiInstanceQueryLexerData(vl::stream::IStream& outputStream);
+		}
 	}
 }
 #endif

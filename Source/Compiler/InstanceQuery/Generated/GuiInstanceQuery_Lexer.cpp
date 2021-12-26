@@ -10,91 +10,94 @@ namespace vl
 {
 	namespace presentation
 	{
-		bool GuiInstanceQueryTokenDeleter(vl::vint token)
+		namespace instancequery
 		{
-			switch((GuiInstanceQueryTokens)token)
+			bool GuiInstanceQueryTokenDeleter(vl::vint token)
 			{
-			case GuiInstanceQueryTokens::SPACE:
-				return true;
-			default:
-				return false;
+				switch((GuiInstanceQueryTokens)token)
+				{
+				case GuiInstanceQueryTokens::SPACE:
+					return true;
+				default:
+					return false;
+				}
 			}
-		}
 
-		const wchar_t* GuiInstanceQueryTokenId(GuiInstanceQueryTokens token)
-		{
-			static const wchar_t* results[] = {
-				L"INDIRECT",
-				L"DIRECT",
-				L"NAME",
-				L"WILDCARD_INTERSECT",
-				L"OPEN",
-				L"CLOSE",
-				L"XOR",
-				L"UNION",
-				L"SUBSTRACT",
-				L"ATTRIBUTE",
-				L"COLON",
-				L"DOT",
-				L"SPACE",
-			};
-			vl::vint index = (vl::vint)token;
-			return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
-		}
+			const wchar_t* GuiInstanceQueryTokenId(GuiInstanceQueryTokens token)
+			{
+				static const wchar_t* results[] = {
+					L"INDIRECT",
+					L"DIRECT",
+					L"NAME",
+					L"WILDCARD_INTERSECT",
+					L"OPEN",
+					L"CLOSE",
+					L"XOR",
+					L"UNION",
+					L"SUBSTRACT",
+					L"ATTRIBUTE",
+					L"COLON",
+					L"DOT",
+					L"SPACE",
+				};
+				vl::vint index = (vl::vint)token;
+				return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
+			}
 
-		const wchar_t* GuiInstanceQueryTokenDisplayText(GuiInstanceQueryTokens token)
-		{
-			static const wchar_t* results[] = {
-				L"//",
-				L"/",
-				nullptr,
-				L"*",
-				L"(",
-				L")",
-				L"^",
-				L"+",
-				L"-",
-				L"@",
-				L":",
-				L".",
-				nullptr,
-			};
-			vl::vint index = (vl::vint)token;
-			return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
-		}
+			const wchar_t* GuiInstanceQueryTokenDisplayText(GuiInstanceQueryTokens token)
+			{
+				static const wchar_t* results[] = {
+					L"//",
+					L"/",
+					nullptr,
+					L"*",
+					L"(",
+					L")",
+					L"^",
+					L"+",
+					L"-",
+					L"@",
+					L":",
+					L".",
+					nullptr,
+				};
+				vl::vint index = (vl::vint)token;
+				return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
+			}
 
-		const wchar_t* GuiInstanceQueryTokenRegex(GuiInstanceQueryTokens token)
-		{
-			static const wchar_t* results[] = {
-				L"////",
-				L"//",
-				L"[a-zA-Z_][a-zA-Z0-9]*",
-				L"/*",
-				L"/(",
-				L"/)",
-				L"/^",
-				L"/+",
-				L"-",
-				L"@",
-				L":",
-				L".",
-				L"/s+",
-			};
-			vl::vint index = (vl::vint)token;
-			return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
-		}
+			const wchar_t* GuiInstanceQueryTokenRegex(GuiInstanceQueryTokens token)
+			{
+				static const wchar_t* results[] = {
+					L"////",
+					L"//",
+					L"[a-zA-Z_][a-zA-Z0-9]*",
+					L"/*",
+					L"/(",
+					L"/)",
+					L"/^",
+					L"/+",
+					L"-",
+					L"@",
+					L":",
+					L".",
+					L"/s+",
+				};
+				vl::vint index = (vl::vint)token;
+				return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
+			}
 
-		void GuiInstanceQueryLexerData(vl::stream::IStream& outputStream)
-		{
-			static const vl::vint dataLength = 232; // 1446 bytes before compressing
-			static const vl::vint dataBlock = 256;
-			static const vl::vint dataRemain = 232;
-			static const vl::vint dataSolidRows = 0;
-			static const vl::vint dataRows = 1;
-			static const char* compressed[] = {
-				"\xA6\x05\x00\x00\xE0\x00\x00\x00\x10\x00\x01\x93\x01\x84\x81\x82\x08\x82\x09\x08\x84\x8A\x0B\x84\x81\x06\x87\x04\xA0\x11\x84\x88\x14\x88\x83\x14\x17\x84\xAA\x1A\x84\x83\x15\x8E\x82\x2D\x20\x84\x8E\x13\x94\x83\x16\x93\x04\xB0\x04\x99\x14\x82\x1D\x96\x82\x40\x30\x84\x81\x24\x82\x2C\x82\x2F\x37\x84\x9F\x3A\x94\x81\x30\x82\x3D\x04\x8C\x01\xA3\xA1\x82\xA1\x80\x02\x04\x85\x04\x83\x04\x87\x00\x82\x04\x04\x8B\x04\x81\x04\x87\x7E\xAB\x7F\x0C\x81\x89\x81\x82\x04\x82\x02\x82\x5D\xDC\x95\xB7\xA4\xB5\xB2\xB3\xB3\x68\xE9\xBF\x6F\x81\x82\xB6\xB7\xB7\x70\xF1\xB2\xBF\x7E\x03\xB2\xB3\xBA\x6D\xE7\xB8\xA0\x03\xBD\xBE\xBF\xBF\x80\x81\xC2\xC3\xC4\xC5\xC2\xC3\xC3\x88\x89\xCA\xCB\xCC\xC5\xC6\xC7\xC7\x90\x91\xD2\xD3\xC8\xC7\x04\x82\xCB\x01\x98\xC0\x1A\xC4\xCD\xCE\xCF\xCF\x71\xFB\xA8\xA2\xDA\xBE\xBB\x7E\xCD\xA8\x97\xE6\xC0\xDF\xB6\x7F\x7E\x80\x05\x81\x94\xA2\xB1\x84\xA7\xA3\xA4\x5E\xCD\x8F\xAA\x81\x81\xAC\x00\xA9\x45\xB1\xF4\xC0\x06\xA0\x00",
-			};
-			vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
+			void GuiInstanceQueryLexerData(vl::stream::IStream& outputStream)
+			{
+				static const vl::vint dataLength = 232; // 1446 bytes before compressing
+				static const vl::vint dataBlock = 256;
+				static const vl::vint dataRemain = 232;
+				static const vl::vint dataSolidRows = 0;
+				static const vl::vint dataRows = 1;
+				static const char* compressed[] = {
+					"\xA6\x05\x00\x00\xE0\x00\x00\x00\x10\x00\x01\x93\x01\x84\x81\x82\x08\x82\x09\x08\x84\x8A\x0B\x84\x81\x06\x87\x04\xA0\x11\x84\x88\x14\x88\x83\x14\x17\x84\xAA\x1A\x84\x83\x15\x8E\x82\x2D\x20\x84\x8E\x13\x94\x83\x16\x93\x04\xB0\x04\x99\x14\x82\x1D\x96\x82\x40\x30\x84\x81\x24\x82\x2C\x82\x2F\x37\x84\x9F\x3A\x94\x81\x30\x82\x3D\x04\x8C\x01\xA3\xA1\x82\xA1\x80\x02\x04\x85\x04\x83\x04\x87\x00\x82\x04\x04\x8B\x04\x81\x04\x87\x7E\xAB\x7F\x0C\x81\x89\x81\x82\x04\x82\x02\x82\x5D\xDC\x95\xB7\xA4\xB5\xB2\xB3\xB3\x68\xE9\xBF\x6F\x81\x82\xB6\xB7\xB7\x70\xF1\xB2\xBF\x7E\x03\xB2\xB3\xBA\x6D\xE7\xB8\xA0\x03\xBD\xBE\xBF\xBF\x80\x81\xC2\xC3\xC4\xC5\xC2\xC3\xC3\x88\x89\xCA\xCB\xCC\xC5\xC6\xC7\xC7\x90\x91\xD2\xD3\xC8\xC7\x04\x82\xCB\x01\x98\xC0\x1A\xC4\xCD\xCE\xCF\xCF\x71\xFB\xA8\xA2\xDA\xBE\xBB\x7E\xCD\xA8\x97\xE6\xC0\xDF\xB6\x7F\x7E\x80\x05\x81\x94\xA2\xB1\x84\xA7\xA3\xA4\x5E\xCD\x8F\xAA\x81\x81\xAC\x00\xA9\x45\xB1\xF4\xC0\x06\xA0\x00",
+				};
+				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
+			}
 		}
 	}
 }

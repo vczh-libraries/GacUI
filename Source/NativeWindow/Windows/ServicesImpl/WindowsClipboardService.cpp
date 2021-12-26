@@ -9,7 +9,6 @@ namespace vl
 	{
 		namespace windows
 		{
-			using namespace parsing::xml;
 			using namespace collections;
 
 /***********************************************************************

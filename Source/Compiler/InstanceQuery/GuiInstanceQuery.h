@@ -16,10 +16,10 @@ namespace vl
 {
 	namespace presentation
 	{
-		extern void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& input, collections::List<Ptr<GuiConstructorRepr>>& output);
-		extern void ExecuteQuery(Ptr<GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output);
+		extern void ExecuteQuery(Ptr<instancequery::GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& input, collections::List<Ptr<GuiConstructorRepr>>& output);
+		extern void ExecuteQuery(Ptr<instancequery::GuiIqQuery> query, Ptr<GuiInstanceContext> context, collections::List<Ptr<GuiConstructorRepr>>& output);
 		extern void ApplyStyle(Ptr<GuiInstanceStyle> style, Ptr<GuiConstructorRepr> ctor);
-		extern void GuiIqPrint(Ptr<GuiIqQuery> query, stream::StreamWriter& writer);
+		extern void GuiIqPrint(Ptr<instancequery::GuiIqQuery> query, stream::StreamWriter& writer);
 	}
 }
 

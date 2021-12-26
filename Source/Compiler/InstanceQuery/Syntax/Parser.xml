@@ -1,13 +1,13 @@
 <Parser name="GuiInstanceQuery">
   <Includes>&lt;VlppGlrParser.h&gt;</Includes>
-  <CppNamespace>vl::presentation</CppNamespace>
+  <CppNamespace>vl::presentation::instancequery</CppNamespace>
   <HeaderGuard>VCZH_PRESENTATION_INSTANCEQUERY</HeaderGuard>
   <OutputDir>../Generated</OutputDir>
 
   <Asts>
     <Ast name="Ast" file="Ast.txt">
-      <CppNamespace>vl::presentation</CppNamespace>
-      <ReflectionNamespace>presentation</ReflectionNamespace>
+      <CppNamespace>vl::presentation::instancequery</CppNamespace>
+      <ReflectionNamespace>presentation::instancequery</ReflectionNamespace>
       <ClassPrefix>GuiIq</ClassPrefix>
       <BlockedUtilities>
         <Empty/>

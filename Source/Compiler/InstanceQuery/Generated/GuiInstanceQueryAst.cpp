@@ -10,23 +10,26 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace instancequery
+		{
 /***********************************************************************
 Visitor Pattern Implementation
 ***********************************************************************/
 
-		void GuiIqPrimaryQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
+			void GuiIqPrimaryQuery::Accept(GuiIqQuery::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
 
-		void GuiIqCascadeQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
+			void GuiIqCascadeQuery::Accept(GuiIqQuery::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
 
-		void GuiIqSetQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
+			void GuiIqSetQuery::Accept(GuiIqQuery::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
 		}
 	}
 }
@@ -38,38 +41,38 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery, presentation::GuiIqQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery::IVisitor, presentation::GuiIqQuery::IVisitor)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqNameOption, presentation::GuiIqNameOption)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqChildOption, presentation::GuiIqChildOption)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqPrimaryQuery, presentation::GuiIqPrimaryQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqCascadeQuery, presentation::GuiIqCascadeQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqBinaryOperator, presentation::GuiIqBinaryOperator)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqSetQuery, presentation::GuiIqSetQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqQuery, presentation::instancequery::GuiIqQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqQuery::IVisitor, presentation::instancequery::GuiIqQuery::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqNameOption, presentation::instancequery::GuiIqNameOption)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqChildOption, presentation::instancequery::GuiIqChildOption)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqPrimaryQuery, presentation::instancequery::GuiIqPrimaryQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqCascadeQuery, presentation::instancequery::GuiIqCascadeQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqBinaryOperator, presentation::instancequery::GuiIqBinaryOperator)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqSetQuery, presentation::instancequery::GuiIqSetQuery)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_CLASS_MEMBER(vl::presentation::GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqQuery)
 				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-			END_CLASS_MEMBER(vl::presentation::GuiIqQuery)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqQuery)
 
-			BEGIN_ENUM_ITEM(vl::presentation::GuiIqNameOption)
-				ENUM_ITEM_NAMESPACE(vl::presentation::GuiIqNameOption)
+			BEGIN_ENUM_ITEM(vl::presentation::instancequery::GuiIqNameOption)
+				ENUM_ITEM_NAMESPACE(vl::presentation::instancequery::GuiIqNameOption)
 				ENUM_NAMESPACE_ITEM(Specified)
 				ENUM_NAMESPACE_ITEM(Any)
-			END_ENUM_ITEM(vl::presentation::GuiIqNameOption)
+			END_ENUM_ITEM(vl::presentation::instancequery::GuiIqNameOption)
 
-			BEGIN_ENUM_ITEM(vl::presentation::GuiIqChildOption)
-				ENUM_ITEM_NAMESPACE(vl::presentation::GuiIqChildOption)
+			BEGIN_ENUM_ITEM(vl::presentation::instancequery::GuiIqChildOption)
+				ENUM_ITEM_NAMESPACE(vl::presentation::instancequery::GuiIqChildOption)
 				ENUM_NAMESPACE_ITEM(Direct)
 				ENUM_NAMESPACE_ITEM(Indirect)
-			END_ENUM_ITEM(vl::presentation::GuiIqChildOption)
+			END_ENUM_ITEM(vl::presentation::instancequery::GuiIqChildOption)
 
-			BEGIN_CLASS_MEMBER(vl::presentation::GuiIqPrimaryQuery)
-				CLASS_MEMBER_BASE(vl::presentation::GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqPrimaryQuery)
+				CLASS_MEMBER_BASE(vl::presentation::instancequery::GuiIqQuery)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::GuiIqPrimaryQuery>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::instancequery::GuiIqPrimaryQuery>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(childOption)
 				CLASS_MEMBER_FIELD(attributeNameOption)
@@ -77,40 +80,40 @@ namespace vl
 				CLASS_MEMBER_FIELD(typeNameOption)
 				CLASS_MEMBER_FIELD(typeName)
 				CLASS_MEMBER_FIELD(referenceName)
-			END_CLASS_MEMBER(vl::presentation::GuiIqPrimaryQuery)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqPrimaryQuery)
 
-			BEGIN_CLASS_MEMBER(vl::presentation::GuiIqCascadeQuery)
-				CLASS_MEMBER_BASE(vl::presentation::GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqCascadeQuery)
+				CLASS_MEMBER_BASE(vl::presentation::instancequery::GuiIqQuery)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::GuiIqCascadeQuery>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::instancequery::GuiIqCascadeQuery>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(parent)
 				CLASS_MEMBER_FIELD(child)
-			END_CLASS_MEMBER(vl::presentation::GuiIqCascadeQuery)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqCascadeQuery)
 
-			BEGIN_ENUM_ITEM(vl::presentation::GuiIqBinaryOperator)
-				ENUM_ITEM_NAMESPACE(vl::presentation::GuiIqBinaryOperator)
+			BEGIN_ENUM_ITEM(vl::presentation::instancequery::GuiIqBinaryOperator)
+				ENUM_ITEM_NAMESPACE(vl::presentation::instancequery::GuiIqBinaryOperator)
 				ENUM_NAMESPACE_ITEM(ExclusiveOr)
 				ENUM_NAMESPACE_ITEM(Intersect)
 				ENUM_NAMESPACE_ITEM(Union)
 				ENUM_NAMESPACE_ITEM(Substract)
-			END_ENUM_ITEM(vl::presentation::GuiIqBinaryOperator)
+			END_ENUM_ITEM(vl::presentation::instancequery::GuiIqBinaryOperator)
 
-			BEGIN_CLASS_MEMBER(vl::presentation::GuiIqSetQuery)
-				CLASS_MEMBER_BASE(vl::presentation::GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqSetQuery)
+				CLASS_MEMBER_BASE(vl::presentation::instancequery::GuiIqQuery)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::GuiIqSetQuery>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::instancequery::GuiIqSetQuery>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(first)
 				CLASS_MEMBER_FIELD(second)
 				CLASS_MEMBER_FIELD(op)
-			END_CLASS_MEMBER(vl::presentation::GuiIqSetQuery)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqSetQuery)
 
-			BEGIN_INTERFACE_MEMBER(vl::presentation::GuiIqQuery::IVisitor)
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::GuiIqQuery::IVisitor::*)(vl::presentation::GuiIqPrimaryQuery* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::GuiIqQuery::IVisitor::*)(vl::presentation::GuiIqCascadeQuery* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::GuiIqQuery::IVisitor::*)(vl::presentation::GuiIqSetQuery* node))
-			END_INTERFACE_MEMBER(vl::presentation::GuiIqQuery)
+			BEGIN_INTERFACE_MEMBER(vl::presentation::instancequery::GuiIqQuery::IVisitor)
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::instancequery::GuiIqQuery::IVisitor::*)(vl::presentation::instancequery::GuiIqPrimaryQuery* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::instancequery::GuiIqQuery::IVisitor::*)(vl::presentation::instancequery::GuiIqCascadeQuery* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::instancequery::GuiIqQuery::IVisitor::*)(vl::presentation::instancequery::GuiIqSetQuery* node))
+			END_INTERFACE_MEMBER(vl::presentation::instancequery::GuiIqQuery)
 
 #endif
 
@@ -120,14 +123,14 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(vl::presentation::GuiIqQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqQuery::IVisitor)
-					ADD_TYPE_INFO(vl::presentation::GuiIqNameOption)
-					ADD_TYPE_INFO(vl::presentation::GuiIqChildOption)
-					ADD_TYPE_INFO(vl::presentation::GuiIqPrimaryQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqCascadeQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqBinaryOperator)
-					ADD_TYPE_INFO(vl::presentation::GuiIqSetQuery)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqQuery)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqQuery::IVisitor)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqNameOption)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqChildOption)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqPrimaryQuery)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqCascadeQuery)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqBinaryOperator)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqSetQuery)
 				}
 
 				void Unload(ITypeManager* manager)

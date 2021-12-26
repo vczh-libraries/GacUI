@@ -5,6 +5,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
+		using namespace instancequery;
 
 /***********************************************************************
 ExecuteQueryVisitor

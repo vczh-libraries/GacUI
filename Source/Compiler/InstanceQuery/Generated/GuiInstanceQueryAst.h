@@ -13,80 +13,83 @@ namespace vl
 {
 	namespace presentation
 	{
-		class GuiIqCascadeQuery;
-		class GuiIqPrimaryQuery;
-		class GuiIqQuery;
-		class GuiIqSetQuery;
-
-		enum class GuiIqNameOption
+		namespace instancequery
 		{
-			UNDEFINED_ENUM_ITEM_VALUE = -1,
-			Specified = 0,
-			Any = 1,
-		};
+			class GuiIqCascadeQuery;
+			class GuiIqPrimaryQuery;
+			class GuiIqQuery;
+			class GuiIqSetQuery;
 
-		enum class GuiIqChildOption
-		{
-			UNDEFINED_ENUM_ITEM_VALUE = -1,
-			Direct = 0,
-			Indirect = 1,
-		};
-
-		enum class GuiIqBinaryOperator
-		{
-			UNDEFINED_ENUM_ITEM_VALUE = -1,
-			ExclusiveOr = 0,
-			Intersect = 1,
-			Union = 2,
-			Substract = 3,
-		};
-
-		class GuiIqQuery abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiIqQuery>
-		{
-		public:
-			class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+			enum class GuiIqNameOption
 			{
-			public:
-				virtual void Visit(GuiIqPrimaryQuery* node) = 0;
-				virtual void Visit(GuiIqCascadeQuery* node) = 0;
-				virtual void Visit(GuiIqSetQuery* node) = 0;
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				Specified = 0,
+				Any = 1,
 			};
 
-			virtual void Accept(GuiIqQuery::IVisitor* visitor) = 0;
+			enum class GuiIqChildOption
+			{
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				Direct = 0,
+				Indirect = 1,
+			};
 
-		};
+			enum class GuiIqBinaryOperator
+			{
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				ExclusiveOr = 0,
+				Intersect = 1,
+				Union = 2,
+				Substract = 3,
+			};
 
-		class GuiIqPrimaryQuery : public GuiIqQuery, vl::reflection::Description<GuiIqPrimaryQuery>
-		{
-		public:
-			GuiIqChildOption childOption = GuiIqChildOption::UNDEFINED_ENUM_ITEM_VALUE;
-			GuiIqNameOption attributeNameOption = GuiIqNameOption::UNDEFINED_ENUM_ITEM_VALUE;
-			vl::glr::ParsingToken attributeName;
-			GuiIqNameOption typeNameOption = GuiIqNameOption::UNDEFINED_ENUM_ITEM_VALUE;
-			vl::glr::ParsingToken typeName;
-			vl::glr::ParsingToken referenceName;
+			class GuiIqQuery abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GuiIqQuery>
+			{
+			public:
+				class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+				{
+				public:
+					virtual void Visit(GuiIqPrimaryQuery* node) = 0;
+					virtual void Visit(GuiIqCascadeQuery* node) = 0;
+					virtual void Visit(GuiIqSetQuery* node) = 0;
+				};
 
-			void Accept(GuiIqQuery::IVisitor* visitor) override;
-		};
+				virtual void Accept(GuiIqQuery::IVisitor* visitor) = 0;
 
-		class GuiIqCascadeQuery : public GuiIqQuery, vl::reflection::Description<GuiIqCascadeQuery>
-		{
-		public:
-			vl::Ptr<GuiIqQuery> parent;
-			vl::Ptr<GuiIqQuery> child;
+			};
 
-			void Accept(GuiIqQuery::IVisitor* visitor) override;
-		};
+			class GuiIqPrimaryQuery : public GuiIqQuery, vl::reflection::Description<GuiIqPrimaryQuery>
+			{
+			public:
+				GuiIqChildOption childOption = GuiIqChildOption::UNDEFINED_ENUM_ITEM_VALUE;
+				GuiIqNameOption attributeNameOption = GuiIqNameOption::UNDEFINED_ENUM_ITEM_VALUE;
+				vl::glr::ParsingToken attributeName;
+				GuiIqNameOption typeNameOption = GuiIqNameOption::UNDEFINED_ENUM_ITEM_VALUE;
+				vl::glr::ParsingToken typeName;
+				vl::glr::ParsingToken referenceName;
 
-		class GuiIqSetQuery : public GuiIqQuery, vl::reflection::Description<GuiIqSetQuery>
-		{
-		public:
-			vl::Ptr<GuiIqQuery> first;
-			vl::Ptr<GuiIqQuery> second;
-			GuiIqBinaryOperator op = GuiIqBinaryOperator::UNDEFINED_ENUM_ITEM_VALUE;
+				void Accept(GuiIqQuery::IVisitor* visitor) override;
+			};
 
-			void Accept(GuiIqQuery::IVisitor* visitor) override;
-		};
+			class GuiIqCascadeQuery : public GuiIqQuery, vl::reflection::Description<GuiIqCascadeQuery>
+			{
+			public:
+				vl::Ptr<GuiIqQuery> parent;
+				vl::Ptr<GuiIqQuery> child;
+
+				void Accept(GuiIqQuery::IVisitor* visitor) override;
+			};
+
+			class GuiIqSetQuery : public GuiIqQuery, vl::reflection::Description<GuiIqSetQuery>
+			{
+			public:
+				vl::Ptr<GuiIqQuery> first;
+				vl::Ptr<GuiIqQuery> second;
+				GuiIqBinaryOperator op = GuiIqBinaryOperator::UNDEFINED_ENUM_ITEM_VALUE;
+
+				void Accept(GuiIqQuery::IVisitor* visitor) override;
+			};
+		}
 	}
 }
 namespace vl
@@ -96,34 +99,34 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(vl::presentation::GuiIqQuery)
-			DECL_TYPE_INFO(vl::presentation::GuiIqQuery::IVisitor)
-			DECL_TYPE_INFO(vl::presentation::GuiIqNameOption)
-			DECL_TYPE_INFO(vl::presentation::GuiIqChildOption)
-			DECL_TYPE_INFO(vl::presentation::GuiIqPrimaryQuery)
-			DECL_TYPE_INFO(vl::presentation::GuiIqCascadeQuery)
-			DECL_TYPE_INFO(vl::presentation::GuiIqBinaryOperator)
-			DECL_TYPE_INFO(vl::presentation::GuiIqSetQuery)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqQuery)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqQuery::IVisitor)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqNameOption)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqChildOption)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqPrimaryQuery)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqCascadeQuery)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqBinaryOperator)
+			DECL_TYPE_INFO(vl::presentation::instancequery::GuiIqSetQuery)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::GuiIqQuery::IVisitor)
-				void Visit(vl::presentation::GuiIqPrimaryQuery* node) override
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::presentation::instancequery::GuiIqQuery::IVisitor)
+				void Visit(vl::presentation::instancequery::GuiIqPrimaryQuery* node) override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::presentation::GuiIqCascadeQuery* node) override
+				void Visit(vl::presentation::instancequery::GuiIqCascadeQuery* node) override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::presentation::GuiIqSetQuery* node) override
+				void Visit(vl::presentation::instancequery::GuiIqSetQuery* node) override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-			END_INTERFACE_PROXY(vl::presentation::GuiIqQuery::IVisitor)
+			END_INTERFACE_PROXY(vl::presentation::instancequery::GuiIqQuery::IVisitor)
 
 #endif
 #endif

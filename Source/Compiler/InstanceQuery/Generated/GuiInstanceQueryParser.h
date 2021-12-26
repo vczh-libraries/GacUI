@@ -14,36 +14,39 @@ namespace vl
 {
 	namespace presentation
 	{
-		enum class ParserStates
+		namespace instancequery
 		{
-			QPrimaryFragment = 0,
-			QPrimaryAttributed = 8,
-			QPrimary = 15,
-			Query0 = 24,
-			Query1 = 29,
-			Query2 = 38,
-			QueryRoot = 47,
-		};
+			enum class ParserStates
+			{
+				QPrimaryFragment = 0,
+				QPrimaryAttributed = 8,
+				QPrimary = 15,
+				Query0 = 24,
+				Query1 = 29,
+				Query2 = 38,
+				QueryRoot = 47,
+			};
 
-		template<ParserStates> struct ParserStateTypes;
-		template<> struct ParserStateTypes<ParserStates::QueryRoot> { using Type = vl::presentation::GuiIqQuery; };
+			template<ParserStates> struct ParserStateTypes;
+			template<> struct ParserStateTypes<ParserStates::QueryRoot> { using Type = vl::presentation::instancequery::GuiIqQuery; };
 
-		const wchar_t* ParserRuleName(vl::vint index);
-		const wchar_t* ParserStateLabel(vl::vint index);
-		extern void GuiInstanceQueryParserData(vl::stream::IStream& outputStream);
+			const wchar_t* ParserRuleName(vl::vint index);
+			const wchar_t* ParserStateLabel(vl::vint index);
+			extern void GuiInstanceQueryParserData(vl::stream::IStream& outputStream);
 
-		class Parser
-			: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver, ParserStateTypes>
-			, protected vl::glr::automaton::TraceManager::ITypeCallback
-		{
-		protected:
-			vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
-		public:
-			Parser();
+			class Parser
+				: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver, ParserStateTypes>
+				, protected vl::glr::automaton::TraceManager::ITypeCallback
+			{
+			protected:
+				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
+			public:
+				Parser();
 
-			vl::Ptr<vl::presentation::GuiIqQuery> ParseQueryRoot(const vl::WString& input, vl::vint codeIndex = -1) const;
-			vl::Ptr<vl::presentation::GuiIqQuery> ParseQueryRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
-		};
+				vl::Ptr<vl::presentation::instancequery::GuiIqQuery> ParseQueryRoot(const vl::WString& input, vl::vint codeIndex = -1) const;
+				vl::Ptr<vl::presentation::instancequery::GuiIqQuery> ParseQueryRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
+			};
+		}
 	}
 }
 #endif
