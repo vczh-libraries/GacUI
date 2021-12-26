@@ -43,9 +43,9 @@ namespace vl
 				void Load()override
 				{
 					LoadPredefinedTypes();
-					LoadParsingTypes();
-					XmlLoadTypes();
-					JsonLoadTypes();
+					LoadParsing2Types();
+					XmlAstLoadTypes();
+					JsonAstLoadTypes();
 					WfLoadLibraryTypes();
 					LoadGuiBasicTypes();
 					LoadGuiElementTypes();

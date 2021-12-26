@@ -5,7 +5,7 @@
 
 using namespace vl::collections;
 using namespace vl::stream;
-using namespace vl::parsing::xml;
+using namespace vl::glr::xml;
 using namespace vl::reflection::description;
 
 bool IsPrimitive(Value value)

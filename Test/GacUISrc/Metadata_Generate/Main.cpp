@@ -79,9 +79,9 @@ int main(int argc, char* argv[])
 #endif
 {
 	LoadPredefinedTypes();
-	LoadParsingTypes();
-	XmlLoadTypes();
-	JsonLoadTypes();
+	LoadParsing2Types();
+	XmlAstLoadTypes();
+	JsonAstLoadTypes();
 	WfLoadLibraryTypes();
 	LoadGuiBasicTypes();
 	LoadGuiElementTypes();
