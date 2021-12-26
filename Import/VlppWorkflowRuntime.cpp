@@ -903,6 +903,18 @@ Serialization (CollectMetadata)
 Serizliation (Data Structures)
 ***********************************************************************/
 
+			BEGIN_SERIALIZATION(glr::ParsingTextPos)
+				SERIALIZE(index)
+				SERIALIZE(row)
+				SERIALIZE(column)
+			END_SERIALIZATION
+
+			BEGIN_SERIALIZATION(glr::ParsingTextRange)
+				SERIALIZE(start)
+				SERIALIZE(end)
+				SERIALIZE(codeIndex)
+			END_SERIALIZATION
+
 			BEGIN_SERIALIZATION(WfInstructionDebugInfo)
 				SERIALIZE(moduleCodes)
 				SERIALIZE(instructionCodeMapping)
@@ -3098,7 +3110,7 @@ WfDebugger
 				return threadContexts[threadContexts.Count() - 1];
 			}
 
-			const parsing::ParsingTextRange& WfDebugger::GetCurrentPosition(bool beforeCodegen, WfRuntimeThreadContext* context, vint callStackIndex)
+			const glr::ParsingTextRange& WfDebugger::GetCurrentPosition(bool beforeCodegen, WfRuntimeThreadContext* context, vint callStackIndex)
 			{
 				if (!context)
 				{

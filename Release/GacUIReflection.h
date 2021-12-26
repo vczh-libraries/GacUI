@@ -11,6 +11,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "Vlpp.h"
 #include "VlppRegex.h"
 #include "VlppWorkflowRuntime.h"
+#include "VlppGlrParser.h"
 
 /***********************************************************************
 .\GUIINSTANCECOMPILEDWORKFLOW.H

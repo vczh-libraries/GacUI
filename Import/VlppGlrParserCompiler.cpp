@@ -4269,6 +4269,7 @@ CompileSyntaxVisitor
 					{
 						bodyPair = Visit(bodyPair, assignment.Obj());
 					}
+					result = bodyPair;
 				}
 
 				void Visit(GlrReuseClause* node) override
