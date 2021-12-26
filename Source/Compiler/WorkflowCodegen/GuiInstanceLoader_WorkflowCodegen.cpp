@@ -1081,6 +1081,7 @@ GuiWorkflowSharedManagerPlugin
 		class GuiWorkflowSharedManagerPlugin : public Object, public IGuiPlugin
 		{
 		protected:
+			workflow::Parser				workflowParser;
 			Ptr<WfLexicalScopeManager>		workflowManager;
 
 		public:
@@ -1103,7 +1104,7 @@ GuiWorkflowSharedManagerPlugin
 			{
 				if (!workflowManager)
 				{
-					workflowManager = new WfLexicalScopeManager(GetParserManager()->GetParsingTable(L"WORKFLOW"));
+					workflowManager = new WfLexicalScopeManager(workflowParser);
 				}
 				return workflowManager.Obj();
 			}

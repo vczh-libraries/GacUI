@@ -6,8 +6,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace regex;
 
 /***********************************************************************
@@ -53,10 +52,6 @@ document_operation_visitors::DeserializeNodeVisitor
 				void Visit(XmlCData* node)override
 				{
 					PrintText(node->content.value);
-				}
-
-				void Visit(XmlAttribute* node)override
-				{
 				}
 
 				void Visit(XmlComment* node)override
@@ -398,7 +393,7 @@ document_operation_visitors::DeserializeNodeVisitor
 DocumentModel
 ***********************************************************************/
 
-		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
+		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
 		{
 			Ptr<DocumentModel> model = new DocumentModel;
 			if (xml->rootElement->name.value == L"Doc")

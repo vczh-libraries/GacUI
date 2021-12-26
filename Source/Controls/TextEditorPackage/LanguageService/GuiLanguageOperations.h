@@ -9,6 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUILANGUAGEOPERATIONS
 #define VCZH_PRESENTATION_CONTROLS_GUILANGUAGEOPERATIONS
 
+#include <VlppParser.h>
 #include "../EditorCallback/GuiTextGeneralOperations.h"
 
 namespace vl

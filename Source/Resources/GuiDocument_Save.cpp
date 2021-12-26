@@ -5,7 +5,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 
 /***********************************************************************
 document_operation_visitors::SerializeRunVisitor
@@ -265,7 +265,7 @@ document_operation_visitors::SerializeRunVisitor
 DocumentModel
 ***********************************************************************/
 
-		Ptr<parsing::xml::XmlDocument> DocumentModel::SaveToXml()
+		Ptr<glr::xml::XmlDocument> DocumentModel::SaveToXml()
 		{
 			Ptr<XmlDocument> xml=new XmlDocument;
 			Ptr<XmlElement> doc=new XmlElement;

@@ -6,7 +6,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace stream;
 
 		namespace document_clipboard_visitors

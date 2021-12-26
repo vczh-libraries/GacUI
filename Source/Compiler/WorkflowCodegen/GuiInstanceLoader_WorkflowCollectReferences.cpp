@@ -7,7 +7,6 @@ namespace vl
 	{
 		using namespace reflection::description;
 		using namespace collections;
-		using namespace parsing;
 		using namespace workflow::analyzer;
 
 /***********************************************************************

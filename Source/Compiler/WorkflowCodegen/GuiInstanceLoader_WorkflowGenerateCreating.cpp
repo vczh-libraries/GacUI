@@ -5,7 +5,6 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace reflection::description;

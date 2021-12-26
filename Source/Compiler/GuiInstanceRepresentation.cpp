@@ -8,8 +8,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace templates;
 		using namespace stream;
 
@@ -35,7 +34,7 @@ GuiTextRepr
 			return repr;
 		}
 
-		void GuiTextRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
+		void GuiTextRepr::FillXml(Ptr<glr::xml::XmlElement> xml)
 		{
 			if (!fromStyle)
 			{
@@ -106,7 +105,7 @@ GuiAttSetterRepr
 			return repr;
 		}
 
-		void GuiAttSetterRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
+		void GuiAttSetterRepr::FillXml(Ptr<glr::xml::XmlElement> xml)
 		{
 			if (!fromStyle)
 			{
@@ -232,7 +231,7 @@ GuiConstructorRepr
 			return repr;
 		}
 
-		void GuiConstructorRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
+		void GuiConstructorRepr::FillXml(Ptr<glr::xml::XmlElement> xml)
 		{
 			if (!fromStyle)
 			{
@@ -263,7 +262,7 @@ GuiConstructorRepr
 GuiInstanceContext
 ***********************************************************************/
 
-		void GuiInstanceContext::CollectDefaultAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::ValueList& values, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::CollectDefaultAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::ValueList& values, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -310,7 +309,7 @@ GuiInstanceContext
 			}
 		}
 
-		void GuiInstanceContext::CollectAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::SetteValuerMap& setters, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::CollectAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::SetteValuerMap& setters, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -366,7 +365,7 @@ GuiInstanceContext
 			}
 		}
 
-		void GuiInstanceContext::CollectEvents(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::CollectEvents(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -422,7 +421,7 @@ GuiInstanceContext
 			}
 		}
 
-		void GuiInstanceContext::FillAttSetter(Ptr<GuiResourceItem> resource, Ptr<GuiAttSetterRepr> setter, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::FillAttSetter(Ptr<GuiResourceItem> resource, Ptr<GuiAttSetterRepr> setter, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -510,7 +509,7 @@ GuiInstanceContext
 			}
 		}
 
-		Ptr<GuiConstructorRepr> GuiInstanceContext::LoadCtor(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		Ptr<GuiConstructorRepr> GuiInstanceContext::LoadCtor(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -547,7 +546,7 @@ GuiInstanceContext
 			return 0;
 		}
 
-		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			Ptr<GuiInstanceContext> context = new GuiInstanceContext;
 			context->tagPosition = { {resource},xml->rootElement->codeRange.start };
@@ -741,7 +740,7 @@ GuiInstanceContext
 			return context->instance ? context : nullptr;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiInstanceContext::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiInstanceContext::SaveToXml()
 		{
 			auto xmlInstance = MakePtr<XmlElement>();
 			xmlInstance->name.value = L"Instance";
@@ -948,7 +947,7 @@ GuiInstanceStyle
 		}
 		using namespace visitors;
 
-		Ptr<GuiInstanceStyle> GuiInstanceStyle::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceStyle> GuiInstanceStyle::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			auto style = MakePtr<GuiInstanceStyle>();
 			if (auto pathAttr = XmlGetAttribute(xml, L"ref.Path"))
@@ -973,7 +972,7 @@ GuiInstanceStyle
 			return style;
 		}
 
-		Ptr<parsing::xml::XmlElement> GuiInstanceStyle::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceStyle::SaveToXml()
 		{
 			auto xmlStyle = MakePtr<XmlElement>();
 			xmlStyle->name.value = L"Style";
@@ -994,7 +993,7 @@ GuiInstanceStyle
 GuiInstanceStyleContext
 ***********************************************************************/
 
-		Ptr<GuiInstanceStyleContext> GuiInstanceStyleContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceStyleContext> GuiInstanceStyleContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto context = MakePtr<GuiInstanceStyleContext>();
 			if (xml->rootElement->name.value == L"Styles")
@@ -1021,7 +1020,7 @@ GuiInstanceStyleContext
 			return context;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiInstanceStyleContext::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiInstanceStyleContext::SaveToXml()
 		{
 			auto xmlStyles = MakePtr<XmlElement>();
 			xmlStyles->name.value = L"Styles";

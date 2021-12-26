@@ -8,8 +8,7 @@ namespace vl
 	{
 		using namespace controls;
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace stream;
 		using namespace filesystem;
 
@@ -297,7 +296,7 @@ GuiResourceLocation
 GuiResourceTextPos
 ***********************************************************************/
 
-		GuiResourceTextPos::GuiResourceTextPos(GuiResourceLocation location, parsing::ParsingTextPos position)
+		GuiResourceTextPos::GuiResourceTextPos(GuiResourceLocation location, glr::ParsingTextPos position)
 			:originalLocation(location)
 			, row(position.row)
 			, column(position.column)
@@ -330,7 +329,7 @@ GuiResourceError
 		}
 
 		template<typename TCallback>
-		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, const TCallback& callback)
+		void TransformErrors(GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, GuiResourceTextPos offset, const TCallback& callback)
 		{
 			if (offset.row < 0 || offset.column < 0)
 			{
@@ -340,7 +339,7 @@ GuiResourceError
 
 			for (auto error : parsingErrors)
 			{
-				auto pos = error->codeRange.start;
+				auto pos = error.codeRange.start;
 				if (pos.row < 0 || pos.column < 0)
 				{
 					pos = { offset.row,offset.column };
@@ -353,21 +352,21 @@ GuiResourceError
 					}
 					pos.row += offset.row;
 				}
-				errors.Add(callback({ offset.originalLocation,pos }, error->errorMessage));
+				errors.Add(callback({ offset.originalLocation,pos }, error.message));
 			}
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors)
 		{
 			Transform(_location, errors, parsingErrors, { _location,{ 0,0 } });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, glr::ParsingTextPos offset)
 		{
 			Transform(_location, errors, parsingErrors, { _location,offset });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, GuiResourceTextPos offset)
 		{
 			TransformErrors(errors, parsingErrors, offset, [&](GuiResourceTextPos pos, const WString& message)
 			{
@@ -466,7 +465,7 @@ GuiResourceItem
 			return content.Cast<GuiImageData>();
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResourceItem::AsXml()
+		Ptr<glr::xml::XmlDocument> GuiResourceItem::AsXml()
 		{
 			return content.Cast<XmlDocument>();
 		}
@@ -485,7 +484,7 @@ GuiResourceItem
 GuiResourceFolder
 ***********************************************************************/
 
-		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, GuiResourceError::List& errors)
+		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<glr::xml::XmlElement> folderXml, GuiResourceError::List& errors)
 		{
 			ClearItems();
 			ClearFolders();
@@ -661,7 +660,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent)
+		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<glr::xml::XmlElement> xmlParent)
 		{
 			for (auto item : items.Values())
 			{
@@ -1198,7 +1197,7 @@ GuiResourceFolder
 GuiResourceMetadata
 ***********************************************************************/
 
-		void GuiResourceMetadata::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors)
+		void GuiResourceMetadata::LoadFromXml(Ptr<glr::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors)
 		{
 			auto attrName = XmlGetAttribute(xml->rootElement, L"Name");
 			auto attrVersion = XmlGetAttribute(xml->rootElement, L"Version");
@@ -1225,7 +1224,7 @@ GuiResourceMetadata
 			}
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResourceMetadata::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiResourceMetadata::SaveToXml()
 		{
 			auto root = MakePtr<XmlElement>();
 			root->name.value = L"ResourceMetadata";
@@ -1325,7 +1324,7 @@ GuiResource
 			return workingDirectory;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
+		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<glr::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
 			Ptr<GuiResource> resource = new GuiResource;
 			resource->SetFileContentPath(filePath, filePath);
@@ -1359,7 +1358,7 @@ GuiResource
 			return 0;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResource::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiResource::SaveToXml()
 		{
 			auto xmlRoot = MakePtr<XmlElement>();
 			xmlRoot->name.value = L"Resource";
@@ -1515,7 +1514,7 @@ GuiResource
 			return result;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResource::GetXmlByPath(const WString& path)
+		Ptr<glr::xml::XmlDocument> GuiResource::GetXmlByPath(const WString& path)
 		{
 			Ptr<XmlDocument> result=GetValueByPath(path).Cast<XmlDocument>();
 			if(!result) throw ArgumentException(L"Path not exists.", L"GuiResource::GetXmlByPath", L"path");

@@ -6,9 +6,7 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace parsing::xml;
+			using namespace glr::xml;
 			using namespace stream;
 			using namespace collections;
 			using namespace presentation;

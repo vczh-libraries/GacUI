@@ -7,9 +7,8 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace controls;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
-		using namespace parsing::json;
+		using namespace glr::xml;
+		using namespace glr::json;
 		using namespace regex;
 
 /***********************************************************************
@@ -26,8 +25,6 @@ IGuiParserManager
 		class GuiParserManager : public Object, public IGuiParserManager, public IGuiPlugin
 		{
 		protected:
-			Dictionary<WString, Ptr<Table>>				tables;
-			Dictionary<WString, Func<Ptr<Table>()>>		loaders;
 			SpinLock									lock;
 
 			Dictionary<WString, Ptr<IGuiGeneralParser>>	parsers;
@@ -39,9 +36,7 @@ IGuiParserManager
 
 			void Load()override
 			{
-				parserManager=this;
-				SetParsingTable(L"XML", &XmlLoadTable);
-				SetParsingTable(L"JSON", &JsonLoadTable);
+				parserManager = this;
 				SetTableParser(L"XML", L"XML", &XmlParseDocument);
 				SetTableParser(L"JSON", L"JSON", &JsonParse);
 			}
@@ -49,34 +44,6 @@ IGuiParserManager
 			void Unload()override
 			{
 				parserManager=0;
-			}
-
-			Ptr<Table> GetParsingTable(const WString& name)override
-			{
-				SPIN_LOCK(lock)
-				{
-					vint index=tables.Keys().IndexOf(name);
-					if(index!=-1)
-					{
-						return tables.Values()[index];
-					}
-
-					index=loaders.Keys().IndexOf(name);
-					if(index!=-1)
-					{
-						Ptr<Table> table=loaders.Values()[index]();
-						tables.Add(name, table);
-						return table;
-					}
-				}
-				return 0;
-			}
-
-			bool SetParsingTable(const WString& name, Func<Ptr<Table>()> loader)override
-			{
-				if(loaders.Keys().Contains(name)) return false;
-				loaders.Add(name, loader);
-				return true;
 			}
 
 			Ptr<IGuiGeneralParser> GetParser(const WString& name)override

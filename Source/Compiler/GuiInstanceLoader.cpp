@@ -11,9 +11,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
-		using namespace parsing::tabling;
+		using namespace glr ::xml;
 		using namespace controls;
 		using namespace regex;
 		using namespace reflection::description;
@@ -154,12 +152,12 @@ GuiInstanceContext::ElementName Parser
 			{
 			}
 
-			Ptr<ElementName> ParseInternal(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
+			Ptr<ElementName> ParseInternal(const WString& text, collections::List<glr::ParsingError>& errors)override
 			{
 				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
 				if (!match || match->Result().Length() != text.Length())
 				{
-					errors.Add(MakePtr<ParsingError>(L"Failed to parse an element name \"" + text + L"\"."));
+					errors.Add(glr::ParsingError({}, L"Failed to parse an element name \"" + text + L"\"."));
 					return nullptr;
 				}
 

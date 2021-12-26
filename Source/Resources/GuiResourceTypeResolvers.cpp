@@ -9,9 +9,7 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace controls;
-		using namespace parsing;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace stream;
 
 /***********************************************************************
@@ -50,7 +48,7 @@ Image Type Resolver (Image)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			Ptr<glr::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
 				return nullptr;
 			}
@@ -63,7 +61,7 @@ Image Type Resolver (Image)
 				writer << (stream::IStream&)fileStream;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				errors.Add(GuiResourceError({ resource }, L"Image should load from file."));
 				return nullptr;
@@ -138,7 +136,7 @@ Text Type Resolver (Text)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			Ptr<glr::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
 				if (auto obj = content.Cast<GuiTextData>())
 				{
@@ -162,7 +160,7 @@ Text Type Resolver (Text)
 				writer << text;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				return new GuiTextData(XmlGetValue(element));
 			}
@@ -226,7 +224,7 @@ Xml Type Resolver (Xml)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			Ptr<glr::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
 				if (auto obj = content.Cast<XmlDocument>())
 				{
@@ -249,7 +247,7 @@ Xml Type Resolver (Xml)
 				writer << text;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				Ptr<XmlElement> root = XmlGetElements(element).First(0);
 				if(root)

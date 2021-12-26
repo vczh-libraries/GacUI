@@ -7,7 +7,7 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace stream;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace reflection::description;
 		using namespace controls;
 
