@@ -6,6 +6,7 @@
 using namespace vl::collections;
 using namespace vl::stream;
 using namespace vl::presentation;
+using namespace vl::presentation::instancequery;
 
 void UnitTestInGuiMain()
 {

@@ -6,7 +6,7 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace parsing::xml;
+			using namespace glr::xml;
 			using namespace presentation;
 			using namespace helper_types;
 

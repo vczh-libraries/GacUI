@@ -955,7 +955,7 @@ GuiInstanceStyle
 				auto position = pathAttr->value.codeRange.start;
 				position.column += 1;
 
-				auto parser = GetParserManager()->GetParser<GuiIqQuery>(L"INSTANCE-QUERY");
+				auto parser = GetParserManager()->GetParser<instancequery::GuiIqQuery>(L"INSTANCE-QUERY");
 				auto query = parser->Parse({ resource }, pathAttr->value.value, position, errors);
 				if (!query) return nullptr;
 				style->query = query;
