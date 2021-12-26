@@ -13,6 +13,12 @@
     <Filter Include="Compiler\WorkflowCodegen">
       <UniqueIdentifier>{962156d5-2481-4ca6-806d-73e37070859c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Compiler\InstanceQuery\Syntax">
+      <UniqueIdentifier>{97a7ea2c-fc79-4673-9e13-d42267d15882}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\InstanceQuery\Generated">
+      <UniqueIdentifier>{248b77b5-b121-4d86-8550-735b3edcbdc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\GuiCppGen.cpp">
@@ -63,12 +69,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.cpp">
       <Filter>Compiler\InstanceQuery</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.cpp">
-      <Filter>Compiler\InstanceQuery</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.cpp">
-      <Filter>Compiler\InstanceQuery</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.cpp">
       <Filter>Compiler\WorkflowCodegen</Filter>
     </ClCompile>
@@ -92,6 +92,18 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowScriptPosition.cpp">
       <Filter>Compiler\WorkflowCodegen</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQuery_Assembler.cpp">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQuery_Lexer.cpp">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQueryAst.cpp">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQueryParser.cpp">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,19 +131,36 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h">
       <Filter>Compiler\InstanceQuery</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Ast.h">
-      <Filter>Compiler\InstanceQuery</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.h">
-      <Filter>Compiler\InstanceQuery</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\WorkflowCodegen\GuiInstanceLoader_WorkflowCodegen.h">
       <Filter>Compiler\WorkflowCodegen</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQueryParser.h">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQuery_Assembler.h">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQuery_Lexer.h">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Generated\GuiInstanceQueryAst.h">
+      <Filter>Compiler\InstanceQuery\Generated</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery_Parser.parser.txt">
-      <Filter>Compiler\InstanceQuery</Filter>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Syntax\Syntax.txt">
+      <Filter>Compiler\InstanceQuery\Syntax</Filter>
     </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Syntax\Ast.txt">
+      <Filter>Compiler\InstanceQuery\Syntax</Filter>
+    </Text>
+    <Text Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Syntax\Lexer.txt">
+      <Filter>Compiler\InstanceQuery\Syntax</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="$(MSBuildThisFileDirectory)..\..\..\Source\Compiler\InstanceQuery\Syntax\Parser.xml">
+      <Filter>Compiler\InstanceQuery\Syntax</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

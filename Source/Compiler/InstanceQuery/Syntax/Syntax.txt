@@ -1,0 +1,35 @@
+QPrimaryFragment
+	::=	"*" ["." NAME : referenceName] as PrimaryQuery {typeNameOption=Any}
+	::=	NAME : typeName ["." NAME : referenceName] as PrimaryQuery {typeNameOption=Specified}
+	;
+
+QPrimaryAttributed
+	::= !QPrimaryFragment {attributeNameOption=Any}
+	::= "@" [NAME : attributeName] ":" !QPrimaryFragment {attributeNameOption=Specified}
+	;
+
+QPrimary
+	::= "/" !QPrimaryAttributed {childOption=Direct}
+	::= "//" !QPrimaryAttributed {childOption=Indirect}
+	::= "(" !QueryRoot ")"
+	;
+
+Query0
+	::= !QPrimary
+	::= Query0 : parent QPrimary : child as CascadeQuery;
+
+Query1
+	::= !Query0
+	::= Query1 : first "^" Query0 : second as SetQuery {op=ExclusiveOr}
+	::= Query1 : first "*" Query0 : second as SetQuery {op=Intersect}
+	;
+	
+Query2
+	::= !Query1
+	::= Query2 : first "+" Query1 : second as SetQuery {op=Union}
+	::= Query2 : first "-" Query1 : second as SetQuery {op=Substract}
+	;
+
+QueryRoot
+	::= !Query2
+	;

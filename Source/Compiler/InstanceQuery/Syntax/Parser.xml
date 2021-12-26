@@ -1,0 +1,27 @@
+<Parser name="GuiInstanceQuery">
+  <Includes>&lt;VlppGlrParser.h&gt;</Includes>
+  <CppNamespace>vl::presentation</CppNamespace>
+  <HeaderGuard>VCZH_PRESENTATION_INSTANCEQUERY</HeaderGuard>
+  <OutputDir>../Generated</OutputDir>
+
+  <Asts>
+    <Ast name="Ast" file="Ast.txt">
+      <CppNamespace>vl::presentation</CppNamespace>
+      <ReflectionNamespace>presentation</ReflectionNamespace>
+      <ClassPrefix>GuiIq</ClassPrefix>
+      <BlockedUtilities>
+        <Empty/>
+        <Copy/>
+        <Traverse/>
+        <Builder/>
+        <Json/>
+      </BlockedUtilities>
+    </Ast>
+  </Asts>
+
+  <Lexer file="Lexer.txt"/>
+
+  <Syntax name="Parser" file="Syntax.txt">
+    <Export rule="QueryRoot"/>
+  </Syntax>
+</Parser>

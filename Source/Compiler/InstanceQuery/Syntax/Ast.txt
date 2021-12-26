@@ -1,0 +1,46 @@
+class Query
+{
+}
+
+enum NameOption
+{
+	Specified,
+	Any,
+}
+
+enum ChildOption
+{
+	Direct,
+	Indirect,
+}
+
+class PrimaryQuery : Query
+{
+	var childOption : ChildOption;
+	var attributeNameOption : NameOption;
+	var attributeName : token;
+	var typeNameOption : NameOption;
+	var typeName : token;
+	var referenceName : token;
+}
+
+class CascadeQuery : Query
+{
+	var parent : Query;
+	var child : Query;
+}
+
+enum BinaryOperator
+{
+	ExclusiveOr,
+	Intersect,
+	Union,
+	Substract,
+}
+
+class SetQuery : Query
+{
+	var first : Query;
+	var second : Query;
+	var op : BinaryOperator;
+}
