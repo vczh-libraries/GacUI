@@ -3,4 +3,4 @@ InstanceStyle1 # .\Resource.WrongInstanceStyle.xml
 InstanceStyle2 # .\Resource.WrongInstanceStyle.xml
 (7, 7): Unknown element in <Styles>: "Unknown".
 (8, 7): Missing attribute "ref.Path" in <Style>.
-(9, 25): Error happened during parsing.
+(9, 25): Parser stops at incorrect input: ".".

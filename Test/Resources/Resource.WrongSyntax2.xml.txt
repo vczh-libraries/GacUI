@@ -1,5 +1,5 @@
  # .\Resource.WrongSyntax.xml
-(1, 2): Error happened during parsing.
+(1, 2): Parser stops at incorrect input: ">".
  # .\Resource.WrongSyntax2.xml
 (10, 3): Duplicated resource folder name "Instances".
 (11, 3): A resource folder should have a name.
@@ -8,11 +8,11 @@
 Instances # .\Resource.WrongSyntax2.xml
 (8, 5): Duplicated resource item name "Text".
 Instances/Instance # .\Resource.WrongSyntax.xml
-(1, 2): Error happened during parsing.
+(1, 2): Parser stops at incorrect input: ">".
 Instances/InstanceStyle # .\Resource.WrongSyntax.xml
-(1, 2): Error happened during parsing.
+(1, 2): Parser stops at incorrect input: ">".
 Instances/Script # .\Resource.WrongSyntax.xml
-(1, 2): Error happened during parsing.
+(1, 2): Parser stops at incorrect input: ">".
 NotExistsCollection # .\Resource.WrongSyntax2.xml
 (15, 5): Failed to load file ".\Resource.NotExists.xml".
 NotExistsCollection/Image # .\Resource.NotExists.xml
@@ -30,4 +30,4 @@ NotExistsCollection/Text # .\Resource.NotExists.xml
 NotExistsCollection/Xml # .\Resource.NotExists.xml
 (-2, -2): Failed to load file ".\Resource.NotExists.xml".
 Xml # .\Resource.WrongSyntax.xml
-(1, 2): Error happened during parsing.
+(1, 2): Parser stops at incorrect input: ">".
