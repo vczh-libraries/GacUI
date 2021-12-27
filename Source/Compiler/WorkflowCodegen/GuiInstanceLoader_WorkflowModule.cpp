@@ -16,6 +16,7 @@ Workflow_CreateModuleWithUsings
 		Ptr<workflow::WfModule> Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context, const WString& moduleName)
 		{
 			auto module = MakePtr<WfModule>();
+			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
 
 			vint index = context->namespaces.Keys().IndexOf(GlobalStringKey());

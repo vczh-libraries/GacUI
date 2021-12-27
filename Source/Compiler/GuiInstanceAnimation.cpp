@@ -390,6 +390,7 @@ GuiInstanceGradientAnimation::Compile
 					}
 
 					auto module = MakePtr<WfModule>();
+					module->moduleType = WfModuleType::Module;
 					module->name.value = moduleName;
 					auto animationClass = Workflow_InstallClass(className, module);
 

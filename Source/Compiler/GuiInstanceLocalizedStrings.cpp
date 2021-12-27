@@ -665,6 +665,7 @@ GuiInstanceLocalizedStrings
 			}
 
 			auto module = MakePtr<WfModule>();
+			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
 			{
 				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(true), module);
