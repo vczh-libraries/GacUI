@@ -11,7 +11,7 @@ namespace vl
 WorkflowScriptPositionVisitor
 ***********************************************************************/
 
-		class WorkflowScriptPositionVisitor : public traverse_visitor::AstVisitor
+		class WorkflowScriptPositionVisitor : public workflow::traverse_visitor::AstVisitor
 		{
 		public:
 			GuiResourcePrecompileContext&					context;

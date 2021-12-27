@@ -10155,9 +10155,9 @@ Workflow_GenerateInstanceClass
 ***********************************************************************/
 
 		class ReplaceDeclImplVisitor
-			: public empty_visitor::DeclarationVisitor
-			, public empty_visitor::VirtualCfeDeclarationVisitor
-			, public empty_visitor::VirtualCseDeclarationVisitor
+			: public workflow::empty_visitor::DeclarationVisitor
+			, public workflow::empty_visitor::VirtualCfeDeclarationVisitor
+			, public workflow::empty_visitor::VirtualCseDeclarationVisitor
 		{
 		public:
 			Func<Ptr<WfStatement>()>			statCtor;
@@ -13307,7 +13307,7 @@ namespace vl
 WorkflowScriptPositionVisitor
 ***********************************************************************/
 
-		class WorkflowScriptPositionVisitor : public traverse_visitor::AstVisitor
+		class WorkflowScriptPositionVisitor : public workflow::traverse_visitor::AstVisitor
 		{
 		public:
 			GuiResourcePrecompileContext&					context;

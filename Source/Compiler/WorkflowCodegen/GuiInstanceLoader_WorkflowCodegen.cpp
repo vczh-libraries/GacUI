@@ -316,9 +316,9 @@ Workflow_GenerateInstanceClass
 ***********************************************************************/
 
 		class ReplaceDeclImplVisitor
-			: public empty_visitor::DeclarationVisitor
-			, public empty_visitor::VirtualCfeDeclarationVisitor
-			, public empty_visitor::VirtualCseDeclarationVisitor
+			: public workflow::empty_visitor::DeclarationVisitor
+			, public workflow::empty_visitor::VirtualCfeDeclarationVisitor
+			, public workflow::empty_visitor::VirtualCseDeclarationVisitor
 		{
 		public:
 			Func<Ptr<WfStatement>()>			statCtor;
