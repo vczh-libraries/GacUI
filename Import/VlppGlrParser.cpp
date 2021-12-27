@@ -2235,7 +2235,7 @@ namespace vl
 			}
 
 			Parser::Parser()
-				: vl::glr::ParserBase<JsonTokens, ParserStates, JsonAstInsReceiver, ParserStateTypes>(&JsonTokenDeleter, &JsonLexerData, &JsonParserData)
+				: vl::glr::ParserBase<JsonTokens, ParserStates, JsonAstInsReceiver>(&JsonTokenDeleter, &JsonLexerData, &JsonParserData)
 			{
 			};
 
@@ -2246,12 +2246,12 @@ namespace vl
 
 			vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return ParseWithString<ParserStates::JRoot>(input, this, codeIndex);
+				 return ParseWithString<vl::glr::json::JsonNode, ParserStates::JRoot>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return ParseWithTokens<ParserStates::JRoot>(tokens, this, codeIndex);
+				 return ParseWithTokens<vl::glr::json::JsonNode, ParserStates::JRoot>(tokens, this, codeIndex);
 			};
 		}
 	}
@@ -6390,7 +6390,7 @@ namespace vl
 			}
 
 			Parser::Parser()
-				: vl::glr::ParserBase<XmlTokens, ParserStates, XmlAstInsReceiver, ParserStateTypes>(&XmlTokenDeleter, &XmlLexerData, &XmlParserData)
+				: vl::glr::ParserBase<XmlTokens, ParserStates, XmlAstInsReceiver>(&XmlTokenDeleter, &XmlLexerData, &XmlParserData)
 			{
 			};
 
@@ -6401,22 +6401,22 @@ namespace vl
 
 			vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return ParseWithString<ParserStates::XElement>(input, this, codeIndex);
+				 return ParseWithString<vl::glr::xml::XmlElement, ParserStates::XElement>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return ParseWithTokens<ParserStates::XElement>(tokens, this, codeIndex);
+				 return ParseWithTokens<vl::glr::xml::XmlElement, ParserStates::XElement>(tokens, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return ParseWithString<ParserStates::XDocument>(input, this, codeIndex);
+				 return ParseWithString<vl::glr::xml::XmlDocument, ParserStates::XDocument>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return ParseWithTokens<ParserStates::XDocument>(tokens, this, codeIndex);
+				 return ParseWithTokens<vl::glr::xml::XmlDocument, ParserStates::XDocument>(tokens, this, codeIndex);
 			};
 		}
 	}

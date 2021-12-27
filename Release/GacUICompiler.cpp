@@ -9546,7 +9546,7 @@ namespace vl
 			}
 
 			Parser::Parser()
-				: vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver, ParserStateTypes>(&GuiInstanceQueryTokenDeleter, &GuiInstanceQueryLexerData, &GuiInstanceQueryParserData)
+				: vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver>(&GuiInstanceQueryTokenDeleter, &GuiInstanceQueryLexerData, &GuiInstanceQueryParserData)
 			{
 			};
 
@@ -9557,12 +9557,12 @@ namespace vl
 
 			vl::Ptr<vl::presentation::instancequery::GuiIqQuery> Parser::ParseQueryRoot(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return ParseWithString<ParserStates::QueryRoot>(input, this, codeIndex);
+				 return ParseWithString<vl::presentation::instancequery::GuiIqQuery, ParserStates::QueryRoot>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::presentation::instancequery::GuiIqQuery> Parser::ParseQueryRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return ParseWithTokens<ParserStates::QueryRoot>(tokens, this, codeIndex);
+				 return ParseWithTokens<vl::presentation::instancequery::GuiIqQuery, ParserStates::QueryRoot>(tokens, this, codeIndex);
 			};
 		}
 	}

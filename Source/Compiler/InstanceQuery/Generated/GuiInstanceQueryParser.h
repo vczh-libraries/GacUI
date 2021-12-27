@@ -27,16 +27,12 @@ namespace vl
 				QueryRoot = 47,
 			};
 
-			template<ParserStates> struct ParserStateTypes;
-			template<> struct ParserStateTypes<ParserStates::QueryRoot> { using Type = vl::presentation::instancequery::GuiIqQuery; };
-
 			const wchar_t* ParserRuleName(vl::vint index);
 			const wchar_t* ParserStateLabel(vl::vint index);
 			extern void GuiInstanceQueryParserData(vl::stream::IStream& outputStream);
 
 			class Parser
-				: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver, ParserStateTypes>
-				, protected vl::glr::automaton::TraceManager::ITypeCallback
+				: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver>				, protected vl::glr::automaton::TraceManager::ITypeCallback
 			{
 			protected:
 				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
