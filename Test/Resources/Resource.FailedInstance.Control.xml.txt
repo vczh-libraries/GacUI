@@ -18,7 +18,8 @@ i1 # .\Resource.FailedInstance.Control.xml
 (34, 32): Precompile: Type "T3" will never be tried, because "T3", which is listed before, has a default constructor. So whatever the view model is, it will be the last choice.
 (36, 32): Unrecognized token: "!".
 (37, 32): Precompile: Type "NotExists" does not exist.
-(39, 50): Unrecognized token: """.
+(39, 42): Input is incomplete.
+(39, 50): Unrecognized token: "")".
 (41, 22): Input is incomplete.
 (42, 20): Unrecognized token: "!".
 (55, 17): Precompile: The value of property "Site" of type "presentation::compositions::GuiCellComposition" is not in a correct format: "row:<integer> column:<integer> [rowSpan:<integer>] [columnSpan:<integer>]".
