@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Import\Vlpp.h" />
+    <ClInclude Include="..\..\..\Import\VlppGlrParser.h" />
     <ClInclude Include="..\..\..\Import\VlppOS.h" />
     <ClInclude Include="..\..\..\Import\VlppParser.h" />
     <ClInclude Include="..\..\..\Import\VlppReflection.h" />
@@ -191,6 +192,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\Import\Vlpp.Windows.cpp" />
+    <ClCompile Include="..\..\..\Import\VlppGlrParser.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\..\Import\VlppOS.cpp" />
     <ClCompile Include="..\..\..\Import\VlppOS.Linux.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
