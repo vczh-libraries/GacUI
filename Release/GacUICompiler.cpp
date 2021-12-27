@@ -9557,12 +9557,12 @@ namespace vl
 
 			vl::Ptr<vl::presentation::instancequery::GuiIqQuery> Parser::ParseQueryRoot(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::QueryRoot>(input, this, codeIndex);
+				 return ParseWithString<ParserStates::QueryRoot>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::presentation::instancequery::GuiIqQuery> Parser::ParseQueryRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::QueryRoot>(tokens, this, codeIndex);
+				 return ParseWithTokens<ParserStates::QueryRoot>(tokens, this, codeIndex);
 			};
 		}
 	}

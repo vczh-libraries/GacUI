@@ -2246,12 +2246,12 @@ namespace vl
 
 			vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::JRoot>(input, this, codeIndex);
+				 return ParseWithString<ParserStates::JRoot>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::JRoot>(tokens, this, codeIndex);
+				 return ParseWithTokens<ParserStates::JRoot>(tokens, this, codeIndex);
 			};
 		}
 	}
@@ -6401,22 +6401,22 @@ namespace vl
 
 			vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::XElement>(input, this, codeIndex);
+				 return ParseWithString<ParserStates::XElement>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::XElement>(tokens, this, codeIndex);
+				 return ParseWithTokens<ParserStates::XElement>(tokens, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::XDocument>(input, this, codeIndex);
+				 return ParseWithString<ParserStates::XDocument>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return Parse<ParserStates::XDocument>(tokens, this, codeIndex);
+				 return ParseWithTokens<ParserStates::XDocument>(tokens, this, codeIndex);
 			};
 		}
 	}

@@ -41817,62 +41817,62 @@ namespace vl
 
 		vl::Ptr<vl::workflow::WfType> Parser::Parse_Type(const vl::WString& input, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Type>(input, this, codeIndex);
+			 return ParseWithString<ParserStates::_Type>(input, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfType> Parser::Parse_Type(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Type>(tokens, this, codeIndex);
+			 return ParseWithTokens<ParserStates::_Type>(tokens, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfExpression> Parser::Parse_Expression(const vl::WString& input, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Expression>(input, this, codeIndex);
+			 return ParseWithString<ParserStates::_Expression>(input, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfExpression> Parser::Parse_Expression(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Expression>(tokens, this, codeIndex);
+			 return ParseWithTokens<ParserStates::_Expression>(tokens, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfCoProviderStatement> Parser::Parse_CoProvider(const vl::WString& input, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_CoProvider>(input, this, codeIndex);
+			 return ParseWithString<ParserStates::_CoProvider>(input, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfCoProviderStatement> Parser::Parse_CoProvider(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_CoProvider>(tokens, this, codeIndex);
+			 return ParseWithTokens<ParserStates::_CoProvider>(tokens, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfStatement> Parser::Parse_Statement(const vl::WString& input, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Statement>(input, this, codeIndex);
+			 return ParseWithString<ParserStates::_Statement>(input, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfStatement> Parser::Parse_Statement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Statement>(tokens, this, codeIndex);
+			 return ParseWithTokens<ParserStates::_Statement>(tokens, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfDeclaration> Parser::Parse_Declaration(const vl::WString& input, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Declaration>(input, this, codeIndex);
+			 return ParseWithString<ParserStates::_Declaration>(input, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfDeclaration> Parser::Parse_Declaration(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Declaration>(tokens, this, codeIndex);
+			 return ParseWithTokens<ParserStates::_Declaration>(tokens, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfModule> Parser::Parse_Module(const vl::WString& input, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Module>(input, this, codeIndex);
+			 return ParseWithString<ParserStates::_Module>(input, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfModule> Parser::Parse_Module(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 		{
-			 return Parse<ParserStates::_Module>(tokens, this, codeIndex);
+			 return ParseWithTokens<ParserStates::_Module>(tokens, this, codeIndex);
 		};
 	}
 }

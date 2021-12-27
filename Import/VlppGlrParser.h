@@ -1353,17 +1353,15 @@ ParserBase<TTokens, TStates, TReceiver, TStateTypes>
 			}
 
 		protected:
-			template<TStates State>
-			auto Parse(TokenList& tokens, const automaton::TraceManager::ITypeCallback* typeCallback, vint codeIndex) const -> Ptr<typename TStateTypes<State>::Type>
+			Ptr<ParsingAstBase> ParseInternal(TokenList& tokens, vint32_t state, automaton::TraceManager& tm, const automaton::TraceManager::ITypeCallback* typeCallback, vint codeIndex) const
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::ParserBase<...>::Parse<TStates>(List<RegexToken>&, TraceManager::ITypeCallback*)#"
+#define ERROR_MESSAGE_PREFIX L"vl::glr::ParserBase<...>::ParseInternal(List<RegexToken>&, vint32_t TraceManager::ITypeCallback*)#"
 				if (codeIndex == -1 && tokens.Count() > 0)
 				{
 					codeIndex = tokens[0].codeIndex;
 				}
 
-				automaton::TraceManager tm(*executable.Obj(), typeCallback);
-				tm.Initialize((vint32_t)State);
+				tm.Initialize(state);
 				for (vint32_t i = 0; i < tokens.Count(); i++)
 				{
 					auto&& token = tokens[i];
@@ -1395,7 +1393,17 @@ ParserBase<TTokens, TStates, TReceiver, TStateTypes>
 				}
 
 				TReceiver receiver;
-				auto ast = tm.ExecuteTrace(rootTrace, receiver, tokens);
+				return tm.ExecuteTrace(rootTrace, receiver, tokens);
+
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<TStates State>
+			auto ParseWithTokens(TokenList& tokens, const automaton::TraceManager::ITypeCallback* typeCallback, vint codeIndex) const -> Ptr<typename TStateTypes<State>::Type>
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::ParserBase<...>::Parse<TStates>(List<RegexToken>& TraceManager::ITypeCallback*)#"
+				automaton::TraceManager tm(*executable.Obj(), typeCallback);
+				auto ast = ParseInternal(tokens, (vint32_t)State, tm, typeCallback, codeIndex);
 				auto typedAst = ast.Cast<typename TStateTypes<State>::Type>();
 
 				if (!typedAst)
@@ -1406,16 +1414,15 @@ ParserBase<TTokens, TStates, TReceiver, TStateTypes>
 					return nullptr;
 				}
 				return typedAst;
-
 #undef ERROR_MESSAGE_PREFIX
 			}
 
 			template<TStates State>
-			auto Parse(const WString& input, const automaton::TraceManager::ITypeCallback* typeCallback, vint codeIndex) const
+			auto ParseWithString(const WString& input, const automaton::TraceManager::ITypeCallback* typeCallback, vint codeIndex) const -> Ptr<typename TStateTypes<State>::Type>
 			{
 				TokenList tokens;
 				Tokenize(input, tokens, codeIndex);
-				return Parse<State>(tokens, typeCallback, codeIndex);
+				return ParseWithTokens<State>(tokens, typeCallback, codeIndex);
 			}
 		};
 	}

@@ -7348,12 +7348,12 @@ namespace vl
 
 			vl::Ptr<vl::glr::parsergen::GlrSyntaxFile> RuleParser::ParseFile(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return Parse<RuleParserStates::File>(input, this, codeIndex);
+				 return ParseWithString<RuleParserStates::File>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::parsergen::GlrSyntaxFile> RuleParser::ParseFile(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return Parse<RuleParserStates::File>(tokens, this, codeIndex);
+				 return ParseWithTokens<RuleParserStates::File>(tokens, this, codeIndex);
 			};
 		}
 	}
@@ -8256,12 +8256,12 @@ namespace vl
 
 			vl::Ptr<vl::glr::parsergen::GlrAstFile> TypeParser::ParseFile(const vl::WString& input, vl::vint codeIndex) const
 			{
-				 return Parse<TypeParserStates::File>(input, this, codeIndex);
+				 return ParseWithString<TypeParserStates::File>(input, this, codeIndex);
 			};
 
 			vl::Ptr<vl::glr::parsergen::GlrAstFile> TypeParser::ParseFile(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 			{
-				 return Parse<TypeParserStates::File>(tokens, this, codeIndex);
+				 return ParseWithTokens<TypeParserStates::File>(tokens, this, codeIndex);
 			};
 		}
 	}
@@ -8969,12 +8969,12 @@ WriteSyntaxCppFile
 						writer.WriteLine(L"");
 						writer.WriteLine(prefix + L"vl::Ptr<" + astType + L"> " + manager.name + L"::Parse" + ruleName + L"(const vl::WString& input, vl::vint codeIndex) const");
 						writer.WriteLine(prefix + L"{");
-						writer.WriteLine(prefix + L"\t return Parse<" + manager.name + L"States::" + ruleName + L">(input, this, codeIndex);");
+						writer.WriteLine(prefix + L"\t return ParseWithString<" + manager.name + L"States::" + ruleName + L">(input, this, codeIndex);");
 						writer.WriteLine(prefix + L"};");
 						writer.WriteLine(L"");
 						writer.WriteLine(prefix + L"vl::Ptr<" + astType + L"> " + manager.name + L"::Parse" + ruleName + L"(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const");
 						writer.WriteLine(prefix + L"{");
-						writer.WriteLine(prefix + L"\t return Parse<" + manager.name + L"States::" + ruleName + L">(tokens, this, codeIndex);");
+						writer.WriteLine(prefix + L"\t return ParseWithTokens<" + manager.name + L"States::" + ruleName + L">(tokens, this, codeIndex);");
 						writer.WriteLine(prefix + L"};");
 					}
 				}
