@@ -1409,15 +1409,15 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode, system::json::JsonNode)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode::IVisitor, system::json::JsonNode::IVisitor)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteralValue, system::json::JsonLiteralValue)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteral, system::json::JsonLiteral)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonString, system::json::JsonString)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNumber, system::json::JsonNumber)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonArray, system::json::JsonArray)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObjectField, system::json::JsonObjectField)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObject, system::json::JsonObject)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode, system::JsonNode)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode::IVisitor, system::JsonNode::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteralValue, system::JsonLiteralValue)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteral, system::JsonLiteral)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonString, system::JsonString)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNumber, system::JsonNumber)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonArray, system::JsonArray)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObjectField, system::JsonObjectField)
+			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObject, system::JsonObject)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -5405,15 +5405,15 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode, system::xml::XmlNode)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode::IVisitor, system::xml::XmlNode::IVisitor)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlText, system::xml::XmlText)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlCData, system::xml::XmlCData)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlAttribute, system::xml::XmlAttribute)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlComment, system::xml::XmlComment)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlElement, system::xml::XmlElement)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlInstruction, system::xml::XmlInstruction)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlDocument, system::xml::XmlDocument)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode, system::XmlNode)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode::IVisitor, system::XmlNode::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlText, system::XmlText)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlCData, system::XmlCData)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlAttribute, system::XmlAttribute)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlComment, system::XmlComment)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlElement, system::XmlElement)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlInstruction, system::XmlInstruction)
+			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlDocument, system::XmlDocument)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 

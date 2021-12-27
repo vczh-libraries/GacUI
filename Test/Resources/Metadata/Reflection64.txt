@@ -1,111 +1,4 @@
-﻿class parsing::ParsingError : system::ReferenceType {
-    property codeRange : parsing::ParsingTextRange;
-    property errorMessage : system::String;
-    property parsingTree : parsing::ParsingTreeCustomBase*;
-
-    constructor () : parsing::ParsingError^;
-    constructor (errorMessage : system::String) : parsing::ParsingError^;
-    constructor (parsingTree : parsing::ParsingTreeCustomBase*, errorMessage : system::String) : parsing::ParsingError^;
-}
-
-@ValueType
-struct parsing::ParsingTextPos {
-    property column : system::Int64;
-    property index : system::Int64;
-    property row : system::Int64;
-}
-
-@ValueType
-struct parsing::ParsingTextRange {
-    property end : parsing::ParsingTextPos;
-    property start : parsing::ParsingTextPos;
-}
-
-class parsing::ParsingToken : parsing::ParsingTreeCustomBase {
-    property tokenIndex : system::Int64;
-    property value : system::String;
-
-}
-
-class parsing::ParsingTreeArray : system::ReferenceType {
-    property Count : system::Int64 { get:GetCount }
-    property ElementType : system::String { get:GetElementType set:SetElementType }
-    property Items : system::List<parsing::ParsingTreeNode^>^ { get:GetItems }
-
-    function AddItem(node : parsing::ParsingTreeNode^) : system::Boolean;
-    function Clone() : parsing::ParsingTreeNode^;
-    function ContainsItem(node : parsing::ParsingTreeNode*) : system::Boolean;
-    @InvokeTemplate:$This->Count($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Count)
-    function GetCount() : system::Int64;
-    function GetElementType() : system::String;
-    function GetItem(index : system::Int64) : parsing::ParsingTreeNode^;
-    function GetItems() : system::List<parsing::ParsingTreeNode^>^;
-    function IndexOfItem(node : parsing::ParsingTreeNode*) : system::Int64;
-    function InsertItem(index : system::Int64, node : parsing::ParsingTreeNode^) : system::Boolean;
-    function RemoveItem(index : system::Int64) : system::Boolean;
-    function RemoveItem(node : parsing::ParsingTreeNode*) : system::Boolean;
-    function SetElementType(value : system::String) : system::Void;
-    function SetItem(index : system::Int64, node : parsing::ParsingTreeNode^) : system::Boolean;
-
-    constructor (elementType : system::String) : parsing::ParsingTreeObject^;
-}
-
-class parsing::ParsingTreeCustomBase : system::ReferenceType {
-    property codeRange : parsing::ParsingTextRange;
-    property creatorRules : system::List<system::String>^ { get }
-
-}
-
-class parsing::ParsingTreeNode : system::ReferenceType {
-    property CodeRange : parsing::ParsingTextRange { get:GetCodeRange set:SetCodeRange }
-    property Parent : parsing::ParsingTreeNode* { get:GetParent }
-    property SubNodes : system::ReadonlyList<parsing::ParsingTreeNode^>^ { get:GetSubNodes }
-
-    function ClearQueryCache() : system::Void;
-    function Clone() : parsing::ParsingTreeNode^;
-    function FindDeepestNode(position : parsing::ParsingTextPos) : parsing::ParsingTreeNode*;
-    function FindDeepestNode(range : parsing::ParsingTextRange) : parsing::ParsingTreeNode*;
-    function FindSubNode(position : parsing::ParsingTextPos) : parsing::ParsingTreeNode*;
-    function FindSubNode(range : parsing::ParsingTextRange) : parsing::ParsingTreeNode*;
-    function GetCodeRange() : parsing::ParsingTextRange;
-    function GetParent() : parsing::ParsingTreeNode*;
-    function GetSubNodes() : system::ReadonlyList<parsing::ParsingTreeNode^>^;
-    function InitializeQueryCache() : system::Void;
-    function SetCodeRange(value : parsing::ParsingTextRange) : system::Void;
-
-}
-
-class parsing::ParsingTreeObject : system::ReferenceType {
-    property CreatorRules : system::List<system::String>^ { get:GetCreatorRules }
-    property MemberNames : system::ReadonlyList<system::String>^ { get:GetMemberNames }
-    property Members : system::Dictionary<system::String, parsing::ParsingTreeNode^>^ { get:GetMembers }
-    property Type : system::String { get:GetType set:SetType }
-
-    function GetCreatorRules() : system::List<system::String>^;
-    function GetMember(name : system::String) : parsing::ParsingTreeNode^;
-    function GetMemberNames() : system::ReadonlyList<system::String>^;
-    function GetMembers() : system::Dictionary<system::String, parsing::ParsingTreeNode^>^;
-    function GetType() : system::String;
-    function SetMember(name : system::String, node : parsing::ParsingTreeNode^) : system::Boolean;
-    function SetType(value : system::String) : system::Void;
-
-    constructor (type : system::String) : parsing::ParsingTreeObject^;
-}
-
-class parsing::ParsingTreeToken : system::ReferenceType {
-    property TokenIndex : system::Int64 { get:GetTokenIndex set:SetTokenIndex }
-    property Value : system::String { get:GetValue set:SetValue }
-
-    function GetTokenIndex() : system::Int64;
-    function GetValue() : system::String;
-    function SetTokenIndex(value : system::Int64) : system::Void;
-    function SetValue(value : system::String) : system::Void;
-
-    constructor (value : system::String, tokenIndex : system::Int64) : parsing::ParsingTreeToken^;
-}
-
-@ValueType
+﻿@ValueType
 enum presentation::Alignment {
     Bottom = 2,
     Center = 1,
@@ -5467,97 +5360,70 @@ interface system::InterfaceProxy : system::Interface {
 
 }
 
-@FullName:vl::parsing::json::JsonArray
+@FullName:vl::glr::json::JsonArray
 class system::JsonArray : system::JsonNode {
     property items : system::List<system::JsonNode^>^ { get }
 
     constructor () : system::JsonArray^;
 }
 
-@FullName:vl::parsing::json::JsonLiteral
+@FullName:vl::glr::json::JsonLiteral
 class system::JsonLiteral : system::JsonNode {
-    property value : system::JsonLiteral::JsonValue;
+    property value : system::JsonLiteralValue;
 
     constructor () : system::JsonLiteral^;
 }
 
-@FullName:vl::parsing::json::JsonLiteral::JsonValue
+@FullName:vl::glr::json::JsonLiteralValue
 @ValueType
-enum system::JsonLiteral::JsonValue {
+enum system::JsonLiteralValue {
     False = 1,
     Null = 2,
     True = 0,
 }
 
-@FullName:vl::parsing::json::JsonNode
-class system::JsonNode : system::ReferenceType {
-    function Accept(visitor : system::JsonNode::IVisitor*) : system::Void;
-
+@FullName:vl::glr::json::JsonNode
+class system::JsonNode : system::ParsingAstBase {
 }
 
-@FullName:vl::parsing::json::JsonNode::IVisitor
+@FullName:vl::glr::json::JsonNode::IVisitor
 interface system::JsonNode::IVisitor : system::Interface {
     function Visit(node : system::JsonLiteral*) : system::Void;
     function Visit(node : system::JsonString*) : system::Void;
     function Visit(node : system::JsonNumber*) : system::Void;
     function Visit(node : system::JsonArray*) : system::Void;
-    function Visit(node : system::JsonObjectField*) : system::Void;
     function Visit(node : system::JsonObject*) : system::Void;
 
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<JsonNode::IVisitor>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<JsonNode::IVisitor>::Create)
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::glr::json::JsonNode::IVisitor>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::glr::json::JsonNode::IVisitor>::Create)
     constructor (proxy : system::InterfaceProxy^) : system::JsonNode::IVisitor^;
 }
 
-@FullName:vl::parsing::json::JsonNumber
+@FullName:vl::glr::json::JsonNumber
 class system::JsonNumber : system::JsonNode {
-    @ReferenceTemplate:$This->$Name.value
-    property content : system::String { get:get_content set:set_content }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_content() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_content(value : system::String) : system::Void;
+    property content : system::ParsingToken;
 
     constructor () : system::JsonNumber^;
 }
 
-@FullName:vl::parsing::json::JsonObject
+@FullName:vl::glr::json::JsonObject
 class system::JsonObject : system::JsonNode {
     property fields : system::List<system::JsonObjectField^>^ { get }
 
     constructor () : system::JsonObject^;
 }
 
-@FullName:vl::parsing::json::JsonObjectField
-class system::JsonObjectField : system::JsonNode {
-    @ReferenceTemplate:$This->$Name.value
-    property name : system::String { get:get_name set:set_name }
+@FullName:vl::glr::json::JsonObjectField
+class system::JsonObjectField : system::ParsingAstBase {
+    property name : system::ParsingToken;
     property value : system::JsonNode^;
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_name() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_name(value : system::String) : system::Void;
 
     constructor () : system::JsonObjectField^;
 }
 
-@FullName:vl::parsing::json::JsonString
+@FullName:vl::glr::json::JsonString
 class system::JsonString : system::JsonNode {
-    @ReferenceTemplate:$This->$Name.value
-    property content : system::String { get:get_content set:set_content }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_content() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_content(value : system::String) : system::Void;
+    property content : system::ParsingToken;
 
     constructor () : system::JsonString^;
 }
@@ -5684,6 +5550,37 @@ interface system::ObservableList : system::List {
     @InvokeTemplate:::vl::reflection::description::IValueObservableList::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::IValueObservableList::Create)
     constructor (values : system::ReadonlyList^) : system::ObservableList^;
+}
+
+@FullName:vl::glr::ParsingAstBase
+class system::ParsingAstBase : system::ReferenceType {
+    property codeRange : system::ParsingTextRange;
+
+}
+
+@FullName:vl::glr::ParsingTextPos
+@ValueType
+struct system::ParsingTextPos {
+    property column : system::Int64;
+    property index : system::Int64;
+    property row : system::Int64;
+}
+
+@FullName:vl::glr::ParsingTextRange
+@ValueType
+struct system::ParsingTextRange {
+    property codeIndex : system::Int64;
+    property end : system::ParsingTextPos;
+    property start : system::ParsingTextPos;
+}
+
+@FullName:vl::glr::ParsingToken
+@ValueType
+struct system::ParsingToken {
+    property codeRange : system::ParsingTextRange;
+    property index : system::Int64;
+    property token : system::Int64;
+    property value : system::String;
 }
 
 @FullName:vl::reflection::description::IPromise
@@ -5836,60 +5733,29 @@ primitive system::UInt8;
 @ValueType
 primitive system::Void;
 
-@FullName:vl::parsing::xml::XmlAttribute
-class system::XmlAttribute : system::XmlNode {
-    @ReferenceTemplate:$This->$Name.value
-    property name : system::String { get:get_name set:set_name }
-    @ReferenceTemplate:$This->$Name.value
-    property value : system::String { get:get_value set:set_value }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_name() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_value() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_name(value : system::String) : system::Void;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_value(value : system::String) : system::Void;
+@FullName:vl::glr::xml::XmlAttribute
+class system::XmlAttribute : system::ParsingAstBase {
+    property name : system::ParsingToken;
+    property value : system::ParsingToken;
 
     constructor () : system::XmlAttribute^;
 }
 
-@FullName:vl::parsing::xml::XmlCData
+@FullName:vl::glr::xml::XmlCData
 class system::XmlCData : system::XmlNode {
-    @ReferenceTemplate:$This->$Name.value
-    property content : system::String { get:get_content set:set_content }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_content() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_content(value : system::String) : system::Void;
+    property content : system::ParsingToken;
 
     constructor () : system::XmlCData^;
 }
 
-@FullName:vl::parsing::xml::XmlComment
+@FullName:vl::glr::xml::XmlComment
 class system::XmlComment : system::XmlNode {
-    @ReferenceTemplate:$This->$Name.value
-    property content : system::String { get:get_content set:set_content }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_content() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_content(value : system::String) : system::Void;
+    property content : system::ParsingToken;
 
     constructor () : system::XmlComment^;
 }
 
-@FullName:vl::parsing::xml::XmlDocument
+@FullName:vl::glr::xml::XmlDocument
 class system::XmlDocument : system::XmlNode {
     property prologs : system::List<system::XmlNode^>^ { get }
     property rootElement : system::XmlElement^;
@@ -5897,79 +5763,45 @@ class system::XmlDocument : system::XmlNode {
     constructor () : system::XmlDocument^;
 }
 
-@FullName:vl::parsing::xml::XmlElement
+@FullName:vl::glr::xml::XmlElement
 class system::XmlElement : system::XmlNode {
     property attributes : system::List<system::XmlAttribute^>^ { get }
-    @ReferenceTemplate:$This->$Name.value
-    property closingName : system::String { get:get_closingName set:set_closingName }
-    @ReferenceTemplate:$This->$Name.value
-    property name : system::String { get:get_name set:set_name }
+    property closingName : system::ParsingToken;
+    property name : system::ParsingToken;
     property subNodes : system::List<system::XmlNode^>^ { get }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_closingName() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_name() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_closingName(value : system::String) : system::Void;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_name(value : system::String) : system::Void;
 
     constructor () : system::XmlElement^;
 }
 
-@FullName:vl::parsing::xml::XmlInstruction
+@FullName:vl::glr::xml::XmlInstruction
 class system::XmlInstruction : system::XmlNode {
     property attributes : system::List<system::XmlAttribute^>^ { get }
-    @ReferenceTemplate:$This->$Name.value
-    property name : system::String { get:get_name set:set_name }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_name() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_name(value : system::String) : system::Void;
+    property name : system::ParsingToken;
 
     constructor () : system::XmlInstruction^;
 }
 
-@FullName:vl::parsing::xml::XmlNode
-class system::XmlNode : system::ReferenceType {
-    function Accept(visitor : system::XmlNode::IVisitor*) : system::Void;
-
+@FullName:vl::glr::xml::XmlNode
+class system::XmlNode : system::ParsingAstBase {
 }
 
-@FullName:vl::parsing::xml::XmlNode::IVisitor
+@FullName:vl::glr::xml::XmlNode::IVisitor
 interface system::XmlNode::IVisitor : system::Interface {
     function Visit(node : system::XmlText*) : system::Void;
     function Visit(node : system::XmlCData*) : system::Void;
-    function Visit(node : system::XmlAttribute*) : system::Void;
     function Visit(node : system::XmlComment*) : system::Void;
     function Visit(node : system::XmlElement*) : system::Void;
     function Visit(node : system::XmlInstruction*) : system::Void;
     function Visit(node : system::XmlDocument*) : system::Void;
 
-    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<XmlNode::IVisitor>::Create($Arguments)
-    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<XmlNode::IVisitor>::Create)
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::glr::xml::XmlNode::IVisitor>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::glr::xml::XmlNode::IVisitor>::Create)
     constructor (proxy : system::InterfaceProxy^) : system::XmlNode::IVisitor^;
 }
 
-@FullName:vl::parsing::xml::XmlText
+@FullName:vl::glr::xml::XmlText
 class system::XmlText : system::XmlNode {
-    @ReferenceTemplate:$This->$Name.value
-    property content : system::String { get:get_content set:set_content }
-
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function get_content() : system::String;
-    @InvokeTemplate:*
-    @ClosureTemplate:*
-    function set_content(value : system::String) : system::Void;
+    property content : system::ParsingToken;
 
     constructor () : system::XmlText^;
 }
