@@ -1334,7 +1334,7 @@ ParserBase<TTokens, TStates, TReceiver, TStateTypes>
 				while (enumerator->Next())
 				{
 					auto&& token = enumerator->Current();
-					if (token.token == -1)
+					if (token.token == -1 || !token.completeToken)
 					{
 						auto args = ErrorArgs::UnrecognizedToken(token);
 						args.throwError = false;
