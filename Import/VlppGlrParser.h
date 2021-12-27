@@ -166,8 +166,11 @@ ParsingTextRange
 ParsingError
 ***********************************************************************/
 
+		class ParsingAstBase;
+
 		struct ParsingError
 		{
+			ParsingAstBase*						node = nullptr;
 			ParsingTextRange					codeRange;
 			WString								message;
 		};

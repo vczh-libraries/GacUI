@@ -4737,6 +4737,7 @@ namespace vl
 		template<ParserStates> struct ParserStateTypes;
 		template<> struct ParserStateTypes<ParserStates::_Type> { using Type = vl::workflow::WfType; };
 		template<> struct ParserStateTypes<ParserStates::_Expression> { using Type = vl::workflow::WfExpression; };
+		template<> struct ParserStateTypes<ParserStates::_CoProvider> { using Type = vl::workflow::WfCoProviderStatement; };
 		template<> struct ParserStateTypes<ParserStates::_Statement> { using Type = vl::workflow::WfStatement; };
 		template<> struct ParserStateTypes<ParserStates::_Declaration> { using Type = vl::workflow::WfDeclaration; };
 		template<> struct ParserStateTypes<ParserStates::_Module> { using Type = vl::workflow::WfModule; };
@@ -4758,6 +4759,8 @@ namespace vl
 			vl::Ptr<vl::workflow::WfType> Parse_Type(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
 			vl::Ptr<vl::workflow::WfExpression> Parse_Expression(const vl::WString& input, vl::vint codeIndex = -1) const;
 			vl::Ptr<vl::workflow::WfExpression> Parse_Expression(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
+			vl::Ptr<vl::workflow::WfCoProviderStatement> Parse_CoProvider(const vl::WString& input, vl::vint codeIndex = -1) const;
+			vl::Ptr<vl::workflow::WfCoProviderStatement> Parse_CoProvider(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
 			vl::Ptr<vl::workflow::WfStatement> Parse_Statement(const vl::WString& input, vl::vint codeIndex = -1) const;
 			vl::Ptr<vl::workflow::WfStatement> Parse_Statement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
 			vl::Ptr<vl::workflow::WfDeclaration> Parse_Declaration(const vl::WString& input, vl::vint codeIndex = -1) const;
@@ -4797,11 +4800,12 @@ namespace vl
 Parsing
 ***********************************************************************/
 
-		extern Ptr<WfType>				ParseType(const WString& input, const Parser& parser, vint codeIndex = -1);
-		extern Ptr<WfExpression>		ParseExpression(const WString& input, const Parser& parser, vint codeIndex = -1);
-		extern Ptr<WfStatement>			ParseStatement(const WString& input, const Parser& parser, vint codeIndex = -1);
-		extern Ptr<WfDeclaration>		ParseDeclaration(const WString& input, const Parser& parser, vint codeIndex = -1);
-		extern Ptr<WfModule>			ParseModule(const WString& input, const Parser& parser, vint codeIndex = -1);
+		extern Ptr<WfType>					ParseType(const WString& input, const Parser& parser, vint codeIndex = -1);
+		extern Ptr<WfExpression>			ParseExpression(const WString& input, const Parser& parser, vint codeIndex = -1);
+		extern Ptr<WfStatement>				ParseStatement(const WString& input, const Parser& parser, vint codeIndex = -1);
+		extern Ptr<WfCoProviderStatement>	ParseCoProviderStatement(const WString& input, const Parser& parser, vint codeIndex = -1);
+		extern Ptr<WfDeclaration>			ParseDeclaration(const WString& input, const Parser& parser, vint codeIndex = -1);
+		extern Ptr<WfModule>				ParseModule(const WString& input, const Parser& parser, vint codeIndex = -1);
 		
 /***********************************************************************
 Print to ParsingWriter

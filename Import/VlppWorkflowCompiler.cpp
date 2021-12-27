@@ -3582,7 +3582,7 @@ namespace vl
 
 			ParsingError MakeParsingError(ParsingAstBase* node, const WString& message)
 			{
-				return { node->codeRange, message };
+				return { node, node->codeRange, message };
 			}
 
 /***********************************************************************
@@ -26876,6 +26876,15 @@ Parsing
 			return ast;
 		}
 
+		Ptr<WfCoProviderStatement> ParseCoProviderStatement(const WString& input, const Parser& parser, vint codeIndex)
+		{
+			List<regex::RegexToken> tokens;
+			parser.Tokenize(input, tokens, codeIndex);
+			auto ast = parser.Parse_CoProvider(tokens, codeIndex);
+			WorkflowUnescapeVisitor(tokens).InspectInto(ast.Obj());
+			return ast;
+		}
+
 		Ptr<WfDeclaration> ParseDeclaration(const WString& input, const Parser& parser, vint codeIndex)
 		{
 			List<regex::RegexToken> tokens;
@@ -41824,6 +41833,16 @@ namespace vl
 		vl::Ptr<vl::workflow::WfExpression> Parser::Parse_Expression(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
 		{
 			 return Parse<ParserStates::_Expression>(tokens, this, codeIndex);
+		};
+
+		vl::Ptr<vl::workflow::WfCoProviderStatement> Parser::Parse_CoProvider(const vl::WString& input, vl::vint codeIndex) const
+		{
+			 return Parse<ParserStates::_CoProvider>(input, this, codeIndex);
+		};
+
+		vl::Ptr<vl::workflow::WfCoProviderStatement> Parser::Parse_CoProvider(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
+		{
+			 return Parse<ParserStates::_CoProvider>(tokens, this, codeIndex);
 		};
 
 		vl::Ptr<vl::workflow::WfStatement> Parser::Parse_Statement(const vl::WString& input, vl::vint codeIndex) const

@@ -168,7 +168,7 @@ namespace vl
 					WfAssemblyLoadErrors loadErrors;
 					if (!compiled->Initialize(true, loadErrors))
 					{
-						manager->errors.Add(glr::ParsingError({}, L"Internal error happened during loading an assembly that just passed type verification."));
+						manager->errors.Add(glr::ParsingError(nullptr, {}, L"Internal error happened during loading an assembly that just passed type verification."));
 					}
 				}
 				else
@@ -185,7 +185,7 @@ namespace vl
 					for (vint i = 0; i < manager->errors.Count(); i++)
 					{
 						auto error = manager->errors[i];
-						errors.Add({ sp->nodePositions[error->parsingTree].computedPosition, error.message });
+						errors.Add({ sp->nodePositions[error.node].computedPosition, error.message });
 					}
 				}
 
