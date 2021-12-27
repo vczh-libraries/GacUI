@@ -17,9 +17,7 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace parsing;
-			using namespace parsing::tabling;
-			using namespace parsing::xml;
+			using namespace glr::xml;
 			using namespace stream;
 			using namespace collections;
 			using namespace presentation;
@@ -23331,7 +23329,6 @@ namespace vl
 			using namespace collections;
 			using namespace compositions;
 			using namespace regex;
-			using namespace parsing;
 
 /***********************************************************************
 GuiToolstripCommand
@@ -23383,7 +23380,7 @@ GuiToolstripCommand
 
 			void GuiToolstripCommand::BuildShortcut(const WString& builderText)
 			{
-				List<Ptr<ParsingError>> errors;
+				List<glr::ParsingError> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
 				{
 					if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
@@ -23607,12 +23604,12 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				{
 				}
 
-				Ptr<ShortcutBuilder> ParseInternal(const WString& text, collections::List<Ptr<ParsingError>>& errors)override
+				Ptr<ShortcutBuilder> ParseInternal(const WString& text, collections::List<glr::ParsingError>& errors)override
 				{
 					Ptr<RegexMatch> match=regexShortcut.MatchHead(text);
 					if (match && match->Result().Length() != text.Length())
 					{
-						errors.Add(new ParsingError(L"Failed to parse a shortcut \"" + text + L"\"."));
+						errors.Add(glr::ParsingError(nullptr, {}, L"Failed to parse a shortcut \"" + text + L"\"."));
 						return 0;
 					}
 
@@ -33397,8 +33394,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace regex;
 		using namespace stream;
 
@@ -33761,7 +33757,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace stream;
 
 		namespace document_clipboard_visitors
@@ -37414,8 +37410,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace regex;
 
 /***********************************************************************
@@ -37461,10 +37456,6 @@ document_operation_visitors::DeserializeNodeVisitor
 				void Visit(XmlCData* node)override
 				{
 					PrintText(node->content.value);
-				}
-
-				void Visit(XmlAttribute* node)override
-				{
 				}
 
 				void Visit(XmlComment* node)override
@@ -37806,7 +37797,7 @@ document_operation_visitors::DeserializeNodeVisitor
 DocumentModel
 ***********************************************************************/
 
-		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
+		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
 		{
 			Ptr<DocumentModel> model = new DocumentModel;
 			if (xml->rootElement->name.value == L"Doc")
@@ -37918,7 +37909,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 
 /***********************************************************************
 document_operation_visitors::SerializeRunVisitor
@@ -38178,7 +38169,7 @@ document_operation_visitors::SerializeRunVisitor
 DocumentModel
 ***********************************************************************/
 
-		Ptr<parsing::xml::XmlDocument> DocumentModel::SaveToXml()
+		Ptr<glr::xml::XmlDocument> DocumentModel::SaveToXml()
 		{
 			Ptr<XmlDocument> xml=new XmlDocument;
 			Ptr<XmlElement> doc=new XmlElement;
@@ -38259,9 +38250,8 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace controls;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
-		using namespace parsing::json;
+		using namespace glr::xml;
+		using namespace glr::json;
 		using namespace regex;
 
 /***********************************************************************
@@ -38275,11 +38265,39 @@ IGuiParserManager
 			return parserManager;
 		}
 
+		class GuiParser_Xml : public IGuiParser<XmlDocument>
+		{
+		protected:
+			glr::xml::Parser							parser;
+
+		public:
+			Ptr<XmlDocument> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+				auto ast = XmlParseDocument(text, parser);
+				parser.OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_Json : public IGuiParser<JsonNode>
+		{
+		protected:
+			glr::json::Parser							parser;
+
+		public:
+			Ptr<JsonNode> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+				auto ast = JsonParse(text, parser);
+				parser.OnError.Remove(handler);
+				return ast;
+			}
+		};
+
 		class GuiParserManager : public Object, public IGuiParserManager, public IGuiPlugin
 		{
 		protected:
-			Dictionary<WString, Ptr<Table>>				tables;
-			Dictionary<WString, Func<Ptr<Table>()>>		loaders;
 			SpinLock									lock;
 
 			Dictionary<WString, Ptr<IGuiGeneralParser>>	parsers;
@@ -38291,44 +38309,14 @@ IGuiParserManager
 
 			void Load()override
 			{
-				parserManager=this;
-				SetParsingTable(L"XML", &XmlLoadTable);
-				SetParsingTable(L"JSON", &JsonLoadTable);
-				SetTableParser(L"XML", L"XML", &XmlParseDocument);
-				SetTableParser(L"JSON", L"JSON", &JsonParse);
+				parserManager = this;
+				SetParser(L"XML", new GuiParser_Xml());
+				SetParser(L"JSON", new GuiParser_Json());
 			}
 
 			void Unload()override
 			{
 				parserManager=0;
-			}
-
-			Ptr<Table> GetParsingTable(const WString& name)override
-			{
-				SPIN_LOCK(lock)
-				{
-					vint index=tables.Keys().IndexOf(name);
-					if(index!=-1)
-					{
-						return tables.Values()[index];
-					}
-
-					index=loaders.Keys().IndexOf(name);
-					if(index!=-1)
-					{
-						Ptr<Table> table=loaders.Values()[index]();
-						tables.Add(name, table);
-						return table;
-					}
-				}
-				return 0;
-			}
-
-			bool SetParsingTable(const WString& name, Func<Ptr<Table>()> loader)override
-			{
-				if(loaders.Keys().Contains(name)) return false;
-				loaders.Add(name, loader);
-				return true;
 			}
 
 			Ptr<IGuiGeneralParser> GetParser(const WString& name)override
@@ -38358,8 +38346,7 @@ namespace vl
 	{
 		using namespace controls;
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace stream;
 		using namespace filesystem;
 
@@ -38647,7 +38634,7 @@ GuiResourceLocation
 GuiResourceTextPos
 ***********************************************************************/
 
-		GuiResourceTextPos::GuiResourceTextPos(GuiResourceLocation location, parsing::ParsingTextPos position)
+		GuiResourceTextPos::GuiResourceTextPos(GuiResourceLocation location, glr::ParsingTextPos position)
 			:originalLocation(location)
 			, row(position.row)
 			, column(position.column)
@@ -38680,7 +38667,7 @@ GuiResourceError
 		}
 
 		template<typename TCallback>
-		void TransformErrors(GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset, const TCallback& callback)
+		void TransformErrors(GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, GuiResourceTextPos offset, const TCallback& callback)
 		{
 			if (offset.row < 0 || offset.column < 0)
 			{
@@ -38690,7 +38677,7 @@ GuiResourceError
 
 			for (auto error : parsingErrors)
 			{
-				auto pos = error->codeRange.start;
+				auto pos = error.codeRange.start;
 				if (pos.row < 0 || pos.column < 0)
 				{
 					pos = { offset.row,offset.column };
@@ -38703,21 +38690,21 @@ GuiResourceError
 					}
 					pos.row += offset.row;
 				}
-				errors.Add(callback({ offset.originalLocation,pos }, error->errorMessage));
+				errors.Add(callback({ offset.originalLocation,pos }, error.message));
 			}
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors)
 		{
 			Transform(_location, errors, parsingErrors, { _location,{ 0,0 } });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, parsing::ParsingTextPos offset)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, glr::ParsingTextPos offset)
 		{
 			Transform(_location, errors, parsingErrors, { _location,offset });
 		}
 
-		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<Ptr<parsing::ParsingError>>& parsingErrors, GuiResourceTextPos offset)
+		void GuiResourceError::Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, GuiResourceTextPos offset)
 		{
 			TransformErrors(errors, parsingErrors, offset, [&](GuiResourceTextPos pos, const WString& message)
 			{
@@ -38816,7 +38803,7 @@ GuiResourceItem
 			return content.Cast<GuiImageData>();
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResourceItem::AsXml()
+		Ptr<glr::xml::XmlDocument> GuiResourceItem::AsXml()
 		{
 			return content.Cast<XmlDocument>();
 		}
@@ -38835,7 +38822,7 @@ GuiResourceItem
 GuiResourceFolder
 ***********************************************************************/
 
-		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<parsing::xml::XmlElement> folderXml, GuiResourceError::List& errors)
+		void GuiResourceFolder::LoadResourceFolderFromXml(DelayLoadingList& delayLoadings, const WString& containingFolder, Ptr<glr::xml::XmlElement> folderXml, GuiResourceError::List& errors)
 		{
 			ClearItems();
 			ClearFolders();
@@ -39011,7 +38998,7 @@ GuiResourceFolder
 			}
 		}
 
-		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<parsing::xml::XmlElement> xmlParent)
+		void GuiResourceFolder::SaveResourceFolderToXml(Ptr<glr::xml::XmlElement> xmlParent)
 		{
 			for (auto item : items.Values())
 			{
@@ -39548,7 +39535,7 @@ GuiResourceFolder
 GuiResourceMetadata
 ***********************************************************************/
 
-		void GuiResourceMetadata::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors)
+		void GuiResourceMetadata::LoadFromXml(Ptr<glr::xml::XmlDocument> xml, GuiResourceLocation location, GuiResourceError::List& errors)
 		{
 			auto attrName = XmlGetAttribute(xml->rootElement, L"Name");
 			auto attrVersion = XmlGetAttribute(xml->rootElement, L"Version");
@@ -39575,7 +39562,7 @@ GuiResourceMetadata
 			}
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResourceMetadata::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiResourceMetadata::SaveToXml()
 		{
 			auto root = MakePtr<XmlElement>();
 			root->name.value = L"ResourceMetadata";
@@ -39675,7 +39662,7 @@ GuiResource
 			return workingDirectory;
 		}
 
-		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<parsing::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
+		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<glr::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
 			Ptr<GuiResource> resource = new GuiResource;
 			resource->SetFileContentPath(filePath, filePath);
@@ -39709,7 +39696,7 @@ GuiResource
 			return 0;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResource::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiResource::SaveToXml()
 		{
 			auto xmlRoot = MakePtr<XmlElement>();
 			xmlRoot->name.value = L"Resource";
@@ -39865,7 +39852,7 @@ GuiResource
 			return result;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiResource::GetXmlByPath(const WString& path)
+		Ptr<glr::xml::XmlDocument> GuiResource::GetXmlByPath(const WString& path)
 		{
 			Ptr<XmlDocument> result=GetValueByPath(path).Cast<XmlDocument>();
 			if(!result) throw ArgumentException(L"Path not exists.", L"GuiResource::GetXmlByPath", L"path");
@@ -40204,7 +40191,7 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace stream;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace reflection::description;
 		using namespace controls;
 
@@ -40470,9 +40457,7 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace controls;
-		using namespace parsing;
-		using namespace parsing::tabling;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace stream;
 
 /***********************************************************************
@@ -40511,7 +40496,7 @@ Image Type Resolver (Image)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			Ptr<glr::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
 				return nullptr;
 			}
@@ -40524,7 +40509,7 @@ Image Type Resolver (Image)
 				writer << (stream::IStream&)fileStream;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				errors.Add(GuiResourceError({ resource }, L"Image should load from file."));
 				return nullptr;
@@ -40599,7 +40584,7 @@ Text Type Resolver (Text)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			Ptr<glr::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
 				if (auto obj = content.Cast<GuiTextData>())
 				{
@@ -40623,7 +40608,7 @@ Text Type Resolver (Text)
 				writer << text;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				return new GuiTextData(XmlGetValue(element));
 			}
@@ -40687,7 +40672,7 @@ Xml Type Resolver (Xml)
 				return this;
 			}
 
-			Ptr<parsing::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
+			Ptr<glr::xml::XmlElement> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
 				if (auto obj = content.Cast<XmlDocument>())
 				{
@@ -40710,7 +40695,7 @@ Xml Type Resolver (Xml)
 				writer << text;
 			}
 
-			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> element, GuiResourceError::List& errors)override
+			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
 				Ptr<XmlElement> root = XmlGetElements(element).First(0);
 				if(root)

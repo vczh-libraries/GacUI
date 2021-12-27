@@ -237,7 +237,7 @@ namespace vl
 	{
 		namespace description
 		{
-			using namespace parsing::xml;
+			using namespace glr::xml;
 			using namespace presentation;
 			using namespace helper_types;
 
@@ -3457,9 +3457,9 @@ namespace vl
 				void Load()override
 				{
 					LoadPredefinedTypes();
-					LoadParsingTypes();
-					XmlLoadTypes();
-					JsonLoadTypes();
+					LoadParsing2Types();
+					XmlAstLoadTypes();
+					JsonAstLoadTypes();
 					WfLoadLibraryTypes();
 					LoadGuiBasicTypes();
 					LoadGuiElementTypes();

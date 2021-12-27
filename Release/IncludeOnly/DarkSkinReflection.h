@@ -5,7 +5,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "DarkSkin.h"
 #include "GacUIReflection.h"
 #include "GacUI.h"
-#include "VlppParser.h"
+#include "VlppGlrParser.h"
 #include "VlppWorkflowLibrary.h"
 #include "VlppReflection.h"
 #include "VlppOS.h"

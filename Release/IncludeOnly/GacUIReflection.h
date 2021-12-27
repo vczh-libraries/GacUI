@@ -4,14 +4,13 @@ DEVELOPER: Zihan Chen(vczh)
 ***********************************************************************/
 #include "GacUI.h"
 #include "VlppWorkflowCompiler.h"
-#include "VlppParser.h"
+#include "VlppGlrParser.h"
 #include "VlppWorkflowLibrary.h"
 #include "VlppReflection.h"
 #include "VlppOS.h"
 #include "Vlpp.h"
 #include "VlppRegex.h"
 #include "VlppWorkflowRuntime.h"
-#include "VlppGlrParser.h"
 
 #include "..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
 #include "..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h"

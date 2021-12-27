@@ -15,7 +15,6 @@ namespace vl
 		using namespace collections;
 		using namespace stream;
 		using namespace filesystem;
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::cppcodegen;
 
@@ -91,7 +90,7 @@ namespace vl
 			{
 				for (auto error : compiled->metadata->errors)
 				{
-					errors.Add(GuiResourceError({ {resource} }, error->errorMessage));
+					errors.Add(GuiResourceError({ {resource} }, error.message));
 				}
 				return nullptr;
 			}
@@ -335,7 +334,7 @@ namespace vl
 	{
 		using namespace reflection::description;
 		using namespace collections;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace presentation::controls;
@@ -344,7 +343,7 @@ namespace vl
 GuiInstanceGradientAnimation::LoadFromXml
 ***********************************************************************/
 
-		Ptr<GuiInstanceGradientAnimation> GuiInstanceGradientAnimation::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceGradientAnimation> GuiInstanceGradientAnimation::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto animation = MakePtr<GuiInstanceGradientAnimation>();
 			animation->tagPosition = { {resource},xml->rootElement->codeRange.start };
@@ -457,7 +456,7 @@ GuiInstanceGradientAnimation::LoadFromXml
 GuiInstanceGradientAnimation::SaveToXml
 ***********************************************************************/
 
-		Ptr<parsing::xml::XmlElement> GuiInstanceGradientAnimation::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceGradientAnimation::SaveToXml()
 		{
 			auto gradientElement = MakePtr<XmlElement>();
 			{
@@ -717,18 +716,12 @@ GuiInstanceGradientAnimation::Compile
 					}
 
 					auto module = MakePtr<WfModule>();
+					module->moduleType = WfModuleType::Module;
 					module->name.value = moduleName;
 					auto animationClass = Workflow_InstallClass(className, module);
 
 					auto typeInfo = MakePtr<SharedPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
 					auto typeInfoDouble = CreateTypeInfoFromTypeFlag(TypeFlag::F8);
-
-					auto addDecl = [=](Ptr<WfDeclaration> decl)
-					{
-						decl->classMember = MakePtr<WfClassMember>();
-						decl->classMember->kind = WfClassMemberKind::Normal;
-						animationClass->declarations.Add(decl);
-					};
 
 					auto notImplemented = []()
 					{
@@ -747,8 +740,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop Begin : <TYPE> = <DEFAULT> {}
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						animationClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = L"Begin";
 						prop->type = GetTypeFromTypeInfo(typeInfo.Obj());
 						prop->expression = CreateDefaultValue(typeInfo.Obj());
@@ -758,8 +752,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop End : <TYPE> = <DEFAULT> {}
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						animationClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = L"End";
 						prop->type = GetTypeFromTypeInfo(typeInfo.Obj());
 						prop->expression = CreateDefaultValue(typeInfo.Obj());
@@ -769,8 +764,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop Current : <TYPE> = <DEFAULT> {}
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						animationClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = L"Current";
 						prop->type = GetTypeFromTypeInfo(typeInfo.Obj());
 						prop->expression = CreateDefaultValue(typeInfo.Obj());
@@ -782,7 +778,7 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// prop <ani-int> : (func(double):double) = <VALUE> {const, not observe}
 						auto var = MakePtr<WfVariableDeclaration>();
-						addDecl(var);
+						animationClass->declarations.Add(var);
 
 						auto att = MakePtr<WfAttribute>();
 						att->category.value = L"cpp";
@@ -853,8 +849,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func GetTimeScale(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>) : double
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"GetTimeScale";
 						{
@@ -1018,8 +1015,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func Interpolate(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>, <ani>ratio : double) : void
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"Interpolate";
 						{
@@ -1207,8 +1205,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func Interpolate(<ani>ratio : double) : void
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"Interpolate";
 						{
@@ -1259,8 +1258,9 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// func CreateAnimation(<ani>target : <TYPE>, <ani>time : UInt64) : IGuiAnimation^
 						auto func = MakePtr<WfFunctionDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
+						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"CreateAnimation";
 						{
@@ -1385,6 +1385,7 @@ GuiInstanceGradientAnimation::Compile
 									auto funcDecl = MakePtr<WfFunctionDeclaration>();
 									funcExpr->function = funcDecl;
 
+									funcDecl->functionKind = WfFunctionKind::Normal;
 									funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
 									{
 										auto argument = MakePtr<WfFunctionArgument>();
@@ -1455,7 +1456,7 @@ GuiInstanceGradientAnimation::Compile
 					{
 						// new (<ani>current : <TYPE>)
 						auto func = MakePtr<WfConstructorDeclaration>();
-						addDecl(func);
+						animationClass->declarations.Add(func);
 
 						func->constructorType = WfConstructorType::SharedPtr;
 						{
@@ -1558,9 +1559,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
-		using namespace parsing::tabling;
+		using namespace glr ::xml;
 		using namespace controls;
 		using namespace regex;
 		using namespace reflection::description;
@@ -1701,12 +1700,12 @@ GuiInstanceContext::ElementName Parser
 			{
 			}
 
-			Ptr<ElementName> ParseInternal(const WString& text, collections::List<Ptr<parsing::ParsingError>>& errors)override
+			Ptr<ElementName> ParseInternal(const WString& text, collections::List<glr::ParsingError>& errors)override
 			{
 				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
 				if (!match || match->Result().Length() != text.Length())
 				{
-					errors.Add(MakePtr<ParsingError>(L"Failed to parse an element name \"" + text + L"\"."));
+					errors.Add(glr::ParsingError(nullptr, {}, L"Failed to parse an element name \"" + text + L"\"."));
 					return nullptr;
 				}
 
@@ -2629,10 +2628,10 @@ namespace vl
 	{
 		using namespace collections;
 		using namespace reflection::description;
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
+		using namespace instancequery;
 		using namespace controls;
 		using namespace stream;
 
@@ -3004,6 +3003,141 @@ GuiEvalInstanceEventBinder (eval)
 GuiPredefinedInstanceBindersPlugin
 ***********************************************************************/
 
+		class GuiParser_WorkflowType : public IGuiParser<WfType>
+		{
+		protected:
+			Ptr<workflow::Parser>						parser;
+
+		public:
+			GuiParser_WorkflowType(Ptr<workflow::Parser> _parser)
+				:parser(_parser)
+			{
+			}
+
+			Ptr<WfType> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(*parser.Obj(), errors);
+				auto ast = ParseType(text, *parser.Obj());
+				parser->OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_WorkflowExpression : public IGuiParser<WfExpression>
+		{
+		protected:
+			Ptr<workflow::Parser>						parser;
+
+		public:
+			GuiParser_WorkflowExpression(Ptr<workflow::Parser> _parser)
+				:parser(_parser)
+			{
+			}
+
+			Ptr<WfExpression> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(*parser.Obj(), errors);
+				auto ast = ParseExpression(text, *parser.Obj());
+				parser->OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_WorkflowStatement : public IGuiParser<WfStatement>
+		{
+		protected:
+			Ptr<workflow::Parser>						parser;
+
+		public:
+			GuiParser_WorkflowStatement(Ptr<workflow::Parser> _parser)
+				:parser(_parser)
+			{
+			}
+
+			Ptr<WfStatement> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(*parser.Obj(), errors);
+				auto ast = ParseStatement(text, *parser.Obj());
+				parser->OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_WorkflowCoProviderStatement : public IGuiParser<WfCoProviderStatement>
+		{
+		protected:
+			Ptr<workflow::Parser>						parser;
+
+		public:
+			GuiParser_WorkflowCoProviderStatement(Ptr<workflow::Parser> _parser)
+				:parser(_parser)
+			{
+			}
+
+			Ptr<WfCoProviderStatement> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(*parser.Obj(), errors);
+				auto ast = ParseCoProviderStatement(text, *parser.Obj());
+				parser->OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_WorkflowDeclaration : public IGuiParser<WfDeclaration>
+		{
+		protected:
+			Ptr<workflow::Parser>						parser;
+
+		public:
+			GuiParser_WorkflowDeclaration(Ptr<workflow::Parser> _parser)
+				:parser(_parser)
+			{
+			}
+
+			Ptr<WfDeclaration> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(*parser.Obj(), errors);
+				auto ast = ParseDeclaration(text, *parser.Obj());
+				parser->OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_WorkflowModule : public IGuiParser<WfModule>
+		{
+		protected:
+			Ptr<workflow::Parser>						parser;
+
+		public:
+			GuiParser_WorkflowModule(Ptr<workflow::Parser> _parser)
+				:parser(_parser)
+			{
+			}
+
+			Ptr<WfModule> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(*parser.Obj(), errors);
+				auto ast = ParseModule(text, *parser.Obj());
+				parser->OnError.Remove(handler);
+				return ast;
+			}
+		};
+
+		class GuiParser_InstanceQuery : public IGuiParser<GuiIqQuery>
+		{
+		protected:
+			instancequery::Parser						parser;
+
+		public:
+			Ptr<GuiIqQuery> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			{
+				auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+				auto ast = parser.ParseQueryRoot(text);
+				parser.OnError.Remove(handler);
+				return ast;
+			}
+		};
+
 		class GuiPredefinedInstanceBindersPlugin : public Object, public IGuiPlugin
 		{
 		public:
@@ -3018,19 +3152,19 @@ GuiPredefinedInstanceBindersPlugin
 
 			void Load()override
 			{
-				WfLoadTypes();
-				GuiIqLoadTypes();
+				WorkflowAstLoadTypes();
+				GuiInstanceQueryAstLoadTypes();
 				{
+					auto workflowParser = MakePtr<workflow::Parser>();
+
 					IGuiParserManager* manager = GetParserManager();
-					manager->SetParsingTable(L"WORKFLOW", &WfLoadTable);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-TYPE", &WfParseType);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-EXPRESSION", &WfParseExpression);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-STATEMENT", &WfParseStatement);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-COPROVIDER-STATEMENT", &WfParseCoProviderStatement);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-DECLARATION", &WfParseDeclaration);
-					manager->SetTableParser(L"WORKFLOW", L"WORKFLOW-MODULE", &WfParseModule);
-					manager->SetParsingTable(L"INSTANCE-QUERY", &GuiIqLoadTable);
-					manager->SetTableParser(L"INSTANCE-QUERY", L"INSTANCE-QUERY", &GuiIqParse);
+					manager->SetParser(L"WORKFLOW-TYPE", new GuiParser_WorkflowType(workflowParser));
+					manager->SetParser(L"WORKFLOW-EXPRESSION", new GuiParser_WorkflowExpression(workflowParser));
+					manager->SetParser(L"WORKFLOW-STATEMENT", new GuiParser_WorkflowStatement(workflowParser));
+					manager->SetParser(L"WORKFLOW-COPROVIDER-STATEMENT", new GuiParser_WorkflowCoProviderStatement(workflowParser));
+					manager->SetParser(L"WORKFLOW-DECLARATION", new GuiParser_WorkflowDeclaration(workflowParser));
+					manager->SetParser(L"WORKFLOW-MODULE", new GuiParser_WorkflowModule(workflowParser));
+					manager->SetParser(L"INSTANCE-QUERY", new GuiParser_InstanceQuery);
 				}
 				{
 					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
@@ -3194,6 +3328,7 @@ GuiTemplatePropertyDeserializer
 				)
 			{
 				auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
+				funcCreateTemplate->functionKind = WfFunctionKind::Normal;
 				funcCreateTemplate->anonymity = WfFunctionAnonymity::Anonymous;
 				funcCreateTemplate->returnType = GetTypeFromTypeInfo(returnTemplateType);
 
@@ -3576,6 +3711,7 @@ GuiItemPropertyDeserializer
 
 				auto funcDecl = MakePtr<WfFunctionDeclaration>();
 				ITypeInfo* acceptValueType = nullptr;
+				funcDecl->functionKind = WfFunctionKind::Normal;
 				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
 				{
 					auto genericType = typeInfo->GetElementType();
@@ -3771,9 +3907,9 @@ GuiDataProcessorDeserializer
 				{
 					auto decl = MakePtr<WfFunctionDeclaration>();
 					newExpr->declarations.Add(decl);
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Override;
+					decl->functionKind = WfFunctionKind::Override;
 					decl->name.value = L"SetCallback";
+					decl->anonymity = WfFunctionAnonymity::Named;
 					decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					{
 						auto argument = MakePtr<WfFunctionArgument>();
@@ -3788,8 +3924,8 @@ GuiDataProcessorDeserializer
 				{
 					auto decl = MakePtr<WfFunctionDeclaration>();
 					newExpr->declarations.Add(decl);
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Override;
+					decl->functionKind = WfFunctionKind::Override;
+					decl->anonymity = WfFunctionAnonymity::Named;
 
 					List<WString> argumentNames;
 					if (typeInfo->GetTypeDescriptor() == description::GetTypeDescriptor<IDataFilter>())
@@ -3891,8 +4027,7 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::emitter;
@@ -3903,8 +4038,9 @@ namespace vl
 
 		using namespace controls;
 
-		class WorkflowVirtualScriptPositionVisitor : public traverse_visitor::ModuleVisitor
+		class WorkflowVirtualScriptPositionVisitor : public workflow::traverse_visitor::AstVisitor
 		{
+			using BaseVisitor = workflow::traverse_visitor::AstVisitor;
 		public:
 			GuiResourcePrecompileContext&						context;
 			Ptr<types::ScriptPosition>							sp;
@@ -3917,7 +4053,7 @@ namespace vl
 
 			void Visit(WfVirtualCfeExpression* node)override
 			{
-				traverse_visitor::ExpressionVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -3928,7 +4064,7 @@ namespace vl
 
 			void Visit(WfVirtualCseExpression* node)override
 			{
-				traverse_visitor::ExpressionVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -3939,7 +4075,7 @@ namespace vl
 
 			void Visit(WfVirtualCseStatement* node)override
 			{
-				traverse_visitor::StatementVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -3950,7 +4086,7 @@ namespace vl
 
 			void Visit(WfVirtualCfeDeclaration* node)override
 			{
-				traverse_visitor::DeclarationVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -3964,7 +4100,7 @@ namespace vl
 
 			void Visit(WfVirtualCseDeclaration* node)override
 			{
-				traverse_visitor::DeclarationVisitor::Visit(node);
+				BaseVisitor::Visit(node);
 				vint index = sp->nodePositions.Keys().IndexOf(node);
 				if (index != -1)
 				{
@@ -4047,7 +4183,7 @@ namespace vl
 					WfAssemblyLoadErrors loadErrors;
 					if (!compiled->Initialize(true, loadErrors))
 					{
-						manager->errors.Add(new ParsingError(L"Internal error happened during loading an assembly that just passed type verification."));
+						manager->errors.Add(glr::ParsingError(nullptr, {}, L"Internal error happened during loading an assembly that just passed type verification."));
 					}
 				}
 				else
@@ -4056,7 +4192,7 @@ namespace vl
 					{
 						auto module = compiled->modules[i];
 						WorkflowVirtualScriptPositionVisitor visitor(context);
-						visitor.VisitField(module.module.Obj());
+						visitor.InspectInto(module.module.Obj());
 						Workflow_RecordScriptPosition(context, module.position, module.module);
 					}
 
@@ -4064,7 +4200,7 @@ namespace vl
 					for (vint i = 0; i < manager->errors.Count(); i++)
 					{
 						auto error = manager->errors[i];
-						errors.Add({ sp->nodePositions[error->parsingTree].computedPosition, error->errorMessage });
+						errors.Add({ sp->nodePositions[error.node].computedPosition, error.message });
 					}
 				}
 
@@ -4810,8 +4946,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace reflection::description;
@@ -4828,7 +4963,7 @@ GuiInstanceLocalizedStrings
 			});
 		}
 
-		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto ls = MakePtr<GuiInstanceLocalizedStrings>();
 
@@ -4945,7 +5080,7 @@ GuiInstanceLocalizedStrings
 			return ls;
 		}
 
-		Ptr<parsing::xml::XmlElement> GuiInstanceLocalizedStrings::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStrings::SaveToXml()
 		{
 			auto xml = MakePtr<XmlElement>();
 			xml->name.value = L"LocalizedStrings";
@@ -5025,7 +5160,7 @@ GuiInstanceLocalizedStrings
 		{
 			const wchar_t* reading = text.Buffer();
 			const wchar_t* textPosCounter = reading;
-			ParsingTextPos formatPos(0, 0);
+			glr::ParsingTextPos formatPos(0, 0);
 			auto textDesc = MakePtr<TextDesc>();
 
 			auto addError = [&](const WString& message)
@@ -5255,17 +5390,13 @@ GuiInstanceLocalizedStrings
 			}
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfClassMemberKind classMemberKind)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind)
 		{
 			auto func = MakePtr<WfFunctionDeclaration>();
+			func->functionKind = functionKind;
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = functionName;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-			{
-				auto member = MakePtr<WfClassMember>();
-				member->kind = classMemberKind;
-				func->classMember = member;
-			}
 			for (vint i = 0; i < textDesc->positions.Count(); i++)
 			{
 				auto type = textDesc->parameters[textDesc->positions[i]];
@@ -5295,7 +5426,7 @@ GuiInstanceLocalizedStrings
 			for (auto lss : ls->items.Values())
 			{
 				auto textDesc = textDescs[{ls, lss->name}];
-				auto func = GenerateFunction(textDesc, lss->name, WfClassMemberKind::Override);
+				auto func = GenerateFunction(textDesc, lss->name, WfFunctionKind::Override);
 				lsExpr->declarations.Add(func);
 
 				auto block = MakePtr<WfBlockStatement>();
@@ -5474,6 +5605,7 @@ GuiInstanceLocalizedStrings
 			}
 
 			auto module = MakePtr<WfModule>();
+			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
 			{
 				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(true), module);
@@ -5483,7 +5615,7 @@ GuiInstanceLocalizedStrings
 				auto defaultStrings = GetDefaultStrings();
 				for (auto functionName : defaultStrings->items.Keys())
 				{
-					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfClassMemberKind::Normal);
+					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfFunctionKind::Normal);
 					lsInterface->declarations.Add(func);
 				}
 			}
@@ -5491,6 +5623,7 @@ GuiInstanceLocalizedStrings
 			{
 				auto func = MakePtr<WfFunctionDeclaration>();
 				lsClass->declarations.Add(func);
+				func->functionKind = WfFunctionKind::Static;
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"<ls>First";
 				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
@@ -5499,11 +5632,6 @@ GuiInstanceLocalizedStrings
 					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<LazyList<WString>>::CreateTypeInfo().Obj());
 					argument->name.value = L"<ls>formats";
 					func->arguments.Add(argument);
-				}
-				{
-					auto member = MakePtr<WfClassMember>();
-					member->kind = WfClassMemberKind::Static;
-					func->classMember = member;
 				}
 				auto block = MakePtr<WfBlockStatement>();
 				func->statement = block;
@@ -5539,6 +5667,7 @@ GuiInstanceLocalizedStrings
 				auto func = MakePtr<WfFunctionDeclaration>();
 				lsClass->declarations.Add(func);
 
+				func->functionKind = WfFunctionKind::Static;
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"Get";
 				{
@@ -5549,11 +5678,6 @@ GuiInstanceLocalizedStrings
 					refPointer->element = refType;
 
 					func->returnType = refPointer;
-				}
-				{
-					auto member = MakePtr<WfClassMember>();
-					member->kind = WfClassMemberKind::Static;
-					func->classMember = member;
 				}
 				{
 					auto argument = MakePtr<WfFunctionArgument>();
@@ -5610,7 +5734,7 @@ GuiInstanceLocalizedStrings
 				block->statements.Add(returnStat);
 			}
 
-			ParsingTextPos pos(tagPosition.row, tagPosition.column);
+			glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
 			SetCodeRange(module, { pos,pos });
 			return module;
 		}
@@ -5626,8 +5750,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
-		using namespace parsing::xml;
+		using namespace glr::xml;
 		using namespace templates;
 		using namespace stream;
 
@@ -5653,7 +5776,7 @@ GuiTextRepr
 			return repr;
 		}
 
-		void GuiTextRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
+		void GuiTextRepr::FillXml(Ptr<glr::xml::XmlElement> xml)
 		{
 			if (!fromStyle)
 			{
@@ -5724,7 +5847,7 @@ GuiAttSetterRepr
 			return repr;
 		}
 
-		void GuiAttSetterRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
+		void GuiAttSetterRepr::FillXml(Ptr<glr::xml::XmlElement> xml)
 		{
 			if (!fromStyle)
 			{
@@ -5850,7 +5973,7 @@ GuiConstructorRepr
 			return repr;
 		}
 
-		void GuiConstructorRepr::FillXml(Ptr<parsing::xml::XmlElement> xml)
+		void GuiConstructorRepr::FillXml(Ptr<glr::xml::XmlElement> xml)
 		{
 			if (!fromStyle)
 			{
@@ -5881,7 +6004,7 @@ GuiConstructorRepr
 GuiInstanceContext
 ***********************************************************************/
 
-		void GuiInstanceContext::CollectDefaultAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::ValueList& values, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::CollectDefaultAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::ValueList& values, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -5928,7 +6051,7 @@ GuiInstanceContext
 			}
 		}
 
-		void GuiInstanceContext::CollectAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::SetteValuerMap& setters, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::CollectAttributes(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::SetteValuerMap& setters, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -5984,7 +6107,7 @@ GuiInstanceContext
 			}
 		}
 
-		void GuiInstanceContext::CollectEvents(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::CollectEvents(Ptr<GuiResourceItem> resource, GuiAttSetterRepr::EventHandlerMap& eventHandlers, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -6040,7 +6163,7 @@ GuiInstanceContext
 			}
 		}
 
-		void GuiInstanceContext::FillAttSetter(Ptr<GuiResourceItem> resource, Ptr<GuiAttSetterRepr> setter, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		void GuiInstanceContext::FillAttSetter(Ptr<GuiResourceItem> resource, Ptr<GuiAttSetterRepr> setter, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -6128,7 +6251,7 @@ GuiInstanceContext
 			}
 		}
 
-		Ptr<GuiConstructorRepr> GuiInstanceContext::LoadCtor(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		Ptr<GuiConstructorRepr> GuiInstanceContext::LoadCtor(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
@@ -6165,7 +6288,7 @@ GuiInstanceContext
 			return 0;
 		}
 
-		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			Ptr<GuiInstanceContext> context = new GuiInstanceContext;
 			context->tagPosition = { {resource},xml->rootElement->codeRange.start };
@@ -6359,7 +6482,7 @@ GuiInstanceContext
 			return context->instance ? context : nullptr;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiInstanceContext::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiInstanceContext::SaveToXml()
 		{
 			auto xmlInstance = MakePtr<XmlElement>();
 			xmlInstance->name.value = L"Instance";
@@ -6566,7 +6689,7 @@ GuiInstanceStyle
 		}
 		using namespace visitors;
 
-		Ptr<GuiInstanceStyle> GuiInstanceStyle::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlElement> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceStyle> GuiInstanceStyle::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
 			auto style = MakePtr<GuiInstanceStyle>();
 			if (auto pathAttr = XmlGetAttribute(xml, L"ref.Path"))
@@ -6574,7 +6697,7 @@ GuiInstanceStyle
 				auto position = pathAttr->value.codeRange.start;
 				position.column += 1;
 
-				auto parser = GetParserManager()->GetParser<GuiIqQuery>(L"INSTANCE-QUERY");
+				auto parser = GetParserManager()->GetParser<instancequery::GuiIqQuery>(L"INSTANCE-QUERY");
 				auto query = parser->Parse({ resource }, pathAttr->value.value, position, errors);
 				if (!query) return nullptr;
 				style->query = query;
@@ -6591,7 +6714,7 @@ GuiInstanceStyle
 			return style;
 		}
 
-		Ptr<parsing::xml::XmlElement> GuiInstanceStyle::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceStyle::SaveToXml()
 		{
 			auto xmlStyle = MakePtr<XmlElement>();
 			xmlStyle->name.value = L"Style";
@@ -6612,7 +6735,7 @@ GuiInstanceStyle
 GuiInstanceStyleContext
 ***********************************************************************/
 
-		Ptr<GuiInstanceStyleContext> GuiInstanceStyleContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceStyleContext> GuiInstanceStyleContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			auto context = MakePtr<GuiInstanceStyleContext>();
 			if (xml->rootElement->name.value == L"Styles")
@@ -6639,7 +6762,7 @@ GuiInstanceStyleContext
 			return context;
 		}
 
-		Ptr<parsing::xml::XmlDocument> GuiInstanceStyleContext::SaveToXml()
+		Ptr<glr::xml::XmlDocument> GuiInstanceStyleContext::SaveToXml()
 		{
 			auto xmlStyles = MakePtr<XmlElement>();
 			xmlStyles->name.value = L"Styles";
@@ -6664,13 +6787,13 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace parsing::xml;
+		using namespace glr::xml;
 
 /***********************************************************************
 GuiInstanceSharedScript
 ***********************************************************************/
 
-		Ptr<GuiInstanceSharedScript> GuiInstanceSharedScript::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<parsing::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceSharedScript> GuiInstanceSharedScript::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
 			if (xml->rootElement->subNodes.Count() == 1)
 			{
@@ -6688,7 +6811,7 @@ GuiInstanceSharedScript
 			return nullptr;
 		}
 
-		Ptr<parsing::xml::XmlElement> GuiInstanceSharedScript::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceSharedScript::SaveToXml()
 		{
 			auto cdata = MakePtr<XmlCData>();
 			cdata->content.value = code;
@@ -8863,6 +8986,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
+		using namespace instancequery;
 
 /***********************************************************************
 ExecuteQueryVisitor
@@ -9151,11 +9275,11 @@ GuiIqPrint
 
 
 /***********************************************************************
-.\INSTANCEQUERY\GUIINSTANCEQUERY_AST.CPP
+.\INSTANCEQUERY\GENERATED\GUIINSTANCEQUERYAST.CPP
 ***********************************************************************/
 /***********************************************************************
 This file is generated by: Vczh Parser Generator
-From parser definition:GuiInstanceQuery_Parser.parser.txt
+From parser definition:Ast
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
@@ -9164,25 +9288,27 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace instancequery
+		{
 /***********************************************************************
 Visitor Pattern Implementation
 ***********************************************************************/
 
-		void GuiIqPrimaryQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
+			void GuiIqPrimaryQuery::Accept(GuiIqQuery::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
 
-		void GuiIqCascadeQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
-		}
+			void GuiIqCascadeQuery::Accept(GuiIqQuery::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
 
-		void GuiIqSetQuery::Accept(GuiIqQuery::IVisitor* visitor)
-		{
-			visitor->Visit(this);
+			void GuiIqSetQuery::Accept(GuiIqQuery::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
 		}
-
 	}
 }
 namespace vl
@@ -9192,103 +9318,97 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			using namespace vl::presentation;
 
-#define PARSING_TOKEN_FIELD(NAME)\
-			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(get_##NAME, NO_PARAMETER, vl::WString(ClassType::*)(), [](ClassType* node) { return node->NAME.value; }, L"*", L"*")\
-			CLASS_MEMBER_EXTERNALMETHOD_TEMPLATE(set_##NAME, { L"value" }, void(ClassType::*)(const vl::WString&), [](ClassType* node, const vl::WString& value) { node->NAME.value = value; }, L"*", L"*")\
-			CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE(NAME, get_##NAME, set_##NAME, L"$This->$Name.value")\
-
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery, presentation::GuiIqQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqNameOption, presentation::GuiIqNameOption)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqChildOption, presentation::GuiIqChildOption)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqPrimaryQuery, presentation::GuiIqPrimaryQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqCascadeQuery, presentation::GuiIqCascadeQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqBinaryOperator, presentation::GuiIqBinaryOperator)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqSetQuery, presentation::GuiIqSetQuery)
-			IMPL_TYPE_INFO_RENAME(vl::presentation::GuiIqQuery::IVisitor, presentation::GuiIqQuery::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqQuery, presentation::instancequery::GuiIqQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqQuery::IVisitor, presentation::instancequery::GuiIqQuery::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqNameOption, presentation::instancequery::GuiIqNameOption)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqChildOption, presentation::instancequery::GuiIqChildOption)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqPrimaryQuery, presentation::instancequery::GuiIqPrimaryQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqCascadeQuery, presentation::instancequery::GuiIqCascadeQuery)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqBinaryOperator, presentation::instancequery::GuiIqBinaryOperator)
+			IMPL_TYPE_INFO_RENAME(vl::presentation::instancequery::GuiIqSetQuery, presentation::instancequery::GuiIqSetQuery)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_CLASS_MEMBER(GuiIqQuery)
-				CLASS_MEMBER_METHOD_OVERLOAD(Accept, {L"visitor"}, void(GuiIqQuery::*)(GuiIqQuery::IVisitor* visitor))
-			END_CLASS_MEMBER(GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqQuery)
+				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-			BEGIN_ENUM_ITEM(GuiIqNameOption)
-				ENUM_ITEM_NAMESPACE(GuiIqNameOption)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqQuery)
+
+			BEGIN_ENUM_ITEM(vl::presentation::instancequery::GuiIqNameOption)
+				ENUM_ITEM_NAMESPACE(vl::presentation::instancequery::GuiIqNameOption)
 				ENUM_NAMESPACE_ITEM(Specified)
 				ENUM_NAMESPACE_ITEM(Any)
-			END_ENUM_ITEM(GuiIqNameOption)
+			END_ENUM_ITEM(vl::presentation::instancequery::GuiIqNameOption)
 
-			BEGIN_ENUM_ITEM(GuiIqChildOption)
-				ENUM_ITEM_NAMESPACE(GuiIqChildOption)
+			BEGIN_ENUM_ITEM(vl::presentation::instancequery::GuiIqChildOption)
+				ENUM_ITEM_NAMESPACE(vl::presentation::instancequery::GuiIqChildOption)
 				ENUM_NAMESPACE_ITEM(Direct)
 				ENUM_NAMESPACE_ITEM(Indirect)
-			END_ENUM_ITEM(GuiIqChildOption)
+			END_ENUM_ITEM(vl::presentation::instancequery::GuiIqChildOption)
 
-			BEGIN_CLASS_MEMBER(GuiIqPrimaryQuery)
-				CLASS_MEMBER_BASE(GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqPrimaryQuery)
+				CLASS_MEMBER_BASE(vl::presentation::instancequery::GuiIqQuery)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqPrimaryQuery>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::instancequery::GuiIqPrimaryQuery>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(childOption)
 				CLASS_MEMBER_FIELD(attributeNameOption)
-				PARSING_TOKEN_FIELD(attributeName)
+				CLASS_MEMBER_FIELD(attributeName)
 				CLASS_MEMBER_FIELD(typeNameOption)
-				PARSING_TOKEN_FIELD(typeName)
-				PARSING_TOKEN_FIELD(referenceName)
-			END_CLASS_MEMBER(GuiIqPrimaryQuery)
+				CLASS_MEMBER_FIELD(typeName)
+				CLASS_MEMBER_FIELD(referenceName)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqPrimaryQuery)
 
-			BEGIN_CLASS_MEMBER(GuiIqCascadeQuery)
-				CLASS_MEMBER_BASE(GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqCascadeQuery)
+				CLASS_MEMBER_BASE(vl::presentation::instancequery::GuiIqQuery)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqCascadeQuery>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::instancequery::GuiIqCascadeQuery>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(parent)
 				CLASS_MEMBER_FIELD(child)
-			END_CLASS_MEMBER(GuiIqCascadeQuery)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqCascadeQuery)
 
-			BEGIN_ENUM_ITEM(GuiIqBinaryOperator)
-				ENUM_ITEM_NAMESPACE(GuiIqBinaryOperator)
+			BEGIN_ENUM_ITEM(vl::presentation::instancequery::GuiIqBinaryOperator)
+				ENUM_ITEM_NAMESPACE(vl::presentation::instancequery::GuiIqBinaryOperator)
 				ENUM_NAMESPACE_ITEM(ExclusiveOr)
 				ENUM_NAMESPACE_ITEM(Intersect)
 				ENUM_NAMESPACE_ITEM(Union)
 				ENUM_NAMESPACE_ITEM(Substract)
-			END_ENUM_ITEM(GuiIqBinaryOperator)
+			END_ENUM_ITEM(vl::presentation::instancequery::GuiIqBinaryOperator)
 
-			BEGIN_CLASS_MEMBER(GuiIqSetQuery)
-				CLASS_MEMBER_BASE(GuiIqQuery)
+			BEGIN_CLASS_MEMBER(vl::presentation::instancequery::GuiIqSetQuery)
+				CLASS_MEMBER_BASE(vl::presentation::instancequery::GuiIqQuery)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<GuiIqSetQuery>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::presentation::instancequery::GuiIqSetQuery>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(first)
 				CLASS_MEMBER_FIELD(second)
 				CLASS_MEMBER_FIELD(op)
-			END_CLASS_MEMBER(GuiIqSetQuery)
+			END_CLASS_MEMBER(vl::presentation::instancequery::GuiIqSetQuery)
 
-			BEGIN_INTERFACE_MEMBER(GuiIqQuery::IVisitor)
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqPrimaryQuery* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqCascadeQuery* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(GuiIqQuery::IVisitor::*)(GuiIqSetQuery* node))
-			END_INTERFACE_MEMBER(GuiIqQuery)
+			BEGIN_INTERFACE_MEMBER(vl::presentation::instancequery::GuiIqQuery::IVisitor)
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::instancequery::GuiIqQuery::IVisitor::*)(vl::presentation::instancequery::GuiIqPrimaryQuery* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::instancequery::GuiIqQuery::IVisitor::*)(vl::presentation::instancequery::GuiIqCascadeQuery* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::presentation::instancequery::GuiIqQuery::IVisitor::*)(vl::presentation::instancequery::GuiIqSetQuery* node))
+			END_INTERFACE_MEMBER(vl::presentation::instancequery::GuiIqQuery)
 
 #endif
-#undef PARSING_TOKEN_FIELD
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-			class GuiIqTypeLoader : public vl::Object, public ITypeLoader
+			class GuiInstanceQueryAstTypeLoader : public vl::Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(vl::presentation::GuiIqQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqNameOption)
-					ADD_TYPE_INFO(vl::presentation::GuiIqChildOption)
-					ADD_TYPE_INFO(vl::presentation::GuiIqPrimaryQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqCascadeQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqBinaryOperator)
-					ADD_TYPE_INFO(vl::presentation::GuiIqSetQuery)
-					ADD_TYPE_INFO(vl::presentation::GuiIqQuery::IVisitor)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqQuery)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqQuery::IVisitor)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqNameOption)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqChildOption)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqPrimaryQuery)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqCascadeQuery)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqBinaryOperator)
+					ADD_TYPE_INFO(vl::presentation::instancequery::GuiIqSetQuery)
 				}
 
 				void Unload(ITypeManager* manager)
@@ -9298,13 +9418,12 @@ namespace vl
 #endif
 #endif
 
-			bool GuiIqLoadTypes()
+			bool GuiInstanceQueryAstLoadTypes()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				ITypeManager* manager = GetGlobalTypeManager();
-				if(manager)
+				if (auto manager = GetGlobalTypeManager())
 				{
-					Ptr<ITypeLoader> loader = new GuiIqTypeLoader;
+					Ptr<ITypeLoader> loader = new GuiInstanceQueryAstTypeLoader;
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -9316,11 +9435,11 @@ namespace vl
 
 
 /***********************************************************************
-.\INSTANCEQUERY\GUIINSTANCEQUERY_PARSER.CPP
+.\INSTANCEQUERY\GENERATED\GUIINSTANCEQUERYPARSER.CPP
 ***********************************************************************/
 /***********************************************************************
 This file is generated by: Vczh Parser Generator
-From parser definition:GuiInstanceQuery_Parser.parser.txt
+From parser definition:GuiInstanceQuery
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
@@ -9329,362 +9448,391 @@ namespace vl
 {
 	namespace presentation
 	{
-/***********************************************************************
-ParserText
-***********************************************************************/
-
-const wchar_t* const parserTextBuffer[] = {
-  L"" L"\r\n"
-, L"class Query" L"\r\n"
-, L"{" L"\r\n"
-, L"}" L"\r\n"
-, L"" L"\r\n"
-, L"enum NameOption" L"\r\n"
-, L"{" L"\r\n"
-, L"\tSpecified," L"\r\n"
-, L"\tAny," L"\r\n"
-, L"}" L"\r\n"
-, L"" L"\r\n"
-, L"enum ChildOption" L"\r\n"
-, L"{" L"\r\n"
-, L"\tDirect," L"\r\n"
-, L"\tIndirect," L"\r\n"
-, L"}" L"\r\n"
-, L"" L"\r\n"
-, L"class PrimaryQuery : Query" L"\r\n"
-, L"{" L"\r\n"
-, L"\tChildOption\t\tchildOption;" L"\r\n"
-, L"\tNameOption\t\tattributeNameOption;" L"\r\n"
-, L"\ttoken\t\t\tattributeName;" L"\r\n"
-, L"\tNameOption\t\ttypeNameOption;" L"\r\n"
-, L"\ttoken\t\t\ttypeName;" L"\r\n"
-, L"\ttoken\t\t\treferenceName;" L"\r\n"
-, L"}" L"\r\n"
-, L"" L"\r\n"
-, L"class CascadeQuery : Query" L"\r\n"
-, L"{" L"\r\n"
-, L"\tQuery\t\t\tparent;" L"\r\n"
-, L"\tQuery\t\t\tchild;" L"\r\n"
-, L"}" L"\r\n"
-, L"" L"\r\n"
-, L"enum BinaryOperator" L"\r\n"
-, L"{" L"\r\n"
-, L"\tExclusiveOr," L"\r\n"
-, L"\tIntersect," L"\r\n"
-, L"\tUnion," L"\r\n"
-, L"\tSubstract," L"\r\n"
-, L"}" L"\r\n"
-, L"" L"\r\n"
-, L"class SetQuery : Query" L"\r\n"
-, L"{" L"\r\n"
-, L"\tQuery\t\t\tfirst;" L"\r\n"
-, L"\tQuery\t\t\tsecond;" L"\r\n"
-, L"\tBinaryOperator\top;" L"\r\n"
-, L"}" L"\r\n"
-, L"" L"\r\n"
-, L"token INDIRECT = \"////\";" L"\r\n"
-, L"token DIRECT = \"//\";" L"\r\n"
-, L"token NAME = \"[a-zA-Z_][a-zA-Z0-9]*\";" L"\r\n"
-, L"token WILDCARD = \"/*\";" L"\r\n"
-, L"token OPEN = \"/(\";" L"\r\n"
-, L"token CLOSE = \"/)\";" L"\r\n"
-, L"token XOR = \"/^\";" L"\r\n"
-, L"token INTERSECT = \"/*\";" L"\r\n"
-, L"token UNION = \"/+\";" L"\r\n"
-, L"token SUBSTRACT = \"-\";" L"\r\n"
-, L"token ATTRIBUTE = \"@\";" L"\r\n"
-, L"token COLON = \":\";" L"\r\n"
-, L"token DOT = \".\";" L"\r\n"
-, L"" L"\r\n"
-, L"discardtoken SPACE = \"/s+\";" L"\r\n"
-, L"" L"\r\n"
-, L"rule PrimaryQuery QPrimaryFragment" L"\r\n"
-, L"\t=\t(" L"\r\n"
-, L"\t\t\t(NAME : typeName with {typeNameOption=\"Specified\"})" L"\r\n"
-, L"\t\t\t| (\"*\" with {typeNameOption=\"Any\"})" L"\r\n"
-, L"\t\t)" L"\r\n"
-, L"\t\t[\".\" NAME : referenceName] as PrimaryQuery" L"\r\n"
-, L"\t;" L"\r\n"
-, L"" L"\r\n"
-, L"rule PrimaryQuery QPrimaryAttributed" L"\r\n"
-, L"\t= !QPrimaryFragment with {attributeNameOption=\"Any\"}" L"\r\n"
-, L"\t= \"@\" [NAME : attributeName] \":\" !QPrimaryFragment with {attributeNameOption=\"Specified\"}" L"\r\n"
-, L"\t;" L"\r\n"
-, L"" L"\r\n"
-, L"rule PrimaryQuery QPrimary" L"\r\n"
-, L"\t= (\"/\" with {childOption=\"Direct\"}) !QPrimaryAttributed" L"\r\n"
-, L"\t= (\"//\" with {childOption=\"Indirect\"}) !QPrimaryAttributed" L"\r\n"
-, L"\t= \"(\" !QueryRoot \")\"" L"\r\n"
-, L"\t;" L"\r\n"
-, L"" L"\r\n"
-, L"rule Query Query0" L"\r\n"
-, L"\t= !QPrimary" L"\r\n"
-, L"\t= Query0 : parent QPrimary : child as CascadeQuery;" L"\r\n"
-, L"" L"\r\n"
-, L"rule Query Query1" L"\r\n"
-, L"\t= !Query0" L"\r\n"
-, L"\t= Query1 : first \"^\" Query0 : second as SetQuery with {op=\"ExclusiveOr\"}" L"\r\n"
-, L"\t= Query1 : first \"*\" Query0 : second as SetQuery with {op=\"Intersect\"}" L"\r\n"
-, L"\t;" L"\r\n"
-, L"\t" L"\r\n"
-, L"rule Query Query2" L"\r\n"
-, L"\t= !Query1" L"\r\n"
-, L"\t= Query2 : first \"+\" Query1 : second as SetQuery with {op=\"Union\"}" L"\r\n"
-, L"\t= Query2 : first \"-\" Query1 : second as SetQuery with {op=\"Substract\"}" L"\r\n"
-, L"\t;" L"\r\n"
-, L"" L"\r\n"
-, L"rule Query QueryRoot" L"\r\n"
-, L"\t= !Query2" L"\r\n"
-, L"\t;" L"\r\n"
-};
-const vint lengthTextBuffer[] = {
-  2, 13, 3, 3, 2, 17, 3, 13, 7, 3, 2, 18, 3, 10, 12, 3, 2, 28, 3, 28, 35, 25, 30, 20, 25, 3, 2, 28, 3, 18, 17, 3
-, 2, 21, 3, 15, 13, 9, 13, 3, 2, 24, 3, 17, 18, 21, 3, 2, 26, 22, 39, 24, 20, 21, 19, 25, 21, 24, 24, 20, 18, 2, 29, 2
-, 36, 6, 56, 40, 5, 46, 4, 2, 38, 55, 92, 4, 2, 28, 58, 61, 23, 4, 2, 19, 14, 54, 2, 19, 12, 75, 73, 4, 3, 19, 12, 69
-, 73, 4, 2, 22, 12, 4
-};
-const vint lengthTextBufferTotal = 1943;
-
-		vl::WString GuiIqGetParserTextBuffer()
+		namespace instancequery
 		{
-			vl::collections::Array<wchar_t> textBuffer(lengthTextBufferTotal + 1);
-			wchar_t* reading = &textBuffer[0];
-			for(vint i = 0; i < sizeof(parserTextBuffer) / sizeof(*parserTextBuffer); i++)
+			void GuiInstanceQueryParserData(vl::stream::IStream& outputStream)
 			{
-				memcpy(reading, parserTextBuffer[i], lengthTextBuffer[i] * sizeof(wchar_t));
-				reading += lengthTextBuffer[i];
+				static const vl::vint dataLength = 2917; // 26562 bytes before compressing
+				static const vl::vint dataBlock = 256;
+				static const vl::vint dataRemain = 101;
+				static const vl::vint dataSolidRows = 11;
+				static const vl::vint dataRows = 12;
+				static const char* compressed[] = {
+					"\xC2\x67\x00\x00\x5D\x0B\x00\x00\x0D\x00\x01\x82\x80\x07\x03\x82\x81\x82\x06\x89\x82\x88\x0A\x87\x06\x84\x0C\x0A\x9D\x0A\x86\x1A\x87\x16\x84\x77\x02\x09\xBF\x7B\x8C\x8B\x8E\x84\x00\x1D\x9D\x9F\x81\x9C\x8B\x90\x93\x7F\x1F\x9F\x81\x0A\x8B\x91\x85\x96\x83\x27\xA8\x8A\x91\x96\x94\x91\x9B\x90\x37\xA2\xB3\x87\x99\x9D\x93\x9C\x9B\x3F\xB8\x81\xBA\x9A\x8C\x9F\xA0\x9F\x45\xC0\x89\xA2\xAB\xA4\xA0\x98\xA3\x4D\xC8\x8F\xAA\xA3\xAC\xA5\xAA\xA7\x03\xB4\x87\xBE\x8B\xAA\x99\xA8\xAE\x09\x99\xAE\x9D\xAD\x98\xB3\xAA\xA9\x59\xD0\xA7\xA6\xB9\xB4\xA9\xB6\xAB\x6F\xD8\x82\x9A\xAF\xAE\xAF\xB4\xBB\x71\xE8\x82\x83\x0C\x94\xB2\xBF\xBA\x65\xF8\xB3\xAA\xB3\x84\x01\xBE\xC0\x7F\xF7\x81\xCB\xC9\xC1\xBC\xB7\xC1\x6E\x90\xF0\xB2\xC2\xB9\x81\x03\xC3\x8A\x8D\xD4\xDA\xB1\x84\xB9\xCC\xC4\xA0\x9F\xE2\xCE\xC2\xC5\xCC\xC3\xCD\x8F\xA6\xD1\xCA\xD3\xC9\x82\x02\xCC\xA4\x8C\xE1\xD1\xDA\xCC\xD5\xCA\x90\xA7\xB6\xDC\xD8\xDB\xD4\xDD\xD6\xDF\xB7\x9E\xC3\x88\x86\x87\x94\xDB\xD9\xA8\xA5\xC0\xFB\xD2\xE3\x84\xD9\xE4\xB2\xA3\xD0\xF5\xDB\xE1\xD5\xEA\xE5\xCD\xBA\xD6\xF9",
+					"\xE0\x01\x07\xE6\xED\xD8\xB9\xD7\xF1\xE7\xE2\xE8\xF0\xF2\xD3\xC8\xE7\xF4\xEC\xED\xF6\xF0\xF7\xBD\xDC\xCA\x1F\xE0\x03\x04\xFA\xF8\xBF\xF8\xC1\xE2\xFC\x07\xFB\xF7\xFF\xF1\x40\x89\x7E\x80\xFB\x41\x86\x83\x80\x07\x85\x88\x83\x82\x0A\x8D\x8C\x72\x78\x00\x63\x5A\x7B\x78\xEC\x44\x8F\x81\x82\x17\x8C\x89\x86\x83\xDB\x56\x8D\x84\x86\x1F\x9A\x81\x8B\x6D\x0E\x3E\x70\x89\x78\x27\xA8\x7B\x7B\x84\x0E\x52\x86\x78\x85\x13\xBA\x7B\x87\x8C\x23\xB4\x88\x8A\x88\x37\x9C\x89\x8F\x6E\x10\x26\x88\x8F\x47\x11\x3E\x8A\x8E\x8A\x30\xAF\x82\x8D\x8D\x48\xBB\x89\x90\x91\x47\x8A\x9E\x90\x93\xE2\x52\x04\x7F\x04\x42\xB6\x80\x95\x8A\x15\x98\x91\x8E\x87\xCA\x54\x04\x7D\x05\x55\x8B\x9A\x42\x05\x61\x8F\x99\x97\x8F\x67\x83\x99\x9A\x95\x6B\xA2\x9B\x96\x96\x46\x9C\x97\x94\x9A\x09\x57\x05\x9B\x9C\x6A\xAF\x94\x9D\x9C\x70\xA5\x7E\x9D\x7A\x7C\xBB\x9F\x9F\x8A\x81\xB9\x96\x40\x44\x2E\x83\xA5\x92\xA2\x4D\xB8\x9C\x9B\x84\x19\x34\x7A\x07\x9D\xD4\x5B\x04\xA6\x9E\x86\x8C\xA2\x9C\x75\x1C\x17\xA5\xA3\xA3\x9F\xAE\x91\xAA\x99\x98\xA0\xAA\xA5\x9F\x80\x8A\xA2\x45\xA2",
+					"\x02\x5E\x0E\xA7\xA9\x82\xA9\xA2\x43\x07\xAF\xB2\xA4\xA3\x40\x20\x35\xA7\xAE\xAD\x8B\xBC\xAD\xA1\x9B\xA4\xA3\xAE\xA2\xA8\xB0\x99\xA2\x41\x08\xF4\x62\x0A\xAD\xAF\xBB\x8D\xBC\xB0\x00\x23\x0B\xBF\xAD\xA9\xD6\x64\x04\x7D\x09\xD2\xA2\x74\x44\xAB\xCE\x93\xB2\xB0\xB0\xC3\x81\xB5\xB2\xA9\xBE\x9B\xA4\xB6\xB8\xE5\xA8\xAD\xB6\xB9\x06\x67\x04\x7C\x0A\xD9\xBD\x69\x09\xBC\xB1\xAB\xBA\xBB\xB3\xDC\x6A\x04\x7F\x0A\xF4\x86\xB6\xBD\xBD\xF8\xAC\xB3\xB8\xB1\xBC\xAC\x04\x7D\x0B\xFD\xA4\xBF\xBE\xBF\x01\xF7\xBE\xB7\xC0\xE8\x8E\xBE\x08\x7D\x16\x5C\xBD\xC3\x6F\x30\x09\xC4\xC3\xC2\x0A\xD7\xCC\xC3\xC3\xE9\x80\xC0\xC8\xC7\x1B\xDE\xCD\xC7\xC8\xCF\xB1\x04\x7E\x0C\x1A\xCA\x73\x0D\xCB\xE1\xB1\xC0\xBA\x42\x34\x34\x75\x0E\x42\x62\x5F\xB7\xBA\xCC\x3B\xF3\xCD\xCF\xCF\x2F\xB7\x04\x7C\x0E\x30\xCA\x49\x0D\xD1\x40\xD0\xCC\xCE\x41\x3A\x34\x7B\x0C\xCE\x3E\xFA\xC2\xD6\xD2\x51\xD4\xD9\xD1\xC8\x1F\xE2\x7D\x0C\xD2\x53\xD8\xD7\xCA\xC0\x5E\xE5\xC8\xCB\xD8\xE2\x7E\x0C\xD6\xD5\x5D\xC1\x4F\x0C\x7D\x40\x10\xD7\xD4\xC9\x11\xE6\xC2\xD8\xD8\x70\xCB\xDA\xA2\x10\xF4",
+					"\x43\x17\xDA\x40\x44\x3B\xD5\xDD\xD5\x61\xF1\xD4\xDA\xC3\x74\xF2\xD2\xE1\xE1\x83\xE2\xC2\x79\x11\xF4\x46\x1E\xDC\x00\x47\x0F\xE9\xE1\xD6\xF7\x88\x14\x7D\x12\x6E\xE9\xD6\xE2\xDD\x81\xDC\xEF\xDF\xDB\xCF\x8B\x14\x7C\x13\x8F\xCD\x12\xE4\xE2\xA8\xF7\xBE\x10\x7D\x4F\x19\xE8\xDB\xEB\x9D\xC0\xEF\xE6\xE6\x93\xDF\xD4\xE3\xED\x00\xD1\x17\xE8\xEE\x94\xCA\xEC\xEE\xED\xBE\xFF\x62\x17\xEE\x00\xD3\x14\x7C\x15\xAE\xF1\xE0\xE9\xED\x73\xFF\xED\xF1\xF0\xB7\x56\x14\x7F\x15\x8F\xD8\x14\xF1\xEF\xD8\xC0\xF9\xF7\xF3\xDB\xC7\xEE\xF2\xF7\xD0\xFB\x69\x17\xF5\xDA\xE5\xFC\xF6\xF9\xE0\xCC\xC2\x3D\xF2\x01\x46\x71\xE1\x4C\x0C\x49\x4F\x69\x5D\x39\xC3\x4E\xF8\x78\xF7\xC0\x09\xFC\xFC\x0A\x44\x74\x6B\xFC\x77\x2D\x48\xFF\x09\x27\x33\xBA\x39\x7B\x7F\x27\x31\x7E\x41\x7E\x79\x38\x00\xA4\x31\x26\xF9\x61\x32\x02\xC3\x3D\x2A\x07\x89\x3A\x80\x09\x8A\x21\x01\xF7\x21\x83\xAE\x13\x87\x20\x15\x9D\x29\x4C\x06\x35\x2F\x98\x35\x7A\x20\x08\x87\x47\x00\x86\x26\x82\xF0\x24\x81\x80\x27\x27\x85\xFB\x5D\x2F\x85\x07\xA7\x27\x80\x1E\x8A\x20\x5F\x75\x2D\x85\xEB\x18\x84",
+					"\x24\x1F\x81\x22\x0C\xD7\x3D\x83\xBA\x01\x88\x00\x3B\x97\x2D\x0F\xB1\x26\x85\x96\x6B\x83\x20\x4B\x91\x85\x99\x35\x87\x83\x93\x14\x88\x3C\x23\x82\x87\x49\x51\x8C\x89\x90\x17\x8E\x87\x56\x9A\x88\x49\x5F\x8D\x8B\x31\xA2\x8E\x8B\x67\x9D\x20\x19\xE5\x8A\x8D\x34\x9C\x23\x8D\x6C\x9B\x20\x1C\xF1\x83\x8E\x36\xB5\x8D\x8C\x77\x9D\x89\x1E\xCC\x8B\x8F\x2C\xA5\x87\x86\x29\x26\x8A\x42\x7B\x8C\x8A\x3A\xAE\x8B\x23\x43\x89\x84\x8E\x4F\x82\x21\x42\xAD\x8F\x8F\x24\x29\x90\x0D\x87\x9F\x1E\x1C\x82\x91\x21\x84\x94\x91\x1F\xD2\x86\x63\x1F\xA1\x27\x88\x8E\x8F\x8C\x25\x92\x95\x2F\x4D\xA6\x88\x92\x68\x88\x97\x23\xB0\x87\x94\x56\xA9\x96\x95\xAB\x96\x85\x2B\xB2\x9F\x94\x5A\xB1\x95\x8A\x24\x21\x95\x17\xBA\x9C\x89\x24\x81\x90\x3C\x47\x8A\x91\x47\x3C\x91\x26\x62\xA7\x26\x97\xBF\x8C\x93\x0C\xA5\x9A\x93\x66\xAA\x92\x94\xCF\x92\x8E\x33\xB0\x90\x9A\x6A\x92\x99\x9A\xFF\x06\x95\x2D\xB8\x9B\x9A\x2C\xA1\x88\x9B\xDA\x97\x96\x37\xB3\x9C\x9B\x8E\x16\x97\x2E\x47\x9E\x38\x0F\x94\x97\x9C\xD2\x29\x99\x84\xD8\x88\x99\x40\x72\x97\x3B\x23\x87\x88\x82\x65\x4F",
+					"\x9F\x3A\xF1\x9A\x87\x1C\x89\x27\x9E\xDF\x96\x99\x36\xD3\x96\x97\x6A\x85\xA7\x9A\x02\xA1\x9C\x47\x45\x88\x9C\x85\x2A\x9A\x89\xEC\x9F\x96\x3B\x8E\xA0\x9E\x81\xB4\x9C\x9E\xCA\x80\x00\x40\xA4\x2C\xA1\x89\x89\x27\xA1\xFF\x74\x93\x45\xFE\x96\x21\x8D\xA1\x26\x98\xB9\x82\xA5\x3F\x97\x95\xA5\x8A\x87\xA7\x1F\x23\xAC\xA7\x40\x26\xA2\x9C\x30\xA4\x9B\x9C\xDD\x96\xA5\x4E\xF1\x86\xA1\x72\xBD\xA0\xA7\x35\xBC\xA4\x42\xAF\xAA\xA1\xA1\xBE\xA6\xA8\x40\xBF\xA6\x4E\xC1\xA2\xA9\xA2\x83\xA0\x9C\x04\xA7\xAB\x53\x89\xA1\xAB\xA4\x88\xAB\xA9\x0B\xAC\x7D\x3D\x94\xAB\x9E\x81\xB9\x7B\x88\x19\xA0\xA5\x03\xAA\xA9\x20\x8C\x99\x87\x9F\x5D\x3F\xA8\x49\x83\x22\xAC\xF0\x28\xA1\x24\x31\xAD\xA0\x5A\xCC\x90\xAB\xBA\x94\xAE\xAE\x44\xB5\xA8\x56\xD7\xA2\xA9\xA9\xAF\xA1\x7F\x66\xA0\x88\x57\x90\xA8\x9A\xC0\xAB\xAA\x20\x6D\xB7\x3B\x5B\x9D\x21\xAE\x8F\xAD\xA6\x80\x2B\xB2\xAE\x41\x09\xB5\x98\xB2\x86\x21\xB0\x9F\x8A\x20\x4D\x9C\x2B\xB0\xCE\x96\xB3\x20\x98\xBD\x22\x3D\xAE\xA2\xAB\xC6\x89\x3B\xB4\x74\xB7\xAE\x6A\xF9\xA8\xAE\xA9\x8E\xAF\xB5\x7A\xBD\xAC\x6C\xAD",
+					"\xB6\xAA\xBF\xAE\xB1\xB6\x42\xBD\xB3\x46\x1B\x8F\xA4\xDE\x92\xAE\xB7\xB5\xA0\xBB\x5E\xFF\x12\xB9\xBE\x85\xBA\xA8\xC7\xBC\xA5\x72\xF1\x8B\xB8\x36\x87\x8A\x82\x0A\x33\x3E\x4C\x82\x22\xBA\xC9\x83\x25\xBA\x8E\xB7\xB9\x57\x5C\x02\xA3\x5F\xAD\x9A\x20\x43\x94\x9F\x17\xC2\xBD\x87\xF0\x83\x92\x83\x0A\x25\xBD\x64\x85\x38\xBC\xF9\x7D\x7D\xBB\x01\x2C\x81\x20\xF2\xBA\xA2\xF8\xB5\xB8\xBE\xA0\x89\xBE\x7E\x9F\xA3\xB0\xB6\xAD\xBC\x85\xFF\xB0\x89\x80\x8D\x91\xBB\xFD\x86\x20\xBB\x04\xC9\x20\x82\xAE\x3A\x20\xFB\x2E\xB9\x21\x0E\xC0\xC0\x84\x86\xCC\xBC\x02\x94\xC2\x20\xE3\xB7\xC1\x40\x19\xCF\xC0\x83\x3D\x3E\xC2\x1D\xC3\x23\x87\x86\x24\xBC\x85\x23\xC3\x20\x25\xC9\x21\x84\x24\xCA\xC2\x00\x2B\xC0\xC5\x2D\xCF\xC6\x40\x29\xC7\xB3\xF3\xA0\xC2\xC2\x35\xD8\x93\x80\x8C\xC5\xAC\x1B\xEC\xC1\xC4\x02\x25\x44\x7C\x8B\xC9\x24\x72\x34\x3F\x23\x32\xC1\x91\x39\x74\x3D\x86\x29\x70\xBE\x1C\xF4\x22\xBA\xCA\x70\xB7\x1C\xFA\x1F\x8B\x62\xF0\xA8\x1C\x7D\x74\x98\x5A\xF8\xA9\x1C\x3E\x43\x9D\x50\x7C\xEA\x14\x3F\xFC\x5E\x48\xBE\xEB\x05\xCF\x98\x76\xBC\x1C\x30",
+					"\xCA\x26\x52\xF0\xAD\x1F\x96\x8A\x29\x56\xF8\xAE\x1B\xCE\x09\x2A\x58\x7C\xEF\x16\xCA\x85\x33\x58\xBE\xF0\x1D\xCD\x42\x7C\x50\xBF\x78\x34\x3A\x0B\xF6\xA2\xBA\x7D\xFA\x7E\xCD\x09\x5F\x23\x88\x1F\x34\x9E\x30\x9D\x64\x95\xEE\x9F\x89\xB4\x94\xCB\xBD\x32\xA9\x7F\x36\xF1\xB6\xBC\x3B\xF4\xA0\xAE\x78\x5F\x8D\xA2\xC4\x9A\xD3\x76\x30\xD6\x63\x47\x27\xCB\x2E\xD9\x40\x04\xC6\x12\xAC\x7A\x72\x3D\x84\xBE\x22\x6D\x46\x20\xA2\xDD\x34\x7D\xA5\xD1\x21\x20\x7D\xC0\x74\x47\x8A\xD2\x42\x67\xC8\xD7\x35\xE1\x2E\xBE\xF9\x67\x88\xA4\x8F\x2A\xAA\xEE\x1F\xB9\x20\x47\x91\xC2\x44\x93\x5D\x93\xC2\x44\xC9\xB1\x1F\x30\xCD\x8E\x9A\x72\xDA\x81\x2C\xD1\x90\xDC\x2E\x57\xB1\x93\x4D\xDB\x80\x02\xCD\xBB\xB2\xCB\xD6\x42\x67\xD1\xD6\x4E\xF7\x31\xC9\xDD\x36\xBD\x9D\xDB\xD0\x76\x73\xFB\xC1\x25\xD1\x56\x62\xB5\x63\xD5\xD8\x8B\x6C\xD8\xBC\xF6\xBB\x59\x71\x54\x32\xD3\x86\x0A\x26\x4E\xF0\xAE\x5D\xB5\xF7\x57\xD7\x81\x20\x48\xBE\xF0\x4B\xE0\xC0\x0D\xE2\x20\x2A\x70\xBF\xCF\x03\xE0\x76\xAF\x86\x2D\x46\xF8\xBA\x5A\xE2\x0C\x6E\xCA\x41\x1B\xED\xDD\xEF\x5F\x26\xE2",
+					"\x06\x28\xE1\x77\x84\xDF\xC7\x17\x5C\xC6\x20\x28\xEE\xE2\x7D\x99\x67\xC6\x45\x49\xB2\xB8\x31\xF5\xE2\x7D\xB7\x65\xE6\x5E\x7F\xDE\x32\xC3\xCA\x21\xC7\xDD\xBD\x69\x5F\xDA\x77\xE1\x2D\xF2\xA3\xD6\x7C\xD3\x21\xB5\x4C\xEA\xE7\x4F\xE1\x20\xD2\x83\x2B\xD9\x84\x01\x0D\xD9\xE2\x33\xE8\xC0\x89\x2A\xEB\x80\x25\xD9\x25\x7A\x60\xE7\x6E\x2A\xE6\x7E\x63\xDC\xE6\xBE\x7D\x66\xE9\xBD\x80\x04\xED\x19\xF6\xB9\x72\x51\xE0\x00\xE6\x71\xE8\x51\x7E\xE9\xE2\xAB\x1F\x22\x75\xDC\xDC\x34\xDA\xBB\xC3\x25\xED\x5E\xF6\xBE\xE9\x62\xE6\x3A\x31\xD9\xE7\x50\x07\xF6\xBF\xEA\x7B\xE2\x3D\x55\x47\xF3\x20\x75\xF2\xE4\x7C\xD0\x08\xEB\xDE\x22\xDF\xF1\x02\x31\xF0\xD4\xDD\xB3\x78\xC6\xFD\x34\x56\x16\x7D\xEF\xDF\xF6\xB8\x78\xC2\xCA\x3B\xDE\x65\xE9\x22\xE8\x82\x2D\xEB\x94\x15\x0B\x59\xC8\x41\xF6\x42\x39\xE1\x90\xE9\x66\xF7\x23\x7A\xD8\xF1\x40\x5A\xD3\x21\x48\x70\xBC\x7A\xB7\xF5\x52\x42\x2B\xF1\x90\xEB\x71\xE8\xD1\xC1\xE9\x22\xE1\xBD\xF6\xBF\x2D\x0F\x73\xF9\x02\x24\xF9\x4A\x5C\xB1\xEE\x2F\x0B\x5E\xF1\xA3\xF0\xBF\x17\x27\xDF\x59\x7C\xFE\xEA\x20\xD8\xEC\xF6",
+					"\x7D\xE2\x0C\xFA\xEE\x1D\xCF\xFB\x01\x21\xFD\x40\x34\xF9\x25\x32\x25\xFA\x3C\x0A\xE8\xFC\x00\x20\xF7\xEE\xF8\xA8\x0D\xF2\xBF\x38\xE0\xD5\x8A\x24\xFE\xC9\xDD\xBA\x0D\xF8\x77\x1B\x2C\x7B\x7F\x09\x1D\x7F\x9B\x72\x51\x6C\x01\x80\xBB\x18\x30\x71\x78\x7A\xAD\x26\x5F\x6E\x0F\x7E\xF7\x2E\x80\x01\x1E\x7D\x12\x51\x07\x3E\x63\x10\x75\x0B\x2C\x14\x80\x00\xFB\x6D\x5D\x76\x09\x81\x02\x1A\x07\xB0\x79\x78\xF0\x5B\x07\x0A\x86\x1D\x15\x32\x7F\xB1\x76\x10\xAD\x7F\x11\x7D\x09\x82\xCA\x13\x65\x2C\x83\x7B\xF6\x5F\x07\x32\x8F\x11\x2F\x31\x77\xB9\x73\x10\x97\x72\x51\x81\x02\x81\x00\x3D\x83\x02\x16\x81\xBF\x44\x08\x22\x81\x10\x88\x0B\x2C\x44\x81\x10\x1F\x82\x51\x89\x09\x84\x00\x0D\x08\xCB\x26\x84\x01\x16\x80\xE0\x6E\x6E\xBB\x1F\x84\xC7\x2F\x69\x5A\x86\x1D\xE7\x7E\x83\xF6\x5E\x08\x8F\x31\x86\x45\x86\x5F\x8F\x0A\x55\x91\x0B\x2C\x66\x8E\x84\xF6\x52\x09\x5A\x54\x09\xCB\x22\x70\xD9\x7D\x5D\x95\x02\x85\xDC\x1C\x73\xF4\x62\x10\x74\x82\x7E\xF0\x59\x09\x78\x82\x1E\x44\x3A\x76\x7C\x86\x83\xF0\x5D\x09\x81\x8D\x1B\x4F\x34\x88\x01\x11\x71\xF5\x7D",
+					"\x5D\xA1\x02\x84\xB7\x16\x36\x8C\x80\x00\x8E\x8E\x7F\x12\x54\x0A\x92\x8B\x1B\x57\x75\x89\x97\x87\x80\xBF\x47\x0A\x9B\x86\x1D\x69\x7B\x87\x01\x1A\x7F\x02\x11\x7F\x12\x5A\x0A\xA3\x81\x37\xA8\x81\x10\x06\x30\x5F\xAD\x02\x85\xB1\x0B\x2C\xAF\x80\x00\x0C\x8D\x5D\xB2\x02\x85\xB6\x0B\x2C\x1F\x7F\x88\x12\x57\x0B\xAD\x8F\x11\x70\x76\x8A\x00\x0F\x8B\x98\x8F\x4B\xBA\x03\x8C\x0A\x1A\x04\xDC\x78\x8C\xA0\x81\x48\xBD\x0C\x8C\x09\x13\x78\xC6\x83\x80\xA9\x86\x5F\xC0\x04\x8D\x2F\x28\x8D\xB0\x86\x5F\xC3\x02\x85\xC7\x0B\x2C\xDE\x88\x8B\xF6\x58\x0C\x52\x8C\x0C\xCB\x21\x8B\x06\x1F\x89\x59\x86\x72\x0A\x19\x8B\x03\x10\x8D\xEF\x81\x3E\xD6\x18\x65\xED\x26\x5F\xCD\x0F\x38\xF8\x83\x10\xEC\x82\x51\xCE\x0A\x55\xD0\x0B\x2C\xFD\x82\x10\xF2\x8F\x4B\xD1\x0A\x55\xD3\x0B\x2C\x2B\x85\x87\x12\x54\x0D\xF7\x6C\x1D\x94\x7A\x63\x09\x1D\x90\x7E\x8D\x5D\xD9\x01\x91\xE2\x15\x7A\x06\x1F\x45\x16\x9B\x7E\xF6\x5E\x0D\x1A\x9D\x1B\xC6\x7D\x91\x0A\x14\x83\x03\x14\x73\xDD\x53\x0E\x8F\x3C\x32\xF0\x5C\x1D\x3E\x4B\x68\x32\x93\x93\x2A\x1B\x68\xBC\x6B\x4C\xB7\x73\x69",
+					"\x59\x58\x6C\x47\x6F\x6C\x38\x99\x7A\x16\x31\x41\xB9\x68\x13\x43\x91\x12\x43\x40\x69\x47\x9F\x68\x78\x75\x75\x71\x79\x12\x95\x62\x7F\x11\x48\x69\x1E\x12\x95\x1B\x15\x70\xDC\x71\x95\x8B\x6B\x47\x00\x0D\x47\x5F\x40\x69\x5D\x9F\x11\xA4\x60\x96\x47\x6F\x95\x52\x81\x41\x5F\x49\x12\xCD\x55\x12\x69\x9C\x11\xC2\x51\x41\x6D\x9F\x11\xC2\x50\x69\x71\x90\x97\x47\x63\x97\xF7\x69\x12\xBC\x40\x00\xC4\x4D\x43\x29\x10",
+				};
+				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 			}
-			*reading = 0;
-			return &textBuffer[0];
+
+			const wchar_t* ParserRuleName(vl::vint index)
+			{
+				static const wchar_t* results[] = {
+					L"QPrimaryFragment",
+					L"QPrimaryAttributed",
+					L"QPrimary",
+					L"Query0",
+					L"Query1",
+					L"Query2",
+					L"QueryRoot",
+				};
+				return results[index];
+			}
+
+			const wchar_t* ParserStateLabel(vl::vint index)
+			{
+				static const wchar_t* results[] = {
+					L"[0][QPrimaryFragment] BEGIN ",
+					L"[1][QPrimaryFragment] END [ENDING]",
+					L"[2][QPrimaryFragment]< \"*\" @ [ \".\" NAME ] >",
+					L"[3][QPrimaryFragment]< \"*\" [ \".\" @ NAME ] >",
+					L"[4][QPrimaryFragment]< \"*\" [ \".\" NAME @ ] >",
+					L"[5][QPrimaryFragment]< NAME @ [ \".\" NAME ] >",
+					L"[6][QPrimaryFragment]< NAME [ \".\" @ NAME ] >",
+					L"[7][QPrimaryFragment]< NAME [ \".\" NAME @ ] >",
+					L"[8][QPrimaryAttributed] BEGIN ",
+					L"[9][QPrimaryAttributed] END [ENDING]",
+					L"[10][QPrimaryAttributed]<< !QPrimaryFragment @ >>",
+					L"[11][QPrimaryAttributed]<< \"@\" @ [ NAME ] \":\" !QPrimaryFragment >>",
+					L"[12][QPrimaryAttributed]<< \"@\" [ NAME @ ] \":\" !QPrimaryFragment >>",
+					L"[13][QPrimaryAttributed]<< \"@\" [ NAME ] \":\" !QPrimaryFragment @ >>",
+					L"[14][QPrimaryAttributed]<< \"@\" [ NAME ] \":\" @ !QPrimaryFragment >>",
+					L"[15][QPrimary] BEGIN ",
+					L"[16][QPrimary] END [ENDING]",
+					L"[17][QPrimary]<< \"(\" !QueryRoot \")\" @ >>",
+					L"[18][QPrimary]<< \"(\" !QueryRoot @ \")\" >>",
+					L"[19][QPrimary]<< \"(\" @ !QueryRoot \")\" >>",
+					L"[20][QPrimary]<< \"/\" !QPrimaryAttributed @ >>",
+					L"[21][QPrimary]<< \"/\" @ !QPrimaryAttributed >>",
+					L"[22][QPrimary]<< \"//\" !QPrimaryAttributed @ >>",
+					L"[23][QPrimary]<< \"//\" @ !QPrimaryAttributed >>",
+					L"[24][Query0] BEGIN ",
+					L"[25][Query0] END [ENDING]",
+					L"[26][Query0]< Query0 @ QPrimary >",
+					L"[27][Query0]< Query0 QPrimary @ >",
+					L"[28][Query0]<< !QPrimary @ >>",
+					L"[29][Query1] BEGIN ",
+					L"[30][Query1] END [ENDING]",
+					L"[31][Query1]< Query1 \"*\" @ Query0 >",
+					L"[32][Query1]< Query1 \"*\" Query0 @ >",
+					L"[33][Query1]< Query1 \"^\" @ Query0 >",
+					L"[34][Query1]< Query1 \"^\" Query0 @ >",
+					L"[35][Query1]< Query1 @ \"*\" Query0 >",
+					L"[36][Query1]< Query1 @ \"^\" Query0 >",
+					L"[37][Query1]<< !Query0 @ >>",
+					L"[38][Query2] BEGIN ",
+					L"[39][Query2] END [ENDING]",
+					L"[40][Query2]< Query2 \"+\" @ Query1 >",
+					L"[41][Query2]< Query2 \"+\" Query1 @ >",
+					L"[42][Query2]< Query2 \"-\" @ Query1 >",
+					L"[43][Query2]< Query2 \"-\" Query1 @ >",
+					L"[44][Query2]< Query2 @ \"+\" Query1 >",
+					L"[45][Query2]< Query2 @ \"-\" Query1 >",
+					L"[46][Query2]<< !Query1 @ >>",
+					L"[47][QueryRoot] BEGIN ",
+					L"[48][QueryRoot] END [ENDING]",
+					L"[49][QueryRoot]<< !Query2 @ >>",
+				};
+				return results[index];
+			}
+
+			Parser::Parser()
+				: vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver, ParserStateTypes>(&GuiInstanceQueryTokenDeleter, &GuiInstanceQueryLexerData, &GuiInstanceQueryParserData)
+			{
+			};
+
+			vl::vint32_t Parser::FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const
+			{
+				return -1;
+			};
+
+			vl::Ptr<vl::presentation::instancequery::GuiIqQuery> Parser::ParseQueryRoot(const vl::WString& input, vl::vint codeIndex) const
+			{
+				 return Parse<ParserStates::QueryRoot>(input, this, codeIndex);
+			};
+
+			vl::Ptr<vl::presentation::instancequery::GuiIqQuery> Parser::ParseQueryRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
+			{
+				 return Parse<ParserStates::QueryRoot>(tokens, this, codeIndex);
+			};
 		}
+	}
+}
+
 
 /***********************************************************************
-SerializedTable
+.\INSTANCEQUERY\GENERATED\GUIINSTANCEQUERY_ASSEMBLER.CPP
+***********************************************************************/
+/***********************************************************************
+This file is generated by: Vczh Parser Generator
+From parser definition:GuiInstanceQuery
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-const vint parserBufferLength = 5817; // 27819 bytes before compressing
-const vint parserBufferBlock = 1024;
-const vint parserBufferRemain = 697;
-const vint parserBufferRows = 6;
-const char* const parserBuffer[] = {
-"\x00\x00\x81\x81\x84\x02\x81\x80\x07\x82\x00\x87\x80\x83\x21\x33\x3B\x31\x30\x64\x65\x11\x35\x35\x32\x39\x3D\x7F\x18\x99\x98\x8A\x85\x84\x8C\x28\x39\x69\x6D\x21\x36\x83\x8D\x8B\x8A\x8D\x19\x85\x08\x80\x0A\x90\x81\x92\x8B\x28\x99\x88\x0B\x93\x98\x83\x29\x32\x74\x2F\xA7\x91\x9B\x03\x94\x8E\x81\x1C\x8C\x8E\x90\x82\x8C\x8A\x8B\x96\x05\xC8\xA3\x28\x39\x34\x34\x33\x98\x1B\xBE\x81\x82\xAF\x81\x8A\x9C\x03\x2B\xD8\x80\x90\x33\x95\x32\x36\x3A\x50\xFF\x7F\x86\x81\x87\x8D\x91\x91\x79\x3A\x8D\x0B\x9B\xB0\x81\x30\x3A\x74\x20\xA2\x35\x34\x3D\x32\x27\x30\x6D\x65\x21\xA3\xB9\x85\xB0\x90\x91\x24\xC6\xB9\x33\x0B\x94\xC2\xB6\xB8\x72\xF4\xB6\xB8\xB5\x37\x24\x38\x3A\x69\x6F\x2E\x3B\xB2\xA8\x82\xB2\xC0\x69\x82\xFD\x88\x8B\xC8\x03\xA5\xA6\x64\x0E\xD0\xD2\xC4\xC8\x86\x8F\xBF\x68\xEA\xAC\xA1\x82\x3D\x32\x33\x8A\x5E\xE3\x0B\xD9\xB5\xD5\x8E\xBF\xB3\x81\xA6\xB5\x85\x8B\xDC\x39\x3C\x38\xB3\xFA\x90\xBC\xB0\x07\xD0\xDD\xCC\x26\x8E\x2B\x8A\xE0\x86\xDC\xE1\xBB\x79\xA2\xD1\xD3\xC0\xAB\xDE\x81\xDD\x37\xB9\x82\xC8\xA2\x80\xA6\x33\x34\x72\x73\x20\xB5\xE4\x99\x81\xEC\x9D\x02\x2B\xA9\xE0\x8F\x30\x39\xB0\xEB\x01\xD8\xF8\x97\xA9\xA9\x83\x39\x32\x63\x12\xCF\xB0\xA1\x0B\x97\x17\x95\xFD\x6B\x42\x83\x4A\x61\x61\x53\x80\x81\x05\xB1\x47\x80\x42\x09\x8A\x8B\x82\x40\x0D\xA8\x40\x7C\x40\xBB\x49\x1E\x10\x11\x49\x12\x15\x13\x10\x54\x04\x48\x42\x87\x00\x2F\x02\x8B\x7F\x08\xB1\x4A\x55\x41\x27\x98\x8A\x84\x87\xEB\x45\x4D\x8A\x88\x01\x25\x88\x48\x88\x02\x60\x8E\x11\x10\x4D\x05\x15\x07\x4A\x3B\x80\x4B\x15\x18\x2D\x3A\x11\x11\x0B\x5A\x1F\x1D\x17\x8F\x41\x83\x9A\x14\x0C\x2D\x39\x0D\x16\x0A\x2D\x90\x84\x78\x42\xBB\x57\x19\x10\x13\x44\x03\x11\x12\x14\x44\x11\x91\x43\x8B\x2A\x03\x02\x8E\x46\x34\x83\x41\x43\x13\x50\x05\x1E\x12\x97\x00\x6F\x88\x09\x99\x00\x61\x5C\x75\x40\x48\x43\x1C\x13\x13\x53\x05\x1C\x98\x00\x2F\xA9\x03\x9D\x9C\x50\x62\x98\x42\xA0\x00\x18\x1F\x12\x14\x7B\xAF\x8E\x17\x89\x52\xB1\x49\x03\x4A\x8F\x80\x46\x84\x15\x45\x12\x19\x9C\x8B\xEA\x41\x4F\x0A\x0A\x07\x23\x99\x4B\x4A\x48\x55\x1E\x11\x12\x4F\x2B\x99\xA4\x40\x2F\x2B\x03\x84\x00\x61\x51\xA5\x42\xAB\x53\x15\x12\x13\x14\x54\x12\x11\x10\x87\x31\x88\x49\xAC\x00\x2D\x2E\xAD\xA0\x4A\xBE\x81\x4E\xA9\x10\x54\x35\xA9\x12\x10\x55\x14\xAB\xAE\x40\xBB\x80\x1A\x02\xA7\x18\x7F\x9C\x4B\x54\x4F\x37\x9E\x13\xB2\x01\x7B\xAA\x0D\x67\xBF\x9A\x44\xA2\x40\x84\x84\x1F\x10\x15\xD8\x80\x4B\xAE\x0B\xC4\x61\x55\xBB\xB4\x08\x48\x53\x14\x14\xB7\x85\x1F\xB5\x40\x84\xAF\x03\x1F\x0A\x6D\x45\x41\x58\x89\x05\x50\x0B\x4A\xBF\x2E\x57\x68\x5A\x11\x72\x21\x17\x19\x5E\x5F\x5A\x0B\x4A\xC2\x01\xE8\x66\x44\xC1\x06\xC8\xC4\x1E\x0B\x52\x2F\x1F\x18\x1D\x53\x34\x13\x48\x1D\x3D\x85\x4D\xC4\x10\x20\x24\x0C\x0D\x14\x02\xCF\xC5\xC3\xC1\x5E\x74\x1E\x0C\xC0\xFD\x81\x44\xCA\xC3\x79\x10\xC8\xCB\x57\x16\x2B\x45\xCD\xC3\xC7\x72\xC2\xC6\x0B\x19\xDB\xC4\x07\x4A\x3F\xC0\x40\xCB\xC8\x25\xF1\xC7\xCA\xC4\x2B\xFF\xBE\xC9\xD1\x3A\xE9\xC2\x07\x4A\x4F\xF8\xC8\x65\xD3\x5F\x6E\x01\x0D\x2A\x2B\x58\xD0\x40\xD1\x30\xD4\xDA\xCA\x0E\x20\x28\x01\xD8\x08\x37\xB9\x80\x08\xD8\xCE\x41\x70\x0B\x1D\x69\x34\x18\x18\x08\x7B\x20\x09\xD8\x74\x8D\x4F\x63\x74\x08\x3D\x20\x02\x0B\x14\xC0\x63\x19\x1B\x77\x65\x24\x12\x08\x08\x7D\x20\x09\x08\x08\x7C\x23\xD2\x0A\x0A\x83\xEC\xDE\xD8\xDC\x72\xFF\x61\x72\x74\x92\x78\xDA\xDD\x10\x6E\x39\x13\xE1\xE1\x87\xE9\x00\xCB\x16\x7A\xEE\x03\xE1\xD9\x45\x27\xD0\x09\x6B\xAF\x6D\x6E\x1A\x6C\x74\xE0\x0D\x14\x08\x0D\x60\x05\xD2\x4E\x2C\xC2\x4C\xCB\xCB\x39\xC7\xDE\xD0\xD4\x4B\xDD\xDA\xED\xD5\x32\x1A\xD5\x42\xF0\x5C\xF9\xE1\xC5\xCA\x3E\x20\xD2\xDA\xD8\xA4\xE6\xE3\xDC\x63\x6B\xED\xDF\xD9\xDC\xCF\xD1\x76\xDD\xE5\x79\xFB\xDD\xDF\xDF\x69\x01\xEB\xE6\xE1\x88\xCA\xEC\xE1\xF4\x8F\xD4\xF2\xE4\xDD\x94\xEE\x16\xE6\x08\x98\xDA\xE4\xE0\xF8\x9E\xE0\x00\xEA\x08\xA2\xE4\xD8\x8D\xE9\x60\xE8\xE0\x6F\xEA\x6A\xEF\xE1\xEF\xEC\x82\x35\x75\x40\x37\x7C\x69\xDF\x74\x09\x6A\x05\x28\x80\xEE\x53\x66\x80\x17\x33\x02\x78\x02\x24\x7B\x02\x83\x66\x81\xE4\x63\x6C\x79\xF7\x6E\x7B\xF9\x50\x7E\x71\xE9\x51\x77\x39\x8C\x29\x7F\xFA\x7C\x68\x3E\xEE\x5E\x7F\x7D\x87\x69\x72\xD8\x0B\x7D\x70\xE9\x50\x75\x7A\x75\x63\x36\xFA\x59\x7D\x7D\xEF\x5D\x72\x7E\xA1\x62\x04\xC8\x4D\x79\x7E\xD7\x3B\x7C\x75\xD0\x7E\x7F\x1C\x32\x70\x66",
-"\xDA\x4A\x6A\x6A\x14\x87\x7B\x57\x18\x0B\x24\x26\x88\x8E\x64\x4A\x93\x61\xC5\x17\x65\x08\x37\x24\x0D\x63\x02\x3D\x62\xC8\x13\x80\x8B\x99\x6A\x60\x04\x40\x08\x82\x40\x0A\x85\x69\x20\x08\x31\x0D\x73\x35\x2C\x19\x41\x65\x20\x36\x9C\x89\x0F\x66\x91\x2C\x1A\x8A\x34\x0C\xAB\x43\x1B\x25\x77\x9B\x6B\x1B\xF1\x89\x30\x35\x96\x81\x04\x6F\x9E\x68\xC8\x1D\x80\x73\xB7\x32\x89\x8D\x93\x77\x7B\x0C\x97\x79\x73\xCD\x4D\x02\x01\xC5\x78\x30\x1F\xF3\x8E\x8E\xB0\x7A\x83\x70\xA0\x7C\x84\xEC\x67\x88\x91\xD6\x6F\x72\x04\x3A\x03\x70\x20\x85\x81\x8B\x41\xAE\x81\x6E\x86\x9D\x8D\x22\xB2\x83\x85\xED\x40\x72\x70\x84\x62\x80\x40\x04\x8E\x77\x28\xA2\x89\x20\x64\x95\x96\x17\xAE\x05\x06\x08\x81\x22\x82\xA4\x9E\x8A\x05\xCB\x76\x7E\xB3\x68\x6B\x83\x79\x24\x7E\x07\xB0\x82\x85\xEC\x64\x86\x6F\xAF\x96\x85\xF8\x2B\x83\x7C\x42\xA6\x78\x84\xD6\x6C\x94\x0D\x8D\x98\x84\xF0\x73\x7D\x7E\x9A\x9A\x7E\xEA\x40\x89\x98\x21\x84\x8F\x38\x3A\x21\x8C\xEF\x4F\x80\x8E\x4E\xB4\x8C\x61\x05\x30\x9F\x1E\xEE\x9A\x8C\x8A\x56\x64\x0E\x55\x84\x0F\x05\x2B\x2B\x9E\x80\x1B\x8D\x8C\xF4\x81\x72\x0F\x60\x8B\x55\xDD\x2F\x8F\x59\x08\x28\xA0\x00\x6F\x8E\x80\x5B\x2B\x26\xA1\x7A\x85\x6B\x30\xFA\x6F\x05\x16\xA5\x78\x04\x9F\x2E\x29\x33\xFA\x64\x08\xF0\x38\x3C\x0E\xD2\x83\x94\xCC\x13\x98\x90\x32\x00\x0F\x91\x91\x88\x2F\x44\xA2\x02\x44\x8B\x9E\x81\xA3\xA1\x2A\x93\xFA\x49\x06\x8A\x8F\xA3\x08\xA4\xDD\x82\xA7\x71\x24\xA4\x8F\x93\x90\x97\x8D\x16\x82\x04\x0A\x22\x9A\x27\x29\xB4\x0A\x6F\x29\x1A\x85\x41\xBD\x77\x38\x59\x80\x04\x96\xC7\x36\x9C\x15\xD6\x89\x5E\x81\x39\x5F\x9F\x30\x63\xA0\x10\x0C\x51\x21\x13\x7A\x20\x06\x4B\xAE\x26\x60\x30\x06\x6B\x28\x2B\x26\xAC\x7A\x83\xAF\x1F\xEF\x8E\xA7\x91\x6A\xA8\x6C\x5F\xA6\x74\x57\x2A\x77\xA9\x37\xA6\x70\xA6\xB0\x63\x88\x55\x44\x29\x9C\xAE\x80\x26\xAB\x63\xA1\xAF\x42\xE3\xAE\x81\x1D\x2B\x26\xB0\x69\xA6\x24\x0C\x16\x81\xAE\xB0\x73\xA9\x65\x20\x16\xAC\xD8\x78\xA1\x77\xBD\x96\x2A\x30\x5B\xB5\x3E\x58\x8A\xB2\xB1\xAF\xAE\x02\x06\x88\xA5\x21\x68\xEE\xAA\xB0\xC6\xA3\xAA\xAE\x5D\x3F\x28\xC8\x12\xB8\xA2\xA6\x0E\x29\xAF\x20\x16\xB1\x51\x26\x2E\xAE\x00\x00\xB2\xB1\xCC\x25\x21\x6E\x9E\xB6\xA9\x7C\x9C\x59\x20\x9D\x3B\x8A\x5A\xE0\x85\xB7\xDB\x96\x21\x06\x9D\xA2\x31\x0C\x56\x6E\x17\x95\x0D\xB9\xB1\xC7\xAB\xAF\x58\xED\xAA\x27\x18\x26\xB6\x24\x31\x06\x77\x77\x61\x37\xA8\x11\x1E\x0B\x70\x8D\xA0\x07\x7D\x79\x36\x8A\xD8\xA7\x3A\x30\xCA\x90\x71\x7B\x6B\x75\x08\x3C\x23\x0C\x0D\x75\x13\x0D\x1A\x76\x0D\x30\x39\x1B\x74\xBA\xCA\xB7\xBB\x71\xDA\xB0\x3C\xF1\x3A\x6B\x7C\xE1\xA3\xBE\x7E\x66\xB3\x3E\xF4\x96\x98\x04\xEB\xB9\x78\x4D\xF5\x21\x3D\x8F\xB7\xBD\xB8\x2E\x6A\xB9\x72\xD8\xBE\x04\x1A\x2A\x13\x25\x17\xD0\xB9\x1E\x56\xB0\xAE\xE5\xBC\xBC\xBB\x7A\x7F\xB9\x64\xA7\xB0\x6C\x01\xE5\xB9\x76\xE7\xA6\x26\x29\x97\xA9\xC0\xBD\x6D\xBF\xBD\xF1\xB3\xBD\x7D\x8E\x9F\xA7\xFC\x9D\xC0\xBB\x1F\xDE\xBC\x0B\xA3\xCA\xB0\xD3\x66\xC4\x0C\x04\xDA\x3A\x8A\xE9\xB1\x6F\x16\xE2\x03\xC1\x15\x23\xBC\x4E\xFD\x0D\xB3\xA2\x4A\xA2\x20\x0A\xAC\xA1\x0C\x15\x1B\x24\x2A\xD1\xA1\xAB\xCA\x74\xA2\x0E\xC4\xCD\xB4\xD0\x1B\xA2\x04\x1D\xAD\x37\x4D\xA1\xA3\x9F\x43\xB4\x88\xA5\x40\xB9\xC8\x4B\x95\xAB\xC5\x97\xAE\xB1\xA6\xDA\x9A\x6C\x4D\xE4\x06\xA7\x25\xE0\x7A\xA7\x92\x81\xA0\x19\x4D\xC0\x67\x27\xC1\x21\xCA\x45\x7F\xB3\x07\x2B\x23\xD1\x2B\xC7\x39\xA8\x43\xA0\x64\x20\x82\x36\xA8\xA4\xA2\x00\xC2\x9B\xA7\xBB\x84\xC7\xBF\xB3\x0C\xC5\x26\xD2\xA4\xB1\xBB\x8D\xFB\xB0\x6D\xED\xA2\x38\x64\xDE\xA0\xBC\x89\xE2\xB8\x3F\x01\xE8\xC5\xC0\x26\x3C\xCA\x91\xAF\xC0\xBE\xF9\xB4\xBF\x09\xF6\xA4\x70\x9A\xB6\xCC\xC6\x4E\xE0\x06\xD3\x74\x00\xD4\x80\xA3\xDF\xC7\x20\xFA\x22\xD5\x70\x13\xA7\x57\x49\xCE\xC0\xC2\x50\xD3\xB0\xD8\xB9\xB6\x40\x3B\xBA\xB8\xA9\xB8\x9E\x8A\xBF\xA0\x21\x70\x99\xDB\xC2\xAD\x87\xDA\x27\x32\x13\xD1\x1E\x32\x06\x6A\x5C\x2B\x26\xDB\x1A\xD2\x06\x74\xD8\xB8\xBE\x93\x22\xDB\xD3\xDB\xD9\xC5\x77\xAB\x02\xD4\x1C\xE5\xC5\xD4\x27\xC3\x89\x8A\x96\x20\xD9\xF5\x55\x0E\x0D\xD3\x37\xBF\xAC\xE6\xDA\xBF\x74\xDD\xD5\xBF\xDD\xAD\x05\xBB\xB6\xDD\xD7\x53\xC2\xCC\xDE\x07\xC6\xCB\x14\x75\x02\x0C\xF1\x05\x63\xCC\x84\x79\xB0\x42\x46\xBB\xDA\x6D\xDC\xDC\x06\xA4\x0B\x25\xC6\xE1\xDD\xDE\x19\x2A\xDA\x6F\xEC\xD5\xD7\x86\xBE\xC0\xDE\x20\xC6\xE1\x9D\xF5\xD9\x7B\xBD\xF9\xD2\xD7\x1A",
-"\xFC\xD8\xDD\x1E\xFF\xDC\x88\xA2\x02\xE0\x91\xD9\xBF\xDD\xE4\xA6\xE6\xBC\xA8\xD6\x23\x36\xEA\xB9\xD8\xCE\x8C\xE2\xC3\xE1\x00\xE3\x3E\x37\x90\x20\xB9\x9B\xA6\x9E\xEC\x82\x20\x37\x80\xA6\xCC\xF5\x92\x04\x1D\x2B\x23\xEA\x43\xF9\xC8\xEA\x02\xB6\x90\x10\x5B\xC9\x93\x0C\xA0\x69\x95\x94\x9D\x7E\xDE\x21\x90\x04\x3C\xC9\x8E\x8B\x5C\xC0\xED\x27\xA1\x82\xA6\x67\xAE\x95\x7B\xB0\x9D\x0F\xB5\x92\xC5\x3D\x48\xDB\xC6\x81\x96\xC2\x20\xA6\xD5\xBD\xDF\x9B\xF7\xD0\xE0\x21\xDB\xC9\x80\xA5\xEE\xD6\x03\xE7\x90\xC1\x40\xEE\xC6\x7B\xAD\xD2\xC6\x58\xF4\xC4\xDA\x1C\xD6\xE7\xC7\xAC\x8B\xB4\x5E\xC4\xF7\xE4\x86\xEC\xC5\xE2\xC7\xC3\xD9\x06\xC5\xEB\xEE\xE6\xD6\xE3\x67\x9B\xE5\x20\xD2\xD4\xDF\xDC\x22\xF1\xE7\xDF\xDC\xB0\xD5\x90\xD5\xBC\xE4\x39\xE5\xF1\xAA\x89\xEB\xF3\x95\xD2\x37\xF1\xD8\xDD\xE2\xBA\xA0\xD5\xE7\xD7\xF8\xE6\xD4\x3B\xE7\xE1\x1E\x29\xEA\x6F\x85\xCD\xE1\x2E\x44\xEB\xC8\xE8\x96\x22\x06\x65\xC1\x24\xD9\xE6\xCE\xDA\x6F\xAB\x23\xDB\xDC\xE0\x89\x58\x00\x2E\x55\x51\xF7\x91\xDA\x00\x1D\x33\xFB\x17\x76\x68\x16\x81\x2D\x62\x6A\xC6\xAB\xDC\xCC\xEA\x9C\x42\x49\xE7\xEA\x55\xAB\x88\x68\x4C\xAD\xFD\xD8\xF5\x85\x07\xAA\xC5\x26\xFE\x29\xB6\x20\x4F\x95\x9A\x6F\xAD\xF8\x82\x93\x6A\x7A\x18\x9E\x43\x76\x5B\x66\x76\x5D\x42\x31\x69\x71\x50\xE8\x3D\x76\xC5\x7F\x76\x27\x46\x74\xEB\x4B\x50\x4F\x7E\x7E\x4C\x71\x10\x4E\x73\x52\x7A\x65\x61\xF6\x72\x10\xF8\x75\x66\xEE\x71\x54\xFE\x7D\x75\xC6\x4B\x49\x58\x7E\x49\xA0\x64\x76\x06\x86\x34\x51\x49\x80\x25\x8C\x76\x71\x6A\x3D\x25\x41\x4D\xC6\x6A\x59\xC8\x6C\x7C\xA2\x73\x03\xA4\x72\x10\xA6\x79\x7B\x30\x73\x79\xEC\x65\x79\xEE\x64\x6A\xB1\x78\x79\xB3\x77\x78\x46\x66\x7B\x6E\x08\x7B\x82\x18\x7A\xD8\x63\x79\x02\x70\x84\x04\x77\x79\xC1\x7F\x6B\xB4\x73\x42\x42\x78\x7C\x45\x7C\x67\xC7\x1E\x67\x00\x10\x68\x30\x35\x61\x85\x65\x10\x61\x89\x7F\x79\x08\x68\x44\x5C\x68\xF7\x40\x6A\x49\x58\x7D\x00\x0A\x7D\x68\x87\x31\x01\x25\x10\x71\x80\x7E\x52\x47\x4F\xF9\x4E\x7C\x00\x19\x5B\xC2\x56\x12\xE7\x70\x46\x47\x70\x00\xEC\x78\x16\xFB\x71\x38\x1C\x0B\x12\x85\x8C\x4E\x83\x85\x47\x46\x5D\x33\x72\x04\x07\xFD\x45\x10\x8F\x80\x32\x58\x5A\x74\x58\x74\x06\x3E\x0F\x87\x81\x8A\x7F\x7A\x6E\x44\x05\x1C\x89\x1E\x83\x7F\x3C\x3A\x31\x8D\x87\x33\x05\x14\x8A\x43\x3F\x89\x25\x5E\x03\x5A\x88\x19\x98\x81\x7F\x68\x1E\x6C\x8C\x84\x07\x55\x51\x10\xF9\x22\x89\x64\x8A\x8A\x75\x72\x81\x30\x38\x87\x00\x0B\x5B\x81\x61\x8B\xC4\x1C\x11\xA7\x82\x51\xCB\x79\x07\x30\x0E\x54\xB7\x34\x58\x8B\x82\x8A\x74\x0D\x7D\x9D\x16\x8B\x5F\x5E\x03\xC5\x80\x03\xC1\x81\x61\x8A\x51\x8A\x1B\x3C\x85\x00\x0A\x50\xA7\x8A\x56\xC5\x81\x03\xC8\x86\x8D\x94\x6B\x8C\x1B\x3E\x8C\x01\x10\x8D\xF9\x5F\x8D\xD5\x86\x77\xCB\x51\x8B\xDA\x8C\x8D\x20\x00\x79\xD2\x84\x83\xD8\x61\x8E\x76\x7C\x6D\xE4\x8D\x88\xE6\x82\x34\x21\x37\x7A\xF3\x83\x71\xE2\x8B\x6D\xEB\x85\x83\xDB\x68\x8D\x8D\x8F\x8E\xE7\x81\x8F\xB9\x7C\x86\x6E\x8C\x87\xF7\x46\x18\x05\x10\x91\x74\x80\x8B\xCC\x8C\x8B\xB9\x58\x8E\x0E\x97\x31\x3E\x0C\x90\x01\x96\x54\x0F\x0B\x12\x1F\x96\x77\x46\x56\x90\xB2\x8B\x1A\xFC\x86\x7E\xF7\x49\x34\x08\x10\x55\x0C\x46\x4B\x11\x81\x48\x0D\x44\x03\xBE\x40\x10\xC0\x4A\x4B\x48\x39\x65\x18\x43\x82\x30\x4C\x65\xCC\x4C\x80\x30\x80\x4D\x70\x72\x4D\x2A\x4F\x5F\x2E\x5F\x42\xC8\x41\x43\x77\x3B\x4D\xEE\x3C\x39\xDE\x49\x43\xC5\x48\x3F\xA7\x3E\x43\xE3\x42\x76\xFF\x35\x44\x98\x5D\x8A\x88\x8B\x74\xF0\x79\x95\x95\x8E\x40\x79\x45\x10\x5F\x94\x86\x89\x8B\x56\xC1\x48\x80\x07\x61\x80\x75\x1B\x80\x2F\x85\x43\x11\x78\x66\x13\x83\x7F\x20\x88\x49\x4F\x96\x3A\x68\x92\x76\xA0\x44\x54\x65\x90\x59\x67\x9A\x80\x2E\x89\x94\x0D\x81\x83\x41\x91\x71\x9D\x2B\x92\x47\x4A\x8B\xC6\x3E\x45\x03\x90\x40\x26\x1F\x20\xDD\x29\x11\x58\x96\x98\xF2\x75\x52\x89\x96\x95\x8B\x9B\x12\x21\x00\x2D\xFF\x0B\x8A\x68\x13\x99\xE8\x42\x18\x02\x23\x02\x98\x93\x8D\xD2\x28\x14\x3A\x12\x20\x25\x01\x9A\xF4\x8A\x5C\xA3\x91\x90\x02\x27\x02\xA8\x90\x90\xF7\x8B\x9A\x76\x72\x20\x29\x08\x99\x1C\x92\x92\xF7\x42\x9B\x04\x92\x20\x2B\x08\x99\x1F\x03\x2F\xAC\x2B\x2E\xFF\x02\x20\xEB\x2C\x98\xC6\x97\x9C\x10\x22\x9C\xB5\x5B\x27\xC8\x9B\x2E\xC5\x99\x8B\xD7\x11\x10\x30\x42\x20\xF6\x80\x99\x67\x72\x31\xFF\x02\x9C\x83\x95\x10\xC0\x98\x9C\xDE\x91\x27\xC2\x9B\x2E\xD2\x28\x9C\xCC\x97\x9C\x9C\x98\x19\xA5\x95\x98",
-"\xB6\x3E\x8A\x07\x89\x32\x70\x23\x20\x16\x92\x9D\x47\x99\x3E\xB7\x90\x00\xCF\x46\x42\x64\x05\x9D\x30\x91\x45\xFF\x0B\x27\xFD\x94\x83\x02\x1C\x86\xD9\x9B\x12\xEB\x2B\x2A\x03\xA8\x10\xF5\x99\x9C\x95\x15\x10\x1E\x04\x20\xEB\x23\x8B\x00\x1D\xA0\x0C\x2B\x2E\xDB\x92\x10\x9C\x8A\xA0\x09\x5D\x44\x0E\xAB\x12\xEF\x91\x87\x18\xA9\x14\x00\x2B\xA1\x54\x21\x81\xCC\x2B\x12\x22\x00\x2A\xDF\x96\x1B\xA6\x17\x1B\xE8\x9E\x99\xEA\x93\x40\xEC\x9A\x82\x5E\x4F\x9E\x02\x21\x9F\xCD\x13\x9F\x8A\x45\x9F\xF7\x9F\x4A\xFA\x99\x97\x5F\x15\x5B\x27\xA9\xA2\x30\xA4\x98\xEC\x4E\x35\xDD\x92\xA4\x63\x4F\x92\x6F\x95\x52\x34\xA5\x18\x4E\xA7\x18\x2D\x89\x4D\xD3\x1D\x9D\x84\x2D\x3E\x8F\x98\x8A\x74\x4F\x9F\xB0\x9F\x2A\x22\xA5\x10\x05\xAD\xA5\x01\xA0\x29\x60\xA4\x16\x08\x12\xA1\xFA\x2F\xA0\x2B\x16\xA6\x1F\xA2\x10\x15\xA1\x10\x17\xA1\x10\x07\xA5\x10\xDA\x8F\xA6\xE0\x9C\xA1\x21\xA3\xA1\x28\xA8\x10\x1E\xA0\xA7\x5F\xAB\x7E\x04\xA6\x88\x79\xA8\xA4\xE7\x99\x1A\x2E\xA4\xA4\x2D\x35\xA4\x06\x4D\xA4\x08\x16\xA3\x00\x0D\x93\x32\x4A\xA3\x0E\x89\x9F\x85\x9B\x9F\x5E\x45\x5B\x87\x88\xA4\x3D\xA6\x93\x29\x37\xA4\x48\xA8\x74\x4A\xA8\x81\x95\x8A\xA8\x11\x9F\xA4\x00\x05\x97\x6A\x93\x1D\x90\xA0\x98\x81\x37\xA5\x4B\xA4\x47\x8C\x91\xA7\x10\x2E\x54\xEF\x91\x9E\x00\xA1\x10\x6D\xA7\x20\xEB\x22\xAA\xCB\x6B\x1C\xF2\x98\x4D\x48\x92\x19\xA9\xA0\x94\x81\x39\xA9\x87\x92\x31\xC1\x93\xA6\x00\x13\x9E\xC7\x95\x9E\xC6\x93\xA8\xB9\x16\x11\xD4\x93\xA9\x3E\xA4\x07\xBA\xAF\x7C\xBC\xA7\xA3\xBE\xA9\x3E\x54\xA1\x10\xED\x34\xAC\x2D\x9E\x45\x5A\xAA\x2F\x7B\x25\x5B\x02\xAE\x9C\xD0\x9C\xA7\x62\xA8\xA0\xC8\xA5\x1C\x69\xAB\xAE\x10\xA0\x00\x6A\xA8\xAE\x08\x17\xAB\x00\x04\xA7\xC7\xA9\xA1\x08\x16\xAF\xB0\xA6\x26\x7A\xAB\xAE\xD2\x2B\xA7\x75\xA3\xA2\x7E\xAA\x2B\x26\xA1\xA8\x42\xAE\xAC\xC8\x10\xAD\x2F\xA3\x4B\x31\xAE\x35\xD5\xA9\x87\xD7\xAD\xA8\x38\xA2\x43\xDB\xA0\x10\xDD\xA2\xAD\x9A\xAF\xA3\x05\xBD\xA9\xDE\xA7\x9D\x9B\xAD\xA9\x03\x2C\xAA\xA0\xAE\x7E\x0F\xB0\x00\x10\x92\x10\x10\x96\xAA\x7D\x92\x19\x15\xB0\x00\x56\xAF\xA9\x94\x8E\x7E\xE1\xA2\x10\xE4\xAB\xAE\x7D\xA7\xA6\xE9\xAC\xA5\x78\xAB\xA2\x65\xAE\xAE\xED\xAB\xB3\x05\x14\xAF\xFA\xAB\x2E\x73\xAB\xAE\x1D\xAE\xAF\x77\xA8\xB3\x02\xB9\x40\x7F\xA8\x10\x97\xAD\x1D\x20\xB8\xB0\xE9\x96\xA8\xEB\x98\xA8\x51\x45\xB2\x8C\xAE\xA8\x53\xAB\x12\x55\xA9\x39\x1D\xBD\x9E\x1A\xBE\xB4\x20\xBF\xB5\x32\xA2\x31\x9C\xAD\xA9\x22\xB1\xB3\xF3\x75\xB2\x27\xB1\x10\x29\xBC\x97\x52\xA0\xAC\x39\xBB\xA3\x70\x79\xB6\x91\x9E\xAA\x0F\x2B\xAF\x71\x22\xAB\x4D\xBA\xB4\x28\x2B\x12\xF4\xA4\x9C\x76\xA6\x9C\x59\xB3\xB1\x5B\xB3\x28\xDC\xAE\xB5\x18\xB5\xAC\x29\x30\xB4\x10\x25\x5B\x81\xB7\x9C\xE6\xA6\x9C\xEF\xA9\x2F\xE2\x41\x1B\xC1\x11\xAD\x86\xA4\xA9\xC6\xA0\xB2\x6B\xA2\xAF\xBC\x1E\xB9\xEB\xA3\xB3\xC2\x22\xB9\x49\xB2\x10\xE3\xA7\xBA\x29\xA6\xB7\x82\x8A\x67\x67\xB8\xA4\x9A\x9A\xB0\xAF\xA4\xAB\xED\x20\xB2\xCF\x9D\xAC\x0B\xAA\x98\xB2\xB7\xA8\xBC\xBC\xB9\x29\x34\xBA\x71\x29\xBA\xC6\x9B\x2E\x41\xA5\x10\x25\xB2\x20\x52\xB5\xA8\xBC\xB5\xB5\xD6\x90\xB6\x74\x00\xA4\x63\xBB\xB8\xDF\xA6\xB6\xA2\xB3\xB0\x4C\xBC\x95\x24\xB7\x9C\x6D\xB0\x10\x6F\xB1\xA5\xBF\xAE\x06\x2D\xBF\xB2\xD6\xB8\xA5\x6A\x40\xBC\xB6\x56\xBA\x62\xBF\x21\x51\xB9\xBB\x94\x9B\xBB\xCC\xBC\xBC\xBE\xB1\xB6\x05\x1F\xB4\x29\xA4\xB6\x46\xA5\xBD\xD7\xB9\xBF\xE4\xB1\x38\x6C\xB4\xAA\x2A\xB1\xB7\x6E\x01\xAC\xF8\x9C\xBA\x9A\x85\x89\xF8\xBE\xB7\x9F\xBD\x85\x07\xC0\xA7\xFE\x9B\x27\xDD\x72\xB8\x08\x16\x02\xA7\x2F\xB7\x11\xC0\xB2\xB1\xB9\x07\xAF\xB2\xA4\xD3\x86\xBE\xC4\x10\xC1\x05\x1F\xAE\xC2\xBF\xC1\x16\xC9\x8B\x6F\x47\xBB\x20\xA5\xBB\x00\x10\x53\x02\x23\x8D\x0B\xC0\xBA\x09\xCD\x8B\x2D\xCC\x2A\x0D\xC0\x92\xB5\xA1\xB0\x5E\xAB\x95\x08\xC5\xBA\xEA\xAE\xB8\x64\xAC\xA0\x3E\xBD\xB3\x3C\xC0\x10\x42\xBB\xAE\x45\xB4\xB0\x08\x18\x02\x13\xC4\xB3\x2B\x18\xC4\x9D\xA3\x8D\x19\xC9\xA2\xDF\x86\xBE\x4E\x55\x5B\x7A\xB0\x00\xEB\x25\x81\x36\xC1\xA6\x3B\xC9\xC3\x7D\x10\xC4\x5C\xC0\x00\xEF\xA1\xAF\x59\xC6\xAB\x1A\xA1\xC4\xDB\x85\xC6\x37\xC9\xAF\x49\xCD\x55\x68\xCA\xC1\xA9\x9A\x58\x26\xCA\xC4\x5B\xAF\x63\x2B\xCF\xC6\xC7\x55\xC5\xFF\x0D\x9D\xEF\xAD\x9D\x55\xC7\xB4\x66\xCF\xAF\xEB\xAB\x2A\x7F\x82\x20\x7B\x24\xAF\x12\xCD\xC4\x76\xC6\x8C\x71\xCC\xC6\x5B\xAF\x58\x5F\x15\xC7\x5B\xAF\x55\xC6\x98\xC7\xEB",
-"\x2C\x8B\xCD\x9B\xBE\x3C\xB0\x00\xB2\x53\xB5\x14\xCD\xC9\x5F\x56\xBE\xE6\xB1\x92\x9D\xCF\xC2\x57\xCB\xAE\x09\xAE\xC2\x3D\xC2\x10\x62\xC7\xAF\x22\xCE\xC5\x2F\xC3\xC4\x66\xC5\xC4\x69\xC5\x10\x4C\xCC\x9D\x98\xCA\xA2\x9A\xCD\x10\x55\x13\x5B\xEE\xBC\xC8\x9E\xC3\x56\xB5\x55\xCB\x6E\xC1\xC9\x63\x5F\xC4\xDF\x91\xC5\x7B\x23\xC5\x36\xB8\xC3\x2F\xC7\xCA\x63\xCD\xC5\x3E\xC6\xC6\x61\xCB\xAE\xB0\xCF\xC5\xB2\xC5\xA2\x6A\xC8\xB8\x9D\xA3\x90\x9B\xCA\xBC\x72\xCF\xCB\x8A\x55\x5B\xF6\xA8\x9C\xD3\x8B\xC8\x7F\x54\x83\x74\xC5\xC3\xE7\xBC\x8E\x78\xCA\xC7\x5C\xB6\xB4\xAA\xBF\xCC\xEC\x22\x87\x81\xC4\xA2\x0B\x26\xCC\x03\x2C\xCD\xBA\xCC\x57\xDE\xCE\xCB\xDF\xCF\x55\x86\xC0\xB2\xE5\xC7\x9C\xC7\x6E\xC8\x1B\x8F\xCD\xFF\xC3\x56\xDE\x98\xC7\x7E\xC8\xA4\x7B\x22\x2D\xEF\xA4\xCE\x89\xC0\x03\x25\xBB\x8F\x9E\x1F\x66\xE9\x32\x58\x73\x65\x67\x17\xC8\xC7\x80\xCD\xA9\x0F\xD6\x92\x48\xA3\x8D\x15\xD4\x7D\x01\x10\x53\xE9\x37\x6C\x61\x6F\x51\x17\xC2\xCF\x99\x96\xCF\xDF\x92\x9E\x22\xD3\xCC\xE0\xC6\x11\x30\x05\xBD\x94\xCC\xCC\xF8\xB0\xCA\x7B\x23\x7E\x00\x1F\x9E\x55\xCB\x2E\xF0\x4D\xCC\x39\xBF\xC2\xC4\x1B\xCA\x55\xC3\xCD\x46\xC5\x10\x2A\x0B\xC6\xE7\xC8\x10\x4D\xD8\xC8\xC4\xC8\x5D\xF8\xC2\xD1\x53\xDC\x7C\xE6\xB4\x8A\x35\x2B\xCC\x08\x13\xD4\xA8\xC9\x7D\x45\xDF\xD5\xEC\xAE\xCA\x62\xDA\xD4\xB3\xCA\xCA\x4E\xDB\xCE\xD1\xC3\xD2\x89\xC1\x03\xE6\xCA\xD6\xDF\xC9\xCE\x5B\xA9\xD0\xE6\x6D\xCE\xA4\xA8\xBA\xD4\xCD\xC6\x62\xD7\xCD\x0B\x25\xC8\x4B\xC2\xD0\x6D\xDF\xD6\xBA\x98\x6B\x90\xC5\xD3\x1B\x63\xC9\xB4\xBD\x46\x31\xCC\xD3\x3C\x23\xB8\x5F\xC2\xD4\xA6\xC1\xD6\xF2\xC7\xD4\x3F\xCB\xD6\xD8\xCC\xD4\x69\xD5\x5B\x51\xDC\xD6\x57\xDB\x61\x55\xD4\xD0\x89\xC2\x03\x59\xDE\xD8\xA4\xCB\x30\x91\xDB\xC5\x46\xDF\xB3\x5F\xC6\xD6\x97\xD8\xD6\x08\x11\xC2\xAE\xDC\xD9\x86\xDE\xD6\xA0\xD3\xC7\x25\x75\xD8\x74\xD8\xD5\xC2\x9D\x9D\xDB\xBC\x27\x79\xD9\xCD\xD6\xCA\xD7\x07\x2E\xD7\x47\xC0\xD8\x9D\xD4\xDB\xC6\x93\xD8\x00\x78\xDB\xBE\xC5\x5D\x29\xA8\xC7\xCB\x90\xB2\xDD\x9F\xD1\xB0\xB4\xC2\x45\x32\x2D\xC5\xB2\xA4\x04\xCD\x4E\x95\x8F\xD6\x82\x53\x9D\x0B\xBF\x54\x0D\xB6\x40\x78\xC4\xAF\x9F\xDF\xDA\x06\xB1\x10\x00\xBE\x9D\x17\xC8\xDD\x20\xBB\xDD\x89\x86\xC6\xFF\x0C\x8B\x8F\x82\xA4\x32\xDD\xAF\x9D\xAD\xD2\x5F\xCF\x0F\x0D\xD4\xD3\x50\xB6\xBD\x42\xAD\xDE\x2B\x1C\x02\x20\xB5\x9F\x74\x82\x2D\x9B\xDE\xDF\xCD\xDB\x84\xD2\x22\xCC\x50\xCD\xD6\xD2\x27\xC8\xB2\xD9\xDB\xC6\x85\xD2\x9C\x17\xD2\x18\xDA\x48\x1A\xD5\x53\x62\x64\x07\x1D\xD2\x9C\xD4\xDA\xE0\xC9\xA0\xD3\xEC\xD6\xDD\x30\x32\x2D\x04\xED\xA9\x06\xEF\x86\x74\x08\xE0\xC6\xD6\xD8\x32\x0D\xE0\x2F\xE4\xE1\x31\x01\xE1\x33\xEB\xE0\x8A\x56\xE1\x05\x1D\x19\x28\xDA\x48\x2A\xDC\xD1\x26\xE7\x1C\x2E\xD2\xC8\x20\xBA\x9B\x49\xA9\xDF\x41\xE8\x19\x28\xE5\xE0\x39\xB7\xE0\x2B\x19\xE0\x0F\xED\xD9\x31\xEF\xD7\x52\xD3\xDB\x36\xE5\xE5\x14\xE7\xD3\x88\xD4\x20\xD5\xC2\xA4\xCC\xAC\x98\x82\x53\x6F\x79\x0C\xDC\x4F\xD4\x90\x31\x05\xB2\x89\x21\x10\xED\x15\x9F\x48\x6E\x79\xCF\xBD\xD6\x2E\xDC\xD7\xDF\x9F\xE5\x0F\x21\xE6\x3C\x73\xE6\xEA\xC4\x71\x67\xEB\xAC\x13\xCD\x1E\x16\xDC\x6A\x31\x6F\x6A\x72\x0F\x8D\x9E\xB9\xD3\x5D\xDB\xD8\xC2\x9B\x27\x1B\x09\xD6\x41\xDB\x12\x20\x07\xDA\x3A\xB7\xD6\x01\x19\xE2\x2E\x2A\xCE\x94\xE2\xE2\x6A\xD8\x6D\xE7\xDC\x98\x2B\xE9\x91\x60\x1B\xDB\x2B\x19\x01\x8C\xEB\x2E\x94\xD2\xCD\xAA\xDF\x20\xC4\xD8\xD9\x58\xE8\xE3\xCC\x72\xD8\x81\xA4\xD8\x79\xE1\x90\x32\x0B\xE5\x66\xCE\xD5\x38\xD9\xE8\x2B\x1B\xE8\xE8\xD6\xC6\xEB\x2F\xE8\x66\xCE\xCC\x56\xC3\xE0\x99\xD2\xEC\xAB\xE5\xE6\x9A\xE1\xC3\x9D\xE6\x11\x46\x56\xD7\x08\x12\xEA\xBB\xEF\xC5\xA5\xEB\xDA\xA7\xED\xD7\x80\xBF\xE4\x37\xE6\xEC\x4B\x8E\xEA\x28\xC0\x00\xB0\xE3\xD7\xAC\xEB\x6D\xCF\xDA\x9C\x2B\x1D\x01\xB6\xBD\xB7\x0F\x25\xB9\x01\x1F\xBF\x65\x02\x20\xF0\xDA\x67\x02\x28\xC7\xA2\xC2\x10\xF4\xB8\xE8\x04\x2D\xDF\x29\xA3\xDD\xC2\xDE\x9D\xDF\x87\xE5\x13\xEF\xED\x14\xD7\x9C\x16\xDD\xE3\x32\x4B\xE1\x74\x6D\xE1\x1F\xE4\x20\x21\xE7\xEF\xE9\xD0\x10\xE3\xC5\xDB\x56\xEB\x12\x12\xE8\xE9\x14\x7F\xEF\xC6\x91\xF0\x19\xE2\x43\x3F\xE6\xF0\x49\xE8\x16\x43\xE4\xE2\xE4\x9B\xF0\xF5\xA7\xED\x99\xEA\x9A\x10\xF2\xF2\x13\xF2\xA4\x78\xC1\xED\x5E\xE3\xC2\x4B\xB2\xE6\x64\xE3\xF2\xE6\x68\xE6\x7D\xE0\x07\xBA\x98\x84\xC5\x82\xDA\xC2\x9C\xDA\x29\xA4\xE7\x0B\x26\xE7\xC2\x7F",
-"\xF2\x14\x72\x03\x32\xFF\xEC\x6B\xE3\xB7\x57\x8F\x70\x6F\xE2\xE5\x48\xA6\xE8\x05\x1E\xEB\x0B\xC8\xC7\x7B\x21\x86\x0F\x2B\x2E\x7F\x80\xDB\xB8\x4C\xE4\x5B\xC4\x87\x9B\xE5\xE7\x1B\xFD\xCB\xB4\xEA\x2F\xD1\xD0\xD2\x20\xF3\xEF\xDE\x9D\xEE\xDD\xD7\x9C\xDF\xD7\x94\x9A\xBD\xBB\xD3\xA5\xDE\xEF\xCD\xA9\xF7\xD3\xBF\xEF\xD0\xB3\x77\xBA\x46\x85\xE2\x9C\xF1\xE1\x10\x64\xFF\xF4\xC2\x96\xEF\xDF\x9F\x9E\xD2\x2B\xCA\x56\xD0\xE3\x32\xE5\xEC\x30\xF7\x5C\xFC\xE2\xF1\x01\x94\xF1\x8C\x96\xF1\x5E\x6A\xE1\xB9\x8B\xD1\x1A\xFB\xB4\x6F\x4E\xD1\xF1\xCE\x9D\x80\xF3\xED\xC7\xC1\xDA\x85\xFD\xEF\xD8\xE8\x5D\x89\xF1\xE5\x86\xDC\xF8\x0F\x2E\xF8\x1A\x5E\xE3\x34\x8B\xD2\x37\x5A\xDF\x78\xC4\xE4\x9D\xA8\xEF\x64\xDB\xF9\x52\xED\xF9\x8A\xFC\x8E\xA1\xF2\xFB\xA3\xFB\xD0\xC2\x90\xEC\x31\xCA\xFB\x04\x22\x20\xD9\xDD\xFB\xBE\xFC\x20\x61\xFE\xD0\x20\xF1\xFC\xDF\x96\xF6\xEE\x7E\xDD\xB9\x80\xDE\x54\xB3\xA4\xCD\xB5\xB6\xBF\xBA\x9D\x6F\xF8\xA4\x71\xF2\x10\xC8\xF5\xF6\x74\xFD\xBA\x06\xCB\xDF\xF4\xD2\xFC\x78\xC2\x20\x24\x02\xFC\xDF\x9C\xD0\x97\xF7\xC9\xEA\xB5\xF1\x26\xD9\xC2\x17\xF3\x1D\x04\xF0\xE4\x94\xF5\x34\x96\xF8\xDF\xD6\xF4\xDA\x0B\x26\xFA\x70\x63\x1D\x19\xFC\xD2\x5D\xF8\xE7\xAD\xFE\xF1\xF4\x74\x41\x02\x11\x88\x74\xFE\x33\x5D\xBD\x67\x7F\x7C\x73\xDB\x42\x08\x02\x88\xFB\x59\x72\x8E\x62\x08\x3C\x75\xFD\x52\x0D\xF7\x73\xF9\x21\x5C\x3B\x33\x7F\xF4\x62\xEC\x4A\x81\x80\x0C\x00\xFA\x77\x44\x6F\x80\xC0\x28\xC3\x4F\x7C\x8C\x79\xFA\x70\x7E\x05\x91\x7E\x1D\x78\xC0\x69\x51\xEB\x7C\x01\xA6\x7B\xE2\x6F\x77\xC2\x4A\x40\x0E\x71\x02\x8B\x20\x66\x7C\xFD\x62\x52\xB0\x7C\x96\x6E\x80\xDB\x75\xF2\x06\x7F\xC4\x60\x81\xD2\x32\x04\xA7\x7D\x81\x71\xF9\x1C\x70\xFF\x71\x7F\x30\x18\x03\x82\x09\xF5\x68\x9C\x39\x82\x40\x13\x81\x1E\x87\xB8\x77\x7D\x28\x83\xFA\x40\x82\xF7\x22\x82\xF9\x7A\x32\x3B\x7F\xD5\x7D\xFF\x29\x81\xFE\x4B\x79\x1B\x80\x20\x10\x83\xC1\x74\xE3\x53\x80\x19\x9E\x77\x30\x87\xF7\x56\x76\x1A\x8F\xF5\x10\x12\xDF\x78\x7C\x20\x78\xCA\x4D\x81\x6F\x73\xE5\x45\x6E\x0F\x81\x48\x35\x75\x07\x9E\x7D\xC3\x75\xE1\x00\x7B\xFA\x77\x68\x23\x86\xFD\x45\x83\x82\x77\x04\xA7\x81\xE5\x60\x71\x08\x86\x38\x59\x7C\xA8\x6B\x03\x84\x49\x1D\x9A\x81\x77\x84\x07\x95\x61\x48\x84\x90\x24\x7F\xFD\x7F\x83\x02\x7A\xFF\x65\x81\x0A\x81\x9D\x6C\x26\x17\x87\x72\x48\x56\x09\x81\x08\x39\x84\x05\x94\x73\x23\x8F\x82\x8D\x85\xBA\x26\x82\x87\x79\xE5\x69\x82\x00\x84\x76\x6C\x81\x6F\x7D\x7B\x44\x8C\x98\x46\x73\xA4\x78\x7A\x91\x76\xC9\x4C\x84\x4A\x88\x6D\x34\x7E\xE8\x65\x83\x7A\x85\xF6\x55\x84\x2B\x81\x01\x81\x87\x04\x83\x84\x26\x85\x13\x91\x7E\x25\x8A\xDE\x45\x70\xC8\x77\x74\x29\x51\xD9\x79\x02\xA3\x2E\xE2\x3C\x84\x83\x74\x72\x7B\x82\xCF\x6B\x84\xE3\x44\xD2\x7E\x83\x85\x6C\x7F\xC6\x86\x0D\x1B\x82\x0F\x7D\x05\xAC\x64\x84\x0E\x7D\x48\x53\x11\x85\x08\x68\x8F\x9D\x52\x84\x35\x8B\x83\xD9\x82\xD6\x7E\x85\x39\x8F\xF9\x08\x7D\x30\x9F\x85\x68\x81\x16\x81\x08",
-};
 
-		void GuiIqGetParserBuffer(vl::stream::MemoryStream& stream)
+namespace vl
+{
+	namespace presentation
+	{
+		namespace instancequery
 		{
-			vl::stream::MemoryStream compressedStream;
-			for (vint i = 0; i < parserBufferRows; i++)
-			{
-				vint size = i == parserBufferRows - 1 ? parserBufferRemain : parserBufferBlock;
-				compressedStream.Write((void*)parserBuffer[i], size);
-			}
-			compressedStream.SeekFromBegin(0);
-			vl::stream::LzwDecoder decoder;
-			vl::stream::DecoderStream decoderStream(compressedStream, decoder);
-			vl::collections::Array<vl::vuint8_t> buffer(65536);
-			while (true)
-			{
-				vl::vint size = decoderStream.Read(&buffer[0], 65536);
-				if (size == 0) break;
-				stream.Write(&buffer[0], size);
-			}
-			stream.SeekFromBegin(0);
-		}
-/***********************************************************************
-Unescaping Function Foward Declarations
-***********************************************************************/
 
 /***********************************************************************
-Parsing Tree Conversion Driver Implementation
+GuiInstanceQueryAstInsReceiver : public vl::glr::AstInsReceiverBase
 ***********************************************************************/
 
-		class GuiIqTreeConverter : public vl::parsing::ParsingTreeConverter
-		{
-		public:
-			using vl::parsing::ParsingTreeConverter::SetMember;
-
-			bool SetMember(GuiIqNameOption& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
+			vl::Ptr<vl::glr::ParsingAstBase> GuiInstanceQueryAstInsReceiver::CreateAstNode(vl::vint32_t type)
 			{
-				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
-				if(token)
+				auto cppTypeName = GuiInstanceQueryCppTypeName((GuiInstanceQueryClasses)type);
+				switch((GuiInstanceQueryClasses)type)
 				{
-					if(token->GetValue()==L"Specified") { member=GuiIqNameOption::Specified; return true; }
-					else if(token->GetValue()==L"Any") { member=GuiIqNameOption::Any; return true; }
-					else { member=GuiIqNameOption::Specified; return false; }
+				case GuiInstanceQueryClasses::CascadeQuery:
+					return new vl::presentation::instancequery::GuiIqCascadeQuery();
+				case GuiInstanceQueryClasses::PrimaryQuery:
+					return new vl::presentation::instancequery::GuiIqPrimaryQuery();
+				case GuiInstanceQueryClasses::SetQuery:
+					return new vl::presentation::instancequery::GuiIqSetQuery();
+				default:
+					return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
 				}
-				member=GuiIqNameOption::Specified;
-				return false;
 			}
 
-			bool SetMember(GuiIqChildOption& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
+			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value)
 			{
-				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
-				if(token)
+				auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
+				switch((GuiInstanceQueryFields)field)
 				{
-					if(token->GetValue()==L"Direct") { member=GuiIqChildOption::Direct; return true; }
-					else if(token->GetValue()==L"Indirect") { member=GuiIqChildOption::Indirect; return true; }
-					else { member=GuiIqChildOption::Direct; return false; }
+				case GuiInstanceQueryFields::CascadeQuery_child:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqCascadeQuery::child, object, field, value, cppFieldName);
+				case GuiInstanceQueryFields::CascadeQuery_parent:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqCascadeQuery::parent, object, field, value, cppFieldName);
+				case GuiInstanceQueryFields::SetQuery_first:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqSetQuery::first, object, field, value, cppFieldName);
+				case GuiInstanceQueryFields::SetQuery_second:
+					return vl::glr::AssemblerSetObjectField(&vl::presentation::instancequery::GuiIqSetQuery::second, object, field, value, cppFieldName);
+				default:
+					return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
 				}
-				member=GuiIqChildOption::Direct;
-				return false;
 			}
 
-			bool SetMember(GuiIqBinaryOperator& member, vl::Ptr<vl::parsing::ParsingTreeNode> node, const TokenList& tokens)
+			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex)
 			{
-				vl::Ptr<vl::parsing::ParsingTreeToken> token=node.Cast<vl::parsing::ParsingTreeToken>();
-				if(token)
+				auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
+				switch((GuiInstanceQueryFields)field)
 				{
-					if(token->GetValue()==L"ExclusiveOr") { member=GuiIqBinaryOperator::ExclusiveOr; return true; }
-					else if(token->GetValue()==L"Intersect") { member=GuiIqBinaryOperator::Intersect; return true; }
-					else if(token->GetValue()==L"Union") { member=GuiIqBinaryOperator::Union; return true; }
-					else if(token->GetValue()==L"Substract") { member=GuiIqBinaryOperator::Substract; return true; }
-					else { member=GuiIqBinaryOperator::ExclusiveOr; return false; }
+				case GuiInstanceQueryFields::PrimaryQuery_attributeName:
+					return vl::glr::AssemblerSetTokenField(&vl::presentation::instancequery::GuiIqPrimaryQuery::attributeName, object, field, token, tokenIndex, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_referenceName:
+					return vl::glr::AssemblerSetTokenField(&vl::presentation::instancequery::GuiIqPrimaryQuery::referenceName, object, field, token, tokenIndex, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_typeName:
+					return vl::glr::AssemblerSetTokenField(&vl::presentation::instancequery::GuiIqPrimaryQuery::typeName, object, field, token, tokenIndex, cppFieldName);
+				default:
+					return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
 				}
-				member=GuiIqBinaryOperator::ExclusiveOr;
-				return false;
 			}
 
-			void Fill(vl::Ptr<GuiIqQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
+			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)
 			{
-			}
-
-			void Fill(vl::Ptr<GuiIqPrimaryQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
-			{
-				SetMember(tree->childOption, obj->GetMember(L"childOption"), tokens);
-				SetMember(tree->attributeNameOption, obj->GetMember(L"attributeNameOption"), tokens);
-				SetMember(tree->attributeName, obj->GetMember(L"attributeName"), tokens);
-				SetMember(tree->typeNameOption, obj->GetMember(L"typeNameOption"), tokens);
-				SetMember(tree->typeName, obj->GetMember(L"typeName"), tokens);
-				SetMember(tree->referenceName, obj->GetMember(L"referenceName"), tokens);
-			}
-
-			void Fill(vl::Ptr<GuiIqCascadeQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
-			{
-				SetMember(tree->parent, obj->GetMember(L"parent"), tokens);
-				SetMember(tree->child, obj->GetMember(L"child"), tokens);
-			}
-
-			void Fill(vl::Ptr<GuiIqSetQuery> tree, vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)
-			{
-				SetMember(tree->first, obj->GetMember(L"first"), tokens);
-				SetMember(tree->second, obj->GetMember(L"second"), tokens);
-				SetMember(tree->op, obj->GetMember(L"op"), tokens);
-			}
-
-			vl::Ptr<vl::parsing::ParsingTreeCustomBase> ConvertClass(vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)override
-			{
-				if(obj->GetType()==L"PrimaryQuery")
+				auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
+				switch((GuiInstanceQueryFields)field)
 				{
-					vl::Ptr<GuiIqPrimaryQuery> tree = new GuiIqPrimaryQuery;
-					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
-					Fill(tree, obj, tokens);
-					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
-					return tree;
+				case GuiInstanceQueryFields::PrimaryQuery_attributeNameOption:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::attributeNameOption, object, field, enumItem, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_childOption:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::childOption, object, field, enumItem, cppFieldName);
+				case GuiInstanceQueryFields::PrimaryQuery_typeNameOption:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::typeNameOption, object, field, enumItem, cppFieldName);
+				case GuiInstanceQueryFields::SetQuery_op:
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqSetQuery::op, object, field, enumItem, cppFieldName);
+				default:
+					return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
 				}
-				else if(obj->GetType()==L"CascadeQuery")
-				{
-					vl::Ptr<GuiIqCascadeQuery> tree = new GuiIqCascadeQuery;
-					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
-					Fill(tree, obj, tokens);
-					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
-					return tree;
-				}
-				else if(obj->GetType()==L"SetQuery")
-				{
-					vl::Ptr<GuiIqSetQuery> tree = new GuiIqSetQuery;
-					vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
-					Fill(tree, obj, tokens);
-					Fill(tree.Cast<GuiIqQuery>(), obj, tokens);
-					return tree;
-				}
-				else 
-					return 0;
 			}
-		};
 
-		vl::Ptr<vl::parsing::ParsingTreeCustomBase> GuiIqConvertParsingTreeNode(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			GuiIqTreeConverter converter;
-			vl::Ptr<vl::parsing::ParsingTreeCustomBase> tree;
-			converter.SetMember(tree, node, tokens);
-			return tree;
+			const wchar_t* GuiInstanceQueryTypeName(GuiInstanceQueryClasses type)
+			{
+				const wchar_t* results[] = {
+					L"CascadeQuery",
+					L"PrimaryQuery",
+					L"Query",
+					L"SetQuery",
+				};
+				vl::vint index = (vl::vint)type;
+				return 0 <= index && index < 4 ? results[index] : nullptr;
+			}
+
+			const wchar_t* GuiInstanceQueryCppTypeName(GuiInstanceQueryClasses type)
+			{
+				const wchar_t* results[] = {
+					L"vl::presentation::instancequery::GuiIqCascadeQuery",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery",
+					L"vl::presentation::instancequery::GuiIqQuery",
+					L"vl::presentation::instancequery::GuiIqSetQuery",
+				};
+				vl::vint index = (vl::vint)type;
+				return 0 <= index && index < 4 ? results[index] : nullptr;
+			}
+
+			const wchar_t* GuiInstanceQueryFieldName(GuiInstanceQueryFields field)
+			{
+				const wchar_t* results[] = {
+					L"CascadeQuery::child",
+					L"CascadeQuery::parent",
+					L"PrimaryQuery::attributeName",
+					L"PrimaryQuery::attributeNameOption",
+					L"PrimaryQuery::childOption",
+					L"PrimaryQuery::referenceName",
+					L"PrimaryQuery::typeName",
+					L"PrimaryQuery::typeNameOption",
+					L"SetQuery::first",
+					L"SetQuery::op",
+					L"SetQuery::second",
+				};
+				vl::vint index = (vl::vint)field;
+				return 0 <= index && index < 11 ? results[index] : nullptr;
+			}
+
+			const wchar_t* GuiInstanceQueryCppFieldName(GuiInstanceQueryFields field)
+			{
+				const wchar_t* results[] = {
+					L"vl::presentation::instancequery::GuiIqCascadeQuery::child",
+					L"vl::presentation::instancequery::GuiIqCascadeQuery::parent",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::attributeName",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::attributeNameOption",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::childOption",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::referenceName",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::typeName",
+					L"vl::presentation::instancequery::GuiIqPrimaryQuery::typeNameOption",
+					L"vl::presentation::instancequery::GuiIqSetQuery::first",
+					L"vl::presentation::instancequery::GuiIqSetQuery::op",
+					L"vl::presentation::instancequery::GuiIqSetQuery::second",
+				};
+				vl::vint index = (vl::vint)field;
+				return 0 <= index && index < 11 ? results[index] : nullptr;
+			}
+
+			vl::Ptr<vl::glr::ParsingAstBase> GuiInstanceQueryAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
+			{
+				auto cppTypeName = GuiInstanceQueryCppTypeName((GuiInstanceQueryClasses)type);
+				return vl::glr::AssemblyThrowTypeNotAllowAmbiguity(type, cppTypeName);
+			}
 		}
+	}
+}
+
 
 /***********************************************************************
-Parsing Tree Conversion Implementation
+.\INSTANCEQUERY\GENERATED\GUIINSTANCEQUERY_LEXER.CPP
 ***********************************************************************/
-
-		vl::Ptr<GuiIqPrimaryQuery> GuiIqPrimaryQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqPrimaryQuery>();
-		}
-
-		vl::Ptr<GuiIqCascadeQuery> GuiIqCascadeQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqCascadeQuery>();
-		}
-
-		vl::Ptr<GuiIqSetQuery> GuiIqSetQuery::Convert(vl::Ptr<vl::parsing::ParsingTreeNode> node, const vl::collections::List<vl::regex::RegexToken>& tokens)
-		{
-			return GuiIqConvertParsingTreeNode(node, tokens).Cast<GuiIqSetQuery>();
-		}
-
 /***********************************************************************
-Parser Function
+This file is generated by: Vczh Parser Generator
+From parser definition:GuiInstanceQuery
+Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-		vl::Ptr<vl::parsing::ParsingTreeNode> GuiIqParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex)
-		{
-			vl::parsing::tabling::ParsingState state(input, table, codeIndex);
-			state.Reset(L"QueryRoot");
-			vl::Ptr<vl::parsing::tabling::ParsingGeneralParser> parser=vl::parsing::tabling::CreateStrictParser(table);
-			vl::Ptr<vl::parsing::ParsingTreeNode> node=parser->Parse(state, errors);
-			return node;
-		}
 
-		vl::Ptr<vl::parsing::ParsingTreeNode> GuiIqParseAsParsingTreeNode(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex)
+namespace vl
+{
+	namespace presentation
+	{
+		namespace instancequery
 		{
-			vl::collections::List<vl::Ptr<vl::parsing::ParsingError>> errors;
-			return GuiIqParseAsParsingTreeNode(input, table, errors, codeIndex);
-		}
-
-		vl::Ptr<GuiIqQuery> GuiIqParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::collections::List<vl::Ptr<vl::parsing::ParsingError>>& errors, vl::vint codeIndex)
-		{
-			vl::parsing::tabling::ParsingState state(input, table, codeIndex);
-			state.Reset(L"QueryRoot");
-			vl::Ptr<vl::parsing::tabling::ParsingGeneralParser> parser=vl::parsing::tabling::CreateStrictParser(table);
-			vl::Ptr<vl::parsing::ParsingTreeNode> node=parser->Parse(state, errors);
-			if(node && errors.Count()==0)
+			bool GuiInstanceQueryTokenDeleter(vl::vint token)
 			{
-				return GuiIqConvertParsingTreeNode(node, state.GetTokens()).Cast<GuiIqQuery>();
+				switch((GuiInstanceQueryTokens)token)
+				{
+				case GuiInstanceQueryTokens::SPACE:
+					return true;
+				default:
+					return false;
+				}
 			}
-			return 0;
+
+			const wchar_t* GuiInstanceQueryTokenId(GuiInstanceQueryTokens token)
+			{
+				static const wchar_t* results[] = {
+					L"INDIRECT",
+					L"DIRECT",
+					L"NAME",
+					L"WILDCARD_INTERSECT",
+					L"OPEN",
+					L"CLOSE",
+					L"XOR",
+					L"UNION",
+					L"SUBSTRACT",
+					L"ATTRIBUTE",
+					L"COLON",
+					L"DOT",
+					L"SPACE",
+				};
+				vl::vint index = (vl::vint)token;
+				return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
+			}
+
+			const wchar_t* GuiInstanceQueryTokenDisplayText(GuiInstanceQueryTokens token)
+			{
+				static const wchar_t* results[] = {
+					L"//",
+					L"/",
+					nullptr,
+					L"*",
+					L"(",
+					L")",
+					L"^",
+					L"+",
+					L"-",
+					L"@",
+					L":",
+					L".",
+					nullptr,
+				};
+				vl::vint index = (vl::vint)token;
+				return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
+			}
+
+			const wchar_t* GuiInstanceQueryTokenRegex(GuiInstanceQueryTokens token)
+			{
+				static const wchar_t* results[] = {
+					L"////",
+					L"//",
+					L"[a-zA-Z_][a-zA-Z0-9]*",
+					L"/*",
+					L"/(",
+					L"/)",
+					L"/^",
+					L"/+",
+					L"-",
+					L"@",
+					L":",
+					L".",
+					L"/s+",
+				};
+				vl::vint index = (vl::vint)token;
+				return 0 <= index && index < GuiInstanceQueryTokenCount ? results[index] : nullptr;
+			}
+
+			void GuiInstanceQueryLexerData(vl::stream::IStream& outputStream)
+			{
+				static const vl::vint dataLength = 232; // 1446 bytes before compressing
+				static const vl::vint dataBlock = 256;
+				static const vl::vint dataRemain = 232;
+				static const vl::vint dataSolidRows = 0;
+				static const vl::vint dataRows = 1;
+				static const char* compressed[] = {
+					"\xA6\x05\x00\x00\xE0\x00\x00\x00\x10\x00\x01\x93\x01\x84\x81\x82\x08\x82\x09\x08\x84\x8A\x0B\x84\x81\x06\x87\x04\xA0\x11\x84\x88\x14\x88\x83\x14\x17\x84\xAA\x1A\x84\x83\x15\x8E\x82\x2D\x20\x84\x8E\x13\x94\x83\x16\x93\x04\xB0\x04\x99\x14\x82\x1D\x96\x82\x40\x30\x84\x81\x24\x82\x2C\x82\x2F\x37\x84\x9F\x3A\x94\x81\x30\x82\x3D\x04\x8C\x01\xA3\xA1\x82\xA1\x80\x02\x04\x85\x04\x83\x04\x87\x00\x82\x04\x04\x8B\x04\x81\x04\x87\x7E\xAB\x7F\x0C\x81\x89\x81\x82\x04\x82\x02\x82\x5D\xDC\x95\xB7\xA4\xB5\xB2\xB3\xB3\x68\xE9\xBF\x6F\x81\x82\xB6\xB7\xB7\x70\xF1\xB2\xBF\x7E\x03\xB2\xB3\xBA\x6D\xE7\xB8\xA0\x03\xBD\xBE\xBF\xBF\x80\x81\xC2\xC3\xC4\xC5\xC2\xC3\xC3\x88\x89\xCA\xCB\xCC\xC5\xC6\xC7\xC7\x90\x91\xD2\xD3\xC8\xC7\x04\x82\xCB\x01\x98\xC0\x1A\xC4\xCD\xCE\xCF\xCF\x71\xFB\xA8\xA2\xDA\xBE\xBB\x7E\xCD\xA8\x97\xE6\xC0\xDF\xB6\x7F\x7E\x80\x05\x81\x94\xA2\xB1\x84\xA7\xA3\xA4\x5E\xCD\x8F\xAA\x81\x81\xAC\x00\xA9\x45\xB1\xF4\xC0\x06\xA0\x00",
+				};
+				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
+			}
 		}
-
-		vl::Ptr<GuiIqQuery> GuiIqParse(const vl::WString& input, vl::Ptr<vl::parsing::tabling::ParsingTable> table, vl::vint codeIndex)
-		{
-			vl::collections::List<vl::Ptr<vl::parsing::ParsingError>> errors;
-			return GuiIqParse(input, table, errors, codeIndex);
-		}
-
-/***********************************************************************
-Table Generation
-***********************************************************************/
-
-		vl::Ptr<vl::parsing::tabling::ParsingTable> GuiIqLoadTable()
-		{
-			vl::stream::MemoryStream stream;
-			GuiIqGetParserBuffer(stream);
-			vl::Ptr<vl::parsing::tabling::ParsingTable> table=new vl::parsing::tabling::ParsingTable(stream);
-			table->Initialize();
-			return table;
-		}
-
 	}
 }
 
@@ -9697,7 +9845,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace workflow::runtime;
@@ -9811,6 +9958,7 @@ WorkflowEventNamesVisitor
 				if (auto eventInfo = resolvedTypeInfo.typeInfo->GetTypeDescriptor()->GetEventByName(propertyName.ToString(), true))
 				{
 					auto decl = Workflow_GenerateEventHandler(precompileContext, eventInfo);
+					decl->functionKind = WfFunctionKind::Normal;
 					decl->anonymity = WfFunctionAnonymity::Named;
 					decl->name.value = handler->value;
 
@@ -9840,9 +9988,6 @@ WorkflowEventNamesVisitor
 						raiseStat->expression = stringExpr;
 						block->statements.Add(raiseStat);
 					}
-
-					decl->classMember = MakePtr<WfClassMember>();
-					decl->classMember->kind = WfClassMemberKind::Normal;
 					return decl;
 				}
 				else
@@ -10204,13 +10349,6 @@ Workflow_GenerateInstanceClass
 				}
 			};
 
-			auto addDecl = [=](Ptr<WfDeclaration> decl)
-			{
-				decl->classMember = MakePtr<WfClassMember>();
-				decl->classMember->kind = WfClassMemberKind::Normal;
-				instanceClass->declarations.Add(decl);
-			};
-
 			auto notImplemented = []()
 			{
 				auto block = MakePtr<WfBlockStatement>();
@@ -10367,8 +10505,9 @@ Workflow_GenerateInstanceClass
 					if (lsiTd)
 					{
 						auto prop = MakePtr<WfAutoPropertyDeclaration>();
-						addDecl(prop);
+						instanceClass->declarations.Add(prop);
 
+						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = localized->name.ToString();
 						prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(lsiTd).Obj());
 						prop->configConst = WfAPConst::Writable;
@@ -10434,7 +10573,7 @@ Workflow_GenerateInstanceClass
 					if (needFunctionBody)
 					{
 						auto decl = MakePtr<WfVariableDeclaration>();
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						decl->name.value = L"<parameter>" + parameter->name.ToString();
 						decl->type = CopyType(type);
@@ -10444,8 +10583,9 @@ Workflow_GenerateInstanceClass
 					}
 					{
 						auto decl = MakePtr<WfFunctionDeclaration>();
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"Get" + parameter->name.ToString();
 						decl->returnType = CopyType(type);
@@ -10470,7 +10610,7 @@ Workflow_GenerateInstanceClass
 					}
 					{
 						auto decl = MakePtr<WfPropertyDeclaration>();
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						decl->name.value = parameter->name.ToString();
 						decl->type = type;
@@ -10518,7 +10658,7 @@ Workflow_GenerateInstanceClass
 				context->instance->Accept(&visitor);
 			}
 
-			addDecl(ctor);
+			instanceClass->declarations.Add(ctor);
 
 			///////////////////////////////////////////////////////////////
 			// Calling Constructor Class
@@ -10634,11 +10774,12 @@ Workflow_GenerateInstanceClass
 						}
 
 						auto decl = MakePtr<WfFunctionDeclaration>();
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"<instance-ctor>";
 						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 						decl->statement = stat;
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						{
 							auto refCtor = MakePtr<WfReferenceExpression>();
@@ -10681,11 +10822,12 @@ Workflow_GenerateInstanceClass
 						}
 
 						auto decl = MakePtr<WfFunctionDeclaration>();
+						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"<instance-dtor>";
 						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 						decl->statement = stat;
-						addDecl(decl);
+						instanceClass->declarations.Add(decl);
 
 						{
 							auto refDtor = MakePtr<WfReferenceExpression>();
@@ -10761,7 +10903,7 @@ Workflow_GenerateInstanceClass
 				dtorBlock->statements.Add(stat);
 			}
 
-			addDecl(dtor);
+			instanceClass->declarations.Add(dtor);
 
 			return module;
 		}
@@ -10778,6 +10920,7 @@ GuiWorkflowSharedManagerPlugin
 		class GuiWorkflowSharedManagerPlugin : public Object, public IGuiPlugin
 		{
 		protected:
+			workflow::Parser				workflowParser;
 			Ptr<WfLexicalScopeManager>		workflowManager;
 
 		public:
@@ -10800,7 +10943,7 @@ GuiWorkflowSharedManagerPlugin
 			{
 				if (!workflowManager)
 				{
-					workflowManager = new WfLexicalScopeManager(GetParserManager()->GetParsingTable(L"WORKFLOW"));
+					workflowManager = new WfLexicalScopeManager(workflowParser);
 				}
 				return workflowManager.Obj();
 			}
@@ -10837,7 +10980,6 @@ namespace vl
 	{
 		using namespace reflection::description;
 		using namespace collections;
-		using namespace parsing;
 		using namespace workflow::analyzer;
 
 /***********************************************************************
@@ -11822,7 +11964,6 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
 		using namespace workflow;
 		using namespace workflow::analyzer;
 		using namespace reflection::description;
@@ -12423,6 +12564,7 @@ Workflow_InstallBindProperty
 			}
 			{
 				auto callback = MakePtr<WfFunctionDeclaration>();
+				callback->functionKind = WfFunctionKind::Normal;
 				callback->anonymity = WfFunctionAnonymity::Anonymous;
 				callback->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());;
 				{
@@ -12629,6 +12771,7 @@ Workflow_GenerateEventHandler
 		Ptr<workflow::WfFunctionDeclaration> Workflow_GenerateEventHandler(GuiResourcePrecompileContext& precompileContext, description::IEventInfo* eventInfo)
 		{
 			auto func = MakePtr<WfFunctionDeclaration>();
+			func->functionKind = WfFunctionKind::Normal;
 			func->anonymity = WfFunctionAnonymity::Anonymous;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 
@@ -12776,6 +12919,7 @@ Workflow_CreateModuleWithUsings
 		Ptr<workflow::WfModule> Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context, const WString& moduleName)
 		{
 			auto module = MakePtr<WfModule>();
+			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
 
 			vint index = context->namespaces.Keys().IndexOf(GlobalStringKey());
@@ -12890,6 +13034,7 @@ Workflow_InstallCtorClass
 			auto block = MakePtr<WfBlockStatement>();
 
 			auto func = MakePtr<WfFunctionDeclaration>();
+			func->functionKind = WfFunctionKind::Normal;
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->arguments.Add(thisParam);
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
@@ -12907,10 +13052,7 @@ Workflow_InstallCtorClass
 				func->attributes.Add(att);
 			}
 
-			func->classMember = MakePtr<WfClassMember>();
-			func->classMember->kind = WfClassMemberKind::Normal;
 			ctorClass->declarations.Add(func);
-
 			return block;
 		}
 
@@ -12944,9 +13086,6 @@ Variable
 			}
 
 			var->expression = CreateDefaultValue(typeInfo);
-
-			var->classMember = MakePtr<WfClassMember>();
-			var->classMember->kind = WfClassMemberKind::Normal;
 			ctorClass->declarations.Add(var);
 		}
 		
@@ -12981,7 +13120,7 @@ Parser
 ***********************************************************************/
 
 		template<typename T>
-		Ptr<T> Workflow_Parse(GuiResourcePrecompileContext& precompileContext, const WString& parserName, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<T> Workflow_Parse(GuiResourcePrecompileContext& precompileContext, const WString& parserName, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter)
 		{
 			vint errorCount = errors.Count();
 			auto parser = GetParserManager()->GetParser<T>(parserName);
@@ -13010,27 +13149,27 @@ Parser
 			return result;
 		}
 
-		Ptr<workflow::WfType> Workflow_ParseType(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfType> Workflow_ParseType(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter)
 		{
 			return Workflow_Parse<WfType>(precompileContext, L"WORKFLOW-TYPE", location, code, position, errors, availableAfter);
 		}
 
-		Ptr<workflow::WfExpression> Workflow_ParseExpression(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfExpression> Workflow_ParseExpression(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter)
 		{
 			return Workflow_Parse<WfExpression>(precompileContext, L"WORKFLOW-EXPRESSION", location, code, position, errors, availableAfter);
 		}
 
-		Ptr<workflow::WfStatement> Workflow_ParseStatement(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfStatement> Workflow_ParseStatement(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter)
 		{
 			return Workflow_Parse<WfStatement>(precompileContext, L"WORKFLOW-STATEMENT", location, code, position, errors, availableAfter);
 		}
 
-		Ptr<workflow::WfStatement> Workflow_ParseCoProviderStatement(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfStatement> Workflow_ParseCoProviderStatement(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter)
 		{
 			return Workflow_Parse<WfStatement>(precompileContext, L"WORKFLOW-COPROVIDER-STATEMENT", location, code, position, errors, availableAfter);
 		}
 
-		Ptr<workflow::WfModule> Workflow_ParseModule(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, parsing::ParsingTextPos availableAfter)
+		Ptr<workflow::WfModule> Workflow_ParseModule(GuiResourcePrecompileContext& precompileContext, GuiResourceLocation location, const WString& code, GuiResourceTextPos position, collections::List<GuiResourceError>& errors, glr::ParsingTextPos availableAfter)
 		{
 			return Workflow_Parse<WfModule>(precompileContext, L"WORKFLOW-MODULE", location, code, position, errors, availableAfter);
 		}
@@ -13162,22 +13301,21 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace parsing;
 		using namespace workflow;
 
 /***********************************************************************
 WorkflowScriptPositionVisitor
 ***********************************************************************/
 
-		class WorkflowScriptPositionVisitor : public traverse_visitor::ModuleVisitor
+		class WorkflowScriptPositionVisitor : public traverse_visitor::AstVisitor
 		{
 		public:
 			GuiResourcePrecompileContext&					context;
 			GuiResourceTextPos								position;
-			ParsingTextPos									availableAfter;
+			glr::ParsingTextPos								availableAfter;
 			Ptr<types::ScriptPosition>						sp;
 
-			WorkflowScriptPositionVisitor(GuiResourcePrecompileContext& _context, GuiResourceTextPos _position, ParsingTextPos _availableAfter)
+			WorkflowScriptPositionVisitor(GuiResourcePrecompileContext& _context, GuiResourceTextPos _position, glr::ParsingTextPos _availableAfter)
 				:context(_context)
 				, position(_position)
 				, availableAfter(_availableAfter)
@@ -13190,7 +13328,7 @@ WorkflowScriptPositionVisitor
 				sp = context.additionalProperties[nullptr].Cast<types::ScriptPosition>();
 			}
 
-			virtual void Traverse(ParsingTreeCustomBase* node)override
+			void Traverse(glr::ParsingAstBase* node) override
 			{
 				if (!sp->nodePositions.Keys().Contains(node))
 				{
@@ -13229,29 +13367,29 @@ WorkflowScriptPositionVisitor
 WorkflowCompiler_ScriptPosition
 ***********************************************************************/
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node, parsing::ParsingTextPos availableAfter)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfType> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, parsing::ParsingTextPos availableAfter)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfExpression> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, parsing::ParsingTextPos availableAfter)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfStatement> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, parsing::ParsingTextPos availableAfter)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfDeclaration> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
 		}
 
-		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, parsing::ParsingTextPos availableAfter)
+		void Workflow_RecordScriptPosition(GuiResourcePrecompileContext& context, GuiResourceTextPos position, Ptr<workflow::WfModule> node, glr::ParsingTextPos availableAfter)
 		{
-			WorkflowScriptPositionVisitor(context, position, availableAfter).VisitField(node.Obj());
+			WorkflowScriptPositionVisitor(context, position, availableAfter).InspectInto(node.Obj());
 		}
 
 		Ptr<types::ScriptPosition> Workflow_GetScriptPosition(GuiResourcePrecompileContext& context)
