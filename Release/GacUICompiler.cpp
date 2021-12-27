@@ -3063,7 +3063,7 @@ GuiPredefinedInstanceBindersPlugin
 			}
 		};
 
-		class GuiParser_WorkflowCoProviderStatement : public IGuiParser<WfCoProviderStatement>
+		class GuiParser_WorkflowCoProviderStatement : public IGuiParser<WfStatement>
 		{
 		protected:
 			Ptr<workflow::Parser>						parser;
@@ -3074,7 +3074,7 @@ GuiPredefinedInstanceBindersPlugin
 			{
 			}
 
-			Ptr<WfCoProviderStatement> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
+			Ptr<WfStatement> ParseInternal(const WString& text, List<glr::ParsingError>& errors) override
 			{
 				auto handler = glr::InstallDefaultErrorMessageGenerator(*parser.Obj(), errors);
 				auto ast = ParseCoProviderStatement(text, *parser.Obj());

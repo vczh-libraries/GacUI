@@ -924,6 +924,7 @@ RegexLexerBase_
 		template<typename T>
 		RegexTokens_<T> RegexLexerBase_::Parse(const ObjectString<T>& code, RegexProc_<T> proc, vint codeIndex)const
 		{
+			code.Buffer();
 			pure->PrepareForRelatedFinalStateTable();
 			return RegexTokens_<T>(pure, stateTokens, code, codeIndex, proc);
 		}
@@ -1026,8 +1027,8 @@ RegexLexer_<T>
 			Automaton::Ref bigEnfa = new Automaton;
 			for (vint i = 0; i < dfas.Count(); i++)
 			{
-				CopyFrom(bigEnfa->states, dfas[i]->states);
-				CopyFrom(bigEnfa->transitions, dfas[i]->transitions);
+				CopyFrom(bigEnfa->states, dfas[i]->states, true);
+				CopyFrom(bigEnfa->transitions, dfas[i]->transitions, true);
 			}
 			bigEnfa->startState = bigEnfa->NewState();
 			for (vint i = 0; i < dfas.Count(); i++)
