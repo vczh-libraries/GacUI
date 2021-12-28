@@ -3336,7 +3336,7 @@ LexerSymbolManager
 				FINISHED_CALCULATING_DISPLAY_TEXT:
 					if (expanding.Count() == 0)
 					{
-						token->displayText = u32tow(U32String::Unmanaged(&buffer[0]));
+						token->displayText = u32tow(&buffer[0]);
 						if (tokensByDisplayText.Keys().Contains(token->displayText))
 						{
 							AddError(
@@ -3507,6 +3507,7 @@ CompileAst
 						case GlrPropType::Array:
 							propSymbol->SetPropType(AstPropType::Array, prop->propTypeName.value, prop->propTypeName.codeRange);
 							break;
+						default:;
 						}
 					}
 				}
@@ -4167,6 +4168,7 @@ CompileSyntaxVisitor
 					case GlrOptionalPriority::PreferSkip:
 						clauseDisplayText += L"-[ ";
 						break;
+					default:;
 					}
 					auto bodyPair = Build(node->syntax);
 					clauseDisplayText += L" ]";
@@ -9291,6 +9293,7 @@ SyntaxSymbolManager::BuildAutomaton
 					case EdgeImportancy::LowPriority:
 						edgeDesc.priority = automaton::EdgePriority::LowPriority;
 						break;
+					default:;
 					}
 
 					edgeDesc.insBeforeInput.start = (vint32_t)instructionsInOrder.Count();
@@ -9333,6 +9336,7 @@ SyntaxSymbolManager::BuildAutomaton
 					case EdgeImportancy::LowPriority:
 						returnDesc.priority = automaton::EdgePriority::LowPriority;
 						break;
+					default:;
 					}
 
 					returnDesc.insAfterInput.start = (vint32_t)instructionsInOrder.Count();
@@ -9714,6 +9718,7 @@ CompactSyntaxBuilder
 						case EdgeInputType::Epsilon:
 							BuildEpsilonEliminatedEdgesInternal(edge->To(), newState, endState, visited, accumulatedEdges);
 							break;
+						default:;
 						}
 						accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
 					}
@@ -10111,6 +10116,7 @@ SyntaxSymbolManager::FixCrossReferencedRuleEdge
 							accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
 						}
 						break;
+					default:;
 					}
 				}
 			}

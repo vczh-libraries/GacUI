@@ -1403,7 +1403,7 @@ ParserBase<TTokens, TStates, TReceiver, TStateTypes>
 #define ERROR_MESSAGE_PREFIX L"vl::glr::ParserBase<...>::Parse<TAst, TStates>(List<RegexToken>& TraceManager::ITypeCallback*)#"
 				automaton::TraceManager tm(*executable.Obj(), typeCallback);
 				auto ast = ParseInternal(tokens, (vint32_t)State, tm, typeCallback, codeIndex);
-				auto typedAst = ast.Cast<TAst>();
+				auto typedAst = ast.template Cast<TAst>();
 
 				if (!typedAst)
 				{
