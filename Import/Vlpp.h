@@ -602,11 +602,23 @@ namespace vl
 			const K&		key;
 			const V&		value;
 
+#if defined(__clang__)
+#pragma clang dignostic push
+#pragma clang diagnostic ignored "-Wnull-dereference"
+#elif defined(__GNUC__)
+#pragma GCC dignostic push
+#pragma GCC diagnostic ignored "-Wnull-dereference"
+#endif
 			Pair()
 				: key(*(const K*)nullptr)
 				, value(*(const V*)nullptr)
 			{
 			}
+#if defined(__clang__)
+#pragma clang dignostic pop
+#elif defined(__GNUC__)
+#pragma GCC dignostic popd
+#endif
 
 			Pair(const K& _key, const V& _value)
 				: key(_key)
