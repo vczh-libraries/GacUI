@@ -292,8 +292,10 @@ GuiToolstripCommand::ShortcutBuilder Parser
 					Ptr<RegexMatch> match=regexShortcut.MatchHead(text);
 					if (match && match->Result().Length() != text.Length())
 					{
-						errors.Add(glr::ParsingError(nullptr, {}, L"Failed to parse a shortcut \"" + text + L"\"."));
-						return 0;
+						glr::ParsingError error;
+						error.message = L"Failed to parse a shortcut \"" + text + L"\".";
+						errors.Add(error);
+						return nullptr;
 					}
 
 					Ptr<ShortcutBuilder> builder = new ShortcutBuilder;

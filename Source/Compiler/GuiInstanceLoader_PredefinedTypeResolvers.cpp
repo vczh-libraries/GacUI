@@ -168,7 +168,9 @@ namespace vl
 					WfAssemblyLoadErrors loadErrors;
 					if (!compiled->Initialize(true, loadErrors))
 					{
-						manager->errors.Add(glr::ParsingError(nullptr, {}, L"Internal error happened during loading an assembly that just passed type verification."));
+						glr::ParsingError error;
+						error.message = L"Internal error happened during loading an assembly that just passed type verification.";
+						manager->errors.Add(error);
 					}
 				}
 				else

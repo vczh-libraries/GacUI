@@ -157,7 +157,9 @@ GuiInstanceContext::ElementName Parser
 				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
 				if (!match || match->Result().Length() != text.Length())
 				{
-					errors.Add(glr::ParsingError(nullptr, {}, L"Failed to parse an element name \"" + text + L"\"."));
+					glr::ParsingError error;
+					error.message = L"Failed to parse an element name \"" + text + L"\".";
+					errors.Add(error);
 					return nullptr;
 				}
 

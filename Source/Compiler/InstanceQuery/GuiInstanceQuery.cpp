@@ -124,6 +124,7 @@ ExecuteQueryVisitor
 				case GuiIqBinaryOperator::Substract:
 					CopyFrom(output, From(first).Except(second));
 					break;
+				default:;
 				}
 			}
 		};
@@ -229,6 +230,7 @@ GuiIqPrint
 				case GuiIqChildOption::Indirect:
 					writer.WriteString(L"//");
 					break;
+				default:;
 				}
 
 				if (node->attributeNameOption == GuiIqNameOption::Specified)
@@ -278,6 +280,7 @@ GuiIqPrint
 				case GuiIqBinaryOperator::Substract:
 					writer.WriteString(L" - ");
 					break;
+				default:;
 				}
 				node->second->Accept(this);
 				writer.WriteChar(L')');
