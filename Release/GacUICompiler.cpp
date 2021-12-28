@@ -1705,7 +1705,9 @@ GuiInstanceContext::ElementName Parser
 				Ptr<RegexMatch> match = regexElementName.MatchHead(text);
 				if (!match || match->Result().Length() != text.Length())
 				{
-					errors.Add(glr::ParsingError(nullptr, {}, L"Failed to parse an element name \"" + text + L"\"."));
+					glr::ParsingError error;
+					error.message = L"Failed to parse an element name \"" + text + L"\".";
+					errors.Add(error);
 					return nullptr;
 				}
 
@@ -4183,7 +4185,9 @@ namespace vl
 					WfAssemblyLoadErrors loadErrors;
 					if (!compiled->Initialize(true, loadErrors))
 					{
-						manager->errors.Add(glr::ParsingError(nullptr, {}, L"Internal error happened during loading an assembly that just passed type verification."));
+						glr::ParsingError error;
+						error.message = L"Internal error happened during loading an assembly that just passed type verification.";
+						manager->errors.Add(error);
 					}
 				}
 				else
@@ -9105,6 +9109,7 @@ ExecuteQueryVisitor
 				case GuiIqBinaryOperator::Substract:
 					CopyFrom(output, From(first).Except(second));
 					break;
+				default:;
 				}
 			}
 		};
@@ -9210,6 +9215,7 @@ GuiIqPrint
 				case GuiIqChildOption::Indirect:
 					writer.WriteString(L"//");
 					break;
+				default:;
 				}
 
 				if (node->attributeNameOption == GuiIqNameOption::Specified)
@@ -9259,6 +9265,7 @@ GuiIqPrint
 				case GuiIqBinaryOperator::Substract:
 					writer.WriteString(L" - ");
 					break;
+				default:;
 				}
 				node->second->Accept(this);
 				writer.WriteChar(L')');
