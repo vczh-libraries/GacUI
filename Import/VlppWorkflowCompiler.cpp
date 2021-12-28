@@ -139,6 +139,7 @@ CheckBaseClass
 									}
 								}
 								break;
+							default:;
 							}
 
 							if (!depItems.Keys().Contains(baseTd)) continue;
@@ -1175,6 +1176,7 @@ BuildGlobalNameFromModules
 					case WfClassKind::Interface:
 						td = MakePtr<WfInterface>(typeName);
 						break;
+					default:;
 					}
 					AddCustomType(manager, scopeName, declaration, td);
 
@@ -1215,6 +1217,7 @@ BuildGlobalNameFromModules
 								manager->declarationMemberInfos.Add(node, info);
 							}
 							break;
+						default:;
 						}
 					}
 				}
@@ -2905,6 +2908,7 @@ CompleteScopeForDeclaration
 								value |= items[itemInt->name.value];
 							}
 							break;
+						default:;
 						}
 						td->AddEnumItem(item->name.value, value);
 						items.Add(item->name.value, value);
@@ -3249,6 +3253,7 @@ ContextFreeModuleDesugar
 								needProperty = true;
 							}
 							break;
+						default:;
 						}
 					}
 					else if (surroundingLambda)
@@ -8201,6 +8206,7 @@ ExpandStateMachineStatementVisitor
 							defaultBlock->statements.Add(gotoStat);
 						}
 						break;
+					default:;
 					}
 
 					if (defaultBlock->statements.Count() > 0)
@@ -8299,6 +8305,7 @@ ExpandStateMachineStatementVisitor
 							}
 						}
 						break;
+					default:;
 					}
 					SetCodeRange(Ptr<WfStatement>(block), node->codeRange);
 					result = block;
@@ -12532,6 +12539,7 @@ ValidateSemantic(Expression)
 							default:;
 							}
 							break;
+						default:;
 						}
 
 						results.Add(ResolveExpressionResult::ReadonlyType(typeInfo));
@@ -15037,6 +15045,7 @@ ValidateStructure(Declaration)
 								case WfFunctionKind::Override:
 									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 									break;
+								default:;
 								}
 							}
 							break;
@@ -15059,9 +15068,11 @@ ValidateStructure(Declaration)
 								case WfFunctionKind::Override:
 									manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 									break;
+								default:;
 								}
 							}
 							break;
+						default:;
 						}
 					}
 					else
@@ -15077,6 +15088,7 @@ ValidateStructure(Declaration)
 								break;
 							case WfFunctionKind::Override:
 								break;
+							default:;
 							}
 						}
 						if (!node->statement)
@@ -15423,8 +15435,7 @@ ValidateStructure(Declaration)
 							}
 						}
 						break;
-					case WfClassKind::Interface:
-						break;
+					default:;
 					}
 
 					for (auto type : node->baseTypes)
@@ -15483,6 +15494,7 @@ ValidateStructure(Declaration)
 									case WfEnumKind::Flag:
 										manager->errors.Add(WfErrors::FlagValuesNotConsecutiveFromZero(node));
 										break;
+									default:;
 									}
 								}
 								switch (node->kind)
@@ -15493,6 +15505,7 @@ ValidateStructure(Declaration)
 								case WfEnumKind::Flag:
 									current = current == 0 ? 1 : current * 2;
 									break;
+								default:;
 								}
 							}
 							break;
@@ -15505,6 +15518,7 @@ ValidateStructure(Declaration)
 								}
 							}
 							break;
+						default:;
 						}
 
 						if (discoveredItems.Contains(item->name.value))
@@ -15567,6 +15581,7 @@ ValidateStructure(Declaration)
 							manager->errors.Add(WfErrors::OverrideShouldImplementInterfaceMethod(node));
 						}
 						break;
+					default:;
 					}
 
 					if (classDecl)
@@ -15585,6 +15600,7 @@ ValidateStructure(Declaration)
 								manager->errors.Add(WfErrors::AutoPropertyCannotBeInitializedInInterface(node, classDecl));
 							}
 							break;
+						default:;
 						}
 					}
 					else if (dynamic_cast<WfNewInterfaceExpression*>(surroundingLambda))
@@ -19418,6 +19434,7 @@ WfGenerateExpressionVisitor
 					case WfLiteralValue::False:
 						writer.WriteString(L"false");
 						break;
+					default:;
 					}
 				}
 
@@ -19521,6 +19538,7 @@ WfGenerateExpressionVisitor
 							writer.WriteString(L")");
 						}
 						break;
+					default:;
 					}
 				}
 
@@ -20146,6 +20164,7 @@ WfGenerateExpressionVisitor
 									writer.WriteString(L" nullptr)");
 								}
 								break;
+							default:;
 							}
 						}
 						break;
@@ -20198,6 +20217,7 @@ WfGenerateExpressionVisitor
 									writer.WriteString(L" nullptr)");
 								}
 								break;
+							default:;
 							}
 						}
 						break;
@@ -20237,6 +20257,7 @@ WfGenerateExpressionVisitor
 									writer.WriteString(L"true");
 								}
 								break;
+							default:;
 							}
 						}
 						break;
@@ -20285,6 +20306,7 @@ WfGenerateExpressionVisitor
 										writer.WriteString(L" nullptr)");
 									}
 									break;
+								default:;
 								}
 							}
 							else if ((type->GetTypeDescriptor() == result.type->GetTypeDescriptor()) == (node->test == WfTypeTesting::IsType))
@@ -21657,6 +21679,7 @@ namespace vl
 						}
 					}
 					break;
+				default:;
 				}
 				writer.WriteLine(L"public ::vl::reflection::Description<" + name + L">");
 				writer.WriteLine(prefix + L"{");
@@ -21931,6 +21954,7 @@ namespace vl
 							}
 							writer.WriteLine(L",");
 							break;
+						default:;
 						}
 					}
 					writer.WriteLine(prefix + L"};");
@@ -25207,6 +25231,7 @@ GenerateInstructions(Expression)
 					case WfLiteralValue::False:
 						INSTRUCTION(Ins::LoadValue({ false }));
 						break;
+					default:;
 					}
 				}
 
@@ -25263,6 +25288,7 @@ GenerateInstructions(Expression)
 					case WfUnaryOperator::Negative:
 						INSTRUCTION(Ins::OpNegative(GetInstructionTypeArgument(type)));
 						break;
+					default:;
 					}
 				}
 
@@ -25767,6 +25793,7 @@ GenerateInstructions(Expression)
 							INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 						}
 						break;
+					default:;
 					}
 				}
 
@@ -28398,6 +28425,7 @@ Print (Declaration)
 						CHECK_FAIL(L"Internal error: Unknown value.");
 					}
 					break;
+				default:;
 				}
 
 				for (auto [type, index] : indexed(node->baseTypes))
