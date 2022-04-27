@@ -15,12 +15,12 @@ For **Gaclib**: click [here](http://vczh-libraries.github.io/doc/current/home.ht
 
 For **GacUI**: click [here](http://vczh-libraries.github.io/doc/current/gacui/home.html)
 
-[gaclib.net](http://www.gaclib.net/) is a mirror to github pages above
+[gaclib.net](http://www.gaclib.net/) is a mirror to github pages above.
 
 ## Content of This Project
 
 - The [Tutorial](http://vczh-libraries.github.io/doc/current/gacui/running.html) shows how to start using this marvelous GUI library.
-- The [Demos](http://vczh-libraries.github.io/demo.html) section show you all demos using this GUI library.
+- The [Demos](http://vczh-libraries.github.io/demo.html) section shows you all demos using this GUI library.
 
 ### Notice
 
@@ -53,5 +53,5 @@ This GUI library provides the following features:
   - You can define interfaces that required to build your own MVVM pattern in XML and [GacGen.exe](https://github.com/vczh-libraries/GacUI/tree/master/Tools/GacGen) will generate the C++ interface declaration for you.
   - You can also use [Workflow](https://github.com/vczh-libraries/Workflow) expressions in Data Binding and statements in event handlers (instead of writing C++ code in code behind).
 
-https://gankra.github.io/blah/text-hates-you/
+https://gankra.github.io/blah/text-hates-you/  
 https://lord.io/text-editing-hates-you-too/
