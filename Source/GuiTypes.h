@@ -523,9 +523,9 @@ Color
 			{
 			}
 
-			vint Compare(Color color)const
+			vint64_t Compare(Color color)const
 			{
-				return value - color.value;
+				return (vint64_t)value - (vint64_t)color.value;
 			}
 			GUI_DEFINE_COMPARE_OPERATORS(Color)
 

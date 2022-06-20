@@ -1347,14 +1347,12 @@ IMPLEMENT_BRUSH_ELEMENT_RENDERER
 				{\
 					oldColor=Pair<Color, Color>(element->GetColor1(), element->GetColor2());\
 					brush=_renderTarget->CreateDirect2DLinearBrush(oldColor.key, oldColor.value);\
-					brush->AddRef();\
 				}\
 			}\
 			void TRENDERER::DestroyBrush(IWindowsDirect2DRenderTarget* _renderTarget)\
 			{\
 				if(_renderTarget && brush)\
 				{\
-					brush->Release();\
 					_renderTarget->DestroyDirect2DLinearBrush(oldColor.key, oldColor.value);\
 					brush=0;\
 				}\

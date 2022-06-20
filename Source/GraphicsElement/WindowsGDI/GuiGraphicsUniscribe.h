@@ -53,9 +53,9 @@ UniscribeColor
 				UniscribeColor(){}
 				UniscribeColor(Color _fontColor, Color _backgroundColor):fontColor(_fontColor),backgroundColor(_backgroundColor){}
 
-				inline vint Compare(const UniscribeColor& value)const
+				inline vint64_t Compare(const UniscribeColor& value)const
 				{
-					vint result;
+					vint64_t result;
 					if ((result = fontColor.Compare(value.fontColor)) != 0) return result;
 					if ((result = backgroundColor.Compare(value.backgroundColor)) != 0) return result;
 					return 0;
