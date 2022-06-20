@@ -64,4 +64,17 @@
       </Window>
     </Instance>
   </Instance>
+
+  <Instance name="MainWindow2Resource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow2">
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:800 y:600">
+        <att.ContainerComposition-set PreferredMinSize="x:640 y:480" />
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <Bounds AlignmentToParent="left:0 top:0 right:-1 bottom:-1" PreferredMinSize="x:640 y:480">
+            <SolidBorder Color="#FFFF00"/>
+          </Bounds>
+        </Bounds>
+      </Window>
+    </Instance>
+  </Instance>
 </Resource>

@@ -76,11 +76,11 @@ void OpenMainWindow()
 		RegisterTheme(theme);
 	}
 	{
-		auto theme = UnboxValue<Ptr<ThemeTemplates>>(Value::Create(L"demo::TestTheme"));
-		RegisterTheme(theme);
+		//auto theme = UnboxValue<Ptr<ThemeTemplates>>(Value::Create(L"demo::TestTheme"));
+		//RegisterTheme(theme);
 	}
 	{
-		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::TestWindow"));
+		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::TestWindow2"));
 		//AttachDumpCompositionMenu(window);
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();
