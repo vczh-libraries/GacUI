@@ -1117,11 +1117,20 @@ WindowsForm
 
 				void SetClientSize(NativeSize size)override
 				{
-					RECT required={0,0,(int)size.x.value,(int)size.y.value };
-					RECT bounds;
-					GetWindowRect(handle, &bounds);
-					DpiAwared_AdjustWindowRect(&required, handle, dpiX);
-					SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right-required.left, required.bottom-required.top)));
+					if (customFrameMode)
+					{
+						RECT bounds;
+						GetWindowRect(handle, &bounds);
+						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), size));
+					}
+					else
+					{
+						RECT required = { 0,0,(int)size.x.value,(int)size.y.value };
+						RECT bounds;
+						GetWindowRect(handle, &bounds);
+						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
+						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right - required.left, required.bottom - required.top)));
+					}
 				}
 
 				NativeRect GetClientBoundsInScreen()override
