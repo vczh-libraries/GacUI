@@ -58,6 +58,7 @@
 - `INativeHostedController` + `INativeHostedWindow`.
   - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
 - SyncTree architecture that streams layout/element changes per `GuiControlHost`.
+  - or called remoting whatever
 - Port GacUI to other platforms:
   - Windows
     - Command/Powershell Line in Windows (hosted)
@@ -85,6 +86,12 @@
   - [ ] JavaScript / TypeScript through Web assembly
   - [ ] .NET (core?) through dll
   - [ ] Python through dll
+- Alternative option:
+  - SyncViewMode technique (or call remoting whatever)
+  - UI.exe connect view model
+    - Compiled from generated code
+    - Using dll or rpc to connect to a server written by other languages to serve view model objects.
+    - Each way is provided from the library, end users only need a GuiMain function, offered from tutorials.
 
 ## Optional
 
