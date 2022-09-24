@@ -1536,7 +1536,14 @@ SpinLock
 	{
 		while(__sync_val_compare_and_swap(&token, 0, 1)!=0)
 		{
-			while(token!=0) _mm_pause();
+			while (token != 0)
+			{
+#ifdef VCZH_ARM
+				__yield();
+#else
+				_mm_pause();
+#endif
+			}
 		}
 	}
 
