@@ -153,12 +153,12 @@ x86 and x64 Compatbility
 #define UITOW_S		_ui64tow_s
 #define UI64TOA_S	_ui64toa_s
 #define UI64TOW_S	_ui64tow_s
-#if defined VCZH_ARM
-#define INCRC(x)	(__atomic_add_fetch(x, 1, __ATOMIC_SEQ_CST))
-#define DECRC(x)	(__atomic_sub_fetch(x, 1, __ATOMIC_SEQ_CST))
-#elif defined VCZH_MSVC
+#if defined VCZH_MSVC
 #define INCRC(x)	(_InterlockedIncrement64(x))
 #define DECRC(x)	(_InterlockedDecrement64(x))
+#elif defined VCZH_ARM
+#define INCRC(x)	(__atomic_add_fetch(x, 1, __ATOMIC_SEQ_CST))
+#define DECRC(x)	(__atomic_sub_fetch(x, 1, __ATOMIC_SEQ_CST))
 #elif defined VCZH_GCC
 #define INCRC(x)	(__sync_add_and_fetch(x, 1))
 #define DECRC(x)	(__sync_sub_and_fetch(x, 1))
@@ -172,12 +172,12 @@ x86 and x64 Compatbility
 #define UITOW_S		_ui64tow_s
 #define UI64TOA_S	_ui64toa_s
 #define UI64TOW_S	_ui64tow_s
-#if defined VCZH_ARM
-#define INCRC(x)	(__atomic_add_fetch(x, 1, __ATOMIC_SEQ_CST))
-#define DECRC(x)	(__atomic_sub_fetch(x, 1, __ATOMIC_SEQ_CST))
-#elif defined VCZH_MSVC
+#if defined VCZH_MSVC
 #define INCRC(x)	(_InterlockedIncrement((volatile long*)(x)))
 #define DECRC(x)	(_InterlockedDecrement((volatile long*)(x)))
+#elif defined VCZH_ARM
+#define INCRC(x)	(__atomic_add_fetch(x, 1, __ATOMIC_SEQ_CST))
+#define DECRC(x)	(__atomic_sub_fetch(x, 1, __ATOMIC_SEQ_CST))
 #elif defined VCZH_GCC
 #define INCRC(x)	(__sync_add_and_fetch(x, 1))
 #define DECRC(x)	(__sync_sub_and_fetch(x, 1))
