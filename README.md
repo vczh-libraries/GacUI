@@ -2,10 +2,17 @@
 
 **GPU Accelerated C++ User Interface, with WYSIWYG developing tools, XML supports, built-in data binding and MVVM features.**
 
+## License
+
 **Read the [LICENSE](https://github.com/vczh-libraries/GacUI/blob/master/LICENSE.md) first.**
 
-- The release of the GacUI project is put in [vczh-libraries/Release](https://github.com/vczh-libraries/Release).
-- **DO NOT** download source code from this repo **if you are not intended to create pull request**. This is not for end users.
+This project is licensed under [the License repo](https://github.com/vczh-libraries/License).
+
+Source code in this repo is for reference only, please use the source code in [the Release repo](https://github.com/vczh-libraries/Release).
+
+You are welcome to contribute to this repo by opening pull requests.
+
+You are allowed to build `Tools/GacGen` and run the executable **in your local machine** if it is not convenient for you to use the executable in **the Release repo** directly, with modification to its project file to satisfy to your need, but you should be aware that, the development progress of this repo could be ahead of **the Release repo**, so there could be compatible issues.
 
 ## Document
 
