@@ -45,7 +45,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(GacGen PRIVATE VCZH_DEBUG_METAONLY_REFLECTION)
 endif()
 
-target_include_directories(GacGen PRIVATE GacGen ${CMAKE_CURRENT_LIST_DIR} ../../Release)
+target_include_directories(GacGen PRIVATE GacGen ${CMAKE_CURRENT_LIST_DIR} ../../Import ../../Release)
 
 set_target_properties(GacGen PROPERTIES RUNTIME_OUTPUT_NAME GacGen${TARGET_ARCH})
 
