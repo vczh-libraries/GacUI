@@ -49,7 +49,7 @@ namespace vl
 				vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
 				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
 				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem) override;
+				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
 				vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
 			};
 		}

@@ -67,19 +67,19 @@ GuiInstanceQueryAstInsReceiver : public vl::glr::AstInsReceiverBase
 				}
 			}
 
-			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)
+			void GuiInstanceQueryAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
 			{
 				auto cppFieldName = GuiInstanceQueryCppFieldName((GuiInstanceQueryFields)field);
 				switch((GuiInstanceQueryFields)field)
 				{
 				case GuiInstanceQueryFields::PrimaryQuery_attributeNameOption:
-					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::attributeNameOption, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::attributeNameOption, object, field, enumItem, weakAssignment, cppFieldName);
 				case GuiInstanceQueryFields::PrimaryQuery_childOption:
-					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::childOption, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::childOption, object, field, enumItem, weakAssignment, cppFieldName);
 				case GuiInstanceQueryFields::PrimaryQuery_typeNameOption:
-					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::typeNameOption, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqPrimaryQuery::typeNameOption, object, field, enumItem, weakAssignment, cppFieldName);
 				case GuiInstanceQueryFields::SetQuery_op:
-					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqSetQuery::op, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::presentation::instancequery::GuiIqSetQuery::op, object, field, enumItem, weakAssignment, cppFieldName);
 				default:
 					return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
 				}

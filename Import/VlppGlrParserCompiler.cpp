@@ -480,7 +480,7 @@ WriteAstAssemblerHeaderFile
 						writer.WriteLine(prefix + L"\tvl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;");
 						writer.WriteLine(prefix + L"\tvoid SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;");
 						writer.WriteLine(prefix + L"\tvoid SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;");
-						writer.WriteLine(prefix + L"\tvoid SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem) override;");
+						writer.WriteLine(prefix + L"\tvoid SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;");
 						writer.WriteLine(prefix + L"\tvl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;");
 						writer.WriteLine(prefix + L"};");
 					}
@@ -639,7 +639,7 @@ WriteAstAssemblerCppFile
 
 					{
 						writer.WriteLine(L"");
-						writer.WriteLine(prefix + L"void " + manager.Global().name + L"AstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)");
+						writer.WriteLine(prefix + L"void " + manager.Global().name + L"AstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)");
 						writer.WriteLine(prefix + L"{");
 						writer.WriteLine(prefix + L"\tauto cppFieldName = " + manager.Global().name + L"CppFieldName((" + manager.Global().name + L"Fields)field);");
 
@@ -673,7 +673,7 @@ WriteAstAssemblerCppFile
 								PrintCppType(nullptr, classSymbol, writer);
 								writer.WriteString(L"::");
 								writer.WriteString(propSymbol->Name());
-								writer.WriteLine(L", object, field, enumItem, cppFieldName);");
+								writer.WriteLine(L", object, field, enumItem, weakAssignment, cppFieldName);");
 							}
 							writer.WriteLine(prefix + L"\tdefault:");
 							writer.WriteLine(prefix + L"\t\treturn vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);");
@@ -747,23 +747,32 @@ WriteAstAssemblerCppFile
 						writer.WriteLine(L"");
 						writer.WriteLine(prefix + L"const wchar_t* " + manager.Global().name + L"FieldName(" + manager.Global().name + L"Fields field)");
 						writer.WriteLine(prefix + L"{");
-						writer.WriteLine(prefix + L"\tconst wchar_t* results[] = {");
 
-						Array<AstClassPropSymbol*> idToFields(output->fieldIds.Count());
-						for (auto [k, v] : output->fieldIds)
+						if (output->fieldIds.Count() > 0)
 						{
-							idToFields[v] = k;
+							writer.WriteLine(prefix + L"\tconst wchar_t* results[] = {");
+
+							Array<AstClassPropSymbol*> idToFields(output->fieldIds.Count());
+							for (auto [k, v] : output->fieldIds)
+							{
+								idToFields[v] = k;
+							}
+
+							for (auto propSymbol : idToFields)
+							{
+								auto classSymbol = propSymbol->Parent();
+								writer.WriteLine(prefix + L"\t\tL\"" + classSymbol->Name() + L"::" + propSymbol->Name() + L"\",");
+							}
+
+							writer.WriteLine(prefix + L"\t};");
+							writer.WriteLine(prefix + L"\tvl::vint index = (vl::vint)field;");
+							writer.WriteLine(prefix + L"\treturn 0 <= index && index < " + itow(idToFields.Count()) + L" ? results[index] : nullptr;");
+						}
+						else
+						{
+							writer.WriteLine(prefix + L"\treturn nullptr;");
 						}
 
-						for (auto propSymbol : idToFields)
-						{
-							auto classSymbol = propSymbol->Parent();
-							writer.WriteLine(prefix + L"\t\tL\"" + classSymbol->Name() + L"::" + propSymbol->Name() + L"\",");
-						}
-
-						writer.WriteLine(prefix + L"\t};");
-						writer.WriteLine(prefix + L"\tvl::vint index = (vl::vint)field;");
-						writer.WriteLine(prefix + L"\treturn 0 <= index && index < " + itow(idToFields.Count()) + L" ? results[index] : nullptr;");
 						writer.WriteLine(prefix + L"}");
 					}
 
@@ -774,25 +783,34 @@ WriteAstAssemblerCppFile
 						writer.WriteLine(L"");
 						writer.WriteLine(prefix + L"const wchar_t* " + manager.Global().name + L"CppFieldName(" + manager.Global().name + L"Fields field)");
 						writer.WriteLine(prefix + L"{");
-						writer.WriteLine(prefix + L"\tconst wchar_t* results[] = {");
 
-						Array<AstClassPropSymbol*> idToFields(output->fieldIds.Count());
-						for (auto [k, v] : output->fieldIds)
+						if (output->fieldIds.Count() > 0)
 						{
-							idToFields[v] = k;
+							writer.WriteLine(prefix + L"\tconst wchar_t* results[] = {");
+
+							Array<AstClassPropSymbol*> idToFields(output->fieldIds.Count());
+							for (auto [k, v] : output->fieldIds)
+							{
+								idToFields[v] = k;
+							}
+
+							for (auto propSymbol : idToFields)
+							{
+								auto classSymbol = propSymbol->Parent();
+								writer.WriteString(prefix + L"\t\tL\"");
+								PrintCppType(nullptr, classSymbol, writer);
+								writer.WriteLine(L"::" + propSymbol->Name() + L"\",");
+							}
+
+							writer.WriteLine(prefix + L"\t};");
+							writer.WriteLine(prefix + L"\tvl::vint index = (vl::vint)field;");
+							writer.WriteLine(prefix + L"\treturn 0 <= index && index < " + itow(idToFields.Count()) + L" ? results[index] : nullptr;");
+						}
+						else
+						{
+							writer.WriteLine(prefix + L"\treturn nullptr;");
 						}
 
-						for (auto propSymbol : idToFields)
-						{
-							auto classSymbol = propSymbol->Parent();
-							writer.WriteString(prefix + L"\t\tL\"");
-							PrintCppType(nullptr, classSymbol, writer);
-							writer.WriteLine(L"::" + propSymbol->Name() + L"\",");
-						}
-
-						writer.WriteLine(prefix + L"\t};");
-						writer.WriteLine(prefix + L"\tvl::vint index = (vl::vint)field;");
-						writer.WriteLine(prefix + L"\treturn 0 <= index && index < " + itow(idToFields.Count()) + L" ? results[index] : nullptr;");
 						writer.WriteLine(prefix + L"}");
 					}
 
@@ -2524,7 +2542,7 @@ AstEnumSymbol
 			AstEnumItemSymbol* AstEnumSymbol::CreateItem(const WString& itemName, ParsingTextRange codeRange)
 			{
 				auto symbol = new AstEnumItemSymbol(this, itemName);
-				symbol->value = items.items.Count();
+				symbol->value = items.map.Count();
 				if (!items.Add(itemName, symbol))
 				{
 					ownerFile->AddError(
@@ -2895,16 +2913,58 @@ CreateParserGenRuleAst
 				Fill(_ast->refNss, L"glr", L"parsergen");
 				_ast->classPrefix = L"Glr";
 
+				///////////////////////////////////////////////////////////////////////////////////
+				// Condition
+				///////////////////////////////////////////////////////////////////////////////////
+
+				auto _Condition = _ast->CreateClass(L"Condition");
+
+				auto _RefCondition = _ast->CreateClass(L"RefCondition");
+				_RefCondition->SetBaseClass(L"Condition");
+				_RefCondition->CreateProp(L"name")->SetPropType(AstPropType::Token);
+
+				auto _NotCondition = _ast->CreateClass(L"NotCondition");
+				_NotCondition->SetBaseClass(L"Condition");
+				_NotCondition->CreateProp(L"condition")->SetPropType(AstPropType::Type, L"Condition");
+
+				auto _AndCondition = _ast->CreateClass(L"AndCondition");
+				_AndCondition->SetBaseClass(L"Condition");
+				_AndCondition->CreateProp(L"first")->SetPropType(AstPropType::Type, L"Condition");
+				_AndCondition->CreateProp(L"second")->SetPropType(AstPropType::Type, L"Condition");
+
+				auto _OrCondition = _ast->CreateClass(L"OrCondition");
+				_OrCondition->SetBaseClass(L"Condition");
+				_OrCondition->CreateProp(L"first")->SetPropType(AstPropType::Type, L"Condition");
+				_OrCondition->CreateProp(L"second")->SetPropType(AstPropType::Type, L"Condition");
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Switch
+				///////////////////////////////////////////////////////////////////////////////////
+
+				auto _SwitchValue = _ast->CreateEnum(L"SwitchValue");
+				_SwitchValue->CreateItem(L"False");
+				_SwitchValue->CreateItem(L"True");
+
+				auto _Switch = _ast->CreateClass(L"SwitchItem");
+				_Switch->CreateProp(L"name")->SetPropType(AstPropType::Token);
+				_Switch->CreateProp(L"value")->SetPropType(AstPropType::Type, L"SwitchValue");
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Syntax
+				///////////////////////////////////////////////////////////////////////////////////
+
 				auto _Syntax = _ast->CreateClass(L"Syntax");
+
+				auto _RefType = _ast->CreateEnum(L"RefType");
+				_RefType->CreateItem(L"Id");
+				_RefType->CreateItem(L"Literal");
+				_RefType->CreateItem(L"ConditionalLiteral");
 
 				auto _RefSyntax = _ast->CreateClass(L"RefSyntax");
 				_RefSyntax->SetBaseClass(L"Syntax");
-				_RefSyntax->CreateProp(L"name")->SetPropType(AstPropType::Token);
+				_RefSyntax->CreateProp(L"refType")->SetPropType(AstPropType::Type, L"RefType");
+				_RefSyntax->CreateProp(L"literal")->SetPropType(AstPropType::Token);
 				_RefSyntax->CreateProp(L"field")->SetPropType(AstPropType::Token);
-
-				auto _LiteralSyntax = _ast->CreateClass(L"LiteralSyntax");
-				_LiteralSyntax->SetBaseClass(L"Syntax");
-				_LiteralSyntax->CreateProp(L"value")->SetPropType(AstPropType::Token);
 
 				auto _UseSyntax = _ast->CreateClass(L"UseSyntax");
 				_UseSyntax->SetBaseClass(L"Syntax");
@@ -2935,9 +2995,35 @@ CreateParserGenRuleAst
 				_AlternativeSyntax->CreateProp(L"first")->SetPropType(AstPropType::Type, L"Syntax");
 				_AlternativeSyntax->CreateProp(L"second")->SetPropType(AstPropType::Type, L"Syntax");
 
+				///////////////////////////////////////////////////////////////////////////////////
+				// Conditional Clause
+				///////////////////////////////////////////////////////////////////////////////////
+
+				auto _PushConditionSyntax = _ast->CreateClass(L"PushConditionSyntax");
+				_PushConditionSyntax->SetBaseClass(L"Syntax");
+				_PushConditionSyntax->CreateProp(L"switches")->SetPropType(AstPropType::Array, L"SwitchItem");
+				_PushConditionSyntax->CreateProp(L"syntax")->SetPropType(AstPropType::Type, L"Syntax");
+
+				auto _TestConditionBranch = _ast->CreateClass(L"TestConditionBranch");
+				_TestConditionBranch->CreateProp(L"condition")->SetPropType(AstPropType::Type, L"Condition");
+				_TestConditionBranch->CreateProp(L"syntax")->SetPropType(AstPropType::Type, L"Syntax");
+
+				auto _TestConditionSyntax = _ast->CreateClass(L"TestConditionSyntax");
+				_TestConditionSyntax->SetBaseClass(L"Syntax");
+				_TestConditionSyntax->CreateProp(L"branches")->SetPropType(AstPropType::Array, L"TestConditionBranch");
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Clause
+				///////////////////////////////////////////////////////////////////////////////////
+
 				auto _Clause = _ast->CreateClass(L"Clause");
 
+				auto _AssignmentType = _ast->CreateEnum(L"AssignmentType");
+				_AssignmentType->CreateItem(L"Strong");
+				_AssignmentType->CreateItem(L"Weak");
+
 				auto _Assignment = _ast->CreateClass(L"Assignment");
+				_Assignment->CreateProp(L"type")->SetPropType(AstPropType::Type, L"AssignmentType");
 				_Assignment->CreateProp(L"field")->SetPropType(AstPropType::Token);
 				_Assignment->CreateProp(L"value")->SetPropType(AstPropType::Token);
 
@@ -2958,11 +3044,56 @@ CreateParserGenRuleAst
 				_ReuseClause->CreateProp(L"syntax")->SetPropType(AstPropType::Type, L"Syntax");
 				_ReuseClause->CreateProp(L"assignments")->SetPropType(AstPropType::Array, L"Assignment");
 
+				///////////////////////////////////////////////////////////////////////////////////
+				// Left Recursion Clauses
+				///////////////////////////////////////////////////////////////////////////////////
+
+				auto _Lrp = _ast->CreateClass(L"LeftRecursionPlaceholder");
+				_Lrp->CreateProp(L"flag")->SetPropType(AstPropType::Token);
+
+				auto _LrpClause = _ast->CreateClass(L"LeftRecursionPlaceholderClause");
+				_LrpClause->SetBaseClass(L"Clause");
+				_LrpClause->CreateProp(L"flags")->SetPropType(AstPropType::Array, L"LeftRecursionPlaceholder");
+
+				auto LriConfig = _ast->CreateEnum(L"LeftRecursionConfiguration");
+				LriConfig->CreateItem(L"Single");
+				LriConfig->CreateItem(L"Multiple");
+
+				auto LriContinuationType = _ast->CreateEnum(L"LeftRecursionInjectContinuationType");
+				LriContinuationType->CreateItem(L"Optional");
+				LriContinuationType->CreateItem(L"Required");
+
+				auto _LriContinuation = _ast->CreateClass(L"LeftRecursionInjectContinuation");
+				auto _LriClause = _ast->CreateClass(L"LeftRecursionInjectClause");
+
+				_LriContinuation->CreateProp(L"flag")->SetPropType(AstPropType::Type, L"LeftRecursionPlaceholder");
+				_LriContinuation->CreateProp(L"configuration")->SetPropType(AstPropType::Type, L"LeftRecursionConfiguration");
+				_LriContinuation->CreateProp(L"type")->SetPropType(AstPropType::Type, L"LeftRecursionInjectContinuationType");
+				_LriContinuation->CreateProp(L"injectionTargets")->SetPropType(AstPropType::Array, L"LeftRecursionInjectClause");
+
+				_LriClause->SetBaseClass(L"Clause");
+				_LriClause->CreateProp(L"rule")->SetPropType(AstPropType::Type, L"RefSyntax");
+				_LriClause->CreateProp(L"continuation")->SetPropType(AstPropType::Type, L"LeftRecursionInjectContinuation");
+
+				auto _PmClause = _ast->CreateClass(L"PrefixMergeClause");
+				_PmClause->SetBaseClass(L"Clause");
+				_PmClause->CreateProp(L"rule")->SetPropType(AstPropType::Type, L"RefSyntax");
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Rule
+				///////////////////////////////////////////////////////////////////////////////////
+
 				auto _Rule = _ast->CreateClass(L"Rule");
 				_Rule->CreateProp(L"name")->SetPropType(AstPropType::Token);
+				_Rule->CreateProp(L"type")->SetPropType(AstPropType::Token);
 				_Rule->CreateProp(L"clauses")->SetPropType(AstPropType::Array, L"Clause");
 
+				///////////////////////////////////////////////////////////////////////////////////
+				// File
+				///////////////////////////////////////////////////////////////////////////////////
+
 				auto _File = _ast->CreateClass(L"SyntaxFile");
+				_File->CreateProp(L"switches")->SetPropType(AstPropType::Array, L"SwitchItem");
 				_File->CreateProp(L"rules")->SetPropType(AstPropType::Array, L"Rule");
 
 				return _ast;
@@ -3395,6 +3526,7 @@ CreateParserGenAst
 				manager.CreateToken(L"CLASS", L"class");
 				manager.CreateToken(L"ENUM", L"enum");
 				manager.CreateToken(L"VAR", L"var");
+				manager.CreateToken(L"SWITCH", L"switch");
 				manager.CreateToken(L"TOKEN", L"token");
 				manager.CreateToken(L"AS", L"as");
 				manager.CreateToken(L"PARTIAL", L"partial");
@@ -3406,6 +3538,11 @@ CreateParserGenAst
 				manager.CreateToken(L"OPEN_CURLY", L"/{");
 				manager.CreateToken(L"CLOSE_CURLY", L"/}");
 
+				manager.CreateToken(L"OPEN_PUSH", L"!/(");
+				manager.CreateToken(L"OPEN_TEST", L"/?/(");
+				manager.CreateToken(L"AND", L"&&");
+				manager.CreateToken(L"OR", L"/|/|");
+
 				manager.CreateToken(L"COMMA", L",");
 				manager.CreateToken(L"COLON", L":");
 				manager.CreateToken(L"SEMICOLON", L";");
@@ -3414,11 +3551,17 @@ CreateParserGenAst
 				manager.CreateToken(L"ALTERNATIVE", L"/|");
 				manager.CreateToken(L"USE", L"!");
 				manager.CreateToken(L"ASSIGN", L"=");
+				manager.CreateToken(L"WEAK_ASSIGN", L"/?=");
 				manager.CreateToken(L"POSITIVE", L"/+");
 				manager.CreateToken(L"NEGATIVE", L"-");
 
+				manager.CreateToken(L"LS_PH", L"left_recursion_placeholder");
+				manager.CreateToken(L"LS_I", L"left_recursion_inject");
+				manager.CreateToken(L"LS_IM", L"left_recursion_inject_multiple");
+				manager.CreateToken(L"LS_PM", L"prefix_merge");
 				manager.CreateToken(L"ID", L"[a-zA-Z_][a-zA-Z0-9_]*");
 				manager.CreateToken(L"STRING", L"(\"[^\"]*\")+");
+				manager.CreateToken(L"CONDITIONAL_LITERAL", L"(\'[^\']*\')+");
 
 				manager.CreateDiscardedToken(L"SPACE", L"/s+");
 				manager.CreateDiscardedToken(L"COMMENT", L"////[^/r/n]*");
@@ -3545,8 +3688,32 @@ namespace vl
 	{
 		namespace parsergen
 		{
+			using namespace collections;
 			using namespace stream;
 			using namespace regex;
+
+/***********************************************************************
+UnescapeLiteral
+***********************************************************************/
+
+			WString UnescapeLiteral(const WString& literal, wchar_t quot)
+			{
+				Array<wchar_t> buffer(literal.Length());
+				wchar_t* writing = &buffer[0];
+
+				for (vint i = 1; i < literal.Length() - 1; i++)
+				{
+					wchar_t c = literal[i];
+					*writing++ = c;
+					if (c == quot)
+					{
+						i++;
+					}
+				}
+				*writing = 0;
+
+				return &buffer[0];
+			}
 
 /***********************************************************************
 CompileLexer
@@ -3554,10 +3721,14 @@ CompileLexer
 
 			void CompileLexer(LexerSymbolManager& lexerManager, const WString& input)
 			{
-				Regex regexToken(L"^(/s*|(<discard>discard/s)?/s*(<name>[a-zA-Z_]/w*):(<regex>/.+))$");
+				Regex regexToken(L"^(/s*|(<discard>discard/s)?/s*(<name>/$?[a-zA-Z_]/w*)/s*:(<regex>/.+))$");
+				Regex regexFragment(L"/{(<fragment>/$[a-zA-Z_]/w*)/}");
 				vint _discard = regexToken.CaptureNames().IndexOf(L"discard");
 				vint _name = regexToken.CaptureNames().IndexOf(L"name");
 				vint _regex = regexToken.CaptureNames().IndexOf(L"regex");
+				vint _fragment = regexFragment.CaptureNames().IndexOf(L"fragment");
+
+				Dictionary<WString, WString> fragments;
 
 				StringReader reader(input);
 				vint lineIndex = 0;
@@ -3571,17 +3742,73 @@ CompileLexer
 						{
 							auto tokenName = match->Groups()[_name][0].Value();
 							auto tokenRegex = match->Groups()[_regex][0].Value();
-							if (match->Groups().Keys().Contains(_discard))
+							auto tokenDiscard = match->Groups().Keys().Contains(_discard);
+
+							if (tokenName[0] == L'$')
 							{
-								lexerManager.CreateDiscardedToken(tokenName, tokenRegex, codeRange);
+								if (tokenDiscard)
+								{
+									lexerManager.AddError(
+										ParserErrorType::InvalidTokenDefinition,
+										codeRange,
+										line
+										);
+								}
+								else if (fragments.Keys().Contains(tokenName))
+								{
+									lexerManager.AddError(
+										ParserErrorType::DuplicatedTokenFragment,
+										codeRange,
+										tokenName
+										);
+								}
+								else
+								{
+									fragments.Add(tokenName, tokenRegex);
+								}
 							}
 							else
 							{
-								lexerManager.CreateToken(tokenName, tokenRegex, codeRange);
+								WString resolvedRegex;
+								List<Ptr<RegexMatch>> matches;
+								regexFragment.Cut(tokenRegex, false, matches);
+								for (auto&& fragment : matches)
+								{
+									if (fragment->Success())
+									{
+										auto fragmentName = fragment->Groups()[_fragment][0].Value();
+										vint index = fragments.Keys().IndexOf(fragmentName);
+										if (index == -1)
+										{
+											lexerManager.AddError(
+												ParserErrorType::TokenFragmentNotExists,
+												codeRange,
+												fragmentName
+												);
+										}
+										else
+										{
+											resolvedRegex += fragments.Values()[index];
+										}
+									}
+									else
+									{
+										resolvedRegex += fragment->Result().Value();
+									}
+								}
+
+								if (tokenDiscard)
+								{
+									lexerManager.CreateDiscardedToken(tokenName, resolvedRegex, codeRange);
+								}
+								else
+								{
+									lexerManager.CreateToken(tokenName, resolvedRegex, codeRange);
+								}
 							}
 						}
 					}
-					else
+					else if (line.Length() < 2 || line.Left(2) != L"//")
 					{
 						lexerManager.AddError(
 							ParserErrorType::InvalidTokenDefinition,
@@ -3609,58 +3836,458 @@ namespace vl
 			using namespace collections;
 			using namespace compile_syntax;
 
-			extern void ResolveName(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files);
-			extern void ValidatePartialRules(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files);
-			extern void CalculateRuleAndClauseTypes(VisitorContext& context);
-			extern void ValidateTypes(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files);
-			extern void ValidateStructure(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files);
-			extern void CompileSyntax(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files);
+			extern void					ResolveName(VisitorContext& context, VisitorSwitchContext& sContext, Ptr<GlrSyntaxFile> syntaxFile);
+			extern void					ValidateSwitchesAndConditions(VisitorContext& context, VisitorSwitchContext& sContext, Ptr<GlrSyntaxFile> syntaxFile);
+			extern void					ValidatePartialRules(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
+			extern void					CalculateRuleAndClauseTypes(VisitorContext& context);
+
+			extern void					CalculateFirstSet(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
+			extern void					ValidateTypes(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
+			extern void					ValidateStructure(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile);
+
+			extern Ptr<GlrSyntaxFile>	RewriteSyntax_Switch(VisitorContext& context, VisitorSwitchContext& sContext, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile);
+			extern Ptr<GlrSyntaxFile>	RewriteSyntax_PrefixMerge(VisitorContext& context, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile);
+			extern void					CompileSyntax(VisitorContext& context, Ptr<CppParserGenOutput> output, Ptr<GlrSyntaxFile> syntaxFile);
 
 /***********************************************************************
 CompileSyntax
 ***********************************************************************/
 
-			void CompileSyntax(AstSymbolManager& astManager, LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, Ptr<CppParserGenOutput> output, collections::List<Ptr<GlrSyntaxFile>>& files)
+			bool NeedRewritten_Switch(Ptr<GlrSyntaxFile> syntaxFile)
 			{
-				VisitorContext context(astManager, lexerManager, syntaxManager, output);
+				return syntaxFile->switches.Count() > 0;
+			}
 
-				for (auto file : files)
+			bool NeedRewritten_PrefixMerge(Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				return !From(syntaxFile->rules)
+					.SelectMany([](auto rule) { return From(rule->clauses); })
+					.FindType<GlrPrefixMergeClause>()
+					.IsEmpty();
+			}
+
+			void CreateSyntaxSymbols(LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				for (auto rule : syntaxFile->rules)
 				{
-					for (auto rule : file->rules)
+					if (lexerManager.Tokens().Keys().Contains(rule->name.value))
 					{
-						if (context.lexerManager.Tokens().Keys().Contains(rule->name.value))
-						{
-							context.syntaxManager.AddError(
-								ParserErrorType::RuleNameConflictedWithToken,
-								rule->codeRange,
-								rule->name.value
+						syntaxManager.AddError(
+							ParserErrorType::RuleNameConflictedWithToken,
+							rule->codeRange,
+							rule->name.value
 							);
-						}
-						else
+					}
+					else
+					{
+						auto ruleSymbol = syntaxManager.CreateRule(rule->name.value, rule->codeRange);
+					}
+
+					for (auto clause : rule->clauses)
+					{
+						if (auto lrpClause = clause.Cast<GlrLeftRecursionPlaceholderClause>())
 						{
-							auto ruleSymbol = context.syntaxManager.CreateRule(rule->name.value, rule->codeRange);
-							context.astRules.Add(ruleSymbol, rule.Obj());
+							for (auto flag : lrpClause->flags)
+							{
+								if (!syntaxManager.lrpFlags.Contains(flag->flag.value))
+								{
+									syntaxManager.lrpFlags.Add(flag->flag.value);
+								}
+							}
 						}
 					}
 				}
-				if (syntaxManager.Global().Errors().Count() > 0) return;
+			}
 
-				ResolveName(context, files);
-				if (syntaxManager.Global().Errors().Count() > 0) return;
+			bool VerifySyntax_UntilSwitch(VisitorContext& context, VisitorSwitchContext& sContext, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				ResolveName(context, sContext, syntaxFile);
+				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
 
-				ValidatePartialRules(context, files);
-				if (syntaxManager.Global().Errors().Count() > 0) return;
+				ValidateSwitchesAndConditions(context, sContext, syntaxFile);
+				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
+
+				ValidatePartialRules(context, syntaxFile);
+				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
 
 				CalculateRuleAndClauseTypes(context);
-				if (syntaxManager.Global().Errors().Count() > 0) return;
+				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
 
-				ValidateTypes(context, files);
-				if (syntaxManager.Global().Errors().Count() > 0) return;
+				return true;
+			}
 
-				ValidateStructure(context, files);
-				if (syntaxManager.Global().Errors().Count() > 0) return;
+			bool VerifySyntax_UntilPrefixMerge(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				CalculateFirstSet(context, syntaxFile);
+				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
 
-				CompileSyntax(context, files);
+				ValidateTypes(context, syntaxFile);
+				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
+
+				ValidateStructure(context, syntaxFile);
+				if (context.syntaxManager.Global().Errors().Count() > 0) return false;
+
+				return true;
+			}
+
+			Ptr<GlrSyntaxFile> CompileSyntax(AstSymbolManager& astManager, LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, Ptr<CppParserGenOutput> output, collections::List<Ptr<GlrSyntaxFile>>& files)
+			{
+				// merge files to single syntax file
+				auto syntaxFile = MakePtr<GlrSyntaxFile>();
+				for (auto file : files)
+				{
+					CopyFrom(syntaxFile->switches, file->switches, true);
+					CopyFrom(syntaxFile->rules, file->rules, true);
+				}
+
+				auto rawSyntaxFile = syntaxFile;
+
+				CreateSyntaxSymbols(lexerManager, syntaxManager, syntaxFile);
+				if (syntaxManager.Global().Errors().Count() > 0) goto FINISHED_COMPILING;
+
+				if (NeedRewritten_Switch(syntaxFile))
+				{
+					VisitorContext context(astManager, lexerManager, syntaxManager);
+					VisitorSwitchContext sContext;
+					if (!VerifySyntax_UntilSwitch(context, sContext, syntaxFile)) goto FINISHED_COMPILING;
+
+					syntaxFile = RewriteSyntax_Switch(context, sContext, syntaxManager, syntaxFile);
+					if (context.syntaxManager.Global().Errors().Count() > 0) goto FINISHED_COMPILING;
+				}
+
+				if (NeedRewritten_PrefixMerge(syntaxFile))
+				{
+					VisitorContext context(astManager, lexerManager, syntaxManager);
+					VisitorSwitchContext sContext;
+					if (!VerifySyntax_UntilSwitch(context, sContext, syntaxFile)) goto FINISHED_COMPILING;
+					if (!VerifySyntax_UntilPrefixMerge(context, syntaxFile)) goto FINISHED_COMPILING;
+
+					syntaxFile = RewriteSyntax_PrefixMerge(context, syntaxManager, syntaxFile);
+					if (context.syntaxManager.Global().Errors().Count() > 0) goto FINISHED_COMPILING;
+				}
+
+				{
+					VisitorContext context(astManager, lexerManager, syntaxManager);
+					VisitorSwitchContext sContext;
+					if (!VerifySyntax_UntilSwitch(context, sContext, syntaxFile)) goto FINISHED_COMPILING;
+					if (!VerifySyntax_UntilPrefixMerge(context, syntaxFile)) goto FINISHED_COMPILING;
+					CompileSyntax(context, output, syntaxFile);
+				}
+			FINISHED_COMPILING:
+				return rawSyntaxFile == syntaxFile ? nullptr : syntaxFile;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\PARSERGEN\COMPILESYNTAX_CALCULATEFIRSTSET.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+			using namespace compile_syntax;
+
+/***********************************************************************
+DirectFirstSetVisitor
+***********************************************************************/
+
+			class DirectFirstSetVisitor
+				: public Object
+				, protected virtual GlrSyntax::IVisitor
+				, protected virtual GlrClause::IVisitor
+			{
+			private:
+				bool						couldBeEmpty = false;
+
+			protected:
+				VisitorContext&				context;
+				RuleSymbol*					ruleSymbol;
+				GlrClause*					currentClause = nullptr;
+
+				RuleSymbol* TryGetRuleSymbol(const WString& name)
+				{
+					vint index = context.syntaxManager.Rules().Keys().IndexOf(name);
+					if (index == -1) return nullptr;
+					return context.syntaxManager.Rules().Values()[index];
+				}
+
+				void AddStartRule(const WString& name)
+				{
+					if (auto startRule = TryGetRuleSymbol(name))
+					{
+						context.directStartRules.Add(ruleSymbol, { startRule,currentClause });
+						context.clauseToStartRules.Add(currentClause, ruleSymbol);
+						if (ruleSymbol == startRule && !context.leftRecursiveClauses.Contains(ruleSymbol, currentClause))
+						{
+							context.leftRecursiveClauses.Add(ruleSymbol, currentClause);
+						}
+					}
+				}
+
+			public:
+				DirectFirstSetVisitor(
+					VisitorContext& _context,
+					RuleSymbol* _ruleSymbol
+				)
+					: context(_context)
+					, ruleSymbol(_ruleSymbol)
+				{
+				}
+
+				void VisitClause(Ptr<GlrClause> clause)
+				{
+					currentClause = clause.Obj();
+					clause->Accept(this);
+				}
+			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Visit(GlrRefSyntax* node) override
+				{
+					if (node->refType == GlrRefType::Id)
+					{
+						AddStartRule(node->literal.value);
+					}
+					couldBeEmpty = false;
+				}
+
+				void Visit(GlrUseSyntax* node) override
+				{
+					AddStartRule(node->name.value);
+					couldBeEmpty = false;
+				}
+
+				void Visit(GlrLoopSyntax* node) override
+				{
+					node->syntax->Accept(this);
+					couldBeEmpty = true;
+				}
+
+				void Visit(GlrOptionalSyntax* node) override
+				{
+					node->syntax->Accept(this);
+					couldBeEmpty = true;
+				}
+
+				void Visit(GlrSequenceSyntax* node) override
+				{
+					node->first->Accept(this);
+					if (couldBeEmpty) node->second->Accept(this);
+				}
+
+				void Visit(GlrAlternativeSyntax* node) override
+				{
+					node->first->Accept(this);
+					bool firstCouldBeEmpty = couldBeEmpty;
+					node->second->Accept(this);
+					bool secondCouldBeEmpty = couldBeEmpty;
+					couldBeEmpty = firstCouldBeEmpty || secondCouldBeEmpty;
+				}
+
+				void Visit(GlrPushConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				void Visit(GlrTestConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Visit(GlrCreateClause* node) override
+				{
+					node->syntax->Accept(this);
+				}
+
+				void Visit(GlrPartialClause* node) override
+				{
+					node->syntax->Accept(this);
+				}
+
+				void Visit(GlrReuseClause* node) override
+				{
+					node->syntax->Accept(this);
+					if (node->assignments.Count() == 0)
+					{
+						auto nodeSyntax = node->syntax.Obj();
+						auto pushSyntax = dynamic_cast<GlrPushConditionSyntax*>(nodeSyntax);
+						if (pushSyntax) nodeSyntax = pushSyntax->syntax.Obj();
+
+						if (auto useSyntax = dynamic_cast<GlrUseSyntax*>(nodeSyntax))
+						{
+							if (auto startRule = TryGetRuleSymbol(useSyntax->name.value))
+							{
+								context.directSimpleUseRules.Add(ruleSymbol, { startRule,currentClause });
+								context.simpleUseClauseToReferencedRules.Add(currentClause, startRule);
+							}
+						}
+					}
+				}
+
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+					node->rule->Accept(this);
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
+					node->rule->Accept(this);
+				}
+			};
+
+/***********************************************************************
+CalculateFirstSet
+***********************************************************************/
+
+			void CalculateFirstSet_DirectStartRules(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				for (auto rule : syntaxFile->rules)
+				{
+					auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					DirectFirstSetVisitor visitor(context, ruleSymbol);
+					for (auto clause : rule->clauses)
+					{
+						visitor.VisitClause(clause);
+					}
+				}
+			}
+
+			void CalculateFirstSet_RuleClosure(const RulePathDependencies& direct, RulePathDependencies& indirect, PathToLastRuleMap& pathToLastRules)
+			{
+				for (auto [rule, index] : indexed(direct.Keys()))
+				{
+					auto&& startRules = direct.GetByIndex(index);
+					for (auto [startRule, clause] : startRules)
+					{
+						indirect.Add(rule, { startRule,clause });
+						pathToLastRules.Add({ rule,startRule }, { rule,clause });
+					}
+				}
+
+				while (true)
+				{
+					vint offset = 0;
+					for (auto [rule, index] : indexed(indirect.Keys()))
+					{
+						auto&& startRules1 = indirect.GetByIndex(index);
+						for (auto [startRule1, clause1] : startRules1)
+						{
+							if (rule == startRule1) continue;
+							vint index2 = direct.Keys().IndexOf(startRule1);
+							if (index2 != -1)
+							{
+								auto&& startRules2 = direct.GetByIndex(index2);
+								for (auto [startRule2, clause2] : startRules2)
+								{
+									if (rule == startRule2 || startRule1 == startRule2) continue;
+									if (!pathToLastRules.Contains({ rule,startRule2 }, { startRule1,clause2 }))
+									{
+										offset++;
+										if (!indirect.Contains(rule, { startRule2,clause2 }))
+										{
+											indirect.Add(rule, { startRule2,clause2 });
+										}
+										pathToLastRules.Add({ rule,startRule2 }, { startRule1,clause2 });
+									}
+								}
+							}
+						}
+					}
+
+					if (offset == 0)
+					{
+						break;
+					}
+				}
+			}
+
+			void CalculateFirstSet_IndirectStartRules(VisitorContext& context)
+			{
+				CalculateFirstSet_RuleClosure(
+					context.directStartRules,
+					context.indirectStartRules,
+					context.indirectStartPathToLastRules
+					);
+			}
+
+			void CalculateFirstSet_IndirectSimpleUseRules(VisitorContext& context)
+			{
+				CalculateFirstSet_RuleClosure(
+					context.directSimpleUseRules,
+					context.indirectSimpleUseRules,
+					context.indirectSimpleUsePathToLastRules
+					);
+			}
+
+			template<typename TClause>
+			void CalculateFirstSet_MoveFromDirectClauses(
+				SortedList<TClause*>& clauses,
+				Group<RuleSymbol*, TClause*>& indirectClauses,
+				Group<RuleSymbol*, TClause*>& directClauses,
+				RuleSymbol* rule,
+				RuleSymbol* startRule
+			)
+			{
+				vint index = directClauses.Keys().IndexOf(startRule);
+				if (index != -1)
+				{
+					for (auto clause : directClauses.GetByIndex(index))
+					{
+						if (!clauses.Contains(clause))
+						{
+							clauses.Add(clause);
+							indirectClauses.Add(rule, clause);
+						}
+					}
+				}
+			}
+
+			void CalculateFirstSet_IndirectLrpPmClauses(VisitorContext& context)
+			{
+				for (auto [rule, index] : indexed(context.indirectStartRules.Keys()))
+				{
+					SortedList<GlrLeftRecursionInjectClause*> lriClauses;
+					SortedList<GlrLeftRecursionPlaceholderClause*> lrpClauses;
+					SortedList<GlrPrefixMergeClause*> pmClauses;
+
+					CalculateFirstSet_MoveFromDirectClauses(lriClauses, context.indirectLriClauses, context.directLriClauses, rule, rule);
+					CalculateFirstSet_MoveFromDirectClauses(lrpClauses, context.indirectLrpClauses, context.directLrpClauses, rule, rule);
+					CalculateFirstSet_MoveFromDirectClauses(pmClauses, context.indirectPmClauses, context.directPmClauses, rule, rule);
+
+					auto&& startRules = context.indirectStartRules.GetByIndex(index);
+
+					for (auto startRule : startRules)
+					{
+						CalculateFirstSet_MoveFromDirectClauses(lriClauses, context.indirectLriClauses, context.directLriClauses, rule, startRule.ruleSymbol);
+						CalculateFirstSet_MoveFromDirectClauses(lrpClauses, context.indirectLrpClauses, context.directLrpClauses, rule, startRule.ruleSymbol);
+						CalculateFirstSet_MoveFromDirectClauses(pmClauses, context.indirectPmClauses, context.directPmClauses, rule, startRule.ruleSymbol);
+					}
+				}
+			}
+
+			void CalculateFirstSet(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				CalculateFirstSet_DirectStartRules(context, syntaxFile);
+				CalculateFirstSet_IndirectStartRules(context);
+				CalculateFirstSet_IndirectSimpleUseRules(context);
+				CalculateFirstSet_IndirectLrpPmClauses(context);
 			}
 		}
 	}
@@ -3683,48 +4310,47 @@ namespace vl
 ValidatePartialRules
 ***********************************************************************/
 
-			void ValidatePartialRules(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files)
+			void ValidatePartialRules(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
 			{
-				for (auto file : files)
+				for (auto rule : syntaxFile->rules)
 				{
-					for (auto rule : file->rules)
+					List<Ptr<GlrPartialClause>> partialClauses;
+					CopyFrom(partialClauses, From(rule->clauses).FindType<GlrPartialClause>());
+					if (partialClauses.Count() == 0) continue;
+
+					auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					ruleSymbol->isPartial = partialClauses.Count() > 0;
+
+					if (partialClauses.Count() != rule->clauses.Count())
 					{
-						List<Ptr<GlrPartialClause>> partialClauses;
-						CopyFrom(partialClauses, From(rule->clauses).FindType<GlrPartialClause>());
-						if (partialClauses.Count() == 0) continue;
+						context.syntaxManager.AddError(
+							ParserErrorType::RuleMixedPartialClauseWithOtherClause,
+							rule->codeRange,
+							ruleSymbol->Name()
+							);
+					}
 
-						auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
-						ruleSymbol->isPartial = partialClauses.Count() > 0;
-
-						if (partialClauses.Count() != rule->clauses.Count())
+					AstClassSymbol* partialType = nullptr;
+					for (auto clause : partialClauses)
+					{
+						vint index = context.clauseTypes.Keys().IndexOf(clause.Obj());
+						if (index != -1)
 						{
-							context.syntaxManager.AddError(
-								ParserErrorType::RuleMixedPartialClauseWithOtherClause,
-								rule->codeRange,
-								ruleSymbol->Name()
-								);
-						}
-
-						AstClassSymbol* partialType = nullptr;
-						for (auto clause : partialClauses)
-						{
-							vint index = context.clauseTypes.Keys().IndexOf(clause.Obj());
-							if (index != -1)
+							auto type = context.clauseTypes.Values()[index];
+							if (!partialType)
 							{
-								auto type = context.clauseTypes.Values()[index];
-								if (!partialType)
-								{
-									partialType = type;
-								}
-								else if (type && partialType != type)
-								{
-									context.syntaxManager.AddError(
-										ParserErrorType::RuleWithDifferentPartialTypes,
-										rule->codeRange,
-										ruleSymbol->Name()
-										);
-									break;
-								}
+								partialType = type;
+							}
+							else if (type && partialType != type)
+							{
+								context.syntaxManager.AddError(
+									ParserErrorType::RuleWithDifferentPartialTypes,
+									rule->codeRange,
+									ruleSymbol->Name(),
+									partialType->Name(),
+									type->Name()
+									);
+								break;
 							}
 						}
 					}
@@ -3735,6 +4361,17 @@ ValidatePartialRules
 CalculateRuleAndClauseTypes
 ***********************************************************************/
 
+			WString GetRuleTypes(const IEnumerable<RuleSymbol*>& rules)
+			{
+				return
+					From(rules)
+					.Select([](auto r) { return r->ruleType; })
+					.Where([](auto rt) { return rt != nullptr; })
+					.Select([](auto rt) { return rt->Name(); })
+					.Aggregate(WString::Empty, [](auto a, auto b) {return a == WString::Empty ? b : a + L", " + b; })
+					;
+			}
+
 			void CalculateRuleAndClauseTypes(VisitorContext& context)
 			{
 				// find cyclic dependencies in "Rule ::= !Rule"
@@ -3744,6 +4381,10 @@ CalculateRuleAndClauseTypes
 				pop.Sort();
 
 				// remove cyclic dependended rules from ruleReuseDependencies
+				// TODO: in order to remove the while(ruleTypeChanged) below
+				//       we need to determine the type following the order from PartialOrderingProcessor
+				//       instead of doing a tricky way to solve non-cyclic reusing before cyclic reusing
+				//       and having to while(ruleTypeChanged) because non-cyclic reusing could depends on the result from cyclic reusing
 				List<List<RuleSymbol*>> cyclicReuseDependencies;
 				for (auto&& component : pop.components)
 				{
@@ -3768,6 +4409,56 @@ CalculateRuleAndClauseTypes
 					cyclicReuseDependencies.Add(std::move(cyclicRules));
 				}
 
+				// do not update explicitly specified rule type
+				SortedList<RuleSymbol*> explicitlyTypedRules;
+				for (auto rule : rules)
+				{
+					if (rule->ruleType)
+					{
+						explicitlyTypedRules.Add(rule);
+					}
+				}
+
+				// define updateRuleType function, check clause type added to rule
+				auto updateRuleType = [&context, &explicitlyTypedRules](RuleSymbol* rule, AstClassSymbol* newClauseType, bool promptIfNull, bool* ruleTypeChanged = nullptr)
+				{
+					auto newRuleType = FindCommonBaseClass(rule->ruleType, newClauseType);
+					if (explicitlyTypedRules.Contains(rule))
+					{
+						if (rule->ruleType != newRuleType)
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::RuleExplicitTypeIsNotCompatibleWithClauseType,
+								context.astRules[rule]->codeRange,
+								rule->Name(),
+								(rule->ruleType ? rule->ruleType->Name() : WString::Empty),
+								(newClauseType ? newClauseType->Name() : WString::Empty)
+								);
+							return false;
+						}
+					}
+					else
+					{
+						if (promptIfNull && !newRuleType)
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::RuleCannotResolveToDeterministicType,
+								context.astRules[rule]->codeRange,
+								rule->Name(),
+								(rule->ruleType ? rule->ruleType->Name() : WString::Empty),
+								(newClauseType ? newClauseType->Name() : WString::Empty)
+								);
+							return false;
+						}
+						if (ruleTypeChanged && newRuleType && rule->ruleType != newRuleType)
+						{
+							*ruleTypeChanged = true;
+						}
+						rule->ruleType = newRuleType;
+					}
+					return true;
+				};
+
 				// calculate types for rules from clauses with known types
 				for (auto rule : rules)
 				{
@@ -3776,14 +4467,9 @@ CalculateRuleAndClauseTypes
 						vint index = context.clauseTypes.Keys().IndexOf(clause.Obj());
 						if (index != -1)
 						{
-							rule->ruleType = FindCommonBaseClass(rule->ruleType, context.clauseTypes.Values()[index]);
-							if (!rule->ruleType)
+							auto newClauseType = context.clauseTypes.Values()[index];
+							if (!updateRuleType(rule, newClauseType, true))
 							{
-								context.syntaxManager.AddError(
-									ParserErrorType::RuleCannotResolveToDeterministicType,
-									context.astRules[rule]->codeRange,
-									rule->Name()
-									);
 								break;
 							}
 						}
@@ -3791,65 +4477,66 @@ CalculateRuleAndClauseTypes
 				}
 				if (context.global.Errors().Count() > 0) return;
 
-				// calculate types for rules that contain reuse dependency
-				for (auto&& component : pop.components)
+				bool ruleTypeChanged = true;
+				while(ruleTypeChanged)
 				{
-					for (vint i = 0; i < component.nodeCount; i++)
+					ruleTypeChanged = false;
+
+					// calculate types for rules that contain reuse dependency
+					for (auto&& component : pop.components)
 					{
-						auto rule = rules[component.firstNode[i]];
-						vint index = context.ruleReuseDependencies.Keys().IndexOf(rule);
-						if (index != -1)
+						for (vint i = 0; i < component.nodeCount; i++)
 						{
-							AstClassSymbol* type = nullptr;
-							for (auto dep : context.ruleReuseDependencies.GetByIndex(index))
+							auto rule = rules[component.firstNode[i]];
+							vint index = context.ruleReuseDependencies.Keys().IndexOf(rule);
+							if (index != -1)
 							{
-								type = FindCommonBaseClass(type, dep->ruleType);
-							}
-							if (type)
-							{
-								rule->ruleType = FindCommonBaseClass(rule->ruleType, type);
-								if (!rule->ruleType)
+								AstClassSymbol* type = nullptr;
+								for (auto dep : context.ruleReuseDependencies.GetByIndex(index))
 								{
-									context.syntaxManager.AddError(
-										ParserErrorType::RuleCannotResolveToDeterministicType,
-										context.astRules[rule]->codeRange,
-										rule->Name()
-										);
+									type = FindCommonBaseClass(type, dep->ruleType);
+								}
+								if (type && !updateRuleType(rule, type, true, &ruleTypeChanged))
+								{
 									break;
 								}
 							}
 						}
 					}
-				}
-				if (context.global.Errors().Count() > 0) return;
+					if (context.global.Errors().Count() > 0) return;
 
-				// calculate types for rules that contain cyclic reuse dependency
-				for (auto&& cyclicRules : cyclicReuseDependencies)
-				{
-					AstClassSymbol* type = nullptr;
-					for (auto rule : cyclicRules)
+					// calculate types for rules that contain cyclic reuse dependency
+					for (auto&& cyclicRules : cyclicReuseDependencies)
 					{
-						type = FindCommonBaseClass(type, rule->ruleType);
-					}
-
-					if (!type)
-					{
+						AstClassSymbol* type = nullptr;
 						for (auto rule : cyclicRules)
 						{
-							context.syntaxManager.AddError(
-								ParserErrorType::CyclicDependedRuleTypeIncompatible,
-								context.astRules[rule]->codeRange,
-								rule->Name()
-								);
+							type = FindCommonBaseClass(type, rule->ruleType);
 						}
-					}
-					else
-					{
-						for (auto rule : cyclicRules)
+
+						if (!type)
 						{
-							rule->ruleType = type;
+							auto ruleTypes = GetRuleTypes(cyclicRules);
+							for (auto rule : cyclicRules)
+							{
+								context.syntaxManager.AddError(
+									ParserErrorType::CyclicDependedRuleTypeIncompatible,
+									context.astRules[rule]->codeRange,
+									rule->Name(),
+									ruleTypes
+									);
+							}
+						}
+						else
+						{
+							for (auto rule : cyclicRules)
+							{
+								updateRuleType(rule, type, false, &ruleTypeChanged);
+							}
 						}
 					}
+
+					if (context.global.Errors().Count() > 0) break;
 				}
 
 				// prompt errors
@@ -3893,10 +4580,12 @@ CalculateRuleAndClauseTypes
 							}
 							else
 							{
+								auto ruleTypes = GetRuleTypes(context.clauseReuseDependencies.GetByIndex(index));
 								context.syntaxManager.AddError(
 									ParserErrorType::ReuseClauseCannotResolveToDeterministicType,
 									clause->codeRange,
-									astRule->name.value
+									astRule->name.value,
+									ruleTypes
 									);
 							}
 						}
@@ -3929,41 +4618,15 @@ CompileSyntaxVisitor
 				, protected virtual GlrSyntax::IVisitor
 				, protected virtual GlrClause::IVisitor
 			{
+				using StatePair = AutomatonBuilder::StatePair;
 			protected:
-				struct StatePair
-				{
-					StateSymbol* begin;
-					StateSymbol* end;
-				};
-
-				using StatePosMap = Dictionary<StateSymbol*, vint>;
-			protected:
-				VisitorContext&				context;
-				RuleSymbol*					ruleSymbol;
-				AstClassSymbol*				clauseType;
-
-				WString						clauseDisplayText;
-				StatePosMap					startPoses;
-				StatePosMap					endPoses;
-				StatePair					result;
-
-				StateSymbol* CreateState()
-				{
-					return ruleSymbol->Owner()->CreateState(ruleSymbol, ruleSymbol->CurrentClauseId());
-				}
-
-				EdgeSymbol* CreateEdge(StateSymbol* from, StateSymbol* to)
-				{
-					return ruleSymbol->Owner()->CreateEdge(from, to);
-				}
+				AutomatonBuilder						automatonBuilder;
+				VisitorContext&							context;
+				Ptr<CppParserGenOutput>					output;
+				AstClassSymbol*							clauseType;
+				StatePair								result;
 
 				StatePair Build(const Ptr<GlrSyntax>& node)
-				{
-					node->Accept(this);
-					return result;
-				}
-
-				StatePair Build(const Ptr<GlrClause>& node)
 				{
 					node->Accept(this);
 					return result;
@@ -3971,334 +4634,279 @@ CompileSyntaxVisitor
 			public:
 				CompileSyntaxVisitor(
 					VisitorContext& _context,
+					Ptr<CppParserGenOutput> _output,
 					RuleSymbol* _ruleSymbol
 				)
-					: context(_context)
-					, ruleSymbol(_ruleSymbol)
+					: automatonBuilder(_ruleSymbol)
+					, context(_context)
+					, output(_output)
 				{
 				}
 
 				void AssignClause(const Ptr<GlrClause>& node)
 				{
-					ruleSymbol->NewClause();
-
-					clauseDisplayText = L"";
-					startPoses.Clear();
-					endPoses.Clear();
-
-					auto pair = Build(node);
-					ruleSymbol->startStates.Add(pair.begin);
-					pair.end->endingState = true;
-
-					vint l = clauseDisplayText.Length();
-					for (auto [state, pos] : startPoses)
-					{
-						state->label = clauseDisplayText.Left(pos) + L"@ " + clauseDisplayText.Right(l - pos);
-					}
-					for (auto [state, pos] : endPoses)
-					{
-						state->label = clauseDisplayText.Left(pos) + L" @" + clauseDisplayText.Right(l - pos);
-					}
+					node->Accept(this);
 				}
 
 			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
 				void Visit(GlrRefSyntax* node) override
 				{
+					vint32_t field = -1;
+					if (node->field)
 					{
-						vint index = context.lexerManager.TokenOrder().IndexOf(node->name.value);
-						if (index != -1)
+						auto propSymbol = FindPropSymbol(clauseType, node->field.value);
+						field = output->fieldIds[propSymbol];
+					}
+
+					switch (node->refType)
+					{
+					case GlrRefType::Id:
 						{
-							auto token = context.lexerManager.Tokens()[node->name.value];
-							StatePair pair;
-							pair.begin = CreateState();
-							pair.end = CreateState();
-							startPoses.Add(pair.begin, clauseDisplayText.Length());
-
+							vint index = context.lexerManager.TokenOrder().IndexOf(node->literal.value);
+							if (index != -1)
 							{
-								auto edge = CreateEdge(pair.begin, pair.end);
-								edge->input.type = EdgeInputType::Token;
-								edge->input.token = (vint32_t)index;
-								if (node->field)
-								{
-									auto propSymbol = FindPropSymbol(clauseType, node->field.value);
-									edge->insAfterInput.Add({ AstInsType::Token });
-									edge->insAfterInput.Add({ AstInsType::Field,context.output->fieldIds[propSymbol] });
-								}
+								auto token = context.lexerManager.Tokens()[node->literal.value];
+								auto displayText = token->displayText == L"" ? token->Name() : L"\"" + token->displayText + L"\"";
+								result = automatonBuilder.BuildTokenSyntax((vint32_t)index, displayText, {}, field);
+								return;
 							}
-
-							clauseDisplayText += token->displayText == L"" ? token->Name() : L"\"" + token->displayText + L"\"";
-							endPoses.Add(pair.end, clauseDisplayText.Length());
-							result = pair;
-							return;
 						}
-					}
-					{
-						vint index = context.syntaxManager.Rules().Keys().IndexOf(node->name.value);
-						if (index != -1)
 						{
-							auto rule = context.syntaxManager.Rules().Values()[index];
-							StatePair pair;
-							pair.begin = CreateState();
-							pair.end = CreateState();
-							startPoses.Add(pair.begin, clauseDisplayText.Length());
-
+							vint index = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
+							if (index != -1)
 							{
-								auto edge = CreateEdge(pair.begin, pair.end);
-								edge->input.type = EdgeInputType::Rule;
-								edge->input.rule = rule;
-								if (node->field)
+								auto rule = context.syntaxManager.Rules().Values()[index];
+								if (rule->isPartial)
 								{
-									auto propSymbol = FindPropSymbol(clauseType, node->field.value);
-									edge->insAfterInput.Add({ AstInsType::Field,context.output->fieldIds[propSymbol] });
+									result = automatonBuilder.BuildPartialRuleSyntax(rule);
 								}
-								else if (!rule->isPartial)
+								else if (field == -1)
 								{
-									edge->insAfterInput.Add({ AstInsType::DiscardValue });
+									result = automatonBuilder.BuildDiscardRuleSyntax(rule);
 								}
+								else
+								{
+									result = automatonBuilder.BuildFieldRuleSyntax(rule, field);
+								}
+								return;
 							}
-
-							clauseDisplayText += rule->Name();
-							endPoses.Add(pair.end, clauseDisplayText.Length());
-							result = pair;
-							return;
 						}
+						CHECK_FAIL(L"Should not reach here!");
+						break;
+					case GlrRefType::Literal:
+						{
+							vint index = context.literalTokens[node];
+							auto token = context.lexerManager.Tokens()[context.lexerManager.TokenOrder()[index]];
+							auto displayText = token->displayText == L"" ? token->Name() : L"\"" + token->displayText + L"\"";
+							result = automatonBuilder.BuildTokenSyntax((vint32_t)index, displayText, {}, field);
+						}
+						break;
+					case GlrRefType::ConditionalLiteral:
+						{
+							vint index = context.literalTokens[node];
+							auto token = context.lexerManager.Tokens()[context.lexerManager.TokenOrder()[index]];
+							auto condition = UnescapeLiteral(node->literal.value, L'\'');
+							auto displayText = token->displayText == L"" ? token->Name() : L"\"" + token->displayText + L"\"";
+							result = automatonBuilder.BuildTokenSyntax((vint32_t)index, displayText, condition, field);
+						}
+						break;
+					default:;
 					}
-					CHECK_FAIL(L"Should not reach here!");
-				}
-
-				void Visit(GlrLiteralSyntax* node) override
-				{
-					vint index = context.literalTokens[node];
-					auto token = context.lexerManager.Tokens()[context.lexerManager.TokenOrder()[index]];
-					StatePair pair;
-					pair.begin = CreateState();
-					pair.end = CreateState();
-					startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-					{
-						auto edge = CreateEdge(pair.begin, pair.end);
-						edge->input.type = EdgeInputType::Token;
-						edge->input.token = context.literalTokens[node];
-					}
-
-					clauseDisplayText += token->displayText == L"" ? token->Name() : L"\"" + token->displayText + L"\"";
-					endPoses.Add(pair.end, clauseDisplayText.Length());
-					result = pair;
 				}
 
 				void Visit(GlrUseSyntax* node) override
 				{
-					vint index = context.syntaxManager.Rules().Keys().IndexOf(node->name.value);
-					if (index == -1)
-					{
-						context.syntaxManager.AddError(
-							ParserErrorType::TokenOrRuleNotExistsInRule,
-							node->codeRange,
-							node->name.value
-							);
-						return;
-					}
-
-					auto rule = context.syntaxManager.Rules().Values()[index];
-					StatePair pair;
-					pair.begin = CreateState();
-					pair.end = CreateState();
-					startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-					{
-						auto edge = CreateEdge(pair.begin, pair.end);
-						edge->input.type = EdgeInputType::Rule;
-						edge->input.rule = rule;
-						edge->insAfterInput.Add({ AstInsType::ReopenObject });
-					}
-
-					clauseDisplayText += L"!" + rule->Name();
-					endPoses.Add(pair.end, clauseDisplayText.Length());
-					result = pair;
+					auto rule = context.syntaxManager.Rules()[node->name.value];
+					result = automatonBuilder.BuildUseSyntax(rule);
 				}
 
 				void Visit(GlrLoopSyntax* node) override
 				{
-					StatePair pair, bodyPair, delimiterPair;
-					pair.begin = CreateState();
-					pair.end = CreateState();
-					startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-					clauseDisplayText += L"{ ";
-					bodyPair = Build(node->syntax);
-					if (node->delimiter)
-					{
-						clauseDisplayText += L" ; ";
-						delimiterPair = Build(node->delimiter);
-					}
-					clauseDisplayText += L" }";
-
-					CreateEdge(pair.begin, bodyPair.begin);
-					CreateEdge(bodyPair.end, pair.end);
-					CreateEdge(pair.begin, pair.end);
-					if (node->delimiter)
-					{
-						CreateEdge(bodyPair.end, delimiterPair.begin);
-						CreateEdge(delimiterPair.end, bodyPair.begin);
-					}
-					else
-					{
-						CreateEdge(bodyPair.end, bodyPair.begin);
-					}
-
-					endPoses.Add(pair.end, clauseDisplayText.Length());
-					result = pair;
+					result = automatonBuilder.BuildLoopSyntax(
+						[this, node]() { return Build(node->syntax); },
+						[this, node]() { return Build(node->delimiter); },
+						node->delimiter
+						);
 				}
 
 				void Visit(GlrOptionalSyntax* node) override
 				{
-					StatePair pair;
-					pair.begin = CreateState();
-					pair.end = CreateState();
-					startPoses.Add(pair.begin, clauseDisplayText.Length());
+					result = automatonBuilder.BuildOptionalSyntax(
+						node->priority == GlrOptionalPriority::PreferTake,
+						node->priority == GlrOptionalPriority::PreferSkip,
+						[this, node]() { return Build(node->syntax); }
+						);
+				}
 
-					switch (node->priority)
+				template<typename T>
+				void CollectElements(GlrSyntax* node, List<Func<StatePair()>>& elements)
+				{
+					if (auto pair = dynamic_cast<T*>(node))
 					{
-					case GlrOptionalPriority::Equal:
-						clauseDisplayText += L"[ ";
-						break;
-					case GlrOptionalPriority::PreferTake:
-						clauseDisplayText += L"+[ ";
-						break;
-					case GlrOptionalPriority::PreferSkip:
-						clauseDisplayText += L"-[ ";
-						break;
-					default:;
+						CollectElements<T>(pair->first.Obj(), elements);
+						CollectElements<T>(pair->second.Obj(), elements);
 					}
-					auto bodyPair = Build(node->syntax);
-					clauseDisplayText += L" ]";
-
-					auto takeEdge = CreateEdge(pair.begin, bodyPair.begin);
-					CreateEdge(bodyPair.end, pair.end);
-					auto skipEdge = CreateEdge(pair.begin, pair.end);
-
-					if (node->priority == GlrOptionalPriority::PreferTake)
+					else
 					{
-						takeEdge->important = true;
+						elements.Add([this, node]() { return Build(node); });
 					}
-					if (node->priority == GlrOptionalPriority::PreferSkip)
-					{
-						skipEdge->important = true;
-					}
-
-					endPoses.Add(pair.end, clauseDisplayText.Length());
-					result = pair;
 				}
 
 				void Visit(GlrSequenceSyntax* node) override
 				{
-					auto firstPair = Build(node->first);
-					clauseDisplayText += L" ";
-					auto secondPair = Build(node->second);
-					CreateEdge(firstPair.end, secondPair.begin);
-					result = { firstPair.begin,secondPair.end };
+					List<Func<StatePair()>> elements;
+					CollectElements<GlrSequenceSyntax>(node, elements);
+					result = automatonBuilder.BuildSequenceSyntax(elements);
 				}
 
 				void Visit(GlrAlternativeSyntax* node) override
 				{
-					StatePair pair;
-					pair.begin = CreateState();
-					pair.end = CreateState();
-					startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-					clauseDisplayText += L"( ";
-					auto firstPair = Build(node->first);
-					clauseDisplayText += L" | ";
-					auto secondPair = Build(node->second);
-					clauseDisplayText += L" )";
-
-					CreateEdge(pair.begin, firstPair.begin);
-					CreateEdge(firstPair.end, pair.end);
-					CreateEdge(pair.begin, secondPair.begin);
-					CreateEdge(secondPair.end, pair.end);
-
-					endPoses.Add(pair.end, clauseDisplayText.Length());
-					result = pair;
+					List<Func<StatePair()>> elements;
+					CollectElements<GlrAlternativeSyntax>(node, elements);
+					result = automatonBuilder.BuildAlternativeSyntax(elements);
 				}
 
-				StatePair Visit(StatePair pair, GlrAssignment* node)
+				void Visit(GlrPushConditionSyntax* node) override
 				{
-					auto withState = CreateState();
-					auto edge = CreateEdge(pair.end, withState);
+					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
 
-					auto propSymbol = FindPropSymbol(clauseType, node->field.value);
-					auto enumSymbol = dynamic_cast<AstEnumSymbol*>(propSymbol->propSymbol);
-					edge->insBeforeInput.Add({ AstInsType::EnumItem,(vint32_t)enumSymbol->ItemOrder().IndexOf(node->value.value) });
-					edge->insBeforeInput.Add({ AstInsType::Field,context.output->fieldIds[propSymbol] });
+				void Visit(GlrTestConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
 
-					endPoses.Add(withState, clauseDisplayText.Length());
-					return { pair.begin,withState };
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				StatePair BuildAssignments(StatePair pair, List<Ptr<GlrAssignment>>& assignments)
+				{
+					for (auto node : assignments)
+					{
+						auto propSymbol = FindPropSymbol(clauseType, node->field.value);
+						auto enumSymbol = dynamic_cast<AstEnumSymbol*>(propSymbol->propSymbol);
+						auto enumItem = (vint32_t)enumSymbol->ItemOrder().IndexOf(node->value.value);
+						auto field = output->fieldIds[propSymbol];
+						pair = automatonBuilder.BuildAssignment(pair, enumItem, field, (node->type == GlrAssignmentType::Weak));
+					}
+					return pair;
 				}
 
 				void Visit(GlrCreateClause* node) override
 				{
 					clauseType = context.clauseTypes[node];
-					StatePair pair;
-					pair.begin = CreateState();
-					pair.end = CreateState();
-					startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-					clauseDisplayText += L"< ";
-					auto bodyPair = Build(node->syntax);
-					for (auto assignment : node->assignments)
+					result = automatonBuilder.BuildClause([this, node]()
 					{
-						bodyPair = Visit(bodyPair, assignment.Obj());
-					}
-					clauseDisplayText += L" >";
-					{
-						auto classSymbol = dynamic_cast<AstClassSymbol*>(context.astManager.Symbols()[node->type.value]);
-						auto edge = CreateEdge(pair.begin, bodyPair.begin);
-						edge->insBeforeInput.Add({ AstInsType::BeginObject,context.output->classIds[classSymbol] });
-					}
-					{
-						auto edge = CreateEdge(bodyPair.end, pair.end);
-						edge->insBeforeInput.Add({ AstInsType::EndObject });
-					}
-					endPoses.Add(pair.end, clauseDisplayText.Length());
-					result = pair;
+						return automatonBuilder.BuildCreateClause(
+							output->classIds[clauseType],
+							[this, node]() { return BuildAssignments(Build(node->syntax), node->assignments); }
+							);
+					});
 				}
 
 				void Visit(GlrPartialClause* node) override
 				{
 					clauseType = context.clauseTypes[node];
-					auto bodyPair = Build(node->syntax);
-					for (auto assignment : node->assignments)
+					result = automatonBuilder.BuildClause([this, node]()
 					{
-						bodyPair = Visit(bodyPair, assignment.Obj());
-					}
-					result = bodyPair;
+						return automatonBuilder.BuildPartialClause(
+							[this, node]() { return BuildAssignments(Build(node->syntax), node->assignments); }
+							);
+					});
 				}
 
 				void Visit(GlrReuseClause* node) override
 				{
 					clauseType = context.clauseTypes[node];
-					StatePair pair;
-					pair.begin = CreateState();
-					pair.end = CreateState();
-					startPoses.Add(pair.begin, clauseDisplayText.Length());
+					result = automatonBuilder.BuildClause([this, node]()
+					{
+						return automatonBuilder.BuildReuseClause(
+							[this, node]() { return BuildAssignments(Build(node->syntax), node->assignments); }
+							);
+					});
+				}
 
-					clauseDisplayText += L"<< ";
-					auto bodyPair = Build(node->syntax);
-					for (auto assignment : node->assignments)
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+					List<vint32_t> flags;
+					CopyFrom(
+						flags,
+						From(node->flags)
+							.Select([this](Ptr<GlrLeftRecursionPlaceholder> flag)
+							{
+								return (vint32_t)context.syntaxManager.lrpFlags.IndexOf(flag->flag.value);
+							})
+							.Distinct()
+						);
+
+					result = automatonBuilder.BuildClause([this, &flags]()
 					{
-						bodyPair = Visit(bodyPair, assignment.Obj());
-					}
-					clauseDisplayText += L" >>";
+						return automatonBuilder.BuildLrpClause(flags, [&](vint32_t flag) { return context.syntaxManager.lrpFlags[flag]; });
+					});
+				}
+
+				using StateBuilder = Func<AutomatonBuilder::StatePair()>;
+
+				StateBuilder CompileLriTargetWithoutSwitches(vint32_t parentFlag, GlrLeftRecursionInjectClause* lriTarget)
+				{
+					StateBuilder useOrLriSyntax;
+					auto rule = context.syntaxManager.Rules()[lriTarget->rule->literal.value];
+					if (parentFlag == -1)
 					{
-						auto edge = CreateEdge(pair.begin, bodyPair.begin);
-						edge->insBeforeInput.Add({ AstInsType::DelayFieldAssignment });
+						useOrLriSyntax = [this, rule]() { return automatonBuilder.BuildUseSyntax(rule); };
 					}
+					else
 					{
-						auto edge = CreateEdge(bodyPair.end, pair.end);
-						edge->insBeforeInput.Add({ AstInsType::EndObject });
+						useOrLriSyntax = [this, rule, parentFlag]() { return automatonBuilder.BuildLriSyntax(parentFlag, rule); };
 					}
-					endPoses.Add(pair.end, clauseDisplayText.Length());
-					result = pair;
+
+					if (!lriTarget->continuation)
+					{
+						return useOrLriSyntax;
+					}
+					else
+					{
+						auto cont = lriTarget->continuation;
+						return [this, useOrLriSyntax, cont]()
+						{
+							bool optional = cont->type == GlrLeftRecursionInjectContinuationType::Optional;
+							auto flag = (vint32_t)context.syntaxManager.lrpFlags.IndexOf(cont->flag->flag.value);
+
+							List<StateBuilder> targetRules;
+							for (auto lriTarget : cont->injectionTargets)
+							{
+								targetRules.Add(CompileLriTarget(flag, lriTarget.Obj()));
+							}
+							return automatonBuilder.BuildLriClauseSyntax(
+								useOrLriSyntax,
+								optional,
+								std::move(targetRules));
+						};
+					}
+				}
+
+				StateBuilder CompileLriTarget(vint32_t parentFlag, GlrLeftRecursionInjectClause* lriTarget)
+				{
+					return CompileLriTargetWithoutSwitches(parentFlag, lriTarget);
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+					result = automatonBuilder.BuildClause([this, node]()
+					{
+						return automatonBuilder.BuildReuseClause(CompileLriTarget(-1, node));
+					});
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
+					CHECK_FAIL(L"GlrPrefixMergeClause should have been removed after RewriteSyntax_PrefixMerge()!");
 				}
 			};
 
@@ -4306,18 +4914,15 @@ CompileSyntaxVisitor
 CompileSyntax
 ***********************************************************************/
 
-			void CompileSyntax(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files)
+			void CompileSyntax(VisitorContext& context, Ptr<CppParserGenOutput> output, Ptr<GlrSyntaxFile> syntaxFile)
 			{
-				for (auto file : files)
+				for (auto rule : syntaxFile->rules)
 				{
-					for (auto rule : file->rules)
+					auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					CompileSyntaxVisitor visitor(context, output, ruleSymbol);
+					for (auto clause : rule->clauses)
 					{
-						auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
-						CompileSyntaxVisitor visitor(context, ruleSymbol);
-						for (auto clause : rule->clauses)
-						{
-							visitor.AssignClause(clause);
-						}
+						visitor.AssignClause(clause);
 					}
 				}
 			}
@@ -4345,12 +4950,29 @@ ResolveNameVisitor
 			class ResolveNameVisitor
 				: public Object
 				, protected virtual GlrSyntax::IVisitor
+				, protected virtual GlrCondition::IVisitor
 				, protected virtual GlrClause::IVisitor
 			{
 			protected:
 				VisitorContext&				context;
+				VisitorSwitchContext&		sContext;
+				SortedList<WString>&		accessedSwitches;
 				RuleSymbol*					ruleSymbol;
-				GlrClause*					clause = nullptr;
+				GlrReuseClause*				reuseClause = nullptr;
+
+			public:
+				ResolveNameVisitor(
+					VisitorContext& _context,
+					VisitorSwitchContext& _sContext,
+					SortedList<WString>& _accessedSwitches,
+					RuleSymbol* _ruleSymbol
+				)
+					: context(_context)
+					, sContext(_sContext)
+					, accessedSwitches(_accessedSwitches)
+					, ruleSymbol(_ruleSymbol)
+				{
+				}
 
 				AstClassSymbol* GetRuleClass(ParsingToken& typeName)
 				{
@@ -4378,98 +5000,153 @@ ResolveNameVisitor
 					}
 					return classSymbol;
 				}
-			public:
-				ResolveNameVisitor(
-					VisitorContext& _context,
-					RuleSymbol* _ruleSymbol
-				)
-					: context(_context)
-					, ruleSymbol(_ruleSymbol)
-				{
-				}
 
 				void ResolveClause(Ptr<GlrClause> clause)
 				{
+					context.clauseToRules.Add(clause.Obj(), ruleSymbol);
 					clause->Accept(this);
 				}
 
 			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
 				void Visit(GlrRefSyntax* node) override
 				{
-					vint tokenIndex = context.lexerManager.TokenOrder().IndexOf(node->name.value);
-					vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->name.value);
-					if (tokenIndex == -1 && ruleIndex == -1)
+					switch (node->refType)
 					{
-						context.syntaxManager.AddError(
-							ParserErrorType::TokenOrRuleNotExistsInRule,
-							node->codeRange,
-							ruleSymbol->Name(),
-							node->name.value
-							);
+					case GlrRefType::Id:
+						{
+							vint tokenIndex = context.lexerManager.TokenOrder().IndexOf(node->literal.value);
+							vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
+							if (tokenIndex == -1 && ruleIndex == -1)
+							{
+								context.syntaxManager.AddError(
+									ParserErrorType::TokenOrRuleNotExistsInRule,
+									node->codeRange,
+									ruleSymbol->Name(),
+									node->literal.value
+									);
+							}
+						}
+						break;
+					case GlrRefType::Literal:
+						{
+							if (node->literal.value.Length() > 2)
+							{
+								auto literalValue = UnescapeLiteral(node->literal.value, L'\"');
+								for (auto&& [tokenName, tokenIndex] : indexed(context.lexerManager.TokenOrder()))
+								{
+									auto tokenSymbol = context.lexerManager.Tokens()[tokenName];
+									if (tokenSymbol->displayText == literalValue)
+									{
+										if (tokenSymbol->discarded)
+										{
+											context.syntaxManager.AddError(
+												ParserErrorType::LiteralIsDiscardedToken,
+												node->codeRange,
+												ruleSymbol->Name(),
+												node->literal.value
+												);
+										}
+										else
+										{
+											context.literalTokens.Add(node, (vint32_t)tokenIndex);
+										}
+										return;
+									}
+								}
+							}
+							context.syntaxManager.AddError(
+								ParserErrorType::LiteralNotValidToken,
+								node->codeRange,
+								ruleSymbol->Name(),
+								node->literal.value
+								);
+						}
+						break;
+					case GlrRefType::ConditionalLiteral:
+						{
+							if (node->literal.value.Length() > 2)
+							{
+								auto literalValue = UnescapeLiteral(node->literal.value, L'\'');
+								auto&& lexer = context.GetCachedLexer();
+								List<regex::RegexToken> tokens;
+								lexer.Parse(literalValue).ReadToEnd(tokens);
+								if (tokens.Count() == 1 && tokens[0].token != -1 && tokens[0].completeToken)
+								{
+									auto tokenSymbol = context.lexerManager.Tokens()[context.lexerManager.TokenOrder()[tokens[0].token]];
+									if (tokenSymbol->displayText != L"")
+									{
+										context.syntaxManager.AddError(
+											ParserErrorType::ConditionalLiteralIsDisplayText,
+											node->codeRange,
+											ruleSymbol->Name(),
+											node->literal.value
+											);
+									}
+									if (tokenSymbol->discarded)
+									{
+										context.syntaxManager.AddError(
+											ParserErrorType::ConditionalLiteralIsDiscardedToken,
+											node->codeRange,
+											ruleSymbol->Name(),
+											node->literal.value
+											);
+									}
+									context.literalTokens.Add(node, (vint32_t)tokens[0].token);
+									return;
+								}
+							}
+							context.syntaxManager.AddError(
+								ParserErrorType::ConditionalLiteralNotValidToken,
+								node->codeRange,
+								ruleSymbol->Name(),
+								node->literal.value
+								);
+						}
+						break;
+					default:;
 					}
 				}
 
-				void Visit(GlrLiteralSyntax* node) override
+				void VisitReuseSyntax(ParsingToken& name, bool addRuleReuseDependency)
 				{
-					if (node->value.value.Length() > 2)
-					{
-						Array<wchar_t> buffer(node->value.value.Length());
-						wchar_t* writing = &buffer[0];
-
-						for (vint i = 1; i < node->value.value.Length() - 1; i++)
-						{
-							wchar_t c = node->value.value[i];
-							*writing++ = c;
-							if (c == L'\"')
-							{
-								i++;
-							}
-						}
-						*writing = 0;
-
-						auto literalValue = WString::Unmanaged(&buffer[0]);
-						for (auto&& [tokenName, tokenIndex] : indexed(context.lexerManager.TokenOrder()))
-						{
-							auto tokenSymbol = context.lexerManager.Tokens()[tokenName];
-							if (tokenSymbol->displayText==literalValue)
-							{
-								context.literalTokens.Add(node, (vint32_t)tokenIndex);
-								return;
-							}
-						}
-					}
-					context.syntaxManager.AddError(
-						ParserErrorType::TokenOrRuleNotExistsInRule,
-						node->codeRange,
-						ruleSymbol->Name(),
-						node->value.value
-						);
-				}
-
-				void Visit(GlrUseSyntax* node) override
-				{
-					vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->name.value);
+					vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(name.value);
 					if (ruleIndex == -1)
 					{
 						context.syntaxManager.AddError(
 							ParserErrorType::TokenOrRuleNotExistsInRule,
-							node->codeRange,
+							name.codeRange,
 							ruleSymbol->Name(),
-							node->name.value
+							name.value
 							);
 					}
-					else if (clause)
+					else
 					{
 						auto usedRuleSymbol = context.syntaxManager.Rules().Values()[ruleIndex];
-						if (!context.ruleReuseDependencies.Contains(ruleSymbol, usedRuleSymbol))
+						if (addRuleReuseDependency)
 						{
-							context.ruleReuseDependencies.Add(ruleSymbol, usedRuleSymbol);
+							if (!context.ruleReuseDependencies.Contains(ruleSymbol, usedRuleSymbol))
+							{
+								context.ruleReuseDependencies.Add(ruleSymbol, usedRuleSymbol);
+							}
 						}
-						if (!context.clauseReuseDependencies.Contains(clause, usedRuleSymbol))
+						if (reuseClause)
 						{
-							context.clauseReuseDependencies.Add(clause, usedRuleSymbol);
+							if (!context.clauseReuseDependencies.Contains(reuseClause, usedRuleSymbol))
+							{
+								context.clauseReuseDependencies.Add(reuseClause, usedRuleSymbol);
+							}
 						}
 					}
+				}
+
+				void Visit(GlrUseSyntax* node) override
+				{
+					VisitReuseSyntax(node->name, reuseClause != nullptr);
 				}
 
 				void Visit(GlrLoopSyntax* node) override
@@ -4498,6 +5175,86 @@ ResolveNameVisitor
 					node->second->Accept(this);
 				}
 
+				void VisitSwitchItems(List<Ptr<GlrSwitchItem>>& switches)
+				{
+					for (auto&& switchItem : switches)
+					{
+						if (!sContext.switches.Keys().Contains(switchItem->name.value))
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::SwitchNotExists,
+								switchItem->name.codeRange,
+								ruleSymbol->Name(),
+								switchItem->name.value
+							);
+						}
+						else if (!accessedSwitches.Contains(switchItem->name.value))
+						{
+							accessedSwitches.Add(switchItem->name.value);
+						}
+					}
+				}
+
+				void Visit(GlrPushConditionSyntax* node) override
+				{
+					VisitSwitchItems(node->switches);
+					node->syntax->Accept(this);
+				}
+
+				void Visit(GlrTestConditionSyntax* node) override
+				{
+					for (auto&& branch : node->branches)
+					{
+						branch->condition->Accept(this);
+						if (branch->syntax)
+						{
+							branch->syntax->Accept(this);
+						}
+					}
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrCondition::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Visit(GlrRefCondition* node) override
+				{
+					if (!sContext.switches.Keys().Contains(node->name.value))
+					{
+						context.syntaxManager.AddError(
+							ParserErrorType::SwitchNotExists,
+							node->name.codeRange,
+							ruleSymbol->Name(),
+							node->name.value
+							);
+					}
+					else if (!accessedSwitches.Contains(node->name.value))
+					{
+						accessedSwitches.Add(node->name.value);
+					}
+				}
+
+				void Visit(GlrNotCondition* node) override
+				{
+					node->condition->Accept(this);
+				}
+
+				void Visit(GlrAndCondition* node) override
+				{
+					node->first->Accept(this);
+					node->second->Accept(this);
+				}
+
+				void Visit(GlrOrCondition* node) override
+				{
+					node->first->Accept(this);
+					node->second->Accept(this);
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
 				void Visit(GlrCreateClause* node) override
 				{
 					if (auto classSymbol = GetRuleClass(node->type))
@@ -4520,8 +5277,45 @@ ResolveNameVisitor
 
 				void Visit(GlrReuseClause* node) override
 				{
-					clause = node;
+					reuseClause = node;
 					node->syntax->Accept(this);
+				}
+
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+					for (auto flag : node->flags)
+					{
+						auto name = flag->flag.value;
+						if (!ruleSymbol->lrFlags.Contains(name))
+						{
+							ruleSymbol->lrFlags.Add(name);
+						}
+					}
+					context.directLrpClauses.Add(ruleSymbol, node);
+				}
+
+				void VisitLriClause(GlrLeftRecursionInjectClause* node)
+				{
+					VisitReuseSyntax(node->rule->literal, true);
+					if (node->continuation)
+					{
+						for (auto lriTarget : node->continuation->injectionTargets)
+						{
+							VisitLriClause(lriTarget.Obj());
+						}
+					}
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+					VisitLriClause(node);
+					context.directLriClauses.Add(ruleSymbol, node);
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
+					VisitReuseSyntax(node->rule->literal, true);
+					context.directPmClauses.Add(ruleSymbol, node);
 				}
 			};
 
@@ -4529,20 +5323,2262 @@ ResolveNameVisitor
 ResolveName
 ***********************************************************************/
 
-			void ResolveName(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files)
+			bool IsLegalNameBeforeWithSwitch(const WString& name)
 			{
-				for (auto file : files)
+				if (wcsstr(name.Buffer(), L"_SWITCH")) return false;
+				if (wcsstr(name.Buffer(), L"SWITCH_")) return false;
+				return true;
+			}
+
+			bool IsLegalNameBeforeWithPrefixMerge(const WString& name)
+			{
+				if (wcsstr(name.Buffer(), L"_LRI")) return false;
+				if (wcsstr(name.Buffer(), L"_LRIP")) return false;
+				if (wcsstr(name.Buffer(), L"LRI_")) return false;
+				if (wcsstr(name.Buffer(), L"LRIP_")) return false;
+				return true;
+			}
+
+			void ResolveName(VisitorContext& context, VisitorSwitchContext& sContext, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				for (auto switchItem : syntaxFile->switches)
 				{
-					for (auto rule : file->rules)
+					if (sContext.switches.Keys().Contains(switchItem->name.value))
 					{
-						auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
-						ResolveNameVisitor visitor(context, ruleSymbol);
-						for (auto clause : rule->clauses)
+						context.syntaxManager.AddError(
+							ParserErrorType::DuplicatedSwitch,
+							switchItem->name.codeRange,
+							switchItem->name.value
+							);
+					}
+					else
+					{
+						sContext.switches.Add(
+							switchItem->name.value, {
+								(switchItem->value == GlrSwitchValue::True),
+								switchItem.Obj()
+							});
+					}
+				}
+
+				for (auto rule : syntaxFile->rules)
+				{
+					context.astRules.Add(context.syntaxManager.Rules()[rule->name.value], rule.Obj());
+				}
+
+				SortedList<WString> accessedSwitches;
+				for (auto rule : syntaxFile->rules)
+				{
+					auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					ResolveNameVisitor visitor(context, sContext, accessedSwitches, ruleSymbol);
+					if (rule->type)
+					{
+						ruleSymbol->ruleType = visitor.GetRuleClass(rule->type);
+					}
+					for (auto clause : rule->clauses)
+					{
+						visitor.ResolveClause(clause);
+					}
+				}
+
+				{
+					vint index = 0;
+					for (auto&& switchName : sContext.switches.Keys())
+					{
+						if (index == accessedSwitches.Count() || switchName != accessedSwitches[index])
 						{
-							visitor.ResolveClause(clause);
+							context.syntaxManager.AddError(
+								ParserErrorType::UnusedSwitch,
+								sContext.switches[switchName].value->codeRange,
+								switchName
+								);
+						}
+						else
+						{
+							index++;
 						}
 					}
 				}
+
+				if (sContext.switches.Count() > 0)
+				{
+					for (auto rule : syntaxFile->rules)
+					{
+						if (!IsLegalNameBeforeWithSwitch(rule->name.value))
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::SyntaxInvolvesSwitchWithIllegalRuleName,
+								rule->name.codeRange,
+								rule->name.value
+								);
+						}
+					}
+				}
+
+				if (context.directPmClauses.Count() > 0)
+				{
+					for (auto rule : syntaxFile->rules)
+					{
+						if (!IsLegalNameBeforeWithPrefixMerge(rule->name.value))
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::SyntaxInvolvesPrefixMergeWithIllegalRuleName,
+								rule->name.codeRange,
+								rule->name.value
+								);
+						}
+
+						for (auto lrp : From(rule->clauses).FindType<GlrLeftRecursionPlaceholderClause>())
+						{
+							for (auto p : lrp->flags)
+							{
+								if (!IsLegalNameBeforeWithPrefixMerge(p->flag.value))
+								{
+									context.syntaxManager.AddError(
+										ParserErrorType::SyntaxInvolvesPrefixMergeWithIllegalPlaceholderName,
+										p->flag.codeRange,
+										rule->name.value,
+										p->flag.value
+										);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\PARSERGEN\COMPILESYNTAX_REWRITESYNTAX_PREFIXMERGE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+			using namespace compile_syntax;
+
+			extern void CalculateFirstSet_IndirectStartRules(VisitorContext& context);
+			extern void CalculateFirstSet_IndirectSimpleUseRules(VisitorContext& context);
+
+			namespace rewritesyntax_prefixmerge
+			{
+				struct RewritingPrefixConflict
+				{
+					// all clauses are simple use clauses, RuleSymbol* in values are the rule referenced by keys
+					SortedList<GlrClause*>									unaffectedClauses;		// clauses that are not affected by prefix extraction
+					SortedList<GlrClause*>									prefixClauses;			// simple use clauses that are prefix themselves
+					Group<GlrClause*, GlrClause*>							conflictedClauses;		// c1 -> c2 if c1's prefix is prefix clause c2
+				};
+
+				struct PrefixRuleWithClause
+				{
+					RuleSymbol*												ruleSymbol = nullptr;
+					GlrClause*												clause = nullptr;
+
+					bool operator==(PrefixRuleWithClause& p) const
+					{
+						return ruleSymbol == p.ruleSymbol && clause == p.clause;
+					}
+				};
+
+				struct RewritingContext
+				{
+					List<RuleSymbol*>										pmRules;				// all rules that need to be rewritten
+					Dictionary<RuleSymbol*, GlrRule*>						originRules;			// rewritten RuleSymbol -> GlrRule ends with _LRI_Original, which is the same GlrRule object before rewritten
+					Dictionary<RuleSymbol*, GlrRule*>						lriRules;				// rewritten RuleSymbol -> GlrRule containing left_recursion_inject clauses
+					Dictionary<RuleSymbol*, GlrRule*>						fixedAstRules;			// RuleSymbol -> GlrRule relationship after rewritten
+
+					Group<RuleSymbol*, PrefixRuleWithClause>				extractPrefixClauses;	// RuleSymbol -> {rule to be extracted, clause begins with rule}
+					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, GlrRule*>	extractedPrefixRules;	// {rewritten RuleSymbol, prefix RuleSymbol} -> GlrRule ends with _LRI_Prefix
+					Dictionary<RuleSymbol*, Ptr<RewritingPrefixConflict>>	extractedConflicts;		// rewritten RuleSymbol -> all needed information if prefix extraction affects how it generates left_recursion_inject clauses
+				};
+
+				Ptr<RewritingPrefixConflict> GetConflict(const RewritingContext& rContext, RuleSymbol* ruleSymbol)
+				{
+					vint indexConflict = rContext.extractedConflicts.Keys().IndexOf(ruleSymbol);
+					if (indexConflict == -1)
+					{
+						return nullptr;
+					}
+					else
+					{
+						return rContext.extractedConflicts.Values()[indexConflict];
+					}
+				}
+
+				Ptr<RewritingPrefixConflict> EnsureGetConflict(RewritingContext& rContext, RuleSymbol* ruleSymbol)
+				{
+					auto conflict = GetConflict(rContext, ruleSymbol);
+					if (!conflict)
+					{
+						conflict = MakePtr<RewritingPrefixConflict>();
+						rContext.extractedConflicts.Add(ruleSymbol, conflict);
+					}
+					return conflict;
+				}
+
+/***********************************************************************
+FillMissingPrefixMergeClauses
+***********************************************************************/
+
+				void RemoveDirectReferences(RulePathDependencies& references, RuleSymbol* ruleSymbol, GlrClause* clause)
+				{
+					vint index = references.Keys().IndexOf(ruleSymbol);
+					if (index != -1)
+					{
+						auto&& values = const_cast<List<RuleClausePath>&>(references.GetByIndex(index));
+						for (vint i = values.Count() - 1; i >= 0; i--)
+						{
+							if (values[i].clause == clause)
+							{
+								values.RemoveAt(i);
+							}
+						}
+
+						if (values.Count() == 0)
+						{
+							references.Remove(ruleSymbol);
+						}
+					}
+				}
+
+				void FillMissingPrefixMergeClauses(VisitorContext& vContext, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> rewritten)
+				{
+					// find position of thses clauses in rules
+					for (auto clauseRaw : vContext.clauseToConvertedToPrefixMerge)
+					{
+						auto ruleSymbol = vContext.clauseToRules[clauseRaw];
+						auto ruleRaw = vContext.astRules[ruleSymbol];
+						vint ruleIndex = rewritten->rules.IndexOf(ruleRaw);
+						vint clauseIndex = ruleRaw->clauses.IndexOf(clauseRaw);
+						auto clause = ruleRaw->clauses[clauseIndex];
+
+						// create new rule and replace the clause with prefix_merge
+						auto newRule = MakePtr<GlrRule>();
+						rewritten->rules.Insert(ruleIndex, newRule);
+						newRule->name.value = ruleRaw->name.value + L"_LRI_Isolated_" + itow(clauseIndex);
+						newRule->clauses.Add(clause);
+
+						auto newPM = MakePtr<GlrPrefixMergeClause>();
+						ruleRaw->clauses[clauseIndex] = newPM;
+						{
+							auto startRule = MakePtr<GlrRefSyntax>();
+							newPM->rule = startRule;
+
+							startRule->refType = GlrRefType::Id;
+							startRule->literal.value = newRule->name.value;
+						}
+
+						// remove direct references
+						RemoveDirectReferences(vContext.directStartRules, ruleSymbol, clause.Obj());
+						RemoveDirectReferences(vContext.directSimpleUseRules, ruleSymbol, clause.Obj());
+
+						// fix rule and clause symbols
+						auto newRuleSymbol = syntaxManager.CreateRule(newRule->name.value, ruleRaw->name.codeRange);
+						newRuleSymbol->ruleType = vContext.clauseTypes[clause.Obj()];
+						vContext.astRules.Add(newRuleSymbol, newRule.Obj());
+						vContext.clauseTypes.Add(newPM.Obj(), newRuleSymbol->ruleType);
+						vContext.clauseToRules.Set(clause.Obj(), newRuleSymbol);
+						vContext.clauseToRules.Add(newPM.Obj(), ruleSymbol);
+						vContext.clauseToStartRules.Add(newPM.Obj(), newRuleSymbol);
+
+						// fix	directPmClauses
+						//		indirectPmClauses
+						//		directStartRules
+						vContext.directPmClauses.Add(ruleSymbol, newPM.Obj());
+						vContext.indirectPmClauses.Add(ruleSymbol, newPM.Obj());
+						vContext.directStartRules.Add(ruleSymbol, { newRuleSymbol,newPM.Obj() });
+						for (auto key : syntaxManager.Rules().Values())
+						{
+							if (vContext.indirectStartPathToLastRules.Contains({ key,ruleSymbol }))
+							{
+								vContext.indirectPmClauses.Add(key, newPM.Obj());
+							}
+						}
+					}
+
+					// fix	indirectStartRules
+					//		indirectSimpleUseRules
+					//		indirectStartPathToLastRules
+					//		indirectSimpleUsePathToLastRules
+					vContext.indirectStartRules.Clear();
+					vContext.indirectSimpleUseRules.Clear();
+					vContext.indirectStartPathToLastRules.Clear();
+					vContext.indirectSimpleUsePathToLastRules.Clear();
+					CalculateFirstSet_IndirectStartRules(vContext);
+					CalculateFirstSet_IndirectSimpleUseRules(vContext);
+				}
+
+/***********************************************************************
+CollectRewritingTargets
+***********************************************************************/
+
+				void CollectRewritingTargets(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
+				{
+					for (auto rule : rewritten->rules)
+					{
+						auto ruleSymbol = vContext.syntaxManager.Rules()[rule->name.value];
+						if (vContext.indirectPmClauses.Keys().Contains(ruleSymbol))
+						{
+							rContext.pmRules.Add(ruleSymbol);
+
+							vint indexStart = vContext.directStartRules.Keys().IndexOf(ruleSymbol);
+							vint indexSimpleUse = vContext.directSimpleUseRules.Keys().IndexOf(ruleSymbol);
+
+							if (indexStart != -1 && indexSimpleUse != -1)
+							{
+								// all clauses should be simple use to enable prefix detection
+								if (vContext.directSimpleUseRules.GetByIndex(indexSimpleUse).Count() != rule->clauses.Count()) continue;
+								Ptr<RewritingPrefixConflict> conflict;
+
+								for (auto [startRule, startClause] : vContext.directStartRules.GetByIndex(indexStart))
+								{
+									// prefix_merge clauses and left recursive clauses are not involved in prefix detection/extraction
+									if (dynamic_cast<GlrPrefixMergeClause*>(startClause)) continue;
+									if (vContext.leftRecursiveClauses.Contains(ruleSymbol, startClause)) continue;
+
+									// find all clause pair "!X" and "Y ...", see if X is a prefix of Y
+									for (auto [simpleUseRule, simpleUseClause] : vContext.directSimpleUseRules.GetByIndex(indexSimpleUse))
+									{
+										// ignore if X is Y
+										if (startRule == simpleUseRule) continue;
+
+										// ignore if X is not a prefix of Y
+										vint indexExtract = vContext.indirectStartPathToLastRules.Keys().IndexOf({ startRule,simpleUseRule });
+										if (indexExtract == -1) continue;
+
+										// ignore if Y ::= X directly or indirectly
+										for (auto [extractRule, extractClause] : vContext.indirectStartPathToLastRules.GetByIndex(indexExtract))
+										{
+											// ignore if Y ::= X directly or indirectly
+											if (vContext.directSimpleUseRules.Contains(extractRule, { simpleUseRule,extractClause })) continue;
+
+											// prefix extraction needed
+											if (!rContext.extractPrefixClauses.Contains(extractRule, { simpleUseRule,extractClause }))
+											{
+												rContext.extractPrefixClauses.Add(extractRule, { simpleUseRule,extractClause });
+											}
+
+											// fill conflict information for ruleSymbol
+											if (!conflict)
+											{
+												conflict = EnsureGetConflict(rContext, ruleSymbol);
+											}
+
+											if (!conflict->prefixClauses.Contains(simpleUseClause))
+											{
+												conflict->prefixClauses.Add(simpleUseClause);
+											}
+											if (!conflict->conflictedClauses.Contains(startClause, simpleUseClause))
+											{
+												conflict->conflictedClauses.Add(startClause, simpleUseClause);
+											}
+										}
+									}
+								}
+
+								if (conflict)
+								{
+									for (auto clause : rule->clauses)
+									{
+										if (!conflict->prefixClauses.Contains(clause.Obj()) && !conflict->conflictedClauses.Contains(clause.Obj()))
+										{
+											conflict->unaffectedClauses.Add(clause.Obj());
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+/***********************************************************************
+CreateRewrittenRules
+***********************************************************************/
+
+				void CreateRewrittenRules(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
+				{
+					for (auto ruleSymbol : rContext.pmRules)
+					{
+						auto originRule = vContext.astRules[ruleSymbol];
+						rContext.originRules.Add(ruleSymbol, originRule);
+
+						auto lri = MakePtr<GlrRule>();
+						rewritten->rules.Add(lri);
+						rContext.lriRules.Add(ruleSymbol, lri.Obj());
+
+						lri->name.value = originRule->name.value;
+						originRule->name.value += L"_LRI_Original";
+					}
+
+					for (auto [ruleSymbol, index] : indexed(rContext.extractPrefixClauses.Keys()))
+					{
+						auto originRule = vContext.astRules[ruleSymbol];
+						auto&& prefixClauses = rContext.extractPrefixClauses.GetByIndex(index);
+						for (auto [prefixRuleSymbol, prefixClause] : From(prefixClauses)
+							.OrderBy([](auto p1, auto p2) {return WString::Compare(p1.ruleSymbol->Name(), p2.ruleSymbol->Name()); }))
+						{
+							auto ep = MakePtr<GlrRule>();
+							rewritten->rules.Insert(rewritten->rules.IndexOf(originRule), ep);
+							rContext.extractedPrefixRules.Add({ ruleSymbol,prefixRuleSymbol }, ep.Obj());
+
+							ep->name.value = ruleSymbol->Name() + L"_" + prefixRuleSymbol->Name() + L"_LRI_Prefix";
+						}
+					}
+				}
+
+/***********************************************************************
+FixRuleTypes
+***********************************************************************/
+
+				void FixRuleTypes(const VisitorContext& vContext, RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
+				{
+					CopyFrom(rContext.fixedAstRules, vContext.astRules);
+					for (auto ruleSymbol : rContext.pmRules)
+					{
+						auto originRule = rContext.originRules[ruleSymbol];
+						auto lriRule = rContext.lriRules[ruleSymbol];
+						auto originSymbol = syntaxManager.CreateRule(originRule->name.value, originRule->codeRange);
+
+						originSymbol->ruleType = ruleSymbol->ruleType;
+						rContext.fixedAstRules.Set(originSymbol, originRule);
+						rContext.fixedAstRules.Set(ruleSymbol, lriRule);
+					}
+
+					for (auto [pair, epRule] : rContext.extractedPrefixRules)
+					{
+						auto originRule = rContext.originRules[pair.key];
+						auto epRuleSymbol = syntaxManager.CreateRule(epRule->name.value, originRule->codeRange);
+						epRuleSymbol->ruleType = pair.value->ruleType;
+						rContext.fixedAstRules.Add(epRuleSymbol, epRule);
+					}
+
+					for (auto [ruleSymbol, rule] : rContext.fixedAstRules)
+					{
+						if (!rule->type)
+						{
+							rule->type.value = ruleSymbol->ruleType->Name();
+						}
+					}
+
+					for (auto ruleSymbol : syntaxManager.Rules().Values())
+					{
+						ruleSymbol->isPartial = false;
+						ruleSymbol->assignedNonArrayField = false;
+						ruleSymbol->ruleType = nullptr;
+						ruleSymbol->lrFlags.Clear();
+					}
+				}
+
+/***********************************************************************
+RewriteExtractedPrefixRules
+***********************************************************************/
+
+				void RewriteExtractedPrefixRules(const VisitorContext& vContext, RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
+				{
+					for (auto [pair, epRule] : rContext.extractedPrefixRules)
+					{
+						{
+							auto lrpClause = MakePtr<GlrLeftRecursionPlaceholderClause>();
+							epRule->clauses.Add(lrpClause);
+
+							auto lrp = MakePtr<GlrLeftRecursionPlaceholder>();
+							lrpClause->flags.Add(lrp);
+							lrp->flag.value = L"LRIP_" + pair.key->Name() + L"_" + pair.value->Name();
+							syntaxManager.lrpFlags.Add(lrp->flag.value);
+						}
+						{
+							auto reuseClause = MakePtr<GlrReuseClause>();
+							epRule->clauses.Add(reuseClause);
+
+							auto useSyntax = MakePtr<GlrUseSyntax>();
+							reuseClause->syntax = useSyntax;
+							useSyntax->name.value = rContext.originRules[pair.value]->name.value;
+						}
+					}
+				}
+
+/***********************************************************************
+RewriteRules (Common)
+***********************************************************************/
+
+				using PMClauseRecord = GenericRuleClausePath<GlrPrefixMergeClause>;
+
+				struct PMInjectRecord
+				{
+					RuleSymbol*					pmRule = nullptr;
+					RuleSymbol*					injectIntoRule = nullptr;
+				};
+
+				void RewriteRules_AddPmClause(
+					const VisitorContext& vContext,
+					RuleSymbol* ruleSymbol,
+					GlrPrefixMergeClause* pmClause,
+					Group<WString, PMClauseRecord>& pmClauses
+				)
+				{
+					auto pmRule = vContext.clauseToRules[pmClause];
+					if (ruleSymbol == pmRule)
+					{
+						if (!pmClauses.Contains(pmClause->rule->literal.value, { ruleSymbol,pmClause }))
+						{
+							pmClauses.Add(pmClause->rule->literal.value, { ruleSymbol,pmClause });
+						}
+					}
+					else
+					{
+						for (auto [indirectStartRule, indirectClause] : vContext.indirectStartPathToLastRules[{ ruleSymbol, pmRule }])
+						{
+							if (!pmClauses.Contains(pmClause->rule->literal.value, { ruleSymbol,pmClause }))
+							{
+								pmClauses.Add(pmClause->rule->literal.value, { ruleSymbol,pmClause });
+							}
+						}
+					}
+				}
+
+				Ptr<RewritingPrefixConflict> RewriteRules_CollectUnaffectedIndirectPmClauses(
+					const VisitorContext& vContext,
+					const RewritingContext& rContext,
+					RuleSymbol* initiatedRuleSymbol,
+					RuleSymbol* ruleSymbol,
+					SortedList<RuleSymbol*>& visited,
+					Group<WString, PMClauseRecord>& pmClauses
+				)
+				{
+					auto conflict = initiatedRuleSymbol == ruleSymbol ? GetConflict(rContext, ruleSymbol) : nullptr;
+					if (!visited.Contains(ruleSymbol))
+					{
+						visited.Add(ruleSymbol);
+
+						if (conflict)
+						{
+							for (auto [simpleUseRule, simpleUseClause] : vContext.directSimpleUseRules[ruleSymbol])
+							{
+								if (conflict->unaffectedClauses.Contains(simpleUseClause))
+								{
+									RewriteRules_CollectUnaffectedIndirectPmClauses(vContext, rContext, initiatedRuleSymbol, simpleUseRule, visited, pmClauses);
+								}
+								else
+								{
+									vint indexConflicted = conflict->conflictedClauses.Keys().IndexOf(simpleUseClause);
+									if (indexConflicted == -1) continue;
+
+									auto&& prefixClauses = conflict->conflictedClauses.GetByIndex(indexConflicted);
+									for (auto pmClause :
+										From(vContext.indirectPmClauses[ruleSymbol]).Except(
+											From(prefixClauses)
+											.SelectMany([&](GlrClause* prefixClause)
+											{
+												return From(vContext.indirectPmClauses[vContext.simpleUseClauseToReferencedRules[prefixClause]]);
+											})
+										))
+									{
+										RewriteRules_AddPmClause(vContext, simpleUseRule, pmClause, pmClauses);
+									}
+								}
+							}
+						}
+						else
+						{
+							for (auto pmClause : vContext.indirectPmClauses[ruleSymbol])
+							{
+								RewriteRules_AddPmClause(vContext, ruleSymbol, pmClause, pmClauses);
+							}
+						}
+					}
+					return conflict;
+				}
+
+				void RewriteRules_CheckPath(
+					const VisitorContext& vContext,
+					RuleSymbol* startSymbol,
+					RuleSymbol* endSymbol,
+					bool& hasSimpleUseTransition,
+					bool& hasNonSimpleUseTransition
+				)
+				{
+					// check the path from startSymbol to endSymbol
+					// hasSimpleUseTransition and hasNonSimpleUseTransition must be false before non-recursive calling from outside
+					// if a transition is found
+					// either of one will be set to true
+					// meaning such transition is counted
+
+					bool isEndSymbolLeftRecursive = vContext.leftRecursiveClauses.Keys().Contains(endSymbol);
+					if (isEndSymbolLeftRecursive)
+					{
+						// if endSymbol is left recursive
+						// then we find a non-simple-use transition from startSymbol to endSymbol
+						hasNonSimpleUseTransition = true;
+					}
+
+					if (startSymbol == endSymbol)
+					{
+						// if startSymbol is endSymbol
+						// then we find a simple-use transition
+						// which does not actually transit
+						hasSimpleUseTransition = true;
+					}
+					else
+					{
+						// otherwise we look through all possible path from startSymbol to endSymbol
+						vint index = vContext.indirectStartPathToLastRules.Keys().IndexOf({ startSymbol,endSymbol });
+						if (index != -1)
+						{
+							for (auto [lastRuleSymbol, clause] : vContext.indirectStartPathToLastRules.GetByIndex(index))
+							{
+								if (vContext.simpleUseClauseToReferencedRules.Keys().Contains(clause))
+								{
+									// if we find a simple-use clause
+									// we check how all transitions look like from startSymbol to lastRuleSymbol
+									RewriteRules_CheckPath(vContext, startSymbol, lastRuleSymbol, hasSimpleUseTransition, hasNonSimpleUseTransition);
+								}
+								else
+								{
+									// if we find a non-simple-use clause
+									// then we find a non-simple-use transition from startSymbol to endSymbol
+									hasNonSimpleUseTransition = true;
+								}
+							}
+						}
+					}
+				}
+
+				void RewriteRules_CollectFlags(
+					const VisitorContext& vContext,
+					RuleSymbol* ruleSymbol,
+					const List<PMClauseRecord>& pmClauses,
+					Dictionary<WString, PMInjectRecord>& flags,
+					bool& generateOptionalLri
+				)
+				{
+					for (auto [injectIntoRule, pmClause] : pmClauses)
+					{
+						auto pmRule = vContext.clauseToRules[pmClause];
+						bool hasSimpleUseTransition = false;
+						bool hasNonSimpleUseTransition = false;
+						RewriteRules_CheckPath(vContext, ruleSymbol, pmRule, hasSimpleUseTransition, hasNonSimpleUseTransition);
+
+						if (hasSimpleUseTransition)
+						{
+							generateOptionalLri = true;
+						}
+
+						if (hasNonSimpleUseTransition)
+						{
+							flags.Add(L"LRI_" + pmRule->Name(), { pmRule,injectIntoRule });
+						}
+					}
+				}
+
+				bool RewriteRules_HasMultiplePaths(
+					const VisitorContext& vContext,
+					RuleSymbol* fromRule,
+					RuleSymbol* toRule,
+					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter
+				)
+				{
+					Pair<RuleSymbol*, RuleSymbol*> key = { fromRule, toRule };
+					vint index = pathCounter.Keys().IndexOf(key);
+					if (index != -1) return pathCounter.Values()[index];
+
+					RuleSymbol* currentRule = toRule;
+					bool hasMultiplePaths = false;
+
+					while (currentRule != fromRule)
+					{
+						index = vContext.indirectStartPathToLastRules.Keys().IndexOf({ fromRule,currentRule });
+						if (index == -1) goto FINISHED;
+
+						auto&& lastRules = vContext.indirectStartPathToLastRules.GetByIndex(index);
+						if (lastRules.Count() > 1) {
+							hasMultiplePaths = true;
+							goto FINISHED;
+						}
+						currentRule = lastRules[0].ruleSymbol;
+					}
+
+				FINISHED:
+					pathCounter.Add(key, hasMultiplePaths);
+					return hasMultiplePaths;
+				}
+
+/***********************************************************************
+RewriteRules (AST Creation)
+***********************************************************************/
+
+				Ptr<GlrLeftRecursionInjectClause> CreateLriClause(
+					const WString& ruleName
+				)
+				{
+					auto lriClause = MakePtr<GlrLeftRecursionInjectClause>();
+
+					auto lriStartRule = MakePtr<GlrRefSyntax>();
+					lriClause->rule = lriStartRule;
+					lriStartRule->refType = GlrRefType::Id;
+					lriStartRule->literal.value = ruleName;
+
+					return lriClause;
+				}
+
+				Ptr<GlrLeftRecursionInjectContinuation> CreateLriContinuation(
+					const VisitorContext& vContext,
+					const RewritingContext& rContext,
+					RuleSymbol* ruleSymbol,
+					const PMInjectRecord& pmInjectRecord,
+					const WString& flag,
+					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
+					bool generateOptionalLri
+				)
+				{
+					auto lriCont = MakePtr<GlrLeftRecursionInjectContinuation>();
+
+					if (RewriteRules_HasMultiplePaths(vContext, ruleSymbol, pmInjectRecord.pmRule, pathCounter))
+					{
+						lriCont->configuration = GlrLeftRecursionConfiguration::Multiple;
+					}
+					else
+					{
+						lriCont->configuration = GlrLeftRecursionConfiguration::Single;
+					}
+
+					if (generateOptionalLri)
+					{
+						lriCont->type = GlrLeftRecursionInjectContinuationType::Optional;
+					}
+					else
+					{
+						lriCont->type = GlrLeftRecursionInjectContinuationType::Required;
+					}
+
+					auto lriContFlag = MakePtr<GlrLeftRecursionPlaceholder>();
+					lriCont->flag = lriContFlag;
+					lriContFlag->flag.value = flag;
+
+					auto lriContTarget = CreateLriClause(rContext.originRules[pmInjectRecord.injectIntoRule]->name.value);
+					lriCont->injectionTargets.Add(lriContTarget);
+
+					return lriCont;
+				}
+
+/***********************************************************************
+RewriteRules (Unaffected)
+***********************************************************************/
+
+				void RewriteRules_GenerateUnaffectedLRIClauses(
+					const VisitorContext& vContext,
+					const RewritingContext& rContext,
+					RuleSymbol* ruleSymbol,
+					GlrRule* lriRule,
+					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
+					Group<WString, PMClauseRecord>& pmClauses,
+					SortedList<WString>& knownOptionalStartRules
+				)
+				{
+					for (auto [pmName, pmIndex] : indexed(pmClauses.Keys()))
+					{
+						//   if originRule is not left recursive
+						//     do not generate lriClause for the flag created for originRule, because there is no continuation
+						//     if a pmName does generate some lriClause
+						//       it becomes GLRICT::Optional
+						//     otherwise
+						//       it becomse GLRICT::Required
+						//       generate useSyntax instead of lriClause
+
+						Dictionary<WString, PMInjectRecord> flags;
+						bool generateOptionalLri = false;
+						RewriteRules_CollectFlags(
+							vContext,
+							ruleSymbol,
+							pmClauses.GetByIndex(pmIndex),
+							flags,
+							generateOptionalLri
+							);
+
+						if (generateOptionalLri && flags.Count() == 0)
+						{
+							auto reuseClause = MakePtr<GlrReuseClause>();
+							lriRule->clauses.Add(reuseClause);
+
+							auto useSyntax = MakePtr<GlrUseSyntax>();
+							reuseClause->syntax = useSyntax;
+							useSyntax->name.value = pmName;
+						}
+
+						for (auto [flag, pmInjectRecord] : flags)
+						{
+							auto lriClause = CreateLriClause(pmName);
+							lriRule->clauses.Add(lriClause);
+
+							auto lriCont = CreateLriContinuation(
+								vContext,
+								rContext,
+								ruleSymbol,
+								pmInjectRecord,
+								flag,
+								pathCounter,
+								generateOptionalLri
+								);
+							lriClause->continuation = lriCont;
+
+							if (generateOptionalLri)
+							{
+								generateOptionalLri = false;
+								knownOptionalStartRules.Add(pmName);
+							}
+						}
+					}
+				}
+
+/***********************************************************************
+RewriteRules (Affected)
+***********************************************************************/
+
+				void RewriteRules_GenerateAffectedLRIClausesSubgroup(
+					const VisitorContext& vContext,
+					const RewritingContext& rContext,
+					RuleSymbol* conflictedRuleSymbol,
+					RuleSymbol* prefixRuleSymbol,
+					SortedList<WString>& lripFlags,
+					GlrRule* lriRule,
+					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
+					SortedList<WString>& knownOptionalStartRules
+				)
+				{
+					Group<WString, PMClauseRecord> pmClauses;
+					{
+						SortedList<RuleSymbol*> visited;
+						auto conflict = RewriteRules_CollectUnaffectedIndirectPmClauses(
+							vContext,
+							rContext,
+							prefixRuleSymbol,
+							prefixRuleSymbol,
+							visited,
+							pmClauses
+							);
+
+						if (conflict)
+						{
+							vContext.syntaxManager.AddError(
+								ParserErrorType::PrefixExtractionAffectedRuleReferencedAnother,
+								rContext.originRules[vContext.syntaxManager.Rules()[lriRule->name.value]]->codeRange,
+								lriRule->name.value,
+								conflictedRuleSymbol->Name(),
+								prefixRuleSymbol->Name()
+								);
+							return;
+						}
+					}
+
+					for (auto [pmName, pmIndex] : indexed(pmClauses.Keys()))
+					{
+						//   if originRule is not left recursive
+						//     left_recursion_inject directly into conflictedRuleSymbol
+						//     if a pmName does generate some lriClause
+						//       it becomes GLRICT::Optional
+						//     otherwise
+						//       it becomse GLRICT::Required
+						//       generate useSyntax instead of lriClause
+
+						auto&& pmClauseRecords = pmClauses.GetByIndex(pmIndex);
+				
+						Dictionary<WString, PMInjectRecord> flags;
+						bool omittedSelf = false;
+						bool generateOptionalLri = false;
+						RewriteRules_CollectFlags(
+							vContext,
+							prefixRuleSymbol,
+							pmClauseRecords,
+							flags,
+							generateOptionalLri
+							);
+
+						if (generateOptionalLri)
+						{
+							// TODO: add test case for omittedSelf == true
+							for (auto lripFlag : lripFlags)
+							{
+								auto lriClause = CreateLriClause(pmName);
+								lriRule->clauses.Add(lriClause);
+
+								auto lriCont = CreateLriContinuation(
+									vContext,
+									rContext,
+									conflictedRuleSymbol,
+									{ prefixRuleSymbol,conflictedRuleSymbol },
+									lripFlag,
+									pathCounter,
+									false
+									);
+								lriClause->continuation = lriCont;
+							}
+						}
+
+						if (knownOptionalStartRules.Contains(pmName))
+						{
+							generateOptionalLri = false;
+						}
+
+						for (auto [flag, pmInjectRecord] : flags)
+						{
+							{
+								// Since there is no switches in pmClauses
+								// So there is no switches in pmInjectRecord as well
+								// because flags comes from pmClauses, collected by RewriteRules_CollectFlags above
+								auto lriClause = CreateLriClause(pmName);
+								lriRule->clauses.Add(lriClause);
+					
+								auto lriCont = CreateLriContinuation(
+									vContext,
+									rContext,
+									prefixRuleSymbol,
+									{ pmInjectRecord.pmRule,prefixRuleSymbol },
+									flag,
+									pathCounter,
+									generateOptionalLri
+									);
+								lriClause->continuation = lriCont;
+
+								for (auto lripFlag : lripFlags)
+								{
+									auto lriCont2 = CreateLriContinuation(
+										vContext,
+										rContext,
+										conflictedRuleSymbol,
+										{ prefixRuleSymbol,conflictedRuleSymbol },
+										lripFlag,
+										pathCounter,
+										true
+										);
+
+									auto branchStart = lriCont->injectionTargets[0];
+									if (branchStart->continuation)
+									{
+										// TODO: add test case
+										auto newBranchStart = CreateLriClause(branchStart->rule->literal.value);
+										newBranchStart->continuation = lriCont2;
+										lriCont->injectionTargets.Add(newBranchStart);
+									}
+									else
+									{
+										branchStart->continuation = lriCont2;
+									}
+								}
+
+								if (generateOptionalLri)
+								{
+									generateOptionalLri = false;
+								}
+							}
+						}
+					}
+				}
+
+				void RewriteRules_GenerateAffectedLRIClauses(
+					const VisitorContext& vContext,
+					const RewritingContext& rContext,
+					RuleSymbol* ruleSymbol,
+					GlrRule* lriRule,
+					Ptr<RewritingPrefixConflict> conflict,
+					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint>& pathCounter,
+					SortedList<WString>& knownOptionalStartRules
+				)
+				{
+					for (auto [conflictedClause, conflictedIndex] : indexed(conflict->conflictedClauses.Keys()))
+					{
+						auto conflictedRuleSymbol = vContext.simpleUseClauseToReferencedRules[conflictedClause];
+						auto&& prefixClauses = conflict->conflictedClauses.GetByIndex(conflictedIndex);
+						for (auto prefixClause : prefixClauses)
+						{
+							auto prefixRuleSymbol = vContext.simpleUseClauseToReferencedRules[prefixClause];
+							SortedList<WString> lripFlags;
+							for (auto extracted : vContext.indirectStartPathToLastRules[{conflictedRuleSymbol, prefixRuleSymbol}])
+							{
+								lripFlags.Add(L"LRIP_" + extracted.ruleSymbol->Name() + L"_" + prefixRuleSymbol->Name());
+							}
+							RewriteRules_GenerateAffectedLRIClausesSubgroup(
+								vContext,
+								rContext,
+								conflictedRuleSymbol,
+								prefixRuleSymbol,
+								lripFlags,
+								lriRule,
+								pathCounter,
+								knownOptionalStartRules
+								);
+						}
+					}
+				}
+
+/***********************************************************************
+RewriteRules
+***********************************************************************/
+
+				void RewriteRules(const VisitorContext& vContext, const RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
+				{
+					Dictionary<Pair<RuleSymbol*, RuleSymbol*>, vint> pathCounter;
+					for (auto [ruleSymbol, originRule] : rContext.originRules)
+					{
+						auto lriRule = rContext.lriRules[ruleSymbol];
+						Ptr<RewritingPrefixConflict> conflict;
+						Group<WString, PMClauseRecord> pmClauses;
+						{
+							SortedList<RuleSymbol*> visited;
+							conflict = RewriteRules_CollectUnaffectedIndirectPmClauses(
+								vContext,
+								rContext,
+								ruleSymbol,
+								ruleSymbol,
+								visited,
+								pmClauses
+								);
+						}
+
+						SortedList<WString> knownOptionalStartRules;
+						RewriteRules_GenerateUnaffectedLRIClauses(
+							vContext,
+							rContext,
+							ruleSymbol,
+							lriRule,
+							pathCounter,
+							pmClauses,
+							knownOptionalStartRules
+							);
+
+						if (conflict)
+						{
+							RewriteRules_GenerateAffectedLRIClauses(
+								vContext,
+								rContext,
+								ruleSymbol,
+								lriRule,
+								conflict,
+								pathCounter,
+								knownOptionalStartRules
+								);
+						}
+					}
+				}
+
+/***********************************************************************
+FixPrefixMergeClauses
+***********************************************************************/
+
+				void FixPrefixMergeClauses(const VisitorContext& vContext, const RewritingContext& rContext, SyntaxSymbolManager& syntaxManager)
+				{
+					for (auto ruleSymbol : vContext.directPmClauses.Keys())
+					{
+						auto originRule = rContext.originRules[ruleSymbol];
+
+						auto lrpClause = MakePtr<GlrLeftRecursionPlaceholderClause>();
+						originRule->clauses.Insert(0, lrpClause);
+
+						auto lrp = MakePtr<GlrLeftRecursionPlaceholder>();
+						lrp->flag.value = L"LRI_" + ruleSymbol->Name();
+						lrpClause->flags.Add(lrp);
+						syntaxManager.lrpFlags.Add(lrp->flag.value);
+
+						for (vint i = 0; i < originRule->clauses.Count(); i++)
+						{
+							if (auto pmClause = originRule->clauses[i].Cast<GlrPrefixMergeClause>())
+							{
+								auto reuseClause = MakePtr<GlrReuseClause>();
+								originRule->clauses[i] = reuseClause;
+
+								auto useSyntax = MakePtr<GlrUseSyntax>();
+								useSyntax->name.value = pmClause->rule->literal.value;
+								reuseClause->syntax = useSyntax;
+							}
+						}
+					}
+				}
+
+/***********************************************************************
+RenamePrefix
+***********************************************************************/
+
+				class RenamePrefixVisitor
+					: public Object
+					, protected virtual GlrSyntax::IVisitor
+					, protected virtual GlrClause::IVisitor
+				{
+				protected:
+					const RewritingContext&			rContext;
+					RuleSymbol*						ruleSymbol;
+					const SyntaxSymbolManager&		syntaxManager;
+
+				public:
+					RenamePrefixVisitor(
+						const RewritingContext& _rContext,
+						RuleSymbol* _ruleSymbol,
+						const SyntaxSymbolManager& _syntaxManager
+					)
+						: rContext(_rContext)
+						, ruleSymbol(_ruleSymbol)
+						, syntaxManager(_syntaxManager)
+					{
+					}
+
+					void FixClause(Ptr<GlrClause> clause)
+					{
+						clause->Accept(this);
+					}
+
+				protected:
+
+					void FixStartRule(ParsingToken& ruleName)
+					{
+						auto startRuleSymbol = syntaxManager.Rules()[ruleName.value];
+						vint index = rContext.extractedPrefixRules.Keys().IndexOf({ ruleSymbol,startRuleSymbol });
+						if (index != -1)
+						{
+							auto epRule = rContext.extractedPrefixRules.Values()[index];
+							ruleName.value = epRule->name.value;
+							return;
+						}
+
+						index = rContext.originRules.Keys().IndexOf(startRuleSymbol);
+						if (index != -1)
+						{
+							auto originRule = rContext.originRules.Values()[index];
+							ruleName.value = originRule->name.value;
+						}
+					}
+
+					////////////////////////////////////////////////////////////////////////
+					// GlrSyntax::IVisitor
+					////////////////////////////////////////////////////////////////////////
+
+					void Visit(GlrRefSyntax* node) override
+					{
+						if (node->refType == GlrRefType::Id)
+						{
+							vint index = syntaxManager.Rules().Keys().IndexOf(node->literal.value);
+							if (index != -1)
+							{
+								FixStartRule(node->literal);
+							}
+						}
+					}
+
+					void Visit(GlrUseSyntax* node) override
+					{
+						FixStartRule(node->name);
+					}
+
+					void Visit(GlrLoopSyntax* node) override
+					{
+					}
+
+					void Visit(GlrOptionalSyntax* node) override
+					{
+					}
+
+					void Visit(GlrSequenceSyntax* node) override
+					{
+						node->first->Accept(this);
+					}
+
+					void Visit(GlrAlternativeSyntax* node) override
+					{
+					}
+
+					void Visit(GlrPushConditionSyntax* node) override
+					{
+						node->syntax->Accept(this);
+					}
+
+					void Visit(GlrTestConditionSyntax* node) override
+					{
+					}
+
+					////////////////////////////////////////////////////////////////////////
+					// GlrClause::IVisitor
+					////////////////////////////////////////////////////////////////////////
+
+					void Visit(GlrCreateClause* node) override
+					{
+						node->syntax->Accept(this);
+					}
+
+					void Visit(GlrPartialClause* node) override
+					{
+						node->syntax->Accept(this);
+					}
+
+					void Visit(GlrReuseClause* node) override
+					{
+						node->syntax->Accept(this);
+					}
+
+					void Visit(GlrLeftRecursionPlaceholderClause* node) override
+					{
+					}
+
+					void Visit(GlrLeftRecursionInjectClause* node) override
+					{
+					}
+
+					void Visit(GlrPrefixMergeClause* node) override
+					{
+					}
+				};
+
+				void RenamePrefix(RewritingContext& rContext, const SyntaxSymbolManager& syntaxManager)
+				{
+					for (auto [ruleSymbol, originRule] : rContext.originRules)
+					{
+						RenamePrefixVisitor visitor(rContext, ruleSymbol, syntaxManager);
+						for (auto clause : originRule->clauses)
+						{
+							// !(a; b) should be moved from rule X_LRI_Original to left_recursion_inject clauses in rule X
+							if (auto reuseClause = clause.Cast<GlrReuseClause>())
+							{
+								if (auto pushSyntax = reuseClause->syntax.Cast<GlrPushConditionSyntax>())
+								{
+									reuseClause->syntax = pushSyntax->syntax;
+								}
+							}
+							visitor.FixClause(clause);
+						}
+					}
+				}
+			}
+
+/***********************************************************************
+RewriteSyntax
+***********************************************************************/
+
+			Ptr<GlrSyntaxFile> RewriteSyntax_PrefixMerge(VisitorContext& context, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				using namespace rewritesyntax_prefixmerge;
+
+				// merge files to single syntax file
+				auto rewritten = MakePtr<GlrSyntaxFile>();
+				CopyFrom(rewritten->rules, syntaxFile->rules);
+
+				// find clauses that need to be converted to prefix_merge and fix VisitorContext
+				FillMissingPrefixMergeClauses(context, syntaxManager, rewritten);
+
+				// find rules that need to be rewritten using left_recursion_inject
+				RewritingContext rewritingContext;
+				CollectRewritingTargets(context, rewritingContext, rewritten);
+
+				// create rewritten rules, rename origin rules
+				CreateRewrittenRules(context, rewritingContext, rewritten);
+
+				// fix rule types (fix syntaxManager.rules, clear RuleSymbol fields)
+				FixRuleTypes(context, rewritingContext, syntaxManager);
+
+				// create clauses in rewritten X_Y_LRI_Prefix rules
+				RewriteExtractedPrefixRules(context, rewritingContext, syntaxManager);
+
+				// create left_recursion_inject clauses in rewritten rules
+				RewriteRules(context, rewritingContext, syntaxManager);
+
+				// convert prefix_merge to left_recursion_placeholder and reuse clauses (fix syntaxManager.lrpFlags)
+				FixPrefixMergeClauses(context, rewritingContext, syntaxManager);
+
+				// rename rule references in origin rules
+				RenamePrefix(rewritingContext, syntaxManager);
+
+				return rewritten;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\PARSERGEN\COMPILESYNTAX_REWRITESYNTAX_SWITCH.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+			using namespace compile_syntax;
+
+			namespace rewritesyntax_switch
+			{
+				struct GeneratedRule
+				{
+					GlrRule*									ruleToExpand = nullptr;
+					Ptr<Dictionary<WString, bool>>				switchValues;
+				};
+
+				struct RewritingContext
+				{
+					Group<RuleSymbol*, Ptr<GeneratedRule>>		generatedRules;
+					Group<RuleSymbol*, Ptr<GlrRule>>			expandedCombinedRules;
+					Group<RuleSymbol*, Ptr<GlrRule>>			expandedFirstLevelRules;
+
+					Dictionary<WString, Ptr<GlrRule>>			combinedRulesByName;
+					Group<WString, GlrClause*>					validCombinedClauses;
+					Group<WString, GlrClause*>					invalidCombinedClauses;
+				};
+
+				class EmptySyntax : public GlrSyntax
+				{
+				public:
+					void Accept(GlrSyntax::IVisitor* visitor) override
+					{
+						CHECK_FAIL(L"vl::glr::parsergen::rewritesyntax_switch::EmptySyntax::Accept(GlrSyntax::IVisitor*)#EmptySyntax should not be used!");
+					}
+				};
+
+				Ptr<Dictionary<WString, bool>> ApplySwitches(Ptr<Dictionary<WString, bool>> currentValues, GlrPushConditionSyntax* node)
+				{
+					auto newValues = MakePtr<Dictionary<WString, bool>>();
+					if (currentValues)
+					{
+						CopyFrom(*newValues.Obj(), *currentValues.Obj());
+					}
+					for (auto switchItem : node->switches)
+					{
+						newValues->Set(switchItem->name.value, switchItem->value == GlrSwitchValue::True);
+					}
+					return newValues;
+				}
+
+/***********************************************************************
+EvaluateConditionVisitor
+**********************************************************************/
+
+				class EvaluateConditionVisitor
+					: public Object
+					, protected GlrCondition::IVisitor
+				{
+					// this visitor evaluates a condition with given switch values
+				protected:
+					Dictionary<WString, bool>&			workingSwitchValues;
+
+					void Visit(GlrRefCondition* node) override
+					{
+						vint index = workingSwitchValues.Keys().IndexOf(node->name.value);
+						CHECK_ERROR(
+							index != -1,
+							L"vl::glr::parsergen::rewritesyntax_switch::EvaluateConditionVisitor::Visit(GlrRefCondition*)#"
+							L"Internal error: specified switch value is unevaluated"
+						);
+						result = workingSwitchValues.Values()[index];
+					}
+
+					void Visit(GlrNotCondition* node) override
+					{
+						node->condition->Accept(this);
+						result = !result;
+					}
+
+					void Visit(GlrAndCondition* node) override
+					{
+						node->first->Accept(this);
+						bool first = result;
+						node->second->Accept(this);
+						bool second = result;
+						result = first && second;
+					}
+
+					void Visit(GlrOrCondition* node) override
+					{
+						node->first->Accept(this);
+						bool first = result;
+						node->second->Accept(this);
+						bool second = result;
+						result = first || second;
+					}
+
+				public:
+					bool								result = false;
+
+					EvaluateConditionVisitor(
+						Dictionary<WString, bool>& _workingSwitchValues
+					)
+						: workingSwitchValues(_workingSwitchValues)
+					{
+					}
+
+					bool Evaluate(GlrCondition* condition)
+					{
+						condition->Accept(this);
+						return result;
+					}
+				};
+
+/***********************************************************************
+ExpandSwitchSyntaxVisitor
+***********************************************************************/
+
+				class ExpandSwitchSyntaxVisitor : public traverse_visitor::RuleAstVisitor
+				{
+					// this visitor look into all rules which is affected by switch values
+					// and find all possible switch combination for these rules
+				protected:
+					struct Identification
+					{
+						RuleSymbol*						workingRule = nullptr;
+						Ptr<Dictionary<WString, bool>>	workingSwitchValues = nullptr;
+						Ptr<GeneratedRule>				generatedRule;
+					};
+
+					VisitorContext&						vContext;
+					VisitorSwitchContext&				sContext;
+					RewritingContext&					rContext;
+					SortedList<RuleSymbol*>				scannedUnaffectedRules;
+					
+					Identification						identification;
+
+				protected:
+					void TraverseRule(const ParsingToken& ruleName)
+					{
+						// check if it is a rule
+						vint index = vContext.syntaxManager.Rules().Keys().IndexOf(ruleName.value);
+						if (index == -1) return;
+
+						auto ruleSymbol = vContext.syntaxManager.Rules().Values()[index];
+						auto rule = vContext.astRules[ruleSymbol];
+
+						// check if it is affected
+						index = sContext.ruleAffectedSwitches.Keys().IndexOf(ruleSymbol);
+						if (index == -1)
+						{
+							InspectIntoUnaffectedRule(rule);
+						}
+						else
+						{
+							InspectIntoAffectedRule(
+								rule,
+								sContext.ruleAffectedSwitches.GetByIndex(index),
+								identification.workingSwitchValues
+							);
+						}
+					}
+
+					void Traverse(GlrRefSyntax* node) override
+					{
+						if (node->refType == GlrRefType::Id)
+						{
+							TraverseRule(node->literal);
+						}
+					}
+
+					void Traverse(GlrUseSyntax* node) override
+					{
+						TraverseRule(node->name);
+					}
+
+					void Visit(GlrTestConditionSyntax* node) override
+					{
+						CHECK_ERROR(
+							identification.workingSwitchValues,
+							L"vl::glr::parsergen::rewritesyntax_switch::ExpandSwitchSyntaxVisitor::Visit(GlrTestConditionSyntax*)#"
+							L"Internal error: switch values are unevaluated"
+						);
+						EvaluateConditionVisitor visitor(*identification.workingSwitchValues.Obj());
+
+						for (auto branch : node->branches)
+						{
+							// inspect into the branch only when it satisfies the condition
+							if (!branch || visitor.Evaluate(branch->condition.Obj()))
+							{
+								InspectInto(branch->syntax.Obj());
+							}
+						}
+					}
+
+					void Visit(GlrPushConditionSyntax* node) override
+					{
+						// inspect into the syntax with updated values
+						auto oldValues = identification.workingSwitchValues;
+						auto newValues = ApplySwitches(oldValues, node);
+
+						identification.workingSwitchValues = newValues;
+						traverse_visitor::RuleAstVisitor::Visit(node);
+						identification.workingSwitchValues = oldValues;
+					}
+
+				public:
+					ExpandSwitchSyntaxVisitor(
+						VisitorContext& _vContext,
+						VisitorSwitchContext& _sContext,
+						RewritingContext& _rContext
+					)
+						: vContext(_vContext)
+						, sContext(_sContext)
+						, rContext(_rContext)
+					{
+					}
+
+					void InspectIntoAffectedRule(
+						GlrRule* rule,
+						const List<WString>& affectedSwitches,
+						Ptr<Dictionary<WString, bool>> currentSwitchValues
+					)
+					{
+						// an affected rule respond to switch values
+						// collect switch values that the rule cares
+						auto workingSwitchValues = MakePtr<Dictionary<WString, bool>>();
+						for (auto&& name : affectedSwitches)
+						{
+							vint index = -1;
+							if (currentSwitchValues)
+							{
+								index = currentSwitchValues->Keys().IndexOf(name);
+							}
+
+							if (index == -1)
+							{
+								workingSwitchValues->Set(name, sContext.switches[name].key);
+							}
+							else
+							{
+								workingSwitchValues->Set(name, currentSwitchValues->Values()[index]);
+							}
+						}
+
+						// skip if the rule with collected switch values has been inspected
+						auto workingRule = vContext.syntaxManager.Rules()[rule->name.value];
+						vint index = rContext.generatedRules.Keys().IndexOf(workingRule);
+						if (index != -1)
+						{
+							for (auto generatedRule : rContext.generatedRules.GetByIndex(index))
+							{
+								if (CompareEnumerable(*generatedRule->switchValues.Obj(), *workingSwitchValues.Obj()) == 0)
+								{
+									return;
+								}
+							}
+						}
+
+						// make a record of the collected switch values
+						auto generatedRule = MakePtr<GeneratedRule>();
+						generatedRule->ruleToExpand = rule;
+						generatedRule->switchValues = workingSwitchValues;
+						rContext.generatedRules.Add(workingRule, generatedRule);
+
+						// inspect into the rule with collected switch values
+						auto oldId = identification;
+						identification.workingRule = workingRule;
+						identification.workingSwitchValues = workingSwitchValues;
+						identification.generatedRule = generatedRule;
+						InspectInto(rule);
+						identification = oldId;
+					}
+
+					void InspectIntoUnaffectedRule(GlrRule* rule)
+					{
+						// an unaffected rule does not respond to switch values
+						// skip if it has been inspected
+						auto workingRule = vContext.syntaxManager.Rules()[rule->name.value];
+						if (scannedUnaffectedRules.Contains(workingRule)) return;
+						scannedUnaffectedRules.Add(workingRule);
+
+						auto oldId = identification;
+						identification = {};
+						identification.workingRule = workingRule;
+						InspectInto(rule);
+						identification = oldId;
+					}
+				};
+
+/***********************************************************************
+ExpandClauseVisitor
+***********************************************************************/
+
+				class ExpandClauseVisitor : public copy_visitor::RuleAstVisitor
+				{
+					// this visitor expand syntax with given switch values
+					// the expanded syntax does not include GlrPushConditionSyntax
+					// GlrTestConditionSyntax will be possibly converts to GlrAlternativeSyntax
+					//   only with branches whose condition is evaluated to true under given switch values
+					// EmptySyntax will be generated for ?(true: ; | false: allOtherBranches)
+					// CancelBranch will be thrown for ?(false: allBranches)
+				protected:
+					struct CancelBranch {};
+
+					VisitorContext&						vContext;
+					VisitorSwitchContext&				sContext;
+					Ptr<Dictionary<WString, bool>>		workingSwitchValues;
+
+				protected:
+
+					void FixRuleName(ParsingToken& name)
+					{
+						// check if it is an affected rule
+						vint index = vContext.syntaxManager.Rules().Keys().IndexOf(name.value);
+						if (index == -1) return;
+
+						auto ruleSymbol = vContext.syntaxManager.Rules().Values()[index];
+						index = sContext.ruleAffectedSwitches.Keys().IndexOf(ruleSymbol);
+						if (index == -1) return;
+
+						// for an affected rule
+						// the name referencing the rule need to be changed
+						// by appending switch values after it
+						SortedList<WString> switchNames;
+						CopyFrom(switchNames, sContext.ruleAffectedSwitches.GetByIndex(index));
+
+						name.value += L"_SWITCH";
+						for (auto&& switchName : switchNames)
+						{
+							auto value = workingSwitchValues->Get(switchName);
+							name.value += (value ? L"_1" : L"_0") + switchName;
+						}
+					}
+
+					void ExpandSyntaxToList(Ptr<GlrSyntax> syntax, List<Ptr<GlrSyntax>>& items)
+					{
+						try
+						{
+							items.Add(CopyNode(syntax.Obj()));
+						}
+						catch (CancelBranch)
+						{
+						}
+					}
+
+					void BuildAlt(bool optional, List<Ptr<GlrSyntax>>& items)
+					{
+						// build syntax [items...]
+						if (items.Count() == 0)
+						{
+							// if there is no branch
+							if (optional)
+							{
+								// optional of nothing is EmptySyntax
+								result = MakePtr<EmptySyntax>();
+								return;
+							}
+							else
+							{
+								// non-optional of nothing results in an exception
+								result = nullptr;
+								throw CancelBranch();
+							}
+						}
+						else if (items.Count() == 1)
+						{
+							// if there is only on branch, just use it
+							result = items[0];
+						}
+						else
+						{
+							// otherwise create alternative syntax for them
+							auto alt = MakePtr<GlrAlternativeSyntax>();
+							alt->first = items[0];
+							alt->second = items[1];
+							for (vint i = 2; i < items.Count(); i++)
+							{
+								auto newAlt = MakePtr<GlrAlternativeSyntax>();
+								newAlt->first = alt;
+								newAlt->second = items[i];
+								alt = newAlt;
+							}
+							result = alt;
+						}
+
+						if (optional)
+						{
+							// make it optional if necessary
+							auto opt = MakePtr<GlrOptionalSyntax>();
+							opt->syntax = result.Cast<GlrSyntax>();
+							result = opt;
+						}
+					}
+
+				protected:
+
+					void Visit(GlrRefSyntax* node) override
+					{
+						// only need to fix rule name for GlrRefSyntax
+						copy_visitor::RuleAstVisitor::Visit(node);
+						if (node->refType == GlrRefType::Id)
+						{
+							FixRuleName(result.Cast<GlrRefSyntax>()->literal);
+						}
+					}
+
+					void Visit(GlrUseSyntax* node) override
+					{
+						// only need to fix rule name for GlrUseSyntax
+						copy_visitor::RuleAstVisitor::Visit(node);
+						FixRuleName(result.Cast<GlrUseSyntax>()->name);
+					}
+
+					void Visit(GlrAlternativeSyntax* node) override
+					{
+						// alternative syntax converts to alternative syntax
+						List<Ptr<GlrSyntax>> items;
+						ExpandSyntaxToList(node->first, items);
+						ExpandSyntaxToList(node->second, items);
+						BuildAlt(false, items);
+					}
+
+					void Visit(GlrTestConditionSyntax* node) override
+					{
+						// test condition syntax converts alternative syntax with optional if necessary
+						bool optional = false;
+						List<Ptr<GlrSyntax>> items;
+						EvaluateConditionVisitor visitor(*workingSwitchValues.Obj());
+						for (auto branch : node->branches)
+						{
+							if (!branch || visitor.Evaluate(branch->condition.Obj()))
+							{
+								if (branch->syntax)
+								{
+									ExpandSyntaxToList(branch->syntax, items);
+								}
+								else
+								{
+									optional = true;
+								}
+							}
+						}
+						BuildAlt(optional, items);
+					}
+
+					void Visit(GlrPushConditionSyntax* node) override
+					{
+						// push condition syntax will be replaced by the syntax inside it
+						auto oldValues = workingSwitchValues;
+						auto newValues = ApplySwitches(oldValues, node);
+
+						workingSwitchValues = newValues;
+						node->syntax->Accept(this);
+						workingSwitchValues = oldValues;
+					}
+
+				public:
+					ExpandClauseVisitor(
+						VisitorContext& _vContext,
+						VisitorSwitchContext& _sContext,
+						Ptr<Dictionary<WString, bool>> _workingSwitchValues
+					)
+						: vContext(_vContext)
+						, sContext(_sContext)
+						, workingSwitchValues(_workingSwitchValues)
+					{
+					}
+
+					Ptr<GlrClause> ExpandClause(GlrClause* node)
+					{
+						try
+						{
+							return CopyNode(node);
+						}
+						catch (CancelBranch)
+						{
+							return nullptr;
+						}
+					}
+				};
+
+/***********************************************************************
+DeductEmptySyntaxVisitor
+***********************************************************************/
+
+				class DeductEmptySyntaxVisitor : public copy_visitor::RuleAstVisitor
+				{
+					// this visitor rewrite a syntax by removing EmptySyntax
+					// but it is possible that the whole syntax is evaluated to EmptySyntax
+					// in this case it is rewritten to EmptySyntax
+				protected:
+
+					Ptr<GlrSyntax> CopyNodeSafe(Ptr<GlrSyntax> node)
+					{
+						if (node.Cast<EmptySyntax>())
+						{
+							return node;
+						}
+						else
+						{
+							return CopyNode(node.Obj());
+						}
+					}
+				protected:
+					void Visit(GlrRefSyntax* node) override
+					{
+						result = node;
+					}
+
+					void Visit(GlrUseSyntax* node) override
+					{
+						result = node;
+					}
+
+					void Visit(GlrLoopSyntax* node) override
+					{
+						node->syntax = CopyNodeSafe(node->syntax);
+						node->delimiter = CopyNodeSafe(node->delimiter);
+						result = node;
+
+						if (node->syntax.Cast<EmptySyntax>())
+						{
+							// if the loop body is empty, it is empty
+							result = node->syntax;
+						}
+						else if (node->delimiter.Cast<EmptySyntax>())
+						{
+							node->delimiter = nullptr;
+						}
+					}
+
+					void Visit(GlrOptionalSyntax* node) override
+					{
+						node->syntax = CopyNodeSafe(node->syntax);
+						result = node;
+
+						if (node->syntax.Cast<EmptySyntax>())
+						{
+							// if the optional body is empty, it is empty
+							result = node->syntax;
+						}
+					}
+
+					void Visit(GlrSequenceSyntax* node) override
+					{
+						node->first = CopyNodeSafe(node->first);
+						node->second = CopyNodeSafe(node->second);
+						result = node;
+
+						bool first = !node->first.Cast<EmptySyntax>();
+						bool second = !node->second.Cast<EmptySyntax>();
+						if (first && second)
+						{
+							// if both are not empty, nothing need to worry
+						}
+						else if (first)
+						{
+							// if only first is not empty, it is second
+							result = node->first;
+						}
+						else if (second)
+						{
+							// if only second is empty, it is second
+							result = node->second;
+						}
+						else
+						{
+							// if both are empty, it is empty
+							result = node->first;
+						}
+					}
+
+					void Visit(GlrAlternativeSyntax* node) override
+					{
+						node->first = CopyNodeSafe(node->first);
+						node->second = CopyNodeSafe(node->second);
+						result = node;
+
+						bool first = !node->first.Cast<EmptySyntax>();
+						bool second = !node->second.Cast<EmptySyntax>();
+						if (first && second)
+						{
+							// if both are not empty, nothing need to worry
+						}
+						else if (first)
+						{
+							// if only first is not empty, it is [first]
+							auto opt = MakePtr<GlrOptionalSyntax>();
+							opt->syntax = node->first;
+							result = opt;
+						}
+						else if (second)
+						{
+							// if only second is not empty, it is [second]
+							auto opt = MakePtr<GlrOptionalSyntax>();
+							opt->syntax = node->second;
+							result = opt;
+						}
+						else
+						{
+							// if both are empty, it is empty
+							result = node->first;
+						}
+					}
+
+					void Visit(GlrPushConditionSyntax* node) override
+					{
+						CHECK_FAIL(L"vl::glr::parsergen::rewritesyntax_switch::DeductEmptySyntaxVisitor::Visit(GlrPushConditionSyntax*)#This should have been removed.");
+					}
+
+					void Visit(GlrTestConditionSyntax* node) override
+					{
+						CHECK_FAIL(L"vl::glr::parsergen::rewritesyntax_switch::DeductEmptySyntaxVisitor::Visit(GlrTestConditionSyntax*)#This should have been removed.");
+					}
+				};
+
+/***********************************************************************
+DeductAndVerifyClauseVisitor
+**********************************************************************/
+
+				class DeductAndVerifyClauseVisitor
+					: public Object
+					, protected GlrClause::IVisitor
+				{
+					// this visitor remove EmptySyntax in clauses
+					// if it is not possible, it returns false
+				protected:
+					void Verify(Ptr<GlrSyntax>& syntax)
+					{
+						auto deducted = DeductEmptySyntaxVisitor().CopyNode(syntax.Obj());
+						if (deducted.Cast<EmptySyntax>())
+						{
+							result = false;
+						}
+						else
+						{
+							syntax = deducted;
+							result = true;
+						}
+					}
+
+					void Visit(GlrCreateClause* node) override
+					{
+						Verify(node->syntax);
+					}
+
+					void Visit(GlrPartialClause* node) override
+					{
+						Verify(node->syntax);
+					}
+
+					void Visit(GlrReuseClause* node) override
+					{
+						Verify(node->syntax);
+					}
+
+					void Visit(GlrLeftRecursionPlaceholderClause* node) override
+					{
+						result = true;
+					}
+
+					void Visit(GlrLeftRecursionInjectClause* node) override
+					{
+						result = true;
+					}
+
+					void Visit(GlrPrefixMergeClause* node) override
+					{
+						result = true;
+					}
+
+				public:
+					bool								result = false;
+
+					bool Evaluate(GlrClause* node)
+					{
+						node->Accept(this);
+						return result;
+					}
+				};
+
+/***********************************************************************
+RewriteSyntax
+***********************************************************************/
+
+				WString CreateRuleName(Ptr<GlrRule> rule, const wchar_t* tag, Dictionary<WString, bool>& switchValues)
+				{
+					auto ruleName = rule->name.value + tag;
+					for (auto [name, value] : switchValues)
+					{
+						ruleName += (value ? L"_1" : L"_0") + name;
+					}
+
+					return ruleName;
+				}
+
+				Ptr<GlrRule> CreateRule(RuleSymbol* ruleSymbol, Ptr<GlrRule> rule, const WString& name)
+				{
+					auto newRule = MakePtr<GlrRule>();
+					newRule->codeRange = rule->codeRange;
+					newRule->name = rule->name;
+					newRule->name.value = name;
+					newRule->type = rule->type;
+					newRule->type.value = ruleSymbol->ruleType->Name();
+					return newRule;
+				}
+
+				Ptr<GlrRule> CreateRule(RuleSymbol* ruleSymbol, Ptr<GlrRule> rule, const wchar_t* tag, Dictionary<WString, bool>& switchValues)
+				{
+					return CreateRule(ruleSymbol, rule, CreateRuleName(rule, tag, switchValues));
+				}
+
+				void AddRules(RuleSymbol* ruleSymbol, Ptr<GlrSyntaxFile> rewritten, Group<RuleSymbol*, Ptr<GlrRule>>& expandedRules)
+				{
+					vint index = expandedRules.Keys().IndexOf(ruleSymbol);
+					if (index != -1)
+					{
+						for (auto expandedRule : From(expandedRules.GetByIndex(index))
+							.OrderBy([](auto a, auto b) { return WString::Compare(a->name.value, b->name.value); })
+							)
+						{
+							rewritten->rules.Add(expandedRule);
+						}
+					}
+				}
+
+				void CreateRuleSymbols(SyntaxSymbolManager& syntaxManager, Group<RuleSymbol*, Ptr<GlrRule>>& expandedRules)
+				{
+					for (auto ruleSymbol : From(expandedRules.Keys())
+						.OrderBy([](auto a, auto b) { return WString::Compare(a->Name(), b->Name()); })
+						)
+					{
+						for (auto rule : expandedRules[ruleSymbol])
+						{
+							auto newRuleSymbol = syntaxManager.CreateRule(
+								rule->name.value,
+								rule->name.codeRange
+							);
+						}
+					}
+				}
+			}
+
+			Ptr<GlrSyntaxFile> RewriteSyntax_Switch(VisitorContext& context, VisitorSwitchContext& sContext, SyntaxSymbolManager& syntaxManager, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				using namespace rewritesyntax_switch;
+
+				if (sContext.ruleAffectedSwitches.Count() == syntaxManager.Rules().Count())
+				{
+					syntaxManager.AddError(
+						ParserErrorType::NoSwitchUnaffectedRule,
+						{}
+						);
+					return nullptr;
+				}
+
+				RewritingContext rewritingContext;
+				{
+					// find out all expansion of rules affected by switch values
+					ExpandSwitchSyntaxVisitor visitor(context, sContext, rewritingContext);
+					for (auto rule : syntaxFile->rules)
+					{
+						auto ruleSymbol = syntaxManager.Rules()[rule->name.value];
+						if (!sContext.ruleAffectedSwitches.Keys().Contains(ruleSymbol))
+						{
+							visitor.InspectIntoUnaffectedRule(rule.Obj());
+						}
+					}
+				}
+
+				auto rewritten = MakePtr<GlrSyntaxFile>();
+				for (auto rule : syntaxFile->rules)
+				{
+					auto ruleSymbol = syntaxManager.Rules()[rule->name.value];
+					vint index = rewritingContext.generatedRules.Keys().IndexOf(ruleSymbol);
+					if (index == -1)
+					{
+						// if a rule is unaffected
+						// just remove GlrPushConditionSyntax in clauses
+						// rules it references could be renamed
+						auto newRule = MakePtr<GlrRule>();
+						newRule->codeRange = rule->codeRange;
+						newRule->name = rule->name;
+						newRule->type = rule->type;
+
+						ExpandClauseVisitor visitor(context, sContext, nullptr);
+						for (auto clause : rule->clauses)
+						{
+							if (auto newClause = visitor.ExpandClause(clause.Obj()))
+							{
+								newRule->clauses.Add(newClause);
+							}
+						}
+
+						if (newRule->clauses.Count() == 0)
+						{
+							// a rewritten rule must have at least on clause
+							syntaxManager.AddError(
+								ParserErrorType::SwitchUnaffectedRuleExpandedToNoClause,
+								rule->codeRange,
+								rule->name.value
+								);
+						}
+						else
+						{
+							rewritten->rules.Add(newRule);
+						}
+					}
+					else
+					{
+						// if a rule is affected
+						// all instances of possible switch values will be converted to a new rule
+						// such rule has switch values encoded in its name
+						for(auto generatedRule : rewritingContext.generatedRules.GetByIndex(index))
+						{
+							SortedList<WString> referencedCombinedRules;
+							auto newRule = CreateRule(ruleSymbol, rule, L"_SWITCH", *generatedRule->switchValues.Obj());
+
+							// rewrite all clauses with given switch values
+							for (auto clause : rule->clauses)
+							{
+								auto switchValues = generatedRule->switchValues;
+
+								// if this clause is affected by some switches
+								// prepare switch values for combined rules
+								vint clauseIndex = sContext.clauseAffectedSwitches.Keys().IndexOf(clause.Obj());
+								if (clauseIndex == -1)
+								{
+									switchValues = MakePtr<Dictionary<WString, bool>>();
+								}
+								else
+								{
+									auto&& switches = sContext.clauseAffectedSwitches.GetByIndex(clauseIndex);
+									if (switches.Count() != generatedRule->switchValues->Count())
+									{
+										switchValues = MakePtr<Dictionary<WString, bool>>();
+										for (auto&& switchName : switches)
+										{
+											switchValues->Add(switchName, generatedRule->switchValues->Get(switchName));
+										}
+									}
+								}
+
+								if (switchValues == generatedRule->switchValues)
+								{
+									// if this clause is affected by all switches
+									// expand this clause into the new rule
+									ExpandClauseVisitor visitor(context, sContext, switchValues);
+									if (auto newClause = visitor.ExpandClause(clause.Obj()))
+									{
+										if (DeductAndVerifyClauseVisitor().Evaluate(newClause.Obj()))
+										{
+											// only add the rewritten clause to the generated rule if it is valid
+											// a clause could be invalid if all branches evaluated to nothing due to GlrTestConditionSyntax
+											newRule->clauses.Add(newClause);
+										}
+									}
+								}
+								else
+								{
+									// if this clause is affected by some switches
+									// expand this clause into a combined rule
+									bool validClause = false;
+									auto combinedRuleName = CreateRuleName(rule, L"_SWITCH_COMBINED", *switchValues.Obj());
+									if (rewritingContext.validCombinedClauses.Contains(combinedRuleName, clause.Obj()))
+									{
+										validClause = true;
+									}
+									else if (!rewritingContext.invalidCombinedClauses.Contains(combinedRuleName, clause.Obj()))
+									{
+										ExpandClauseVisitor visitor(context, sContext, switchValues);
+										if (auto newClause = visitor.ExpandClause(clause.Obj()))
+										{
+											if (DeductAndVerifyClauseVisitor().Evaluate(newClause.Obj()))
+											{
+												// only add the rewritten clause to the generated rule if it is valid
+												// a clause could be invalid if all branches evaluated to nothing due to GlrTestConditionSyntax
+												Ptr<GlrRule> combinedRule;
+												vint ruleIndex = rewritingContext.combinedRulesByName.Keys().IndexOf(combinedRuleName);
+												if (ruleIndex == -1)
+												{
+													combinedRule = CreateRule(ruleSymbol, rule, combinedRuleName);
+													rewritingContext.expandedCombinedRules.Add(ruleSymbol, combinedRule);
+													rewritingContext.combinedRulesByName.Add(combinedRuleName, combinedRule);
+												}
+												else
+												{
+													combinedRule = rewritingContext.combinedRulesByName.Values()[ruleIndex];
+												}
+												combinedRule->clauses.Add(newClause);
+												validClause = true;
+											}
+										}
+
+										if (validClause)
+										{
+											rewritingContext.validCombinedClauses.Add(combinedRuleName, clause.Obj());
+										}
+										else
+										{
+											rewritingContext.invalidCombinedClauses.Add(combinedRuleName, clause.Obj());
+										}
+									}
+
+									// this clause might be invalid in the current context
+									if (validClause)
+									{
+										if (!referencedCombinedRules.Contains(combinedRuleName))
+										{
+											referencedCombinedRules.Add(combinedRuleName);
+										}
+									}
+								}
+							}
+
+							for (auto ruleName : referencedCombinedRules)
+							{
+								// add all used combined rules in order of name
+								if (ruleSymbol->isPartial)
+								{
+									auto refSyntax = MakePtr<GlrRefSyntax>();
+									refSyntax->literal = rule->name;
+									refSyntax->literal.value = ruleName;
+									refSyntax->refType = GlrRefType::Id;
+
+									auto partialClause = MakePtr<GlrPartialClause>();
+									partialClause->type = rule->name;
+									partialClause->type.value = ruleSymbol->ruleType->Name();
+									partialClause->syntax = refSyntax;
+
+									newRule->clauses.Add(partialClause);
+								}
+								else
+								{
+									auto useSyntax = MakePtr<GlrUseSyntax>();
+									useSyntax->name = rule->name;
+									useSyntax->name.value = ruleName;
+
+									auto reuseClause = MakePtr<GlrReuseClause>();
+									reuseClause->syntax = useSyntax;
+
+									newRule->clauses.Add(reuseClause);
+								}
+							}
+
+							if (newRule->clauses.Count() == 0)
+							{
+								// a rewritten rule must have at least on clause
+								syntaxManager.AddError(
+									ParserErrorType::SwitchAffectedRuleExpandedToNoClause,
+									rule->codeRange,
+									rule->name.value,
+									newRule->name.value
+									);
+							}
+							else
+							{
+								rewritingContext.expandedFirstLevelRules.Add(ruleSymbol, newRule);
+							}
+						}
+
+						// add rules
+						AddRules(ruleSymbol, rewritten, rewritingContext.expandedCombinedRules);
+						AddRules(ruleSymbol, rewritten, rewritingContext.expandedFirstLevelRules);
+					}
+				}
+
+				// add symbols for generated rules
+				CreateRuleSymbols(syntaxManager, rewritingContext.expandedCombinedRules);
+				CreateRuleSymbols(syntaxManager, rewritingContext.expandedFirstLevelRules);
+
+				// remove symbols for rule affected by switch values
+				// because they are expanded to other rules
+				for (auto ruleSymbol : rewritingContext.generatedRules.Keys())
+				{
+					syntaxManager.RemoveRule(ruleSymbol->Name());
+				}
+
+				return rewritten;
 			}
 		}
 	}
@@ -4571,18 +7607,19 @@ ValidateStructureCountingVisitor
 				, protected virtual GlrClause::IVisitor
 			{
 			protected:
-				VisitorContext&				context;
-				RuleSymbol*					ruleSymbol;
-				GlrClause*					clause = nullptr;
+				VisitorContext&							context;
+				RuleSymbol*								ruleSymbol;
+				GlrClause*								clause = nullptr;
+				GlrLeftRecursionPlaceholderClause*		lrpClause = nullptr;
 
-				vint						optionalCounter = 0;
-				vint						loopCounter = 0;
-				bool						lastSyntaxPiece = true;
-				bool						prioritySyntaxOccurred = false;
+				vint									optionalCounter = 0;
+				vint									loopCounter = 0;
+				bool									lastSyntaxPiece = true;
+				bool									prioritySyntaxOccurred = false;
 
-				vint						syntaxMinLength = 0;
-				vint						syntaxMinUseRuleCount = 0;
-				vint						syntaxMaxUseRuleCount = 0;
+				vint									syntaxMinLength = 0;
+				vint									syntaxMinUseRuleCount = 0;
+				vint									syntaxMaxUseRuleCount = 0;
 
 			public:
 				ValidateStructureCountingVisitor(
@@ -4604,6 +7641,11 @@ ValidateStructureCountingVisitor
 				}
 
 			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
 				void Visit(GlrRefSyntax* node) override
 				{
 					syntaxMinLength = 1;
@@ -4629,29 +7671,25 @@ ValidateStructureCountingVisitor
 							}
 						}
 
-						vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->name.value);
-						if (ruleIndex != -1)
+						if (node->refType == GlrRefType::Id)
 						{
-							auto fieldRule = context.syntaxManager.Rules().Values()[ruleIndex];
-							if (fieldRule->isPartial && fieldRule->assignedNonArrayField)
+							vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
+							if (ruleIndex != -1)
 							{
-								context.syntaxManager.AddError(
-									ParserErrorType::NonLoopablePartialRuleUsedInLoop,
-									node->codeRange,
-									ruleSymbol->Name(),
-									clauseType->Name(),
-									fieldRule->Name()
+								auto fieldRule = context.syntaxManager.Rules().Values()[ruleIndex];
+								if (fieldRule->isPartial && fieldRule->assignedNonArrayField)
+								{
+									context.syntaxManager.AddError(
+										ParserErrorType::NonLoopablePartialRuleUsedInLoop,
+										node->codeRange,
+										ruleSymbol->Name(),
+										clauseType->Name(),
+										fieldRule->Name()
 									);
+								}
 							}
 						}
 					}
-				}
-
-				void Visit(GlrLiteralSyntax* node) override
-				{
-					syntaxMinLength = 1;
-					syntaxMinUseRuleCount = 0;
-					syntaxMaxUseRuleCount = 0;
 				}
 
 				void Visit(GlrUseSyntax* node) override
@@ -4794,6 +7832,20 @@ ValidateStructureCountingVisitor
 					syntaxMaxUseRuleCount = firstMaxUseRuleCount > secondMaxUseRuleCount ? firstMaxUseRuleCount : secondMaxUseRuleCount;
 				}
 
+				void Visit(GlrPushConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				void Visit(GlrTestConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
 				void CheckAfterClause(GlrClause* node, bool reuseClause)
 				{
 					if (syntaxMinLength == 0)
@@ -4812,7 +7864,7 @@ ValidateStructureCountingVisitor
 								ParserErrorType::ClauseNotCreateObject,
 								node->codeRange,
 								ruleSymbol->Name()
-							);
+								);
 						}
 						if (syntaxMaxUseRuleCount > 1)
 						{
@@ -4820,7 +7872,7 @@ ValidateStructureCountingVisitor
 								ParserErrorType::ClauseTooManyUseRule,
 								node->codeRange,
 								ruleSymbol->Name()
-							);
+								);
 						}
 					}
 				}
@@ -4844,6 +7896,30 @@ ValidateStructureCountingVisitor
 					clause = node;
 					node->syntax->Accept(this);
 					CheckAfterClause(node, true);
+				}
+
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+					if (!lrpClause)
+					{
+						lrpClause = node;
+					}
+					else
+					{
+						context.syntaxManager.AddError(
+							ParserErrorType::TooManyLeftRecursionPlaceholderClauses,
+							node->codeRange,
+							ruleSymbol->Name()
+							);
+					}
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
 				}
 			};
 
@@ -4995,6 +8071,11 @@ ValidateStructureRelationshipVisitor
 				}
 
 			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
 				void Visit(GlrRefSyntax* node) override
 				{
 					if (node->field)
@@ -5002,19 +8083,18 @@ ValidateStructureRelationshipVisitor
 						existingFields = existingFields.Append(new Link(node));
 					}
 
-					vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->name.value);
-					if (ruleIndex != -1)
+					if (node->refType == GlrRefType::Id)
 					{
-						auto fieldRule = context.syntaxManager.Rules().Values()[ruleIndex];
-						if (fieldRule->isPartial)
+						vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
+						if (ruleIndex != -1)
 						{
-							existingPartials= existingPartials.Append(new Link(node));
+							auto fieldRule = context.syntaxManager.Rules().Values()[ruleIndex];
+							if (fieldRule->isPartial)
+							{
+								existingPartials = existingPartials.Append(new Link(node));
+							}
 						}
 					}
-				}
-
-				void Visit(GlrLiteralSyntax* node) override
-				{
 				}
 
 				void Visit(GlrUseSyntax* node) override
@@ -5057,6 +8137,20 @@ ValidateStructureRelationshipVisitor
 					existingFields = existingFields.Connect(firstFields);
 					existingPartials = existingPartials.Connect(firstPartials);
 				}
+
+				void Visit(GlrPushConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				void Visit(GlrTestConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
 
 				void CheckAfterClause(GlrClause* node)
 				{
@@ -5114,27 +8208,679 @@ ValidateStructureRelationshipVisitor
 					node->syntax->Accept(this);
 					CheckAfterClause(node);
 				}
+
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
+				}
+			};
+
+/***********************************************************************
+ValidateStructurePrefixMergeRuleVisitor
+***********************************************************************/
+
+			class ValidateStructurePrefixMergeRuleVisitor
+				: public Object
+				, protected virtual GlrSyntax::IVisitor
+				, protected virtual GlrClause::IVisitor
+			{
+			protected:
+				VisitorContext&				context;
+				RuleSymbol*					ruleSymbol;
+
+			public:
+				ValidateStructurePrefixMergeRuleVisitor(
+					VisitorContext& _context,
+					RuleSymbol* _ruleSymbol
+				)
+					: context(_context)
+					, ruleSymbol(_ruleSymbol)
+				{
+				}
+
+				void ValidateClause(Ptr<GlrClause> clause)
+				{
+					clause->Accept(this);
+				}
+
+			protected:
+
+				void NotBeginWithARule(ParsingAstBase* node)
+				{
+					// TODO: Should accept and generate !prefix_merge equivalent effect for this clause automatically
+					context.syntaxManager.AddError(
+						ParserErrorType::RuleMixedPrefixMergeWithClauseNotSyntacticallyBeginWithARule,
+						node->codeRange,
+						ruleSymbol->Name()
+						);
+				}
+
+				void VerifyStartRule(ParsingAstBase* node, RuleSymbol* startRule)
+				{
+					if (ruleSymbol != startRule && !context.indirectPmClauses.Keys().Contains(startRule))
+					{
+						// TODO: Should accept and generate !prefix_merge equivalent effect for this clause automatically
+						//       When this is not a left-recursive clause
+						context.syntaxManager.AddError(
+							ParserErrorType::RuleMixedPrefixMergeWithClauseNotBeginWithIndirectPrefixMerge,
+							node->codeRange,
+							ruleSymbol->Name(),
+							startRule->Name()
+							);
+					}
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Visit(GlrRefSyntax* node) override
+				{
+					if (node->refType != GlrRefType::Id)
+					{
+						NotBeginWithARule(node);
+					}
+					else
+					{
+						vint index = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
+						if (index == -1)
+						{
+							NotBeginWithARule(node);
+						}
+						else
+						{
+							VerifyStartRule(node, context.syntaxManager.Rules().Values()[index]);
+						}
+					}
+				}
+
+				void Visit(GlrUseSyntax* node) override
+				{
+					VerifyStartRule(node, context.syntaxManager.Rules()[node->name.value]);
+				}
+
+				void Visit(GlrLoopSyntax* node) override
+				{
+					NotBeginWithARule(node);
+				}
+
+				void Visit(GlrOptionalSyntax* node) override
+				{
+					NotBeginWithARule(node);
+				}
+
+				void Visit(GlrSequenceSyntax* node) override
+				{
+					node->first->Accept(this);
+				}
+
+				void Visit(GlrAlternativeSyntax* node) override
+				{
+					NotBeginWithARule(node);
+				}
+
+				void Visit(GlrPushConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				void Visit(GlrTestConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Visit(GlrCreateClause* node) override
+				{
+					node->syntax->Accept(this);
+				}
+
+				void Visit(GlrPartialClause* node) override
+				{
+					node->syntax->Accept(this);
+				}
+
+				void Visit(GlrReuseClause* node) override
+				{
+					node->syntax->Accept(this);
+				}
+
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+					NotBeginWithARule(node);
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+					NotBeginWithARule(node);
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
+				}
+			};
+
+/***********************************************************************
+ValidateStructureIndirectPrefixMergeRuleVisitor
+***********************************************************************/
+
+			class ValidateStructureIndirectPrefixMergeRuleVisitor
+				: public Object
+				, protected virtual GlrClause::IVisitor
+			{
+			protected:
+				VisitorContext&				context;
+				RuleSymbol*					ruleSymbol;
+				RuleSymbol*					pmRuleSymbol;
+
+			public:
+				ValidateStructureIndirectPrefixMergeRuleVisitor(
+					VisitorContext& _context,
+					RuleSymbol* _ruleSymbol,
+					RuleSymbol* _pmRuleSymbol
+				)
+					: context(_context)
+					, ruleSymbol(_ruleSymbol)
+					, pmRuleSymbol(_pmRuleSymbol)
+				{
+				}
+
+				void ValidateClause(Ptr<GlrClause> clause)
+				{
+					clause->Accept(this);
+				}
+
+			protected:
+
+				void NotSimpleUsingRule(GlrClause* node)
+				{
+					if (context.leftRecursiveClauses.Contains(ruleSymbol, node)) return;
+
+					{
+						vint index = context.clauseToStartRules.Keys().IndexOf(node);
+						if (index == -1) goto SUCCEEDED_CONDITION;
+						for (auto ruleSymbol : context.clauseToStartRules.GetByIndex(index))
+						{
+							if (context.indirectPmClauses.Keys().IndexOf(ruleSymbol) != -1)
+							{
+								goto FAILED_CONDITION;
+							}
+						}
+
+					SUCCEEDED_CONDITION:
+						context.clauseToConvertedToPrefixMerge.Add(node);
+						return;
+					FAILED_CONDITION:;
+					}
+
+					context.syntaxManager.AddError(
+						ParserErrorType::RuleIndirectlyBeginsWithPrefixMergeMixedNonSimpleUseClause,
+						node->codeRange,
+						ruleSymbol->Name(),
+						pmRuleSymbol->Name()
+						);
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Visit(GlrCreateClause* node) override
+				{
+					NotSimpleUsingRule(node);
+				}
+
+				void Visit(GlrPartialClause* node) override
+				{
+					NotSimpleUsingRule(node);
+				}
+
+				void Visit(GlrReuseClause* node) override
+				{
+					if (!dynamic_cast<GlrUseSyntax*>(node->syntax.Obj()))
+					{
+						NotSimpleUsingRule(node);
+					}
+					else if (node->assignments.Count() > 0)
+					{
+						NotSimpleUsingRule(node);
+					}
+				}
+
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
+				}
 			};
 
 /***********************************************************************
 ValidateStructure
 ***********************************************************************/
 
-			void ValidateStructure(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files)
+			void ValidateStructure(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
 			{
-				for (auto file : files)
+				for (auto rule : syntaxFile->rules)
 				{
-					for (auto rule : file->rules)
+					auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					ValidateStructureCountingVisitor visitor1(context, ruleSymbol);
+					for (auto clause : rule->clauses)
 					{
-						auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
-						ValidateStructureCountingVisitor visitor1(context, ruleSymbol);
+						ValidateStructureRelationshipVisitor visitor2(context, ruleSymbol);
+						visitor1.ValidateClause(clause);
+						visitor2.ValidateClause(clause);
+					}
+
+					if (context.directPmClauses.Keys().Contains(ruleSymbol))
+					{
+						ValidateStructurePrefixMergeRuleVisitor visitor3(context, ruleSymbol);
 						for (auto clause : rule->clauses)
 						{
-							ValidateStructureRelationshipVisitor visitor2(context, ruleSymbol);
-							visitor1.ValidateClause(clause);
-							visitor2.ValidateClause(clause);
+							visitor3.ValidateClause(clause);
 						}
 					}
+
+					vint indexPm = context.indirectPmClauses.Keys().IndexOf(ruleSymbol);
+					vint indexLrp = context.indirectLrpClauses.Keys().IndexOf(ruleSymbol);
+					vint indexLri = context.indirectLriClauses.Keys().IndexOf(ruleSymbol);
+
+					if (indexPm != -1)
+					{
+						auto rulePm = context.clauseToRules[context.indirectPmClauses.GetByIndex(indexPm)[0]];
+						if (indexLrp != -1)
+						{
+							auto ruleLrp = context.clauseToRules[context.indirectLrpClauses.GetByIndex(indexLrp)[0]];
+							context.syntaxManager.AddError(
+								ParserErrorType::RuleIndirectlyBeginsWithPrefixMergeMixedLeftRecursionMarkers,
+								rule->name.codeRange,
+								ruleSymbol->Name(),
+								rulePm->Name(),
+								ruleLrp->Name()
+								);
+						}
+						if (indexLri != -1)
+						{
+							auto ruleLri = context.clauseToRules[context.indirectLriClauses.GetByIndex(indexLri)[0]];
+							context.syntaxManager.AddError(
+								ParserErrorType::RuleIndirectlyBeginsWithPrefixMergeMixedLeftRecursionMarkers,
+								rule->name.codeRange,
+								ruleSymbol->Name(),
+								rulePm->Name(),
+								ruleLri->Name()
+								);
+						}
+
+						if (!context.directPmClauses.Keys().Contains(ruleSymbol))
+						{
+							ValidateStructureIndirectPrefixMergeRuleVisitor visitor3(context, ruleSymbol, rulePm);
+							for (auto clause : rule->clauses)
+							{
+								visitor3.ValidateClause(clause);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\PARSERGEN\COMPILESYNTAX_VALIDATESWITCHESANDCONDITIONS.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+			using namespace compile_syntax;
+
+/***********************************************************************
+CollectRuleAffectedSwitchesVisitorBase
+***********************************************************************/
+
+			class CollectRuleAffectedSwitchesVisitorBase
+				: public traverse_visitor::RuleAstVisitor
+			{
+			protected:
+				VisitorContext&							context;
+				VisitorSwitchContext&					sContext;
+				RuleSymbol*								ruleSymbol = nullptr;
+				GlrClause*								currentClause = nullptr;
+				List<WString>							pushedSwitches;
+
+			public:
+				CollectRuleAffectedSwitchesVisitorBase(
+					VisitorContext& _context,
+					VisitorSwitchContext& _sContext
+				)
+					: context(_context)
+					, sContext(_sContext)
+				{
+				}
+
+				void ValidateRule(Ptr<GlrRule> rule)
+				{
+					ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					for (auto clause : rule->clauses)
+					{
+						currentClause = clause.Obj();
+						clause->Accept(this);
+						currentClause = nullptr;
+					}
+				}
+
+			protected:
+
+				void Traverse(GlrPushConditionSyntax* node) override
+				{
+					for (auto switchItem : node->switches)
+					{
+						pushedSwitches.Add(switchItem->name.value);
+					}
+				}
+
+				void Finishing(GlrPushConditionSyntax* node) override
+				{
+					for (vint i = 0; i < node->switches.Count(); i++)
+					{
+						pushedSwitches.RemoveAt(pushedSwitches.Count() - 1);
+					}
+				}
+			};
+
+/***********************************************************************
+CollectRuleAffectedSwitchesFirstPassVisitor
+***********************************************************************/
+
+			class CollectRuleAffectedSwitchesFirstPassVisitor
+				: public CollectRuleAffectedSwitchesVisitorBase
+			{
+			public:
+				CollectRuleAffectedSwitchesFirstPassVisitor(
+					VisitorContext& _context,
+					VisitorSwitchContext& _sContext
+				)
+					: CollectRuleAffectedSwitchesVisitorBase(_context, _sContext)
+				{
+				}
+
+			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrCondition::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Traverse(GlrRefCondition* node) override
+				{
+					if (!pushedSwitches.Contains(node->name.value))
+					{
+						if (!sContext.clauseAffectedSwitches.Contains(currentClause, node->name.value))
+						{
+							sContext.clauseAffectedSwitches.Add(currentClause, node->name.value);
+						}
+						if (!sContext.ruleAffectedSwitches.Contains(ruleSymbol, node->name.value))
+						{
+							sContext.ruleAffectedSwitches.Add(ruleSymbol, node->name.value);
+						}
+					}
+				}
+			};
+
+/***********************************************************************
+CollectRuleAffectedSwitchesSecondPassVisitor
+***********************************************************************/
+
+			class CollectRuleAffectedSwitchesSecondPassVisitor
+				: public CollectRuleAffectedSwitchesVisitorBase
+			{
+			public:
+				bool									updated = false;
+
+				CollectRuleAffectedSwitchesSecondPassVisitor(
+					VisitorContext& _context,
+					VisitorSwitchContext& _sContext
+				)
+					: CollectRuleAffectedSwitchesVisitorBase(_context, _sContext)
+				{
+				}
+
+			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void VisitRule(const WString& name)
+				{
+					vint index = context.syntaxManager.Rules().Keys().IndexOf(name);
+					if (index != -1)
+					{
+						auto refRuleSymbol = context.syntaxManager.Rules().Values()[index];
+						vint indexSwitch = sContext.ruleAffectedSwitches.Keys().IndexOf(refRuleSymbol);
+						if (indexSwitch != -1)
+						{
+							for (auto&& name : sContext.ruleAffectedSwitches.GetByIndex(indexSwitch))
+							{
+								if (!pushedSwitches.Contains(name))
+								{
+									if (!sContext.clauseAffectedSwitches.Contains(currentClause, name))
+									{
+										updated = true;
+										sContext.clauseAffectedSwitches.Add(currentClause, name);
+									}
+									if (ruleSymbol != refRuleSymbol && !sContext.ruleAffectedSwitches.Contains(ruleSymbol, name))
+									{
+										updated = true;
+										sContext.ruleAffectedSwitches.Add(ruleSymbol, name);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				void Traverse(GlrRefSyntax* node) override
+				{
+					VisitRule(node->literal.value);
+				}
+
+				void Traverse(GlrUseSyntax* node) override
+				{
+					VisitRule(node->name.value);
+				}
+			};
+
+/***********************************************************************
+VerifySwitchesAndConditionsVisitor
+***********************************************************************/
+
+			class CollectTestedSwitchesVisitor
+				: public traverse_visitor::RuleAstVisitor
+			{
+			protected:
+				VisitorContext&							context;
+				VisitorSwitchContext&					sContext;
+
+			public:
+				SortedList<WString>						testedSwitches;
+
+				CollectTestedSwitchesVisitor(
+					VisitorContext& _context,
+					VisitorSwitchContext& _sContext
+				)
+					: context(_context)
+					, sContext(_sContext)
+				{
+				}
+
+			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrCondition::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Traverse(GlrRefCondition* node)
+				{
+					if (!testedSwitches.Contains(node->name.value))
+					{
+						testedSwitches.Add(node->name.value);
+					}
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void VisitRule(const WString& name)
+				{
+					vint index = context.syntaxManager.Rules().Keys().IndexOf(name);
+					if (index != -1)
+					{
+						auto refRuleSymbol = context.syntaxManager.Rules().Values()[index];
+						vint index = sContext.ruleAffectedSwitches.Keys().IndexOf(refRuleSymbol);
+						if (index != -1)
+						{
+							for (auto switchName : sContext.ruleAffectedSwitches.GetByIndex(index))
+							{
+								if (!testedSwitches.Contains(switchName))
+								{
+									testedSwitches.Add(switchName);
+								}
+							}
+						}
+					}
+				}
+
+				void Traverse(GlrRefSyntax* node) override
+				{
+					VisitRule(node->literal.value);
+				}
+
+				void Traverse(GlrUseSyntax* node) override
+				{
+					VisitRule(node->name.value);
+				}
+			};
+
+			class VerifySwitchesAndConditionsVisitor
+				: public traverse_visitor::RuleAstVisitor
+			{
+			protected:
+				VisitorContext&							context;
+				VisitorSwitchContext&					sContext;
+				RuleSymbol*								ruleSymbol = nullptr;
+
+			public:
+				VerifySwitchesAndConditionsVisitor(
+					VisitorContext& _context,
+					VisitorSwitchContext& _sContext
+				)
+					: context(_context)
+					, sContext(_sContext)
+				{
+				}
+
+				void ValidateRule(Ptr<GlrRule> rule)
+				{
+					ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					for (auto clause : rule->clauses)
+					{
+						clause->Accept(this);
+					}
+				}
+
+			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Traverse(GlrPushConditionSyntax* node) override
+				{
+					CollectTestedSwitchesVisitor visitor(context, sContext);
+					node->syntax->Accept(&visitor);
+					for (auto switchItem : node->switches)
+					{
+						if (!visitor.testedSwitches.Contains(switchItem->name.value))
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::PushedSwitchIsNotTested,
+								node->codeRange,
+								ruleSymbol->Name(),
+								switchItem->name.value
+								);
+						}
+					}
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Traverse(GlrPrefixMergeClause* node) override
+				{
+					auto pmRuleSymbol = context.syntaxManager.Rules()[node->rule->literal.value];
+					vint index = sContext.ruleAffectedSwitches.Keys().IndexOf(pmRuleSymbol);
+					if(index != -1)
+					{
+						context.syntaxManager.AddError(
+							ParserErrorType::PrefixMergeAffectedBySwitches,
+							node->codeRange,
+							ruleSymbol->Name(),
+							pmRuleSymbol->Name(),
+							sContext.ruleAffectedSwitches.GetByIndex(index)[0]
+							);
+					}
+				}
+			};
+
+/***********************************************************************
+ValidateSwitchesAndConditions
+***********************************************************************/
+
+			void ValidateSwitchesAndConditions(VisitorContext& context, VisitorSwitchContext& sContext, Ptr<GlrSyntaxFile> syntaxFile)
+			{
+				for (auto rule : syntaxFile->rules)
+				{
+					CollectRuleAffectedSwitchesFirstPassVisitor visitor(context, sContext);
+					visitor.ValidateRule(rule);
+				}
+
+				while (true)
+				{
+					CollectRuleAffectedSwitchesSecondPassVisitor visitor(context, sContext);
+					for (auto rule : syntaxFile->rules)
+					{
+						visitor.ValidateRule(rule);
+					}
+
+					if (!visitor.updated) break;
+				};
+
+				for (auto rule : syntaxFile->rules)
+				{
+					VerifySwitchesAndConditionsVisitor visitor(context, sContext);
+					visitor.ValidateRule(rule);
 				}
 			}
 		}
@@ -5153,6 +8899,16 @@ namespace vl
 		{
 			using namespace collections;
 			using namespace compile_syntax;
+
+			bool ConvertibleTo(AstClassSymbol* from, AstClassSymbol* to)
+			{
+				while (from)
+				{
+					if (from == to) return true;
+					from = from->baseClass;
+				}
+				return false;
+			}
 
 /***********************************************************************
 ValidateTypesVisitor
@@ -5192,16 +8948,6 @@ ValidateTypesVisitor
 					}
 				}
 
-				bool ConvertibleTo(AstClassSymbol* from, AstClassSymbol* to)
-				{
-					while (from)
-					{
-						if (from == to) return true;
-						from = from->baseClass;
-					}
-					return false;
-				}
-
 			public:
 				ValidateTypesVisitor(
 					VisitorContext& _context,
@@ -5218,9 +8964,14 @@ ValidateTypesVisitor
 				}
 
 			protected:
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrSyntax::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
 				void Visit(GlrRefSyntax* node) override
 				{
-					vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->name.value);
+					vint ruleIndex = node->refType == GlrRefType::Id ? context.syntaxManager.Rules().Keys().IndexOf(node->literal.value) : -1;
 					auto clauseType = context.clauseTypes[clause];
 					auto fieldRule = ruleIndex == -1 ? nullptr : context.syntaxManager.Rules().Values()[ruleIndex];
 
@@ -5293,10 +9044,6 @@ ValidateTypesVisitor
 					}
 				}
 
-				void Visit(GlrLiteralSyntax* node) override
-				{
-				}
-
 				void Visit(GlrUseSyntax* node) override
 				{
 					auto fieldRule = context.syntaxManager.Rules()[node->name.value];
@@ -5345,6 +9092,20 @@ ValidateTypesVisitor
 					node->first->Accept(this);
 					node->second->Accept(this);
 				}
+
+				void Visit(GlrPushConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrPushConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				void Visit(GlrTestConditionSyntax* node) override
+				{
+					CHECK_FAIL(L"GlrTestConditionSyntax should have been removed after RewriteSyntax_Switch()!");
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
 
 				void Visit(GlrAssignment* node)
 				{
@@ -5407,23 +9168,259 @@ ValidateTypesVisitor
 						Visit(assignment.Obj());
 					}
 				}
+
+				void Visit(GlrLeftRecursionPlaceholderClause* node) override
+				{
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+				}
+
+				void Visit(GlrPrefixMergeClause* node) override
+				{
+					auto prefixRule = context.syntaxManager.Rules()[node->rule->literal.value];
+					if (prefixRule->isPartial)
+					{
+						context.syntaxManager.AddError(
+							ParserErrorType::PartialRuleInPrefixMerge,
+							node->rule->codeRange,
+							ruleSymbol->Name(),
+							node->rule->literal.value
+							);
+					}
+				}
+			};
+
+/***********************************************************************
+LriVerifyTypesVisitor
+***********************************************************************/
+
+			class LriVerifyTypesVisitor
+				: public empty_visitor::ClauseVisitor
+			{
+			protected:
+				VisitorContext&									context;
+				RuleSymbol*										ruleSymbol;
+
+			public:
+				LriVerifyTypesVisitor(
+					VisitorContext& _context,
+					RuleSymbol* _ruleSymbol
+				)
+					: context(_context)
+					, ruleSymbol(_ruleSymbol)
+				{
+				}
+
+				void ValidateClause(Ptr<GlrClause> clause)
+				{
+					clause->Accept(this);
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+					auto prefixRule = context.syntaxManager.Rules()[node->rule->literal.value];
+					if (prefixRule->isPartial)
+					{
+						context.syntaxManager.AddError(
+							ParserErrorType::PartialRuleInLeftRecursionInject,
+							node->rule->codeRange,
+							ruleSymbol->Name(),
+							node->rule->literal.value
+							);
+					}
+
+					for (auto lriTarget : node->continuation->injectionTargets)
+					{
+						auto target = lriTarget->rule;
+						List<GlrLeftRecursionPlaceholderClause*> lrpClauses;
+						{
+							vint index = context.indirectLrpClauses.Keys().IndexOf(context.syntaxManager.Rules()[target->literal.value]);
+							if (index != -1)
+							{
+								CopyFrom(
+									lrpClauses,
+									From(context.indirectLrpClauses.GetByIndex(index))
+										.Where([node](auto&& lrp)
+										{
+											return !From(lrp->flags)
+												.Where([node](auto&& flag) { return flag->flag.value == node->continuation->flag->flag.value; })
+												.IsEmpty();
+										}));
+							}
+						}
+
+						if (lrpClauses.Count() == 0)
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::LeftRecursionPlaceholderNotFoundInRule,
+								target->codeRange,
+								ruleSymbol->Name(),
+								node->continuation->flag->flag.value,
+								target->literal.value
+								);
+						}
+						else if (lrpClauses.Count() > 1 && node->continuation->configuration == GlrLeftRecursionConfiguration::Single)
+						{
+							context.syntaxManager.AddError(
+								ParserErrorType::LeftRecursionPlaceholderNotUnique,
+								target->codeRange,
+								ruleSymbol->Name(),
+								node->continuation->flag->flag.value,
+								target->literal.value
+								);
+						}
+
+						for (auto lrpClause : lrpClauses)
+						{
+							auto lrpClauseRule = context.clauseToRules[lrpClause];
+							if (!ConvertibleTo(prefixRule->ruleType, lrpClauseRule->ruleType))
+							{
+								context.syntaxManager.AddError(
+									ParserErrorType::LeftRecursionPlaceholderTypeMismatched,
+									target->codeRange,
+									ruleSymbol->Name(),
+									node->continuation->flag->flag.value,
+									target->literal.value,
+									lrpClauseRule->Name()
+									);
+							}
+						}
+
+						if (lriTarget->continuation)
+						{
+							Visit(lriTarget.Obj());
+						}
+					}
+				}
+			};
+
+/***********************************************************************
+LriPrefixTestingVisitor
+***********************************************************************/
+
+			class LriPrefixTestingVisitor
+				: public empty_visitor::ClauseVisitor
+			{
+			protected:
+				VisitorContext&									context;
+				RuleSymbol*										ruleSymbol;
+				Group<GlrLeftRecursionInjectClause*, WString>	lriEndings;
+
+			public:
+				LriPrefixTestingVisitor(
+					VisitorContext& _context,
+					RuleSymbol* _ruleSymbol
+				)
+					: context(_context)
+					, ruleSymbol(_ruleSymbol)
+				{
+				}
+
+				void ValidateClause(Ptr<GlrClause> clause)
+				{
+					clause->Accept(this);
+				}
+
+				////////////////////////////////////////////////////////////////////////
+				// GlrClause::IVisitor
+				////////////////////////////////////////////////////////////////////////
+
+				void SearchLriEndings(List<GlrLeftRecursionInjectClause*>& visiting, GlrLeftRecursionInjectClause* node)
+				{
+					visiting.Add(node);
+					if (!node->continuation || node->continuation->type == GlrLeftRecursionInjectContinuationType::Optional)
+					{
+						for (auto lri : visiting)
+						{
+							if (!lriEndings.Contains(lri, node->rule->literal.value))
+							{
+								lriEndings.Add(lri, node->rule->literal.value);
+							}
+						}
+					}
+
+					if (node->continuation)
+					{
+						for (auto target : node->continuation->injectionTargets)
+						{
+							SearchLriEndings(visiting, target.Obj());
+						}
+					}
+					visiting.RemoveAt(visiting.Count() - 1);
+				}
+
+				void VerifyPrefix(GlrLeftRecursionInjectClause* node)
+				{
+					if (node->continuation)
+					{
+						for (auto t1 : node->continuation->injectionTargets)
+						{
+							auto k1 = context.syntaxManager.Rules()[t1->rule->literal.value];
+							vint i1 = lriEndings.Keys().IndexOf(t1.Obj());
+							if (i1 == -1) continue;
+							for (auto t2 : node->continuation->injectionTargets)
+							{
+								auto k2 = context.syntaxManager.Rules()[t2->rule->literal.value];
+								vint i2 = lriEndings.Keys().IndexOf(t2.Obj());
+								if (i2 == -1) continue;
+
+								if (t1 != t2 && context.indirectStartPathToLastRules.Keys().Contains({ k2, k1 }))
+								{
+									auto&& e1 = lriEndings.GetByIndex(i1);
+									auto&& e2 = lriEndings.GetByIndex(i2);
+									if (!From(e1).Intersect(e2).IsEmpty())
+									{
+										context.syntaxManager.AddError(
+											ParserErrorType::LeftRecursionInjectTargetIsPrefixOfAnotherSameEnding,
+											node->codeRange,
+											ruleSymbol->Name(),
+											node->continuation->flag->flag.value,
+											k1->Name(),
+											k2->Name()
+											);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				void Visit(GlrLeftRecursionInjectClause* node) override
+				{
+					{
+						List<GlrLeftRecursionInjectClause*> visiting;
+						SearchLriEndings(visiting, node);
+					}
+					VerifyPrefix(node);
+				}
 			};
 
 /***********************************************************************
 ValidateTypes
 ***********************************************************************/
 
-			void ValidateTypes(VisitorContext& context, List<Ptr<GlrSyntaxFile>>& files)
+			void ValidateTypes(VisitorContext& context, Ptr<GlrSyntaxFile> syntaxFile)
 			{
-				for (auto file : files)
+				for (auto rule : syntaxFile->rules)
 				{
-					for (auto rule : file->rules)
+					auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
+					ValidateTypesVisitor vtVisitor(context, ruleSymbol);
+					for (auto clause : rule->clauses)
 					{
-						auto ruleSymbol = context.syntaxManager.Rules()[rule->name.value];
-						ValidateTypesVisitor visitor(context, ruleSymbol);
-						for (auto clause : rule->clauses)
+						vtVisitor.ValidateClause(clause);
 						{
-							visitor.ValidateClause(clause);
+							LriVerifyTypesVisitor lvtVisitor(context, ruleSymbol);
+							lvtVisitor.ValidateClause(clause);
+						}
+						{
+							LriPrefixTestingVisitor lptVisitor(context, ruleSymbol);
+							lptVisitor.ValidateClause(clause);
 						}
 					}
 				}
@@ -5508,7 +9505,7 @@ Utility
 				writer.WriteLine(L"");
 			}
 
-			WString WriteNssBegin(collections::List<WString>& cppNss, stream::StreamWriter& writer)
+			WString WriteNssBegin(const collections::List<WString>& cppNss, stream::StreamWriter& writer)
 			{
 				WString prefix;
 				for (auto ns : cppNss)
@@ -5520,7 +9517,7 @@ Utility
 				return prefix;
 			}
 
-			void WriteNssEnd(collections::List<WString>& cppNss, stream::StreamWriter& writer)
+			void WriteNssEnd(const collections::List<WString>& cppNss, stream::StreamWriter& writer)
 			{
 				vint counter = cppNss.Count();
 				for (auto ns : cppNss)
@@ -5637,12 +9634,27 @@ namespace vl
 Visitor Pattern Implementation
 ***********************************************************************/
 
-			void GlrRefSyntax::Accept(GlrSyntax::IVisitor* visitor)
+			void GlrRefCondition::Accept(GlrCondition::IVisitor* visitor)
 			{
 				visitor->Visit(this);
 			}
 
-			void GlrLiteralSyntax::Accept(GlrSyntax::IVisitor* visitor)
+			void GlrNotCondition::Accept(GlrCondition::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
+
+			void GlrAndCondition::Accept(GlrCondition::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
+
+			void GlrOrCondition::Accept(GlrCondition::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
+
+			void GlrRefSyntax::Accept(GlrSyntax::IVisitor* visitor)
 			{
 				visitor->Visit(this);
 			}
@@ -5672,6 +9684,16 @@ Visitor Pattern Implementation
 				visitor->Visit(this);
 			}
 
+			void GlrPushConditionSyntax::Accept(GlrSyntax::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
+
+			void GlrTestConditionSyntax::Accept(GlrSyntax::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
+
 			void GlrCreateClause::Accept(GlrClause::IVisitor* visitor)
 			{
 				visitor->Visit(this);
@@ -5686,6 +9708,21 @@ Visitor Pattern Implementation
 			{
 				visitor->Visit(this);
 			}
+
+			void GlrLeftRecursionPlaceholderClause::Accept(GlrClause::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
+
+			void GlrLeftRecursionInjectClause::Accept(GlrClause::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
+
+			void GlrPrefixMergeClause::Accept(GlrClause::IVisitor* visitor)
+			{
+				visitor->Visit(this);
+			}
 		}
 	}
 }
@@ -5697,48 +9734,121 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrCondition, glr::parsergen::GlrCondition)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrCondition::IVisitor, glr::parsergen::GlrCondition::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrRefCondition, glr::parsergen::GlrRefCondition)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrNotCondition, glr::parsergen::GlrNotCondition)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrAndCondition, glr::parsergen::GlrAndCondition)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrOrCondition, glr::parsergen::GlrOrCondition)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrSwitchValue, glr::parsergen::GlrSwitchValue)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrSwitchItem, glr::parsergen::GlrSwitchItem)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrSyntax, glr::parsergen::GlrSyntax)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrSyntax::IVisitor, glr::parsergen::GlrSyntax::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrRefType, glr::parsergen::GlrRefType)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrRefSyntax, glr::parsergen::GlrRefSyntax)
-			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLiteralSyntax, glr::parsergen::GlrLiteralSyntax)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrUseSyntax, glr::parsergen::GlrUseSyntax)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLoopSyntax, glr::parsergen::GlrLoopSyntax)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrOptionalPriority, glr::parsergen::GlrOptionalPriority)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrOptionalSyntax, glr::parsergen::GlrOptionalSyntax)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrSequenceSyntax, glr::parsergen::GlrSequenceSyntax)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrAlternativeSyntax, glr::parsergen::GlrAlternativeSyntax)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrPushConditionSyntax, glr::parsergen::GlrPushConditionSyntax)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrTestConditionBranch, glr::parsergen::GlrTestConditionBranch)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrTestConditionSyntax, glr::parsergen::GlrTestConditionSyntax)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrClause, glr::parsergen::GlrClause)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrClause::IVisitor, glr::parsergen::GlrClause::IVisitor)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrAssignmentType, glr::parsergen::GlrAssignmentType)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrAssignment, glr::parsergen::GlrAssignment)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrCreateClause, glr::parsergen::GlrCreateClause)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrPartialClause, glr::parsergen::GlrPartialClause)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrReuseClause, glr::parsergen::GlrReuseClause)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionPlaceholder, glr::parsergen::GlrLeftRecursionPlaceholder)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause, glr::parsergen::GlrLeftRecursionPlaceholderClause)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionConfiguration, glr::parsergen::GlrLeftRecursionConfiguration)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType, glr::parsergen::GlrLeftRecursionInjectContinuationType)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionInjectContinuation, glr::parsergen::GlrLeftRecursionInjectContinuation)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrLeftRecursionInjectClause, glr::parsergen::GlrLeftRecursionInjectClause)
+			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrPrefixMergeClause, glr::parsergen::GlrPrefixMergeClause)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrRule, glr::parsergen::GlrRule)
 			IMPL_TYPE_INFO_RENAME(vl::glr::parsergen::GlrSyntaxFile, glr::parsergen::GlrSyntaxFile)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrCondition)
+				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrCondition)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrRefCondition)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrCondition)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrRefCondition>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(name)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrRefCondition)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrNotCondition)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrCondition)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrNotCondition>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(condition)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrNotCondition)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrAndCondition)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrCondition)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrAndCondition>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(first)
+				CLASS_MEMBER_FIELD(second)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrAndCondition)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrOrCondition)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrCondition)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrOrCondition>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(first)
+				CLASS_MEMBER_FIELD(second)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrOrCondition)
+
+			BEGIN_ENUM_ITEM(vl::glr::parsergen::GlrSwitchValue)
+				ENUM_ITEM_NAMESPACE(vl::glr::parsergen::GlrSwitchValue)
+				ENUM_NAMESPACE_ITEM(False)
+				ENUM_NAMESPACE_ITEM(True)
+			END_ENUM_ITEM(vl::glr::parsergen::GlrSwitchValue)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrSwitchItem)
+				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrSwitchItem>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(name)
+				CLASS_MEMBER_FIELD(value)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrSwitchItem)
 
 			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrSyntax)
 				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrSyntax)
 
+			BEGIN_ENUM_ITEM(vl::glr::parsergen::GlrRefType)
+				ENUM_ITEM_NAMESPACE(vl::glr::parsergen::GlrRefType)
+				ENUM_NAMESPACE_ITEM(Id)
+				ENUM_NAMESPACE_ITEM(Literal)
+				ENUM_NAMESPACE_ITEM(ConditionalLiteral)
+			END_ENUM_ITEM(vl::glr::parsergen::GlrRefType)
+
 			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrRefSyntax)
 				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrSyntax)
 
 				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrRefSyntax>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(name)
+				CLASS_MEMBER_FIELD(refType)
+				CLASS_MEMBER_FIELD(literal)
 				CLASS_MEMBER_FIELD(field)
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrRefSyntax)
-
-			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLiteralSyntax)
-				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrSyntax)
-
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLiteralSyntax>(), NO_PARAMETER)
-
-				CLASS_MEMBER_FIELD(value)
-			END_CLASS_MEMBER(vl::glr::parsergen::GlrLiteralSyntax)
 
 			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrUseSyntax)
 				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrSyntax)
@@ -5791,16 +9901,49 @@ namespace vl
 				CLASS_MEMBER_FIELD(second)
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrAlternativeSyntax)
 
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrPushConditionSyntax)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrSyntax)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrPushConditionSyntax>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(switches)
+				CLASS_MEMBER_FIELD(syntax)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrPushConditionSyntax)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrTestConditionBranch)
+				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrTestConditionBranch>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(condition)
+				CLASS_MEMBER_FIELD(syntax)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrTestConditionBranch)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrTestConditionSyntax)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrSyntax)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrTestConditionSyntax>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(branches)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrTestConditionSyntax)
+
 			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrClause)
 				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrClause)
+
+			BEGIN_ENUM_ITEM(vl::glr::parsergen::GlrAssignmentType)
+				ENUM_ITEM_NAMESPACE(vl::glr::parsergen::GlrAssignmentType)
+				ENUM_NAMESPACE_ITEM(Strong)
+				ENUM_NAMESPACE_ITEM(Weak)
+			END_ENUM_ITEM(vl::glr::parsergen::GlrAssignmentType)
 
 			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrAssignment)
 				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
 				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrAssignment>(), NO_PARAMETER)
 
+				CLASS_MEMBER_FIELD(type)
 				CLASS_MEMBER_FIELD(field)
 				CLASS_MEMBER_FIELD(value)
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrAssignment)
@@ -5834,12 +9977,69 @@ namespace vl
 				CLASS_MEMBER_FIELD(assignments)
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrReuseClause)
 
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholder)
+				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionPlaceholder>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(flag)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholder)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrClause)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionPlaceholderClause>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(flags)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause)
+
+			BEGIN_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionConfiguration)
+				ENUM_ITEM_NAMESPACE(vl::glr::parsergen::GlrLeftRecursionConfiguration)
+				ENUM_NAMESPACE_ITEM(Single)
+				ENUM_NAMESPACE_ITEM(Multiple)
+			END_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionConfiguration)
+
+			BEGIN_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
+				ENUM_ITEM_NAMESPACE(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
+				ENUM_NAMESPACE_ITEM(Optional)
+				ENUM_NAMESPACE_ITEM(Required)
+			END_ENUM_ITEM(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectContinuation)
+				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionInjectContinuation>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(flag)
+				CLASS_MEMBER_FIELD(configuration)
+				CLASS_MEMBER_FIELD(type)
+				CLASS_MEMBER_FIELD(injectionTargets)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectContinuation)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectClause)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrClause)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrLeftRecursionInjectClause>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(rule)
+				CLASS_MEMBER_FIELD(continuation)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrLeftRecursionInjectClause)
+
+			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrPrefixMergeClause)
+				CLASS_MEMBER_BASE(vl::glr::parsergen::GlrClause)
+
+				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrPrefixMergeClause>(), NO_PARAMETER)
+
+				CLASS_MEMBER_FIELD(rule)
+			END_CLASS_MEMBER(vl::glr::parsergen::GlrPrefixMergeClause)
+
 			BEGIN_CLASS_MEMBER(vl::glr::parsergen::GlrRule)
 				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
 				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrRule>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(name)
+				CLASS_MEMBER_FIELD(type)
 				CLASS_MEMBER_FIELD(clauses)
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrRule)
 
@@ -5848,23 +10048,35 @@ namespace vl
 
 				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::parsergen::GlrSyntaxFile>(), NO_PARAMETER)
 
+				CLASS_MEMBER_FIELD(switches)
 				CLASS_MEMBER_FIELD(rules)
 			END_CLASS_MEMBER(vl::glr::parsergen::GlrSyntaxFile)
 
+			BEGIN_INTERFACE_MEMBER(vl::glr::parsergen::GlrCondition::IVisitor)
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrCondition::IVisitor::*)(vl::glr::parsergen::GlrRefCondition* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrCondition::IVisitor::*)(vl::glr::parsergen::GlrNotCondition* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrCondition::IVisitor::*)(vl::glr::parsergen::GlrAndCondition* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrCondition::IVisitor::*)(vl::glr::parsergen::GlrOrCondition* node))
+			END_INTERFACE_MEMBER(vl::glr::parsergen::GlrCondition)
+
 			BEGIN_INTERFACE_MEMBER(vl::glr::parsergen::GlrSyntax::IVisitor)
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrRefSyntax* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrLiteralSyntax* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrUseSyntax* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrLoopSyntax* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrOptionalSyntax* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrSequenceSyntax* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrAlternativeSyntax* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrPushConditionSyntax* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrSyntax::IVisitor::*)(vl::glr::parsergen::GlrTestConditionSyntax* node))
 			END_INTERFACE_MEMBER(vl::glr::parsergen::GlrSyntax)
 
 			BEGIN_INTERFACE_MEMBER(vl::glr::parsergen::GlrClause::IVisitor)
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrCreateClause* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrPartialClause* node))
 				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrReuseClause* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrLeftRecursionInjectClause* node))
+				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::parsergen::GlrClause::IVisitor::*)(vl::glr::parsergen::GlrPrefixMergeClause* node))
 			END_INTERFACE_MEMBER(vl::glr::parsergen::GlrClause)
 
 #endif
@@ -5875,22 +10087,41 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrCondition)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrCondition::IVisitor)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrRefCondition)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrNotCondition)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrAndCondition)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrOrCondition)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrSwitchValue)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrSwitchItem)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrSyntax)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrSyntax::IVisitor)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrRefType)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrRefSyntax)
-					ADD_TYPE_INFO(vl::glr::parsergen::GlrLiteralSyntax)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrUseSyntax)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrLoopSyntax)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrOptionalPriority)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrOptionalSyntax)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrSequenceSyntax)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrAlternativeSyntax)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrPushConditionSyntax)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrTestConditionBranch)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrTestConditionSyntax)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrClause)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrClause::IVisitor)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrAssignmentType)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrAssignment)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrCreateClause)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrPartialClause)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrReuseClause)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionPlaceholder)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionConfiguration)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectContinuation)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectClause)
+					ADD_TYPE_INFO(vl::glr::parsergen::GlrPrefixMergeClause)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrRule)
 					ADD_TYPE_INFO(vl::glr::parsergen::GlrSyntaxFile)
 				}
@@ -5954,12 +10185,34 @@ MakeAlternativeSyntax
 				}
 
 /***********************************************************************
+MakeAndCondition
+***********************************************************************/
+
+				MakeAndCondition& MakeAndCondition::first(const vl::Ptr<GlrCondition>& value)
+				{
+					node->first = value;
+					return *this;
+				}
+
+				MakeAndCondition& MakeAndCondition::second(const vl::Ptr<GlrCondition>& value)
+				{
+					node->second = value;
+					return *this;
+				}
+
+/***********************************************************************
 MakeAssignment
 ***********************************************************************/
 
 				MakeAssignment& MakeAssignment::field(const vl::WString& value)
 				{
 					node->field.value = value;
+					return *this;
+				}
+
+				MakeAssignment& MakeAssignment::type(GlrAssignmentType value)
+				{
+					node->type = value;
 					return *this;
 				}
 
@@ -5992,12 +10245,66 @@ MakeCreateClause
 				}
 
 /***********************************************************************
-MakeLiteralSyntax
+MakeLeftRecursionInjectClause
 ***********************************************************************/
 
-				MakeLiteralSyntax& MakeLiteralSyntax::value(const vl::WString& value)
+				MakeLeftRecursionInjectClause& MakeLeftRecursionInjectClause::continuation(const vl::Ptr<GlrLeftRecursionInjectContinuation>& value)
 				{
-					node->value.value = value;
+					node->continuation = value;
+					return *this;
+				}
+
+				MakeLeftRecursionInjectClause& MakeLeftRecursionInjectClause::rule(const vl::Ptr<GlrRefSyntax>& value)
+				{
+					node->rule = value;
+					return *this;
+				}
+
+/***********************************************************************
+MakeLeftRecursionInjectContinuation
+***********************************************************************/
+
+				MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::configuration(GlrLeftRecursionConfiguration value)
+				{
+					node->configuration = value;
+					return *this;
+				}
+
+				MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::flag(const vl::Ptr<GlrLeftRecursionPlaceholder>& value)
+				{
+					node->flag = value;
+					return *this;
+				}
+
+				MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::injectionTargets(const vl::Ptr<GlrLeftRecursionInjectClause>& value)
+				{
+					node->injectionTargets.Add(value);
+					return *this;
+				}
+
+				MakeLeftRecursionInjectContinuation& MakeLeftRecursionInjectContinuation::type(GlrLeftRecursionInjectContinuationType value)
+				{
+					node->type = value;
+					return *this;
+				}
+
+/***********************************************************************
+MakeLeftRecursionPlaceholder
+***********************************************************************/
+
+				MakeLeftRecursionPlaceholder& MakeLeftRecursionPlaceholder::flag(const vl::WString& value)
+				{
+					node->flag.value = value;
+					return *this;
+				}
+
+/***********************************************************************
+MakeLeftRecursionPlaceholderClause
+***********************************************************************/
+
+				MakeLeftRecursionPlaceholderClause& MakeLeftRecursionPlaceholderClause::flags(const vl::Ptr<GlrLeftRecursionPlaceholder>& value)
+				{
+					node->flags.Add(value);
 					return *this;
 				}
 
@@ -6018,6 +10325,16 @@ MakeLoopSyntax
 				}
 
 /***********************************************************************
+MakeNotCondition
+***********************************************************************/
+
+				MakeNotCondition& MakeNotCondition::condition(const vl::Ptr<GlrCondition>& value)
+				{
+					node->condition = value;
+					return *this;
+				}
+
+/***********************************************************************
 MakeOptionalSyntax
 ***********************************************************************/
 
@@ -6030,6 +10347,22 @@ MakeOptionalSyntax
 				MakeOptionalSyntax& MakeOptionalSyntax::syntax(const vl::Ptr<GlrSyntax>& value)
 				{
 					node->syntax = value;
+					return *this;
+				}
+
+/***********************************************************************
+MakeOrCondition
+***********************************************************************/
+
+				MakeOrCondition& MakeOrCondition::first(const vl::Ptr<GlrCondition>& value)
+				{
+					node->first = value;
+					return *this;
+				}
+
+				MakeOrCondition& MakeOrCondition::second(const vl::Ptr<GlrCondition>& value)
+				{
+					node->second = value;
 					return *this;
 				}
 
@@ -6056,6 +10389,42 @@ MakePartialClause
 				}
 
 /***********************************************************************
+MakePrefixMergeClause
+***********************************************************************/
+
+				MakePrefixMergeClause& MakePrefixMergeClause::rule(const vl::Ptr<GlrRefSyntax>& value)
+				{
+					node->rule = value;
+					return *this;
+				}
+
+/***********************************************************************
+MakePushConditionSyntax
+***********************************************************************/
+
+				MakePushConditionSyntax& MakePushConditionSyntax::switches(const vl::Ptr<GlrSwitchItem>& value)
+				{
+					node->switches.Add(value);
+					return *this;
+				}
+
+				MakePushConditionSyntax& MakePushConditionSyntax::syntax(const vl::Ptr<GlrSyntax>& value)
+				{
+					node->syntax = value;
+					return *this;
+				}
+
+/***********************************************************************
+MakeRefCondition
+***********************************************************************/
+
+				MakeRefCondition& MakeRefCondition::name(const vl::WString& value)
+				{
+					node->name.value = value;
+					return *this;
+				}
+
+/***********************************************************************
 MakeRefSyntax
 ***********************************************************************/
 
@@ -6065,9 +10434,15 @@ MakeRefSyntax
 					return *this;
 				}
 
-				MakeRefSyntax& MakeRefSyntax::name(const vl::WString& value)
+				MakeRefSyntax& MakeRefSyntax::literal(const vl::WString& value)
 				{
-					node->name.value = value;
+					node->literal.value = value;
+					return *this;
+				}
+
+				MakeRefSyntax& MakeRefSyntax::refType(GlrRefType value)
+				{
+					node->refType = value;
 					return *this;
 				}
 
@@ -6103,6 +10478,12 @@ MakeRule
 					return *this;
 				}
 
+				MakeRule& MakeRule::type(const vl::WString& value)
+				{
+					node->type.value = value;
+					return *this;
+				}
+
 /***********************************************************************
 MakeSequenceSyntax
 ***********************************************************************/
@@ -6120,12 +10501,60 @@ MakeSequenceSyntax
 				}
 
 /***********************************************************************
+MakeSwitchItem
+***********************************************************************/
+
+				MakeSwitchItem& MakeSwitchItem::name(const vl::WString& value)
+				{
+					node->name.value = value;
+					return *this;
+				}
+
+				MakeSwitchItem& MakeSwitchItem::value(GlrSwitchValue value)
+				{
+					node->value = value;
+					return *this;
+				}
+
+/***********************************************************************
 MakeSyntaxFile
 ***********************************************************************/
 
 				MakeSyntaxFile& MakeSyntaxFile::rules(const vl::Ptr<GlrRule>& value)
 				{
 					node->rules.Add(value);
+					return *this;
+				}
+
+				MakeSyntaxFile& MakeSyntaxFile::switches(const vl::Ptr<GlrSwitchItem>& value)
+				{
+					node->switches.Add(value);
+					return *this;
+				}
+
+/***********************************************************************
+MakeTestConditionBranch
+***********************************************************************/
+
+				MakeTestConditionBranch& MakeTestConditionBranch::condition(const vl::Ptr<GlrCondition>& value)
+				{
+					node->condition = value;
+					return *this;
+				}
+
+				MakeTestConditionBranch& MakeTestConditionBranch::syntax(const vl::Ptr<GlrSyntax>& value)
+				{
+					node->syntax = value;
+					return *this;
+				}
+
+/***********************************************************************
+MakeTestConditionSyntax
+***********************************************************************/
+
+				MakeTestConditionSyntax& MakeTestConditionSyntax::branches(const vl::Ptr<GlrTestConditionBranch>& value)
+				{
+					node->branches.Add(value);
 					return *this;
 				}
 
@@ -6169,13 +10598,25 @@ namespace vl
 					to->second = CopyNode(from->second.Obj());
 				}
 
+				void RuleAstVisitor::CopyFields(GlrAndCondition* from, GlrAndCondition* to)
+				{
+					CopyFields(static_cast<GlrCondition*>(from), static_cast<GlrCondition*>(to));
+					to->first = CopyNode(from->first.Obj());
+					to->second = CopyNode(from->second.Obj());
+				}
+
 				void RuleAstVisitor::CopyFields(GlrAssignment* from, GlrAssignment* to)
 				{
 					to->field = from->field;
+					to->type = from->type;
 					to->value = from->value;
 				}
 
 				void RuleAstVisitor::CopyFields(GlrClause* from, GlrClause* to)
+				{
+				}
+
+				void RuleAstVisitor::CopyFields(GlrCondition* from, GlrCondition* to)
 				{
 				}
 
@@ -6190,10 +10631,36 @@ namespace vl
 					to->type = from->type;
 				}
 
-				void RuleAstVisitor::CopyFields(GlrLiteralSyntax* from, GlrLiteralSyntax* to)
+				void RuleAstVisitor::CopyFields(GlrLeftRecursionInjectClause* from, GlrLeftRecursionInjectClause* to)
 				{
-					CopyFields(static_cast<GlrSyntax*>(from), static_cast<GlrSyntax*>(to));
-					to->value = from->value;
+					CopyFields(static_cast<GlrClause*>(from), static_cast<GlrClause*>(to));
+					to->continuation = CopyNode(from->continuation.Obj());
+					to->rule = CopyNode(from->rule.Obj());
+				}
+
+				void RuleAstVisitor::CopyFields(GlrLeftRecursionInjectContinuation* from, GlrLeftRecursionInjectContinuation* to)
+				{
+					to->configuration = from->configuration;
+					to->flag = CopyNode(from->flag.Obj());
+					for (auto&& listItem : from->injectionTargets)
+					{
+						to->injectionTargets.Add(CopyNode(listItem.Obj()));
+					}
+					to->type = from->type;
+				}
+
+				void RuleAstVisitor::CopyFields(GlrLeftRecursionPlaceholder* from, GlrLeftRecursionPlaceholder* to)
+				{
+					to->flag = from->flag;
+				}
+
+				void RuleAstVisitor::CopyFields(GlrLeftRecursionPlaceholderClause* from, GlrLeftRecursionPlaceholderClause* to)
+				{
+					CopyFields(static_cast<GlrClause*>(from), static_cast<GlrClause*>(to));
+					for (auto&& listItem : from->flags)
+					{
+						to->flags.Add(CopyNode(listItem.Obj()));
+					}
 				}
 
 				void RuleAstVisitor::CopyFields(GlrLoopSyntax* from, GlrLoopSyntax* to)
@@ -6203,11 +10670,24 @@ namespace vl
 					to->syntax = CopyNode(from->syntax.Obj());
 				}
 
+				void RuleAstVisitor::CopyFields(GlrNotCondition* from, GlrNotCondition* to)
+				{
+					CopyFields(static_cast<GlrCondition*>(from), static_cast<GlrCondition*>(to));
+					to->condition = CopyNode(from->condition.Obj());
+				}
+
 				void RuleAstVisitor::CopyFields(GlrOptionalSyntax* from, GlrOptionalSyntax* to)
 				{
 					CopyFields(static_cast<GlrSyntax*>(from), static_cast<GlrSyntax*>(to));
 					to->priority = from->priority;
 					to->syntax = CopyNode(from->syntax.Obj());
+				}
+
+				void RuleAstVisitor::CopyFields(GlrOrCondition* from, GlrOrCondition* to)
+				{
+					CopyFields(static_cast<GlrCondition*>(from), static_cast<GlrCondition*>(to));
+					to->first = CopyNode(from->first.Obj());
+					to->second = CopyNode(from->second.Obj());
 				}
 
 				void RuleAstVisitor::CopyFields(GlrPartialClause* from, GlrPartialClause* to)
@@ -6221,11 +10701,34 @@ namespace vl
 					to->type = from->type;
 				}
 
+				void RuleAstVisitor::CopyFields(GlrPrefixMergeClause* from, GlrPrefixMergeClause* to)
+				{
+					CopyFields(static_cast<GlrClause*>(from), static_cast<GlrClause*>(to));
+					to->rule = CopyNode(from->rule.Obj());
+				}
+
+				void RuleAstVisitor::CopyFields(GlrPushConditionSyntax* from, GlrPushConditionSyntax* to)
+				{
+					CopyFields(static_cast<GlrSyntax*>(from), static_cast<GlrSyntax*>(to));
+					for (auto&& listItem : from->switches)
+					{
+						to->switches.Add(CopyNode(listItem.Obj()));
+					}
+					to->syntax = CopyNode(from->syntax.Obj());
+				}
+
+				void RuleAstVisitor::CopyFields(GlrRefCondition* from, GlrRefCondition* to)
+				{
+					CopyFields(static_cast<GlrCondition*>(from), static_cast<GlrCondition*>(to));
+					to->name = from->name;
+				}
+
 				void RuleAstVisitor::CopyFields(GlrRefSyntax* from, GlrRefSyntax* to)
 				{
 					CopyFields(static_cast<GlrSyntax*>(from), static_cast<GlrSyntax*>(to));
 					to->field = from->field;
-					to->name = from->name;
+					to->literal = from->literal;
+					to->refType = from->refType;
 				}
 
 				void RuleAstVisitor::CopyFields(GlrReuseClause* from, GlrReuseClause* to)
@@ -6245,6 +10748,7 @@ namespace vl
 						to->clauses.Add(CopyNode(listItem.Obj()));
 					}
 					to->name = from->name;
+					to->type = from->type;
 				}
 
 				void RuleAstVisitor::CopyFields(GlrSequenceSyntax* from, GlrSequenceSyntax* to)
@@ -6252,6 +10756,12 @@ namespace vl
 					CopyFields(static_cast<GlrSyntax*>(from), static_cast<GlrSyntax*>(to));
 					to->first = CopyNode(from->first.Obj());
 					to->second = CopyNode(from->second.Obj());
+				}
+
+				void RuleAstVisitor::CopyFields(GlrSwitchItem* from, GlrSwitchItem* to)
+				{
+					to->name = from->name;
+					to->value = from->value;
 				}
 
 				void RuleAstVisitor::CopyFields(GlrSyntax* from, GlrSyntax* to)
@@ -6264,6 +10774,25 @@ namespace vl
 					{
 						to->rules.Add(CopyNode(listItem.Obj()));
 					}
+					for (auto&& listItem : from->switches)
+					{
+						to->switches.Add(CopyNode(listItem.Obj()));
+					}
+				}
+
+				void RuleAstVisitor::CopyFields(GlrTestConditionBranch* from, GlrTestConditionBranch* to)
+				{
+					to->condition = CopyNode(from->condition.Obj());
+					to->syntax = CopyNode(from->syntax.Obj());
+				}
+
+				void RuleAstVisitor::CopyFields(GlrTestConditionSyntax* from, GlrTestConditionSyntax* to)
+				{
+					CopyFields(static_cast<GlrSyntax*>(from), static_cast<GlrSyntax*>(to));
+					for (auto&& listItem : from->branches)
+					{
+						to->branches.Add(CopyNode(listItem.Obj()));
+					}
 				}
 
 				void RuleAstVisitor::CopyFields(GlrUseSyntax* from, GlrUseSyntax* to)
@@ -6272,9 +10801,37 @@ namespace vl
 					to->name = from->name;
 				}
 
+				void RuleAstVisitor::Visit(GlrSwitchItem* node)
+				{
+					auto newNode = vl::MakePtr<GlrSwitchItem>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrTestConditionBranch* node)
+				{
+					auto newNode = vl::MakePtr<GlrTestConditionBranch>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
 				void RuleAstVisitor::Visit(GlrAssignment* node)
 				{
 					auto newNode = vl::MakePtr<GlrAssignment>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholder* node)
+				{
+					auto newNode = vl::MakePtr<GlrLeftRecursionPlaceholder>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrLeftRecursionInjectContinuation* node)
+				{
+					auto newNode = vl::MakePtr<GlrLeftRecursionInjectContinuation>();
 					CopyFields(node, newNode.Obj());
 					this->result = newNode;
 				}
@@ -6293,16 +10850,37 @@ namespace vl
 					this->result = newNode;
 				}
 
-				void RuleAstVisitor::Visit(GlrRefSyntax* node)
+				void RuleAstVisitor::Visit(GlrRefCondition* node)
 				{
-					auto newNode = vl::MakePtr<GlrRefSyntax>();
+					auto newNode = vl::MakePtr<GlrRefCondition>();
 					CopyFields(node, newNode.Obj());
 					this->result = newNode;
 				}
 
-				void RuleAstVisitor::Visit(GlrLiteralSyntax* node)
+				void RuleAstVisitor::Visit(GlrNotCondition* node)
 				{
-					auto newNode = vl::MakePtr<GlrLiteralSyntax>();
+					auto newNode = vl::MakePtr<GlrNotCondition>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrAndCondition* node)
+				{
+					auto newNode = vl::MakePtr<GlrAndCondition>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrOrCondition* node)
+				{
+					auto newNode = vl::MakePtr<GlrOrCondition>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrRefSyntax* node)
+				{
+					auto newNode = vl::MakePtr<GlrRefSyntax>();
 					CopyFields(node, newNode.Obj());
 					this->result = newNode;
 				}
@@ -6342,6 +10920,20 @@ namespace vl
 					this->result = newNode;
 				}
 
+				void RuleAstVisitor::Visit(GlrPushConditionSyntax* node)
+				{
+					auto newNode = vl::MakePtr<GlrPushConditionSyntax>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrTestConditionSyntax* node)
+				{
+					auto newNode = vl::MakePtr<GlrTestConditionSyntax>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
 				void RuleAstVisitor::Visit(GlrCreateClause* node)
 				{
 					auto newNode = vl::MakePtr<GlrCreateClause>();
@@ -6363,6 +10955,34 @@ namespace vl
 					this->result = newNode;
 				}
 
+				void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
+				{
+					auto newNode = vl::MakePtr<GlrLeftRecursionPlaceholderClause>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrLeftRecursionInjectClause* node)
+				{
+					auto newNode = vl::MakePtr<GlrLeftRecursionInjectClause>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				void RuleAstVisitor::Visit(GlrPrefixMergeClause* node)
+				{
+					auto newNode = vl::MakePtr<GlrPrefixMergeClause>();
+					CopyFields(node, newNode.Obj());
+					this->result = newNode;
+				}
+
+				vl::Ptr<GlrCondition> RuleAstVisitor::CopyNode(GlrCondition* node)
+				{
+					if (!node) return nullptr;
+					node->Accept(static_cast<GlrCondition::IVisitor*>(this));
+					return this->result.Cast<GlrCondition>();
+				}
+
 				vl::Ptr<GlrSyntax> RuleAstVisitor::CopyNode(GlrSyntax* node)
 				{
 					if (!node) return nullptr;
@@ -6377,11 +10997,39 @@ namespace vl
 					return this->result.Cast<GlrClause>();
 				}
 
+				vl::Ptr<GlrSwitchItem> RuleAstVisitor::CopyNode(GlrSwitchItem* node)
+				{
+					if (!node) return nullptr;
+					Visit(node);
+					return this->result.Cast<GlrSwitchItem>();
+				}
+
+				vl::Ptr<GlrTestConditionBranch> RuleAstVisitor::CopyNode(GlrTestConditionBranch* node)
+				{
+					if (!node) return nullptr;
+					Visit(node);
+					return this->result.Cast<GlrTestConditionBranch>();
+				}
+
 				vl::Ptr<GlrAssignment> RuleAstVisitor::CopyNode(GlrAssignment* node)
 				{
 					if (!node) return nullptr;
 					Visit(node);
 					return this->result.Cast<GlrAssignment>();
+				}
+
+				vl::Ptr<GlrLeftRecursionPlaceholder> RuleAstVisitor::CopyNode(GlrLeftRecursionPlaceholder* node)
+				{
+					if (!node) return nullptr;
+					Visit(node);
+					return this->result.Cast<GlrLeftRecursionPlaceholder>();
+				}
+
+				vl::Ptr<GlrLeftRecursionInjectContinuation> RuleAstVisitor::CopyNode(GlrLeftRecursionInjectContinuation* node)
+				{
+					if (!node) return nullptr;
+					Visit(node);
+					return this->result.Cast<GlrLeftRecursionInjectContinuation>();
 				}
 
 				vl::Ptr<GlrRule> RuleAstVisitor::CopyNode(GlrRule* node)
@@ -6404,16 +11052,28 @@ namespace vl
 					return CopyNode(static_cast<GlrSyntax*>(node)).Cast<GlrAlternativeSyntax>();
 				}
 
+				vl::Ptr<GlrAndCondition> RuleAstVisitor::CopyNode(GlrAndCondition* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrCondition*>(node)).Cast<GlrAndCondition>();
+				}
+
 				vl::Ptr<GlrCreateClause> RuleAstVisitor::CopyNode(GlrCreateClause* node)
 				{
 					if (!node) return nullptr;
 					return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrCreateClause>();
 				}
 
-				vl::Ptr<GlrLiteralSyntax> RuleAstVisitor::CopyNode(GlrLiteralSyntax* node)
+				vl::Ptr<GlrLeftRecursionInjectClause> RuleAstVisitor::CopyNode(GlrLeftRecursionInjectClause* node)
 				{
 					if (!node) return nullptr;
-					return CopyNode(static_cast<GlrSyntax*>(node)).Cast<GlrLiteralSyntax>();
+					return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrLeftRecursionInjectClause>();
+				}
+
+				vl::Ptr<GlrLeftRecursionPlaceholderClause> RuleAstVisitor::CopyNode(GlrLeftRecursionPlaceholderClause* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrLeftRecursionPlaceholderClause>();
 				}
 
 				vl::Ptr<GlrLoopSyntax> RuleAstVisitor::CopyNode(GlrLoopSyntax* node)
@@ -6422,16 +11082,46 @@ namespace vl
 					return CopyNode(static_cast<GlrSyntax*>(node)).Cast<GlrLoopSyntax>();
 				}
 
+				vl::Ptr<GlrNotCondition> RuleAstVisitor::CopyNode(GlrNotCondition* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrCondition*>(node)).Cast<GlrNotCondition>();
+				}
+
 				vl::Ptr<GlrOptionalSyntax> RuleAstVisitor::CopyNode(GlrOptionalSyntax* node)
 				{
 					if (!node) return nullptr;
 					return CopyNode(static_cast<GlrSyntax*>(node)).Cast<GlrOptionalSyntax>();
 				}
 
+				vl::Ptr<GlrOrCondition> RuleAstVisitor::CopyNode(GlrOrCondition* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrCondition*>(node)).Cast<GlrOrCondition>();
+				}
+
 				vl::Ptr<GlrPartialClause> RuleAstVisitor::CopyNode(GlrPartialClause* node)
 				{
 					if (!node) return nullptr;
 					return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrPartialClause>();
+				}
+
+				vl::Ptr<GlrPrefixMergeClause> RuleAstVisitor::CopyNode(GlrPrefixMergeClause* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrClause*>(node)).Cast<GlrPrefixMergeClause>();
+				}
+
+				vl::Ptr<GlrPushConditionSyntax> RuleAstVisitor::CopyNode(GlrPushConditionSyntax* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrSyntax*>(node)).Cast<GlrPushConditionSyntax>();
+				}
+
+				vl::Ptr<GlrRefCondition> RuleAstVisitor::CopyNode(GlrRefCondition* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrCondition*>(node)).Cast<GlrRefCondition>();
 				}
 
 				vl::Ptr<GlrRefSyntax> RuleAstVisitor::CopyNode(GlrRefSyntax* node)
@@ -6450,6 +11140,12 @@ namespace vl
 				{
 					if (!node) return nullptr;
 					return CopyNode(static_cast<GlrSyntax*>(node)).Cast<GlrSequenceSyntax>();
+				}
+
+				vl::Ptr<GlrTestConditionSyntax> RuleAstVisitor::CopyNode(GlrTestConditionSyntax* node)
+				{
+					if (!node) return nullptr;
+					return CopyNode(static_cast<GlrSyntax*>(node)).Cast<GlrTestConditionSyntax>();
 				}
 
 				vl::Ptr<GlrUseSyntax> RuleAstVisitor::CopyNode(GlrUseSyntax* node)
@@ -6484,16 +11180,34 @@ namespace vl
 			{
 
 /***********************************************************************
+ConditionVisitor
+***********************************************************************/
+
+				// Visitor Members -----------------------------------
+
+				void ConditionVisitor::Visit(GlrRefCondition* node)
+				{
+				}
+
+				void ConditionVisitor::Visit(GlrNotCondition* node)
+				{
+				}
+
+				void ConditionVisitor::Visit(GlrAndCondition* node)
+				{
+				}
+
+				void ConditionVisitor::Visit(GlrOrCondition* node)
+				{
+				}
+
+/***********************************************************************
 SyntaxVisitor
 ***********************************************************************/
 
 				// Visitor Members -----------------------------------
 
 				void SyntaxVisitor::Visit(GlrRefSyntax* node)
-				{
-				}
-
-				void SyntaxVisitor::Visit(GlrLiteralSyntax* node)
 				{
 				}
 
@@ -6517,6 +11231,14 @@ SyntaxVisitor
 				{
 				}
 
+				void SyntaxVisitor::Visit(GlrPushConditionSyntax* node)
+				{
+				}
+
+				void SyntaxVisitor::Visit(GlrTestConditionSyntax* node)
+				{
+				}
+
 /***********************************************************************
 ClauseVisitor
 ***********************************************************************/
@@ -6532,6 +11254,18 @@ ClauseVisitor
 				}
 
 				void ClauseVisitor::Visit(GlrReuseClause* node)
+				{
+				}
+
+				void ClauseVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
+				{
+				}
+
+				void ClauseVisitor::Visit(GlrLeftRecursionInjectClause* node)
+				{
+				}
+
+				void ClauseVisitor::Visit(GlrPrefixMergeClause* node)
 				{
 				}
 			}
@@ -6567,16 +11301,41 @@ namespace vl
 					Print(node->second.Obj());
 					EndField();
 				}
+				void RuleAstVisitor::PrintFields(GlrAndCondition* node)
+				{
+					BeginField(L"first");
+					Print(node->first.Obj());
+					EndField();
+					BeginField(L"second");
+					Print(node->second.Obj());
+					EndField();
+				}
 				void RuleAstVisitor::PrintFields(GlrAssignment* node)
 				{
 					BeginField(L"field");
 					WriteToken(node->field);
+					EndField();
+					BeginField(L"type");
+					switch (node->type)
+					{
+					case vl::glr::parsergen::GlrAssignmentType::Strong:
+						WriteString(L"Strong");
+						break;
+					case vl::glr::parsergen::GlrAssignmentType::Weak:
+						WriteString(L"Weak");
+						break;
+					default:
+						WriteNull();
+					}
 					EndField();
 					BeginField(L"value");
 					WriteToken(node->value);
 					EndField();
 				}
 				void RuleAstVisitor::PrintFields(GlrClause* node)
+				{
+				}
+				void RuleAstVisitor::PrintFields(GlrCondition* node)
 				{
 				}
 				void RuleAstVisitor::PrintFields(GlrCreateClause* node)
@@ -6598,10 +11357,74 @@ namespace vl
 					WriteToken(node->type);
 					EndField();
 				}
-				void RuleAstVisitor::PrintFields(GlrLiteralSyntax* node)
+				void RuleAstVisitor::PrintFields(GlrLeftRecursionInjectClause* node)
 				{
-					BeginField(L"value");
-					WriteToken(node->value);
+					BeginField(L"continuation");
+					Print(node->continuation.Obj());
+					EndField();
+					BeginField(L"rule");
+					Print(node->rule.Obj());
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrLeftRecursionInjectContinuation* node)
+				{
+					BeginField(L"configuration");
+					switch (node->configuration)
+					{
+					case vl::glr::parsergen::GlrLeftRecursionConfiguration::Multiple:
+						WriteString(L"Multiple");
+						break;
+					case vl::glr::parsergen::GlrLeftRecursionConfiguration::Single:
+						WriteString(L"Single");
+						break;
+					default:
+						WriteNull();
+					}
+					EndField();
+					BeginField(L"flag");
+					Print(node->flag.Obj());
+					EndField();
+					BeginField(L"injectionTargets");
+					BeginArray();
+					for (auto&& listItem : node->injectionTargets)
+					{
+						BeginArrayItem();
+						Print(listItem.Obj());
+						EndArrayItem();
+					}
+					EndArray();
+					EndField();
+					BeginField(L"type");
+					switch (node->type)
+					{
+					case vl::glr::parsergen::GlrLeftRecursionInjectContinuationType::Optional:
+						WriteString(L"Optional");
+						break;
+					case vl::glr::parsergen::GlrLeftRecursionInjectContinuationType::Required:
+						WriteString(L"Required");
+						break;
+					default:
+						WriteNull();
+					}
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrLeftRecursionPlaceholder* node)
+				{
+					BeginField(L"flag");
+					WriteToken(node->flag);
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrLeftRecursionPlaceholderClause* node)
+				{
+					BeginField(L"flags");
+					BeginArray();
+					for (auto&& listItem : node->flags)
+					{
+						BeginArrayItem();
+						Print(listItem.Obj());
+						EndArrayItem();
+					}
+					EndArray();
 					EndField();
 				}
 				void RuleAstVisitor::PrintFields(GlrLoopSyntax* node)
@@ -6611,6 +11434,12 @@ namespace vl
 					EndField();
 					BeginField(L"syntax");
 					Print(node->syntax.Obj());
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrNotCondition* node)
+				{
+					BeginField(L"condition");
+					Print(node->condition.Obj());
 					EndField();
 				}
 				void RuleAstVisitor::PrintFields(GlrOptionalSyntax* node)
@@ -6635,6 +11464,15 @@ namespace vl
 					Print(node->syntax.Obj());
 					EndField();
 				}
+				void RuleAstVisitor::PrintFields(GlrOrCondition* node)
+				{
+					BeginField(L"first");
+					Print(node->first.Obj());
+					EndField();
+					BeginField(L"second");
+					Print(node->second.Obj());
+					EndField();
+				}
 				void RuleAstVisitor::PrintFields(GlrPartialClause* node)
 				{
 					BeginField(L"assignments");
@@ -6654,13 +11492,57 @@ namespace vl
 					WriteToken(node->type);
 					EndField();
 				}
+				void RuleAstVisitor::PrintFields(GlrPrefixMergeClause* node)
+				{
+					BeginField(L"rule");
+					Print(node->rule.Obj());
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrPushConditionSyntax* node)
+				{
+					BeginField(L"switches");
+					BeginArray();
+					for (auto&& listItem : node->switches)
+					{
+						BeginArrayItem();
+						Print(listItem.Obj());
+						EndArrayItem();
+					}
+					EndArray();
+					EndField();
+					BeginField(L"syntax");
+					Print(node->syntax.Obj());
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrRefCondition* node)
+				{
+					BeginField(L"name");
+					WriteToken(node->name);
+					EndField();
+				}
 				void RuleAstVisitor::PrintFields(GlrRefSyntax* node)
 				{
 					BeginField(L"field");
 					WriteToken(node->field);
 					EndField();
-					BeginField(L"name");
-					WriteToken(node->name);
+					BeginField(L"literal");
+					WriteToken(node->literal);
+					EndField();
+					BeginField(L"refType");
+					switch (node->refType)
+					{
+					case vl::glr::parsergen::GlrRefType::ConditionalLiteral:
+						WriteString(L"ConditionalLiteral");
+						break;
+					case vl::glr::parsergen::GlrRefType::Id:
+						WriteString(L"Id");
+						break;
+					case vl::glr::parsergen::GlrRefType::Literal:
+						WriteString(L"Literal");
+						break;
+					default:
+						WriteNull();
+					}
 					EndField();
 				}
 				void RuleAstVisitor::PrintFields(GlrReuseClause* node)
@@ -6694,6 +11576,9 @@ namespace vl
 					BeginField(L"name");
 					WriteToken(node->name);
 					EndField();
+					BeginField(L"type");
+					WriteToken(node->type);
+					EndField();
 				}
 				void RuleAstVisitor::PrintFields(GlrSequenceSyntax* node)
 				{
@@ -6702,6 +11587,25 @@ namespace vl
 					EndField();
 					BeginField(L"second");
 					Print(node->second.Obj());
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrSwitchItem* node)
+				{
+					BeginField(L"name");
+					WriteToken(node->name);
+					EndField();
+					BeginField(L"value");
+					switch (node->value)
+					{
+					case vl::glr::parsergen::GlrSwitchValue::False:
+						WriteString(L"False");
+						break;
+					case vl::glr::parsergen::GlrSwitchValue::True:
+						WriteString(L"True");
+						break;
+					default:
+						WriteNull();
+					}
 					EndField();
 				}
 				void RuleAstVisitor::PrintFields(GlrSyntax* node)
@@ -6719,12 +11623,100 @@ namespace vl
 					}
 					EndArray();
 					EndField();
+					BeginField(L"switches");
+					BeginArray();
+					for (auto&& listItem : node->switches)
+					{
+						BeginArrayItem();
+						Print(listItem.Obj());
+						EndArrayItem();
+					}
+					EndArray();
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrTestConditionBranch* node)
+				{
+					BeginField(L"condition");
+					Print(node->condition.Obj());
+					EndField();
+					BeginField(L"syntax");
+					Print(node->syntax.Obj());
+					EndField();
+				}
+				void RuleAstVisitor::PrintFields(GlrTestConditionSyntax* node)
+				{
+					BeginField(L"branches");
+					BeginArray();
+					for (auto&& listItem : node->branches)
+					{
+						BeginArrayItem();
+						Print(listItem.Obj());
+						EndArrayItem();
+					}
+					EndArray();
+					EndField();
 				}
 				void RuleAstVisitor::PrintFields(GlrUseSyntax* node)
 				{
 					BeginField(L"name");
 					WriteToken(node->name);
 					EndField();
+				}
+
+				void RuleAstVisitor::Visit(GlrRefCondition* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"RefCondition", node);
+					PrintFields(static_cast<GlrCondition*>(node));
+					PrintFields(static_cast<GlrRefCondition*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Visit(GlrNotCondition* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"NotCondition", node);
+					PrintFields(static_cast<GlrCondition*>(node));
+					PrintFields(static_cast<GlrNotCondition*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Visit(GlrAndCondition* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"AndCondition", node);
+					PrintFields(static_cast<GlrCondition*>(node));
+					PrintFields(static_cast<GlrAndCondition*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Visit(GlrOrCondition* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"OrCondition", node);
+					PrintFields(static_cast<GlrCondition*>(node));
+					PrintFields(static_cast<GlrOrCondition*>(node));
+					EndObject();
 				}
 
 				void RuleAstVisitor::Visit(GlrRefSyntax* node)
@@ -6738,20 +11730,6 @@ namespace vl
 					WriteType(L"RefSyntax", node);
 					PrintFields(static_cast<GlrSyntax*>(node));
 					PrintFields(static_cast<GlrRefSyntax*>(node));
-					EndObject();
-				}
-
-				void RuleAstVisitor::Visit(GlrLiteralSyntax* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"LiteralSyntax", node);
-					PrintFields(static_cast<GlrSyntax*>(node));
-					PrintFields(static_cast<GlrLiteralSyntax*>(node));
 					EndObject();
 				}
 
@@ -6825,6 +11803,34 @@ namespace vl
 					EndObject();
 				}
 
+				void RuleAstVisitor::Visit(GlrPushConditionSyntax* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"PushConditionSyntax", node);
+					PrintFields(static_cast<GlrSyntax*>(node));
+					PrintFields(static_cast<GlrPushConditionSyntax*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Visit(GlrTestConditionSyntax* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"TestConditionSyntax", node);
+					PrintFields(static_cast<GlrSyntax*>(node));
+					PrintFields(static_cast<GlrTestConditionSyntax*>(node));
+					EndObject();
+				}
+
 				void RuleAstVisitor::Visit(GlrCreateClause* node)
 				{
 					if (!node)
@@ -6867,9 +11873,61 @@ namespace vl
 					EndObject();
 				}
 
+				void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"LeftRecursionPlaceholderClause", node);
+					PrintFields(static_cast<GlrClause*>(node));
+					PrintFields(static_cast<GlrLeftRecursionPlaceholderClause*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Visit(GlrLeftRecursionInjectClause* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"LeftRecursionInjectClause", node);
+					PrintFields(static_cast<GlrClause*>(node));
+					PrintFields(static_cast<GlrLeftRecursionInjectClause*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Visit(GlrPrefixMergeClause* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"PrefixMergeClause", node);
+					PrintFields(static_cast<GlrClause*>(node));
+					PrintFields(static_cast<GlrPrefixMergeClause*>(node));
+					EndObject();
+				}
+
 				RuleAstVisitor::RuleAstVisitor(vl::stream::StreamWriter& _writer)
 					: vl::glr::JsonVisitorBase(_writer)
 				{
+				}
+
+				void RuleAstVisitor::Print(GlrCondition* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					node->Accept(static_cast<GlrCondition::IVisitor*>(this));
 				}
 
 				void RuleAstVisitor::Print(GlrSyntax* node)
@@ -6892,6 +11950,32 @@ namespace vl
 					node->Accept(static_cast<GlrClause::IVisitor*>(this));
 				}
 
+				void RuleAstVisitor::Print(GlrSwitchItem* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"SwitchItem", node);
+					PrintFields(static_cast<GlrSwitchItem*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Print(GlrTestConditionBranch* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"TestConditionBranch", node);
+					PrintFields(static_cast<GlrTestConditionBranch*>(node));
+					EndObject();
+				}
+
 				void RuleAstVisitor::Print(GlrAssignment* node)
 				{
 					if (!node)
@@ -6902,6 +11986,32 @@ namespace vl
 					BeginObject();
 					WriteType(L"Assignment", node);
 					PrintFields(static_cast<GlrAssignment*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Print(GlrLeftRecursionPlaceholder* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"LeftRecursionPlaceholder", node);
+					PrintFields(static_cast<GlrLeftRecursionPlaceholder*>(node));
+					EndObject();
+				}
+
+				void RuleAstVisitor::Print(GlrLeftRecursionInjectContinuation* node)
+				{
+					if (!node)
+					{
+						WriteNull();
+						return;
+					}
+					BeginObject();
+					WriteType(L"LeftRecursionInjectContinuation", node);
+					PrintFields(static_cast<GlrLeftRecursionInjectContinuation*>(node));
 					EndObject();
 				}
 
@@ -6958,37 +12068,113 @@ namespace vl
 				void RuleAstVisitor::Traverse(vl::glr::ParsingToken& token) {}
 				void RuleAstVisitor::Traverse(vl::glr::ParsingAstBase* node) {}
 				void RuleAstVisitor::Traverse(GlrAlternativeSyntax* node) {}
+				void RuleAstVisitor::Traverse(GlrAndCondition* node) {}
 				void RuleAstVisitor::Traverse(GlrAssignment* node) {}
 				void RuleAstVisitor::Traverse(GlrClause* node) {}
+				void RuleAstVisitor::Traverse(GlrCondition* node) {}
 				void RuleAstVisitor::Traverse(GlrCreateClause* node) {}
-				void RuleAstVisitor::Traverse(GlrLiteralSyntax* node) {}
+				void RuleAstVisitor::Traverse(GlrLeftRecursionInjectClause* node) {}
+				void RuleAstVisitor::Traverse(GlrLeftRecursionInjectContinuation* node) {}
+				void RuleAstVisitor::Traverse(GlrLeftRecursionPlaceholder* node) {}
+				void RuleAstVisitor::Traverse(GlrLeftRecursionPlaceholderClause* node) {}
 				void RuleAstVisitor::Traverse(GlrLoopSyntax* node) {}
+				void RuleAstVisitor::Traverse(GlrNotCondition* node) {}
 				void RuleAstVisitor::Traverse(GlrOptionalSyntax* node) {}
+				void RuleAstVisitor::Traverse(GlrOrCondition* node) {}
 				void RuleAstVisitor::Traverse(GlrPartialClause* node) {}
+				void RuleAstVisitor::Traverse(GlrPrefixMergeClause* node) {}
+				void RuleAstVisitor::Traverse(GlrPushConditionSyntax* node) {}
+				void RuleAstVisitor::Traverse(GlrRefCondition* node) {}
 				void RuleAstVisitor::Traverse(GlrRefSyntax* node) {}
 				void RuleAstVisitor::Traverse(GlrReuseClause* node) {}
 				void RuleAstVisitor::Traverse(GlrRule* node) {}
 				void RuleAstVisitor::Traverse(GlrSequenceSyntax* node) {}
+				void RuleAstVisitor::Traverse(GlrSwitchItem* node) {}
 				void RuleAstVisitor::Traverse(GlrSyntax* node) {}
 				void RuleAstVisitor::Traverse(GlrSyntaxFile* node) {}
+				void RuleAstVisitor::Traverse(GlrTestConditionBranch* node) {}
+				void RuleAstVisitor::Traverse(GlrTestConditionSyntax* node) {}
 				void RuleAstVisitor::Traverse(GlrUseSyntax* node) {}
 
 				void RuleAstVisitor::Finishing(vl::glr::ParsingAstBase* node) {}
 				void RuleAstVisitor::Finishing(GlrAlternativeSyntax* node) {}
+				void RuleAstVisitor::Finishing(GlrAndCondition* node) {}
 				void RuleAstVisitor::Finishing(GlrAssignment* node) {}
 				void RuleAstVisitor::Finishing(GlrClause* node) {}
+				void RuleAstVisitor::Finishing(GlrCondition* node) {}
 				void RuleAstVisitor::Finishing(GlrCreateClause* node) {}
-				void RuleAstVisitor::Finishing(GlrLiteralSyntax* node) {}
+				void RuleAstVisitor::Finishing(GlrLeftRecursionInjectClause* node) {}
+				void RuleAstVisitor::Finishing(GlrLeftRecursionInjectContinuation* node) {}
+				void RuleAstVisitor::Finishing(GlrLeftRecursionPlaceholder* node) {}
+				void RuleAstVisitor::Finishing(GlrLeftRecursionPlaceholderClause* node) {}
 				void RuleAstVisitor::Finishing(GlrLoopSyntax* node) {}
+				void RuleAstVisitor::Finishing(GlrNotCondition* node) {}
 				void RuleAstVisitor::Finishing(GlrOptionalSyntax* node) {}
+				void RuleAstVisitor::Finishing(GlrOrCondition* node) {}
 				void RuleAstVisitor::Finishing(GlrPartialClause* node) {}
+				void RuleAstVisitor::Finishing(GlrPrefixMergeClause* node) {}
+				void RuleAstVisitor::Finishing(GlrPushConditionSyntax* node) {}
+				void RuleAstVisitor::Finishing(GlrRefCondition* node) {}
 				void RuleAstVisitor::Finishing(GlrRefSyntax* node) {}
 				void RuleAstVisitor::Finishing(GlrReuseClause* node) {}
 				void RuleAstVisitor::Finishing(GlrRule* node) {}
 				void RuleAstVisitor::Finishing(GlrSequenceSyntax* node) {}
+				void RuleAstVisitor::Finishing(GlrSwitchItem* node) {}
 				void RuleAstVisitor::Finishing(GlrSyntax* node) {}
 				void RuleAstVisitor::Finishing(GlrSyntaxFile* node) {}
+				void RuleAstVisitor::Finishing(GlrTestConditionBranch* node) {}
+				void RuleAstVisitor::Finishing(GlrTestConditionSyntax* node) {}
 				void RuleAstVisitor::Finishing(GlrUseSyntax* node) {}
+
+				void RuleAstVisitor::Visit(GlrRefCondition* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrCondition*>(node));
+					Traverse(static_cast<GlrRefCondition*>(node));
+					Traverse(node->name);
+					Finishing(static_cast<GlrRefCondition*>(node));
+					Finishing(static_cast<GlrCondition*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::Visit(GlrNotCondition* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrCondition*>(node));
+					Traverse(static_cast<GlrNotCondition*>(node));
+					InspectInto(node->condition.Obj());
+					Finishing(static_cast<GlrNotCondition*>(node));
+					Finishing(static_cast<GlrCondition*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::Visit(GlrAndCondition* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrCondition*>(node));
+					Traverse(static_cast<GlrAndCondition*>(node));
+					InspectInto(node->first.Obj());
+					InspectInto(node->second.Obj());
+					Finishing(static_cast<GlrAndCondition*>(node));
+					Finishing(static_cast<GlrCondition*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::Visit(GlrOrCondition* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrCondition*>(node));
+					Traverse(static_cast<GlrOrCondition*>(node));
+					InspectInto(node->first.Obj());
+					InspectInto(node->second.Obj());
+					Finishing(static_cast<GlrOrCondition*>(node));
+					Finishing(static_cast<GlrCondition*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
 
 				void RuleAstVisitor::Visit(GlrRefSyntax* node)
 				{
@@ -6997,20 +12183,8 @@ namespace vl
 					Traverse(static_cast<GlrSyntax*>(node));
 					Traverse(static_cast<GlrRefSyntax*>(node));
 					Traverse(node->field);
-					Traverse(node->name);
+					Traverse(node->literal);
 					Finishing(static_cast<GlrRefSyntax*>(node));
-					Finishing(static_cast<GlrSyntax*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void RuleAstVisitor::Visit(GlrLiteralSyntax* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<GlrSyntax*>(node));
-					Traverse(static_cast<GlrLiteralSyntax*>(node));
-					Traverse(node->value);
-					Finishing(static_cast<GlrLiteralSyntax*>(node));
 					Finishing(static_cast<GlrSyntax*>(node));
 					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 				}
@@ -7078,6 +12252,37 @@ namespace vl
 					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 				}
 
+				void RuleAstVisitor::Visit(GlrPushConditionSyntax* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrSyntax*>(node));
+					Traverse(static_cast<GlrPushConditionSyntax*>(node));
+					for (auto&& listItem : node->switches)
+					{
+						InspectInto(listItem.Obj());
+					}
+					InspectInto(node->syntax.Obj());
+					Finishing(static_cast<GlrPushConditionSyntax*>(node));
+					Finishing(static_cast<GlrSyntax*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::Visit(GlrTestConditionSyntax* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrSyntax*>(node));
+					Traverse(static_cast<GlrTestConditionSyntax*>(node));
+					for (auto&& listItem : node->branches)
+					{
+						InspectInto(listItem.Obj());
+					}
+					Finishing(static_cast<GlrTestConditionSyntax*>(node));
+					Finishing(static_cast<GlrSyntax*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
 				void RuleAstVisitor::Visit(GlrCreateClause* node)
 				{
 					if (!node) return;
@@ -7128,6 +12333,52 @@ namespace vl
 					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 				}
 
+				void RuleAstVisitor::Visit(GlrLeftRecursionPlaceholderClause* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrClause*>(node));
+					Traverse(static_cast<GlrLeftRecursionPlaceholderClause*>(node));
+					for (auto&& listItem : node->flags)
+					{
+						InspectInto(listItem.Obj());
+					}
+					Finishing(static_cast<GlrLeftRecursionPlaceholderClause*>(node));
+					Finishing(static_cast<GlrClause*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::Visit(GlrLeftRecursionInjectClause* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrClause*>(node));
+					Traverse(static_cast<GlrLeftRecursionInjectClause*>(node));
+					InspectInto(node->continuation.Obj());
+					InspectInto(node->rule.Obj());
+					Finishing(static_cast<GlrLeftRecursionInjectClause*>(node));
+					Finishing(static_cast<GlrClause*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::Visit(GlrPrefixMergeClause* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrClause*>(node));
+					Traverse(static_cast<GlrPrefixMergeClause*>(node));
+					InspectInto(node->rule.Obj());
+					Finishing(static_cast<GlrPrefixMergeClause*>(node));
+					Finishing(static_cast<GlrClause*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::InspectInto(GlrCondition* node)
+				{
+					if (!node) return;
+					node->Accept(static_cast<GlrCondition::IVisitor*>(this));
+				}
+
 				void RuleAstVisitor::InspectInto(GlrSyntax* node)
 				{
 					if (!node) return;
@@ -7138,6 +12389,27 @@ namespace vl
 				{
 					if (!node) return;
 					node->Accept(static_cast<GlrClause::IVisitor*>(this));
+				}
+
+				void RuleAstVisitor::InspectInto(GlrSwitchItem* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrSwitchItem*>(node));
+					Traverse(node->name);
+					Finishing(static_cast<GlrSwitchItem*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::InspectInto(GlrTestConditionBranch* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrTestConditionBranch*>(node));
+					InspectInto(node->condition.Obj());
+					InspectInto(node->syntax.Obj());
+					Finishing(static_cast<GlrTestConditionBranch*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 				}
 
 				void RuleAstVisitor::InspectInto(GlrAssignment* node)
@@ -7151,6 +12423,30 @@ namespace vl
 					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 				}
 
+				void RuleAstVisitor::InspectInto(GlrLeftRecursionPlaceholder* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrLeftRecursionPlaceholder*>(node));
+					Traverse(node->flag);
+					Finishing(static_cast<GlrLeftRecursionPlaceholder*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
+				void RuleAstVisitor::InspectInto(GlrLeftRecursionInjectContinuation* node)
+				{
+					if (!node) return;
+					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+					Traverse(static_cast<GlrLeftRecursionInjectContinuation*>(node));
+					InspectInto(node->flag.Obj());
+					for (auto&& listItem : node->injectionTargets)
+					{
+						InspectInto(listItem.Obj());
+					}
+					Finishing(static_cast<GlrLeftRecursionInjectContinuation*>(node));
+					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+				}
+
 				void RuleAstVisitor::InspectInto(GlrRule* node)
 				{
 					if (!node) return;
@@ -7161,6 +12457,7 @@ namespace vl
 						InspectInto(listItem.Obj());
 					}
 					Traverse(node->name);
+					Traverse(node->type);
 					Finishing(static_cast<GlrRule*>(node));
 					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 				}
@@ -7171,6 +12468,10 @@ namespace vl
 					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
 					Traverse(static_cast<GlrSyntaxFile*>(node));
 					for (auto&& listItem : node->rules)
+					{
+						InspectInto(listItem.Obj());
+					}
+					for (auto&& listItem : node->switches)
 					{
 						InspectInto(listItem.Obj());
 					}
@@ -7202,38 +12503,68 @@ namespace vl
 		{
 			void ParserGenRuleParserData(vl::stream::IStream& outputStream)
 			{
-				static const vl::vint dataLength = 6495; // 70565 bytes before compressing
+				static const vl::vint dataLength = 14334; // 195897 bytes before compressing
 				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 95;
-				static const vl::vint dataSolidRows = 25;
-				static const vl::vint dataRows = 26;
+				static const vl::vint dataRemain = 254;
+				static const vl::vint dataSolidRows = 55;
+				static const vl::vint dataRows = 56;
 				static const char* compressed[] = {
-					"\xA5\x13\x01\x00\x57\x19\x00\x00\x1A\x00\x01\x82\x80\x09\x03\x82\x81\x82\x06\x89\x82\x85\x0A\x80\x81\x85\x0F\x0A\xA5\x0A\x88\x1A\x85\x16\x85\x21\x0A\xC9\x0A\x8C\x38\x01\x87\x7F\x8F\x20\x9F\x8A\x80\x01\x91\x93\x91\x92\x20\xA7\xA8\x9F\x7A\x90\x95\x97\x92\x2F\xA6\x8A\x8B\x9C\x93\x9B\x95\x98\x29\xB6\xAE\x83\x9A\x81\x02\x9C\x98\x3F\xB2\x9E\x97\x91\xA1\x9F\xA1\x9D\x47\xC0\x89\xA2\xA6\x84\x98\x9C\x91\x45\xD0\x8B\xA6\xAD\xA4\xA3\xA8\xA9\x55\xC8\x99\xAA\xAB\xAC\xA7\x80\xA7\x51\xB5\x97\xA2\xBD\xAC\xAB\xAE\xAB\x65\xD8\xA7\xBA\xAB\xB4\xAD\xB6\xAF\x02\xE0\xA3\xAF\xA4\xB7\xB6\xB3\xB8\x68\xF6\xAA\xB8\xBC\xB4\xBE\xB6\xBF\x70\x81\xB2\xA9\xB5\xB8\xC3\xBA\xC1\x79\x86\xFB\xA8\xCD\xBC\xC7\xBE\xC7\x81\xA4\x89\xD0\xC7\xC2\xC9\xC6\xCB\x8F\x98\xD1\xC3\xCA\xBD\xC0\xCB\xC5\x9A\x95\xDC\xCA\xCE\xC8\x02\x9F\x84\xA7\x84\xE3\x82\x0D\x99\xB3\x91\x01\xAD\xF3\xAE\xD3\xD2\xDD\xDA\xD4\x85\x04\x31\xF7\xC9\x8C\x80\xD6\x84\x03\xBA\x83\x87\x01\xE2\x85\x8E\xDE\xDB\x9D\xA3\x88\x86\x89\xD1\xE4\xDB\xDD\xD0\xCE\xC8\xE4\xD4\xBD\xEB\xE6\xE9\xD1\xD4\xD7\xFA",
-					"\xE3\xEF\xCD\xD3\xD1\xDE\xD6\xDD\xE1\xD0\xD0\xF0\xF3\xEF\x93\xE7\xE2\xF9\xE1\xF3\xED\xF7\xF1\xE6\xF1\xE9\xF2\xF7\xCC\xF9\xCC\x05\xC4\xEF\xEC\xEA\xFE\xF4\xFC\xF9\xF9\x00\xB5\x71\x81\x66\xF6\x5B\x63\x82\x81\x02\x89\x84\x83\x81\xA2\x4C\x85\x7A\x83\xA5\x4B\x09\x7E\x7F\x06\x4C\x03\x86\x79\x0D\x17\x80\x87\x7A\xD8\x5D\x8C\x76\x41\x0E\x1A\x87\x67\x03\x13\x90\x03\x85\x04\x13\x92\x02\x8B\x82\x0A\x88\x8C\x8B\x8B\x2E\xB1\x8D\x81\x8B\x33\xB0\x85\x8E\x8C\x0F\xB4\x89\x8E\x8D\x3B\xB8\x88\x7A\x8E\x3F\xBC\x81\x92\x8F\x1C\x9F\x8E\x86\x7E\x47\x94\x89\x91\x81\x37\x8D\x9D\x8E\x93\x43\x90\x95\x90\x92\x46\x95\x94\x97\x95\x4A\x96\x99\x94\x96\x4C\x8F\x90\x6B\x04\x2B\x84\x9D\x7C\x05\x61\x92\x9D\x7D\x97\x51\x9E\x99\x9B\x9A\x53\x9B\x9E\x98\x9A\x6D\xB0\x97\x9B\x86\x73\x80\x91\x9C\x9D\xFF\x76\x95\x9E\x90\x77\xBA\x99\x9C\x9F\x0A\x55\x05\x9A\x9A\x7D\x80\xAF\x9E\x98\x87\xA6\x99\xA0\xA1\x7B\x91\x66\x07\xA0\x6C\x8D\xAA\xA3\x7E\x72\x8B\xA1\xA6\xA5\x85\x88\xA4\xA4\x9E\x9B\xBE\x9D\xA6\xA1\x9F\x9A\xAB\x90\xA7\xA3\x9E\xA5\xA8\xA8\x49\x97\x00\xA5\xA6",
-					"\x93\xA7\xA2\xAA\x96\x95\xA1\xAD\xA8\xAC\xA4\x82\x48\x07\xAA\x92\x8C\xA8\xA5\xAE\x97\xB2\xAA\xAE\xAF\xBD\xAE\xA3\xAC\x97\xB5\x84\xB6\xA8\xAD\xC7\x86\xB8\xA8\xB2\xCB\x8A\xBF\xA9\x40\x19\x38\xA9\x42\x43\xCC\x7D\x7B\x06\xB4\xC0\xAC\xAF\xAF\x40\x1C\x18\xB3\x41\x07\x13\x9E\x03\x84\x44\xC7\x46\x40\x0A\xB7\xCC\x8F\xBF\x99\xB1\xEB\x89\xBD\xB9\xB3\xEF\xAA\xB1\x08\xBA\x58\xA2\x04\xBD\xBC\xC3\xB8\xBB\xB5\xBA\xF9\xB1\xA2\xB3\xBE\xCE\xBD\xB9\x7B\x08\xF7\xA4\x07\xBE\x44\xE5\xBF\xB1\xB0\xBF\x00\xC0\x06\x0B\xBD\x27\x13\x84\x45\xC2\x02\x69\x03\x86\x0A\xF7\xBE\xBC\xC3\xC2\x01\xCD\xCA\xC5\xC7\x1C\xFA\xB5\x6B\x0A\x19\xEC\xBF\xC6\xC8\xDA\xA1\xC7\xCA\x79\x2C\x25\xCE\xBB\xCA\x26\xF1\xCF\xCA\xCC\xF0\xB0\xC3\xCF\xCD\x35\xF4\xCA\xBA\x45\x14\xE0\xC9\xCB\xCF\xBC\x80\xDB\xAF\xD0\xFB\x6E\x0E\xC9\xCE\x38\xEA\xB6\xCC\xD2\x4C\xCA\xDA\xCE\xC0\x49\xD0\xDD\xD2\xD4\x4E\xD1\xDE\xC4\xBB\x2F\x07\xDA\xB8\x0C\x5A\xD4\xDE\xD7\xD5\x56\xEA\xCF\xD0\xD8\x53\xE4\xD5\xD5\xD9\x62\xEE\xB1\x0D\xD7\x66\xDF\xD9\xD8\xDA\x42\xD9\xB1\xD3\xDC\x44\xCA\xC1\xDE\xDD\xFD",
-					"\x72\x0C\xDB\xDB\x67\xFD\xDE\xDB\xDD\x1B\xC0\xEE\xCC\xDD\x72\xF5\xD1\xE1\x7F\x33\x3B\xD2\xE0\xCA\x84\xF8\xD6\xE3\xE0\x8F\xCC\xE1\xE7\xD2\x7E\xED\xD6\xE4\xDF\x7F\xCD\xE7\xE1\x42\x34\x0A\xEA\xE4\xE4\x85\xE1\xEE\xE2\xE8\x9B\xE4\xE0\xEB\xE8\xA8\xE5\xE3\x41\x0D\xF7\xB6\x07\xBF\x0D\x9E\xD3\xEC\xB8\x0E\xF7\xB9\x03\x86\x0E\x13\xBB\x03\x84\x0F\xB1\xE6\xE2\xE6\xEF\x94\xD5\x6D\x0F\xBD\x3E\x37\xBF\x0D\xEF\xA9\xE7\xE2\x40\x10\xF7\x81\x13\x86\x10\x13\x98\x4D\xCC\x00\x44\x08\xFA\xEB\xF5\xCA\xD9\xFF\xED\xF2\xDB\xD8\xFD\xF6\xF6\xC1\xD7\xEB\xE1\xF8\x98\xE2\xFF\xE6\x9B\x45\x37\xB6\x13\xBD\x47\x16\xF0\xF8\xBB\x48\x37\xBA\x47\xF4\x4A\x13\x8B\x13\x84\x4C\x2E\xF0\x01\x13\x13\x8E\x1A\xFC\xF9\xE3\x63\x6D\xF9\x03\x81\x81\xB0\x45\x80\x6E\xE7\x6F\x0B\x84\x50\x0F\x7E\x01\x87\x85\x72\x04\x87\x7C\x00\x92\x8E\x80\x0A\x86\x86\x82\x08\x92\x77\x65\x51\x07\x5E\x29\x37\x5B\x0A\x0D\x97\x83\x78\x54\x07\x5F\x2A\x13\x46\x0A\x13\x57\x0B\x84\x58\x01\x85\x0C\x80\x7D\x82\x1A\x8E\x84\xF7\x13\x81\x86\x08\x8F\x81\x73\x35\x98\x87\x0B\xEE\x59\x0B\x7B\x5A\x0F",
-					"\x5E\x5B\x0D\x86\x0D\xFD\x3C\x0B\x7B\x5D\x0B\x42\x5E\x13\x43\x17\x13\x40\x0C\xFD\x61\x0B\x42\x62\x02\x8A\x0E\xB3\x80\x87\x1D\xB2\x86\x7B\x34\x96\x8B\x10\xB9\x86\x7C\x2E\x91\x86\x8B\x37\x9D\x8A\xEF\x63\x02\x8A\x31\x94\x8F\x32\x64\x13\x41\x19\x65\x8F\x8A\x2D\x93\x88\x8B\x55\x87\x8F\x15\xEF\x72\x84\x37\xA6\x88\x8E\x75\x83\x22\x19\x77\x57\x0D\x7B\x68\x0C\x8D\x61\x85\x35\x1A\x77\x5A\x0D\x09\x6B\x0B\x42\x6C\x13\x41\x1B\x00\x98\x83\x2D\xB6\x8D\x8D\x72\x8E\x91\x24\xEF\x84\x8F\x39\x9F\x78\x00\x6E\x0C\x90\x18\x8D\x94\x93\x4B\x99\x8B\x92\x77\x95\x92\x24\xF8\x86\x93\x4F\xA4\x93\x94\xA2\x9D\x92\x29\xA9\x9D\x61\x37\x1A\x97\x91\x81\x91\x94\x27\xA1\x9E\x93\x38\xA7\x92\x95\xB6\x8C\x94\x24\xB7\x94\x97\x55\xB5\x91\x8F\xBC\x9B\x96\xF6\x70\x0F\x95\x81\x31\x0D\x98\xC1\x92\x97\x26\xCB\x90\x97\x59\x82\x9F\x97\xA5\x99\x94\x34\xA8\x93\x9A\x5C\x80\x9A\x97\x6D\x52\x0C\x32\xD8\x9E\x98\x65\x8D\x99\x21\x73\x0A\x20\x6C\x63\x36\x0E\x71\xBD\x39\x0F\xE6\x8C\x98\x28\xA5\x3C\x0F\x74\xBB\x3F\x0F\xEE\x83\x22\x20\x71\x92\x21\x42\x34\x99\x20\x88\x17",
-					"\x9D\x35\xBD\x92\x9A\x5F\xBE\x9D\x9F\x00\xB7\x9B\x3E\xCF\x9F\x9E\x81\x85\xA1\x9A\x06\xA1\xA0\x42\x8B\xAA\x5D\x45\x1B\x98\x00\x8C\x0F\xA3\x41\xD4\x9E\x97\x46\x12\xA2\xA1\x14\xB8\xA2\x35\x8C\xAB\xA3\x8C\x89\xA7\x32\x8E\x17\xA3\x47\x96\x9F\x10\x91\x9C\xA4\x9F\x23\xBE\xA3\x49\x84\xAA\xA2\x5A\x90\x17\xA1\x91\x06\xA6\x4A\xB3\xAD\xA3\x9A\xA8\xA3\xA5\xDE\x8B\x9D\x4E\xC9\x9D\x9B\x9E\xA3\x3A\x12\x13\x53\x12\x4C\xB6\xAC\xA5\x94\x84\xAB\xA7\x58\x54\x13\x50\xB7\xA4\xA6\xA6\x87\xAE\xA7\xDF\x91\xAA\x4E\xD0\xA3\xAA\x75\xBC\xA6\xAA\x01\x35\x13\x43\x96\x1B\xA9\xA2\xB8\xA7\x7C\x97\x1D\xA8\x52\x83\xA3\xAD\x89\x8F\xA8\xAB\x64\xA7\x7C\x26\x62\xA4\xAA\xEF\x59\x14\xAD\x68\xA6\xAE\x53\xF3\xAE\xAB\xA6\xB5\xA9\x5F\x9A\x0F\xA3\x26\x70\xA2\xAB\xAB\xBD\xAC\x9B\x71\xAD\xA7\x5D\xF4\xA5\xAC\xC1\x85\xB6\x5D\x9C\x13\x41\x27\x7C\xA5\xAB\xBF\xA9\xA9\xB0\x02\xBE\x10\x63\xFE\xAD\xB1\xCA\x94\xB7\xB2\x80\xAE\xB3\xC9\x1F\x13\xB3\xCC\x96\xB6\xB3\x98\xAF\xB3\x7E\x20\x1D\xB2\xD1\x9F\xB7\x92\xA1\x05\xB6\x5C\x83\xBC\xB5\xC3\x9F\xA8\xB2\xAF\xA6\x22\x28\x2A",
-					"\xB6\xB1\xFE\x23\x14\xB6\x46\xA4\xB1\x5B\xA0\xBC\xB6\xD3\xA1\xB6\x3C\xA4\x0F\xA1\x29\x38\xB1\xB7\xD3\xAB\xB6\xB5\x76\xA8\xBB\x59\x9A\xB5\xB6\xD8\xAA\x5E\x14\x13\x47\x14\x71\xC9\xBB\xB6\xDF\xBD\xB7\xB8\xD5\xB8\xBA\x73\xCB\xB9\x48\x54\x13\xBC\xBB\xBF\xAD\xB8\x73\xB9\xBD\xB5\xEC\xA2\xBE\xB8\xE7\xA1\xBC\x79\x8B\x79\x15\x09\x6A\x17\xBB\xBA\xBB\xB9\x7C\x8E\xBB\x14\x7D\xA6\x3E\x15\xF6\xA9\x3D\x2C\x79\xBB\xBD\xF3\x74\x14\xBF\x99\x37\x16\x3E\xBA\x1A\x9F\x5E\x3A\x98\x18\x00\xD4\xBA\x7C\xE5\xBB\xC0\xE5\xA0\x33\x18\x13\x44\x18\x7C\x8C\xCB\x3F\x62\x13\xC6\xC1\x14\xC8\xBD\x7F\x8D\xC6\xBD\x0D\xE3\xBD\xB8\xEA\xA0\xC7\x75\xE9\xB1\x20\x63\x17\xC5\xC3\x22\xD6\xBA\x8A\xDA\xBF\xC2\x05\xFE\x77\x18\x27\xDC\xC2\x8C\xAD\xC0\xBD\xDE\x88\x1F\xA1\xC9\x11\xC4\x8D\xF3\xBA\xC3\x14\xEC\xC3\x20\xCA\x0F\xA0\x21\x2C\x36\x21\xDC\x23\x2C\x26\x46\xC4\x30\x92\xE1\x2B\xC9\x23\xEB\x21\xC9\x9D\x2D\xCA\x92\xCF\xCC\xC9\x95\x04\xCE\x20\x12\x43\x2C\x94\xA4\x32\xCB\x28\xD4\xCE\xC9\x28\x37\xCB\x40\x78\x3A\xCB\x2A\xE8\x23\xCB\xDE\x3D\xC8\x97\xD6\xCA\x20\x32",
-					"\x65\xC8\xCC\x25\x28\xCF\x79\x6A\xC9\xCC\x36\xC9\x21\xCB\x84\x32\xCC\x4D\x74\xC3\xCF\x2F\xD3\xC9\xCC\x0A\x38\xCD\x67\x7A\xCB\xCF\x33\xE6\xC9\xCE\x87\xC1\x26\x98\x82\x29\x42\x4B\x74\x26\x38\x06\x31\x5B\x9B\xFF\xC8\xD0\x38\xE1\x24\xD0\x85\xCA\xD2\x42\x4B\x3A\x61\x47\xCA\x26\x44\x93\xDE\xC8\xA0\xF7\xC1\x2D\x45\xC1\x24\xCC\x84\x26\xD4\x00\x6E\xC9\xD5\x40\xE5\xD6\xD5\x63\x2A\xD5\xA3\xC0\x5E\xD3\x84\x12\xD5\xD5\x09\x3C\xD3\xC6\x35\xD6\x20\x50\xF4\xD3\x25\x90\xC3\x22\xBD\x63\x20\x38\x4B\xE0\x25\x39\x02\x28\xDA\x77\x41\xD2\x20\x30\x44\xD9\xD1\xC7\xCA\x22\xAA\xBC\xD3\x20\x67\xC4\x35\xD8\x94\xD7\xD0\xB4\x9F\x28\xD3\x4C\xDC\xDB\xDB\xFF\x1D\xDA\xB7\xE2\xD9\xD2\x72\xC5\xD6\xDC\x7B\xCA\xD6\xA0\xA4\x38\xDC\x3E\xDE\xDA\xDB\xC6\xDF\x22\xAA\xA8\xD3\xD0\x70\xED\xDE\xCF\xA2\xC5\x26\xAA\xAC\xD5\xDF\x78\xE1\xDE\xDE\xE0\xCA\xDD\x58\x77\xD6\xD0\x7F\xC4\xE2\xDF\xB0\xD9\xCC\xC0\x86\xE1\xE0\x85\x33\xD5\xD3\xC0\xCA\x23\xAD\xFD\xD9\xDA\x90\x07\xE0\xDE\x15\xF2\xDF\xA6\xBC\x54\xDA\x81\x3E\xD4\xE2\xF9\xD8\xE1\xC8\x96\xEB\xE1\x8C\xFF\xDC\xE1",
-					"\x28\xE6\xE6\xC0\xA1\xDB\xCD\x82\xE6\xE7\xE2\x20\x33\xDF\xC0\xA5\xE3\xE5\x6F\xFE\xDB\xDF\x33\xE9\xE5\xCD\xA7\xEA\xE5\x84\xE0\xE5\xE5\x95\xCF\xE5\xC3\xA4\xDC\xE5\x3A\xEE\xE3\xE7\x30\xFA\xE1\x42\x0F\xEB\xD7\x88\xF6\xD1\xE7\x42\xFA\xE4\xD0\x9A\xD9\xD6\x8E\xCE\xED\xD7\x61\x38\xDB\xCE\xDA\xE3\xEA\x28\x5D\xE1\x20\xB7\x4F\xDA\xBF\xCA\xDC\x27\xAF\xC0\x06\xDA\x9D\x3C\xEA\xD1\xA5\x2A\xED\x3E\xE8\x25\xED\xEF\xC4\xE6\xD4\xEB\xE2\xE5\xAE\xF6\xE1\xEA\x78\xE8\xEB\xD0\xD8\xC0\xEA\xBD\xF3\xEE\xED\x08\xE9\x20\xBD\xEC\xD4\xE6\xBB\xFC\xE3\xE7\x38\xE5\xE8\xE0\xF5\xE4\xEE\xB9\xFD\xE4\xE8\x0A\xFF\xED\xDC\xF7\xE8\xF0\x9F\xC4\xF2\xF2\x93\xE9\xEB\x3F\x32\xD6\xEA\x94\x0C\xD8\x5A\x7D\xE6\xF2\xE6\x9A\xFA\xD4\x5D\xE0\x66\xEC\x1F\xF7\xF1\xDE\xA2\xFB\xEF\x81\x2B\xDE\x3B\xA4\xEA\x23\xE0\xB0\xFD\xF4\x81\x3C\xDA\xF5\x95\xF0\xF3\xCF\x8D\xFA\xE8\xBE\xCA\xF3\xF2\x9B\xEE\xE1\xE7\xA5\x2F\xF2\x00\x13\xE0\xF7\x86\xE5\xF7\xF0\xA1\x25\xF9\xD4\xF4\xF7\xE6\x96\xFE\x3A\xCC\xB1\xDD\xCD\x57\xFA\xF4\x34\x2B\xF8\xD6\x41\x4C\xE7\xF5\xAB\xC3\x27\xF8\xD2\xFB\xE2",
-					"\xA3\xDE\xFE\xE3\xAC\xE0\xD8\xEE\x93\xE3\x9C\xD6\xE3\x25\xF8\x71\x62\xEE\xE4\xE8\xF1\xEE\xFA\x83\x2E\xF9\xF3\x2D\xF9\xF4\xBC\xE7\xF0\xEB\x98\xF1\xEF\xD8\xD7\xFF\xF9\xAB\x79\x7F\xD3\x71\x79\x01\x8B\x78\x31\x75\x7D\xBF\x79\x79\xB5\x71\x10\xAF\x77\x1E\xA3\x7B\x80\x00\x0D\x80\xEE\x6A\x80\xD0\x7B\x74\xCB\x70\x12\xC5\x70\x7E\x0E\x85\x78\x02\x82\x7E\xBF\x6E\x79\x9F\x68\x7F\x06\x84\x79\xFB\x7F\x78\xBE\x74\x80\xB9\x76\x10\xB3\x7B\x81\x15\x86\x10\xB7\x70\x80\x29\x8E\x7A\x22\x80\x7C\xD9\x7B\x7B\x23\x81\x7C\x16\x83\x7E\x20\x8F\x74\x09\x81\x77\xCA\x7A\x83\xC4\x71\x82\xEF\x7B\x75\xE0\x63\x7F\x3C\x1B\x6C\x47\x87\x6D\xE7\x75\x84\x49\x8D\x19\xC5\x74\x17\x0F\x8C\x7F\xEF\x61\x85\x05\x80\x7C\xFE\x77\x82\x36\x86\x85\x1C\x87\x83\x03\x89\x85\x14\x85\x85\x93\x79\x78\x28\x85\x82\x7E\x76\x82\x32\x8D\x83\x53\x8B\x85\x34\x81\x7D\x2C\x80\x86\xFD\x70\x81\xDC\x72\x32\x66\x7A\x81\x13\x8F\x86\x52\x8E\x6D\x3F\x8F\x81\x41\x89\x10\xF5\x74\x13\xF1\x7F\x6E\xAA\x64\x76\x68\x26\x76\xD3\x60\x21\x66\x76\x84\xDE\x1F\x87\x78\x8A\x10\x16\x28\x86\xE3\x6A",
-					"\x86\x5F\x81\x83\x02\x1A\x88\x8E\x75\x86\x96\x84\x86\xC9\x7A\x10\x21\x2E\x88\xE5\x60\x89\x76\x86\x86\x02\x1D\x88\x63\x89\x7F\x54\x82\x89\x0C\x86\x7D\x06\x14\x89\x24\x84\x8A\x9E\x80\x88\x6C\x84\x13\xAA\x6B\x89\xA3\x87\x83\xA5\x89\x89\xFF\x77\x1E\xAA\x62\x8A\x5E\x8F\x89\x97\x8D\x81\x82\x78\x8A\x03\x1A\x8A\xFA\x7C\x8A\x77\x89\x69\x5D\x88\x7D\x9A\x83\x83\x91\x88\x89\xBE\x8A\x82\xC0\x81\x8A\xCA\x8C\x8B\xCC\x8C\x85\x08\x8A\x7D\xC1\x81\x8D\x69\x85\x8C\x85\x62\x86\x9D\x11\x8B\xD8\x8F\x88\xDA\x89\x6E\xD5\x8D\x8D\x8C\x8F\x8D\x9D\x81\x8E\xB0\x8F\x8A\x76\x69\x8A\xE6\x87\x6E\xAD\x8B\x88\xB7\x89\x8E\x09\x12\x8B\xBB\x89\x8D\x6E\x8E\x8A\xF1\x8B\x8E\x03\x1A\x8B\xC8\x74\x8C\xF7\x80\x8F\x58\x88\x8C\x09\x12\x8C\xB5\x8E\x8F\xA6\x81\x81\xCF\x81\x10\xF4\x8D\x8F\xB4\x8F\x8E\xC6\x8A\x8E\xA3\x65\x21\xED\x8B\x67\x05\x94\x8D\x39\x8A\x87\xCC\x72\x71\x09\x90\x00\x04\x9E\x90\xEE\x8D\x82\x03\x11\x87\x83\x84\x7E\xA0\x74\x7D\xF3\x83\x91\x75\x86\x8F\x07\x92\x92\x86\x84\x92\xC6\x7B\x91\xFC\x80\x83\xD3\x8A\x85\x20\x97\x10\x17\x8F\x11\xCD\x7B\x91",
-					"\x1D\x98\x8E\xF8\x66\x8B\x06\x16\x7A\x72\x8E\x92\x7D\x8A\x8F\x02\x1B\x90\x32\x96\x90\x33\x91\x86\x1E\x80\x71\x3B\x8B\x7E\x18\x98\x81\x0A\x1A\x2A\x43\x8E\x93\x03\x12\x88\x2D\x9D\x94\x03\x15\x88\x11\x95\x95\x37\x9F\x0F\xC5\x7A\x95\x6C\x70\x6E\x74\x16\x76\x2C\x9F\x76\x10\x86\x95\x40\x24\x88\x1B\x98\x96\x42\x2A\x96\x53\x99\x7F\xC2\x82\x8F\xD5\x20\x84\x19\x99\x10\x60\x94\x75\x73\x9F\x94\x38\x92\x6D\xE6\x75\x93\x01\x14\x22\x74\x90\x95\x09\x10\x2E\x26\x92\x91\x9C\x8F\x91\xFF\x87\x8E\xA0\x81\x10\x3B\x99\x98\x88\x9D\x8B\x16\x90\x22\x28\x9D\x93\x48\x95\x99\x91\x9B\x8F\x93\x97\x74\x49\x9E\x83\x10\x91\x78\xEC\x87\x98\x14\x9E\x91\xE2\x89\x8F\x5B\x95\x94\x99\x91\x74\x90\x9B\x86\xA4\x9E\x99\x98\x90\x9A\x29\x90\x8E\x8B\x90\x00\x2B\x82\x97\xD7\x8E\x9A\x94\x9D\x90\x7E\x92\x9B\x1B\x96\x94\x6D\x89\x9A\xCB\x8D\x8C\x63\x60\x93\xA7\x9C\x78\xB8\x91\x9B\x2F\x88\x8B\xBF\x13\x9C\x95\x8B\x99\xF8\x8E\x82\xBB\x9A\x9C\xAB\x85\x9C\x07\x97\x9C\xB4\x90\x8D\xB6\x9A\x99\x96\x9A\x9A\x01\x91\x7E\x03\x90\x9D\xC3\x82\x9D\x54\x92\x10\x12\x84\x94\x0A",
-					"\x9E\x9D\x15\x9A\x9D\x67\x86\x8D\xD6\x93\x8B\x34\x9E\x98\xA3\x9B\x9D\xC8\x9D\x9D\xD7\x98\x9A\xCC\x90\x90\xE9\x94\x8E\x27\x93\x9F\xC4\x9D\x9E\x07\x93\x9E\xA5\x91\x10\x31\x9D\x9B\xF5\x9A\x98\x2B\x9D\x95\x19\x8A\x93\xE6\x92\x9A\xD5\x91\x10\x65\x9D\x96\x2E\x94\x87\xE4\x90\x00\xBC\x9F\x9A\x04\xA3\xA0\xDB\x82\x7C\x81\x9B\x97\x3C\x8A\x9E\x00\xA9\xA0\x3C\x9F\x9F\x04\x16\xA0\x42\x8C\xA1\x1C\x9E\xA1\xEE\x9B\xA0\x21\xA9\xA1\x5E\x93\xA2\xF8\x92\x99\xFA\x9B\x9C\xD9\x9A\x94\x55\x7A\xA2\x39\x9F\x96\x97\x92\x10\x2A\x25\x98\x03\x10\x98\x7A\x9B\xA2\x83\x9D\x97\xB1\x9C\xA3\x4C\x9B\x87\x06\x14\x98\x4A\x89\x9B\x42\xAD\x74\x58\x92\x10\x46\xAE\x84\xE3\x84\x1A\xBD\x16\x72\x51\xAB\x73\x53\xA6\x78\xC5\x79\xA3\x84\x15\x7C\x28\x23\x16\x55\xA9\x7F\xC5\x74\x2E\x59\xA0\x29\xC5\x7F\x28\xEC\x75\x8E\x65\xA9\x10\xD7\x27\xA6\x06\x12\x28\x6A\xA3\x10\x6C\xA1\xA6\xAB\x95\x97\xF0\x96\x76\xD4\x2E\xA4\xD3\x21\x16\xC5\x7D\x2D\x6D\xA2\x10\xE7\x2B\xA7\x01\x1D\xA7\x70\xA6\x2E\x61\x1B\x0B\x64\x73\x21\xAA\x68\x88\x3C\x14\x76\x87\xA8\x1B\x4D\x89\x6C\x7C\x99",
-					"\x10\x88\xA3\x12\x8A\xAA\x4F\x92\xAF\xA8\x06\x11\xA9\x86\xA4\xA9\x99\xA0\xA9\x8D\xA1\x10\x93\xAC\xA9\x09\x12\x67\x5D\xA5\xA2\x09\x13\x1C\xD3\x3B\xA8\xA5\xAB\xA9\x97\xAC\xA8\xA9\xA7\xAA\xFA\x46\xAA\x79\x99\x95\xAF\xAA\xAA\x03\x18\xA8\xB0\xAC\x95\x76\x93\xAB\xAE\xA0\xAA\x06\x17\xAB\x8E\xA9\xAB\xBC\xA3\x10\xC5\x7F\xA9\xAB\xA9\x10\xC3\xA6\xA9\xB5\xAC\xAA\x06\x17\xAC\xC0\xA5\xAC\xCB\xA4\xAB\x02\x18\xA8\xCC\xA6\x10\xA8\xAF\xAC\xBB\xAE\xAC\xC2\xA0\xAD\x01\x12\xAD\xDA\xA0\x00\x88\xA0\x94\xC4\xA9\xAC\x33\xA1\xAB\x02\x15\xAD\x03\x12\x67\xE0\xA8\xAC\xD1\xAB\x94\xBF\xA4\xAD\xFA\x49\xAE\xCD\xA2\xAE\x3F\x9D\xAD\xDF\xA4\xAF\xEC\xAE\xA9\xEA\xAB\xAD\xFA\x48\xA8\x72\x68\xA8\xFE\xAB\xAF\xFA\x4B\x82\x2B\x82\x67\x02\xB2\x7B\x06\xBF\x8B\x08\xBE\xAE\xC1\xA5\xAE\xFA\x42\x67\xE6\xAC\xB0\x0B\xB1\x10\x0F\xB2\xB1\xFA\x43\xB1\x00\x06\xB1\x0D\x88\xA8\x19\xBA\xAC\xF7\x9B\xAE\xB7\x8A\xB1\xFA\x4B\xB1\x1F\xBC\x86\x88\xA1\xAE\x1E\xB4\xAE\x14\xB1\xB1\x00\x02\x67\x26\xBA\xAF\xD7\xA2\xAF\xB8\xAA\xB0\xD8\xAD\xAE\xB2\xAA\xB2\x2D\xBE\xAD\xF6\xA9\x10",
-					"\x01\xA7\xB3\x88\xA1\x87\x3C\xB9\x8C\x2F\xB7\xB2\xAD\x98\xB2\x17\xBD\xB0\x18\xA4\xB4\x16\xB2\x67\xBC\x9F\xB3\xA1\xA6\xA6\x48\xBA\x4F\x3E\xB9\xAF\x38\xB9\x9F\x4F\xBA\xB2\x3B\xB2\xB5\x3D\xB9\xB3\x2E\xA5\xB5\x33\xBD\xA1\x41\xBE\xB2\xDB\x7A\xB5\x03\x1B\xB4\x58\xBE\xB4\x31\xB5\xB3\x5D\xB0\x00\x51\xB1\xAF\x42\xB6\x9A\x5F\xB3\xB5\x86\x9C\xB5\x30\xBC\x68\x62\xBE\xB6\x72\xBD\xB6\x5E\xB7\xB7\x60\xB1\x92\x75\xB5\x9E\x6F\xB8\xA8\x49\xA1\x10\xF5\x7B\xA5\x06\x18\xA5\xD5\x6F\xA4\x01\x1F\xA6\x43\xB7\xB6\x10\xB9\xB6\x8A\xB4\xB7\x7F\xB1\x28\x40\xBA\xB7\x70\xBE\xA6\x66\xB4\xB3\x8D\xB3\xB7\x01\x12\x67\x8F\xBC\xA0\x7D\xBB\xB2\x92\xB4\xB5\x8C\xB9\xB2\x69\xBC\xB9\x97\xB8\xAF\x6C\xBB\xB7\x02\x1D\xB9\x6A\xBF\xB9\xAC\xB4\xB6\xA9\xB5\xB9\xAB\xB7\xBA\xA6\x15\xB6\x09\x1C\xBA\x6B\xB2\xB3\x9A\xB0\x00\xAF\xBE\xBA\xB4\xBC\xB4\x6B\xA7\xB4\xA3\xB5\xB4\x2A\xBD\xBB\x91\xB7\xBB\xBF\xB6\xBB\xC1\xB7\x91\xC3\xB6\xB1\xC6\xB4\xB9\x88\xAC\xBA\x57\xB1\xBB\xD1\xB2\xBC\x98\xB4\xBA\xBB\xBF\xBC\xCD\xBA\x4F\xD2\xBE\xBB\xCC\xB7\xBD\xC4\xBE\xB8\x93\xBB\xBD\x2A",
-					"\xB4\xA6\x06\x12\x95\x06\x11\x76\x91\x6C\xB1\x02\x12\x67\x23\x1E\x06\xA6\x64\x76\x88\xA1\x31\x9D\xAF\x06\xF1\xB2\xB5\x06\x3D\xA9\x70\x07\xBF\xD3\x3E\x7E\x8D\xA1\x07\xFC\xBD\xA8\xAC\xBD\x26\x23\x1B\x82\x04\xC4\xBB\x6D\x2A\xB4\x9D\xA0\x00\x72\x01\xC0\xE7\xAC\xA2\x49\x83\x07\x0E\xCD\xBE\x0A\x1A\xBE\x4D\x84\x07\x13\xC8\xBA\x45\xAB\xC0\x75\x09\xC1\xE1\xB2\x6C\x0B\xC6\x07\x1E\xC2\x67\xBC\x3D\xA9\x77\x03\xC2\x0A\x13\x3C\x9D\xA8\x07\x28\xC9\x10\xC5\x3D\xA9\x79\x0E\xC1\xA3\xAD\x39\x9D\xAA\x07\x32\xCA\x10\x34\xCD\xA8\x7B\x07\xC3\x09\x1A\x3B\x9D\xAC\x07\x3C\xC6\x10\x3E\xCD\xA8\x7D\x01\xC4\x03\x10\x3D\x9D\xAE\x07\x46\xC2\x10\x48\xCD\xA8\x7F\x0E\xC1\x6D\x7D\x3E\x9D\xA0\x08\x1E\xCE\xAB\x01\x17\x3F\x9D\xA1\x08\x55\xCA\x10\xF9\x3D\xA9\x82\x0B\xC5\x09\x1D\xC5\x8D\xA3\x08\x1E\xCB\x0C\x0B\xCA\x6A\x63\x5A\x6A\x1A\x8B\xC0\xA0\xB3\x1E\x23\x1E\xB0\x52\xBF\xC6\xEC\xB8\x25\xA2\xA2\xB5\x71\x83\x12\xC5\x78\x6E\xCA\x13\xC7\x1F\xC2\x10\x56\xCC\x13\x01\xAA\xC7\xD6\xBB\xB9\x52\xB0\x94\x23\x15\x7F\x82\xC9\x10\x84\xBF\xC0\xB1\xBD\x80\x23\x17",
-					"\x9C\x89\xCB\xBC\x45\x62\xB5\x86\xB9\x84\x16\xC4\xC1\x09\x1A\xA7\xBA\xB2\x10\x1A\x80\xC7\x09\x16\xBE\x4D\x8E\xBF\x8C\xC6\x10\xC3\x6B\xC9\x01\x1D\xA4\x98\xC9\xB6\x85\xA5\x5D\xFD\xAB\xC0\xBE\x43\xAA\x6B\xCA\x10\xF9\xB4\xB4\x27\x33\xAA\x68\xC1\x11\xF7\x23\x2F\xD3\x33\xAA\x77\xCA\x10\x0F\x33\x3D\xB5\xCA\x10\x7F\xC3\x12\xF4\xB4\xCB\xEC\x23\xAA\x86\xC3\x11\xFA\x33\xAA\x8E\xCA\x10\x16\x30\xCC\xC7\xCA\x10\x95\xC7\x84\x18\x33\x3D\x24\x31\xBB\xE6\x13\xAA\xA0\xC9\x84\x3C\x34\xB4\x46\x38\xCD\xE9\x1F\xC7\x4F\x8D\x1F\x5C\x30\xCE\x97\x15\x7C\x6D\x73\x12\x7A\x30\xCD\xEE\x20\x94\xB7\xC1\x39\xA5\xC3\xBC\x2B\x89\xCE\x0A\x19\x38\x2A\xB7\x32\x0D\x8F\xCE\xBE\x34\x30\xD3\x31\xA0\xF4\xC9\x10\xAE\x37\xCF\xEC\x21\x87\xB1\xC9\x10\xB6\x3D\xB4\xE3\x13\xCB\xA3\xCC\xB7\xB1\xB3\x12\x2A\xC3\xC9\xE3\x13\x31\x06\x1C\xCB\x83\xCC\x13\xCE\x38\xD0\xFB\x1D\xCD\x0B\xD0\xB9\xBD\xAB\xC0\xE9\x38\xD1\x49\x2B\x36\x20\xDC\xD1\x03\x19\xCC\x09\x13\x3F\x10\xDB\x1F\xAC\x33\xD2\x9E\xB7\x8B\x23\x1C\x3F\x2C\xDE\x26\x07\xD9\xD2\x0C\xD5\xB8\x0B\xCC\x41\x31\xD6\x42",
-					"\xB1\xBF\xD0\x1B\xDD\xD2\x06\x1B\xCD\x47\x8A\x42\x31\xD1\x44\xB1\xB7\xD1\x34\xD6\xB7\x03\x1B\xC8\x49\x8E\x4B\xBC\x91\xB8\x65\x72\x4D\x4E\xD5\xD0\x06\x17\x44\x31\xD6\x1E\x1F\xD7\xD4\x7F\x91\xC7\x0A\x1F\x44\x55\xD9\x1E\x28\xD3\x10\xA3\xAE\xD4\xBD\xC9\x10\x6B\x4D\xD5\x97\x1E\x3F\x31\xDE\xD4\xC3\xCA\x10\x83\x46\xD6\x99\x1E\x41\x69\xD7\xAF\x3C\x1B\x48\x6E\xD1\x19\x28\x41\xD7\x2E\xDA\x10\xC7\x45\xD7\x95\x1F\x43\x78\xD6\xD3\x9D\xA5\x07\x7C\xC8\x4E\xB1\xB9\x44\x7F\xD3\x10\x40\xDC\x13\x7B\x0C\xC7\xF0\x41\xBB\x51\x41\xD3\x83\xBE\xCA\xD2\x4A\xD4\x8C\x9B\xC0\x81\x0A\x3F\xD3\xC4\xAA\x8D\xA3\x4F\xEC\xC0\x2F\x99\xD8\x76\x4B\xD2\x4D\xA0\xD1\x10\xC7\x9D\x26\x83\x02\xB5\xE6\x17\x9C\xFF\xC6\x10\xF6\x4D\xD9\xEA\x2C\xBA\xAB\xD3\x10\x86\x09\x60\xF9\x29\xD8\xB1\xD2\x10\x89\x0A\x3F\xE8\xB5\x9B\x8D\xAA\x08\xFA\x37\xC9\x01\x1B\xDB\xA1\xD2\x50\x1A\x82\xD5\x03\x1E\x50\x7C\xD0\x1A\x7B\x41\xD3\x1A\x8A\xCF\x03\x15\x52\xC9\xD5\x1A\x85\x4C\x1B\x1A\x9F\xBD\x47\x82\x54\xD1\xD3\x12\xAE\x4C\xDC\xC2\xCB\xC0\x61\x59\xDD\x0A\x11\x4E\xDC\xD3\xAE\x4D",
-					"\x8B\x57\xE0\xD9\x10\x77\x0C\xC7\x1A\x8D\xCC\x09\x1C\x59\xE7\xD6\x10\x8B\xD3\xDE\x80\xDD\xA8\xB7\x51\xD3\xD2\x51\xBB\x8D\xD8\xD5\x2F\x9F\xC9\x0B\xCD\x5E\x31\xDD\x0A\x52\xB7\xDA\x31\xD5\xA7\x9C\xCB\xC0\xAF\x08\xDA\xE9\x17\x08\x13\x24\xE0\xD8\xB9\x84\xFB\x56\xCE\x99\x19\x4F\xB1\xBC\xE0\xAD\xBD\xA9\xB3\x08\xE0\x97\x1E\xDB\xD3\x34\xE1\x6B\xD9\x10\xB5\x08\xE1\x99\x18\xDC\x44\xB4\xE1\x26\xD6\x10\x02\x60\xE1\x91\x11\x51\x1B\xEC\x86\x23\x19\x0B\x20\xE1\x19\x16\x5B\xE2\x09\x19\xD9\x23\x1B\x0B\x52\xB6\x60\xB1\xB1\x52\x32\xEF\xD3\x0B\xCF\x0B\x52\xB1\x0C\x52\xB0\xDD\x44\xBA\xC9\xDF\x7B\xC0\x10\x6E\xDA\x95\x1F\x52\xD3\x34\xE4\x99\xB9\x84\x12\x68\xE4\xA0\x11\x53\xB1\xBC\xE4\x3E\xDD\x84\x16\x60\xE5\xA5\x18\xDD\x43\xED\xDD\x9D\xA6\x62\x58\xE3\x12\x4A\x5B\xE4\x72\xD3\x12\x30\x6F\xE5\x0A\x1A\x55\x62\xE9\xD7\x09\x17\x63\x66\xE9\x10\x5C\x59\xE6\xF3\xDD\x84\x39\x63\x3D\x41\x61\xBB\xDF\xDB\xE5\xFC\xDD\xA9\xCC\x03\x21\xCD\x02\xB5\x6B\x53\x3D\xA8\xC1\x10\x69\xAD\xA8\xCF\x0A\x3F\x81\xE0\x00\x54\xEC\x13\xD0\x02\xB5\xD2\x07\x2F\xA2\xC2",
-					"\x10\x83\xED\x84\xD3\x0A\x3F\x8F\xE1\x10\x89\xE3\x12\xD4\x02\xB5\xD6\x07\x2F\x60\xA5\xE4\x9D\xA7\x0D\xB4\xD0\x1A\x6F\x51\xBB\x9D\xED\xE4\x47\x8A\x0D\xA1\xE5\x1A\xE6\xD9\xB6\xA5\xE5\xE5\x49\x8D\x0D\xA9\xE3\x12\x92\x54\xEA\x5C\xED\xA8\xE0\x01\xEB\x0A\x14\x5A\xB4\xE4\xDE\x49\x83\x0E\xB8\xE9\x10\xB3\x5B\xEB\xF0\x93\x12\xE6\x0F\xEB\x06\x11\x5C\xC2\xE3\x10\x34\xEA\x10\xE9\x0A\x4F\xEC\x02\xB5\xD0\x59\xEC\x02\x19\xD8\x23\x1E\x0E\xFA\x41\x0F\x52\xBE\x5D\xB1\xBA\xCB\xEB\xBD\xA9\xF3\x0F\xE2\x95\x1F\x5E\xDB\xEA\xD5\x09\x15\x0F\xE0\xE0\x1A\xAC\x0A\x4F\xDC\xE5\xD3\x4D\x87\x0F\xE7\xE5\x1A\x07\xE3\xEE\xAD\xAD\xA8\xF9\x0F\xEE\x23\x1F\xE0\xA6\xC0\x00\xEB\xE6\x93\x9D\xAB\x0F\xF6\xEA\x10\x17\xE2\xEF\xC3\xEA\x10\xFD\x0F\xEF\x1E\xE2\xB5\xFB\xE1\x10\xCB\xEE\x11\x52\xB1\x00\xCA\x6A\x6A\x27\xE9\xEF\x09\xF0\x00\xD4\xE2\x4E\x0F\xFA\x10\x05\x07\xF1\x09\x1E\xE2\xB1\xB1\xCF\x7C\xAB\xC0\x07\x0A\x6C\x6C\x9A\x2E\x1E\xF1\x10\xFC\xCD\xA8\x08\x0A\xF1\x2A\x82\xF2\xFD\x17\xF2\x03\x13\xF1\x63\x5A\xD0\x1F\xFD\xA9\x0B\x0C\xF2\x91\x32\xF3\x26\xFB\xC0",
-					"\x0C\x0A\xF2\x63\xB6\xF3\xFB\x18\x30\xDD\xED\xA8\x0F\x0A\x6C\x91\xC3\x10\x36\xEA\xB2\x40\xF8\xB6\x4D\x83\x01\x44\xFD\x1F\xBE\x0C\xC7\x49\xF4\xD2\x49\x87\x01\x4D\xF3\x1E\xC2\x0A\x4F\x51\xF1\x10\x1D\xE6\x10\x1B\x05\xF5\x15\x68\xF5\x63\xEA\x10\x1F\x0E\xF5\x49\x2C\xE6\x69\xB9\xF5\x08\x9D\xA9\x23\x04\xF6\x5A\x26\xC6\x48\xF2\xCD\x0B\xC7\x02\x6C\xF1\x10\x2B\x0C\xF3\x02\x1E\x0C\x60\xF9\xE7\x8D\xAD\x02\x73\xF0\x00\x31\x06\xF7\x01\x11\x0D\xFA\x45\xCC\x03\x1F\xCB\x8D\xA3\x03\x3E\xFC\x3D\x12\xD3\x10\x2D\x3D\xA9\x34\x09\xF8\x02\x15\x03\x80\xFE\x26\xD5\xC6\x10\xD7\xCD\xA8\xE6\x17\x03\x93\xF6\x1E\x97\xF3\x10\xCF\xCD\xA8\x39\x00\xF9\xDA\x3D\xF8\x06\x15\xF9\x4D\x8E\x4B\x1A\xD5\xE0\x9D\xAA\x03\xCA\x63\xAA\xE6\x19\xE9\x31\xD9\xFA\x25\x9D\xA8\x3F\x0D\xFA\xFD\x18\x0D\x7C\xC2\xFB\xFB\xDD\xA8\x44\x06\xFB\xE3\x1C\x0D\xB9\xF4\xEE\x06\x19\x04\xBE\xFB\x1F\xB7\xE4\xDD\x09\x1A\xFB\xCE\xD2\x10\x4E\x05\xFC\x49\x25\x0E\x18\xF5\x11\xC2\xF3\x10\x53\x0E\xFC\x5A\x2A\x0E\xD1\xF9\xFC\x15\xD3\x12\x58\x06\xFD\x58\x2F\x0E\xC1\xF6\xDD\x3C\x1D\x05\xDE",
-					"\xFE\x26\xDF\xE1\xFB\xDB\xFA\x10\x62\x05\xFE\xE6\x1E\xEE\xE8\xF3\xEF\x4D\x87\x06\xEC\xF9\x1E\xFE\xEF\xFE\x1D\xDD\xA9\x6C\x03\xFF\xF5\x11\xFE\xF7\xFF\xBF\xFA\xF9\x19\x03\x05\xEF\x7A\x7D\x12\x73\x10\x76\x03\xFF\x71\x0C\x21\x7E\xFE\x65\x69\x05\x6B\x07\x07\x81\x65\x15\x79\x0A\x84\xDF\x4D\x54\x40\x0E\x00\xA0\x0F\xD0\x71\x80\xA7\x45\x53\x45\x05\x0A\x85\x1A\x4C\x78\x06\x89\x7B\xBD\x6C\x03\xA3\x08\xAA\x7F\x01\xEC\x6E\x41\x0F\x04\x22\x82\x21\x1D\x7B\x0F\x8B\xF0\x06\x08\x25\x05\x7F\x99\x03\xF2\x63\x7A\x16\x8B\xC0\x1B\x05\xF9\x60\x05\x93\x7B\xED\x74\x81\x4E\x52\x0A\x65\x7F\x29\x13\x7C\x72\x7F\x03\x95\x79\x84\x09\x0A\x65\x7E\x2B\x13\x7C\x75\x7A\x08\x8B\x60\x58\x05\xFE\x35\x07\xE4\x6F\x01\x02\x82\x21\x03\x82\x13\x75\xFE\x3C\x07\xE4\x68\x7C\x31\x69\x6B\x09\x09\x72\x68\xF9\x69\x0E\x2F\x1B\x7C\xE9\x0C\x0B\x83\x09\x6F\x6D\xA8\x40\x06\xE8\x77\x24\x62\x82\x20\x22\x69\x2E\x82\x50\x6B\x83\x40\x16\x67\x6C\x86\x92\x2E\x82\x81\x04\xFA\x4D\x41\x30\x07\x83\xC2\x03\xF2\x5A\x7D\xE9\x1B\xCE\x06\x09\x1D\x8E\x72\x67\x85\x18\x13\x7C\x1C\x07",
-					"\x06\xF0\x83\x18\x8B\x60\xC7\x07\x0C\xA7\x19\x1C\x6F\x06\x92\x6E\x40\x2C\x84\x02\x0D\x0F\xA7\x7C\x69\x2B\xD2\x06\x0A\x16\x91\x83\xD4\x21\xA0\x46\x08\xD8\x1D\xA9\x66\x0C\x32\x00\x83\x97\x0C\x13\x86\x08\x32\x8D\x84\x4A\x06\x22\x8C\x17\xA2\x83\x20\x34\x1D\x4E\x82\x4D\x2B\x86\x41\x18\x1D\xAC\x82\xA0\x2E\x84\xC6\x7B\xC0\x4B\x07\x19\x8C\x06\x93\x79\xF4\x53\x1F\x99\x64\x0B\x9D\x56\x33\x07\x83\xCF\x03\xF2\x6C\x7D\xE9\x10\x0B\xA3\x87\x02\x71\x06\xA7\x86\x5D\x03\x63\x81\x05\x0C\x93\x86\x40\x2B\x86\x02\x0C\x17\x83\x6E\x4B\x25\xC2\x06\x09\x25\x8E\x86\x96\x24\xA7\x42\x08\x4D\x88\x0D\xD4\x27\x0B\x66\x86\x9D\x52\x1A\x09\x86\x78\x1F\x0D\x83\x0B\xF1\x11\x85\x96\x27\x1C\x86\x08\xA3\x6D\x0D\x9D\x26\x3A\x9D\x85\x8D\x53\x1A\x27\x82\x6A\x03\xF9\x3B\x03\x19\x8C\x1E\x09\x0F\x0F\x87\x42\x6B\x07\x06\xD7\x07\xE4\x7C\x01\x67\x84\x1D\x82\x08\x52\x89\x84\x59\x07\x38\x8A\x17\x4D\x63\x20\x02\x89\x23\x4E\x4B\x09\x8B\xF2\x0E\x84\x96\x22\x7A\x06\x09\xAB\x6D\x84\x5A\x07\x19\x9B\x06\xA0\x81\x33\x14\x88\x81\x01\x3F\x68\x84\x35\x3B\x88\x01\x0B\x7D",
-					"\x1E\x89\x4E\x22\x12\xC1\x79\x13\x5D\x06\x29\x81\x21\x3D\x01\xF2\x75\x12\x9E\x75\xA3\x42\x07\x29\x8E\x20\x02\x02\x96\x85\xDD\x0D\x57\x39\x11\x89\x03\x0F\x08\x34\x89\x86\x6A\x10\x6C\x04\x4E\x82\x08\x4C\x02\xD9\x2D\x3B\x96\x86\xEA\x3C\x09\x3C\x1F\x89\x01\x0A\x0A\x02\x8A\x85\x04\x14\x8D\x73\x11\x56\x07\x48\x88\x00\x1D\x7E\xF9\x46\x10\x4D\x89\x85\x6D\x54\xFB\x01\x2A\x9E\x03\x9D\x81\xB6\x67\x60\xF2\x7B\x0F\x63\x04\x2B\xAC\x77\x24\x45\x00\x26\x36\xEB\x69\x0F\x68\x02\x2C\xBE\x63\x05\x6A\x00\x66\x89\x7F\x0D\x03\x6A\x8A\xEB\x4B\x61\x07\x0E\x16\xE3\x0E\x1C\x11\x8B\x00\x03\xEB\x43\x08\x0A\x05\x17\xFB\x0F\x1D\x18\x8B\x04\x84\x93\x7D\x8B\x24\x1C\x07\x00\x8F\x02\x7E\x00\x83\x8A\x4B\x01\x04\xC3\x8A\xF6\x09\x8C\x96\x06\x04\x78\x8E\x04\x83\x08\x14\x0E\x18\xEE\x13\x22\x11\x8C\x0B\x65\x05\x15\x8C\xF3\x00\x09\x18\x8D\xA7\x52\x01\x9B\x89\x3D\x15\x04\xBC\x8D\x02\x83\x0B\x0D\x15\x8C\x3C\x06\xD4\x2A\x34\x4D\x04\x1A\x8B\x62\x0F\x15\x8C\x43\x02\x35\x8A\x09\x4F\x0D\x1A\x9D\x55\x11\x15\x8C\x4A\x02\x36\x89\x08\x52\x08\x17\xD3\x83\x40\x0C",
-					"\x02\x95\x89\x0A\x3A\x8C\x83\x05\x04\xDF\x8B\x40\x16\x8A\xBE\x8A\x20\x13\x03\xCA\x88\x05\x43\x8F\x40\x07\x82\xC6\x8A\x20\x08\x8F\x05\x6A\x05\x15\x8F\x17\x0E\x8E\x02\x0B\x16\x25\x7E\x29\x66\x10\x1D\x88\x26\x9D\x24\xDC\x8F\x38\x90\x88\x6A\x2E\x1D\x83\x09\xF5\x1D\x54\x61\x06\x83\x67\x19\xAF\x62\x10\x20\x88\x4F\x02\x03\xD8\x89\x20\x24\x03\xF8\x80\x00\x38\x07\x19\x98\x62\x06\x0D\x7E\x1D\x54\x33\x0A\x1E\xEC\x14\x7E\x83\x08\xEE\x8B\x24\x27\x02\x0F\x68\x06\x74\x8D\x2E\x07\x83\x62\x63\x20\x3A\x8F\x46\x5A\x06\x7D\x8E\xBB\x09\x90\xED\x8B\x81\x6B\x02\x0F\x6C\x06\x74\x8E\x2E\x07\x83\x30\x6F\x3B\xA0\x0D\x39\x3C\xC6\x1D\x92\x87\x83\x79\x29\x08\x44\x91\x37\x86\x67\xB3\x35\x5D\x4C\x66\x91\xFA\x68\x45\xA0\x6B\x4A\x51\x1D\xE0\x5D\xA4\x52\x5F\x2C\x91\x6D\x6A\x90\xBC\x5A\xC1\x3B\x5F\x8C\x89\x42\xAB\x63\x42\x09\x55\xE4\x43\x21\x05\x54\xD9\x23\x66\x3F\x91\x46\x82\x0F\xD5\x0E\x1A\x77\x48\x5E\x43\x5E\x7D\x65\x46\x8A\x7B\x26\x48\xA8\x4E\x09\x93\x94\x09\x25\x5F\x35\x3A\x91\x28\x9A\xA9\x7C\x62\x53\x0D\x37\xEE\x5B\x24\x27\x8A\x97\x0B\x25",
-					"\xA8\x0B\xA8\x5C\x09\x5F\x92\x4B\xAC\x62\x61\x4A\xD9\x51\x31\xDB\x25\x54\x67\x93\x24\x29\x92\x1E\x94\xB4\x65\x90\xF8\x4E\x93\x4A\x93\x12\x7A\x91\xDB\x62\x27\x8B\x60\x9D\x95\x6C\x76\x93\x4C\xBA\x93\xE9\x10\x27\xC7\x41\xDB\x28\x63\x7F\x92\x4D\xB1\x63\x40\x9C\x26\xCB\x93\x5A\x93\x0B\x7F\x63\xCF\x3A\x8B\x21\x90\xF2\x6C\x63\xA2\x85\x0E\xAE\x0D\xF8\x3B\x33\x71\x6A\x10\x14\x95\x42\x00",
+					"\x39\xFD\x02\x00\xF6\x37\x00\x00\x25\x00\x01\x82\x80\x08\x0B\x82\x81\x82\x06\x89\x82\x88\x0A\x86\x06\x84\x0A\x0A\x97\x0A\x9C\x0A\x82\x12\x85\x13\x0A\xAD\x0A\x92\x1A\x81\x2A\x84\x2B\x0A\xDC\x0A\x9F\x2A\x83\x32\x84\x34\x0A\x8C\x4A\x8F\x4A\x82\x4A\x84\x4B\x0A\x9F\x4A\x85\x5A\x84\x56\x84\x5A\x0A\xAF\x14\x86\x8F\x7D\x9E\x9F\x9E\x0A\x80\x3F\x9F\x91\xA3\xA2\x9F\xA2\x46\xFF\x48\xA6\xAB\xA3\xA1\xA6\xA2\x0A\xC9\x8A\xB1\xA9\xA7\xA7\xA3\xA0\x0A\x81\x14\xAC\xAB\xAE\xA5\xAE\xA8\x09\xD2\x96\xA0\xAF\xAF\xA9\xB1\xAA\x65\xE4\xA7\xBC\xAB\xB6\xAD\xB6\xB0\x3C\xE8\xAF\xA6\xB1\xBC\xB6\x82\xAD\x09\xF8\xB5\xAE\xBB\xB8\xBB\x80\xB1\x69\xD3\xB3\xAA\xBD\xBC\xBB\xBE\xB9\x85\x84\xC3\x82\x09\xA9\xC3\xB0\xC1\x89\x90\xC7\xD6\xB3\xCC\xBD\xCA\xBF\x02\x80\xC3\xD2\xC9\xC8\xC7\xCA\xC3\x9D\x94\xE1\xD6\xC3\xD0\xCD\x80\xCD\x91\x8F\xEA\xCE\xCC\xD3\xCF\xD4\xD7\xAD\xA9\xF1\xDF\xCA\xC5\xD0\xD1\xD3\x9E\xB6\xF5\xD8\xD2\xD4\xDC\xD2\xDF\xA6\xC2\xB9\xC0\xE7\xDA\xE1\xDE\xE3\xBF\xC8\xC1\xE8\xD4\xDC\xCC\xE3\xDD\xCA\xC5\xCC\xFA\xDE\xE1\xE8\xE9\xE9\xCF\xD5\xD8\xF6",
+					"\xEA\xEB\xE0\xEF\xD7\xB2\xB0\xC9\x83\x0D\xC2\xF1\xF1\xF3\xCD\xE0\xE9\xF3\xD4\xEA\xF5\xF6\xF6\xD9\xEE\xF1\xEA\x84\x05\xF0\xF5\xF7\xE6\xEB\xF9\xF8\xF7\xFB\xF9\x85\x02\xF6\x7A\x7D\x7F\x77\xF0\x40\x06\x01\x80\xFC\x42\x8A\x81\x82\x0C\xBE\x73\x83\x76\x10\x9E\x71\x87\x71\x13\x89\x75\x87\x72\x12\x99\x84\x86\x86\x16\x9C\x88\x87\x86\x20\x9D\x81\x8B\x87\x22\xA5\x84\x8B\x89\xD2\x5E\x89\x8B\x88\x2B\x89\x77\x00\x82\x0E\x8B\x81\x8D\x83\x04\xBB\x73\x8F\x8D\x35\x8F\x8A\x8B\x75\x3B\x9D\x7C\x88\x8F\x3F\xBE\x86\x89\x8B\x28\x80\x93\x92\x91\x45\x82\x99\x92\x7C\x39\xB2\x8D\x90\x8D\x17\x84\x92\x94\x92\xC5\x4C\x49\x5D\x81\x51\x94\x9A\x96\x92\x53\x9C\x9B\x94\x93\x59\x9E\x92\x98\x98\x3D\xA4\x91\x92\x99\x47\xA3\x98\x95\x99\x6B\xA7\x9D\x99\x9A\x68\x8B\x9F\x9A\x9C\x36\x8F\x98\x8D\x98\x71\x9D\x99\x9C\x74\x09\x30\x86\x9F\x9F\x78\xB3\x9A\x9E\xA0\x5F\x84\xAA\x99\x9D\x81\x88\xAC\x9A\xA2\x6E\x8C\xA0\x9E\xA1\x7B\x87\xAA\x8D\xA3\x93\x8F\xA5\x9E\x02\x7E\x89\xA5\xA4\x9D\x9B\x83\xAE\xA0\xA7\x4E\x9A\xA3\x43\x02\x99\x8B\xAD\xA5\xA1\x9F\x9E\xA6\x40\x03",
+					"\xA5\x94\xA1\xAA\xA9\xAF\xAE\xA0\x94\xAC\xB3\xB2\xA1\x41\x03\xAD\x96\xA7\xAA\xA4\xB1\xBA\xAD\xAC\xA8\xB5\xBE\xA2\x42\x43\x57\xA9\xA8\xAB\xAE\x91\x8C\x9F\x01\xAE\xC0\xB7\x94\xAE\xB3\xB6\x80\xAF\xB2\xB4\xD1\xA2\xA1\xB1\xB3\xD4\x82\xB0\xB6\xB6\xD9\x98\xB6\xB7\xB6\xDE\x93\xBF\xB5\xB7\xAA\xBF\xA5\xBB\xB5\xE7\xA0\xB9\xB8\xB9\xC7\x8E\x90\x04\xB3\xEB\xA3\xB2\xBE\xB8\xF4\x95\xB3\xB5\x04\xF0\xAD\xB8\xBA\xBE\xEA\xBC\xB0\x02\x04\xF9\xBC\xAB\xBD\x75\x13\x3E\x90\x45\xB1\xC8\x90\xAA\xC2\xB1\x02\xFD\xBD\xC0\xBB\x0F\xF3\xB6\xBF\xC4\xDC\x92\xC5\xC5\xBD\x17\xD4\xC1\xBA\xC6\xF1\x98\xCB\xC5\xC6\x20\xDF\xC2\xC9\xC7\xD1\x95\x01\xC1\xB2\x0B\xC9\xCC\xC0\xCA\x2B\xE9\xC6\xBA\xBF\xE3\x96\x0E\x9E\x44\x08\xEF\xC1\xC6\xC7\x24\xE1\xC9\xCF\xC8\x30\xF8\xCD\xCC\xC7\x3F\xFA\xC1\xD0\xCF\x37\xC0\xD5\xD2\xD0\x47\xC4\xDC\xCA\xCA\x03\x88\x47\x5E\xCB\x03\xCB\xD6\xCE\xD4\x51\xD0\xD1\x41\x06\x27\xD6\xD0\xC4\xD5\x38\x9A\x09\xD5\xCB\x60\xCC\xD3\xD6\xD6\x16\xCA\xD4\xDA\xCF\x49\xFB\xCA\xDB\xD0\x6B\xE9\xDC\xDB\xDB\x6E\xF1\xDC\xD7\xD6\x67\xC6\xD3\xDF\x76\x1B",
+					"\x1F\xD2\xD9\xD5\x61\xE3\xDD\xDC\xDF\x03\xBB\x4F\xD3\xDF\x0E\xF7\xD3\xB5\x07\x7A\xFE\xD3\x82\x07\x7E\x9F\x09\xE0\xE0\x8A\xD1\xE0\xE7\xE4\x85\xF5\xD8\xD2\xE1\x76\xD6\xE6\xD8\xE1\x74\xDC\xE5\xD9\xDB\x98\xD7\xEA\xE4\xE8\xA3\xF0\xD3\xDC\x08\x8F\xD5\xEE\xE4\xDA\xA1\xDB\xEB\xDE\xEA\xAF\xC0\x01\x0A\x9F\x16\x75\xC4\xE5\xE7\xB1\xDF\xE6\xE9\xE9\x72\xFC\xED\xE8\xE9\xAB\xD9\xE1\xF2\xE8\xC3\xEE\xE2\xE4\xEC\xC7\xF8\xE3\x43\x08\xA9\xCA\xF7\xEE\xEE\xBD\xC5\xFB\xB8\x09\xCD\xD0\xFF\xEE\xBF\x00\x76\xE8\xF3\xF3\xAC\xFE\xEE\xF6\xF4\xBB\xE0\xF1\xF5\xEE\xDD\xE2\xF7\xF7\xF8\xC9\xD6\xFA\xD6\x09\xD5\xE5\xF4\xFA\xF0\xEF\xC4\xF1\xFE\xF1\xDC\xF0\xF9\xFA\xFB\xF7\xF6\xF5\xFE\xFC\xF9\xFC\xFB\xFC\xFD\xDB\x61\x82\xF3\x02\x8A\x7C\xF3\x57\x25\x7D\xFA\x64\x83\xB4\x28\x08\x80\xFF\x4A\x81\x81\x03\x91\x81\x01\xF3\x70\x78\x0A\xA1\x7E\x82\xE8\x7F\x7D\x05\xFD\x70\x80\x09\xB8\x7A\x83\x17\x9C\x83\x06\xA0\x89\x83\x07\x8E\x86\x83\x10\x93\x82\x08\xD0\x39\x05\x06\x9D\x82\x05\x2E\x83\x86\x09\x9D\x8A\x84\x12\xA7\x7F\x86\xDF\x78\x80\x0E\x86\x8C\x87\xD8\x6B\x01",
+					"\x86\x21\x96\x85\x0E\xAB\x85\x84\x14\xA7\x85\x86\x33\x92\x86\x11\xB4\x8F\x83\x24\x81\x8E\x89\xD5\x2C\x04\x10\xC5\x88\x89\x25\x8A\x8D\x8A\x58\x8D\x8A\x15\xCF\x8B\x8A\x2A\x9A\x89\x8B\x29\x9F\x8A\x18\xE1\x84\x8D\x23\xA3\x8E\x8C\x65\x8C\x89\x1A\xD7\x87\x8C\x35\xA8\x8F\x8D\x6E\x91\x8F\xBA\x1A\x2A\x7B\x08\xAE\x03\x8A\x3B\x9A\x85\x4E\x78\x83\x88\x21\xBD\x84\x88\x79\x80\x91\x1F\xD0\x81\x90\x81\x30\x04\x8F\x7F\x9E\x8E\x41\x31\x08\x91\xD8\x5C\x25\x8E\x60\x90\x8C\x1B\xEB\x8C\x8B\x48\xB2\x8D\x92\x6D\x93\x92\x24\x98\x94\x92\x2F\x9D\x95\x90\x84\x83\x91\x17\xC1\x23\x07\xE6\x74\x05\x91\x82\x89\x91\x28\xAA\x93\x94\x51\x96\x92\x93\xD8\x55\x04\x2A\x8A\x99\x94\x3D\xAC\x97\x95\x9C\x9B\x92\x27\xBA\x90\x95\x56\xB7\x91\x93\xB9\x97\x93\x2E\xC2\x9D\x96\x5C\x83\x98\x96\xC8\x81\x9B\xBA\x36\x0D\x79\x1B\x0D\x78\x07\xCD\x79\x06\x9F\x3A\x03\x97\x55\xB1\x73\x07\xD5\x80\x00\x0F\x7E\x4D\x07\x6C\xA3\x5E\x07\x7E\x5F\x06\x9F\x40\x09\x9B\x20\x1E\x98\x98\xC7\x8A\x9A\x3A\xE9\x9C\x9D\x62\xA8\x9E\x9D\x9F\x8E\x97\x3B\xF2\x91\x9E\xCE\x42\x0F\x9C\xF5\x96",
+					"\x96\x3E\xB5\x9C\x9E\x5A\xBE\x9E\x9A\xFD\x80\xA3\xED\x43\x08\x9E\x5E\xB4\x9E\xA0\x75\x44\x09\x41\xC4\x9A\x6B\x22\x0B\xA1\x99\xED\x87\xA0\x43\xBF\x99\x9F\x80\xBE\x93\x9F\xFF\x97\xA2\x45\xE3\x56\x09\x87\xAB\x98\x9E\x08\xB8\xA2\x40\xA3\xAA\xA3\x8C\x86\x98\xA4\x1D\x87\x0A\x47\x91\xA4\xA3\x90\x9B\xA3\x9E\x2D\xB3\xA2\x48\xA5\xA4\xA5\x93\x92\xA0\xA2\x4C\x48\x09\xF3\x49\x0D\x78\x25\x0D\x7B\x09\x7E\x4C\x0B\x4A\xCC\x4D\x09\x6C\x8E\x09\x9B\x4F\x1E\x4C\x14\x43\xA5\x40\x8F\x35\x8A\x0A\x7E\x53\x08\x53\xB1\xA8\xA7\x9B\x9F\xA6\xAA\x45\x94\x0B\x54\xB3\xA6\xA6\xAA\x97\xAE\xAB\x2C\xBC\xA8\x4C\xE2\xA5\xA2\x93\xA3\xAF\xA5\x10\x95\x0A\x9F\x20\x25\x8F\x2B\x1B\xA8\xAD\x2E\xA6\xAD\x59\xB5\xA7\xAC\xB9\xB1\xAC\xAE\x73\xB4\xA4\x00\x58\x0F\xAC\xBB\xB2\xA0\xAE\x7F\xBE\xAD\x55\xE0\xA8\xA5\xC1\xB3\xA1\x0B\x7D\xB8\xAF\x5D\xFA\xAD\xAA\xB2\x8B\xB5\xB1\x80\xA6\xB2\x45\xDA\x09\xB0\xC6\xB5\xAA\xB1\x81\xB8\xB2\x64\x82\xBF\xAA\xC7\x99\xB6\xB2\x79\xB5\x8B\x16\x4D\x72\x24\x48\x9E\x3D\x0B\xCD\x7E\x0A\x9F\x24\x26\xB5\xD0\x9A\x88\x0C\xD9\x81\x0E\x9F\x62",
+					"\x05\xB3\xED\x26\x25\x8E\x64\x1E\x4D\x19\x35\xB7\xB2\xD0\x8F\xB5\xB7\x90\xBC\xB1\x58\x91\xBD\xB2\xE2\x83\xBA\xB8\x85\xA5\xB8\x72\xD8\xA9\xB9\xE3\x9A\xB4\x8B\x66\x1C\xB7\x71\x67\x02\xBB\xDF\xAE\xB7\xBA\xD6\xB9\xBB\x67\xC1\xBF\xB8\xE7\xBE\xB3\xBB\xC0\xA1\xBC\x76\x9D\x88\x25\xD6\x9C\x59\x0D\xD5\xA0\xBF\x71\x6A\x09\xBD\xCD\x9D\xBD\xB9\xF0\xAC\xBA\x7C\x9C\x7B\x0D\xF6\x8A\xB8\x47\x6C\x16\xBE\x77\xDC\xBA\xAF\x36\x0D\x7E\x0D\xCD\x6F\x0D\xF3\x70\x0E\x4F\x38\x3A\xBD\x97\x72\x19\x9B\x1C\x7E\x44\x0F\x03\xCA\x25\x0E\x7E\x56\x0E\x9F\x77\x09\x9A\x3C\x0E\xC4\xB0\xF3\xBE\xB2\x7B\xDF\xBB\xC2\xFE\x9E\xC2\xBC\xDA\xBD\xC2\x16\xF9\x07\xC2\x0D\xF7\xBC\xC3\x27\xDF\xC3\x78\xA2\xCB\xC5\x14\xE0\xC2\xBD\xC9\x3A\x0D\xF3\x7B\x05\xC4\xE3\xB1\xB8\xC3\x38\xC6\xC7\x7E\xDE\x3C\x0F\x1A\xCB\xB9\xC7\x36\xD9\xC1\x90\x9C\x7D\x0E\x1F\xEF\xBA\xC8\x3F\xDA\xC7\x8D\xCA\xC8\xC9\x23\xC0\xC9\xC9\x43\xD1\x76\x1F\x46\xC8\xC5\x1D\xED\xC6\xCA\x21\xDC\x8B\x1F\x54\xCA\xC5\x2C\xD8\xC8\xC6\x60\xCC\xC6\x97\xCB\xC1\xCB\x32\xD9\xA0\x10\x5C\xCF\xC6\x98\xD8\x51\x11\x34",
+					"\xF9\xAA\x10\x6E\xC3\xCD\x93\x91\x83\x11\x38\xE1\xCF\xC4\x84\x16\xCF\x9A\xFB\xCE\xC5\x2B\xFD\x95\x10\x7A\xDD\xCE\x9C\xF5\x46\x11\x40\xDE\xBF\x10\x86\xC4\xCC\x94\xB7\x78\x11\x44\xF3\xCD\x8A\x89\x0E\xD3\x93\xCE\xC3\x40\x45\x12\xD4\xC9\x93\xD5\xCA\xA2\x94\xD6\xCC\x4E\xCB\xD6\xD3\xA0\xDA\xAF\x22\x4D\x7A\x24\xF3\x81\x3D\x11\xCD\x6E\x12\x9F\x2C\x26\xD4\x3E\xC5\x88\x12\xD9\x91\x12\x9F\x2E\x2D\xD5\x13\xD3\x16\x4F\x94\x1E\x4D\x25\x17\xDD\xD2\x4D\xF3\xC8\x26\xB5\xDF\xCB\xBA\x17\x1C\xD7\x4F\xFE\xD1\xD3\x5D\xD7\xCD\x75\x18\x1D\x79\x4C\x0D\x7A\x13\xCD\x7B\x12\x9F\x1C\x15\xD8\x01\x9D\x11\x9B\x9E\x1E\x4E\x4C\x41\xDD\x96\x50\x3E\x49\x14\x7E\x42\x15\xB5\xC7\xD8\xD3\x72\xC3\x23\x14\xE3\xC9\xDA\xAB\x9B\xD4\xDC\x27\x64\x11\xDD\x6A\xC2\xD2\xB2\xEC\xDA\xDC\x79\xEB\xDA\x94\x34\x3C\xDB\xA3\xF1\xD2\xD8\x7B\xFE\xDD\xDF\x00\xF4\xDD\x6F\xA6\x10\xDE\x3F\xFB\xDE\xE0\x75\x47\x15\xC1\x83\xD6\xDC\x63\xF5\xD9\xE0\x07\xEC\xE1\xAF\x8F\xE2\xE1\x68\x68\x14\xCA\xA9\x0B\xE3\xBC\x91\xEB\xE2\x64\xFC\xDD\xE2\x12\xF4\x46\x2A\x1A\xE7\xDE\x8F\xC8\xE5\xE1",
+					"\xA1\xD4\xE0\xC7\xA5\xE8\xE5\x76\xC2\x23\x15\x24\xFF\xDC\xC8\x9D\xED\xE4\x95\xE6\xE1\xE4\x01\x36\x26\xBE\x89\x2D\x15\xE6\x6E\x15\x79\xAF\x1E\x4C\x2C\x31\xEF\x61\x58\x19\x9A\x16\x7E\x53\x14\x95\xB8\x25\x8F\x5A\x3E\x4E\x16\x44\xF3\xE7\xBA\x37\x1D\x78\x5C\x0D\x79\x17\xCD\x7A\x16\x9F\x3B\x11\xEB\x02\x7C\x11\x9B\xBD\x1E\x4E\x2F\x54\xCF\x16\x3F\x40\x1E\x4F\xC1\x1D\xEB\xCD\xB4\xE3\xE3\x8F\xEB\xE2\xE6\x6F\xF0\xE3\xDA\xAC\xE3\x20\x61\x0D\x7B\x18\xCD\x64\x19\xF3\x45\x1E\x4E\x63\x2A\xEB\x40\xC7\x19\x98\x32\x7E\x49\x18\x2A\xCA\x1E\x4F\xCB\x1E\x4C\x33\x59\x9D\x18\x3F\x4E\x1F\xEF\x6D\xE7\xE5\xE4\xB8\xEE\xE5\x94\xEE\xE9\x21\xCF\x1E\x4C\x34\x10\xFE\xE1\xCB\xF5\xE6\xF3\x93\xEC\xED\xE7\x92\xF3\xF5\xE4\x11\x1D\x79\xD2\x0D\x7B\x34\x4D\x74\x1A\x3F\x55\x1C\xF3\x38\x56\x19\x36\xD7\x1E\x4E\x6C\x14\xC9\x1B\x7E\x5A\x1A\x9F\x5B\x10\xF7\xCA\xFE\xF6\xE6\x9F\xE4\xF6\xE5\xC2\xFF\xF6\xD0\xE5\xF1\x38\xDC\x0D\x79\x37\x4D\x7E\x1B\xE6\x5F\x1E\x4F\xE0\x1D\xF7\x76\x61\x19\x9A\x71\x3E\x4B\x1C\x54\xC4\x1E\x9F\x65\x1E\x4E\x73\x19\x9F\x1C\x7E\x48\x1E",
+					"\xF4\xC6\xF3\xF8\xCA\xC0\xF9\xF4\x74\xE7\xF9\xFA\xE5\xF2\xF4\xF6\xEB\xF8\x00\xE9\x03\xFC\xF1\xD5\x8A\x1C\x3F\x6B\x1A\xFE\xE6\xE4\xFD\xF1\xF3\xFA\xFF\xF3\xEA\xF8\xEE\xAC\x4C\x0E\xCD\x3D\x0E\xCD\x3E\x0E\xCD\x3F\x0E\x7E\x20\x0F\xF8\x71\x1C\xF1\x09\x4D\xF2\x0E\x27\xF3\x04\x65\xF4\x0E\x27\xF5\x0E\x27\xF6\x0B\x80\xEF\x7E\x7F\xEE\x70\x80\xC1\x79\x7F\xFC\x71\x2D\xF7\x08\x81\x1C\x88\x7E\x23\x8F\x7F\x72\x7D\x81\xED\x7B\x7F\x1E\x8B\x82\x29\x8A\x81\x11\x48\x0F\x7E\x29\x0F\x22\x87\x82\x24\x84\x83\x26\x82\x75\x25\x8B\x81\x36\x8A\x83\x73\x3A\x0F\x33\x88\x83\x3B\x8A\x82\x2D\x8D\x7F\x44\x80\x41\xFB\x0F\x83\x71\x70\x84\x4A\x89\x84\x4C\x83\x77\x39\x82\x84\x19\x85\x84\x2C\x81\x85\x1F\x8C\x2D\xFC\x08\x84\x4E\x81\x84\x2E\x8B\x85\x52\x83\x84\x55\x8E\x85\x53\x8F\x84\x5C\x8F\x85\x4A\x4D\x0F\x7E\x2E\x0F\x58\x88\x82\x54\x81\x86\x5A\x8D\x85\x6B\x80\x86\xDB\x54\x65\x00\x0A\x17\x02\x14\x87\x37\x8D\x84\x6A\x82\x86\x6E\x8A\x87\x64\x8C\x87\x6C\x8D\x4B\x01\x06\x87\x00\x04\x1E\x75\x24\x00\x82\x84\x88\x03\x27\x00\x87\x85\x20\x0A\x0B\x88\x09\x1D",
+					"\x00\x8E\x89\x87\x45\x40\x01\x82\x80\x20\x9C\x35\x01\x91\x83\x10\x18\x09\x89\x02\x1B\x01\x82\x82\x88\x7A\x5C\x01\x9C\x81\x10\x1F\x03\x8A\x00\x02\x02\xA6\x83\x86\x7F\x88\x87\x35\x8B\x84\x59\x8E\x8A\x92\x80\x8B\xAD\x8C\x8A\x77\x8F\x8A\xB4\x81\x6A\x25\x0F\x89\x73\x66\x02\xBA\x86\x8B\xBE\x81\x8B\xB7\x80\x85\x7E\x80\x87\x6F\x85\x8C\x4F\x87\x02\xBD\x80\x8C\xBF\x83\x8B\xCB\x85\x8B\xCA\x8F\x8C\xC9\x38\x02\xC9\x8C\x8C\xD0\x8E\x8C\xD4\x87\x8D\xD6\x89\x8D\x3C\x81\x8C\xAA\x84\x8C\xC3\x85\x1C\x29\x03\x8D\xDA\x82\x8C\x6D\x8D\x87\xE5\x8B\x8A\xCD\x81\x6A\x2A\x02\x8E\xDB\x89\x8E\xE4\x8C\x24\x2B\x0C\x8E\xEF\x8C\x8D\x7B\x85\x44\x2C\x02\x8F\x2D\x02\x8F\xDD\x85\x1C\x2E\x0A\x8F\xF5\x82\x8B\xE3\x8B\x8F\xDF\x83\x90\xE7\x8E\x8D\x05\x96\x8C\x07\x94\x90\x00\x9D\x8E\x06\x1F\x02\xFE\x86\x8E\x0B\x9E\x7B\x30\x0F\x90\xE8\x81\x3B\x31\x04\x91\x06\x91\x91\x02\x99\x90\x1C\x9A\x91\xFF\x84\x8F\x10\x92\x4A\x32\x08\x91\x08\x9E\x91\x79\x53\x03\x24\x9A\x90\x5A\x34\x03\x29\x9D\x91\x20\x95\x91\x4E\x25\x03\x2D\x96\x92\x30\x91\x90\x1F\x9E\x8E\x1B\x94\x93",
+					"\x19\x92\x4A\x36\x03\x93\x2F\x9B\x93\x38\x97\x93\xD5\x8C\x90\xD8\x84\x94\x36\x91\x92\x41\x90\x41\x37\x0E\x93\xAC\x48\x03\x4C\x93\x94\xF3\x8C\x39\x39\x0F\x94\x45\x91\x95\x50\x99\x93\x3F\x95\x92\x59\x90\x1D\x3A\x04\x95\x47\x95\x93\x46\x98\x23\x3B\x0E\x95\x61\x96\x95\x55\x98\x95\x49\x90\x96\x66\x92\x10\x3C\x04\x96\x7A\x5D\x03\x6E\x98\x96\x57\x92\x94\x67\x94\x97\x5F\x90\x94\x73\x98\x94\xB1\x3E\x03\x71\x9A\x45\x3F\x0D\x97\x7A\x95\x97\x81\x97\x97\x1B\x60\x04\x80\x9A\x96\x72\x92\x98\x88\x96\x97\x65\x99\x98\x84\x9A\x92\x69\x98\x97\x03\x11\x04\x87\x9D\x41\x42\x05\x99\x5A\x91\x99\xC5\x13\x04\x98\x90\x99\x79\x9B\x98\x83\x9D\x98\x8C\x9E\x7B\x44\x0D\x99\x2E\x9A\x99\x9E\x93\x10\x45\x06\x9A\x3A\x99\x99\x9F\x92\x99\x8F\x97\x9A\x33\x56\x04\xAC\x9A\x35\x47\x05\x9B\xA8\x92\x9B\x8A\x90\x9B\xA2\x91\x9A\x6B\x9D\x9B\xA0\x9C\x2D\x48\x08\x9B\xB1\x39\x04\xC4\x9B\x9B\xAE\x98\x9C\xA9\x97\x3B\x4A\x07\x9C\xB1\x9D\x9A\xCB\x90\x9C\xBC\x9F\x9B\x7A\x5B\x04\xCE\x92\x9D\xC9\x9F\x9C\x5B\x9A\x9B\x02\x1C\x04\xD7\x94\x9D\x8E\x91\x10\x4D\x0F\x9D\xE1",
+					"\x90\x9E\xA3\x95\x9E\xE8\x97\x9E\xD3\x2E\x04\xE4\x9A\x9E\xBE\x9C\x5F\x4F\x0D\x9E\xEF\x9E\x9E\xC1\x93\x9D\xE9\x9E\x9B\x50\x02\x9F\xDC\x21\x05\xFA\x96\x9F\xF4\x9E\x9F\xF3\x91\xA0\xF5\x99\x9D\xD8\x97\x62\x52\x0D\x9F\xEB\x23\x05\x08\xA1\x9D\xE6\x92\xA0\x00\xA3\xA0\x0C\xA7\x9F\x10\xA9\x55\x0B\xAC\x9D\x05\xA6\xA1\x0D\xA3\xA1\xD0\x98\xA1\xDB\x15\x05\x15\xAB\xA1\x20\xAB\x9D\x21\xA9\x9B\x23\xAF\x9A\x04\xA9\xA1\x0F\xA9\xA2\xEF\x76\x05\x1F\xA2\xA2\x2E\xA4\xA2\x2F\xA6\xA2\x11\xAA\x7F\x57\x0D\xA2\x30\xA7\xA3\x32\xAC\xA1\xFF\x97\xA2\x12\xAA\xA2\x33\xAE\xA0\x3C\xAE\x1D\x58\x02\x8F\x59\x06\xA3\x39\xA5\xA2\xCA\x9A\xA3\x40\xAF\xA3\x1A\xAA\x10\x5A\x06\xA4\x49\xA8\xA4\xDA\x98\xA3\x51\xA1\x8C\x5B\x00\xA5\x53\xA7\xA4\x31\xA5\xA5\x54\xA9\xA5\x5C\xAA\xA5\x5D\xA7\xA1\x52\xA1\x10\x5C\x02\x8F\x5D\x08\xA5\x62\xAB\xA5\x5E\xAB\xA6\x69\xA1\xA6\x28\xA1\xA4\x4B\xAA\xA4\x4D\xAE\xA6\xFC\x5E\x05\x68\xAF\xA6\x0C\xAF\x05\x77\xAD\xA3\x70\xA3\xA7\x03\x20\x06\x7B\xAE\x1D\x61\x01\xA8\x71\xA3\xA6\x78\xAF\x30\x62\x04\xA8\x7E\xAF\xA5\x8C\xA7\x3B\x63\x0A",
+					"\xA8\x3E\xA2\xA7\x91\xAC\x24\x64\x00\xA9\xC5\x15\x06\x96\xAC\xA4\x93\xAA\xA6\x38\x26\x06\x99\xA2\xA9\x7D\xAB\xA9\xAC\x47\x06\x9F\xA6\xA8\x7C\xAA\xA9\xA1\xA9\xAA\x5C\x48\x06\xA5\xAC\xA9\x87\xA6\xAA\x3B\xA8\xAA\x0C\xA9\x06\xAD\xA4\xA7\xB1\xAF\x30\x6A\x02\x8F\x6B\x05\xAB\x60\xAD\xAB\x8D\xAD\xA6\xBE\xAC\xA6\xAF\xAE\xAA\xA7\xA0\xAA\xB2\xA8\xA1\x6C\x02\x8F\x6D\x0C\xAB\xC9\x3E\x06\xCC\xA2\xAC\xC5\xA0\xAB\x85\xA4\xAC\xB7\xA2\xAD\xDC\x2F\x06\xCF\xA0\xAC\xBF\xA3\xAC\xAC\x40\x07\xD9\xAC\xAD\xC1\xAA\xAD\xD0\xA5\xAD\xD4\xA3\xAD\x09\x11\x07\xDF\xA1\xAD\xE5\xAA\x96\x72\x09\xAE\xE4\xA6\xAB\xE6\xA1\xAE\xE0\xAB\xAD\xEA\xA0\xAF\x8B\xA3\xAE\xF1\xA9\x3C\x73\x0E\xAE\xF9\xA3\x8E\x74\x0C\xAF\xF7\xA2\xAE\x38\x25\x07\xF2\x86\x07\x00\xB8\x2D\x77\x07\xB0\xAA\xA6\xAC\x0C\xB6\xAD\xA2\xA2\xAF\xF5\xA6\x10\x78\x0A\xB0\xC7\xAE\xB0\x0B\xBD\x4B\x79\x04\xB1\x0D\xBB\xAE\x0F\xB4\xAF\xEF\xA0\xB1\x1F\xBE\xB1\xFD\xA2\xB0\x7A\x5A\x07\x1A\xB6\xB1\x15\xBC\xB1\x17\xBA\xB2\x29\xB6\xAF\x1D\xB8\xAF\xC9\x1B\x07\xF2\x8C\x07\xF2\x8D\x07\x27\xBC\xB2\x1B\xBE\xB2",
+					"\x2B\xBA\xB3\x2D\xB0\x95\x7E\x07\xB3\x3C\xB9\xB3\x20\xB1\x2D\x7F\x02\x8F\x80\x00\xB4\x43\xB1\xB0\xF3\xA4\x23\x81\x09\x8A\xDE\x14\x08\x4E\xB7\x1C\x87\x01\xB5\xC9\x1A\x08\xA6\x8D\x08\x54\xBF\xB2\x01\x10\x09\x95\x8A\x35\x95\x06\x8A\x98\x06\x8A\x9B\x07\xA7\x9C\x06\x8A\x9F\x06\x8A\xA2\x09\xB5\x3B\xB9\xB4\x5A\xBE\x7B\xA5\x02\x8F\xA6\x08\xB4\x22\xBB\x58\xA7\x02\xB7\x30\xBD\xB6\x11\xB3\xB7\x78\xB3\x9A\xA8\x06\xB7\x24\xB9\xB7\x77\xBA\x44\xA9\x0E\xB7\x4B\xBF\xB7\x21\xB1\xB8\x3D\xBA\xB7\x6B\xBA\xB8\x89\xB8\xB8\x42\xBE\x24\xAA\x0F\xAD\xAB\x04\xB8\x80\xB6\xB8\x23\xB5\xB8\x11\x4C\x0A\xDF\xAD\x0A\x94\xB7\xB8\x96\xBA\xB4\x95\xBF\x27\xAE\x0F\xAD\xCA\x05\x1F\x06\x16\xBA\x91\x12\x15\x8C\x19\x10\xEF\x2B\x19\xAB\xB6\x10\x32\x3C\x30\x52\x18\x29\x09\x1C\x40\x9B\x18\xBA\xCD\x1A\xBA\x0A\x1D\xBA\x91\x1F\xBA\x03\x11\xBB\xBB\x23\xBB\x0A\x16\xBB\x91\x17\x20\x9B\x12\x15\xC6\xB9\xBA\x49\x19\xBC\xB9\xB9\x14\xB8\xB4\x1D\x52\x1F\xBC\xD9\x11\xBD\x81\x14\xBD\xC7\xBE\xBC\xD5\xB8\xBD\xD7\xB6\x14\xD2\xBC\x1D\xBA\xBC\xBA\x81\x1D\xBD\x52\x16\xBD\xCA",
+					"\xBC\xBD\xD9\xB6\x14\xBE\xB2\x10\xC0\xB6\x33\xC2\xB5\xBB\xE1\xB7\xBE\x43\x12\xBE\xE3\xB6\xBE\xDB\xB3\x14\xE9\xB1\x10\xBC\xBD\x1C\xF2\xB3\xBF\x3F\x17\xBF\x00\x0B\xBE\x03\x3D\xBE\x06\x14\xBC\xFA\xB0\xBF\xFD\xBB\xBB\x81\x1E\xBF\x00\xCE\x30\x02\xC3\x10\x04\xC4\x1D\xCC\xB0\xBD\xCB\xB6\xC0\x3E\x18\x88\x03\x10\x8A\x0D\xC2\x10\xFE\xB8\xBC\x14\xCD\x13\x11\xC3\xBD\x49\x16\xC1\x75\x81\x18\xB4\xB6\x10\x1B\xCA\xBD\xE5\xB1\xBF\x1D\xCF\x0F\xFB\xBC\xBF\x3D\x1D\xC2\x2E\xC0\xC3\xFC\xBE\xBF\xF9\xB4\x1D\x32\xC3\xBF\x37\xC3\xBE\x0A\xC6\x28\x19\xC1\x10\x0F\xC9\x1D\x39\xC4\xBE\xCD\xB4\xBF\x29\xC7\xC0\xE0\xB7\xBB\x2B\xCB\xC3\xB2\xB9\x14\x25\xCE\xC0\x81\x1F\xC1\xDE\xB3\xC1\xF5\xBF\x13\x22\xC1\x10\x00\x3B\x19\x4D\xC2\x10\xA8\x3B\x19\x50\xCE\xC2\x3F\x1D\xC5\x5E\xCD\x13\x55\xCF\x2F\x24\xCA\x10\x5B\xC1\x19\x41\xC8\xC2\x43\xCA\xC2\x53\xCE\x13\x69\xC4\xC4\x6B\xCF\x13\x6F\xCC\xC6\x45\xCE\x13\x34\xCF\xBE\x6D\xCF\xC2\x2B\xC3\xC7\x46\xC0\xBB\x3C\xCC\xC4\xC3\xB1\x18\x96\x85\xC7\x1E\xC9\xC4\x0A\x19\x37\xAE\xB7\xC8\x7F\xC6\x14\x59\xC1\x10\xA5\x4B",
+					"\xC4\x8C\xCA\x10\x8F\xC1\x19\xA0\x8F\x18\x8D\xC0\x00\xA7\x4C\xC5\x2B\xC0\x8A\x18\xC0\xC8\x09\x19\xC9\xC5\xB6\xC8\x09\x18\xC8\xBD\xBA\xC8\x90\xC3\x14\x97\xC3\xC9\xCD\x1E\xBF\xA4\xCB\xCA\xA6\xC1\xBC\x9E\xC6\x10\xAA\xC6\xC3\x7B\xC5\xCB\x79\xCC\xC2\xB6\xC4\xC8\xB8\xC7\xCB\x7C\xC6\xC7\x0A\x18\x2F\x48\xCC\xCB\xB9\xC1\xC7\xBE\xC9\x10\xCB\x21\xCC\xBA\xCD\xCB\x7A\xC7\xCB\xFE\xB6\x32\xC8\xC4\xCC\xCB\xC9\xCC\xA2\xC6\x10\x8E\x3F\xCC\x12\xC0\xC7\xD7\xC4\xC7\xD0\xCF\x0F\xFE\xB3\x3B\xD6\xC0\xC2\xD8\xC0\xCE\xDA\xC9\xCD\x7D\xC3\x10\xC0\xC8\xC6\xC3\xC4\xCE\x6E\xC3\xCD\xE6\xC8\xC7\xD2\xC2\xCC\xCC\xC1\x11\x8B\xC8\xCA\x0A\x10\x43\xDF\xC1\xC5\xE1\xC8\xCF\xE3\xC2\xCE\xE5\xC2\x10\x34\x30\xCB\x91\xC9\x10\xF6\xC8\xCE\xF0\xCF\xCE\xBA\xCE\xBF\xFF\xCC\xBE\xB1\xC3\x10\x03\xDE\xCA\x09\x1C\x38\xF7\xC1\xC6\xD1\xCB\xCD\xCA\xCB\xCB\x07\xDA\x10\x10\xD4\xD0\x06\xD4\xD1\xEC\xC2\x10\x35\xC9\x1D\xFE\xB9\xD1\x05\xC5\xD0\x1C\xD1\xCF\x09\x1B\xC0\x10\x3D\xC3\x00\x0F\xC3\xDC\x10\xC6\x61\xCE\xD2\x5E\xC5\xD1\x32\xDD\xD1\x01\x17\xCE\x23\xD7\xD1\xC6\xCE\xCE",
+					"\xDB\xCD\xCC\x3A\xDA\xCE\x3D\x1E\xBF\xD5\xCA\xD1\x3B\xDA\x10\xDE\xC2\xD4\x3E\xDC\xCD\xBF\xCD\xD3\xFC\xC5\xCC\x06\x16\xD3\xB4\xC6\xD2\x06\x19\xD0\x01\xCB\xD0\x02\x1D\xD0\x4F\xD8\xD3\x51\xD3\xCF\x3F\x17\xC9\x56\xD0\xC4\x34\xD0\x00\x52\xDC\xC0\x54\xD1\x10\x5D\xD9\xD2\x63\xD0\x00\x65\xD1\x26\x2A\xD9\xD6\x3D\x2B\xD6\x81\x10\x8A\x27\xC1\xD0\x06\x1F\x43\x9B\x15\xC9\x65\xC9\x10\x74\xD4\xC9\x01\x37\xC9\x79\xD7\xD3\x43\xD9\x10\x4E\xD0\xD2\x0A\x17\xCC\xA5\xC9\x10\xCE\xC5\xD8\xD4\xC9\xC0\x44\xDA\xD8\x80\xDC\xD8\x4D\xDE\xD8\x03\x11\xD6\x66\xD2\xD7\x0C\xD0\xD9\xFE\xCA\xD5\x3E\x1C\xD5\x96\xD1\x10\x92\xDA\xD6\x67\xDC\xD6\x41\x2A\xD2\xD8\x4A\xC9\x50\xD3\x10\xAD\xC4\x1D\xAC\xC8\xD9\x3D\x19\xCA\x9B\xD0\x00\xA7\xD2\xD8\xA3\xCA\xDA\xFF\x0C\xDA\x11\xD2\xD1\x33\xD4\xD2\x47\xD7\xDB\x1B\xD7\xD4\xFE\xB1\xD8\xDC\x1A\xDB\x25\xD8\xD5\x03\x14\xD8\x7E\xD9\xDB\xE9\xCB\xD4\x3F\xDA\x10\x87\xD5\xDC\xC8\xD6\xD1\xC1\xDF\xD7\x89\xD5\xDB\x61\xC0\xDC\xBC\xDB\xD8\xD2\xD1\xD3\xC7\xDA\xCF\xFD\xC5\xD3\x4A\xDA\xDD\xEB\xC8\xDB\xCD\xDD\xDB\xDD\xD2\xD1\xCE",
+					"\xD6\xDC\xA5\xD7\xD9\xA7\xCB\xD5\xF5\xC3\xDE\xB6\xD9\xDD\xE4\xD8\xD0\xB2\xDA\xD9\xD7\xD1\xC3\xEE\xD2\xD1\xF0\xD9\xDE\x99\xDB\xDE\xA4\xDA\xCB\x9C\xC7\xD7\x06\x12\xD2\x10\xCB\xC9\x0A\x11\xD7\xF4\xCF\xD0\x4F\xCF\xD5\x00\xEE\xD5\xE0\xDE\xDD\x13\xD6\xDE\xC2\xD2\x10\x09\xEF\xDB\xF5\xD3\xDD\x5F\xDF\xD1\xDC\x11\xD2\xEC\xD4\xE1\x0B\xEF\xDE\x0A\x18\xD2\x9E\xD4\xD9\x02\x1C\xD2\xDF\xBF\xDF\x19\xE8\xDD\x1B\xED\xDE\xE7\xD1\x10\x11\xE2\xC4\x0E\xEF\xDC\xD5\xD7\xC4\x88\xD3\x10\x2B\xEA\xC6\x2D\xE5\xE3\xE1\xDD\xE1\xF1\xD1\xC8\xFB\xDE\xE2\xCD\xD4\xDD\x3D\xE3\xE1\x26\xEB\xDB\x37\xED\xD8\xF3\xDC\xBF\x3E\xEC\xE0\x48\xD9\xD3\x45\xE8\xC3\x40\xEE\xC2\x3C\xDB\xE4\xE3\xB7\xE4\x1C\xE9\x10\x41\xDC\xDC\x48\xE2\xE5\xF6\xD6\xDD\x46\xDF\xE3\x27\xE1\xC6\xE2\xD0\xE5\x2C\xEC\xE5\x0F\xEC\xDD\x60\xE4\xE3\x62\xE0\xDD\x91\xD9\xE3\x02\xD5\xE2\xF4\xDD\xE5\x5E\xC7\xDF\x00\xD5\xE0\x06\x10\xDA\xFB\xC7\xE5\x4D\xE3\xC3\xF2\xC8\xDF\xAB\xDA\xDF\x5B\xE6\xE7\x6E\xED\xE6\x42\xEE\xE7\x81\xE3\xE5\x8F\xD5\xE6\xF9\xC4\xDE\x15\xDE\xBF\xC4\xD7\xD5\x3C\xE2\xE8\x68\xE2",
+					"\x10\xCB\xDC\xE8\x36\xEE\xE8\x2F\xE1\xDD\x7D\xE8\xE8\x77\xE3\xBF\xDD\xCC\xE6\x46\xE9\xE9\x3A\xC9\xD4\x86\xE5\xE7\x98\xE9\xE2\x00\x0E\xDB\x61\xE4\xE9\x67\xE5\xE9\x69\xEA\xE7\xB3\xDC\xE7\x56\xE3\xEA\x83\xE9\xE5\x09\x1D\xD9\x6D\xDF\xD9\x9C\xEC\xE4\x7F\xE8\xE7\xB3\xEA\xE6\x73\xE7\xE0\xB7\xC6\xD7\x58\xC8\xD1\xBE\xEA\xCB\x30\xDE\xC2\x8F\x1A\xD2\x2D\x4B\xE3\x47\xD5\xEC\x9D\xE9\xEB\xB8\xE1\xEB\x1A\xE0\xED\x41\xEF\xE8\x64\xE7\xE9\x28\xE2\xED\x4E\xE3\xD8\xB7\xE1\xE5\x9E\xE3\xE2\x03\x11\xE9\x0A\xE8\xED\xCD\xE3\xE6\x00\x05\xE5\x92\xE9\xEA\xE8\xE8\xE4\x9B\xE1\xEA\x72\xCD\xED\x49\x1F\xE5\xD6\xE1\xED\x8D\xE4\xE8\xED\xCC\xEE\xDF\xD2\xEE\x9A\xE9\xE7\x71\xEA\xDE\x6B\xE6\xEF\x0D\xE9\xEE\xF4\xE8\xDE\xFB\xE9\xDF\xFD\xE1\xEF\xD3\xE3\xE9\x01\xFC\xD9\xBC\xE5\xD9\xFE\xE5\xDE\x00\xF2\xEB\x85\xE6\xF0\xD9\xEA\xE4\x12\xFA\xEB\x06\x10\xEE\x12\xE4\xEA\xE6\xE1\xEE\xD4\xE2\x3B\xDB\xEE\xED\x02\x16\xEA\x66\xEA\xEE\xA0\xE5\xF1\xF9\xEB\xEB\xAC\xE2\xDF\x26\xFF\xE9\x28\xF3\xF0\x7B\xE5\xF0\xAF\xE0\xF1\xAB\xEE\xF2\xAD\xE0\xF3\xE7\xE4\xF2\x44\xE1\xE3",
+					"\x02\x1B\xE8\xB0\xD7\xF1\xAD\xDB\xF1\x17\xEA\xE5\x0E\xD1\xF1\x43\xF5\xEF\x3A\xFA\xF0\x29\xFE\xEA\xA8\xDA\xEF\x0A\xD0\xE2\x64\xDD\xDA\xB4\xE1\xDA\xB6\xEA\xEC\xCD\xDC\xEC\xF3\xB3\xC6\x5E\x31\xEC\x09\x1C\x48\x54\xF8\xE4\x56\xF3\xBE\x58\xFE\xDF\x03\x1C\xF5\x2B\xF7\xEA\xB0\xE3\xEF\xD7\xED\xF1\x22\xF7\xE8\x69\xFA\xEA\x3B\xFF\xF1\x23\xF9\xF0\x00\x08\xF1\x66\xFD\xF6\x43\xE6\xE9\x31\xF2\xEF\x6E\xF1\x10\x45\xD9\xF7\x07\xF7\xF7\x46\xFE\xF7\x80\xEA\xF6\x70\xFC\xF6\x5E\xEC\xF4\x53\xDE\xF4\x68\xD5\xF8\xA2\xE2\xF3\x02\xFD\xF4\x72\xEC\xF0\x65\xF1\xF7\x8E\xF8\xF4\x34\xFA\xF2\x82\xF3\xEE\x68\xF7\xF8\x39\xF9\xF9\x27\xF6\x10\x3C\xF9\xF1\xE4\xE4\xF7\x94\xFC\xF9\x78\xF7\xF3\x72\xFD\xF7\xA8\xF5\xF9\xA5\xEC\xF8\xDB\xDD\xFA\x0D\xF0\xE7\x90\xFC\xEF\xBD\xE1\xFB\x88\xF2\xD6\x8A\xF4\xE7\xED\xE4\xEA\x51\xF9\x26\x6E\xDD\xF5\xE4\xDF\xF5\x52\x13\xC6\x96\xC8\x15\xC0\xF2\xD1\xC2\xF1\xC2\xC6\xF1\x19\x97\xCF\x18\x58\xEA\xF7\x0F\xF0\xFD\xA8\xE3\xFD\x72\xFB\xF6\x8D\xF2\xFD\x67\xFB\xF7\x00\x01\xFA\x75\xF8\xFD\x76\xF8\xF3\x3E\xFD\xF0\xCF\xFF\xE6\x0A",
+					"\x10\xF4\xDD\xFF\xF7\xD4\xFC\xFA\xAA\xFC\xF1\x08\xFF\xFD\xD5\xFE\xFA\xF7\xEB\xF9\xE4\xFD\xF9\xAB\xFE\xFD\xF6\xF3\xFF\x59\xD9\xF4\x36\xFC\xFE\xD1\xF8\xFE\x72\xFD\xFB\x49\x17\xF7\x53\x7C\xC3\x7E\xFF\x2C\x7C\x00\x9D\x12\x02\x85\x39\x03\x65\x6D\x69\xFC\x46\x08\xB0\x6C\x7E\x0A\x0B\x01\x94\x0F\xFE\x6A\xF5\x06\x0A\x04\x9D\x79\x8B\x0B\xE1\x42\x09\x1C\x67\xEC\x67\x6B\xD7\x6D\x80\xF6\x5A\x21\x05\x18\xF1\x7E\xEE\x04\x83\xC4\x66\x08\x56\x13\x00\x97\x7F\x02\x87\xFF\x27\x82\x26\x50\x7F\xFF\x71\xFD\x6D\x80\x8B\x73\x10\x23\x82\x0A\x9B\x7D\xF8\x74\xE5\x44\x7B\xA5\x79\x10\x29\x82\xE7\x7C\x76\xCE\x72\x07\x81\x7C\x1E\x86\x10\x4E\x1B\x0F\x87\x7F\x83\x7A\xFB\x56\x7F\xD7\x76\x03\xC7\x81\xE9\x6C\x81\xF8\x7B\xB8\x6D\x6C\x1F\x85\xFF\x50\x81\x12\x80\x7C\x6F\x79\x91\x49\x08\x23\x85\x05\xD7\x82\x0C\x91\x82\x59\x87\xE8\x40\x01\x26\x8D\x05\x9A\x7D\xFB\x66\x7D\xDF\x73\x0A\xB0\x80\x87\x7F\x05\xAE\x80\xA4\x6D\x6D\x5C\x84\xFF\x6D\x82\x33\x88\x05\x81\x08\xE9\x68\x5F\x22\x83\x0D\xA3\x7E\x37\x84\x8A\x6A\x80\x09\x81\x82\x20\x7D\x0F\x9A\x83\x22\x8A",
+					"\x07\xA5\x81\x08\x94\x72\x70\x85\x10\x80\x85\x77\x72\xF4\x44\x83\x40\x14\x82\x72\x81\xFB\x7D\x7E\x3E\x8E\xF1\x03\x85\x0D\x8A\x84\x39\x81\x10\x95\x84\x31\x87\x30\x62\x80\xA9\x16\x84\x02\x0C\x0C\x91\x84\xF7\x74\x0A\xE8\x81\xC8\x7E\x83\x37\x81\xFE\x67\x82\x30\x85\xED\x45\x7B\x41\x18\x84\xF2\x7C\x12\x8B\x82\xA6\x67\x09\xFF\x81\x26\x8C\x84\xF4\x78\x03\x8B\x08\x58\x8B\x0A\xB2\x85\x22\x96\x85\xB1\x84\x06\xA7\x84\x50\x81\x10\x44\x16\x18\x82\x85\xA2\x79\x18\x8F\x77\x8E\x77\x00\xDB\x11\x02\x8E\x84\xBB\x80\x18\xBD\x84\x61\x86\xF9\x33\x7C\xC1\x75\x7D\x62\x81\x0E\x89\x87\x69\x8B\x0C\xDA\x7D\x33\x82\x13\xCF\x82\x17\x81\x08\x64\x88\x04\xF4\x83\x1C\x9F\x7C\x33\x7E\x1A\xAF\x78\x6C\x8E\x0A\x81\x08\x24\x9B\x86\x93\x86\x1C\xBF\x7E\x0D\x8F\xF4\x44\x84\x41\x1C\x85\xF1\x80\x1D\x8F\x7D\xC4\x71\xF9\x55\x69\x6B\x64\x87\x4F\x86\x0B\x92\x84\xF0\x79\x0E\xFC\x84\xED\x72\x7C\xED\x80\x00\x2F\x87\x72\x8D\x0D\xF9\x86\x10\x9B\x87\xB8\x7D\x1F\xB5\x87\x6C\x88\x0F\xE7\x87\x43\x95\x86\x06\x8F\x1A\x88\x88\x68\x88\x11\x91\x8B\x41\x9E\x87\xC7\x7E\x14",
+					"\x9D\x89\xC9\x62\x11\x8B\x7E\x3D\x8C\x15\x27\x8D\xB5\x68\x89\x50\x64\xEA\x38\x16\xFE\x66\x08\x58\x1E\x1E\xAE\x89\xCB\x7A\x10\x31\x88\x4B\x9A\x65\x1D\x82\xF1\x54\x1F\x90\x8C\x0A\x80\x00\x81\x61\x80\x67\x69\x87\x7E\x5F\x9F\x88\x00\xC1\x8B\xB0\x7B\x66\x39\x8D\x24\x96\x70\x0E\x64\xEA\x44\x8A\x33\x86\x8A\xF6\x86\x29\xA0\x86\xA8\x87\x13\x8C\x83\x57\x72\x8A\x49\x8F\x23\x81\x08\xA1\x83\xE0\x74\x84\x00\x19\x61\x20\x87\xF5\x73\x88\x75\x85\xF3\x30\x8B\x51\x9E\x86\x5E\x8A\xF7\x7E\x09\x07\x8D\x1C\x7C\x6B\x59\x8D\x6E\x6C\x8C\x3A\x17\x65\x3B\x83\x14\x14\x80\x04\x86\x6C\xAD\x6B\x2C\x99\x89\x75\x83\x10\x36\x89\x42\x9F\x84\x9E\x80\xEA\x69\x8B\xD6\x60\x18\xFF\x8A\x60\x8F\x89\x1B\x8A\x1C\x80\x01\x95\x89\x10\x8C\x8C\x47\x8B\x8C\x6F\x6B\xF9\x6D\x8A\x85\x0A\x0D\xCC\x88\x7F\x7B\x6B\x94\x8F\x2D\x84\x88\x81\x05\x18\x8F\x8D\x67\x8A\x8C\xDF\x81\x2B\x9A\x88\x90\x82\x06\xA1\x8F\x0A\x78\x7C\x8F\x8E\x31\x8A\x8C\xD5\x81\xF4\x09\x08\x6B\x96\x8C\xDB\x67\x92\x5D\x85\xE6\x01\x16\xB4\x86\x40\x1E\x8B\x7B\x8D\x2C\x83\x09\x17\x0E\x15\x87\x26\x3D\x80",
+					"\x88\x26\x82\x1E\xA5\x84\x2B\x84\x0D\x8A\x89\x45\x83\x88\xC8\x8C\xF5\x55\x8D\x80\x82\x1C\xB3\x81\x43\x9B\x8C\xE3\x87\x38\x83\x8E\x5F\x86\x0F\x8B\x88\x73\x8F\x8E\xC9\x8A\x24\xB0\x7C\x8A\x82\x0D\x8E\x8A\x26\x93\x85\xC9\x69\x21\x00\x8F\x15\x82\x10\xD3\x8D\x71\x9C\x7E\xB8\x80\x05\x92\x8E\xE7\x87\x11\xDB\x7F\x2F\x89\x85\x31\x81\x3B\xBD\x88\xF4\x88\x07\xE2\x8F\x7A\x84\x8E\xFA\x86\x0E\xA8\x84\x27\x81\x1C\xD8\x8C\xEB\x74\x8B\xAF\x7B\x39\xBD\x8E\x20\x87\x0B\xF5\x8D\xF8\x67\x86\xF7\x8D\x3C\x9A\x8E\xF3\x79\x1E\x8F\x85\x82\x8D\x8E\x3D\x8C\x41\x86\x91\x17\x8D\x1D\x96\x8A\x26\x92\x90\x87\x84\x10\x95\x90\xF9\x84\x09\xEB\x7D\x6B\x8A\x8F\x1B\x96\x3C\xB9\x8F\x4D\x89\x10\xE3\x8C\x0E\x8A\x86\x04\x95\xE3\x5E\x90\x4D\x83\x1B\x9E\x8F\x3F\x8F\x90\xFE\x8A\x3B\xA0\x8F\x24\x70\x22\xF0\x8C\x1B\x9C\x90\xC5\x8B\x46\xBE\x5E\x01\x94\x1E\x90\x92\x82\x9D\x89\x3A\x91\x0F\xA1\x90\xF6\x8F\x1D\xFB\x8D\x19\x91\x91\xF8\x8D\x3D\x81\x93\x2D\x80\x23\xA9\x92\x12\x8D\x6D\xC6\x85\x44\x8D\x92\x86\x8D\x1E\xA6\x8F\x2D\x68\x8D\x8A\x8E\x3A\x83\x90\x2A\x9C\x25",
+					"\x8D\x90\x44\x84\x89\x5A\x8E\x24\x9C\x8E\x1B\x9B\x07\xC5\x8E\x95\x9A\x65\x58\x97\x43\xB5\x84\x32\x96\x08\xAF\x7F\x99\x91\x8D\x4A\x79\x4B\x93\x93\xEB\x85\x25\x83\x8E\x3D\x9C\x91\x27\x94\x1B\x8E\x93\x3A\x80\xD6\x76\x90\x82\x83\x92\x49\x92\x13\xAF\x93\xA3\x69\x26\x9A\x86\x96\x9D\x91\x48\x97\x47\x94\x85\x41\x9D\xDC\x05\x96\x97\x81\x08\x78\x92\x15\x9E\x8E\x3A\x92\x28\xFE\x90\x6D\x9F\x6A\x88\x1E\x1E\x99\x94\x31\x88\x1B\x9E\x8B\x68\x81\x08\xBC\x8E\x1E\x9D\x94\x30\x9F\x29\x80\x01\xA8\x95\x8A\xDA\x7B\x54\x9F\x71\x92\x87\x2A\x97\x94\xA9\x6A\x95\xB5\x72\xF1\x6D\x94\xB9\x8A\x10\x1B\x96\x02\x8B\x61\x17\x80\xC9\x79\x94\xF2\x67\xC9\x63\x62\x4A\x6B\x91\x67\x6C\x99\x15\x81\x81\x02\x2C\xF7\x8B\xE9\x79\x0E\xBB\x92\xA2\x49\x97\x30\x67\xC9\x4E\x27\xB0\x82\x08\xD0\x27\x59\x81\x08\xF6\x12\x2D\x80\x00\xB5\x86\x96\x03\x08\x23\x15\x96\x69\x2B\x2D\xE2\x7A\x40\x02\x1C\x93\x89\xB6\x5B\x0D\x65\x9E\xC5\x17\x67\x23\x38\x96\x23\x65\x5A\x8C\x1F\x6A\x94\x1F\xA5\x88\x1D\x28\x97\x01\x09\x7B\x30\x96\x00\x0D\x22\xD9\x0F\x25\x66\x91\xA5\x91\xEB\x73",
+					"\x96\x7D\x91\x2E\x86\x09\xED\x13\x97\xFF\x95\x5F\x83\x09\x28\x94\x2B\x89\x08\xC1\x96\x97\x0A\x0A\x8A\x15\x96\x85\x93\x2F\x9E\x73\x59\x7F\x86\x97\x60\x62\x8F\x08\x6F\x91\x1D\xD5\x97\x1D\x35\x96\xB2\x20\x63\x94\x98\x00\x09\x31\xF3\x95\xC7\x8D\x0E\x59\x04\xF8\x52\x8C\xE3\x70\xD7\x0A\x0B\x18\x7D\x5E\x25\x9B\x3C\x34\x0E\x3F\x1E\xBF\x27\x9B\xCA\x89\x08\xDD\x5D\x7B\x79\x95\x99\x96\x32\xAF\x9A\x41\x0E\x99\x2A\x98\x66\x8A\x08\x28\x6D\xBD\x3C\x9B\xCE\x96\x99\x19\x81\x67\xA7\x5D\xAE\x82\x34\x83\x09\xF7\x4D\x99\x40\x9A\x20\x2F\x11\x84\x0B\x34\xB5\x92\x83\x89\x08\x7D\x11\x21\x17\x65\xCF\x80\x19\xD0\x9A\x42\x13\x9A\x0A\x0C\x35\xBA\x8B\x80\x01\x35\x86\x08\xD6\x8E\x8D\x0A\x0D\x6B\x83\x09\xAF\x9B\x2A\x61\x9B\xD5\x8A\x08\x54\x9C\x35\xA2\x9A\x81\x04\x36\x83\x0A\xDA\x87\x9B\x09\x09\x6D\xA6\x9A\xA9\x98\x36\xD9\x9B\xDC\x9E\x9A\x75\x98\x6C\x86\x99\xBB\x93\x36\xF9\x99\xD9\x9B\x9B\x56\x9C\x6E\xB1\x9A\xBB\x90\x38\xA0\x7C\xD1\x97\x99\x49\x99\x20\x21\x7C\xA4\x9A\x33\x94\x79\xD0\x88\x9C\x8D\x9E\x20\x16\x70\xD6\x83\x39\x8A\x0B\xD6\x80\x00",
+					"\x95\x98\xC6\x6E\x9A\x04\x6A\x37\x92\x9C\xE1\x9E\x9C\x9D\x9B\x20\x19\x9C\xD0\x9F\x37\x86\x0B\xC1\x98\x9C\x9F\x9B\x60\x9C\x9D\xD2\x9A\x3A\x8F\x45\x43\x0F\x9D\x85\x9B\x08\xAD\x84\x81\x07\xC5\x06\x09\xED\x8B\x93\x7D\x9B\x70\xA1\x9D\x50\x80\x37\x86\x0A\xDC\x8E\x9D\xF6\x8A\x70\xBE\x9D\xD4\x9C\x3B\xC2\x9F\xA8\x04\x9E\x15\x98\x6F\xBA\x9C\xD6\x95\x3C\xCA\x9F\xF0\x9B\x9D\xC9\x99\x77\x8F\x9E\xE6\x91\x3D\xEC\x9A\xDF\x9B\x9C\xC1\x9E\x79\x87\x9E\xE8\x90\x00\x27\x9C\x32\x8D\x9B\x02\x0C\x35\x9E\x9F\xDE\x9B\x3D\xD4\x9D\xF7\x93\x98\x78\x8F\xA4\x5A\x77\x84\x0C\x38\xC3\x9A\xFA\x8E\x9C\x1A\x65\x66\x91\x9D\xDF\x5B\x3E\xA6\x62\xFC\x8E\x9F\xF9\x7E\x70\xAC\x9F\xFB\x96\x34\xB7\x7E\x7B\x9B\x9F\x45\x9B\x03\xBE\x9F\xC5\x9C\x3F\x82\xA0\x93\x86\x9E\x9C\x88\x79\xB7\x86\x04\xA1\x10\x3F\x9E\x41\x17\x9C\xDA\x80\x7C\x81\x08\xD6\x81\x41\xD7\x9D\xF8\x99\x8C\x0C\xA0\x00\x0E\xA0\x0A\x9A\x3D\x89\xA0\xF7\x95\xA0\xCB\x98\x7B\x9A\x91\x0E\xAD\x40\x8A\xA0\x08\xB3\x9E\x22\xA5\x75\xA3\xA0\xE9\x95\x3E\xA9\xA3\xB0\x18\xA0\x24\xA2\x83\x8A\xA1\xD3\x93\x2A\x92",
+					"\xA1\xD5\x86\x8B\x19\xA3\x83\x82\x09\xCB\x95\x43\x96\xA3\x04\xB5\x89\xE4\x9E\x83\xA6\x9F\x1E\xA1\x42\x97\xA1\x42\x04\xA2\x28\xA6\x88\xB8\xA1\x18\xAA\x43\xD7\x19\x10\xA5\xA1\xDC\x98\x89\xAD\xA0\x25\xAA\x42\xFD\x8B\x13\xB2\xA1\xDC\x9C\x86\x97\xA3\x26\xA7\x3E\x89\x08\xBF\x96\x9E\x45\xA7\x87\x9E\xA3\x2D\xAA\x40\x97\x9F\x17\xA1\x08\x36\xA4\x35\xA7\xA2\x00\x09\x46\x8A\x0B\x1A\xAD\xA3\x63\xA1\x87\x8A\xA1\x37\xAE\x43\xB7\xA3\x40\x14\xA3\x61\xA6\x8E\x82\x08\x3C\xA9\x44\xE2\xA2\xE9\x8E\xA3\x64\xA1\x8B\x80\xA4\x39\xA2\x48\xDC\x9E\xD6\x8A\xA0\xAC\x89\x91\x88\xA5\x19\xAC\x48\x85\xA6\x41\x0F\x6D\xAE\x6E\x72\xAF\x64\xD3\x63\x49\x9D\x45\x25\xA1\x08\x90\xA0\x92\xA7\x9C\x4D\xA7\x49\xDD\xA1\x1F\xBA\xA3\x50\xA6\x7C\x97\x9C\x2E\xA4\x4A\x8A\xA1\x29\xBC\x9E\xA7\xA6\x7C\xA7\x9C\x2E\xAB\x4A\x8D\xA6\x41\x00\x97\x54\xA7\x5B\xA5\xA3\x89\x0A\x40\xB0\xA6\x1F\xA3\x08\xB6\xA0\x94\x80\x01\x5C\xAC\x1A\xBC\xA4\x2D\xBC\x9E\xBE\xA1\x76\xB2\xA4\x47\xA8\x4B\xAE\xA4\x0B\xA2\xA2\x2E\xA0\x8D\xB5\xA3\x43\xA4\x48\xE6\x9C\x1C\xAC\xA2\x0A\xA7\x99\x87\xA7",
+					"\x50\xA9\x4C\xEC\xA3\x32\xA1\xA4\xAA\xA0\x9B\x95\xA7\xD3\x92\x4D\xAF\xA1\x42\x16\x95\x02\x08\x9C\xAA\x70\x6D\xA1\x4B\x82\x84\x34\xBC\x9E\x67\x63\x9A\x98\xA2\xF3\x91\xE1\x5D\xA7\xAD\x05\x7F\xE4\xA7\x96\xBB\xA0\x33\x61\x4F\xBA\xA7\xE5\x8D\xA7\xD7\xA0\x11\x8D\xA7\x6A\xA9\x4E\xE0\xA3\x27\xAC\x8D\xF8\xA1\x8F\xAC\x8C\xA0\x7E\x4E\x80\x01\x3F\xAA\xA6\x02\xAA\xD8\x7B\xA7\x72\xA5\xEE\x75\xA4\x6B\x87\xA8\xD6\xA1\xA1\x89\x08\x88\xA5\x50\x84\xA9\x3E\xA4\x71\x0B\xAA\x9E\xA3\xA7\x8C\xAA\x4B\x96\xAA\x44\xA6\x08\x14\xAF\xA2\xB2\x70\x87\xA0\x4F\x9C\xAB\x43\xA4\xA9\x06\x76\xA4\xB0\x9D\x63\x91\x51\xFF\xA7\x4A\xA3\x08\x21\xAF\xA3\x95\xA2\x08\x78\x52\xFF\xA2\x3E\xA7\xA7\xD9\xA3\xA2\xB5\xA9\x99\xAB\x51\xB8\xAB\x36\xA5\xA9\x3E\xAC\xA1\xA7\x9D\x98\xAE\x52\xC2\xA4\xDF\x75\x08\x0A\x0B\x5D\x86\x08\xA5\xA3\x10\x3B\x8A\x41\x12\x97\xCB\x1A\x21\x0E\xAB\x81\x00\x55\x82\x0B\xB5\x99\x96\x3A\x76\x20\x09\x76\x76\x82\x10\x7D\x6A\x40\x0C\x98\x03\x0F\x5D\x94\xAA\x85\x05\x55\x81\x0B\xC5\x8D\x48\x7B\x21\x21\x3E\x8D\x45\x2A\x10\x64\x7B\x40\x0B\xAB\x4D",
+					"\xAC\xAC\x92\xAA\xB9\xA9\x10\x67\x97\x58\xB5\xAB\x74\xAE\x20\x30\xAA\x81\x03\xCB\x01\x08\x28\x63\x08\x7F\xAA\x20\x13\xAA\x81\x05\x56\x98\x67\x5C\xA9\x08\x85\xAF\x63\xB4\xA8\x95\xA9\x10\x0A\xAE\x39\xAA\xA7\x5C\xA6\xB1\x86\xA9\x9D\xA2\x10\x12\xAD\x40\xA5\xAA\x0F\xA2\x21\x12\xAC\x8F\xA8\x59\x83\x0B\xE5\x92\xAC\x44\xAB\x8A\x9A\xA8\x00\x0F\x59\x8A\xA9\x50\xA3\xAD\x9B\xAC\xB2\x81\x08\xD0\xAA\x5A\x9C\x9A\x69\xB0\xAC\x0A\xA1\xB5\x8C\xAC\x83\x0C\x5A\xB3\xAF\x40\x16\xAC\xAD\xAA\xB6\xA7\xAC\x5D\xA5\x5B\xBB\xAC\x6B\x9D\xAD\xB0\xAC\x7B\xBA\xAD\xE0\xA6\x3E\xB8\xAE\x6D\xB5\xAC\x9A\xA9\xB9\xA9\xA8\xDF\xAA\x5C\xAC\xA9\x41\xA0\xAE\xFE\xA2\xB4\xBC\xAD\xD7\xA1\x5D\xC8\xA4\x43\xA3\xAE\xD5\xAC\x9A\x97\xAE\x7A\xA7\x5C\xAB\xAD\x73\xA3\xA9\xDD\xAE\x93\xB7\xAC\xA0\xA4\x5C\xBF\xA9\x63\xBC\xAE\xCC\xAE\xA8\xAE\xAD\xE5\xA5\x5E\xC2\xAB\x77\xA2\x08\x9C\xAA\xBA\xA2\x9F\xF7\xA1\x10\x21\xAE\x75\xA3\xAD\xA7\x9E\xB8\xA9\xAE\x9B\xA4\x5B\xE4\xAD\x76\xAB\xA7\xE6\xAD\xBF\xBA\xA9\xF0\xA7\x3A\xC5\x97\x40\x0E\x96\x06\x09\x5A\x86\x08\x6E\x96\x10\x54\x25",
+					"\x42\x03\x6D\x23\x9A\x64\xA3\x98\x00\x0B\x09\x52\x5C\x28\x43\x63\x50\x61\x28\x23\x62\x4E\x06\x61\x87\x9C\xFD\x93\xB0\xBE\x96\x3B\x20\x44\x64\x8A\x61\x8A\x09\x27\x1D\xB0\x13\xB7\x72\xA5\xB1\x84\x0E\x09\x28\xB3\xC8\x94\x9A\x13\xB1\x20\x1F\x04\x17\xB7\xC1\x25\x79\x8C\xA6\x08\xA0\x04\xC6\x86\xA0\x83\x0E\x21\xB7\xB1\x28\x1A\xB1\x5B\x8D\x11\xB7\xB1\x80\x02\x0A\x40\xB2\x2E\xB7\xAA\x43\xB1\x20\x23\x04\x23\xB4\x35\xAA\x2C\x88\xAC\x44\x0A\x0B\xB4\x0F\xB3\x84\x04\x0A\x46\xB3\xDA\x81\x08\x6A\x2B\xCA\x86\x09\x52\x06\x64\xD0\x62\x4F\x33\xB0\x9D\x67\x38\x2F\x86\xA0\x20\x66\x85\x13\x18\x60\xAB\x49\xB0\x00\x26\x04\x23\xB7\xC9\x5B\xA9\x9A\xA0\x00\xA7\x06\xC8\x9D\x5E\x08\xBF\x66\xA8\x06\x9C\xAA\x08\x74\xB1\xCD\xA9\x04\x23\xBC\x1A\x8E\xB3\x9B\xA0\x00\xAA\x05\xCB\x8A\x09\x6E\x25\x66\xF5\x10\x14\x62\x27\x85\xB1\x11\x4A\x08\x73\x2F\x67\x80\x03\x2A\x06\xB2\x4D\x9B\x20\x04\x29\x46\xBC\x0A\x7C\xB2\x42\x1D\x28\x8D\xB5\x15\x16\xB5\x84\x0A\x53\x0D\xB6\x2B\x1B\xB4\x06\x09\xA9\x1A\xB3\x81\x0F\x0A\x56\xB2\x42\x1A\x2A\x8D\xB0\x16\x2C\xB2\x85",
+					"\x08\x58\x0D\xB5\x2C\x06\xB2\x97\x99\xBA\x09\xB4\x27\x1C\x1A\x80\x35\xA3\xB2\x05\xA0\xB3\x20\x05\x35\x46\xB3\x0B\x39\xB6\x40\x08\x34\x8D\xB4\x16\x06\xB2\xDF\x69\x5F\x0D\xB5\x2D\x03\xB6\x0A\x0C\xC0\x0D\xB4\x5B\x06\x64\xF5\x94\x00\x06\x30\x8D\xB7\x16\x06\xB2\x64\x8F\x6E\x33\xB4\x8D\x17\x9D\x02\x09\xDB\x16\xB6\x1C\x16\xE1\x0B\x31\xA3\xB8\x05\x46\xB6\xC2\x50\x31\x46\xB9\x0B\x46\xB3\xE9\x85\x32\x8D\xB2\x17\x26\xB6\x85\x08\x6E\xFF\xB3\x2E\x0B\xB7\x09\x09\xCF\x0D\xB4\x5E\x00\x6F\x86\x0A\xBC\xBF\xB3\xBD\x05\xDE\x83\x09\x51\x3D\x68\xBE\x06\xBE\xA2\x08\xFC\xB7\xCF\xBF\x05\x70\xB6\x62\x8D\xB4\x00\x00\x06\x46\xB0\xE3\x50\x37\x46\xB1\x0C\x48\xB5\x42\x10\x39\x8D\xB3\x3B\x18\x78\x6A\x3D\x68\xC2\x07\xB4\xAA\x08\xE8\x33\xDB\xBF\x12\xDF\x67\x71\x0D\xB7\x30\x0D\xB6\x0A\x0B\xE4\x0D\xB4\x62\x06\x64\xA1\x7C\xD2\x2D\xB4\xC5\x06\xC8\xB9\x94\xA8\x3A\x71\xDB\x0C\x4A\x74\x3A\x8D\xB6\x18\x06\xB3\x97\xB6\x70\xC7\x07\xCC\xAA\x08\x56\x3D\xD1\x88\x07\x9B\xB9\x10\x39\xBB\x9F\xA9\x06\x46\xB7\x15\x31\x8A\x00\x01\x69\xB4\x13\x8D\xA1\xB3\xDC\x11",
+					"\x28\x18\x8B\x18\xB6\x17\xC9\x1D\x50\x1C\x80\x31\xB6\x7F\x57\xB0\x0F\xB4\x23\x7E\x5D\xD1\xB8\x11\x41\x09\x57\x88\xBB\xE0\x01\x14\x29\x9A\xFD\x95\x13\x41\x08\x8A\x5B\xBB\xE2\x0D\x74\xF1\x9F\xFC\x86\xBA\x0A\x0F\xEA\xB3\x42\x85\x0F\x0E\xC3\x8A\x9F\x03\x63\x63\xB8\x3A\x01\x0B\x4B\x61\x77\x8F\x18\xCA\x85\x10\x41\x0C\x6A\xB5\xBA\x26\x1A\x75\xF8\xBA\x02\xBB\xBB\x05\x10\x8A\x64\x96\xAE\xB2\x4A\x6A\xBA\xDA\xBB\x0E\x41\x0F\x72\x90\xBB\x00\xA1\x64\xCC\x98\xD5\xB8\xBA\x36\xB3\xC7\x8E\x12\xB5\xBD\xBD\x14\xBE\xDF\xA9\x9F\xF8\x9E\x8A\x80\xA1\x4F\xAD\xBD\x6F\x87\xE1\xBE\x0E\x41\x08\x92\x8B\xBA\xF8\x91\x10\x20\x45\xDB\xB7\xBC\x06\x0A\x9C\xBE\x89\x02\x16\xE1\x26\xBD\xE2\x9F\x13\x41\x08\xE8\x6B\x77\xAF\xBB\x03\xA5\xBF\x15\xBF\xBC\xC7\x09\x28\x0C\xAB\x74\x93\x20\x58\xB6\xED\xB9\xA0\xA3\xBB\x64\x83\xAD\xDF\xB3\x20\x48\x84\x28\x57\x64\x8B\xBB\x64\x85\xAC\x50\x48\x64\x81\x0A\xFF\x4E\xB6\xA0\x44\x6A\x97\xB2\xD8\xB9\x55\xB5\xB0\xE7\x1C\xA2\x88\xBA\x21\x2E\xB2\xB3\xB3\xD7\x4D\x1C\x6B\x97\x64\xD9\xBC\x95\x17\x9D\xE9\xB1\x7E\x86\x08\x9A",
+					"\xA4\xBE\xC9\x1F\x72\xAF\x8C\xD0\xB9\x11\x0F\xBE\xA9\x8D\x1E\xA7\x98\xF7\x89\x0F\xA0\x0B\x57\x81\x09\x88\xA7\x0E\x18\x7E\x7F\x67\x9D\xE0\xB2\x19\xFD\xAB\x20\x45\x10\x92\x6A\xFF\xAF\xBD\xF2\xB4\x2C\x85\xA1\x40\x0C\xB0\x8F\x9A\xF3\xB4\xBC\xD1\x99\x76\xA8\xBF\x40\x19\xB3\xCE\xBD\x40\x22\xBD\xD5\x99\x80\xE8\xB9\x42\x04\xB4\x0B\xC4\x46\x2A\xBD\x3B\x67\x76\x90\xBD\x42\x08\xB4\x19\xC1\x20\x0C\xB5\x10\xCD\x50\x9B\xBE\xEC\x9F\x9F\x03\x11\x28\x13\xB5\xC1\x11\x3B\x3E\x6E\xEF\xB4\xBE\x09\x0A\xA1\x26\xC0\x81\x08\x69\xAC\xC2\x93\x0F\xC1\x4B\x8C\xFD\xAC\x24\x64\x8D\x2E\x84\xBD\x42\x0A\x29\x3B\x3D\xF8\x8A\x09\x17\xC4\x80\x82\x09\xA7\xA4\xC1\x5F\xB6\x06\xF4\x10\x67\xB2\x7F\xBE\xC2\x41\x04\xB3\x99\xBC\x46\x1E\x91\x31\x6E\x6C\xFC\xBF\xF2\x62\xB5\x51\xC0\x47\x03\xBF\xFF\xB9\x10\x4E\xB5\xF2\xB2\x8C\x52\x2D\x03\xC0\x00\xB7\x23\x83\x81\x0A\xB6\x90\x9C\x7E\x60\xF3\x8E\x13\xA0\x0D\x6A\xA4\xC3\xB8\x12\x6C\xB0\x91\xF7\x91\xB3\x6C\x22\xD9\x10\xA5\x11\xC4\x53\x7E\x10\xB5\x25\xC3\x3F\x13\x2A\xEB\xA3\x1D\xDF\x13\xAC\x2E\x0D\xDE\x0F\x35\xA1",
+					"\x29\xF2\xBA\x42\x12\x2D\x8C\xB9\x82\x10\xA5\x42\xC5\x1D\x41\x09\x6E\x29\xC4\xE3\x11\x97\xB3\x70\x39\xCC\x4A\x11\x70\x44\xBF\xC3\x55\x21\xC2\x71\xC3\xF9\xBA\x10\x54\x2D\x10\xC9\x8C\x6B\xBC\xBD\x96\xA4\xB0\xB7\x12\x7E\x10\x7A\x3B\xC3\x5E\xA8\xFD\xB0\xAE\x20\xA4\x8A\x89\x09\x7D\x3F\xC4\x5F\xAD\x71\x1D\xA5\x3F\xC5\x6C\xCA\xC1\x40\x1E\x2F\x7B\xC2\xAC\xBC\xBC\x98\xA5\x2B\x8E\xC1\x46\x3E\x90\x18\x96\x09\xD6\x28\x0F\x97\x89\xBA\xC3\x4C\x21\x98\x82\xAE\x17\xE4\x29\x2D\xCB\x54\x2D\xC6\x41\x02\x30\x62\xC3\x3B\x27\xAB\xFE\x99\x10\x5B\xC3\x16\xDF\xC3\xDE\xB1\x0B\xFF\x12\xBB\xA2\x10\x39\x97\x16\xCE\x28\xCE\xC3\x20\x14\x31\x68\xCE\x1D\x08\xB0\x35\xC6\x08\x5B\xC6\xC0\x96\xC0\x83\x04\x63\x64\xC7\x71\x10\xC0\x5F\x8F\xB0\x86\x08\x72\x21\x8E\x82\x0B\x96\x2E\xC7\xC9\x08\x04\xE7\xC7\xB8\xAF\xC9\x4A\xC4\x00\x15\x33\xF8\xC1\x38\x2B\xC1\x7D\xC9\x8C\x89\x0B\x36\x35\xC7\x01\x08\xD8\x9A\xC7\xED\x00\x84\xDA\xC7\x16\xC0\x27\x08\xC8\x00\x01\xB8\x82\xC8\x23\x50\xC0\x45\xC0\x00\x5B\xC5\xFE\xB0\xC0\x83\x0C\x6A\x5A\xC7\xAD\x3B\xC3\x58\xC3\x20",
+					"\x1E\xC7\xB6\xAE\x8F\xBB\x36\x18\xCE\x36\x7B\xC0\xD5\x96\x80\x79\xCB\x1B\xFE\xC6\xB4\x22\xC3\xDB\x34\x04\xED\xC2\x91\xC9\x57\xD1\xA9\x44\xD5\x22\xCD\xB8\x00\x05\xAC\x4C\xCA\x45\x67\xC3\x40\x0D\xC2\xC5\x09\x28\x20\x37\xFF\x05\x20\x4E\xB2\x36\xDE\xC9\xDC\xBB\x0D\xCA\x08\x82\x34\x94\xF5\x10\x6D\x22\xC3\x48\xCD\xF1\xA9\xC0\x85\x00\x71\xAB\xC9\x42\x03\x3A\x7B\xC2\xD6\x9A\xC7\xED\xBE\xC3\x7E\xC7\xC9\xB6\xC5\x11\x25\xAC\x62\x70\x63\xC3\x10\x4A\x38\x2C\xD8\x11\xA9\xC0\x00\x0D\xC7\xA9\xC9\x10\x4C\x3A\x20\xCB\x2F\xEE\xB9\x2D\xD7\xC6\xB2\xC2\x10\x2C\xBB\x5B\xC9\x0E\xB5\xC3\x20\x23\x63\xB4\xC0\x8E\xEC\xCA\x41\x1E\xB9\x15\xC0\x47\x10\xC6\x12\xC9\x96\xEA\xC6\x07\xC6\x08\x5A\x3B\x0F\xDB\x0E\x68\xB4\x98\x8A\x08\x3D\xDE\xCB\x03\x0F\xEB\x0A\xCC\xEF\x09\x8D\x81\xCC\x00\x09\xCB\x6A\x8E\x10\xEC\x25\xB4\xC1\x58\x87\xCF\x40\x03\x3B\x93\xCF\x38\x23\xB7\xC6\xC6\x90\xFE\xC7\xD9\x21\xCD\xC9\x0B\x1C\xE4\xCC\x83\x00\x91\x90\xCE\x40\x16\x3B\xA8\xC9\x38\x24\x30\x54\xCA\x10\x1A\xCB\x1F\xDA\x3B\x7B\xC6\xEF\x3B\xC3\x76\xC8\x86\x83\x09\x5A\xCE",
+					"\xAB\xEB\xC3\x20\x03\x3D\x3D\xC7\x78\x7B\xC3\x94\x29\xC4\x69\xCB\x56\x9E\xCC\x81\x0B\x78\x7B\xC3\xE3\x3B\xC3\x6D\x31\x11\xE7\xBF\xCB\xCE\x8F\xD5\x22\x2E\xC1\x08\xB6\xCC\x2E\xF8\x11\xCD\x31\x9B\xC5\x0F\x75\xC0\x00\xC0\xCB\x39\xF8\x11\xD4\x3D\x9D\xD0\x0F\x77\xCA\xCE\x1B\xCE\x49\x2D\x3D\xF2\xC5\x1D\x68\xCF\x34\xC1\xCE\x02\x0A\xF6\x2C\xCE\x26\x1A\x91\xEF\xCE\x78\xC0\x00\xB6\x3B\x3E\xC5\x11\xF0\xC0\x00\x76\xCD\x7A\xC2\x08\xBA\x3A\x3F\xF5\x12\x6E\xC1\x10\x6B\xCA\x52\xC9\x08\xC9\x3F\x2C\xDB\xC6\x96\xC0\x9F\x81\x0B\xF2\x2A\xD0\xF7\xB6\xFA\x86\x08\x02\xD0\x00\x7D\xCB\x81\xC6\x08\xCD\x3A\x41\xDB\x0E\x0A\xD6\x98\xFF\xCD\x40\x0F\x3E\x1A\xD6\x3B\x14\xD1\xC7\xC7\xA1\x83\x09\xF4\x21\xD1\xC7\x0C\x42\xDD\xCC\x0F\xD0\x00\x54\x3C\x8A\xC9\x0E\x14\xD7\x20\xEE\xCD\x80\x06\x7D\x2F\xD1\x70\x14\xD0\xAD\xCD\x44\xC2\x08\xEC\x36\xA3\xC5\x0C\x85\xD9\xCE\x94\xC6\x20\x1A\x3F\x3A\x2C\x7D\x7B\xC2\xAD\xA0\xCB\x14\xD4\x3F\xFF\xC2\xF0\x35\x47\x62\x3F\x1E\xDB\xB5\x48\xD1\xAD\xB3\xD0\x00\x05\x7F\x75\x23\xFD\x3B\xC3\x0A\xCA\x42\xC0\xAC\xFA\xAC\xA2",
+					"\xDB\x0C\x01\x42\xD0\x02\xB2\x96\x7E\xC6\x04\x4D\xA3\xD0\x0D\x87\xCA\xB0\x3A\xD4\xA4\x1D\xD1\x4D\xC2\x8C\x82\x0A\x02\x4A\xD0\x8D\x35\x8E\x1D\xD0\x3B\xCA\x9D\x80\x01\x03\x55\x23\x0F\x43\x0F\xD1\x35\x3A\x26\x8E\xB7\x8E\x3F\xD3\x40\x0A\xD6\xD2\x3C\xD3\x59\xC5\xA7\x95\x41\x1D\x37\x40\x7B\xC3\x22\xFB\xC4\x68\x9A\x10\x06\xD1\x83\xC0\x00\x30\x41\x20\xC5\x0F\x52\x3A\x8D\xE8\xD1\x41\xD3\xD2\x57\x42\x52\xD0\x0E\x58\x3D\x94\x89\xB2\x42\x16\xD0\x8F\xD1\x14\xD7\xC9\xED\x06\x92\x95\xD6\x42\x1D\xD0\x7F\xC6\x10\x5A\xD5\xEA\x08\x92\xA6\xD5\x42\x04\xD1\x8F\xD0\x01\x02\x45\x2F\xC2\x10\x57\x36\x18\xD6\xD4\x7E\xAE\x1F\xCC\x01\x59\xD5\x20\x43\xCA\xAB\xC6\x08\x32\xD1\x4D\xD8\x9C\x5E\xD5\x27\x79\x37\xAF\xC3\x08\x39\xD7\x51\xD4\x00\x62\xD3\x20\x19\x3B\xAD\xD5\xCD\xFE\xC3\x13\x62\xC2\x51\x4B\x87\xBD\x39\xA7\xC3\x08\xB8\xD0\x3C\xFE\xC6\x0F\x0C\xAC\x83\x08\x2A\x5B\xC3\x5F\xCC\x26\xC9\x09\x6C\xD8\x9E\xFF\xC0\x09\x1D\xD6\x21\x72\x10\x7E\x5E\x98\xB6\x95\x8B\xB2\x24\x7E\xC7\xEB\x45\x4C\xD5\x0E\x3F\xB3\x10\x08\xC3\xA3\xD5\x22\xF0\xC5\x4F\xF7",
+					"\xCE\x7C\xDA\x10\x59\xD4\x4F\xD0\x20\xC1\xD7\x52\xC2\xD7\x71\x12\x99\xE0\xC8\x06\xC3\x08\xFE\xBF\x0F\xF1\x46\x48\xC3\x2D\x49\xD5\x40\x13\xCB\x41\xD1\x79\x21\x3B\x3A\x2A\x8F\xFC\xAA\x3F\xDD\x47\x0C\xD9\x5A\x30\xD5\x80\x00\x94\x9A\xCF\x22\x3D\x5A\x75\x10\x34\xED\xD7\x81\x0B\xB1\xAB\xBD\x44\xDD\x49\xD7\xD4\x46\x38\x3B\x94\xD1\x10\x25\xD8\xAD\xC6\x7E\x63\x4C\x65\xC0\x00\xC3\x4B\x87\xC3\xCF\xC8\xC2\x08\x23\xC3\x20\x32\xC1\x29\xD5\x45\x39\xDA\x40\x17\x27\x37\xCA\x8B\x00\xDA\x83\x0D\xB1\x8D\xC6\x42\x17\x4C\x32\xDB\x3B\x0D\x3C\x99\xD3\xB4\x96\xCF\x1F\xD7\x4D\x49\xDE\x3B\x24\xCF\x9B\xD1\x10\x4D\xDA\xE4\xAF\xD4\xDE\x4A\x66\xFC\x4F\x3D\xC4\x7B\x32\xDB\x40\xC2\x08\x3B\xDB\x60\xDA\x23\xAF\xD5\xB5\xD5\xCE\x16\x21\xDB\x16\xD9\x22\xCA\x50\x79\xD1\x14\x20\xD5\x81\xDE\xC7\x54\x00\x5D\xF8\x11\x04\xDA\x8D\xEE\xD8\x46\xDE\xC7\x43\x53\x55\xC1\x0B\x13\xD4\xB5\x95\xD3\xA7\xDE\xC7\x65\x52\x6F\xCA\x09\x22\xD5\xB7\xA7\xD6\x3F\xC0\x54\x82\xD9\x21\x31\x3E\x31\xC6\xB7\xA5\xDB\x1F\xD5\x54\x89\xDE\x20\x1F\xD3\xC2\xDD\x8F\x91\xC8\xAB\x51\xDC",
+					"\x03\x0F\x4E\xD4\xDC\x60\xDE\x8F\xC9\x54\xE6\xC2\x08\x86\xD3\x73\xC8\xD6\x7F\xCE\xAD\x1F\xDD\x40\x12\x41\x8C\xD8\x5A\xD1\xC9\x7F\x52\x86\x93\x5B\x1E\xC6\x43\x32\xDE\x6E\xCA\xD3\x3A\xD6\xB2\x62\xC3\xCF\x5B\xC3\x02\x00\x64\xC6\x08\xBB\xD5\xAE\xF5\xD3\xD1\x42\xC3\x50\x5B\x0F\xCA\x44\x99\xD5\x83\x83\x08\x4F\x21\xDA\x10\x25\x78\xC2\x09\x86\xC2\xB6\x90\x20\xF3\xC2\x08\x8E\xD7\x3E\xC6\x04\xB9\xDF\x27\x3B\xD6\x18\xCF\xDE\x0F\xDE\x1F\xD6\x5A\xD3\xD3\xAC\xB2\xD8\xF6\xDE\xDB\x11\xCE\x11\x14\xDE\x89\xB4\xBD\xDF\xDC\xAA\xD5\xD3\x92\x03\x7C\xDE\x0F\x0C\x05\xBE\x8E\xCE\x3F\xD6\x04\xEA\xDF\x38\x1D\x01\xF6\xD5\xB9\xD3\xD2\x26\x11\xDF\xC9\x09\x04\x34\xDE\xCE\xD1\x91\x9E\x04\xFE\xC1\x0E\xB9\x47\x7A\xCA\x08\x87\xDC\xA2\xE9\x58\xF7\xC1\x47\x02\xE2\xAD\xBE\xC7\xB8\x52\x86\x91\x5D\x2E\xDA\xDD\x03\x0F\x7B\xF3\xDD\x88\xD2\x10\x1A\x5E\x18\xD0\x05\xEA\xD3\x23\x10\xE1\xE5\xD2\xA5\xC2\xD6\x2C\x14\xDE\xB6\x01\x83\xC9\x09\xA5\x42\xB3\xC7\xC2\xF1\xC6\xDB\x10\x27\x78\xE2\xD3\x88\xC8\x0B\x5F\x4D\x12\xC8\xD8\xFE\xC1\x17\x2A\x5A\x7F\x16\x91\xE9",
+					"\xDB\x94\xDC\x05\xDF\x4D\x86\xC1\x08\xA1\x28\xBC\xA7\x20\x0F\xE6\x08\x45\x2D\x87\xC1\x0F\x5E\x02\xC2\x83\x11\x10\xEB\xE1\x53\xD7\x17\x1F\x4F\xA3\x29\x10\x09\xD9\x9D\xC0\x06\xDF\x49\x24\xC2\x08\x26\xEC\xB3\xDA\x21\xF4\xCA\xCB\xFE\xC1\x18\x3F\xDF\xE2\x0D\x96\x62\xC3\x15\xF0\xD8\x9C\xC1\x21\x05\x07\x2D\xE0\x1D\x34\xD9\xDF\xD7\xE2\x76\xDF\x0F\xC9\x06\x32\xE5\x1D\x2B\x4E\x17\xE6\xDC\x11\xCD\x19\x2C\xE3\xA0\x06\x9C\x6F\xE3\xAB\xDE\xC7\xD1\x03\x8E\xCA\x09\xF1\x46\xC7\x86\x0B\x8A\xDF\xC3\xD5\x02\x8F\xC9\x09\xAD\xDA\x8D\xD7\xE1\xC0\xD7\xCF\xD9\x02\x90\xC6\x08\x0F\x5D\xC7\xA3\xDD\x44\xDD\x06\x8A\xE3\x20\x05\x53\x46\xE6\x48\x7E\xC5\x38\x14\xDE\xE5\x05\x88\xC3\x09\x33\x52\xB3\xD7\xE3\x04\xE1\xE3\x06\x0F\x1C\x14\xDF\x75\x0A\xC9\x82\x09\xA2\x5D\xE4\x1D\xE7\x51\xED\x06\xEA\xD1\x0F\x25\xE5\x40\x04\x55\x5A\xDD\x51\xFE\xC7\x79\x0E\xCA\xFF\x12\xE7\xC0\xCB\x4E\x28\x1D\xFE\xC7\x7A\x05\xCB\xDB\x0F\xB2\x5B\xC3\xB9\xE2\x35\x7E\xC7\x7B\x0D\xCB\xDE\x0C\xB6\x55\x23\xC1\xE2\x20\x27\xDE\x0A\xE7\xBA\xC5\xE7\x71\x05\xDD\xB8\xE6\x7D\xD1\xC9",
+					"\x7D\x0E\xCC\xC9\x0C\xBA\x48\xE6\x0A\x0F\x8F\xF5\xD3\x7E\x05\xCD\xC1\x0D\xBB\x58\xE6\xA5\xCF\x26\xDD\xE7\xE2\x0B\xAF\x60\xE4\x6B\xDE\xC7\x01\x07\x7E\x56\xC3\x80\x0C\xBA\xD1\xE6\x02\xF1\xC8\x03\x02\x9D\xD1\x80\x79\xE9\x10\x04\x58\x30\xE4\xC9\x11\xCF\x00\x34\xE6\x83\x09\x00\x7B\xE6\x38\xD5\xE5\xC9\xE0\x54\xBE\xC7\x05\x0E\xCF\xBB\xA1\x41\xE1\x08\x19\x5B\x0F\xE1\xC2\x83\x07\xC5\xFF\xC3\x03\x17\x5F\x80\xB9\x21\x32\x59\x3A\x2B\xD0\xFC\xC7\x94\xD0\x00\x10\xED\x40\x34\x58\x85\xEF\xB7\x91\xC9\x04\x19\xE8\x75\x17\x76\xE0\xCB\x8A\xEA\xCC\xFE\xC6\x04\x00\xE9\x03\x15\x68\x54\xE8\x69\xE3\xA5\x93\x00\x4A\xEE\x12\xBF\xDB\xA4\xD9\xE6\x7F\xC4\x01\x2F\xE8\xD3\x52\x47\x24\xE9\x20\x07\xE4\x16\xD5\x01\x36\xE8\x8E\x02\x04\x38\xEB\x80\xFE\xC6\x0B\x0E\xD3\xFF\x13\x20\x01\xEA\xEF\xE3\x4A\xD7\x01\xA2\xE8\x01\x07\xE8\x00\x01\xDE\x24\xC1\xA7\xDA\xD7\x88\xCA\x01\x45\xEB\x06\x0E\xEA\xD3\xDC\xA3\xC9\x09\xDE\xDC\xCC\x80\x01\x07\x05\xEA\x1E\x06\xA9\xC8\x05\x5A\xEA\x92\x83\x08\x54\x31\xC8\x20\x05\xA8\xE3\x17\xB2\xE2\x10\x52\xEB\x1F\xC1\x01\x4E",
+					"\xEB\x04\x2A\xEA\xEF\x09\x65\x86\x0B\x59\xF3\xD2\x24\x03\xAE\xD1\x17\xBA\xE3\x10\x6E\xE9\x9D\xC5\x01\x4E\xEF\x04\x3A\xEB\xE4\x0C\x56\x0C\xEA\x3F\xC8\x01\xF7\x5F\xFE\x95\x5B\x5A\xE5\xD8\x96\xEA\xB0\xCB\x01\x89\xED\x40\x0C\x04\x53\x4D\xD8\x82\x09\x1A\xF5\xD3\x2E\x01\xB2\xF5\x13\x47\x0C\xD8\xF0\xE3\x94\xD1\x01\x9A\xEB\x40\x11\x05\xCE\xE7\xC7\x91\xC8\x0D\x01\xED\x4E\x13\x12\x24\xEC\x3F\xEE\x8F\xB7\x00\x6A\xF4\x11\x5F\x5B\x0F\xD5\xEC\x9D\xEE\x8F\xBA\x03\x6B\xF8\x11\x97\x03\xB5\xCE\xE5\x29\xDD\x03\x37\xEF\x9F\x19\x04\xBA\xED\x92\xD1\xC8\x20\x0E\xDB\xC3\x02\x53\xE3\x5B\x89\xC3\xB6\xD3\xEB\x29\xD5\x04\x3E\xEC\x12\x0E\xEA\xFE\xD9\xB9\xE9\xE5\xFB\xCA\x04\x3E\xED\x13\x0E\xEA\xA1\x06\x14\x7C\x2B\x84\x0D\xD0\xF5\xD3\x13\x0E\xEA\xDB\x0C\x14\x35\xE5\xED\xEA\xCB\x91\xC9\x14\x00\xEF\xDE\x0C\x81\xFD\xCC\x81\x04\xDE\xC2\xE6\xDA\xC8\xEF\xC7\x0B\x70\x7B\xC3\xF6\xE5\xD2\x91\xC9\x15\x10\xEF\xC9\x0B\x72\x73\xEE\x96\xE2\xAC\xD7\x00\x7E\xE1\x0E\x9C\x5B\xBF\xF5\xDE\x61\xD9\x05\x7F\xED\x71\x02\xBA\x02\xF4\x7F\xD3\xD3\x2D\x06\xE0\xD0\x0D",
+					"\x2C\x03\xEF\x42\xE9\x22\xDD\x03\x06\xF5\x1D\x33\x04\x84\xE9\xEA\xC2\xD7\x0B\x0E\xEB\x30\x0E\xD4\xB5\x06\x76\xF8\xE7\x53\xD3\x0C\x0E\xEB\x32\x0E\xD4\xAD\xE1\x22\xD4\xEF\x02\xE9\x22\xE7\x02\xA7\xE9\x06\x4E\xEB\x2E\x06\x45\x33\xCA\x20\x24\xC3\x29\xDB\x06\x03\xEC\xB6\x11\xF1\x01\x0C\xB2\x11\xC8\x36\x0E\xD4\xEE\x02\x8D\xE5\x0E\x3A\xF6\x20\x28\xF1\x2E\xDA\x45\x52\xB2\x41\x13\xF1\xC2\xD7\x0D\x3F\xF0\x7F\x16\xE4\x83\x09\x90\xE2\xD6\x70\x06\xA9\xF2\x03\x25\xF5\x1D\x25\x2E\x61\xF1\xC8\x73\x07\x7E\x6F\xD8\x00\x0E\x0B\x26\x46\x95\xEE\xEC\x8F\xD7\x0E\x1A\xF3\x02\x1A\xC5\xE2\xC3\x97\xF6\xEC\xFE\xC3\x0F\x23\xF3\x3A\x13\xC6\x89\xC7\x99\xE1\x08\xCB\xE0\x94\xC3\x09\x3F\x0B\xE6\x83\x10\x32\x1E\xF2\xFC\xEF\x51\xC3\x05\x3A\xFE\x24\x4B\x04\x9E\xE3\xF0\x8F\xD7\x10\x3C\xF2\x1A\x1E\x0C\x7F\xF2\x82\xE2\xD6\x8B\x03\xD0\xF8\x11\x3C\xEE\xE6\x91\xF3\x94\xCF\x04\x8A\xF7\x4F\x14\x06\x43\xFF\x56\xFE\xC7\x24\x11\xF4\x97\x06\xA9\xD7\x06\xEA\xDF\xE6\xCB\xEE\xB0\xD9\x04\x91\xF5\x13\x0E\xEB\x6D\x0C\xE9\xD3\xEC\x8B\xDF\x04\x91\xF3\x14\x0E\xEB\x6F",
+					"\x04\xBD\xC6\xCB\x26\xFE\xC7\xA5\x04\xC2\xCC\x13\x40\xC3\x10\x08\xC5\x15\xF0\x20\xB4\xF6\x94\xE8\xE1\x13\x26\xEB\x83\x08\x6C\x31\xC8\xA7\x02\xD6\xC5\x11\xA7\xC6\x10\x3F\xF7\x94\xC9\x05\xC2\xF5\x4E\x37\x2C\x83\x0B\x5B\x11\xCB\x2A\x05\xEA\xAC\x01\xD9\xCC\xF7\x43\xCB\xEB\xD8\x17\x38\x12\x47\xCD\xF6\x20\x04\xF7\xE6\xDC\x2D\x64\x06\x3C\x5A\xCA\x03\x0E\x13\xF7\xF5\xE4\x0E\x0A\x52\xF5\xB8\xEA\x08\x8F\xC3\x4A\xF0\x04\x2A\xFC\x24\x65\x2F\x95\xF3\xD2\xB1\x07\x7E\x43\xBD\xE2\x09\xC9\xE2\xC2\xBB\xE3\x08\xDD\xED\xAB\xF6\x04\x79\xF5\x20\x69\x04\xF5\xD7\xF7\xD0\xDE\x1F\xFB\x04\x7E\xF5\x27\x2B\xE6\xBD\xEC\xD0\xF7\xC8\x18\x04\xF9\x01\x1D\xCA\xB2\xD8\xC0\xF9\xDE\x11\xCD\x18\x0B\xF8\x27\x16\x0F\x1B\xE1\x40\x0F\xF8\x77\xD9\x22\xCA\x07\x89\xF4\x23\x54\xE6\xC3\xFD\xE8\x53\xD7\x19\x1C\xF8\xAC\xB1\xE9\x98\xFB\x65\xFD\xEA\xD4\x03\xE4\xFF\x12\x02\x05\xF2\xA0\xFA\xB0\xD9\x06\x2A\xFB\x3B\x08\x01\x96\xF9\x10\x71\xF1\x9B\xC1\x08\xDE\x01\xE6\xDE\x0E\x06\x04\xF3\x86\x0A\xCD\xE1\xCA\x0A\x0B\x1C\x3A\xF9\xE3\x08\xD1\x87\xF9\xCD\xFE\xC7\xE8\x03",
+					"\xE8\xC9\x0F\x9A\xE6\xF4\xF3\xC6\x3F\xCD\x07\x4A\xF9\x38\x0D\xEB\xA6\xF4\xB2\xFE\xC6\x3C\x11\xFA\xC5\x0C\x03\x3D\xF9\xAA\xF1\x91\xF7\x04\xD6\xF0\x0E\x69\xEC\xEA\xC2\x08\x6D\xED\xD5\xFC\x07\xD7\xF5\x0E\x79\xEA\xEC\xF9\xD5\x88\xC1\x00\x55\x63\xBC\xF0\x0E\x88\xEA\xED\xC6\xAD\x88\xC6\x00\x6E\xF9\x81\x0C\x01\x5B\xFA\x20\x00\x31\x88\xCB\x00\x55\x61\x44\xE3\x10\x18\xFB\x30\xC2\xD6\x06\x0E\xF7\xDA\x18\xC6\xFB\xE9\x7F\xC5\x01\x36\xFB\x3A\x10\x03\x79\xF8\x6D\xF1\xC8\x12\x03\xF1\xC3\x11\xD3\xE2\xF7\x88\xFD\x9D\xD7\x00\x92\xFE\x49\x38\x00\xC7\xF0\x00\x04\xE3\x1F\xDC\x00\x99\xFC\x46\x3C\x00\xCE\xFE\xF9\xF5\xD1\x08\x01\xFD\x38\x14\xB8\xF2\xFB\xD2\xFD\xD5\xA6\x00\xEA\xFF\x13\x44\x04\xF3\xEA\xCD\xC7\xE5\xF8\x9C\x1C\xC6\xE0\xD2\x72\xF7\xAB\xAF\xFD\x18\x05\xC5\x7E\x5F\x73\xFF\xF8\x18\xF7\x51\xF3\x01\xD7\xF8\x03\x3D\xFF\x1E\xEA\xF9\xB7\xFD\xB6\xEF\xFD\x1F\x06\xFC\x89\x0A\x14\x08\xFE\x20\xF2\x58\xC1\x03\xD7\xF6\x04\x4D\xFF\x91\xF0\xFE\x5B\x7E\x1F\xC8\x03\xD7\xFD\x04\x56\xFF\x40\x1C\x02\xD8\xFC\xAD\x91\xC9\x27\x0F\xFA\xD4\x02\xF7",
+					"\xE2\x08\x1C\xF0\xF8\xE8\xAB\x88\xC6\x05\x2F\xFF\x16\x07\xFF\x01\x0E\x0C\x21\xFF\x96\xC2\xE1\xAF\xFE\x18\x10\xFF\x00\x05\xC6\xEA\xFE\xFA\xF3\xA5\xE4\x03\xEB\xE9\x03\xF8\x7D\x94\x72\xB3\x6C\x17\x09\x06\xAC\x11\x91\x6B\x01\xB5\x7E\x41\x0C\x06\x38\x7F\x75\x01\x51\x7F\x8A\x46\x04\xA7\x63\x94\x6E\x06\x09\x80\xC9\x0D\x5E\x62\x10\x0F\x80\xDC\x79\x07\x18\x8B\x46\x04\x04\x83\xB8\x7D\x41\x3B\x7D\x06\x07\x06\x89\x01\x8A\x11\x82\x7E\x40\x06\x00\x93\x69\x6F\x00\x05\x82\x10\x30\x01\xF8\x7E\x1D\x05\xD4\x4A\x5B\x06\x06\xAF\x62\xAC\x72\x01\x2A\x80\x8E\x02\xE6\x75\x11\x30\x83\x40\x09\x6B\x18\x79\x35\x83\x9F\x08\x07\x3E\x76\x39\x82\x40\x05\xAA\x42\x6B\x74\x01\x0F\x8B\x1D\x2A\x79\x89\x60\x63\x63\x10\x11\x80\xC2\x69\x1D\x06\x04\x93\x0B\x09\x19\x42\x0A\x6A\x11\x64\x76\x01\x0F\x87\x07\x38\x7F\x7E\x01\x51\x75\x99\x42\x04\x12\x1A\x10\x7A\x44\x1B\x81\xEC\x71\xB5\x7A\x44\x0D\x18\x52\x82\x3F\x69\x07\x3D\x80\x7A\x00\xFE\x74\xE7\x75\x11\xA3\x67\x40\x0D\x05\x9E\x80\x4A\x11\x1B\x82\x10\x24\x81\x70\x80\x17\x1F\x06\x8B\x81\xFE\x60\x1F\x0F\x04",
+					"\x91\x0B\xB3\x7E\x40\x01\x05\xB5\x81\x45\x12\x85\x19\x10\x33\x66\x80\x81\x50\x0D\x07\x38\x7F\xDB\x04\x21\x88\x07\x91\x64\x7F\x03\x1E\x8C\x2D\x0A\x82\x02\x06\x8C\x1E\x05\x9C\x11\x92\x82\x41\x0D\x63\x13\x82\x45\x11\x25\x83\x10\x19\x7B\xC2\x68\x20\x0D\x03\x81\x02\xF8\x7C\x20\x05\xD4\x7C\x66\x9B\x82\x3F\x63\x08\x3D\x80\x84\x00\xFE\x71\x08\x05\x75\x97\x80\x04\x8E\x8F\x46\x02\x8E\x80\xB6\x0D\x6E\x43\x04\xAD\x83\x08\x8C\x45\x33\x82\x02\x04\x29\x87\xAF\x5A\x11\xC7\x66\xC4\x22\x06\x9A\x19\x0A\x04\x9A\x18\x09\x81\x05\x87\x00\x22\x8E\x1D\x02\x83\xAE\x81\x44\x69\x08\x31\x82\xEB\x08\x32\x83\x10\x11\x67\x85\x82\xD6\x00\x0D\x83\x04\x00\x65\x34\x8C\x39\x13\x83\x02\x04\x27\x8F\xA8\x4A\x02\x3D\x83\x22\x08\xFF\x42\x02\x45\x74\x9C\x19\x10\x1A\x83\xF7\x65\x23\x0D\x03\x8E\x02\xF8\x7F\x9E\x75\x47\x15\x83\x8B\x83\x94\x60\x09\x0C\x83\xFE\x09\x84\x62\x10\x2C\x83\xBB\x80\x04\x12\x0F\x81\x04\xE2\x82\x35\x81\x3B\x07\x69\x03\x05\x2F\x86\x0B\x85\x11\x50\x6B\x9C\x7F\x0B\x85\x11\x59\x6A\x40\x0C\x04\x8F\x6A\x91\x00\x3C\x8F\x30\x05\x84\x01\x05",
+					"\x9C\x6A\x0F\x89\x0F\x0E\x87\x40\x02\xA8\x4F\x84\x8C\x1A\x42\x04\x0E\xAC\x68\x92\x01\x0F\x83\x09\x38\x7F\x84\x01\x51\x7B\xA7\x53\x7B\x11\x65\x25\x0D\x03\x96\x02\xF8\x7D\x21\x05\xD4\x53\x84\xED\x82\xB0\x68\x09\x0A\x84\x4C\x0A\xA2\x61\x10\x28\x84\xF5\x83\x09\x1E\x12\x80\x00\x1F\x87\x3F\x83\x37\x14\x6A\x03\x07\x14\x83\xA5\x59\x02\x3D\x82\x26\x06\x0C\x87\x07\x3A\x87\x40\x08\x6A\x11\x64\x9C\x00\x4B\x85\x20\x1D\x64\x03\x07\x09\x82\xAC\x5D\x02\x3D\x82\x27\x0F\x13\x89\x07\x4A\x86\x40\x0C\xA9\x53\x69\xA0\x01\x15\x3A\xD8\x58\x0B\xB4\x1A\x41\x0B\x03\x94\x84\x02\x11\x56\x83\x10\x03\x81\x31\x85\x07\x1B\x15\x83\x04\x1F\x67\x94\x63\x0A\x0F\x85\xD8\x08\x58\x81\x10\x25\x85\xC2\x69\x29\x08\x16\xAB\x0B\xC0\x1A\x56\x83\x10\x8C\x09\x86\x01\x51\x71\x17\x9F\x85\x73\x85\x81\x02\xE8\x75\x11\xCC\x19\x19\x80\xEC\x7D\x80\xA8\x00\xFE\x78\x08\x05\x75\xAD\x6B\x40\x0A\x70\x11\x64\xAA\x02\x51\x89\x10\x09\x02\x84\x86\x42\x01\x15\xB7\x67\xAB\x00\xFE\x7D\x0A\x38\x7F\x8A\x02\x53\x7B\x70\x46\x04\xC4\x1B\x30\x8A\x35\x17\x86\x03\x07\x4B\x6C\x15\x91",
+					"\x10\x9E\x86\x61\x8E\x8F\x6F\x02\x8A\x86\x41\x0C\x08\x05\x75\xA1\x86\x09\x8E\x8F\x70\x02\xF8\x7E\x2C\x08\xFF\x4D\x02\x4E\x74\xC5\x58\x19\xB9\x85\x9C\x0E\x6C\x8D\x19\xB4\x86\xB1\x0E\xAD\x66\x10\x05\x86\x61\x86\x12\x1A\x6D\x46\x04\x7D\x87\x67\x83\x2E\x31\x64\x03\x06\x0C\x8F\xA8\x74\x02\xA5\x86\x93\x04\x1C\x82\x04\x63\x87\xA3\x65\x0B\x09\x87\x02\x04\xA4\x7B\x87\x4B\x87\x01\x06\x5A\x8C\xA2\x76\x02\xD0\x85\x40\x01\x09\x18\x77\x0A\x05\x73\x8B\xAF\x53\x0B\x97\x7B\x1E\x66\x1C\x95\x87\xB8\x86\x93\x05\x09\x0E\x75\xE2\x19\x42\x0E\x6D\x11\x64\xB7\x02\x55\x8A\x35\x19\x5C\x06\x05\x7A\x82\x1C\x93\x0B\xD5\x58\x8E\x5E\x8F\x7A\x02\xEE\x84\xE7\x06\xAC\x62\x86\x11\x65\x2F\x09\x1D\xBF\x09\xFB\x86\x6A\x81\x91\x7E\x02\xF8\x7C\x30\x08\xFF\x59\x7A\x75\x13\x61\x86\x10\x0F\x86\x2C\x6A\x30\x0D\x03\x83\x03\xF8\x7C\x26\x05\xD4\x5D\x5C\x31\x82\x3F\x65\x0C\x3F\x87\xA0\x79\x1D\x14\x21\xBA\x80\xFE\x62\x31\x0F\x1F\x9A\x02\xBE\x77\x86\x82\x04\xBE\x63\xC7\x03\x7F\x82\xEA\x49\x62\xCE\x6A\x41\x0C\x94\x53\x69\xC8\x03\x7F\x8B\x1D\x22\x5C\x06\x05\x8A",
+					"\x86\x13\x9A\x0D\x55\x67\x40\x0B\x22\x82\x6B\xC9\x03\x5B\x8E\x2F\x3A\x1C\x06\x07\xCF\x11\x91\x4B\x03\x3D\x80\x33\x0A\x23\x95\x07\x3E\x8A\x41\x01\x74\x1A\x86\x9C\x0D\x91\x85\x96\x65\x87\xB7\x0E\x92\x82\x10\x06\x1D\x48\x89\xEC\x07\x24\x86\x04\x58\x67\x67\x8E\x0C\x03\x89\x41\x05\x95\x8B\x24\x91\x89\xC9\x0E\x96\x8F\x24\x8C\x89\x02\x10\x94\x8F\xEE\x42\x6B\xD0\x03\xEB\x7B\x1D\x20\x02\x2A\x7E\x98\x88\xEF\x7E\x63\xD5\x02\x99\x8E\x1D\x31\x7A\x32\x6E\x9A\x81\xF0\x51\x64\xDA\x02\x9B\x87\x1C\x2A\x02\x69\x88\xC2\x7C\xA2\x5F\x03\x76\x89\x72\x0F\x0A\x37\x2F\x50\x32\x9C\x80\xF1\x53\x69\xE4\x01\x9F\x81\x1C\x35\x02\x80\x8A\x42\x02\x28\x99\x7C\x53\x69\x3A\x06\x28\x85\x07\x03\x7D\x42\x01\x28\xAE\x7C\x8F\x6A\x3B\x0F\x28\x90\x07\xC1\x01\x9E\x89\x10\x27\x7C\xB9\x7D\x40\x03\x0F\x17\x8A\xD5\x06\x31\x0A\x29\xBB\x6E\xFE\x60\x3E\x00\x2A\x81\x05\xCB\x03\xA8\x85\x80\x51\x64\xFD\x03\xA9\x8A\x10\x10\x03\xAA\x89\x7D\x73\xA5\x42\x00\xD2\x2F\xDB\x75\x1D\x15\x03\xB1\x88\x9C\x7E\x8F\x47\x00\xB5\x89\x81\x0A\x0D\x39\x8A\x33\x6E\xAE\x6D\x2B\xB5\x09",
+					"\xDF\x00\xB0\x8E\xB8\x75\x69\x11\x03\xB0\x83\x20\x24\x03\xC6\x8B\x50\x7A\x2C\x8E\x09\xE9\x00\xB0\x84\xF6\x5D\x8A\xAE\x37\xB3\x84\x23\x2E\x03\xD2\x8A\x3F\x60\x02\x16\x8B\x38\x0B\x3C\x09\x2D\x91\x64\x25\x00\xB7\x8F\x27\x38\x03\xC0\x88\x08\x82\xAC\x6A\x00\x46\x5B\x76\x0D\x0F\x05\x75\x8B\x89\x09\x87\x9F\x6B\x00\xE9\x8A\x77\x0E\x0F\x2C\x8B\x0A\x06\xE5\x7D\xD5\x6C\x00\xE2\x88\x84\x00\x2C\xB6\x8B\xD4\x89\x0C\x09\x2F\x9E\x07\x04\x03\xEB\x7B\x28\xBC\x8B\x37\x7C\x00\x06\x03\x3F\x8B\xC7\x05\x02\x02\x30\x8E\x7A\xC2\x6B\x0E\x08\x30\x89\x07\x0E\x03\xC2\x89\x10\x2C\x7E\xD4\x88\x10\x0F\x30\x81\x07\x13\x02\xC4\x87\xCE\x51\x64\x45\x03\xC5\x85\x1C\x18\x00\x1A\x8E\x38\x6E\x8F\x4A\x01\xF1\x8A\xFC\x6D\x03\x8B\x8A\xB8\x7D\xC1\x8B\x04\x22\x8B\x50\x02\xF4\x21\xD2\x15\x31\x93\x89\xF0\x77\x9F\x52\x01\xE2\x8B\x15\x0E\x32\x92\x55\x30\x8E\xA2\x8A\xBA\x53\x69\x59\x02\xB8\x8E\x05\x37\x8C\x02\x35\xCE\x89\x10\x0B\x8A\x9F\x71\xC1\x80\x06\x22\x8B\x65\x00\xD0\x8A\x57\x42\x8D\x06\x04\xD1\x8E\x8F\x67\x01\xE2\x88\x1B\x0A\x34\x84\x4B\x4C\x8F\x40\x0E",
+					"\x34\x91\x64\x6E\x02\xB8\x83\x07\x13\x8D\x6C\x25\xD5\x8F\x25\x9B\x75\xFE\x61\x1D\x02\x2E\xBA\x01\x5C\x8D\xD5\x6E\x35\x81\x04\x8B\x88\x57\x74\x2D\xBC\x01\xE2\x89\x20\x05\x36\x80\x00\xDB\x7E\xA4\x8A\x33\xA0\x8D\x11\x67\x20\x02\x2E\x88\x02\x6F\x8E\x13\x07\x36\x80\x00\xE1\x6A\x40\x06\x96\x73\x87\xD1\x09\xDF\x88\x36\xA0\x89\x11\x13\xDF\x83\x10\x16\x6B\x53\x6A\x22\x05\x32\x9C\x0B\x6E\x64\x78\x53\xA5\x4B\x02\x8B\x8D\x70\x06\xFE\x75\x11\x8D\x8E\x40\x0E\x24\xB7\x67\x8C\x03\xDB\x8E\x08\x2F\x8D\x55\x01\x0F\x86\x97\x43\x04\x97\x8C\x8B\x60\x09\x06\x59\x91\x03\xDB\x8D\xFE\x75\x11\xEC\x6B\x40\x0E\x74\x11\x64\x93\x01\xE4\x83\x75\x0A\x04\xA1\x8F\x1F\x64\x09\x06\x59\x95\x03\xDB\x87\x05\x3D\x80\x80\x66\x40\x0B\x3A\x93\x69\x97\x02\xEB\x8E\x2F\x39\x8E\x01\x05\xEC\x85\xA7\x58\x02\x46\x59\x26\x0F\x36\x98\x01\x3D\x80\xD6\x13\x61\x48\x5E\xE3\x2E\xD2\x57\x63\x7E\x2F\x06\x5F\xA2\x6B\xFC\x03\x5D\xAA\x62\xF4\x8F\x1D\x35\x5D\xFF\x01\xD9\x56\x3D\x95\x32\xDA\x8D\xF5\x86\xFC\x18\x45\x52\x44\x8D\x4A\xA5\x56\x66\x95\x32\xD4\x5E\x3C\xB1\x58\x57",
+					"\x87\x51\x09\x3E\x95\x30\x37\x58\x07\x41\xC4\x37\x5D\xAF\x5D\x25\x3D\xBD\x18\x05\xB6\x88\x00\x06\x2B\xBF\x03\xB9\x48\xFD\x87\x63\x79\x8F\x59\x5F\x8D\x5F\xF5\x06\x08\xD5\x2D\x86\x51\x76\x7E\x8F\x37\x59\xD1\x64\x74\x55\x2F\x6A\x5C\x56\x09\x40\x81\x05\x0B\x91\x03\x61\x63\x47\x4A\x44\x04\x04\x9F\x13\x27\x5E\x6C\x5F\x8D\x5F\x0E\x55\x32\xE4\x5D\x55\x09\x41\x89\x05\xD3\x5C\x06\x9E\x27\x00\x00\xD3\x5D\x86\x51\x42\x81\x05\x23\x90\xDF\x42\x10\x22\x90\x3F\x4E\x09\x91\x10\x28\x90\x89\x60\x08\x96\x80\x5C\x4D\xAF\x5E\x0B\x92\x86\x72\x90\x44\x6C\x09\x9E\x40\x81\x4E\x35\x92\x0A\x97\x40\xBA\x90\x09\x93\xF4\x50\x3D\xBE\x90\x36\x93\x1E\x64\x43\x96\x66\x43\x91\x52\x63\x10\x13\x5F\xF9\x8F\xF4\x58\x15\x0A\x91\x41\x93\x84\x53\x7D\x6F\x43\x45\x92\x3B\x4D\x44\x8F\x4D\x19\x52\x58\x00\x7E\x6A\x34\x95\x30\xDD\x53\x77\x77\x58\x54\x4E\x58\x0D\x45\x92\x05\x7A\x5D\xDE\x5F\x41\xA1\x91\x75\x50\x56\x0B\x7E\x4C\x05\x67\x92\x51\x0C\x1A\x58\x05\x97\x4E\x58\x0D\x46\x92\x05\x2A\x59\xE2\x5F\x41\xA7\x4E\x62\x04\x1D\x92\x15\x27\x4E\x58\x04\x1E\x91\x14",
+					"\x3A\x91\xF5\x4D\x7A\x0D\x83\x7F\x04\xA1\x3D\xFE\x81\x48\x81\x05\x83\x91\x1F\x9D\x8D\x44\x92\x11\x40\x22\x93\x43\xA1\x3E\xF3\x8C\x23\x9A\x48\xAB\x77\x61\x42\x5E\x6F\x48\x92\x92\x86\x92\xFD\x53\x49\x82\x04\xC4\x3D\xE8\x39\x49\x9F\x90\xA1\x3D\x25\x3D\x49\x97\x92\xDE\x8C\x0A\x63\x3E\x91\x92\xD6\x8E\x28\x95\x4A\xA1\x3E\x58\x04\x2A\x90\x4A\x86\x3F\xAA\x91\x25\x9C\x4A\xB7\x58\x9F\x92\x2B\x99\x4A\xAE\x5F\xA6\x91\x04\x6E\x4A\x90\x8F\x04\x53\x2D\x91\x14\x39\x60\x4C\x04\x2F\x96\x14\x16\x38\x58\x07\x8C\x4B\x1D\x79\x2E\xBE\x34\x56\x04\x84\x55\x05\xC7\x91\x52\x0F\x82\x46\x93\x1F\x90\xBE\x40\x14\x0E\x93\x3D\x04\x89\x51\x14\x12\x93\x42\x4B\x84\x54\x4D\x99\x4F\x23\x4F\x35\x96\x10\x1A\x93\x03\x06\xB3\x52\x16\x1E\x93\x52\x04\xF4\x51\x14\x22\x93\xE8\x4C\x58\x64\x2F\x77\x58\x00\x4B\x51\x09\x4E\xBE\x04\x18\x3D\x25\x3D\x4E\x81\x05\xEF\x92\x72\x3F\x41\x98\x3C\x58\x06\xC3\x4C\x14\x36\x93\x46\x04\x4A\x35\x4F\xB7\x58\xFA\x91\x50\x0D\x4F\xB8\x38\x31\x5B\x3F\x9D\xF2\x29\x07\xDF\x43\x3F\x02\xD9\x18\x05\x07\x95\x50\x09\x50\xB1\x58",
 				};
 				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 			}
@@ -7241,13 +12572,28 @@ namespace vl
 			const wchar_t* RuleParserRuleName(vl::vint index)
 			{
 				static const wchar_t* results[] = {
+					L"Cond0",
+					L"Cond1",
+					L"Cond2",
+					L"Cond",
+					L"SwitchItem",
+					L"Switches",
 					L"OptionalBody",
+					L"TestBranch",
+					L"Token",
 					L"Syntax0",
 					L"Syntax1",
 					L"Syntax2",
 					L"Syntax",
+					L"AssignmentOp",
 					L"Assignment",
 					L"Clause",
+					L"Placeholder",
+					L"RuleName",
+					L"LriConfig",
+					L"LriContinuationBody",
+					L"LriContinuation",
+					L"LriTarget",
 					L"Rule",
 					L"File",
 				};
@@ -7257,83 +12603,191 @@ namespace vl
 			const wchar_t* RuleParserStateLabel(vl::vint index)
 			{
 				static const wchar_t* results[] = {
-					L"[0][OptionalBody] BEGIN ",
-					L"[1][OptionalBody] END [ENDING]",
-					L"[2][OptionalBody]\"[\" @ Syntax \"]\"",
-					L"[3][OptionalBody]\"[\" Syntax \"]\" @",
-					L"[4][OptionalBody]\"[\" Syntax @ \"]\"",
-					L"[5][Syntax0] BEGIN ",
-					L"[6][Syntax0] END [ENDING]",
-					L"[7][Syntax0]< \"!\" @ ID >",
-					L"[8][Syntax0]< \"!\" ID @ >",
-					L"[9][Syntax0]< \"+\" @ OptionalBody >",
-					L"[10][Syntax0]< \"+\" OptionalBody @ >",
-					L"[11][Syntax0]< \"-\" @ OptionalBody >",
-					L"[12][Syntax0]< \"-\" OptionalBody @ >",
-					L"[13][Syntax0]< \"{\" @ Syntax [ \";\" Syntax ] \"}\" >",
-					L"[14][Syntax0]< \"{\" Syntax @ [ \";\" Syntax ] \"}\" >",
-					L"[15][Syntax0]< \"{\" Syntax [ \";\" @ Syntax ] \"}\" >",
-					L"[16][Syntax0]< \"{\" Syntax [ \";\" Syntax @ ] \"}\" >",
-					L"[17][Syntax0]< \"{\" Syntax [ \";\" Syntax ] \"}\" @ >",
-					L"[18][Syntax0]< ID @ [ \":\" ID ] >",
-					L"[19][Syntax0]< ID [ \":\" @ ID ] >",
-					L"[20][Syntax0]< ID [ \":\" ID @ ] >",
-					L"[21][Syntax0]< OptionalBody @ >",
-					L"[22][Syntax0]< STRING @ >",
-					L"[23][Syntax0]<< \"(\" !Syntax \")\" @ >>",
-					L"[24][Syntax0]<< \"(\" !Syntax @ \")\" >>",
-					L"[25][Syntax0]<< \"(\" @ !Syntax \")\" >>",
-					L"[26][Syntax1] BEGIN ",
-					L"[27][Syntax1] END [ENDING]",
-					L"[28][Syntax1]< Syntax1 @ Syntax0 >",
-					L"[29][Syntax1]< Syntax1 Syntax0 @ >",
-					L"[30][Syntax1]<< !Syntax0 @ >>",
-					L"[31][Syntax2] BEGIN ",
-					L"[32][Syntax2] END [ENDING]",
-					L"[33][Syntax2]< Syntax2 \"|\" @ Syntax1 >",
-					L"[34][Syntax2]< Syntax2 \"|\" Syntax1 @ >",
-					L"[35][Syntax2]< Syntax2 @ \"|\" Syntax1 >",
-					L"[36][Syntax2]<< !Syntax1 @ >>",
-					L"[37][Syntax] BEGIN ",
-					L"[38][Syntax] END [ENDING]",
-					L"[39][Syntax]<< !Syntax2 @ >>",
-					L"[40][Assignment] BEGIN ",
-					L"[41][Assignment] END [ENDING]",
-					L"[42][Assignment]< ID \"=\" @ ID >",
-					L"[43][Assignment]< ID \"=\" ID @ >",
-					L"[44][Assignment]< ID @ \"=\" ID >",
-					L"[45][Clause] BEGIN ",
-					L"[46][Clause] END [ENDING]",
-					L"[47][Clause]< Syntax \"as\" \"partial\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[48][Clause]< Syntax \"as\" \"partial\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[49][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
-					L"[50][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
-					L"[51][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
-					L"[52][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
-					L"[53][Clause]< Syntax \"as\" @ \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[54][Clause]< Syntax \"as\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[55][Clause]< Syntax \"as\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[56][Clause]< Syntax \"as\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
-					L"[57][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
-					L"[58][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
-					L"[59][Clause]< Syntax \"as\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
-					L"[60][Clause]< Syntax @ \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[61][Clause]< Syntax @ \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[62][Clause]< Syntax @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
-					L"[63][Clause]< Syntax [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
-					L"[64][Clause]< Syntax [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
-					L"[65][Clause]< Syntax [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
-					L"[66][Clause]< Syntax [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
-					L"[67][Rule] BEGIN ",
-					L"[68][Rule] END [ENDING]",
-					L"[69][Rule]< ID @ { \"::=\" Clause } \";\" >",
-					L"[70][Rule]< ID { \"::=\" @ Clause } \";\" >",
-					L"[71][Rule]< ID { \"::=\" Clause @ } \";\" >",
-					L"[72][Rule]< ID { \"::=\" Clause } \";\" @ >",
-					L"[73][File] BEGIN ",
-					L"[74][File] END [ENDING]",
-					L"[75][File]< Rule @ { Rule } >",
-					L"[76][File]< Rule { Rule @ } >",
+					L"[0][Cond0] BEGIN ",
+					L"[1][Cond0] END [ENDING]",
+					L"[2][Cond0]< \"!\" @ Cond0 >",
+					L"[3][Cond0]< \"!\" Cond0 @ >",
+					L"[4][Cond0]< ID @ >",
+					L"[5][Cond0]<< \"(\" !Cond \")\" @ >>",
+					L"[6][Cond0]<< \"(\" !Cond @ \")\" >>",
+					L"[7][Cond0]<< \"(\" @ !Cond \")\" >>",
+					L"[8][Cond1] BEGIN ",
+					L"[9][Cond1] END [ENDING]",
+					L"[10][Cond1]< Cond1 \"&&\" @ Cond0 >",
+					L"[11][Cond1]< Cond1 \"&&\" Cond0 @ >",
+					L"[12][Cond1]< Cond1 @ \"&&\" Cond0 >",
+					L"[13][Cond1]<< !Cond0 @ >>",
+					L"[14][Cond2] BEGIN ",
+					L"[15][Cond2] END [ENDING]",
+					L"[16][Cond2]< Cond2 \"||\" @ Cond1 >",
+					L"[17][Cond2]< Cond2 \"||\" Cond1 @ >",
+					L"[18][Cond2]< Cond2 @ \"||\" Cond1 >",
+					L"[19][Cond2]<< !Cond1 @ >>",
+					L"[20][Cond] BEGIN ",
+					L"[21][Cond] END [ENDING]",
+					L"[22][Cond]<< !Cond2 @ >>",
+					L"[23][SwitchItem] BEGIN ",
+					L"[24][SwitchItem] END [ENDING]",
+					L"[25][SwitchItem]< \"!\" @ ID >",
+					L"[26][SwitchItem]< \"!\" ID @ >",
+					L"[27][SwitchItem]< ID @ >",
+					L"[28][Switches] BEGIN ",
+					L"[29][Switches] END [ENDING]",
+					L"[30][Switches]\"switch\" @ { SwitchItem ; \",\" } \";\"",
+					L"[31][Switches]\"switch\" { SwitchItem ; \",\" @ } \";\"",
+					L"[32][Switches]\"switch\" { SwitchItem ; \",\" } \";\" @",
+					L"[33][Switches]\"switch\" { SwitchItem @ ; \",\" } \";\"",
+					L"[34][OptionalBody] BEGIN ",
+					L"[35][OptionalBody] END [ENDING]",
+					L"[36][OptionalBody]\"[\" @ Syntax \"]\"",
+					L"[37][OptionalBody]\"[\" Syntax \"]\" @",
+					L"[38][OptionalBody]\"[\" Syntax @ \"]\"",
+					L"[39][TestBranch] BEGIN ",
+					L"[40][TestBranch] END [ENDING]",
+					L"[41][TestBranch]< Cond \":\" ( Syntax1 @ | \";\" ) >",
+					L"[42][TestBranch]< Cond \":\" ( Syntax1 | \";\" @ ) >",
+					L"[43][TestBranch]< Cond \":\" @ ( Syntax1 | \";\" ) >",
+					L"[44][TestBranch]< Cond @ \":\" ( Syntax1 | \";\" ) >",
+					L"[45][Token] BEGIN ",
+					L"[46][Token] END [ENDING]",
+					L"[47][Token]CONDITIONAL_LITERAL @",
+					L"[48][Token]ID @",
+					L"[49][Token]STRING @",
+					L"[50][Syntax0] BEGIN ",
+					L"[51][Syntax0] END [ENDING]",
+					L"[52][Syntax0]< \"!\" @ ID >",
+					L"[53][Syntax0]< \"!\" ID @ >",
+					L"[54][Syntax0]< \"!(\" @ { SwitchItem ; \",\" } \";\" Syntax \")\" >",
+					L"[55][Syntax0]< \"!(\" { SwitchItem ; \",\" @ } \";\" Syntax \")\" >",
+					L"[56][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" @ Syntax \")\" >",
+					L"[57][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" Syntax \")\" @ >",
+					L"[58][Syntax0]< \"!(\" { SwitchItem ; \",\" } \";\" Syntax @ \")\" >",
+					L"[59][Syntax0]< \"!(\" { SwitchItem @ ; \",\" } \";\" Syntax \")\" >",
+					L"[60][Syntax0]< \"+\" @ OptionalBody >",
+					L"[61][Syntax0]< \"+\" OptionalBody @ >",
+					L"[62][Syntax0]< \"-\" @ OptionalBody >",
+					L"[63][Syntax0]< \"-\" OptionalBody @ >",
+					L"[64][Syntax0]< \"?(\" @ TestBranch { \"|\" TestBranch } \")\" >",
+					L"[65][Syntax0]< \"?(\" TestBranch @ { \"|\" TestBranch } \")\" >",
+					L"[66][Syntax0]< \"?(\" TestBranch { \"|\" @ TestBranch } \")\" >",
+					L"[67][Syntax0]< \"?(\" TestBranch { \"|\" TestBranch @ } \")\" >",
+					L"[68][Syntax0]< \"?(\" TestBranch { \"|\" TestBranch } \")\" @ >",
+					L"[69][Syntax0]< \"{\" @ Syntax [ \";\" Syntax ] \"}\" >",
+					L"[70][Syntax0]< \"{\" Syntax @ [ \";\" Syntax ] \"}\" >",
+					L"[71][Syntax0]< \"{\" Syntax [ \";\" @ Syntax ] \"}\" >",
+					L"[72][Syntax0]< \"{\" Syntax [ \";\" Syntax @ ] \"}\" >",
+					L"[73][Syntax0]< \"{\" Syntax [ \";\" Syntax ] \"}\" @ >",
+					L"[74][Syntax0]< OptionalBody @ >",
+					L"[75][Syntax0]< Token @ [ \":\" ID ] >",
+					L"[76][Syntax0]< Token [ \":\" @ ID ] >",
+					L"[77][Syntax0]< Token [ \":\" ID @ ] >",
+					L"[78][Syntax0]<< \"(\" !Syntax \")\" @ >>",
+					L"[79][Syntax0]<< \"(\" !Syntax @ \")\" >>",
+					L"[80][Syntax0]<< \"(\" @ !Syntax \")\" >>",
+					L"[81][Syntax1] BEGIN ",
+					L"[82][Syntax1] END [ENDING]",
+					L"[83][Syntax1]< Syntax1 @ Syntax0 >",
+					L"[84][Syntax1]< Syntax1 Syntax0 @ >",
+					L"[85][Syntax1]<< !Syntax0 @ >>",
+					L"[86][Syntax2] BEGIN ",
+					L"[87][Syntax2] END [ENDING]",
+					L"[88][Syntax2]< Syntax2 \"|\" @ Syntax1 >",
+					L"[89][Syntax2]< Syntax2 \"|\" Syntax1 @ >",
+					L"[90][Syntax2]< Syntax2 @ \"|\" Syntax1 >",
+					L"[91][Syntax2]<< !Syntax1 @ >>",
+					L"[92][Syntax] BEGIN ",
+					L"[93][Syntax] END [ENDING]",
+					L"[94][Syntax]<< !Syntax2 @ >>",
+					L"[95][AssignmentOp] BEGIN ",
+					L"[96][AssignmentOp] END [ENDING]",
+					L"[97][AssignmentOp]\"=\" @",
+					L"[98][AssignmentOp]\"?=\" @",
+					L"[99][Assignment] BEGIN ",
+					L"[100][Assignment] END [ENDING]",
+					L"[101][Assignment]< ID @ AssignmentOp ID >",
+					L"[102][Assignment]< ID AssignmentOp @ ID >",
+					L"[103][Assignment]< ID AssignmentOp ID @ >",
+					L"[104][Clause] BEGIN ",
+					L"[105][Clause] END [ENDING]",
+					L"[106][Clause]< \"!\" \"prefix_merge\" \"(\" @ RuleName \")\" >",
+					L"[107][Clause]< \"!\" \"prefix_merge\" \"(\" RuleName \")\" @ >",
+					L"[108][Clause]< \"!\" \"prefix_merge\" \"(\" RuleName @ \")\" >",
+					L"[109][Clause]< \"!\" \"prefix_merge\" @ \"(\" RuleName \")\" >",
+					L"[110][Clause]< \"!\" @ \"prefix_merge\" \"(\" RuleName \")\" >",
+					L"[111][Clause]< \"!\" @ RuleName LriContinuation >",
+					L"[112][Clause]< \"!\" RuleName @ LriContinuation >",
+					L"[113][Clause]< \"!\" RuleName LriContinuation @ >",
+					L"[114][Clause]< \"left_recursion_placeholder\" \"(\" @ Placeholder { \",\" Placeholder } \")\" >",
+					L"[115][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder @ { \",\" Placeholder } \")\" >",
+					L"[116][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder { \",\" @ Placeholder } \")\" >",
+					L"[117][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder { \",\" Placeholder @ } \")\" >",
+					L"[118][Clause]< \"left_recursion_placeholder\" \"(\" Placeholder { \",\" Placeholder } \")\" @ >",
+					L"[119][Clause]< \"left_recursion_placeholder\" @ \"(\" Placeholder { \",\" Placeholder } \")\" >",
+					L"[120][Clause]< Syntax \"as\" \"partial\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[121][Clause]< Syntax \"as\" \"partial\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[122][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
+					L"[123][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
+					L"[124][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
+					L"[125][Clause]< Syntax \"as\" \"partial\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
+					L"[126][Clause]< Syntax \"as\" @ \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[127][Clause]< Syntax \"as\" @ ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[128][Clause]< Syntax \"as\" ID @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[129][Clause]< Syntax \"as\" ID [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
+					L"[130][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
+					L"[131][Clause]< Syntax \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
+					L"[132][Clause]< Syntax \"as\" ID [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
+					L"[133][Clause]< Syntax @ \"as\" \"partial\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[134][Clause]< Syntax @ \"as\" ID [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[135][Clause]< Syntax @ [ \"{\" { Assignment ; \",\" } \"}\" ] >",
+					L"[136][Clause]< Syntax [ \"{\" @ { Assignment ; \",\" } \"}\" ] >",
+					L"[137][Clause]< Syntax [ \"{\" { Assignment ; \",\" @ } \"}\" ] >",
+					L"[138][Clause]< Syntax [ \"{\" { Assignment ; \",\" } \"}\" @ ] >",
+					L"[139][Clause]< Syntax [ \"{\" { Assignment @ ; \",\" } \"}\" ] >",
+					L"[140][Placeholder] BEGIN ",
+					L"[141][Placeholder] END [ENDING]",
+					L"[142][Placeholder]< ID @ >",
+					L"[143][RuleName] BEGIN ",
+					L"[144][RuleName] END [ENDING]",
+					L"[145][RuleName]< ID @ >",
+					L"[146][LriConfig] BEGIN ",
+					L"[147][LriConfig] END [ENDING]",
+					L"[148][LriConfig]\"left_recursion_inject\" @",
+					L"[149][LriConfig]\"left_recursion_inject_multiple\" @",
+					L"[150][LriContinuationBody] BEGIN ",
+					L"[151][LriContinuationBody] END [ENDING]",
+					L"[152][LriContinuationBody]LriConfig \"(\" @ Placeholder \")\" LriTarget { \"|\" LriTarget }",
+					L"[153][LriContinuationBody]LriConfig \"(\" Placeholder \")\" @ LriTarget { \"|\" LriTarget }",
+					L"[154][LriContinuationBody]LriConfig \"(\" Placeholder \")\" LriTarget @ { \"|\" LriTarget }",
+					L"[155][LriContinuationBody]LriConfig \"(\" Placeholder \")\" LriTarget { \"|\" @ LriTarget }",
+					L"[156][LriContinuationBody]LriConfig \"(\" Placeholder \")\" LriTarget { \"|\" LriTarget @ }",
+					L"[157][LriContinuationBody]LriConfig \"(\" Placeholder @ \")\" LriTarget { \"|\" LriTarget }",
+					L"[158][LriContinuationBody]LriConfig @ \"(\" Placeholder \")\" LriTarget { \"|\" LriTarget }",
+					L"[159][LriContinuation] BEGIN ",
+					L"[160][LriContinuation] END [ENDING]",
+					L"[161][LriContinuation]< \"[\" @ LriContinuationBody \"]\" >",
+					L"[162][LriContinuation]< \"[\" LriContinuationBody \"]\" @ >",
+					L"[163][LriContinuation]< \"[\" LriContinuationBody @ \"]\" >",
+					L"[164][LriContinuation]< LriContinuationBody @ >",
+					L"[165][LriTarget] BEGIN ",
+					L"[166][LriTarget] END [ENDING]",
+					L"[167][LriTarget]< \"(\" @ RuleName LriContinuation \")\" >",
+					L"[168][LriTarget]< \"(\" RuleName @ LriContinuation \")\" >",
+					L"[169][LriTarget]< \"(\" RuleName LriContinuation \")\" @ >",
+					L"[170][LriTarget]< \"(\" RuleName LriContinuation @ \")\" >",
+					L"[171][LriTarget]< RuleName @ >",
+					L"[172][Rule] BEGIN ",
+					L"[173][Rule] END [ENDING]",
+					L"[174][Rule]< ID @ [ \":\" ID ] { \"::=\" Clause } \";\" >",
+					L"[175][Rule]< ID [ \":\" @ ID ] { \"::=\" Clause } \";\" >",
+					L"[176][Rule]< ID [ \":\" ID @ ] { \"::=\" Clause } \";\" >",
+					L"[177][Rule]< ID [ \":\" ID ] { \"::=\" @ Clause } \";\" >",
+					L"[178][Rule]< ID [ \":\" ID ] { \"::=\" Clause @ } \";\" >",
+					L"[179][Rule]< ID [ \":\" ID ] { \"::=\" Clause } \";\" @ >",
+					L"[180][File] BEGIN ",
+					L"[181][File] END [ENDING]",
+					L"[182][File]< [ Switches @ ] Rule { Rule } >",
+					L"[183][File]< [ Switches ] Rule @ { Rule } >",
+					L"[184][File]< [ Switches ] Rule { Rule @ } >",
 				};
 				return results[index];
 			}
@@ -8157,21 +13611,22 @@ namespace vl
 		{
 			void ParserGenTypeParserData(vl::stream::IStream& outputStream)
 			{
-				static const vl::vint dataLength = 2267; // 29656 bytes before compressing
+				static const vl::vint dataLength = 2558; // 39168 bytes before compressing
 				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 219;
-				static const vl::vint dataSolidRows = 8;
-				static const vl::vint dataRows = 9;
+				static const vl::vint dataRemain = 254;
+				static const vl::vint dataSolidRows = 9;
+				static const vl::vint dataRows = 10;
 				static const char* compressed[] = {
-					"\xD8\x73\x00\x00\xD3\x08\x00\x00\x1A\x00\x01\x82\x80\x08\x03\x82\x81\x82\x06\x89\x82\x84\x0A\x83\x06\x84\x09\x0A\x99\x0A\x81\x1A\x80\x16\x84\x16\x0A\xC0\x05\x09\x8F\x7D\x8E\x8F\x8E\x0A\x80\x1F\x9F\x81\x93\x92\x8F\x92\x26\xFF\x68\x86\x9B\x93\x91\x96\x92\x0A\xA9\xAA\x91\x99\x97\x97\x92\x9A\x2C\xB8\xAE\x9A\x90\x9C\x8D\x9A\x9E\x37\xBE\xB9\x82\xAB\x9C\xA1\x9E\x83\x32\xB6\xA0\x80\xAB\xA6\xA1\xA0\xA4\x3F\xCE\x8D\xA1\x96\x81\x00\xA7\x99\x52\xD8\x90\xA3\xAB\xAD\xA1\xAF\xA3\x03\xC9\x97\xAA\xAA\xA9\xB1\xA9\xAF\x4F\xE6\x9C\xAA\xBE\xAC\xB4\xB0\x81\x62\xD9\xA4\xB3\xB3\xB5\xBA\xB8\xBB\x68\xD3\xAE\xA9\xB0\xBF\xB3\xBC\xBD\x7D\xEB\x81\xCD\xB3\xC7\xB5\x81\xB8\x79\xE5\x85\xDC\xB1\x86\xA9\x84\xC7\x89\xF4\xB7\xB3\xC1\xC8\xBF\xBE\xC5\x87\xFE\x8B\xC0\xC9\xCA\xC1\xCE\xC2\x9F\x86\xE2\x9A\xC1\xD4\xC7\xD0\xCF\xA7\xA0\xE9\xC2\xD8\xC7\xCA\xC9\xCA\x94\xAE\xD6\xDB\xC8\xCB\xD6\xD3\xD6\xB4\xAF\xF2\xD1\xD9\xDB\xD9\xD2\xCE\xB6\xC0\xF8\xDF\xD5\xDB\xE1\xE1\xE2\xA4\xC7\xFA\xC2\x82\x02\x84\xC9\xDD\xB0\xD1\xD0\xF3\xED\xDC\xDC\xE3\xE5\xD7\xBE\xCA\xFA",
-					"\xE6\xE5\xED\xE5\x01\xCE\xDC\xC9\xFE\xE8\xD4\xF2\xD4\xF3\xAC\xE3\xEA\xE5\xFB\xF7\xF1\xF7\xF4\xEC\xF1\xEE\xF2\xF0\xFB\xFA\xFB\xFA\xF8\xB7\xEF\xFA\xF4\xFC\xFF\xFA\xFF\xF9\x42\x7B\x7E\x80\xFD\x44\x8F\x7E\x81\x01\x88\x75\x82\x82\x07\x8C\x89\x80\x76\xDB\x56\x71\x86\x74\xD5\x54\x89\x76\x84\xE8\x40\x8A\x84\x82\x1B\x8E\x8D\x84\x84\x19\x9C\x82\x8A\x87\x23\xA0\x83\x80\x89\xB5\x4C\x4F\x62\x78\x0B\xA6\x8D\x88\x8B\x0D\xAE\x81\x8C\x8C\x0F\xB4\x86\x6B\x46\x2B\x98\x87\x8A\x8C\x35\xBA\x8F\x89\x42\x06\x21\x7E\x8F\x8C\x43\xBD\x86\x87\x84\xD4\x57\x87\x91\x88\x28\xBC\x8F\x86\x42\x07\x02\x9B\x93\x8E\x36\xA5\x85\x95\x93\x0A\x48\x45\x57\x95\x10\x89\x02\x95\x92\x48\x95\x80\x98\x93\x4E\x96\x95\x93\x93\x67\xA6\x93\x97\x8F\x6B\x84\x9D\x9A\x91\x63\x94\x99\x98\x96\x73\xA5\x94\x9F\x9B\x68\xB8\x90\x72\x02\x5F\xA2\x9E\x9E\x92\x71\xAC\x91\xA2\x9B\x83\xB0\x9F\x9D\x98\x80\x87\xA4\x98\x97\x0D\x7D\x99\xA3\xA3\x88\x91\xAB\xA1\x9D\x8C\x94\xA6\xA6\x9E\x77\x83\x4C\x02\x42\xCD\x57\xA5\xA1\x9E\x9F\xAA\x91\xA9\xA6\x8A\xB2\x98\xA6\x9D\xA8\x95\xA7\xAA\xAA",
-					"\xA3\xA9\xA2\x86\x03\x8E\x92\xA6\xA9\xAB\xAC\xA5\xA2\xA2\xAD\x84\xB8\xA6\xA0\xA4\x93\xAB\xAE\xA6\xAE\xA0\x87\xAF\x01\xAC\xBD\xB4\xAF\xAC\xAF\xB3\x80\xB2\xAA\xB2\xA4\x88\xB7\xAE\xB3\xB9\x90\xBB\xAE\xAC\xCF\x94\xB1\xB6\xB5\xD3\x85\xBC\xB2\xAB\x06\x50\x04\xB1\xB2\xD2\x81\xB1\xBB\xB2\xE3\x8D\xB8\xB6\xB8\x91\x91\x0F\xB5\xB5\xDA\xA5\xBC\xB6\xB1\xBE\xB1\xB0\xBF\xBC\xDB\xB5\xAE\xBA\xBD\xE7\xA4\xB9\xBE\xB9\xED\xBB\xBF\xBA\x40\x10\x79\x82\xBD\xBD\xC7\xBE\xB8\xBD\xBF\x08\xE0\xB6\xC1\xC1\xC6\x53\x0B\xBB\xB5\x09\xEC\xBA\xC1\xC4\x10\xD3\xC6\xC6\xC4\x18\xD5\xC9\xC5\xB6\x17\xDA\xCE\xC4\xC7\x1B\xE8\xB4\xC4\xC8\x1F\xE2\xCD\xC4\xC9\x28\xE6\xC1\xCA\xBE\x23\xEA\xC5\xC8\xCB\x27\xEE\xC9\xCA\xBE\x14\x0F\xC3\xCC\xBF\x31\xF0\xC8\x69\x05\x36\xF2\xCE\xCE\xCE\x2F\xF8\xCB\xCA\xD0\x41\xE1\x46\x04\xA7\x07\xC9\x78\x05\xCF\x40\xF7\xCF\xBF\xBD\x0C\xF9\xC4\xD2\xD3\x49\xC3\xDF\xD3\xC2\x03\xD0\xD9\xD4\xD6\xF4\x9A\xDD\xD4\xD7\x87\x92\x42\xC3\xD7\x2D\xCD\xDF\xCF\xD4\x67\xD7\xD5\xD8\xDA\x66\xED\xDC\xD9\x6D\x00\x63\xD4\xC3\xD6\x6B\xEA\xD2\xD6\xDD\x56",
-					"\xD5\xD5\xD2\xDE\x54\xD1\xD9\xDE\xDF\xAA\x5B\x0C\xD3\xDB\x78\xFB\xD0\xE1\xDF\x74\xF7\xDC\xDD\xDA\x8B\xEE\xD5\xE0\xE2\x64\xCA\xE7\xE0\xE3\x12\x9C\x03\xE0\x84\x1D\x17\xED\xE0\xE1\x9B\xCF\xE4\xE5\xE2\x7F\xE0\xE6\xE2\xE8\x90\xF3\xD1\xE5\xB5\x1E\x1A\xE3\xE6\xE3\x9D\xED\xEB\xEA\xB9\x1F\x2A\xE4\xEB\xE7\xA7\xE3\xE5\xED\xE9\x5E\xC7\xA0\x0A\xEC\xB7\xF4\xE6\xEA\x40\x14\x72\xD9\xEF\xF0\x60\xC4\xF5\xDE\xEB\xB3\xFA\xB2\x08\xEF\xBF\xC6\xF2\xE6\x41\x23\x0C\xFE\xF1\xE8\xBD\xEC\xE5\xC0\x09\xD2\xC5\xFA\xF7\xF1\xAF\xDE\xE6\xF5\xF2\x9C\xDD\xF8\xF3\xD7\x25\x31\xA6\x09\xF6\xDC\xE0\xFE\xF5\xF8\xEA\xE3\xFD\xF3\xF6\xCF\xD5\xFC\xFA\xFC\xEB\xF5\xFE\xFB\xF4\xB6\xEF\xF9\xF8\xFD\xF7\xF0\xF4\xF6\xFE\xF1\x60\x83\xFF\x78\x72\x35\x13\x28\x7A\x61\x16\x22\x7A\xFF\x79\x74\x80\xDF\x4D\x87\x7B\xFC\x62\x7E\x04\xED\x73\x83\x81\x29\x07\x80\x03\x8B\x80\xEE\x1A\x8E\x80\x0E\x90\x82\x80\x0C\x9E\x83\xFC\x20\x8B\x83\xFD\x64\x85\x83\x26\x8F\x81\x6D\x2A\x08\x83\x6B\x6B\x05\x85\x25\x81\x82\x0A\xF6\x75\x83\x13\x9F\x83\x86\xFD\x7D\x5C\x46\x0A\x8D\x05\x58\x6E\x00",
-					"\x86\x28\x92\x86\x08\xB4\x84\x83\x22\x91\x86\x88\x36\x83\x84\x0E\xB5\x8B\x88\x24\x8D\x8F\x88\x50\x82\x23\x0B\x40\x87\x87\x21\xB9\x82\x88\x29\x96\x88\x13\xDA\x8B\x6A\x18\x14\x8A\x89\x5C\x91\x8B\x13\xC9\x84\x88\x31\xA1\x8C\x8C\xDA\x31\x05\xAC\x32\x01\x57\x19\x1F\x8D\x8C\x68\x9B\x89\x16\xF3\x88\x8B\x3A\x99\x84\x8E\x77\x96\x8D\x08\xF8\x8B\x8E\x3D\xB1\x80\x35\x34\x19\x79\x0D\x31\x56\x07\x58\x77\x07\x8D\x57\x99\x8E\x22\xFD\x8B\x91\x3F\xA1\x80\x07\xD9\x79\x05\xAC\x3A\x01\x57\x1D\x08\x92\x8E\x7E\x81\x89\x23\x9A\x9C\x91\x10\x9A\x08\x69\x09\x3A\x4B\xA8\x32\x22\x94\x81\x03\x59\x2B\x41\x59\x2A\x4C\x1D\x56\x21\x28\x73\x4C\x94\x13\x37\x28\x2B\x83\x25\x95\x72\x70\x91\x21\xA7\x89\x33\x2C\x87\x27\x4B\x5B\x86\x21\x97\x97\x29\x95\x62\x4C\x4E\x97\x81\x3C\x4F\x95\x29\x35\x94\x00\x47\x99\x31\xE7\x14\x2C\x38\xCA\x9E\x49\x56\x4E\x91\x21\x5D\x90\x9A\x21\xD2\x8D\x9B\xE0\x51\x92\x96\x85\x2A\x40\x53\xC5\x9C\x94\x32\xA6\x2A\x98\x66\xA3\x91\x99\x0A\x26\x9C\x6D\x42\x97\x32\x62\xA8\x99\x21\xC1\x60\x9F\x3B\x86\x2C\x9C\xDA\x16\x98\x00\xDF\x97",
-					"\x33\x3D\xF9\x96\x9E\x85\x20\x39\x2B\xF7\x9F\x9E\x3C\xE4\x91\x97\x69\x9B\x9A\x21\x38\x49\x31\x3D\xC4\x3E\x9C\x82\xB0\x9F\x2A\xD4\x94\x29\x38\x81\x29\xA1\x60\x97\x2A\x26\xFC\x8C\xA1\x4A\x01\xA7\x2B\x8C\x87\x3B\x95\xFE\x9D\xA3\x45\x9B\xA0\x4B\xAB\x0B\xA7\xA3\x29\x27\xA6\x4C\x20\xA9\x21\x7B\x98\xA3\xA4\x26\x3C\xA0\x40\xA0\x99\x30\x8F\xAB\xA4\xA4\x09\x22\xA2\x3E\xB4\xA7\x32\x9B\xB7\xA3\x24\xF7\x8E\x96\x42\xB0\xA3\x24\x9F\xBF\xA6\x23\x32\xB5\xA4\x51\x9F\x29\xA9\x9E\x8B\xA8\xA9\x25\xA8\x97\x53\x9D\x26\xA9\xA3\xBF\x1D\xA9\xB4\x35\xAB\x51\xD8\xA4\x38\xAD\xBF\xA1\xA8\x57\x2A\x98\xAC\x59\x22\xAD\xB0\x91\xA9\x31\xCA\x82\xAB\x65\x15\xA4\x36\x99\x2C\xAA\xA3\x0E\xA6\x22\x57\x9D\x2A\x99\xB9\xBF\x1D\xAE\x57\x29\x77\x33\x83\x21\xA3\x7B\xBE\xA9\xA4\x09\x3E\xA3\x5B\x80\x07\xA4\xB5\x82\x26\xB0\x01\x3C\x99\x42\x08\xB0\x01\x6C\x83\x24\xB1\x8E\xA2\x9E\x41\x6A\x91\x20\xC6\x94\xB0\x00\x96\xB9\x49\xA3\x0B\xBB\xB3\x56\x9D\xB4\x96\x0A\x3B\x53\x5E\x92\xB3\xB5\x28\x31\x51\x24\xCA\x81\x26\x14\x31\x57\x9F\x0B\x23\xB7\x50\x3A\xA2\x21\xEC\x2F",
-					"\xB0\x01\x29\x31\x51\xB6\x01\x33\xB7\x6B\xD4\x01\x56\x8F\x98\x7C\xB6\xC6\x3E\xA2\x01\xC0\xB9\x39\xC1\xAF\x84\xB6\x55\x11\x55\x44\xAC\x84\xB6\x2B\x31\x57\xA4\x3F\x94\xB7\x15\x4F\xBA\x21\x29\xB4\xB0\x0B\xD4\xA9\x22\x75\xAF\xB9\x0B\x58\x7C\x04\xB6\x00\x18\xB4\x78\x8D\x3C\xB4\xED\x37\x99\xA2\x21\x22\xBD\x44\xFD\x52\xBD\x7B\xB0\x89\x20\x1E\xA7\xA5\x48\x1E\xAB\xBC\x85\x67\xA7\xB2\x10\x43\xB2\x4B\xC9\x30\xB2\xF0\x99\x8C\xB1\xE2\xA1\x24\x63\x91\xAA\x98\xF7\xB1\x52\xB1\xAF\xB9\x8A\x32\x81\xC9\x9D\x58\x4E\x25\xA5\xCA\xB8\x98\x42\xE0\xBD\x01\x4B\x93\xB7\xAC\xA3\xB9\x8B\x83\x86\x25\xC2\xE2\x99\x83\xC3\x03\x3E\x5A\x87\xAA\x33\xAC\x83\x3B\xB8\x35\x20\xC2\x22\xBA\x23\xC2\x34\x11\xE6\xC2\x3B\x1D\xC6\x22\x68\xAF\xB1\x61\x17\xC5\x65\xC4\x9A\x40\xBD\xCD\x10\xC5\x60\x60\x82\x20\xC7\x7B\xB9\x8A\x8B\xB9\xC4\xB7\xA3\x7C\xC3\x6B\x2B\xDF\x96\x7F\xC2\x85\xC7\x81\x3B\xC7\xB5\x4B\x6A\x81\xBF\x4F\xC3\x21\x28\xC9\xC1\x39\x62\x76\xC7\x91\x3C\x69\x21\x18\xD9\xC2\x61\xE7\xAA\x20\x97\xDD\x5B\xC8\xD4\x02\x77\xC8\x03\x2A\xBE\x98\x8A\x29\xC9\x2F",
-					"\xE8\x31\x73\x68\xCB\x21\xAC\x46\xC6\x20\x87\x74\xB2\xB7\x7C\xB8\x5E\x6B\x89\x24\xCE\x37\xE1\x86\xCA\x03\x23\xCE\x9F\x9B\x89\xCB\x81\x27\xCF\xCA\xA8\x3B\x75\x9C\x90\x57\xD1\x81\x3A\xA8\xD1\x21\x8D\xD2\x40\x16\x7C\xC5\x0E\x94\xD6\x20\x70\xD0\xD2\x68\x4B\x7B\xD1\x48\x59\xD6\xD1\x65\xC1\x87\xA3\xCE\xC0\xBD\xDF\x9B\x4A\x42\x83\xB1\xA3\xA8\x82\x2A\xD0\x4D\xDD\x80\xCF\x02\x34\xCB\x5E\xE5\x72\xCB\xE4\x27\xA1\xA2\xB0\xC1\x21\xAB\x83\xDD\x83\x5D\xC2\x21\x6E\xAE\xD5\x89\x3C\x83\x24\xD7\xD7\xA7\x7D\xD6\xD5\x43\xDA\x40\x47\xDF\xB5\xE1\xA7\xD3\x6B\xD1\x69\x22\xA4\xCF\x96\x39\x04\x9A\xCF\xB1\xB1\x46\xD7\x40\x1C\xDF\xB4\xE6\x86\x22\xBC\xFD\x45\xDB\x40\x51\xD1\xD8\x30\x8C\xDE\xD0\xA1\xC2\x35\x0F\x9D\xDA\x99\x88\x8E\xDB\xDB\xE0\xBB\xB9\x9A\xF8\x56\xDA\x62\xE0\xBC\x8D\x9D\xC6\x39\x64\xE4\xB9\x21\x7A\xCB\xD8\xBC\x81\x99\xDD\x72\x17\xB1\xA2\x7F\xC1\x22\xBE\x0A\x25\x92\xC0\xA8\xC1\x56\x6F\xD6\x80\xBC\x90\x88\xDA\x0B\x8A\x27\x82\xDA\x92\x92\xE2\xD3\x5B\x86\x41\x62\xDB\xAE\x4A\xB9\xA2\x3B\x33\xC3\x23\x3D\x9A\xE3\x21\x73\xFB\xAD\x07",
-					"\x80\xA7\x48\x90\xD5\x97\x22\x85\x08\xE1\x21\x40\x09\xE4\x98\x43\xCC\x38\x85\x11\xBE\x20\xEB\xCF\xB7\x10\x16\xC3\x21\x9B\xF6\xDC\xB6\x44\x1C\xA7\xA1\x4D\xC5\xE7\x84\x3E\xE7\xDF\xB4\xA6\x0A\xD0\x90\x52\xD6\x96\xC6\xEE\xE5\xE0\xA8\x0B\xD2\x91\x5D\xCF\xA2\xC6\x22\xDE\x02\x39\xE7\x68\xCA\x0C\xE6\x29\x8A\x24\xE3\xCF\x8B\x0B\xD4\xC6\x30\xD0\xAB\xC3\x20\xEB\x01\x26\xE7\x33\xCD\x03\xED\xE4\x00\xDA\xE4\xD5\xB0\xE8\x6D\xCF\x0D\xEC\xD4\x17\xD0\xEE\x09\x3E\x89\xA5\xC0\x3F\xA3\xF1\xBE\xE8\x00\xF5\xAC\x25\xE0\xA6\x28\xBD\x90\x05\xF7\xB4\x86\xE3\xBF\xE1\x8B\xEE\x25\x13\xF1\xA3\xBC\x7F\xB3\xEA\x7B\xE1\xC2\xF3\xF4\xA3\x28\xDC\x32\x2C\xC2\xCC\xA3\xBA\xF3\x8F\xE0\xBD\xF3\x72\xA3\x2E\x5D\xFF\x1E\xA2\xAA\x25\xF3\xBE\xE3\xA7\xF6\x37\xA9\xF3\xBD\xC1\x89\x2E\xF5\x6E\xA7\xB5\xAA\xA1\x23\xF7\x09\xE0\xBB\xB0\x54\x2A\xA5\x4D\x3A\xF9\xA5\xF1\xAF\xE4\xB3\x72\x2C\xB3\x4A\x8C\xB4\x2A\xE2\xE1\x20",
+					"\x00\x99\x00\x00\xF6\x09\x00\x00\x25\x00\x01\x82\x80\x08\x03\x82\x81\x82\x06\x89\x82\x84\x0A\x83\x06\x84\x09\x0A\x99\x0A\x81\x1A\x80\x16\x84\x16\x0A\xD0\x07\x09\x8F\x7D\x8E\x8F\x8E\x0A\x80\x1F\x9F\x81\x93\x92\x8F\x92\x26\xFF\x68\x86\x9B\x93\x91\x96\x92\x0A\xA9\xAA\x91\x99\x97\x97\x92\x9A\x2C\xB8\xAE\x9A\x90\x9C\x8D\x9A\x9E\x37\xBE\xB9\x82\xAB\x9C\xA1\x9E\x83\x32\xB6\xA0\x80\xAB\xA6\xA1\xA0\xA4\x3F\xCE\x8D\xB0\xA3\xA4\xA9\xA2\xAB\x47\x83\x89\xAC\xA3\x9A\xA9\xAE\xAC\x4F\xDA\x91\xA0\xB3\xAA\xB1\xAB\x90\x03\x81\x1C\xAA\xAF\xAE\xB3\xAA\xB7\x59\x82\x9B\xBE\xAC\xB5\xBB\xB5\xBB\x74\xF8\xA4\xAD\xB2\xBB\xB0\xB9\xB0\x7D\xE7\x81\xCF\xB3\xC1\xB9\x81\xB9\x7B\xF6\xB9\xAB\xC9\xC2\xBF\xBF\xB2\x85\x80\xC7\xDE\xB1\xC8\xCB\xC8\xC1\x97\x84\xD9\xC6\xC2\x94\xCB\xCC\xC9\x9D\x98\xE1\xDA\xC3\xD4\xCC\xC5\xC7\x7C\x9F\xD6\xC5\xD0\xD7\xD1\xCB\xD4\x00\x6A\x89\x92\xDD\xC4\xC4\xD4\xC5\xB5\xB9\xF7\xCE\xCF\xD0\xDF\xDC\xDB\xBD\xBC\xEA\xD0\xDE\xD3\xE2\xDF\xE0\xC0\xC6\xC2\xEC\xDB\xD5\xE0\xE6\xE2\x9E\xCF\xC7\xEA\xE9\xE2\xEB\xE4\xE7\xD8\xD1\xD9\xE2",
+					"\xDB\xEC\xD1\xEE\xD3\xDA\xE1\xDC\xE2\xFE\xEC\xF0\xF1\xF1\xE8\xE5\xE9\xE7\xFA\xF5\xF4\xF7\xF7\xA0\x82\x0A\x94\xDF\xDA\xDC\xE4\xFB\xD4\xF8\xD6\xF5\xEF\xED\xD6\xF2\xFF\xEB\x40\x8E\x7A\x80\xF0\x4D\x7F\x7E\x81\x01\xAB\x63\x03\x7C\xD7\x47\x80\x75\x82\x0F\x83\x88\x82\x84\x11\x85\x85\x84\x81\x18\x93\x86\x87\x74\xFB\x7A\x7D\x7E\x86\x19\x97\x80\x8B\x88\x22\xA5\x8C\x87\x87\x26\x8D\x80\x87\x89\x0E\xAC\x8B\x8A\x8A\x14\xAE\x81\x8C\x8C\x1B\xB4\x81\x8A\x8C\x35\xBC\x7D\x8A\x8D\x24\xB8\x87\x8C\x8F\x29\xBA\x8F\x8A\x90\x33\x84\x99\x8E\x87\x3B\x86\x9F\x8E\x92\x3D\x80\x9E\x8D\x93\x4C\x81\x98\x93\x90\x53\x85\x95\x97\x91\xF5\x59\x97\x7E\x96\x01\x4C\x43\x6E\x93\x60\x91\x9F\x92\x94\x5C\x9D\x85\x98\x8A\x63\xA9\x9B\x71\x01\x0C\xA2\x91\x9B\x95\x4B\xB0\x90\x96\x9C\x64\x9B\x96\x9D\x7E\x67\x91\x76\x01\x9B\x74\xAA\x9E\x9B\x9F\x7D\xAF\x99\x9C\x95\x83\x96\x95\x9B\x46\x5F\x80\xA5\xA0\x96\x77\xA6\x9D\xA0\x9A\x82\x8F\xA9\x91\xA0\xD5\x48\x46\x40\x7D\x92\x84\xAD\xA1\x02\x7C\x8B\xA1\x9E\xA7\x73\xA0\xA5\x9C\x9E\x99\x86\xA5\xA8\xA3\xA4\xA9\xAE\xA2\xAA",
+					"\x90\x8A\xA7\xAB\xA7\xAF\xA1\xA1\xAF\xA8\xAB\xB5\xAD\xA8\xA5\xB8\xA2\xAE\x9D\xAE\xB3\xBB\xA5\x9A\x02\x9D\xBD\xA1\xA4\xAB\x93\xBA\xA3\xB2\xAD\xC5\x82\xBE\xA8\xB1\x9A\x8C\xB6\xAA\xB3\xA8\x88\xBD\xB1\xAD\x0E\x49\xAC\xAC\xB4\xB0\x98\xB2\xAE\xB6\xB4\xB7\xA6\xB3\xB2\xD2\x8F\xB1\xB9\xB4\xDE\x8D\xAC\x02\x42\xF2\x60\xB5\xB8\xB7\xBE\x8A\xB7\xB7\xB8\xD9\xB0\xBB\xB6\xBC\xDD\x89\xBC\xBB\xB1\xEB\xB4\xBD\xBB\xBD\xEA\xB6\xBA\xBF\xB1\x0E\x01\xBC\xBF\xBB\xF9\x85\xCE\xBE\xC1\xD3\x88\xC2\xBA\xC2\xE4\x87\xCE\xC1\xC2\x0F\xCB\xC1\xC5\xC3\xD3\x8F\x02\xC3\xBF\xFD\x90\xCA\xC6\xC4\x1B\xD4\xCC\xC7\xC7\x1E\xE1\xC1\xBC\xC3\x23\xD3\xC5\xC9\xC7\x27\xE0\xC9\xCA\xC8\xF3\xA4\xCD\xCA\xC9\xAB\x50\x07\xC6\xCB\xF5\xA8\xCF\xCA\xCD\x35\xEA\xC7\xCE\xCE\x39\xEC\xCD\xCC\x68\x11\x33\xC0\xCF\xCF\x3B\xFE\xCB\xBC\xC6\x04\xC3\xD7\xD0\xCD\x4B\xCA\xD8\xBE\xD3\x19\xFC\xCD\xD0\xCE\x53\xD2\xD7\xB0\x44\xD6\x9F\xB9\xD0\xD5\x4F\xDC\xD1\xD6\xD1\x5D\xD6\xDF\xD7\xCA\x64\xC5\xD0\x6B\x04\x42\xDE\xDB\xD6\xD8\x6B\xE0\xD3\xDA\xD9\x70\xC4\xD2\xDD\xD5\x6E\xED\xD5\xDB\xDC\x61",
+					"\xF5\xDA\xD7\xDE\xEE\xBC\xD3\xC2\xDF\x48\xC0\xEC\xD1\xDE\x77\xF4\xD5\xE0\xE1\x71\xC6\xE9\xE0\xE2\x78\xEF\xDD\xE2\xDD\x8B\xCE\xEA\xE3\xE3\x82\xD1\x74\x05\xDA\x6C\xD5\xEA\xDA\xE6\xA4\x55\x08\xE6\xDE\x7D\xE1\xEF\xDE\xE8\x81\xE4\xE3\xE2\xE4\x8C\xC7\xD6\x04\xBA\xA9\xCB\x78\x07\xE7\x87\xE8\xE2\xEC\xE4\x94\xE6\xE0\xD4\xED\x93\xF9\xED\xEB\xEC\x9C\xE0\xE3\xEB\xEF\xA5\xC0\xF7\xE8\xEE\xBB\xC4\xF5\x76\x44\x59\xF6\xEB\xE6\xF2\x99\xCC\xFE\xED\xF0\xD0\xC3\xFD\xED\xEC\xC6\xD5\xF3\xF7\xBC\x1A\x30\xE1\xE6\xF5\xCE\xD4\xF7\xF5\xED\xC2\xF7\xEF\xF6\xEE\xBC\xDD\xFB\xF7\xF8\xC5\xE8\xF5\xF9\xF8\xD3\x9B\x0A\xF4\xF8\xD1\xE2\xF6\xF8\xFC\xD2\xF3\xF4\xF8\xF7\xEC\xCD\xF9\xFF\xF3\xF5\xFB\xFE\xF6\xFD\xE9\x60\x83\xFA\x50\x7C\x03\xF7\x77\x78\x70\x1D\x06\x81\x00\xFE\x77\x7C\x01\xB8\x79\x7E\xCB\x6C\x80\xFD\x72\x72\x83\x03\x8E\x82\x7D\x0F\x9D\x7C\x04\xFA\x70\x00\x0F\x0A\x83\x80\x1A\x81\x84\x05\x9B\x8F\x79\x0F\x1F\x81\x83\x23\x82\x85\x04\xA4\x8F\x7F\x0A\x8B\x84\x85\x0D\x81\x20\x08\x27\x88\x83\x1A\xA4\x74\x22\xC9\x6E\x84\x08\xA9\x8C\x87\x15\xAA\x84",
+					"\x83\x3F\x9C\x7D\x74\x22\x04\x87\x0B\x86\x88\x78\x23\x05\x8A\x0E\xA8\x8E\x87\x1E\x80\x8E\x89\x42\x82\x34\x09\x4A\x80\x87\x09\x8D\x8F\x8A\x4F\x98\x89\x14\xD9\x8C\x8B\x2D\x9E\x8D\x85\x55\x9C\x40\x40\x39\x80\x00\x13\x14\x89\x88\x60\x88\x8D\x0C\xE1\x8F\x84\x35\x96\x8D\x8B\x69\x90\x89\x1C\xDA\x83\x8E\x38\xAB\x8E\x8D\x16\x8B\x8A\x0D\xFA\x87\x88\x36\xBB\x84\x8E\x77\x92\x8D\x20\x80\x9F\x8D\x2F\x83\x96\x8E\x85\x95\x8C\x67\x27\x07\x8D\x11\x96\x24\x8C\x78\x8D\x8E\x20\x89\x97\x90\x43\x94\x97\x92\x79\x9E\x8C\x13\x88\x97\x69\x14\x0D\x94\x90\x99\x91\x93\x1F\x9C\x92\x92\x50\xA5\x94\x94\xA3\x96\x91\x28\x93\x9B\x94\x53\xA9\x92\x91\xB0\x95\x90\x18\xAA\x0F\x92\x0E\xAB\x05\x96\xAA\x87\x95\x2E\xAF\x92\x97\x5E\x98\x92\x97\xB1\x9F\x94\x2F\xB4\x58\x22\x32\xAD\x07\x62\x2E\x18\x95\x30\xAD\x98\x95\x4D\xBB\x96\x99\xCB\x80\x9A\x2F\xCC\x9F\x99\x3D\x9A\x96\x9A\xA2\x90\x9B\x34\xD2\x92\x98\x6D\xB0\x7F\x05\xCA\x9B\x9B\x30\xD4\x91\x9B\x71\x9C\x9C\x9C\xE2\x9E\x99\x26\xB0\x01\x9D\x6E\x98\x9C\x95\xE7\x91\x9E\x39\xF3\x9A\x9C\x79\xB5\x99\x21\x31\x17",
+					"\x62\x0C\x17\x63\x07\x76\xA8\x9E\x9D\x7D\x99\x9B\x3B\xAE\x97\x9F\x82\x83\xA5\x99\x07\xB5\x99\x40\xF0\x94\x9F\x84\xA5\x9E\xA0\x0B\xAB\x84\x0D\x54\x85\x07\x8B\x76\x07\x62\x37\x1E\x9E\x3D\x8E\xA9\x9C\x8E\x80\xA4\x8F\x20\xB7\x99\x44\xE2\x58\x06\x2A\xB9\x07\x62\x3A\x17\x63\x0E\x1A\xAD\xA1\x91\x8A\xA1\xA4\x02\xAE\xA7\x43\x9E\xA9\x92\x2D\x2C\x71\x21\xC0\x51\x4A\x4C\x39\xA6\x20\xAC\x7B\x2B\x4F\x5E\x32\x25\xBA\x06\x2C\x52\x9D\xA9\x24\xA7\x03\x29\xA6\x57\x43\xA3\x20\xA4\xB3\x53\xA7\x0F\x3C\x28\x53\x82\x2E\xA8\x6E\x50\xA9\x21\x3E\xA8\x34\x50\xFB\x28\x45\xAB\x86\x25\x01\x40\x5E\xAB\x40\x60\xAE\x2A\x4C\x68\x2F\x39\x55\xA0\x03\xB9\x65\xA7\xA7\xBD\x29\xAB\xAD\x7B\x26\xAD\x6C\x5C\x2F\xAC\xA9\x8A\x24\x4D\x46\xA6\x25\x5A\xD5\x54\x4E\xB1\x82\x24\xAC\x7D\xA7\xAA\x42\x00\xBA\xAA\xAE\x1D\xAA\xB0\x09\x2A\xA9\x60\xFA\xAA\x21\xA2\xBB\x2B\xAA\x01\x38\xAF\x63\xF7\xA6\xAF\x84\x1E\x4B\xB2\x96\xA1\xAC\x62\x86\x2A\xB0\xD4\x32\xAA\xAE\x7E\xA1\x22\xA5\x05\xB1\xA8\x07\x61\xB0\x00\x9D\xAF\x36\x5C\xEC\x29\xAD\xD1\xAF\x33\xAB\xA8\x32\x27\x65\xB1",
+					"\xB9\x24\xC8\x80\x03\xB6\xAF\x38\xB7\x70\x42\xAA\x20\xDD\x8F\x3E\xB7\x32\x3C\xB5\x42\x0E\xB8\x34\xC9\xB4\xB6\x24\xB0\xAF\x36\x4C\x46\xBA\xB9\x94\x09\xBB\xB7\xB5\xAA\x23\x82\x5E\x20\xB9\xE0\xA6\x26\xB6\xD5\xB7\xBA\x74\xDC\x29\xBA\xEB\x9E\x20\xBB\x95\xA6\x23\x74\xFB\x2D\xBA\xEF\xBF\x1E\xB6\xC4\xAF\xB6\x61\xA9\x25\xBC\xEF\xA0\xBC\xBA\xEB\xBA\xB9\x66\xF0\xB5\xB4\xF9\x84\xAC\x2B\xCF\xAF\x3A\x6C\xF1\xB3\x25\xF7\xA4\xBC\xBF\x1F\x3E\xBC\x6A\x6D\xB6\xBA\xF4\xB4\xAA\x21\x41\x7E\x29\x5A\x89\xCE\xAC\x85\x29\xAF\xB4\x0F\xDB\xB3\x40\x08\x5D\xC1\x84\x14\xC0\x35\x69\xB7\xC3\x6B\x1E\x87\xAD\xB4\x2D\xAB\x20\xB6\xB6\xB7\x78\x83\x2E\xB6\xE6\x81\x21\xBF\x1A\xC1\x21\x8A\x84\x2D\xB0\x85\x2B\xC1\xBD\x2A\xCD\xC5\x42\x2E\xB1\x21\x0C\xCE\xC6\xC5\x37\xD3\xC5\x43\x38\xC9\x20\xBE\x93\xC3\xC7\x3A\xC9\x20\x5C\x9D\xCC\xC4\x22\xE7\xAB\x0A\x17\x61\x24\x8D\xC6\xC3\x20\x2A\x17\x66\xB6\x17\x0C\xCB\x5C\xD5\x33\xC4\x81\x26\x82\xCA\x0A\x35\x0B\xC5\x55\xC1\x21\x2B\xD8\xCE\x20\x56\x17\x62\x6F\xD3\x8C\xC8\xD0\x91\x3E\xB7\x8C\x85\xCF\x9A\x0A\x27\x96\x26",
+					"\xDC\xCD\x56\x72\xB4\x96\x9B\xCB\x39\xBF\x64\x9F\xCE\x20\x57\x17\x61\x7E\xE0\x97\xCF\x81\x18\x0A\xCF\x0A\x3C\xCD\x9F\x81\x29\x0B\x8B\x7C\x02\xCA\x6F\xCE\x38\x96\x9F\xBF\xC3\x46\x76\xB6\xCC\xA2\x21\x27\x9B\x90\xD2\x5D\x37\xF6\xB2\xD1\x2F\x9E\xB5\x7E\x98\xD3\xBF\x4B\x47\x59\xBF\x11\xD1\xD3\x9A\x89\x27\xD3\xE8\x2F\xC3\x39\x99\x8B\xC5\xA2\xD1\x31\x25\x15\xF2\xAB\xC9\xB6\xA1\x27\xAB\xB2\xCA\x3F\x4C\x8B\xCB\xD5\xA2\xD8\xA7\xC5\x3E\xC2\x21\x47\xD7\x60\xC6\x00\x06\xC5\xAD\x21\x24\xB0\x81\x14\xD1\x5A\x36\xD5\x39\x26\xBC\xD1\x21\x62\xEA\x53\xD9\x0A\x32\x66\xB2\xCB\x31\x60\x52\xCB\x3C\xD9\x00\x0C\xC1\x99\x1C\x42\xDA\x83\x25\xD2\x34\xCE\xCA\xAC\xAA\xD1\xA6\xDA\x70\x55\xDE\x20\x43\xCD\x51\x48\x17\x75\xDD\x77\x56\x61\x21\xE7\xDB\xDB\x0B\xDD\xD3\x21\x74\xCF\xDA\x21\xAB\x6D\xDC\xE0\x5A\xD2\x21\x77\xF5\xD7\x85\x59\xA2\x20\xBB\xFF\xD9\x21\xD7\x50\x96\x5F\x03\xE3\x22\xC1\x84\xEA\x3E\xE4\x5E\xDB\x39\x9E\x69\x21\xB8\x9C\xDF\x5C\x5F\xC9\x21\xE2\x06\x34\xDE\xBA\xCB\x3E\x7C\x7D\xC2\x23\xD2\x0A\x38\xE3\x40\x7C\xD7\xDF\xEA\x09\x86\xE3",
+					"\x5D\x57\x61\xBE\x86\x28\x6D\x69\xC9\x26\xCB\x1E\xC0\x5D\x94\x89\x2B\xE4\x79\xC3\x83\xE1\x03\x22\xE7\xC6\x83\x8E\xE1\x81\x1D\xE4\xE1\x65\x53\x84\xCA\xB5\x5F\xE7\x81\x1C\xC0\xE8\x7D\x85\xEA\x40\x05\x8E\xE5\x07\x8C\xEE\x20\x27\xE8\xEA\xAA\x44\x83\xE8\xE7\x11\xEE\xE8\xE3\xC3\x83\xD1\x83\x29\xE1\x9D\xC6\x24\xCC\x9E\xD5\x3A\xB0\xF2\xAB\xEA\x81\x02\xEA\xEA\x22\xBD\xCA\x42\x5D\xE5\xE4\x83\x23\x89\xEC\xFA\x39\xBE\x5C\xB0\xE6\xED\xAC\xCF\x87\xEC\x03\x39\x79\xD3\xD6\x98\x86\xB7\xF6\xEB\x20\x66\x87\xE3\xB4\x7D\xE0\xF1\xBF\xC2\x21\xCD\x70\xE0\x71\x12\x89\x2A\xE9\xB6\xE5\x4F\x91\x0F\xF6\xC3\xC5\x60\xE3\x20\xAA\xE8\xEA\xCE\xE2\xA7\x5B\xDB\x83\x2B\xF0\xB4\xDA\x81\xF0\x06\x2D\xF3\xB0\xCB\x37\x99\xA1\xCB\xCA\xAE\x88\xF5\xF2\xE1\x81\x22\xD1\x81\x38\xD2\x5C\x90\xE3\x23\xE6\xDE\xE3\x21\x7D\x95\xE9\x3A\xC0\xD2\xAD\xEC\x82\x20\xF4\x9B\xC6\x23\xA2\xB7\xE2\x35\x5A\xBA\xFA\x21\x4D\xEC\xD2\x21\x17\xA1\xF8\x69\x58\xD1\xCE\x85\x1E\x93\xEF\x02\x25\xA6\xF2\xD1\x5D\xCC\x83\x0F\xF8\xED\xA9\xA1\x23\xB7\xE2\x55\x98\xBF\xD0\xF9\x20\x87\xC9\x23",
+					"\xEB\x9C\x36\xDE\x00\x36\xB5\xFB\x85\xFF\xF8\x00\x3F\x0B\xBB\xEA\x31\xDD\xD7\x17\x25\xFB\xEA\x80\x02\x09\xF6\xFA\x3A\xE3\xDA\xEA\x22\x9D\x86\x25\xF4\xB4\xC5\x0C\xA5\x06\x1B\x7F\xB2\x73\x7F\x46\x0D\x68\xAA\x21\x70\xF9\x79\x10\x02\x8C\x7B\xF3\x78\x04\x06\x85\x2B\x6C\x76\x7E\xFA\x72\x7F\xEA\x7A\x04\x0F\x8E\x1C\x35\x70\x7F\x09\x1D\x7A\x02\x1D\x7F\xBE\x73\x10\x4C\x00\x80\x03\x1C\x81\x01\x13\x7B\x8E\x72\x10\x4D\x07\x81\xD1\x18\x73\x1A\x86\x10\x24\x85\x46\xF3\x7F\x04\x2A\x82\x1A\x7A\x71\x79\x2E\x84\x81\x68\x71\x05\x33\x84\x1A\x4F\x70\x62\x0A\x1C\x4E\x4C\x6A\x68\xC1\x53\x68\x6A\x64\x17\xC7\x6F\x11\xAB\x52\x6B\x8B\x6B\x84\x52\x69\x84\x3B\x84\x12\xDB\x7D\x5F\x58\x61\x62\x21\x14\x85\x0F\x8B\x5A\x56\x82\x7E\x6B\x13\x7E\x1F\x1F\x66\x68\x1E\x85\x92\x68\x65\x60\x86\x7F\x46\x64\x60\x2A\x16\x86\xFF\x0E\x5B\x68\x1A\x86\x21\x1C\x86\xBD\x58\x65\x6E\x8D\x69\x46\x62\x6C\x49\x14\x87\xCB\x59\x64\x63\x71\x12\x79\x84\x59\x52\x62\x6C\x68\x16\x7C\x2C\x10\x88\xC8\x58\x65\xF9\x58\x16\x2B\x69\x14\x87\x82\x13\x2B\x66\x88\x44\x82\x10",
 				};
 				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 			}
@@ -8298,6 +13753,8 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 				{
 				case ParserGenClasses::AlternativeSyntax:
 					return new vl::glr::parsergen::GlrAlternativeSyntax();
+				case ParserGenClasses::AndCondition:
+					return new vl::glr::parsergen::GlrAndCondition();
 				case ParserGenClasses::Assignment:
 					return new vl::glr::parsergen::GlrAssignment();
 				case ParserGenClasses::AstFile:
@@ -8312,14 +13769,30 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					return new vl::glr::parsergen::GlrEnum();
 				case ParserGenClasses::EnumItem:
 					return new vl::glr::parsergen::GlrEnumItem();
-				case ParserGenClasses::LiteralSyntax:
-					return new vl::glr::parsergen::GlrLiteralSyntax();
+				case ParserGenClasses::LeftRecursionInjectClause:
+					return new vl::glr::parsergen::GlrLeftRecursionInjectClause();
+				case ParserGenClasses::LeftRecursionInjectContinuation:
+					return new vl::glr::parsergen::GlrLeftRecursionInjectContinuation();
+				case ParserGenClasses::LeftRecursionPlaceholder:
+					return new vl::glr::parsergen::GlrLeftRecursionPlaceholder();
+				case ParserGenClasses::LeftRecursionPlaceholderClause:
+					return new vl::glr::parsergen::GlrLeftRecursionPlaceholderClause();
 				case ParserGenClasses::LoopSyntax:
 					return new vl::glr::parsergen::GlrLoopSyntax();
+				case ParserGenClasses::NotCondition:
+					return new vl::glr::parsergen::GlrNotCondition();
 				case ParserGenClasses::OptionalSyntax:
 					return new vl::glr::parsergen::GlrOptionalSyntax();
+				case ParserGenClasses::OrCondition:
+					return new vl::glr::parsergen::GlrOrCondition();
 				case ParserGenClasses::PartialClause:
 					return new vl::glr::parsergen::GlrPartialClause();
+				case ParserGenClasses::PrefixMergeClause:
+					return new vl::glr::parsergen::GlrPrefixMergeClause();
+				case ParserGenClasses::PushConditionSyntax:
+					return new vl::glr::parsergen::GlrPushConditionSyntax();
+				case ParserGenClasses::RefCondition:
+					return new vl::glr::parsergen::GlrRefCondition();
 				case ParserGenClasses::RefSyntax:
 					return new vl::glr::parsergen::GlrRefSyntax();
 				case ParserGenClasses::ReuseClause:
@@ -8328,8 +13801,14 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					return new vl::glr::parsergen::GlrRule();
 				case ParserGenClasses::SequenceSyntax:
 					return new vl::glr::parsergen::GlrSequenceSyntax();
+				case ParserGenClasses::SwitchItem:
+					return new vl::glr::parsergen::GlrSwitchItem();
 				case ParserGenClasses::SyntaxFile:
 					return new vl::glr::parsergen::GlrSyntaxFile();
+				case ParserGenClasses::TestConditionBranch:
+					return new vl::glr::parsergen::GlrTestConditionBranch();
+				case ParserGenClasses::TestConditionSyntax:
+					return new vl::glr::parsergen::GlrTestConditionSyntax();
 				case ParserGenClasses::UseSyntax:
 					return new vl::glr::parsergen::GlrUseSyntax();
 				default:
@@ -8346,6 +13825,10 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrAlternativeSyntax::first, object, field, value, cppFieldName);
 				case ParserGenFields::AlternativeSyntax_second:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrAlternativeSyntax::second, object, field, value, cppFieldName);
+				case ParserGenFields::AndCondition_first:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrAndCondition::first, object, field, value, cppFieldName);
+				case ParserGenFields::AndCondition_second:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrAndCondition::second, object, field, value, cppFieldName);
 				case ParserGenFields::AstFile_types:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrAstFile::types, object, field, value, cppFieldName);
 				case ParserGenFields::Class_props:
@@ -8356,16 +13839,38 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrCreateClause::syntax, object, field, value, cppFieldName);
 				case ParserGenFields::Enum_items:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrEnum::items, object, field, value, cppFieldName);
+				case ParserGenFields::LeftRecursionInjectClause_continuation:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectClause::continuation, object, field, value, cppFieldName);
+				case ParserGenFields::LeftRecursionInjectClause_rule:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectClause::rule, object, field, value, cppFieldName);
+				case ParserGenFields::LeftRecursionInjectContinuation_flag:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::flag, object, field, value, cppFieldName);
+				case ParserGenFields::LeftRecursionInjectContinuation_injectionTargets:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::injectionTargets, object, field, value, cppFieldName);
+				case ParserGenFields::LeftRecursionPlaceholderClause_flags:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLeftRecursionPlaceholderClause::flags, object, field, value, cppFieldName);
 				case ParserGenFields::LoopSyntax_delimiter:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLoopSyntax::delimiter, object, field, value, cppFieldName);
 				case ParserGenFields::LoopSyntax_syntax:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrLoopSyntax::syntax, object, field, value, cppFieldName);
+				case ParserGenFields::NotCondition_condition:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrNotCondition::condition, object, field, value, cppFieldName);
 				case ParserGenFields::OptionalSyntax_syntax:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrOptionalSyntax::syntax, object, field, value, cppFieldName);
+				case ParserGenFields::OrCondition_first:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrOrCondition::first, object, field, value, cppFieldName);
+				case ParserGenFields::OrCondition_second:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrOrCondition::second, object, field, value, cppFieldName);
 				case ParserGenFields::PartialClause_assignments:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPartialClause::assignments, object, field, value, cppFieldName);
 				case ParserGenFields::PartialClause_syntax:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPartialClause::syntax, object, field, value, cppFieldName);
+				case ParserGenFields::PrefixMergeClause_rule:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPrefixMergeClause::rule, object, field, value, cppFieldName);
+				case ParserGenFields::PushConditionSyntax_switches:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPushConditionSyntax::switches, object, field, value, cppFieldName);
+				case ParserGenFields::PushConditionSyntax_syntax:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrPushConditionSyntax::syntax, object, field, value, cppFieldName);
 				case ParserGenFields::ReuseClause_assignments:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrReuseClause::assignments, object, field, value, cppFieldName);
 				case ParserGenFields::ReuseClause_syntax:
@@ -8378,6 +13883,14 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrSequenceSyntax::second, object, field, value, cppFieldName);
 				case ParserGenFields::SyntaxFile_rules:
 					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrSyntaxFile::rules, object, field, value, cppFieldName);
+				case ParserGenFields::SyntaxFile_switches:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrSyntaxFile::switches, object, field, value, cppFieldName);
+				case ParserGenFields::TestConditionBranch_condition:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrTestConditionBranch::condition, object, field, value, cppFieldName);
+				case ParserGenFields::TestConditionBranch_syntax:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrTestConditionBranch::syntax, object, field, value, cppFieldName);
+				case ParserGenFields::TestConditionSyntax_branches:
+					return vl::glr::AssemblerSetObjectField(&vl::glr::parsergen::GlrTestConditionSyntax::branches, object, field, value, cppFieldName);
 				default:
 					return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
 				}
@@ -8402,16 +13915,22 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrCreateClause::type, object, field, token, tokenIndex, cppFieldName);
 				case ParserGenFields::EnumItem_name:
 					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrEnumItem::name, object, field, token, tokenIndex, cppFieldName);
-				case ParserGenFields::LiteralSyntax_value:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrLiteralSyntax::value, object, field, token, tokenIndex, cppFieldName);
+				case ParserGenFields::LeftRecursionPlaceholder_flag:
+					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrLeftRecursionPlaceholder::flag, object, field, token, tokenIndex, cppFieldName);
 				case ParserGenFields::PartialClause_type:
 					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrPartialClause::type, object, field, token, tokenIndex, cppFieldName);
+				case ParserGenFields::RefCondition_name:
+					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrRefCondition::name, object, field, token, tokenIndex, cppFieldName);
 				case ParserGenFields::RefSyntax_field:
 					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrRefSyntax::field, object, field, token, tokenIndex, cppFieldName);
-				case ParserGenFields::RefSyntax_name:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrRefSyntax::name, object, field, token, tokenIndex, cppFieldName);
+				case ParserGenFields::RefSyntax_literal:
+					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrRefSyntax::literal, object, field, token, tokenIndex, cppFieldName);
 				case ParserGenFields::Rule_name:
 					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrRule::name, object, field, token, tokenIndex, cppFieldName);
+				case ParserGenFields::Rule_type:
+					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrRule::type, object, field, token, tokenIndex, cppFieldName);
+				case ParserGenFields::SwitchItem_name:
+					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrSwitchItem::name, object, field, token, tokenIndex, cppFieldName);
 				case ParserGenFields::Type_name:
 					return vl::glr::AssemblerSetTokenField(&vl::glr::parsergen::GlrType::name, object, field, token, tokenIndex, cppFieldName);
 				case ParserGenFields::UseSyntax_name:
@@ -8421,17 +13940,27 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 				}
 			}
 
-			void ParserGenAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)
+			void ParserGenAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
 			{
 				auto cppFieldName = ParserGenCppFieldName((ParserGenFields)field);
 				switch((ParserGenFields)field)
 				{
+				case ParserGenFields::Assignment_type:
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrAssignment::type, object, field, enumItem, weakAssignment, cppFieldName);
 				case ParserGenFields::Class_ambiguity:
-					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrClass::ambiguity, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrClass::ambiguity, object, field, enumItem, weakAssignment, cppFieldName);
 				case ParserGenFields::ClassProp_propType:
-					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrClassProp::propType, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrClassProp::propType, object, field, enumItem, weakAssignment, cppFieldName);
+				case ParserGenFields::LeftRecursionInjectContinuation_configuration:
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::configuration, object, field, enumItem, weakAssignment, cppFieldName);
+				case ParserGenFields::LeftRecursionInjectContinuation_type:
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrLeftRecursionInjectContinuation::type, object, field, enumItem, weakAssignment, cppFieldName);
 				case ParserGenFields::OptionalSyntax_priority:
-					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrOptionalSyntax::priority, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrOptionalSyntax::priority, object, field, enumItem, weakAssignment, cppFieldName);
+				case ParserGenFields::RefSyntax_refType:
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrRefSyntax::refType, object, field, enumItem, weakAssignment, cppFieldName);
+				case ParserGenFields::SwitchItem_value:
+					return vl::glr::AssemblerSetEnumField(&vl::glr::parsergen::GlrSwitchItem::value, object, field, enumItem, weakAssignment, cppFieldName);
 				default:
 					return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
 				}
@@ -8441,58 +13970,84 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 			{
 				const wchar_t* results[] = {
 					L"AlternativeSyntax",
+					L"AndCondition",
 					L"Assignment",
 					L"AstFile",
 					L"Class",
 					L"ClassProp",
 					L"Clause",
+					L"Condition",
 					L"CreateClause",
 					L"Enum",
 					L"EnumItem",
-					L"LiteralSyntax",
+					L"LeftRecursionInjectClause",
+					L"LeftRecursionInjectContinuation",
+					L"LeftRecursionPlaceholder",
+					L"LeftRecursionPlaceholderClause",
 					L"LoopSyntax",
+					L"NotCondition",
 					L"OptionalSyntax",
+					L"OrCondition",
 					L"PartialClause",
+					L"PrefixMergeClause",
+					L"PushConditionSyntax",
+					L"RefCondition",
 					L"RefSyntax",
 					L"ReuseClause",
 					L"Rule",
 					L"SequenceSyntax",
+					L"SwitchItem",
 					L"Syntax",
 					L"SyntaxFile",
+					L"TestConditionBranch",
+					L"TestConditionSyntax",
 					L"Type",
 					L"UseSyntax",
 				};
 				vl::vint index = (vl::vint)type;
-				return 0 <= index && index < 21 ? results[index] : nullptr;
+				return 0 <= index && index < 34 ? results[index] : nullptr;
 			}
 
 			const wchar_t* ParserGenCppTypeName(ParserGenClasses type)
 			{
 				const wchar_t* results[] = {
 					L"vl::glr::parsergen::GlrAlternativeSyntax",
+					L"vl::glr::parsergen::GlrAndCondition",
 					L"vl::glr::parsergen::GlrAssignment",
 					L"vl::glr::parsergen::GlrAstFile",
 					L"vl::glr::parsergen::GlrClass",
 					L"vl::glr::parsergen::GlrClassProp",
 					L"vl::glr::parsergen::GlrClause",
+					L"vl::glr::parsergen::GlrCondition",
 					L"vl::glr::parsergen::GlrCreateClause",
 					L"vl::glr::parsergen::GlrEnum",
 					L"vl::glr::parsergen::GlrEnumItem",
-					L"vl::glr::parsergen::GlrLiteralSyntax",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectClause",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation",
+					L"vl::glr::parsergen::GlrLeftRecursionPlaceholder",
+					L"vl::glr::parsergen::GlrLeftRecursionPlaceholderClause",
 					L"vl::glr::parsergen::GlrLoopSyntax",
+					L"vl::glr::parsergen::GlrNotCondition",
 					L"vl::glr::parsergen::GlrOptionalSyntax",
+					L"vl::glr::parsergen::GlrOrCondition",
 					L"vl::glr::parsergen::GlrPartialClause",
+					L"vl::glr::parsergen::GlrPrefixMergeClause",
+					L"vl::glr::parsergen::GlrPushConditionSyntax",
+					L"vl::glr::parsergen::GlrRefCondition",
 					L"vl::glr::parsergen::GlrRefSyntax",
 					L"vl::glr::parsergen::GlrReuseClause",
 					L"vl::glr::parsergen::GlrRule",
 					L"vl::glr::parsergen::GlrSequenceSyntax",
+					L"vl::glr::parsergen::GlrSwitchItem",
 					L"vl::glr::parsergen::GlrSyntax",
 					L"vl::glr::parsergen::GlrSyntaxFile",
+					L"vl::glr::parsergen::GlrTestConditionBranch",
+					L"vl::glr::parsergen::GlrTestConditionSyntax",
 					L"vl::glr::parsergen::GlrType",
 					L"vl::glr::parsergen::GlrUseSyntax",
 				};
 				vl::vint index = (vl::vint)type;
-				return 0 <= index && index < 21 ? results[index] : nullptr;
+				return 0 <= index && index < 34 ? results[index] : nullptr;
 			}
 
 			const wchar_t* ParserGenFieldName(ParserGenFields field)
@@ -8500,7 +14055,10 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 				const wchar_t* results[] = {
 					L"AlternativeSyntax::first",
 					L"AlternativeSyntax::second",
+					L"AndCondition::first",
+					L"AndCondition::second",
 					L"Assignment::field",
+					L"Assignment::type",
 					L"Assignment::value",
 					L"AstFile::types",
 					L"Class::ambiguity",
@@ -8514,28 +14072,50 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					L"CreateClause::type",
 					L"Enum::items",
 					L"EnumItem::name",
-					L"LiteralSyntax::value",
+					L"LeftRecursionInjectClause::continuation",
+					L"LeftRecursionInjectClause::rule",
+					L"LeftRecursionInjectContinuation::configuration",
+					L"LeftRecursionInjectContinuation::flag",
+					L"LeftRecursionInjectContinuation::injectionTargets",
+					L"LeftRecursionInjectContinuation::type",
+					L"LeftRecursionPlaceholder::flag",
+					L"LeftRecursionPlaceholderClause::flags",
 					L"LoopSyntax::delimiter",
 					L"LoopSyntax::syntax",
+					L"NotCondition::condition",
 					L"OptionalSyntax::priority",
 					L"OptionalSyntax::syntax",
+					L"OrCondition::first",
+					L"OrCondition::second",
 					L"PartialClause::assignments",
 					L"PartialClause::syntax",
 					L"PartialClause::type",
+					L"PrefixMergeClause::rule",
+					L"PushConditionSyntax::switches",
+					L"PushConditionSyntax::syntax",
+					L"RefCondition::name",
 					L"RefSyntax::field",
-					L"RefSyntax::name",
+					L"RefSyntax::literal",
+					L"RefSyntax::refType",
 					L"ReuseClause::assignments",
 					L"ReuseClause::syntax",
 					L"Rule::clauses",
 					L"Rule::name",
+					L"Rule::type",
 					L"SequenceSyntax::first",
 					L"SequenceSyntax::second",
+					L"SwitchItem::name",
+					L"SwitchItem::value",
 					L"SyntaxFile::rules",
+					L"SyntaxFile::switches",
+					L"TestConditionBranch::condition",
+					L"TestConditionBranch::syntax",
+					L"TestConditionSyntax::branches",
 					L"Type::name",
 					L"UseSyntax::name",
 				};
 				vl::vint index = (vl::vint)field;
-				return 0 <= index && index < 35 ? results[index] : nullptr;
+				return 0 <= index && index < 60 ? results[index] : nullptr;
 			}
 
 			const wchar_t* ParserGenCppFieldName(ParserGenFields field)
@@ -8543,7 +14123,10 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 				const wchar_t* results[] = {
 					L"vl::glr::parsergen::GlrAlternativeSyntax::first",
 					L"vl::glr::parsergen::GlrAlternativeSyntax::second",
+					L"vl::glr::parsergen::GlrAndCondition::first",
+					L"vl::glr::parsergen::GlrAndCondition::second",
 					L"vl::glr::parsergen::GlrAssignment::field",
+					L"vl::glr::parsergen::GlrAssignment::type",
 					L"vl::glr::parsergen::GlrAssignment::value",
 					L"vl::glr::parsergen::GlrAstFile::types",
 					L"vl::glr::parsergen::GlrClass::ambiguity",
@@ -8557,28 +14140,50 @@ ParserGenAstInsReceiver : public vl::glr::AstInsReceiverBase
 					L"vl::glr::parsergen::GlrCreateClause::type",
 					L"vl::glr::parsergen::GlrEnum::items",
 					L"vl::glr::parsergen::GlrEnumItem::name",
-					L"vl::glr::parsergen::GlrLiteralSyntax::value",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectClause::continuation",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectClause::rule",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::configuration",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::flag",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::injectionTargets",
+					L"vl::glr::parsergen::GlrLeftRecursionInjectContinuation::type",
+					L"vl::glr::parsergen::GlrLeftRecursionPlaceholder::flag",
+					L"vl::glr::parsergen::GlrLeftRecursionPlaceholderClause::flags",
 					L"vl::glr::parsergen::GlrLoopSyntax::delimiter",
 					L"vl::glr::parsergen::GlrLoopSyntax::syntax",
+					L"vl::glr::parsergen::GlrNotCondition::condition",
 					L"vl::glr::parsergen::GlrOptionalSyntax::priority",
 					L"vl::glr::parsergen::GlrOptionalSyntax::syntax",
+					L"vl::glr::parsergen::GlrOrCondition::first",
+					L"vl::glr::parsergen::GlrOrCondition::second",
 					L"vl::glr::parsergen::GlrPartialClause::assignments",
 					L"vl::glr::parsergen::GlrPartialClause::syntax",
 					L"vl::glr::parsergen::GlrPartialClause::type",
+					L"vl::glr::parsergen::GlrPrefixMergeClause::rule",
+					L"vl::glr::parsergen::GlrPushConditionSyntax::switches",
+					L"vl::glr::parsergen::GlrPushConditionSyntax::syntax",
+					L"vl::glr::parsergen::GlrRefCondition::name",
 					L"vl::glr::parsergen::GlrRefSyntax::field",
-					L"vl::glr::parsergen::GlrRefSyntax::name",
+					L"vl::glr::parsergen::GlrRefSyntax::literal",
+					L"vl::glr::parsergen::GlrRefSyntax::refType",
 					L"vl::glr::parsergen::GlrReuseClause::assignments",
 					L"vl::glr::parsergen::GlrReuseClause::syntax",
 					L"vl::glr::parsergen::GlrRule::clauses",
 					L"vl::glr::parsergen::GlrRule::name",
+					L"vl::glr::parsergen::GlrRule::type",
 					L"vl::glr::parsergen::GlrSequenceSyntax::first",
 					L"vl::glr::parsergen::GlrSequenceSyntax::second",
+					L"vl::glr::parsergen::GlrSwitchItem::name",
+					L"vl::glr::parsergen::GlrSwitchItem::value",
 					L"vl::glr::parsergen::GlrSyntaxFile::rules",
+					L"vl::glr::parsergen::GlrSyntaxFile::switches",
+					L"vl::glr::parsergen::GlrTestConditionBranch::condition",
+					L"vl::glr::parsergen::GlrTestConditionBranch::syntax",
+					L"vl::glr::parsergen::GlrTestConditionSyntax::branches",
 					L"vl::glr::parsergen::GlrType::name",
 					L"vl::glr::parsergen::GlrUseSyntax::name",
 				};
 				vl::vint index = (vl::vint)field;
-				return 0 <= index && index < 35 ? results[index] : nullptr;
+				return 0 <= index && index < 60 ? results[index] : nullptr;
 			}
 
 			vl::Ptr<vl::glr::ParsingAstBase> ParserGenAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
@@ -8626,6 +14231,7 @@ namespace vl
 					L"CLASS",
 					L"ENUM",
 					L"VAR",
+					L"SWITCH",
 					L"TOKEN",
 					L"AS",
 					L"PARTIAL",
@@ -8635,6 +14241,10 @@ namespace vl
 					L"CLOSE_SQUARE",
 					L"OPEN_CURLY",
 					L"CLOSE_CURLY",
+					L"OPEN_PUSH",
+					L"OPEN_TEST",
+					L"AND",
+					L"OR",
 					L"COMMA",
 					L"COLON",
 					L"SEMICOLON",
@@ -8642,10 +14252,16 @@ namespace vl
 					L"ALTERNATIVE",
 					L"USE",
 					L"ASSIGN",
+					L"WEAK_ASSIGN",
 					L"POSITIVE",
 					L"NEGATIVE",
+					L"LS_PH",
+					L"LS_I",
+					L"LS_IM",
+					L"LS_PM",
 					L"ID",
 					L"STRING",
+					L"CONDITIONAL_LITERAL",
 					L"SPACE",
 					L"COMMENT",
 				};
@@ -8660,6 +14276,7 @@ namespace vl
 					L"class",
 					L"enum",
 					L"var",
+					L"switch",
 					L"token",
 					L"as",
 					L"partial",
@@ -8669,6 +14286,10 @@ namespace vl
 					L"]",
 					L"{",
 					L"}",
+					L"!(",
+					L"?(",
+					L"&&",
+					L"||",
 					L",",
 					L":",
 					L";",
@@ -8676,8 +14297,14 @@ namespace vl
 					L"|",
 					L"!",
 					L"=",
+					L"?=",
 					L"+",
 					L"-",
+					L"left_recursion_placeholder",
+					L"left_recursion_inject",
+					L"left_recursion_inject_multiple",
+					L"prefix_merge",
+					nullptr,
 					nullptr,
 					nullptr,
 					nullptr,
@@ -8694,6 +14321,7 @@ namespace vl
 					L"class",
 					L"enum",
 					L"var",
+					L"switch",
 					L"token",
 					L"as",
 					L"partial",
@@ -8703,6 +14331,10 @@ namespace vl
 					L"/]",
 					L"/{",
 					L"/}",
+					L"!/(",
+					L"/?/(",
+					L"&&",
+					L"/|/|",
 					L",",
 					L":",
 					L";",
@@ -8710,10 +14342,16 @@ namespace vl
 					L"/|",
 					L"!",
 					L"=",
+					L"/?=",
 					L"/+",
 					L"-",
+					L"left_recursion_placeholder",
+					L"left_recursion_inject",
+					L"left_recursion_inject_multiple",
+					L"prefix_merge",
 					L"[a-zA-Z_][a-zA-Z0-9_]*",
 					L"(\"[^\"]*\")+",
+					L"(\'[^\']*\')+",
 					L"/s+",
 					L"////[^/r/n]*",
 				};
@@ -8723,18 +14361,21 @@ namespace vl
 
 			void ParserGenLexerData(vl::stream::IStream& outputStream)
 			{
-				static const vl::vint dataLength = 1368; // 15852 bytes before compressing
+				static const vl::vint dataLength = 2299; // 36189 bytes before compressing
 				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 88;
-				static const vl::vint dataSolidRows = 5;
-				static const vl::vint dataRows = 6;
+				static const vl::vint dataRemain = 251;
+				static const vl::vint dataSolidRows = 8;
+				static const vl::vint dataRows = 9;
 				static const char* compressed[] = {
-					"\xEC\x3D\x00\x00\x50\x05\x00\x00\x40\x00\x01\xBB\x01\x84\x81\x82\x1C\x82\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x27\x04\xA8\x0A\x94\x81\x15\x96\x82\x2A\x30\x84\x8B\x13\x9C\x80\x16\x9B\x04\xAD\x39\x84\x8E\x14\x9C\x83\x17\x3F\x84\xB0\x04\x89\x1C\x83\x82\x83\x04\x83\x82\x84\x8C\x1C\xA4\x83\x1E\x4F\x84\xBE\x04\x80\x81\x81\x20\x82\x5A\x04\x9B\x3A\xA4\x84\x2D\xAE\x82\x5D\x60\x84\x9E\x23\xB4\x83\x2E\xB3\x04\xE0\x29\xA4\x81\x34\xB4\x82\x31\x6F\x84\xA3\x32\xB4\x84\x31\xBA\x82\x65\x78\x84\x86\x3B\xBC\x83\x32\xBF\x04\xE8\x01\xC4\x89\x34\xC0\x82\x35\x87\x84\xAB\x2A\xC4\x84\x35\xC6\x82\x6D\x10\xC4\x8E\x33\xCC\x83\x36\xCB\x04\xF0\x19\xC4\x81\x3C\xCC\x82\x39\x9F\x84\xB3\x22\xD4\x84\x39\xD2\x82\x75\x28\xC4\x96\x3B\xD4\x83\x3A\x82\x7A\x04\xBB\x32\xD4\x84\x3D\xDA\x82\x7D\x38\xC4\x9E\x34\x87\x7F\x7E\x08\x00\x3E\xFE\xD7\x04\x84\xE1\x80\xE1\xFF\x46\xC1\xE2\xEA\xE1\x08\x82\x0B\xBD\xC2\xC7\x0A\x81\xEE\xDF\x08\x8C\x01\x94\x15\xFF",
-					"\x78\x0B\xEE\x8D\x80\x0F\x5B\xD2\x1B\xE5\x0E\x87\xE2\xE1\x10\xE7\xFE\xC5\xFA\xF7\x7D\x85\x80\xEC\x80\x02\x04\x81\xFB\x00\xFB\xFB\xF0\xF8\xC0\x11\xFC\xFA\xFD\xFF\x80\x06\x3E\x7A\x7D\x01\xFA\x44\x0A\x7F\x44\x01\x40\x71\x41\x45\xED\x48\x7E\x83\x83\x10\x91\x82\x87\x84\x14\x95\x88\x73\x06\xDB\x56\x82\x70\x86\x0D\x94\x8C\x87\x72\xBE\x5F\x82\x88\x41\x23\x81\x45\x88\x00\x27\xA9\x84\x41\x06\x24\xAD\x86\x8A\x8B\x28\x84\x4A\x04\x8C\x2A\x9D\x8A\x87\x8D\x38\xB9\x8A\x8F\x83\x1F\xBB\x8F\x3D\x8F\x37\x80\x91\x88\x8D\x44\xAF\x86\x91\x8C\x47\xA7\x8C\x05\x91\x48\x8D\x95\x8E\x93\x4C\xBE\x82\x97\x94\x54\xBC\x89\x85\x90\x57\x93\x82\x93\x8F\x4C\x8F\x9E\x95\x97\x04\x5D\x00\x99\x92\x63\x8D\x95\x97\x99\x68\xB9\x8B\x94\x8E\x6B\x9E\x8B\x76\x07\x65\x9F\x94\x9B\x9C\x50\xB4\x92\x9D\x9D\x66\xA9\x9A\x9F\x9E\x10\xAD\x9A\x86\x9F\x12\x9B\x97\x9F\xA0\x71\xB0\x8C\x46\x9D\x85\x87\x9C\x9F\xA2\x8B\x80\xA5\x86\xA3\x7D\x9B\x7E\x44\xA2\x94\xB8\x94\xA1\xA5\x97\xB9\x9C\xA3\xA6\x9C\x9D\xAE\xA7\xA7\xA0\xA1\xA2\xAB\xA8\xA4\xA5\xA6\xAB\xA9\xA8\xA9\xAA\xAB\xAA",
-					"\xAC\xAD\xAE\xAB\xAB\xB0\xB1\xA2\xAF\xAC\xB4\xB5\xA6\xAF\xAD\xB8\xB9\xAA\xAF\xAE\xBC\x8B\xA1\x4A\x8D\xBD\x81\xB2\xB3\xB0\xC4\x85\xB6\xB3\xB1\xC8\x89\xBA\xB3\xB2\xCC\x8D\xBE\xB3\xB3\xD0\x91\xB2\xB7\xB4\xD4\xBE\x80\xA6\x96\x59\x81\xAB\x75\xA6\xDC\x89\xA6\xA6\xB7\xD7\x92\x84\x49\x40\xE3\x80\x05\xBB\xB9\x25\x64\xB9\xB8\x00\x27\x6A\xBE\xBA\xB9\xEB\xA8\xBF\xBA\xBC\xF0\xB3\xB1\xBF\xBD\xF6\xB9\xB5\xBF\xBE\xF4\xBD\xB8\xBC\xBF\xFF\xBE\xBA\xBE\xC0\x00\xC3\xC1\xC1\xB6\x24\x04\x49\xC1\x7B\x0B\xE0\x8F\x3D\xC3\xD5\x91\xC2\xC6\x84\x25\x19\xB3\xC7\xC5\xA7\xA1\xB1\x86\xC6\x1B\x9B\xB4\x42\x09\xE0\xA1\xC8\xA6\xC8\x78\x97\xCC\xC6\x95\xC0\x9B\xCE\xC7\xC8\x2C\xDF\xBD\xC9\xB7\x8A\x93\xC7\xCA\x83\x33\xC2\xA4\xC8\xCC\x2E\xF9\xC9\xA6\xC9\x16\xEE\x99\xC9\xA4\xED\x69\x4F\xCB\xCD\x44\xC3\xDF\xCF\xB3\x33\xD7\x8D\xCC\xCA\x0E\xF8\xCE\xD1\xD1\x4D\xAB\x44\x9C\xCF\x47\xDA\xB5\xD6\xD2\xED\x4F\xD6\xD2\xCE\x30\xAE\x4B\xD4\xD5\x0E\xEC\x9B\xD0\xCD\x2B\xDC\xDB\xD5\x4C\x5B\xDA\xD1\xD8\xB5\x49\xDD\xC7\xD6\xDB\x4D\xD0\xDA\xDB\x93\x34\x5F\xD8\xC6\x86\x37",
-					"\x6F\xD7\xDE\xA7\x04\xFD\xDB\xB9\xBB\x05\xC1\xEE\xDE\xC1\x84\xC2\xE7\xC1\xE1\x83\xC6\xE8\xE3\xE1\x8A\xCD\xE9\xE0\xBD\x9E\xBA\x4A\xDF\xDE\x77\xCD\xC0\xC6\x70\x97\xFE\x69\xE4\xE5\x9C\xD5\x8D\x4D\x40\x9F\xCE\xC1\xE8\x72\xA1\xE5\xEE\x4C\xE8\xA7\xC0\x06\xE8\xEA\xAC\xEA\xE9\xEB\xEA\xAE\xED\xE0\xEF\xEC\xAF\xF5\xE2\xEE\xED\xB1\xF9\xE4\xEF\xED\xBC\xFA\xE8\xEF\xEE\xBE\xFD\xE0\xF3\xE8\xC8\xAD\xD3\x93\xE4\x36\xE9\xD0\x8C\x50\xCA\xCD\xF5\xCA\xCC\x63\xEA\xC8\xF1\xD9\x73\xF2\xDC\x93\x50\x2D\xE0\xD6\xB5\xF4\x70\xD8\xD6\xDB\xF7\x4F\xB1\x06\xF5\xA5\xDA\xFB\x85\xCC\xF5\xE3\xE0\xF9\xFB\x89\xE5\xFA\x87\xF9\xD6\x65\xB2\x0B\xFB\xFC\x53\xD0\xF3\xE6\xF7\x62\xF0\xFE\xF1\xF5\x2D\xF3\x05\x99\xE7\x00\x95\x54\x0D\x04\x23\x81\x80\x05\x80\x00\x07\x89\x80\x01\x8B\x81\x21\x1A\x0C\x80\x81\x0F\x8A\x82\x01\x91\x84\x83\x09\x96\x80\x82\x17\x92\x80\x06\x9B\x8A\x83\x0E\x95\x84\x83\x1F\x9E\x81\x06\xA1\x84\x85\x11\xA6\x80\x84\x27\x87\x80\xE9\x29\x7B\x85\xF6\x03\x7F\x77\x30\x82\x79\x0C\xC1\x74\x87\x17\xB2\x87\x86\x35\x93\x86\x0D\xB9\x88\x87\x1D\x80\x79",
-					"\x59\xC6\x7C\x4B\xF4\x7A\x7A\x7D\x80\x36\x04\x7E\x45\x99\x65\xFB\x6A\x4C\x7B\xE3\x71\x6B\x7F\x48\x87\x47\x0D\x5E\x5B\x89\xFC\x6B\x68\x5B\x44\x9C\x7D\x12\xDA\x81\x89\x62\x41\x8F\x7D\x4F\x9B\x88\xD4\x38\x01\x8B\x26\x8A\x5F\x8B\x66\x89\x7A\x18\xC7\x45\x28\x28\xAE\x8F\x8A\x16\x42\x84\x0A\xF3\x87\x80\x07\xA9\x85\x84\x74\x98\x8E\x1C\xFB\x8A\x8F\x3E\xB7\x8F\x8F\x79\x80\x90\x1F\x82\x9F\x83\xC8\x66\x89\x80\x88\x91\x54\x1A\xC3\x81\x8C\x2E\xA5\x8F\x48\x47\x2F\x7A\xC4\x0B\x90\x8E\xE9\x4D\x97\x91\x6B\x99\x91\x15\xD8\x4C\x90\xEF\x4E\x97\x8D\x38\x7B\x93\x9F\x69\x8B\x3A\xA5\x19\x97\x93\xA7\x87\x91\xF1\x2A\x9E\x88\x2B\x9E\x90\x93\x4F\x4D\x28\x28\xAC\x96\x58\x4A\xAE\x90\x6E\xA8\x9F\x40\x54\x33\x94\x7C\xFB\x55\x96\x67\xBF\x8C\x6B\x2B\xBC\x99\x95\x4A\x53\x2D\x7E\x93\x94\x94\x18\xC3\x95\x99\x66\xAA\x6A\x94\x16\x4B\x98\x2E\xB0\x90\x6B\x1F\x14\x8E\x97\xDB\x7D\x93\x34\xC4\x99\x97\xFF\x7B\x46\x1F\xFF\x1F\x16\x3F\x79\x1F\x1B\x77\x3F\x1D\x2A\x05\x20\x00\x74\x01\x2B\x9C\x75\x8F\x3F\x9D\xEC\x84\x23\x74\x01\x2B\x21\x80\x0D\x21\x20\xE9\x20",
-					"\x00\x82\x00\x0C\x40\x00\x17\x21\x20\xDF\x20\x01\x78\x01\x2E\x39\x80\x23\x39\x20\xD7\x39\x3A\x7E\x6D\x93\x47\x80\x1D\x39\x20\x0D\xAE\x9D\x40\x04\x41\x9F\x8A\x92\xA7\xA2\xED\x8C\xA2\x8C\x45\x34\x21\x87\x80\x04\x45\x16\xB9\xA0\x41\x76\x31\xA4\x82\x0A\x40\x00\x11\xA0\xA4\x46\x84\x23\x3F\x92\x90\xA4\xA3\x16\xAF\x3C\x00\x06\x4E\xA5\x95\x80\x40\x9E\xE9\x80",
+					"\x5D\x8D\x00\x00\xF3\x08\x00\x00\x87\x00\x01\x81\x21\x84\x81\x80\x20\x82\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x25\x04\xA6\x0A\x94\x87\x11\x96\x82\x28\x30\x84\x89\x13\x9C\x82\x14\x9B\x04\xAB\x39\x84\x8C\x14\x9C\x83\x16\x3F\x84\xAE\x02\xA4\x87\x15\xA2\x82\x30\x04\xB9\x04\x8A\x1C\xA4\x83\x1D\x4F\x84\xBC\x12\xA4\x85\x1D\xAA\x82\x3E\x58\x84\x9F\x1B\xAC\x83\x82\x83\x04\x83\x81\x9A\x24\x83\x2D\xB2\x82\x5C\x68\x84\x9D\x2B\xB4\x82\x2E\xB7\x04\xDF\x31\xA4\x80\x34\xB8\x83\x30\x77\x84\xA2\x3A\xB4\x83\x31\xBE\x82\x64\x00\xC4\x85\x33\xC4\x82\x32\xC3\x04\xE7\x09\xC4\x88\x34\xC4\x83\x34\x8F\x84\xAA\x32\xC4\x83\x35\xCA\x82\x6C\x18\xC4\x8D\x3B\xCC\x82\x36\xCF\x04\xEF\x21\xC4\x80\x3C\xD0\x83\x38\xA7\x84\xB2\x2A\xD4\x83\x39\xD6\x82\x74\x30\xC4\x95\x33\xDC\x82\x3A\xDB\x04\xF7\x39\xC4\x88\x3C\xDC\x83\x3C\x04\xFA\x04\x9B\x33\xE4\x80\x3E\xE3\x04\xFD\x09\xE4\x8E\x3C\x83\x7F\x7F\x10\x00\x0F\xEF\xEC\x0C\x81\xEB\x80\xD3\xFF\x57\xF2",
+					"\xE3\xEB\xEE\x8D\x80\x1A\x4E\xD3\xF1\xE1\x83\x0E\x84\x87\xD8\xD3\xD6\x04\x82\x0C\x83\x0A\xF1\xCF\x9D\x30\xFF\x73\x0C\x80\x0B\xF9\x15\x73\xCF\x13\xF9\x09\x89\xF5\xE7\x13\x7F\x7F\x3D\x7F\x02\x89\x41\x40\x81\x00\x02\x04\x40\x82\x03\x0B\x8E\x83\x81\x0F\x80\x08\x80\x82\x18\x11\x83\x84\x41\x07\x16\x84\x41\x01\x04\x46\x01\x84\x01\x1A\x90\x81\x41\x45\x01\x51\x08\x46\x80\xD9\x69\x8A\x8B\x8A\x2C\xAD\x8E\x8B\x8B\x30\xB0\x8E\x44\x8A\x31\xAE\x83\x8C\x77\x35\xB7\x89\x77\x8D\x3C\x9F\x41\x41\x8F\x3F\xBE\x80\x00\x90\x43\x82\x9E\x06\x90\x44\x84\x9C\x45\x90\x4C\x85\x9D\x90\x91\x35\x91\x92\x97\x94\x54\x95\x9F\x3E\x8E\x56\xAB\x88\x95\x8E\xF3\x49\x98\x93\x97\x4F\xA0\x90\x01\x48\x61\xA5\x9E\x93\x99\x5E\xA6\x90\x95\x96\x6C\xAD\x9E\x99\x8B\x5B\xAF\x91\x9E\x8C\x5D\xA2\x99\x98\x9A\x76\xA2\x94\x4A\x9A\x79\xBC\x96\x9B\x9B\x80\x81\xAC\x9B\x9C\x6D\x84\xA6\x8F\x7C\x27\x7E\x98\x9E\xA2\x77\x8D\xAD\x9F\xA2\x90\xAB\x92\xA3\xA4\x94\xAF\x86\xA1\x96\x97\xAC\x81\x9E\xA3\x8C\x8F\xAC\xA5\xA4\x9E\x84\x44\x0A\x98\x95\xA5\xA6\xAB\x8E\xF3\x6E\x99\xA6\x96",
+					"\x75\x9D\xAE\xA8\xA8\x66\xA9\x4F\xAB\xA7\x92\xA7\xA6\xAE\xA0\xAB\x94\x99\xAD\x8A\x71\xAB\x43\xAD\xA8\xBF\xA6\x9E\x49\xB0\x90\xB7\xA6\xB3\xB1\xC8\x89\xBA\xB3\xB2\xCC\x8D\xBE\xB3\xB3\xD0\x91\xB2\xB7\xB4\xD4\x95\xB6\xB7\xB5\xD8\x99\xBA\xB7\xB6\xDC\x9D\xBE\xB7\xB7\xE0\xA1\xB2\xBB\xB8\xD0\xB1\x44\x8C\xB9\xE8\xA9\xBF\xB0\x4D\xE7\x86\xB7\x4D\xBB\xEA\xB1\xB4\xB6\x4E\xF0\xB2\xB6\xBF\xBD\xF8\xB9\xBA\xBD\x76\x3D\x75\xBB\xBF\xBF\x00\xC1\xC2\xA0\x50\xFE\x82\xC6\xC3\xC1\x08\xC9\xCA\xC3\xC2\x0C\xCD\xCE\xC3\xC3\x10\xD1\xC2\xC7\xB2\xBB\x92\x95\xC7\x74\x9B\x8F\xA3\x50\xB1\xB4\x80\xB0\xAF\xC7\x13\xE8\xA5\xC2\xC5\xA9\x96\xAD\xAB\xC7\x1D\xDC\xCE\xC5\xCA\x67\x96\x96\x51\x40\x2F\xC0\x01\xCF\xCC\x47\x70\xC5\xCC\x00\x49\x76\xCA\xCE\xCC\x37\xF4\xCB\xCE\xCF\x3C\xFF\xCD\xCF\xD0\x42\xC5\xD1\xD3\xD1\x40\xC9\xD4\xD0\xD2\x4B\xCA\xD6\xD2\xD3\x4C\xCF\xDD\xD3\xD4\x52\xC2\x81\x0C\x41\x57\xC1\x49\xD4\x00\x5B\xDD\xD8\xD7\xD7\x5A\xE0\xDC\xD4\x41\x32\x22\xDE\xD5\xD8\x68\xE3\xD9\xDB\xD9\x6A\xED\xDC\xDB\xDB\x66\xF1\xDB\xDA\xDC\x6E\xF4\xD0\xDF\xDC\x78",
+					"\xF5\xD9\xDF\xDD\x7A\xFD\xDC\xDC\xDF\x2C\xB3\x04\x42\xE0\x02\x84\xE8\x8F\x3F\x86\xE1\xCA\xE3\xE2\x35\xB4\x05\xC8\xE3\x90\xD6\xB7\xC4\x97\x23\xD8\xC7\xC9\x0D\x2B\xD9\xEA\xCB\xE6\x2D\xCB\xE3\xE5\x8C\x9F\xD9\xCC\xE4\xCB\xA4\xDA\xE5\xB2\xE7\x8F\xD8\xA9\xEA\xA6\x27\xE5\xE3\xEA\xE9\xAE\xC7\xE3\xC7\xE7\x74\x95\xEF\x71\x9C\x36\x30\xEA\xEF\xEB\xC4\x8C\xE4\xEE\xC9\xB6\xD7\x9D\xEB\xEE\x28\xC4\xF4\x93\x0D\x1E\xFE\xEB\xE9\x95\xA1\xC3\xFC\xED\xF1\xAF\xB8\x06\xF3\xF2\x0D\xFF\xE7\xA1\xF0\xA2\xD0\xFF\xC7\x52\xCF\xF1\xE7\x9E\xF2\xC1\xF5\xE2\xEC\xF0\x87\xDE\xFF\xA1\x53\xDD\xC4\xF0\xFB\xF8\x83\x94\xFC\xAE\xF3\xDA\xE6\xFF\xA8\x54\xCF\xEB\xF8\xAE\xFB\x22\xE5\xFF\xA3\x54\xE9\xFD\xFA\xF5\xE4\x00\x81\x82\x00\x83\x84\x81\x02\x86\x87\x80\x08\x89\x82\x02\x8B\x80\x46\xAB\x21\x7C\x81\x05\x96\x78\x9C\x78\x76\x72\x01\x6C\x61\x2B\xFE\x72\x7F\xFF\x55\x40\x6B\x0E\xB7\x61\x67\x51\x61\x86\x07\xD5\x62\x84\xAA\x65\x84\x84\x23\x87\x86\x0A\xA9\x8C\x84\x13\xAD\x80\x85\x37\x77\x54\x57\x0F\x80\x83\x86\x7F\x6E\x6E\x38\x89\x6D\xD9\x7B\x69\x86\xBF\x7D\x87",
+					"\x86\x3C\x81\x8A\x0F\xC2\x80\x89\x21\x86\x8D\x88\x48\x9F\x86\xD8\x51\x5F\x2A\xF6\x75\x87\x61\x86\x69\x73\x74\x52\x8F\x38\x2A\x8F\x88\x81\x62\x20\x01\x16\xD9\x3B\x8B\xE9\x19\x8F\x8B\x61\x21\x8E\x40\x62\x8A\x8A\x32\xA0\x8B\x8C\x68\x85\x8D\x1A\xE7\x8A\x8D\x36\xAC\x8F\x8D\x66\x91\x8F\x1A\xF2\x8E\x8C\x3A\xB0\x8B\x8E\x78\x95\x8D\x1E\xF7\x8A\x8F\x3E\xBC\x8C\x8D\x07\x72\x80\xEB\x58\x70\x7F\xD8\x42\x0B\x7A\x19\x94\x81\xC2\x02\x9C\x54\x42\x96\x80\x91\xF1\x66\x77\x10\x6A\x78\x74\x1A\x93\x86\x91\xFA\x69\x92\x99\x44\x00\x92\x96\x76\x79\x50\xCD\x6F\x92\x26\x91\x93\x94\x46\xBB\x5E\x94\xEF\x78\x91\xFE\x1A\x8C\x95\x47\x45\x0E\x74\x9F\x80\x51\x28\x99\x9F\x62\x23\x1D\x97\x96\xAF\x51\x96\x9C\x0A\x92\x78\x51\xA4\x97\x97\xAD\x81\x23\x11\x30\x95\x92\x27\x96\x4B\x96\xAB\x8F\x50\x12\x38\x90\x98\x62\x97\x8F\x99\x57\x88\x95\xFE\x24\x6E\x97\x60\x8D\x9F\x55\x49\x0E\x9B\x94\x4A\x04\x20\x6E\x81\x26\x9B\x00\x00\x9E\x38\xDD\x94\x9D\x80\x0B\x0D\x9C\xE1\x88\x9F\x38\xDF\x9A\x9D\x76\xAC\x9F\x9D\xE9\x90\x9F\x3A\xF1\x94\x9F\x79\xB6\x9E\x9D\xF5\x98",
+					"\x9F\x3D\xF2\x9A\x9F\x7E\xBC\x9F\x9F\xF9\x80\xA3\x3E\x81\xA4\xA1\xEC\x0C\x0C\x20\x07\xA1\x21\x42\x80\x0B\xA1\x86\x88\xA7\xA1\x0A\xB0\xA0\x43\x84\x2D\x08\x89\x8E\xA1\xA2\x18\xB3\xA1\x46\x97\xAA\xA3\x8E\x9C\xA7\xA3\x16\xA1\xA7\x46\xA2\xAE\xA2\x92\xA0\xA3\xA4\x28\xA5\xA5\x4A\xA7\xAA\xA5\x96\xAC\xA4\xA5\x5C\x84\x8D\x4C\x82\x4F\x8E\x3B\xB6\xA3\x8F\x37\xBE\x8D\x4E\xB5\xA8\xA7\x9E\xBA\xA6\xA7\x3C\xBF\xA6\x50\xC1\xA4\xA8\x3A\x81\x94\x97\xE2\x74\x98\x2D\xAC\x6E\x08\x66\x96\x9D\x56\xB3\x68\xA8\xF9\x4A\xA9\x99\x52\x84\x7F\x09\x94\x8A\x72\x34\x95\x86\x99\x46\x8B\xAE\xA9\x60\xBD\x75\x31\xF7\x7A\x94\xAE\xB7\x40\x0A\x61\xB7\x9A\x5A\xDB\xA7\x5E\xB6\xBD\x95\xAB\x2A\x59\x7B\x53\x8F\x51\x0B\xB4\x90\xAA\x62\x6E\xA8\x9A\x59\xC4\x72\x0A\xBB\x99\xA9\x64\x79\xBC\x96\x5C\xC4\x73\x0A\xBF\x9C\x72\x97\xAA\x5C\x94\x15\x05\x96\xB1\xB5\x9A\x9A\x4A\x03\xB1\xB0\x3A\xE7\x92\xA0\x7F\x84\xA2\xB2\x95\xB9\xB3\x65\x96\xB8\xB3\xCD\x9A\xB5\xB3\xA0\xBC\xB2\x68\x9F\xB2\xAA\x2A\x73\x80\xAE\xD0\x8F\x63\x4B\xA6\xAC\xB5\x8C\x95\xA3\xA5\xAD\xAE\xA5\x6C\xAB",
+					"\xB0\xB7\xDA\xB2\xB6\xB6\xB4\xB7\xB6\x6E\xB9\xBC\xB7\xD9\x92\xA4\x89\xA5\xA9\xB6\x70\xE4\xA8\xB4\xAA\x91\x4B\xB0\x56\xBE\x7D\x15\x49\x73\xAC\x50\x82\xB4\xB1\xC9\xAE\xB2\x58\xDA\xA1\xB9\x41\x85\xBC\xAB\x55\xBF\x96\x15\x0D\xBA\x82\xC4\x85\x57\xB9\xD5\x9C\xBA\x78\xCD\x4E\xBB\xF6\x65\xAF\x39\x57\x03\xBE\x74\xEA\xA5\xBC\xD5\x67\xBF\xAD\x73\xB1\xBB\x9D\x58\x02\x49\xF6\x87\x98\xBC\x5F\xB2\xBE\xC7\x59\x00\x92\xFB\x8C\x78\xBF\xD9\xB1\xBF\xC7\x64\x21\xBA\xFF\xBA\x50\xC0\x7B\xBA\xBE\x82\x9D\x74\xBA\x4B\x96\xBE\xB8\xB7\x6D\xB2\x59\x0B\xC7\xAF\x88\x41\xB1\x78\x69\x21\xBC\x85\xEA\xB6\xC1\x29\x7A\xA9\xC2\x8A\x4C\x2F\x86\xFE\x7D\xC2\x08\xE0\x70\xBA\xEB\xA2\xC3\x8D\x6F\x29\x97\xE6\xB2\x90\xC1\x20\xC9\xC6\x7A\x9E\x9E\xC5\x5D\xAF\xBA\xC5\x62\x52\x2F\x88\xD7\xBB\x91\xEA\x9E\xAE\xC4\x44\x55\x2F\x8E\xB8\xCE\xC1\x7F\x57\xC4\xC7\x6F\xA1\xC3\x8C\x8F\x58\x2F\xC3\xB5\xC1\xB1\x37\xCF\x53\x5E\x43\xCD\xBF\x27\xDF\xB9\xCA\x54\xDC\x72\x5F\x2D\xCD\xC0\x24\xC9\xAF\xB8\x28\xC4\xCA\x8C\xDC\xC0\xB0\x1F\xF1\xA8\xC6\xF0\xAB\xCA\xA2\x01\x35\x7E\x2B",
+					"\xE6\xB8\xC9\xC8\xA3\xCF\x7A\x84\x3D\xCD\x2E\xC4\xB8\xC8\xA6\x67\x31\x96\xBF\x95\xC4\x30\xD8\xCA\xCE\x02\xCA\x32\x93\xF6\xCE\xB9\x3F\xF7\x4D\x31\x7B\xDD\xBA\x9B\xEE\xB0\xCF\x30\xDE\x60\x32\x89\xC4\x57\xA2\xF7\xB6\xD0\x35\xC0\xD2\xD2\x84\xCF\xC5\xA5\xBB\xC3\x33\x02\xD3\xD7\xBF\x9B\xD7\xD2\x99\x16\x3B\xC1\x3E\xD4\x70\xC9\x99\x3A\xC2\xA8\xAB\xD4\xC7\x4C\xF6\xC5\xD1\xAA\xD1\x77\x67\x1C\x7C\x33\x51\xA6\xD7\xC4\xA1\xC2\xC2\x68\x7B\xC7\xD7\x2F\xE7\xD2\xC9\xD1\xA5\x35\xA9\x9F\xD7\xC1\xF7\xA8\x31\xD2\x9E\xCE\xD4\x94\xB0\xD9\xBF\xF5\xAB\x30\xD9\x0C\xC5\xCD\x91\xE7\xC1\xD4\xD7\x10\xDE\x9A\xBD\xD3\xAA\x9F\xCD\xD4\x49\xD8\x17\xDF\xB1\x78\xA6\xCD\x2A\xCC\xD0\xD9\x33\x74\x37\xDB\xD3\xB2\xDA\x97\xDA\xDF\xD7\x04\xC0\x07\x36\xE8\xCB\xBD\xB6\xD7\x74\xDC\x77\xEC\x62\x37\xF1\xD5\xC0\xC4\x47\xC8\xCF\x7C\xE2\x4D\x37\xE9\xD1\xAB\xB4\xE3\xDD\xDE\x56\xCF\x50\x38\xC9\xCA\xDF\x9D\xD1\x42\x39\x58\xD6\xD2\xCC\xF3\xD7\x91\xBD\xB1\xC2\xCC\xE2\x3C\xD4\xD8\x1E\xC8\xCE\x98\xC4\x47\x39\x1D\xD1\xE7\xC1\xDB\xC5\xDE\x72\x7E\xD1\xE1\x70\xC3\xE3\x9A",
+					"\x21\xF6\xDF\xC3\x9E\x6D\x38\x32\xC2\xE3\xDD\xF4\xC5\xE3\x9D\x7F\x0B\xE5\x3A\xCA\xE5\xD0\x13\xE9\xCF\x28\x80\x15\xE6\x98\xC1\x64\xDF\x29\xF4\xE1\xCF\xC4\x41\x11\x2A\xCA\xDF\xCA\x39\xFB\xE0\x33\x82\x10\xDC\x0B\xE2\xD8\xE5\xED\xC2\xE8\xC9\xF2\xD8\xE2\x13\xFE\xD2\xE7\x6A\xA3\x13\xD0\x98\xD7\xE6\x4D\xC9\xEB\xEB\x01\x24\x11\x5A\x9F\xEF\xC7\xA0\xD8\xEA\xC0\x85\x1D\xE4\xD9\xD4\xDF\xEA\x45\x46\x10\xEC\xEC\xB5\xEA\xD9\xD7\xEA\xE8\x68\xD6\x4E\x1F\x7F\x1E\x1F\x34\x7F\x1F\x0B\x7E\x39\xEB\x1D\x2A\x5F\x0C\x40\x05\x2F\x79\x85\x01\x25\x21\x01\x30\x21\x40\x01\x40\x00\x12\x40\x07\x22\x01\x2F\x3D\x40\x32\x50\x00\xCA\xEB\x39\x20\xED\x21\x21\x7D\x01\x27\x3F\x80\x15\x40\x3C\x04\x26\x3D\xAC\x28\x26\x24\xD2\xCD\x4E\x43\xFE\x7F\x38\x00\x7B\x32\x44\x00\x24\x38\x00\x26\x53\xF2\x90\x14\xF4\x4D\xCA\xE5\x21\x20\x89\x40\x03\xA8\x0A\x5D\x41\x57\x79\x3D\x49\x94\xF4\xF3\xEE\x90\x5A\x40\x62\x74\xF6\xF4\x00\x1B\x4F\x99\x06\x47\x4C\x0E\x6F\x50\x44\xAF\x59\x40\xB1\x05\x21\x77\x25\x46\xE4\x58\xF2\x3E\x7F\x76\x1F\x57\x49\x80\x00",
 				};
 				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 			}
@@ -8815,8 +14456,8 @@ WriteSyntaxHeaderFile
 					writer.WriteString(prefix+L"\t: public vl::glr::ParserBase<");
 					writer.WriteString(manager.Global().name + L"Tokens, ");
 					writer.WriteString(manager.name + L"States, ");
-					writer.WriteString(manager.Global().name + L"AstInsReceiver>");
-					writer.WriteLine(prefix + L"\t, protected vl::glr::automaton::TraceManager::ITypeCallback");
+					writer.WriteLine(manager.Global().name + L"AstInsReceiver>");
+					writer.WriteLine(prefix + L"\t, protected vl::glr::automaton::IExecutor::ITypeCallback");
 					writer.WriteLine(prefix + L"{");
 					writer.WriteLine(prefix + L"protected:");
 					writer.WriteLine(prefix + L"\tvl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;");
@@ -9030,6 +14671,21 @@ StateSymbol
 							{
 							case EdgeInputType::Token:
 								result = e1->input.token - e2->input.token;
+								if (result == 0)
+								{
+									if (e1->input.condition && e2->input.condition)
+									{
+										result = (vint)WString::Compare(e1->input.condition.Value(), e2->input.condition.Value());
+									}
+									else if (e1->input.condition)
+									{
+										result = 1;
+									}
+									else if (e2->input.condition)
+									{
+										result = -1;
+									}
+								}
 								break;
 							case EdgeInputType::Rule:
 								result = ownerManager->RuleOrder().IndexOf(e1->input.rule->Name()) - ownerManager->RuleOrder().IndexOf(e2->input.rule->Name());
@@ -9088,6 +14744,11 @@ SyntaxSymbolManager
 						);
 				}
 				return rule;
+			}
+
+			void SyntaxSymbolManager::RemoveRule(const WString& name)
+			{
+				rules.Remove(name);
 			}
 
 			StateSymbol* SyntaxSymbolManager::CreateState(RuleSymbol* rule, vint32_t clauseId)
@@ -9179,6 +14840,448 @@ SyntaxSymbolManager
 }
 
 /***********************************************************************
+.\SYNTAX\SYNTAXSYMBOLWRITER.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace parsergen
+		{
+			using namespace collections;
+
+/***********************************************************************
+AutomatonBuilder
+***********************************************************************/
+
+			AutomatonBuilder::AutomatonBuilder(RuleSymbol* _ruleSymbol)
+				: ruleSymbol(_ruleSymbol)
+			{
+			}
+
+/***********************************************************************
+AutomatonBuilder (Syntax)
+***********************************************************************/
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildTokenSyntax(vint32_t tokenId, const WString& displayText, Nullable<WString> condition, vint32_t field)
+			{
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				{
+					auto edge = CreateEdge(pair.begin, pair.end);
+					edge->input.type = EdgeInputType::Token;
+					edge->input.token = tokenId;
+					edge->input.condition = condition;
+					if (field != -1)
+					{
+						edge->insAfterInput.Add({ AstInsType::Token });
+						edge->insAfterInput.Add({ AstInsType::Field,field });
+					}
+				}
+
+				clauseDisplayText += displayText;
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildRuleSyntaxInternal(RuleSymbol* rule, vint32_t field, automaton::ReturnRuleType ruleType)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::parsergen::AutomatonBuilder::BuildRuleSyntaxInternal(RuleSymbol*, vint32_t, ReturnRuleType)#"
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				{
+					auto edge = CreateEdge(pair.begin, pair.end);
+					edge->input.type = EdgeInputType::Rule;
+					edge->input.rule = rule;
+					edge->input.ruleType = ruleType;
+
+					switch (ruleType)
+					{
+					case automaton::ReturnRuleType::Field:
+						CHECK_ERROR(field != -1, ERROR_MESSAGE_PREFIX L"Field must set for ReturnRuleType::Field.");
+						edge->insAfterInput.Add({ AstInsType::Field,field });
+						break;
+					case automaton::ReturnRuleType::Partial:
+						CHECK_ERROR(field == -1, ERROR_MESSAGE_PREFIX L"Field must not set for ReturnRuleType::Partial.");
+						break;
+					case automaton::ReturnRuleType::Discard:
+						CHECK_ERROR(field == -1, ERROR_MESSAGE_PREFIX L"Field must not set for ReturnRuleType::Discard.");
+						edge->insAfterInput.Add({ AstInsType::DiscardValue });
+						break;
+					case automaton::ReturnRuleType::Reuse:
+						CHECK_ERROR(field == -1, ERROR_MESSAGE_PREFIX L"Field must not set for ReturnRuleType::Reuse.");
+						edge->insAfterInput.Add({ AstInsType::ReopenObject });
+						break;
+					}
+				}
+
+				switch (ruleType)
+				{
+				case automaton::ReturnRuleType::Reuse:
+					clauseDisplayText += L"!" + rule->Name();
+					break;
+				default:
+					clauseDisplayText += rule->Name();
+					break;
+				}
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildFieldRuleSyntax(RuleSymbol* rule, vint32_t field)
+			{
+				return BuildRuleSyntaxInternal(rule, field, automaton::ReturnRuleType::Field);
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildPartialRuleSyntax(RuleSymbol* rule)
+			{
+				return BuildRuleSyntaxInternal(rule, -1, automaton::ReturnRuleType::Partial);
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildDiscardRuleSyntax(RuleSymbol* rule)
+			{
+				return BuildRuleSyntaxInternal(rule, -1, automaton::ReturnRuleType::Discard);
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildUseSyntax(RuleSymbol* rule)
+			{
+				return BuildRuleSyntaxInternal(rule, -1, automaton::ReturnRuleType::Reuse);
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildLoopSyntax(const StateBuilder& loopBody, const StateBuilder& loopDelimiter, bool hasDelimiter)
+			{
+				/*
+				*     +--------------------+
+				*     |                    V
+				* S --+--+--(loopBody)--+--+--> E
+				*        ^              |
+				*        +--------------+
+				*/
+
+				/*
+				*     +-------------------------+
+				*     |                         V
+				* S --+--+--(  loopBody   )--+--+--> E
+				*        ^                   |
+				*        +--(loopDelimiter)--+
+				*/
+
+				StatePair pair, bodyPair, delimiterPair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				clauseDisplayText += L"{ ";
+				bodyPair = loopBody();
+				if (hasDelimiter)
+				{
+					clauseDisplayText += L" ; ";
+					delimiterPair = loopDelimiter();
+				}
+				clauseDisplayText += L" }";
+
+				CreateEdge(pair.begin, bodyPair.begin);
+				CreateEdge(bodyPair.end, pair.end);
+				CreateEdge(pair.begin, pair.end);
+				if (hasDelimiter)
+				{
+					CreateEdge(bodyPair.end, delimiterPair.begin);
+					CreateEdge(delimiterPair.end, bodyPair.begin);
+				}
+				else
+				{
+					CreateEdge(bodyPair.end, bodyPair.begin);
+				}
+
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildOptionalSyntax(bool preferTake, bool preferSkip, const StateBuilder& optionalBody)
+			{
+				/*
+				*     +------------------+
+				*     |                  V
+				* S --+--(optionalBody)--+--> E
+				*/
+
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				if (!preferTake && !preferSkip)
+				{
+					clauseDisplayText += L"[ ";
+				}
+				else if (preferTake)
+				{
+					clauseDisplayText += L"+[ ";
+				}
+				else if (preferSkip)
+				{
+					clauseDisplayText += L"-[ ";
+				}
+				auto bodyPair = optionalBody();
+				clauseDisplayText += L" ]";
+
+				auto takeEdge = CreateEdge(pair.begin, bodyPair.begin);
+				CreateEdge(bodyPair.end, pair.end);
+				auto skipEdge = CreateEdge(pair.begin, pair.end);
+
+				if (preferTake)
+				{
+					takeEdge->important = true;
+				}
+				if (preferSkip)
+				{
+					skipEdge->important = true;
+				}
+
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildSequenceSyntax(collections::List<StateBuilder>& elements)
+			{
+				/*
+				* S --(a)--> ? --(b)--> E
+				*/
+				CHECK_ERROR(elements.Count() > 0, L"vl::glr::parsergen::AutomatonBuilder::BuildSequenceSyntax(List<StateBuilder>&)#Elements must not be empty.");
+				auto pair = elements[0]();
+				for (vint i = 1; i < elements.Count(); i++)
+				{
+					clauseDisplayText += L" ";
+					auto nextPair = elements[i]();
+					CreateEdge(pair.end, nextPair.begin);
+					pair.end = nextPair.end;
+				}
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildAlternativeSyntax(collections::List<StateBuilder>& elements)
+			{
+				/*
+				*     +--(a)--+
+				*     |       V
+				* S --+--(b)--+--> E
+				*/
+
+				CHECK_ERROR(elements.Count() > 0, L"vl::glr::parsergen::AutomatonBuilder::BuildAlternativeSyntax(List<StateBuilder>&)#Elements must not be empty.");
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				clauseDisplayText += L"( ";
+				for (vint i = 0; i < elements.Count(); i++)
+				{
+					if (i > 0) clauseDisplayText += L" | ";
+					auto branchPair = elements[i]();
+					CreateEdge(pair.begin, branchPair.begin);
+					CreateEdge(branchPair.end, pair.end);
+				}
+				clauseDisplayText += L" )";
+
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+/***********************************************************************
+AutomatonBuilder (Clause)
+***********************************************************************/
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildClause(const StateBuilder& compileSyntax)
+			{
+				ruleSymbol->NewClause();
+				clauseDisplayText = L"";
+				startPoses.Clear();
+				endPoses.Clear();
+
+				auto pair = compileSyntax();
+
+				ruleSymbol->startStates.Add(pair.begin);
+				pair.end->endingState = true;
+
+				vint l = clauseDisplayText.Length();
+				for (auto [state, pos] : startPoses)
+				{
+					state->label = clauseDisplayText.Left(pos) + L"@ " + clauseDisplayText.Right(l - pos);
+				}
+				for (auto [state, pos] : endPoses)
+				{
+					state->label = clauseDisplayText.Left(pos) + L" @" + clauseDisplayText.Right(l - pos);
+				}
+
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildAssignment(StatePair pair, vint32_t enumItem, vint32_t field, bool weakAssignment)
+			{
+				auto withState = CreateState();
+				auto edge = CreateEdge(pair.end, withState);
+				edge->insBeforeInput.Add({ AstInsType::EnumItem,enumItem });
+				edge->insBeforeInput.Add({ (weakAssignment ? AstInsType::FieldIfUnassigned : AstInsType::Field),field});
+				endPoses.Add(withState, clauseDisplayText.Length());
+				return { pair.begin,withState };
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildCreateClause(vint32_t classId, const StateBuilder& compileSyntax)
+			{
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				clauseDisplayText += L"< ";
+				auto bodyPair = compileSyntax();
+				clauseDisplayText += L" >";
+				{
+					auto edge = CreateEdge(pair.begin, bodyPair.begin);
+					edge->insBeforeInput.Add({ AstInsType::BeginObject,classId });
+				}
+				{
+					auto edge = CreateEdge(bodyPair.end, pair.end);
+					edge->insBeforeInput.Add({ AstInsType::EndObject });
+				}
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildPartialClause(const StateBuilder& compileSyntax)
+			{
+				return compileSyntax();
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildReuseClause(const StateBuilder& compileSyntax)
+			{
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				clauseDisplayText += L"<< ";
+				auto bodyPair = compileSyntax();
+				clauseDisplayText += L" >>";
+				{
+					auto edge = CreateEdge(pair.begin, bodyPair.begin);
+					edge->insBeforeInput.Add({ AstInsType::DelayFieldAssignment });
+				}
+				{
+					auto edge = CreateEdge(bodyPair.end, pair.end);
+					edge->insBeforeInput.Add({ AstInsType::EndObject });
+				}
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildLrpClause(collections::List<vint32_t>& flags, const Func<WString(vint32_t)>& flagName)
+			{
+				/*
+				*     +--(lrp:a)--+
+				*     |           V
+				* S --+--(lrp:b)--+--> E
+				*/
+
+				List<StateBuilder> elements;
+				for (vint32_t flag : flags)
+				{
+					elements.Add([this, flag, name = flagName(flag)]()
+					{
+						StatePair pair;
+						pair.begin = CreateState();
+						pair.end = CreateState();
+						startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+						{
+							auto edge = CreateEdge(pair.begin, pair.end);
+							edge->input.type = EdgeInputType::LrPlaceholder;
+							edge->input.token = flag;
+						}
+
+						clauseDisplayText += L"lrp:" + name;
+						endPoses.Add(pair.end, clauseDisplayText.Length());
+						return pair;
+					});
+				}
+				return BuildAlternativeSyntax(elements);
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildLriSyntax(vint32_t flag, RuleSymbol* rule)
+			{
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				{
+					auto edge = CreateEdge(pair.begin, pair.end);
+					edge->input.type = EdgeInputType::LrInject;
+					edge->input.token = flag;
+					edge->input.rule = rule;
+					edge->input.ruleType = automaton::ReturnRuleType::Reuse;
+					edge->insAfterInput.Add({ AstInsType::ReopenObject });
+				}
+
+				clauseDisplayText += L"lri:" + rule->Name();
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildLriSkip()
+			{
+				StatePair pair;
+				pair.begin = CreateState();
+				pair.end = CreateState();
+				startPoses.Add(pair.begin, clauseDisplayText.Length());
+
+				{
+					auto edge = CreateEdge(pair.begin, pair.end);
+					edge->input.type = EdgeInputType::Epsilon;
+				}
+
+				clauseDisplayText += L"lri:<skip>";
+				endPoses.Add(pair.end, clauseDisplayText.Length());
+				return pair;
+			}
+
+			AutomatonBuilder::StatePair AutomatonBuilder::BuildLriClauseSyntax(StateBuilder useOrLriSyntax, bool optional, collections::List<StateBuilder>&& continuations)
+			{
+				/*
+				*                                                   +--(lri:c:ReopenObject)--+
+				*                                                   |                        |
+				*                          +--(lri:a:ReopenObject)--+--(lri:d:ReopenObject)--+--+
+				*                          |                        |                        |  |
+				*                          |                        +------------------------+  | {<-- if optional}
+				*                          |                                                    V
+				* S --(rule:ReopenObject)--+--(lri:b:ReopenObject)------------------------------+--> E
+				*                          |                                                    ^
+				*                          +----------------------------------------------------+  {<-- if optional}
+				*/
+
+				if (optional)
+				{
+					continuations.Add([this]() { return BuildLriSkip(); });
+				}
+
+				List<StateBuilder> seqs;
+				seqs.Add(useOrLriSyntax);
+				seqs.Add([this, &continuations]() { return BuildAlternativeSyntax(continuations); });
+				return BuildSequenceSyntax(seqs);
+			}
+		}
+	}
+}
+
+/***********************************************************************
 .\SYNTAX\SYNTAXSYMBOL_AUTOMATON.CPP
 ***********************************************************************/
 
@@ -9189,6 +15292,7 @@ namespace vl
 		namespace parsergen
 		{
 			using namespace collections;
+			using namespace stream;
 
 /***********************************************************************
 SyntaxSymbolManager::BuildAutomaton
@@ -9240,7 +15344,7 @@ SyntaxSymbolManager::BuildAutomaton
 				List<EdgeSymbol*> edgesInOrder;
 				List<EdgeSymbol*> returnEdgesInOrder;
 				List<vint32_t> returnIndicesInOrder;
-				List<AstIns> instructionsInOrder;
+				List<AstIns> astInsInOrder;
 
 				// executable.transitions
 				vint inputCount = automaton::Executable::TokenBegin + tokenCount;
@@ -9278,13 +15382,42 @@ SyntaxSymbolManager::BuildAutomaton
 					}
 				}
 
+				// executable.stringLiteralBuffer
+				{
+					MemoryStream stringLiteralBuffer;
+					{
+						StreamWriter stringLiteralWriter(stringLiteralBuffer);
+						for (auto edge : edgesInOrder)
+						{
+							if (edge->input.condition)
+							{
+								stringLiteralWriter.WriteString(edge->input.condition.Value());
+							}
+						}
+					}
+					{
+						stringLiteralBuffer.SeekFromBegin(0);
+						StreamReader stringLiteralReader(stringLiteralBuffer);
+						executable.stringLiteralBuffer = stringLiteralReader.ReadToEnd();
+					}
+				}
+
 				// executable.edges
 				executable.edges.Resize(edgesInOrder.Count());
+				vint32_t stringLiteralIndex = 0;
 				for (auto [edge, edgeIndex] : indexed(edgesInOrder))
 				{
 					auto&& edgeDesc = executable.edges[edgeIndex];
 					edgeDesc.fromState = (vint32_t)statesInOrder.IndexOf(edge->From());
 					edgeDesc.toState = (vint32_t)statesInOrder.IndexOf(edge->To());
+					if (edge->input.condition)
+					{
+						vint32_t length = (vint32_t)edge->input.condition.Value().Length();
+						edgeDesc.condition.start = stringLiteralIndex;
+						edgeDesc.condition.count = length;
+						stringLiteralIndex += length;
+					}
+
 					switch (edge->importancy)
 					{
 					case EdgeImportancy::HighPriority:
@@ -9296,13 +15429,13 @@ SyntaxSymbolManager::BuildAutomaton
 					default:;
 					}
 
-					edgeDesc.insBeforeInput.start = (vint32_t)instructionsInOrder.Count();
-					CopyFrom(instructionsInOrder, edge->insBeforeInput, true);
-					edgeDesc.insBeforeInput.count = (vint32_t)instructionsInOrder.Count() - edgeDesc.insBeforeInput.start;
+					edgeDesc.insBeforeInput.start = (vint32_t)astInsInOrder.Count();
+					CopyFrom(astInsInOrder, edge->insBeforeInput, true);
+					edgeDesc.insBeforeInput.count = (vint32_t)astInsInOrder.Count() - edgeDesc.insBeforeInput.start;
 
-					edgeDesc.insAfterInput.start = (vint32_t)instructionsInOrder.Count();
-					CopyFrom(instructionsInOrder, edge->insAfterInput, true);
-					edgeDesc.insAfterInput.count = (vint32_t)instructionsInOrder.Count() - edgeDesc.insAfterInput.start;
+					edgeDesc.insAfterInput.start = (vint32_t)astInsInOrder.Count();
+					CopyFrom(astInsInOrder, edge->insAfterInput, true);
+					edgeDesc.insAfterInput.count = (vint32_t)astInsInOrder.Count() - edgeDesc.insAfterInput.start;
 
 					edgeDesc.returnIndices.start = (vint32_t)returnIndicesInOrder.Count();
 					for (auto returnEdge : edge->returnEdges)
@@ -9339,17 +15472,18 @@ SyntaxSymbolManager::BuildAutomaton
 					default:;
 					}
 
-					returnDesc.insAfterInput.start = (vint32_t)instructionsInOrder.Count();
-					CopyFrom(instructionsInOrder, edge->insAfterInput, true);
-					returnDesc.insAfterInput.count = (vint32_t)instructionsInOrder.Count() - returnDesc.insAfterInput.start;
+					returnDesc.ruleType = edge->input.ruleType;
+					returnDesc.insAfterInput.start = (vint32_t)astInsInOrder.Count();
+					CopyFrom(astInsInOrder, edge->insAfterInput, true);
+					returnDesc.insAfterInput.count = (vint32_t)astInsInOrder.Count() - returnDesc.insAfterInput.start;
 					if (returnDesc.insAfterInput.count == 0) returnDesc.insAfterInput.start = -1;
 				}
 
 				// executable.returnIndices
 				CopyFrom(executable.returnIndices, returnIndicesInOrder);
 
-				// executable.instructions
-				CopyFrom(executable.instructions, instructionsInOrder);
+				// executable.astInstructions
+				CopyFrom(executable.astInstructions, astInsInOrder);
 			}
 		}
 	}
@@ -9379,15 +15513,37 @@ CreateParserGenRuleSyntax
 			{
 				manager.name = L"RuleParser";
 
+				auto _cond0 = manager.CreateRule(L"Cond0");
+				auto _cond1 = manager.CreateRule(L"Cond1");
+				auto _cond2 = manager.CreateRule(L"Cond2");
+				auto _cond = manager.CreateRule(L"Cond");
+				auto _switchItem = manager.CreateRule(L"SwitchItem");
+				auto _switches = manager.CreateRule(L"Switches");
 				auto _optionalBody = manager.CreateRule(L"OptionalBody");
+				auto _testBranch = manager.CreateRule(L"TestBranch");
+				auto _token = manager.CreateRule(L"Token");
 				auto _syntax0 = manager.CreateRule(L"Syntax0");
 				auto _syntax1 = manager.CreateRule(L"Syntax1");
 				auto _syntax2 = manager.CreateRule(L"Syntax2");
 				auto _syntax = manager.CreateRule(L"Syntax");
+				auto _assignmentOp = manager.CreateRule(L"AssignmentOp");
 				auto _assignment = manager.CreateRule(L"Assignment");
 				auto _clause = manager.CreateRule(L"Clause");
+				auto _placeholder = manager.CreateRule(L"Placeholder");
+				auto _ruleName = manager.CreateRule(L"RuleName");
+				auto _lriConfig = manager.CreateRule(L"LriConfig");
+				auto _lriContinuationBody = manager.CreateRule(L"LriContinuationBody");
+				auto _lriContinuation = manager.CreateRule(L"LriContinuation");
+				auto _lriTarget = manager.CreateRule(L"LriTarget");
 				auto _rule = manager.CreateRule(L"Rule");
 				auto _file = manager.CreateRule(L"File");
+
+				_switches->isPartial = true;
+				_optionalBody->isPartial = true;
+				_token->isPartial = true;
+				_assignmentOp->isPartial = true;
+				_lriConfig->isPartial = true;
+				_lriContinuationBody->isPartial = true;
 
 				manager.parsableRules.Add(_file);
 				manager.ruleTypes.Add(_file, L"vl::glr::parsergen::GlrSyntaxFile");
@@ -9396,14 +15552,65 @@ CreateParserGenRuleSyntax
 				using C = ParserGenClasses;
 				using F = ParserGenFields;
 
+				///////////////////////////////////////////////////////////////////////////////////
+				// Condition
+				///////////////////////////////////////////////////////////////////////////////////
+
+				// ID:name as RefCondition
+				Clause{ _cond0 } = create(tok(T::ID, F::RefCondition_name), C::RefCondition);
+
+				// "(" !Cond ")"
+				Clause{ _cond0 } = tok(T::OPEN_ROUND) + use(_cond) + tok(T::CLOSE_ROUND);
+
+				// "!" Cond0:syntax as NotCondition
+				Clause{ _cond0 } = create(tok(T::USE) + rule(_cond0, F::NotCondition_condition), C::NotCondition);
+
+				// !Cond0
+				Clause{ _cond1 } = use(_cond0);
+
+				// Cond1:first "&&" Cond0:second as AndCondition
+				Clause{ _cond1 } = create(rule(_cond1, F::AndCondition_first) + tok(T::AND) + rule(_cond0, F::AndCondition_second), C::AndCondition);
+
+				// !Cond1
+				Clause{ _cond2 } = use(_cond1);
+
+				// Cond2:first "||" Cond1:second as OrCondition
+				Clause{ _cond2 } = create(rule(_cond2, F::OrCondition_first) + tok(T::OR) + rule(_cond1, F::OrCondition_second), C::OrCondition);
+
+				// !Cond2
+				Clause{ _cond } = use(_cond2);
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Switch
+				///////////////////////////////////////////////////////////////////////////////////
+
+				// ID:name as SwitchItem {value = True}
+				Clause{ _switchItem } = create(tok(T::ID, F::SwitchItem_name), C::SwitchItem).with(F::SwitchItem_value, GlrSwitchValue::True);
+
+				// "!" ID:name as SwitchItem {value = False}
+				Clause{ _switchItem } = create(tok(T::USE) + tok(T::ID, F::SwitchItem_name), C::SwitchItem).with(F::SwitchItem_value, GlrSwitchValue::False);
+
+				// "switch" {SwitchItem:switches ; ","} ";" as partial File
+				Clause{ _switches } = partial(tok(T::SWITCH) + loop(rule(_switchItem, F::SyntaxFile_switches), tok(T::COMMA)) + tok(T::SEMICOLON));
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Syntax (primitive)
+				///////////////////////////////////////////////////////////////////////////////////
+
 				// "[" Syntax:syntax "]" as partial OptionalSyntax
 				Clause{ _optionalBody } = partial(tok(T::OPEN_SQUARE) + rule(_syntax, F::OptionalSyntax_syntax) + tok(T::CLOSE_SQUARE));
 
-				// ID:name [":" ID:field] as RefSyntax
-				Clause{ _syntax0 } = create(tok(T::ID, F::RefSyntax_name) + opt(tok(T::COLON) + tok(T::ID, F::RefSyntax_field)), C::RefSyntax);
+				// ID:literal as partial RefSyntax {refType = Id}
+				Clause{ _token } = partial(tok(T::ID, F::RefSyntax_literal)).with(F::RefSyntax_refType, GlrRefType::Id);
 
-				// STRING:value as LiteralSyntax
-				Clause{ _syntax0 } = create(tok(T::STRING, F::LiteralSyntax_value), C::LiteralSyntax);
+				// STRING:literal as partial RefSyntax {refType = Literal}
+				Clause{ _token } = partial(tok(T::STRING, F::RefSyntax_literal)).with(F::RefSyntax_refType, GlrRefType::Literal);
+
+				// CONDITIONAL_LITERAL:literal as partial RefSyntax {refType = ConditionalLiteral}
+				Clause{ _token } = partial(tok(T::CONDITIONAL_LITERAL, F::RefSyntax_literal)).with(F::RefSyntax_refType, GlrRefType::ConditionalLiteral);
+
+				// Token [":" ID:field] as RefSyntax
+				Clause{ _syntax0 } = create(prule(_token) + opt(tok(T::COLON) + tok(T::ID, F::RefSyntax_field)), C::RefSyntax);
 
 				// "!" ID:name as UseSyntax
 				Clause{ _syntax0 } = create(tok(T::USE) + tok(T::ID, F::UseSyntax_name), C::UseSyntax);
@@ -9419,6 +15626,23 @@ CreateParserGenRuleSyntax
 
 				// OptionalBody as OptionalSyntax {priority = Equal}
 				Clause{ _syntax0 } = create(prule(_optionalBody), C::OptionalSyntax).with(F::OptionalSyntax_priority, GlrOptionalPriority::Equal);
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Syntax (conditional)
+				///////////////////////////////////////////////////////////////////////////////////
+
+				// "!(" {SwitchItem:switches ; ","} ";" Syntax:syntax ")" as PushConditionSyntax
+				Clause{ _syntax0 } = create(tok(T::OPEN_PUSH) + loop(rule(_switchItem, F::PushConditionSyntax_switches), tok(T::COMMA)) + tok(T::SEMICOLON) + rule(_syntax, F::PushConditionSyntax_syntax) + tok(T::CLOSE_ROUND), C::PushConditionSyntax);
+
+				// Condition:condition ":" (Syntax1:syntax | ";") as TestConditionBranch
+				Clause{ _testBranch } = create(rule(_cond, F::TestConditionBranch_condition) + tok(T::COLON) + (rule(_syntax1, F::TestConditionBranch_syntax) | tok(T::SEMICOLON)), C::TestConditionBranch);
+
+				// "?(" TestBranch:branches {"|" TestBranch:branches} ")" as TestConditionSyntax
+				Clause{ _syntax0 } = create(tok(T::OPEN_TEST) + rule(_testBranch, F::TestConditionSyntax_branches) + loop(tok(T::ALTERNATIVE) + rule(_testBranch, F::TestConditionSyntax_branches)) + tok(T::CLOSE_ROUND), C::TestConditionSyntax);
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// Syntax (others)
+				///////////////////////////////////////////////////////////////////////////////////
 
 				// "(" !Syntax ")"
 				Clause{ _syntax0 } = tok(T::OPEN_ROUND) + use(_syntax) + tok(T::CLOSE_ROUND);
@@ -9438,8 +15662,18 @@ CreateParserGenRuleSyntax
 				// !Syntax2
 				Clause{ _syntax } = use(_syntax2);
 
-				// ID:field "=" STRING:value as partial Assignment
-				Clause{ _assignment } = create(tok(T::ID, F::Assignment_field) + tok(T::ASSIGN) + tok(T::ID, F::Assignment_value), C::Assignment);
+				///////////////////////////////////////////////////////////////////////////////////
+				// Clause
+				///////////////////////////////////////////////////////////////////////////////////
+
+				// "=" as partial Assignment {type = Strong}
+				Clause{ _assignmentOp } = partial(tok(T::ASSIGN)).with(F::Assignment_type, GlrAssignmentType::Strong);
+
+				// "?=" as partial Assignment {type = Weak}
+				Clause{ _assignmentOp } = partial(tok(T::WEAK_ASSIGN)).with(F::Assignment_type, GlrAssignmentType::Weak);
+
+				// ID:field AssignmentOp STRING:value as Assignment
+				Clause{ _assignment } = create(tok(T::ID, F::Assignment_field) + prule(_assignmentOp) + tok(T::ID, F::Assignment_value), C::Assignment);
 
 				// Syntax:syntax "as" ID:type ["{" {Assignment:assignments ; ","} "}"] as CreateClause
 				Clause{ _clause } = create(rule(_syntax, F::CreateClause_syntax) + tok(T::AS) + tok(T::ID, F::CreateClause_type) + opt(tok(T::OPEN_CURLY) + loop(rule(_assignment, F::CreateClause_assignments), tok(T::COMMA)) + tok(T::CLOSE_CURLY)), C::CreateClause);
@@ -9450,11 +15684,64 @@ CreateParserGenRuleSyntax
 				// Syntax:syntax ["{" {Assignment:assignments ; ","} "}"] as ReuseClause
 				Clause{ _clause } = create(rule(_syntax, F::ReuseClause_syntax) + opt(tok(T::OPEN_CURLY) + loop(rule(_assignment, F::ReuseClause_assignments), tok(T::COMMA)) + tok(T::CLOSE_CURLY)), C::ReuseClause);
 
-				// ID:name {"::=" Clause:clauses} ";" as Rule
-				Clause{ _rule } = create(tok(T::ID, F::Rule_name) + loop(tok(T::INFER) + rule(_clause, F::Rule_clauses)) + tok(T::SEMICOLON), C::Rule);
+				///////////////////////////////////////////////////////////////////////////////////
+				// Clause (left recursive)
+				///////////////////////////////////////////////////////////////////////////////////
 
-				// Rule:rules {Rule:rules} as SyntaxFile
-				Clause{ _file } = create(rule(_rule, F::SyntaxFile_rules) + loop(rule(_rule, F::SyntaxFile_rules)), C::SyntaxFile);
+				// ID:flag as LeftRecursionPlaceholder
+				Clause{ _placeholder } = create(tok(T::ID, F::LeftRecursionPlaceholder_flag), C::LeftRecursionPlaceholder);
+
+				// ID:literal as RefSyntax {refType = ID}
+				Clause{ _ruleName } = create(tok(T::ID, F::RefSyntax_literal), C::RefSyntax).with(F::RefSyntax_refType, GlrRefType::Id);
+
+				// "left_recursion_placeholder" "(" RuleName:flags {"," ruleName:flags} ")" as LeftRecursionPlaceholderClause
+				Clause{ _clause } = create(
+						tok(T::LS_PH) + tok(T::OPEN_ROUND)
+						+ rule(_placeholder, F::LeftRecursionPlaceholderClause_flags)
+						+ loop(tok(T::COMMA) + rule(_placeholder, F::LeftRecursionPlaceholderClause_flags))
+						+ tok(T::CLOSE_ROUND),
+					C::LeftRecursionPlaceholderClause);
+
+				// "left_recursion_inject" as partial LeftRecursionInjectContinuation {configuration = Single}
+				Clause{ _lriConfig } = partial(tok(T::LS_I)).with(F::LeftRecursionInjectContinuation_configuration, GlrLeftRecursionConfiguration::Single);
+
+				// "left_recursion_inject_multiple" as partial LeftRecursionInjectContinuation {configuration = Multiple}
+				Clause{ _lriConfig } = partial(tok(T::LS_IM)).with(F::LeftRecursionInjectContinuation_configuration, GlrLeftRecursionConfiguration::Multiple);
+
+				// LriConfig "(" Placeholder:flag ")" LriTarget:injectionTargets {"|" LriTarget:injectionTargets} as partial LeftRecursionInjectContinuation
+				Clause{ _lriContinuationBody } = partial(
+					prule(_lriConfig) + tok(T::OPEN_ROUND) + rule(_placeholder, F::LeftRecursionInjectContinuation_flag) + tok(T::CLOSE_ROUND)
+					+ rule(_lriTarget, F::LeftRecursionInjectContinuation_injectionTargets)
+					+ loop(tok(T::ALTERNATIVE) + rule(_lriTarget, F::LeftRecursionInjectContinuation_injectionTargets))
+					);
+
+				// LriContinuationBody as LeftRecursionInjectionContinuation {type = Required}
+				Clause{ _lriContinuation } = create(prule(_lriContinuationBody), C::LeftRecursionInjectContinuation).with(F::LeftRecursionInjectContinuation_type, GlrLeftRecursionInjectContinuationType::Required);
+
+				// "[" LriContinuationBody as LeftRecursionInjectionContinuation "]" {type = Optional}
+				Clause{ _lriContinuation } = create(tok(T::OPEN_SQUARE) + prule(_lriContinuationBody) + tok(T::CLOSE_SQUARE), C::LeftRecursionInjectContinuation).with(F::LeftRecursionInjectContinuation_type, GlrLeftRecursionInjectContinuationType::Optional);
+
+				// RuleName:rule as LeftRecursionInjectClause
+				Clause{ _lriTarget } = create(rule(_ruleName, F::LeftRecursionInjectClause_rule), C::LeftRecursionInjectClause);
+
+				// "(" RuleName:rule LriContinuation:continuation ")" as LeftRecursionInjectClause
+				Clause{ _lriTarget } = create(tok(T::OPEN_ROUND) + rule(_ruleName, F::LeftRecursionInjectClause_rule) + rule(_lriContinuation, F::LeftRecursionInjectClause_continuation) + tok(T::CLOSE_ROUND), C::LeftRecursionInjectClause);
+
+				// "!" RuleName:rule LriContinuation:continuation as LeftRecursionInjectClause
+				Clause{ _clause } = create(tok(T::USE) + rule(_ruleName, F::LeftRecursionInjectClause_rule) + rule(_lriContinuation, F::LeftRecursionInjectClause_continuation), C::LeftRecursionInjectClause);
+
+				// "!" "prefix_merge" "(" RuleName:rule ")" as PrefixMergeClause
+				Clause{ _clause } = create(tok(T::USE) + tok(T::LS_PM) + tok(T::OPEN_ROUND) + rule(_ruleName, F::PrefixMergeClause_rule) + tok(T::CLOSE_ROUND), C::PrefixMergeClause);
+
+				///////////////////////////////////////////////////////////////////////////////////
+				// File
+				///////////////////////////////////////////////////////////////////////////////////
+
+				// ID:name {"::=" Clause:clauses} ";" as Rule
+				Clause{ _rule } = create(tok(T::ID, F::Rule_name) + opt(tok(T::COLON) + tok(T::ID, F::Rule_type)) + loop(tok(T::INFER) + rule(_clause, F::Rule_clauses)) + tok(T::SEMICOLON), C::Rule);
+
+				// [Switches] Rule:rules {Rule:rules} as SyntaxFile
+				Clause{ _file } = create(opt(prule(_switches)) + rule(_rule, F::SyntaxFile_rules) + loop(rule(_rule, F::SyntaxFile_rules)), C::SyntaxFile);
 			}
 		}
 	}
@@ -9492,6 +15779,9 @@ CreateParserGenTypeSyntax
 				auto _class = manager.CreateRule(L"Class");
 				auto _type = manager.CreateRule(L"Type");
 				auto _file = manager.CreateRule(L"File");
+
+				_classPropType->isPartial = true;
+				_classBody->isPartial = true;
 
 				manager.parsableRules.Add(_file);
 				manager.ruleTypes.Add(_file, L"vl::glr::parsergen::GlrAstFile");
@@ -9697,7 +15987,10 @@ CompactSyntaxBuilder
 						{
 						case EdgeInputType::Token:
 						case EdgeInputType::Rule:
+						case EdgeInputType::LrPlaceholder:
+						case EdgeInputType::LrInject:
 							{
+								// a new edge is created, accumulating multiple epsilon edges, ending with such edge
 								auto targetNewState = CreateCompactState(edge->To());
 								if (!visited.Contains(targetNewState))
 								{
@@ -9718,13 +16011,22 @@ CompactSyntaxBuilder
 						case EdgeInputType::Epsilon:
 							BuildEpsilonEliminatedEdgesInternal(edge->To(), newState, endState, visited, accumulatedEdges);
 							break;
-						default:;
+						case EdgeInputType::Ending:
+							// Ending is ignored because it doesn't exist in epsilon-NFA
+							break;
+						default:
+							CHECK_FAIL(L"<BuildCompactNFAInternal>Unhandled!");
 						}
 						accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
 					}
 
 					if (walkingOldState->endingState)
 					{
+						// if accumulated epsilon edges lead to the epsilon-NFA ending state
+						// create an Ending edge to the compact-NFA ending state
+						// when a non-epsilon edge connects to the ending state directly
+						// this is triggered by examing the epsilon-NFA ending state directly
+						// at this moment accumulatedEdges is an empty collection
 						auto newEdge = new EdgeSymbol(newState, endState);
 						newEdge->input.type = EdgeInputType::Ending;
 						for (auto accumulatedEdge : accumulatedEdges)
@@ -9792,7 +16094,7 @@ CompactSyntaxBuilder
 			};
 
 /***********************************************************************
-SyntaxSymbolManager::CreateLeftRecEdge
+SyntaxSymbolManager::BuildLeftRecEdge
 ***********************************************************************/
 
 			void SyntaxSymbolManager::BuildLeftRecEdge(EdgeSymbol* newEdge, EdgeSymbol* endingEdge, EdgeSymbol* lrecPrefixEdge)
@@ -9881,7 +16183,7 @@ SyntaxSymbolManager::EliminateLeftRecursion
 			}
 
 /***********************************************************************
-SyntaxSymbolManager::EliminateEpsilonEdges
+SyntaxSymbolManager::EliminateSingleRulePrefix
 ***********************************************************************/
 
 			void SyntaxSymbolManager::EliminateSingleRulePrefix(RuleSymbol* rule, StateSymbol* startState, StateSymbol* endState, StateList& newStates, EdgeList& newEdges)
@@ -9906,8 +16208,11 @@ SyntaxSymbolManager::EliminateEpsilonEdges
 				*/
 
 				Group<RuleSymbol*, EdgeSymbol*> prefixEdges;
-				List<EdgeSymbol*> continuationEdges;
+				List<EdgeSymbol*> continuationEdges, eliminatedEdges;
 
+				// identify prefix edge and continuation edge
+				// prefix edges are clauses (x)
+				// continuation edges are all qualified clauses with prefix (x) except prefix edges
 				for (auto edge : startState->OutEdges())
 				{
 					if (edge->input.type != EdgeInputType::Rule) continue;
@@ -9925,27 +16230,125 @@ SyntaxSymbolManager::EliminateEpsilonEdges
 					}
 				}
 
-				for (auto continuationEdge : continuationEdges)
+				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
 				{
-					vint prefixIndex = prefixEdges.Keys().IndexOf(continuationEdge->input.rule);
-					if (prefixIndex == -1) continue;
+					auto&& prefixEdgesOfRule = prefixEdges.GetByIndex(prefixIndex);
+					CHECK_ERROR(prefixEdgesOfRule.Count() == 1, L"<EliminateSingleRulePrefix>Multiple prefix edges under the same rule is not supported yet.");
+
+					// TODO:
+					// in this case we need to create a prefix edges to replace all others
+					// it also means unresolvable ambiguity
+					// maybe a better solution is to define it as a kind of invalid syntax
+				}
+
+				// for all prefixEdge and continuationEdge under the same rule
+				// if their insBeforeInput are different
+				// move prefixEdge's insBeforeInput to insAfterInput with help from LriStore and LriFetch
+				SortedList<RuleSymbol*> compatibleInsBeforeInputPrefixRules;
+				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
+				{
+					// see if all prefixEdges are compatible
+					auto&& prefixEdgesOfRule = prefixEdges.GetByIndex(prefixIndex);
+					auto prefixEdge = prefixEdgesOfRule[0];
+					for (auto otherPrefixEdge : From(prefixEdgesOfRule).Skip(1))
+					{
+						if (CompareEnumerable(prefixEdge->insBeforeInput, otherPrefixEdge->insBeforeInput) != 0)
+						{
+							goto INCOMPATIBLE;
+						}
+					}
+
+					// see if all continuationEdges are compatible
+					for (auto continuationEdge : continuationEdges)
+					{
+						if (continuationEdge->input.rule == prefixEdge->input.rule)
+						{
+							if (CompareEnumerable(prefixEdge->insBeforeInput, continuationEdge->insBeforeInput) != 0)
+							{
+								goto INCOMPATIBLE;
+							}
+						}
+					}
+
+					compatibleInsBeforeInputPrefixRules.Add(ruleSymbol);
+				INCOMPATIBLE:;
+				}
+
+				// for all prefixEdge that fails the above test
+				// combine insBeforeInput with insAfterInput with the help from LriStore and LriFetch
+				// properly move instructions from prefixEdge to endingEdge
+				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
+				{
+					bool compatible = compatibleInsBeforeInputPrefixRules.Contains(ruleSymbol);
 					for (auto prefixEdge : prefixEdges.GetByIndex(prefixIndex))
 					{
-						auto state = prefixEdge->To();
-						auto endingEdge = state->OutEdges()[0];
-						auto newEdge = new EdgeSymbol(state, continuationEdge->To());
-						newEdges.Add(newEdge);
-						BuildLeftRecEdge(newEdge, endingEdge, continuationEdge);
+						List<AstIns> ins;
+						if (!compatible && prefixEdge->insBeforeInput.Count() > 0)
+						{
+							ins.Add({ AstInsType::LriStore });
+							CopyFrom(ins, prefixEdge->insBeforeInput, true);
+							ins.Add({ AstInsType::LriFetch });
+							prefixEdge->insBeforeInput.Clear();
+						}
+						CopyFrom(ins, prefixEdge->insAfterInput, true);
+						prefixEdge->insAfterInput.Clear();
+
+						auto endingEdge = prefixEdge->To()->OutEdges()[0];
+						CopyFrom(ins, endingEdge->insBeforeInput, true);
+						CopyFrom(endingEdge->insBeforeInput, ins);
 					}
 				}
 
+				// for all qualified continuationEdge
+				// create a new edge to run continuationEdge's instruction properly after prefixEdge
+				// remove continuationEdge
 				for (auto continuationEdge : continuationEdges)
 				{
 					vint prefixIndex = prefixEdges.Keys().IndexOf(continuationEdge->input.rule);
 					if (prefixIndex == -1) continue;
-					continuationEdge->From()->outEdges.Remove(continuationEdge);
-					continuationEdge->To()->inEdges.Remove(continuationEdge);
-					newEdges.Remove(continuationEdge);
+
+					bool compatible = compatibleInsBeforeInputPrefixRules.Contains(continuationEdge->input.rule);
+					bool eliminated = false;
+					for (auto prefixEdge : prefixEdges.GetByIndex(prefixIndex))
+					{
+						// important and insSwitch happen before shifting into the rule
+						if (continuationEdge->important != prefixEdge->important) continue;
+
+						eliminated = true;
+						auto state = prefixEdge->To();
+						auto newEdge = new EdgeSymbol(state, continuationEdge->To());
+						newEdges.Add(newEdge);
+
+						newEdge->input.type = EdgeInputType::LeftRec;
+						newEdge->important = continuationEdge->important;
+						if (compatible)
+						{
+							CopyFrom(newEdge->insAfterInput, continuationEdge->insAfterInput);
+						}
+						else if (continuationEdge->insBeforeInput.Count() > 0)
+						{
+							// for incompatible continuationEdge
+							// combine insBeforeInput with insAfterInput with the help from LriStore and LriFetch
+							newEdge->insAfterInput.Add({ AstInsType::LriStore });
+							CopyFrom(newEdge->insAfterInput, continuationEdge->insBeforeInput, true);
+							newEdge->insAfterInput.Add({ AstInsType::LriFetch });
+							CopyFrom(newEdge->insAfterInput, continuationEdge->insAfterInput, true);
+						}
+					}
+
+					if (eliminated)
+					{
+						eliminatedEdges.Add(continuationEdge);
+					}
+				}
+
+				for (auto eliminatedEdge : eliminatedEdges)
+				{
+					vint prefixIndex = prefixEdges.Keys().IndexOf(eliminatedEdge->input.rule);
+					if (prefixIndex == -1) continue;
+					eliminatedEdge->From()->outEdges.Remove(eliminatedEdge);
+					eliminatedEdge->To()->inEdges.Remove(eliminatedEdge);
+					newEdges.Remove(eliminatedEdge);
 				}
 			}
 
@@ -10084,6 +16487,8 @@ SyntaxSymbolManager::FixCrossReferencedRuleEdge
 					switch (edge->input.type)
 					{
 					case EdgeInputType::Token:
+					case EdgeInputType::LrPlaceholder:
+						// multiple Rule edges followed by one Token or LrPlaceholder edge create a cross-referenced edge
 						if (edge->returnEdges.Count() == 0)
 						{
 							auto newEdge = new EdgeSymbol(startState, edge->To());
@@ -10116,8 +16521,199 @@ SyntaxSymbolManager::FixCrossReferencedRuleEdge
 							accumulatedEdges.RemoveAt(accumulatedEdges.Count() - 1);
 						}
 						break;
-					default:;
+					case EdgeInputType::Epsilon:
+					case EdgeInputType::Ending:
+					case EdgeInputType::LeftRec:
+						// Epsilon edges do not exist in compact-NFA
+						// Ending and LeftRec edges are not involved
+						break;
+					case EdgeInputType::LrInject:
+						CHECK_FAIL(L"<BuildCrossReferencedNFAInternal>LrInject is impossible from a start state");
+						break;
+					default:
+						CHECK_FAIL(L"<BuildCrossReferencedNFAInternal>Unhandled!");
 					}
+				}
+			}
+
+/***********************************************************************
+SyntaxSymbolManager::FixLeftRecursionInjectEdge
+***********************************************************************/
+
+			void SyntaxSymbolManager::FixLeftRecursionInjectEdge(StateSymbol* startState, EdgeSymbol* injectEdge)
+			{
+				List<EdgeSymbol*> placeholderEdges;
+				for (auto outEdge : startState->OutEdges())
+				{
+					if (outEdge->input.type == EdgeInputType::LrPlaceholder && outEdge->input.token == injectEdge->input.token)
+					{
+						placeholderEdges.Add(outEdge);
+					}
+				}
+
+				vint created = 0;
+				for(auto placeholderEdge : From(placeholderEdges))
+				{
+					List<StateSymbol*> endingStates;
+					List<EdgeSymbol*> returnEdges;
+					{
+						// check if placeholderEdge does nothing more than using rules
+
+						if (placeholderEdge->insAfterInput.Count() > 0)
+						{
+							goto FAILED_INSTRUCTION_CHECKING;
+						}
+
+						for (vint i = 0; i <= placeholderEdge->returnEdges.Count(); i++)
+						{
+							auto returnEdge =
+								i == 0
+								? injectEdge
+								: placeholderEdge->returnEdges[i - 1]
+								;
+							auto endingState =
+								i == placeholderEdge->returnEdges.Count()
+								? placeholderEdge->To()
+								: placeholderEdge->returnEdges[i]->To()
+								;
+
+							for (auto outEdge : endingState->OutEdges())
+							{
+								if (outEdge->input.type == EdgeInputType::Ending && outEdge->insAfterInput.Count() > 0)
+								{
+									goto FAILED_INSTRUCTION_CHECKING;
+								}
+							}
+
+							returnEdges.Add(returnEdge);
+							endingStates.Add(endingState);
+						}
+						goto PASSED_INSTRUCTION_CHECKING;
+					FAILED_INSTRUCTION_CHECKING:
+						AddError(
+							ParserErrorType::LeftRecursionPlaceholderMixedWithSwitches,
+							{},
+							injectEdge->fromState->Rule()->Name(),
+							lrpFlags[injectEdge->input.token],
+							startState->Rule()->Name()
+							);
+						return;
+					}
+				PASSED_INSTRUCTION_CHECKING:;
+
+					// search for all possible "LrPlaceholder {Ending} LeftRec Token" transitions
+					// for each transition, compact edges and put injectEdge properly in returnEdges
+					// here insBeforeInput has been ensured to be:
+					//   EndObject
+					//   LriStore
+					//   placeholderEdge->insBeforeInput
+					//   DelayFieldAssignment
+					//   LriFetch
+					//   loop {endingEdge->insBeforeInput returnEdge->insAfterInput}
+					//   --LeftRec--> ...
+
+					// EndObject is for the ReopenObject in the use rule transition before
+					// DelayFieldAssignment is for the ReopenObject in injectEdge->insAfterInput
+					// injectEdge is the last returnEdge
+
+					List<AstIns> instructionPrefix;
+					// there is no instruction in injectEdge->insBeforeInput
+					instructionPrefix.Add({ AstInsType::EndObject });
+					instructionPrefix.Add({ AstInsType::LriStore });
+					instructionPrefix.Add({ AstInsType::DelayFieldAssignment });
+					CopyFrom(instructionPrefix, placeholderEdge->insBeforeInput, true);
+					instructionPrefix.Add({ AstInsType::LriFetch });
+
+					for (vint i = returnEdges.Count() - 1; i >= 0; i--)
+					{
+						auto endingState = endingStates[i];
+						auto returnEdge = returnEdges[i];
+						EdgeSymbol* endingEdge = nullptr;
+
+						for (auto outEdge : endingState->OutEdges())
+						{
+							switch (outEdge->input.type)
+							{
+							case EdgeInputType::Ending:
+								endingEdge = outEdge;
+								break;
+							// find if there is any LeftRec from this state
+							case EdgeInputType::LeftRec:
+								{
+									auto lrEdge = outEdge;
+									// compact everything on top of this LeftRec and create an Input
+									for (auto tokenEdge : lrEdge->To()->OutEdges())
+									{
+										if (tokenEdge->input.type == EdgeInputType::Token)
+										{
+											created++;
+											auto newEdge = new EdgeSymbol(injectEdge->From(), tokenEdge->To());
+											edges.Add(newEdge);
+
+											newEdge->input = tokenEdge->input;
+											newEdge->importancy = tokenEdge->importancy;
+											CopyFrom(newEdge->returnEdges, From(returnEdges).Take(i + 1), true);
+											CopyFrom(newEdge->returnEdges, tokenEdge->returnEdges, true);
+
+											// newEdge consumes a token
+											// lrEdge->insAfterInput happens before consuming this token
+											// so it should be copied to newEdge->insBeforeInput
+											CopyFrom(newEdge->insBeforeInput, instructionPrefix, true);
+											CopyFrom(newEdge->insBeforeInput, lrEdge->insBeforeInput, true);
+											CopyFrom(newEdge->insBeforeInput, lrEdge->insAfterInput, true);
+											CopyFrom(newEdge->insBeforeInput, tokenEdge->insBeforeInput, true);
+
+											CopyFrom(newEdge->insAfterInput, tokenEdge->insAfterInput, true);
+										}
+									}
+								}
+								break;
+							// find if there is any Token from this state
+							case EdgeInputType::Token:
+								{
+									created++;
+									auto tokenEdge = outEdge;
+									auto newEdge = new EdgeSymbol(injectEdge->From(), tokenEdge->To());
+									edges.Add(newEdge);
+
+									newEdge->input = tokenEdge->input;
+									newEdge->importancy = tokenEdge->importancy;
+									CopyFrom(newEdge->returnEdges, From(returnEdges).Take(i + 1), true);
+									CopyFrom(newEdge->returnEdges, tokenEdge->returnEdges, true);
+
+									// newEdge consumes a token
+									// lrEdge->insAfterInput happens before consuming this token
+									// so it should be copied to newEdge->insBeforeInput
+									CopyFrom(newEdge->insBeforeInput, instructionPrefix, true);
+									CopyFrom(newEdge->insBeforeInput, tokenEdge->insBeforeInput, true);
+									CopyFrom(newEdge->insAfterInput, tokenEdge->insAfterInput, true);
+								}
+								break;
+							}
+						}
+
+						if (endingEdge)
+						{
+							CopyFrom(instructionPrefix, endingEdge->insBeforeInput, true);
+							CopyFrom(instructionPrefix, returnEdge->insAfterInput, true);
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
+
+				// report an error if nothing is created
+				if (created == 0)
+				{
+					AddError(
+						ParserErrorType::LeftRecursionInjectHasNoContinuation,
+						{},
+						injectEdge->fromState->Rule()->Name(),
+						lrpFlags[injectEdge->input.token],
+						startState->Rule()->Name()
+						);
 				}
 			}
 
@@ -10141,6 +16737,10 @@ SyntaxSymbolManager::BuildCrossReferencedNFAInternal
 					}
 				}
 
+				// compact multiple shift (Rule) edges and an input (Token or LrPlaceholder) edge to one edge
+				// when a cross-referenced edge is executed, for each Rule edge:
+				//   insBeforeInput instructions are executed
+				//   insAfterInput instructions are executed in its returnEdges
 				for (auto state : states)
 				{
 					vint index = orderedEdges.Keys().IndexOf(state);
@@ -10153,6 +16753,23 @@ SyntaxSymbolManager::BuildCrossReferencedNFAInternal
 								List<EdgeSymbol*> accumulatedEdges;
 								accumulatedEdges.Add(edge);
 								FixCrossReferencedRuleEdge(edge->From(), orderedEdges, accumulatedEdges);
+							}
+						}
+					}
+				}
+
+				// convert LrInject to Token
+				for (auto state : states)
+				{
+					vint index = orderedEdges.Keys().IndexOf(state);
+					if (index != -1)
+					{
+						for (auto edge : orderedEdges.GetByIndex(index))
+						{
+							if (edge->input.type == EdgeInputType::LrInject)
+							{
+								auto startState = edge->input.rule->startStates[0];
+								FixLeftRecursionInjectEdge(startState, edge);
 							}
 						}
 					}

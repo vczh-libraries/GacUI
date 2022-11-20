@@ -275,18 +275,34 @@ AstInsReceiverBase
 			}
 		}
 
-		void AstInsReceiverBase::SetField(ParsingAstBase* object, vint32_t field, const ObjectOrToken& value)
+		void AstInsReceiverBase::SetField(ParsingAstBase* object, vint32_t field, const ObjectOrToken& value, bool weakAssignment)
 		{
 			if (value.object)
 			{
+				if (weakAssignment)
+				{
+					throw AstInsException(
+						L"Weak assignment only available for field of enum type",
+						AstInsErrorType::FieldWeakAssignmentOnNonEnum,
+						field
+						);
+				}
 				SetField(object, field, value.object);
 			}
 			else if (value.enumItem != -1)
 			{
-				SetField(object, field, value.enumItem);
+				SetField(object, field, value.enumItem, weakAssignment);
 			}
 			else
 			{
+				if (weakAssignment)
+				{
+					throw AstInsException(
+						L"Weak assignment only available for field of enum type",
+						AstInsErrorType::FieldWeakAssignmentOnNonEnum,
+						field
+						);
+				}
 				SetField(object, field, value.token, value.tokenIndex);
 			}
 		}
@@ -357,10 +373,12 @@ AstInsReceiverBase
 					case AstInsType::DelayFieldAssignment:
 					case AstInsType::ResolveAmbiguity:
 					case AstInsType::AccumulatedDfa:
+					case AstInsType::LriStore:
+					case AstInsType::LriFetch:
 						break;
 					default:
 						throw AstInsException(
-							L"There is no created objects.",
+							L"There is no created object.",
 							AstInsErrorType::NoRootObject
 							);
 					}
@@ -456,7 +474,7 @@ AstInsReceiverBase
 
 							for (auto&& dfa : createdObject.delayedFieldAssignments)
 							{
-								SetField(createdObject.object.Obj(), dfa.field, dfa.value);
+								SetField(createdObject.object.Obj(), dfa.field, dfa.value, dfa.weakAssignment);
 							}
 							createdObject.delayedFieldAssignments.Clear();
 						}
@@ -510,7 +528,68 @@ AstInsReceiverBase
 						pushed.RemoveAt(pushed.Count() - 1);
 					}
 					break;
+				case AstInsType::LriStore:
+					{
+						{
+							vint pushedCount = 0;
+							if (created.Count() > 0)
+							{
+								auto& createdObject = TopCreated();
+								pushedCount = createdObject.pushedCount;
+							}
+
+							if (pushed.Count() <= pushedCount)
+							{
+								throw AstInsException(
+									L"There is no pushed value to run LriStore.",
+									AstInsErrorType::MissingValueToLriStore
+									);
+							}
+						}
+
+						auto value = pushed[pushed.Count() - 1];
+						if (value.object)
+						{
+							if (lriStoredObject)
+							{
+								throw AstInsException(
+									L"LriFetch is not executed before the next LriStore.",
+									AstInsErrorType::LriStoredValueNotCleared
+									);
+							}
+							else
+							{
+								lriStoredObject = value.object;
+								pushed.RemoveAt(pushed.Count() - 1);
+							}
+						}
+						else
+						{
+							throw AstInsException(
+								L"The value to run LriStore is not an object.",
+								AstInsErrorType::LriStoredValueIsNotObject
+								);
+						}
+					}
+					break;
+				case AstInsType::LriFetch:
+					{
+						if (lriStoredObject)
+						{
+							pushed.Add(ObjectOrToken{ lriStoredObject });
+							lriStoredObject = nullptr;
+						}
+						else
+						{
+							throw AstInsException(
+								L"LriStore is not executed before the next LriFetch.",
+								AstInsErrorType::LriStoredValueNotExists
+								);
+						}
+					}
+					break;
 				case AstInsType::Field:
+				case AstInsType::FieldIfUnassigned:
 					{
 						auto& createdObject = TopCreated();
 						if (pushed.Count() <= createdObject.pushedCount)
@@ -524,13 +603,14 @@ AstInsReceiverBase
 						auto value = pushed[pushed.Count() - 1];
 						pushed.RemoveAt(pushed.Count() - 1);
 
+						bool weakAssignment = instruction.type == AstInsType::FieldIfUnassigned;
 						if (createdObject.object)
 						{
-							SetField(createdObject.object.Obj(), instruction.param, value);
+							SetField(createdObject.object.Obj(), instruction.param, value, weakAssignment);
 						}
 						else
 						{
-							DelayAssign({ value,instruction.param });
+							DelayAssign({ value,instruction.param,weakAssignment });
 						}
 					}
 					break;
@@ -679,7 +759,7 @@ IAstInsReceiver (Code Generation Error Templates)
 				throw AstInsException(
 					WString::Unmanaged(L"Field \"") +
 					WString::Unmanaged(cppFieldName) +
-					WString::Unmanaged(L"\" is not an object."),
+					WString::Unmanaged(L"\" cannot be assigned with an object."),
 					AstInsErrorType::ObjectTypeMismatchedToField, field);
 			}
 			else
@@ -695,7 +775,7 @@ IAstInsReceiver (Code Generation Error Templates)
 				throw AstInsException(
 					WString::Unmanaged(L"Field \"") +
 					WString::Unmanaged(cppFieldName) +
-					WString::Unmanaged(L"\" is not a token."),
+					WString::Unmanaged(L"\" cannot be assigned with a token."),
 					AstInsErrorType::ObjectTypeMismatchedToField, field);
 			}
 			else
@@ -711,7 +791,7 @@ IAstInsReceiver (Code Generation Error Templates)
 				throw AstInsException(
 					WString::Unmanaged(L"Field \"") +
 					WString::Unmanaged(cppFieldName) +
-					WString::Unmanaged(L"\" is not an enum item."),
+					WString::Unmanaged(L"\" cannot be assigned with an enum item."),
 					AstInsErrorType::ObjectTypeMismatchedToField, field);
 			}
 			else
@@ -1021,6 +1101,7 @@ namespace vl
 
 			SERIALIZE_ENUM(AstInsType)
 			SERIALIZE_ENUM(EdgePriority)
+			SERIALIZE_ENUM(ReturnRuleType)
 
 			BEGIN_SERIALIZATION(AstIns)
 				SERIALIZE(type)
@@ -1029,6 +1110,11 @@ namespace vl
 			END_SERIALIZATION
 
 			BEGIN_SERIALIZATION(InstructionArray)
+				SERIALIZE(start)
+				SERIALIZE(count)
+			END_SERIALIZATION
+
+			BEGIN_SERIALIZATION(StringLiteral)
 				SERIALIZE(start)
 				SERIALIZE(count)
 			END_SERIALIZATION
@@ -1047,12 +1133,14 @@ namespace vl
 				SERIALIZE(consumedRule)
 				SERIALIZE(returnState)
 				SERIALIZE(priority)
+				SERIALIZE(ruleType)
 				SERIALIZE(insAfterInput)
 			END_SERIALIZATION
 
 			BEGIN_SERIALIZATION(EdgeDesc)
 				SERIALIZE(fromState)
 				SERIALIZE(toState)
+				SERIALIZE(condition)
 				SERIALIZE(priority)
 				SERIALIZE(insBeforeInput)
 				SERIALIZE(insAfterInput)
@@ -1070,11 +1158,12 @@ namespace vl
 				SERIALIZE(ruleCount)
 				SERIALIZE(ruleStartStates)
 				SERIALIZE(transitions)
-				SERIALIZE(instructions)
+				SERIALIZE(astInstructions)
 				SERIALIZE(returnIndices)
 				SERIALIZE(returns)
 				SERIALIZE(edges)
 				SERIALIZE(states)
+				SERIALIZE(stringLiteralBuffer)
 			END_SERIALIZATION
 		}
 	}
@@ -1125,12 +1214,12 @@ ErrorArgs
 				const_cast<regex::RegexToken&>(token),
 				*static_cast<collections::List<regex::RegexToken>*>(nullptr),
 				*static_cast<automaton::Executable*>(nullptr),
-				*static_cast<automaton::TraceManager*>(nullptr),
+				nullptr,
 				nullptr
 			};
 		}
 
-		ErrorArgs ErrorArgs::InvalidToken(regex::RegexToken& token, collections::List<regex::RegexToken>& tokens, automaton::Executable& executable, automaton::TraceManager& traceManager)
+		ErrorArgs ErrorArgs::InvalidToken(regex::RegexToken& token, collections::List<regex::RegexToken>& tokens, automaton::Executable& executable, automaton::IExecutor* executor)
 		{
 			return {
 				true,
@@ -1139,12 +1228,12 @@ ErrorArgs
 				token,
 				tokens,
 				executable,
-				traceManager,
+				executor,
 				nullptr
 			};
 		}
 
-		ErrorArgs ErrorArgs::InputIncomplete(vint codeIndex, collections::List<regex::RegexToken>& tokens, automaton::Executable& executable, automaton::TraceManager& traceManager)
+		ErrorArgs ErrorArgs::InputIncomplete(vint codeIndex, collections::List<regex::RegexToken>& tokens, automaton::Executable& executable, automaton::IExecutor* executor)
 		{
 			return {
 				true,
@@ -1153,12 +1242,12 @@ ErrorArgs
 				*static_cast<regex::RegexToken*>(nullptr),
 				tokens,
 				executable,
-				traceManager,
+				executor,
 				nullptr
 			};
 		}
 
-		ErrorArgs ErrorArgs::UnexpectedAstType(collections::List<regex::RegexToken>& tokens, automaton::Executable& executable, automaton::TraceManager& traceManager, Ptr<ParsingAstBase> ast)
+		ErrorArgs ErrorArgs::UnexpectedAstType(collections::List<regex::RegexToken>& tokens, automaton::Executable& executable, automaton::IExecutor* executor, Ptr<ParsingAstBase> ast)
 		{
 			return {
 				true,
@@ -1167,7 +1256,7 @@ ErrorArgs
 				*static_cast<regex::RegexToken*>(nullptr),
 				tokens,
 				executable,
-				traceManager,
+				executor,
 				ast
 			};
 		}
@@ -2164,20 +2253,20 @@ namespace vl
 		{
 			void JsonParserData(vl::stream::IStream& outputStream)
 			{
-				static const vl::vint dataLength = 1866; // 16217 bytes before compressing
+				static const vl::vint dataLength = 1919; // 17265 bytes before compressing
 				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 74;
+				static const vl::vint dataRemain = 127;
 				static const vl::vint dataSolidRows = 7;
 				static const vl::vint dataRows = 8;
 				static const char* compressed[] = {
-					"\x59\x3F\x00\x00\x42\x07\x00\x00\x0C\x00\x01\x82\x80\x06\x03\x82\x81\x82\x06\x89\x82\x87\x0A\x80\x81\x84\x09\x0A\x98\x0A\x9D\x0A\x86\x65\x01\x84\xFF\x19\x9A\x99\x8A\x80\x03\x8D\x8D\x1D\x9D\x97\x89\x83\x96\x81\x93\x81\x02\x0A\xA7\x82\x8F\x8A\x8D\x8F\x96\x1C\x8A\xB0\x9F\x7F\x90\x99\x9B\x96\x37\x9F\x9D\x83\x0A\x92\x84\x03\x9E\x18\xB6\xB2\x82\xA1\xA0\x9F\xA0\xA3\x45\xBA\x87\xAA\xA9\xA0\x93\xA4\xA7\x4D\xAE\x8F\xB2\xA1\xA9\x99\xAA\x9A\x53\xD6\x86\x93\x99\x98\xAA\x83\x02\x40\xDB\x84\xA2\xB8\xA4\xB0\xA6\xB3\x5E\x83\x9C\xB9\xA8\xAF\xA9\xAE\xAA\x68\xF0\xAA\xA3\xB3\xBD\xB1\xBB\xB3\x77\xE9\x87\x81\xB9\xBA\xB8\x96\xBA\x7F\xF6\x81\xD8\xB3\xC2\xBD\x81\xB5\x6E\xEC\xAF\xBA\xAD\xBC\xC5\xC2\xBF\x87\x80\xD1\xC2\xC1\x84\x84\x92\xC5\x98\x89\xDA\xD1\xBE\xC3\xC8\xC2\xCF\x86\x9E\x92\xC2\xD4\xCC\xD3\xCE\xD3\xA1\x88\xDC\xCD\xB6\x80\x04\xBF\xC7\x9D\xA8\xD0\xD2\xD1\xDA\xD5\xC6\xD6\xB7\x8B\xF8\xD0\xDB\xD8\xD3\xD8\xDB\xBC\xBA\xC2\xEA\x89\x07\xD6\xDF\xDA\xA3\xC0\xC7\xFD\xD4\xDC\xE6\xE5\xE6\xC3\x9B\xF9\xD9\xCB\xD1\xE9\xEA\xEA\xD3\xD2\xC1\xF8",
+					"\x71\x43\x00\x00\x77\x07\x00\x00\x0C\x00\x01\x82\x80\x06\x03\x82\x81\x82\x06\x89\x82\x87\x0A\x80\x81\x84\x09\x0A\x98\x0A\x9D\x0A\x86\x65\x01\x84\xFF\x19\x9A\x99\x8A\x80\x03\x8D\x8D\x1D\x9D\x97\x89\x83\x96\x81\x93\x81\x02\x0A\xA7\x82\x8F\x8A\x8D\x8F\x96\x1C\x8A\xB0\x9F\x7F\x90\x99\x9B\x96\x37\x9F\x9D\x83\x0A\x92\x84\x03\x9E\x18\xB6\xB2\x82\xA1\xA0\x9F\xA0\xA3\x45\xBA\x87\xAA\xA9\xA0\x93\xA4\xA7\x4D\xAE\x8F\xB2\xA1\xA9\x99\xAA\x9A\x53\xD6\x86\x93\x99\x98\xAA\x83\x02\x40\xDB\x84\xA2\xB8\xA4\xB0\xA6\xB3\x5E\x83\x9C\xB9\xA8\xAF\xA9\xAE\xAA\x68\xF0\xAA\xA3\xB3\xBD\xB1\xBB\xB3\x77\xE9\x87\x81\xB9\xBA\xB8\x96\xBA\x7F\xF6\x81\xD8\xB3\xC2\xBD\x81\xB5\x6E\xEC\xAF\xBA\xAD\xBC\xC5\xC2\xBF\x87\x80\xD1\xC2\xC1\x84\x84\x92\xC5\x98\x89\xDA\xD1\xBE\xC3\xC8\xC2\xCF\x86\x9E\x92\xC2\xD4\xCC\xD3\xCE\xD3\xA1\x88\xDC\xCD\xB6\x80\x04\xBF\xC7\x9D\xA8\xD0\xD2\xD1\xDA\xD5\xC6\xD6\xB7\x8B\xF8\xD0\xDB\xD8\xD3\xD8\xDB\xBC\xBA\xC2\xEA\x89\x07\xD6\xDF\xDA\xA3\xC0\xC7\xFD\xD4\xDC\xE6\xE5\xE6\xC3\x9B\xF9\xD9\xCB\xD1\xE9\xEA\xEA\xD3\xD2\xC1\xF8",
 					"\xEB\xEA\xEF\xE4\xEB\xD9\xD7\xC9\x8A\x06\xE0\xE8\xEF\xEF\xE7\xE6\xDE\xEA\xF2\xF5\xF5\xF1\xF7\xDD\xEE\xF1\xF0\xF8\xF3\xF7\x05\xF2\x0E\xA6\x8A\x8D\x05\xF6\x05\xF3\xE7\x0F\x3F\x79\x73\x80\xA5\x50\x05\x79\x04\x02\xA5\x60\x47\x65\xEB\x4F\x7E\x80\x81\xA7\x4F\x85\x6A\x84\x11\x90\x89\x6A\x85\xBF\x58\x88\x73\x84\x1A\x8E\x7D\x84\x78\xF3\x61\x81\x43\x04\x09\x95\x8C\x87\x89\x26\xA9\x87\x84\x8A\xA1\x54\x05\x8B\x8A\x2A\x99\x8C\x8A\x8C\x31\x9B\x85\x8E\x87\x33\xB6\x80\x8F\x8E\x34\xBC\x8A\x8D\x8F\x40\xBF\x82\x90\x8E\x37\xA0\x85\x7E\x7C\x47\xB4\x70\x01\x05\x2F\x81\x94\x92\x8F\x4F\xB3\x66\x05\x93\x43\x86\x9C\x7A\x92\x14\x90\x96\x95\x96\x4E\x96\x97\x04\x95\xCC\x52\x4C\x80\x92\x57\xA2\x85\x99\x92\x66\x9C\x95\x95\x7A\x6A\x91\x9B\x99\x83\x1F\xAC\x93\x69\x06\x60\x96\x9A\x05\x9D\x72\xB9\x8E\x9B\x9E\x5B\xB1\x90\x9D\x69\x1B\x38\x9F\x9D\x91\x79\x84\xA3\xA2\x96\x85\x88\xA7\xA1\x97\x89\x8C\xAB\xA3\x9B\x06\x5C\x05\x78\x45\x63\x83\x4E\x05\x79\x1F\x02\xA6\x40\x08\xE5\x61\x0A\xA6\x92\x22\x25\x73\x0B\xA7\x69\xA3\x64\x09\x79\x25\x25\x76\x09\x79",
-					"\x27\x24\xA1\x40\x0A\xAE\xA7\x92\xAD\x0A\xE5\x6A\x01\xAF\x0A\xB1\xAD\x9D\x9E\x9E\xBB\x86\xA4\x9A\xAE\x8D\x90\xA8\x96\x9F\xBF\x84\xB3\x40\x0B\xE5\x6D\x09\xAE\xB1\xA5\xBC\xAA\x42\x0B\xE5\x6F\x05\x78\x0C\xE5\x71\x01\xAE\x0C\xCB\x8E\xB9\x43\x0C\xE5\x74\x09\xB6\xAF\xC3\x9A\xB5\xB2\xB8\xE1\xA0\xBD\xB2\xB9\x01\x75\x0F\xB6\xA2\xE3\xA8\xB2\xAC\xB0\x8F\xBC\x99\x7A\x0D\xEB\x8E\xAD\xB8\xBB\xE5\xB8\xB7\xBA\xBE\x68\x81\x47\x0D\xBD\xC2\xBB\xB6\xBD\xBE\x03\xC2\xC1\xC1\xBF\xEF\x8C\xB8\xC3\x73\x38\x31\xA9\x0C\xC0\xF2\xB1\xBD\xAC\xBF\x09\xE4\xB6\xC1\xC4\xF7\x85\xCB\xC2\xC2\x00\x3A\x00\xC7\xC4\x1A\xD5\xCE\xB8\xBC\x19\xC7\xC0\x03\x0E\x1F\xC1\xB8\xC4\xC1\x26\xE4\xCC\xCB\xCA\x02\x7D\x1A\x41\x4A\x95\xBC\x64\xCE\x7E\x57\x77\xC3\x43\x4A\xCB\x7A\xC2\x40\x4F\xF1\xB3\x4E\x69\x42\x3E\xFD\xCA\x40\x42\x25\xF3\x4F\x3F\xD0\x06\x48\xD7\x6C\xCF\x00\x10\xD2\xD0\x98\x4E\xFC\x63\x4C\xD4\x45\xCD\x7C\xD3\xCE\x6C\x55\xDB\x73\xD5\x21\x57\x5B\xD6\x40\x52\xF0\x4E\xD5\x73\x33\x67\xDA\xD2\xD9\x6C\x73\x49\xD4\x58\x41\xF0\x43\xD9\x40\x3F\x57\x55\xDF\x6A\x6E",
-					"\xE0\x97\xDF\x6D\x79\xF5\xCB\x73\xDE\x56\xF0\x49\xD5\xD9\x2D\x40\xEF\xD6\xE0\x3E\x6C\x56\xE0\xDA\x88\xE1\xD7\x6F\xE2\x6B\xED\x49\xD4\xD0\x49\xD3\xD4\xD2\xE2\x6D\xCD\xED\xD2\xCA\x96\xDB\xE7\x56\xDA\x91\xDB\x49\xD4\xE4\x9A\xC3\x40\xDD\xE5\x72\xC9\xE9\xCE\x42\xA7\xEF\xCD\xE7\x40\xA4\xED\x40\xE9\xE8\x19\x59\xDA\x6D\xEC\xB4\xC3\xE8\xE7\x55\x7D\xF8\xCB\x68\xEE\xA1\xFA\xE6\xDD\xE6\x92\xEA\xEF\xEC\xF1\x1F\x76\xEB\xEC\xDE\xA5\xFF\xCC\xE5\xEA\x97\xC3\xFC\xED\xF3\x01\x73\xE7\x8F\xEB\x7B\x52\xFC\xF1\xF1\x7E\xCD\x70\xF1\xE4\xC2\xC7\xF3\xF4\xF7\xBE\xCF\xE8\xF2\xE8\xC6\xE6\xF3\xF9\xF2\x8E\xEA\xFB\xF4\xFB\x09\x54\xEE\xE8\xF4\x06\x59\xD3\x4F\xF7\x6B\xD9\xD6\xF4\x94\xD8\xD5\xFD\xD7\xF9\x1A\x38\x7E\xD2\x61\x7E\x7C\xBE\x54\x79\x6A\xCB\x66\x80\xF9\x5C\x6A\x7A\x05\xB0\x7E\x20\x02\x82\x81\xEF\x6D\x77\x7E\x00\xB5\x72\x21\xF2\x77\x61\xFF\x00\x06\x7E\x98\x12\x87\x80\xFB\x6E\x4B\x06\xA1\x89\x22\x12\x8A\x6E\x84\x69\x76\x83\x3F\x1F\x8B\x80\x81\x11\x82\x85\xCA\x7F\x72\x0A\xA8\x84\x7E\xD3\x6C\x2D\x75\x81\x6D\x24\x0E\x87\x7A\x86\x15\xB3\x68",
-					"\x00\x19\x8B\x3B\x0F\xC1\x8A\x6B\xF6\x7C\x37\x87\xBA\x3B\x84\xE3\x3D\x8B\x7D\x8D\x2A\x5E\x88\x08\x90\x88\xD4\x22\x20\x8A\x0E\x95\x8C\x88\x54\x92\x89\xFA\x02\x2A\x89\xB3\x50\x6E\x8B\x47\x65\x3F\xD9\x7A\x78\x83\x30\x9D\x78\x8C\x09\x36\x31\xF9\x0B\x25\x3C\x35\x8C\x86\x20\x6E\x82\x21\xD6\x71\x81\x20\x22\xB4\x89\x8A\x70\x85\x3C\xD4\x7B\x83\x67\x32\x9D\x78\x6A\x3F\x85\x3B\x78\x5B\x81\x20\xF2\x10\x8B\x0E\xE5\x3D\x21\xA0\x50\x84\x0F\xF2\x19\x6A\x52\x50\x95\x0D\x79\x44\x87\x4E\x28\xB6\x0A\x8F\x0A\x28\x40\x14\xF7\x08\x93\x84\x1A\x96\x88\x78\x05\x3F\xE2\x5F\x40\x8B\x3C\x22\x92\x21\xA4\x86\x8A\x1E\x0E\x9A\x20\x4E\x50\x8B\x0F\x93\x8A\x21\xA6\x50\x8C\x0F\xF2\x3C\x05\x8A\x8B\x75\x88\x1E\xAF\x6A\x97\x18\xAB\x89\x20\x84\x6E\x5F\x4E\x55\x84\x81\x8B\x7A\x92\x89\xC3\x9D\x7B\xE2\x1D\x85\x35\x8E\x27\x6E\x99\x6D\x9D\x8F\x7A\x45\x91\x6C\x41\x86\x24\x88\x2E\x6E\x79\xF7\x1D\x29\x3F\x81\x18\x9C\x63\x8B\x73\x8A\x42\x01\x41\x7E\x95\x5D\x22\x89\xE2\x8F\x21\xCA\x09\x28\x8C\x23\xA4\x45\x7B\xD9\x95\x32\x42\x77\x30\x8A\x17\x5D\x7C\x49\xD1\x64",
-					"\x4E\x35\xB0\x75\x8B\x54\xA8\x21\x3D\x1D\x39\x6B\x3E\xF2\x85\x8A\x3A\x79\x9A\x49\x59\x62\xA2\x1F\xC6\x8B\x91\xFA\x69\x3B\x99\xC4\x2A\x22\x7F\x50\x84\x52\x87\xAB\x3B\x8C\x11\xA9\x22\x3D\xC6\x83\x96\x8B\xA4\x4F\x87\x0A\xA9\x20\x32\x8A\x2E\x53\x83\x82\x23\x54\x26\xA5\x92\x34\x86\x23\xA0\xFF\x50\x89\x55\x29\xA0\x01\xAB\x31\xAD\x9A\x82\x83\x91\x21\x48\x8A\x20\xAD\x70\x9C\x62\x7A\xAC\xA5\x8A\xF1\x92\x55\x4D\x81\x23\xA2\x23\xB6\x54\xA7\x16\x64\xAA\x42\x06\x40\x8B\xA0\x8F\x3D\xA8\x03\x3E\xA5\xFB\x38\x5D\x7A\x64\x71\xA0\xAA\x64\x63\x9F\x3C\xD5\x80\x5B\xEE\x52\x59\xA6\xE4\x9F\x94\x00\x4C\xA6\x20\xFE\x10\x8E\x5A\x48\xAE\x5F\x27\x83\x24\xAC\x0A\x9C\x67\x39\x6B\xA2\x21\x58\xEE\xA9\xA8\x59\x4B\x46\x20\x1B\xAD\x7C\xB6\x69\xA4\x63\xBC\xAE\x85\x8A\xDC\x51\xA7\x73\x6D\xA6\xA6\xBC\xAB\xA5\x7D\x4F\x9E\xA2\x92\x77\xAF\x9E\x8D\x8B\xA5\x7D\xFF\x42\xB3\x68\x7E\xA1\x21\xAC\x54\xB0\x00\x58\xA1\x6F\xC3\x12\xB5\x35\x29\x71\xA7\xB2\x97\xBD\x20\xCA\x1C\xB7\x34\x31\x4A\xB2\x20\x97\xBE\xB2\x11\xCE\xA3\xB2\xD6\x55\x8D\x07\x87\xA2\x23\x0F\x31",
-					"\xB1\x21\x4A\xA7\xB1\x20\x97\xAF\x9A\x42\x41\x04\xB6\x00\x03\x0D\xB7\x90\x97\xB7\x92\x04\x91\x25\x22\x3D\xB7\x39\x97\x51\xA4\x3E\xC2\xBD\x23\x23\x07\xBB\x34\xAE\x82\xBB\x72\xDE\x95\x8B\x24\x0F\xBD\x34\xA1\x4A\xBA\x44\xD5\x8B\x09\xEB\xA7\x37\x54\xDA\xAE\xB0\x14\xCD\x0E\xBB\xD0\x2B\x51\xBC\x5F\x35\x8B\x13\x3D\xB1\x0B\xDE\xB0\x50\xBD\x03\x3A\xB5\x42\x53\x0D\xB7\x2A\x3D\xB7\xA8\xC2\xAA\xB7\x40\x6F\x96\x89\x2B\x2B\x9E\x20\xFE\x82\x22\x7E\x8E\x7C\xB5\xD2\x01\xC1\x20\xD3\xA4\xC3\x5B\xA3\x36\xB4\x7E\x90\x88\x0B\xE5\xB3\x36\x55\xE2\xAD\xC1\xC2\xAD\x7A\x0B\x11\xD1\x36\xB2\x5D\x75\xC3\x3A\x95\x8C\x0B\x19\xCC\x39\x57\x94\xCB\xBA\x28\x9E\x09\xC4\x1D\x3F\xA8\x89\xE2\xB6\x88\x30\x28\xC2\x21\xD4\x5C\xC2\x6B\xD0\x82\x0D\xDE\xA4\x0D\xB7\x68\xAB\xC6\xE7\x46\x86\x0D\xDE\xA8\x0D\xB7\x7B\xA2\xAE\x6D\x83\x26\xA0\x23\xAA\x0F\xBF\x03\x2D\xA0\x91\xD5\x8B\x0C\x24\xC2\x21\xB8\x4B\xD0\x88\x1B\x4E\xC1\x21\x8A\x83\x21\xB3\x21\x2D\x0F\x8B\xDB\x53\x52\x85\x21\xB2\x21\x6F\x1B\xCA\x41\x5E\x5D\x7B\x8E\x96\x55\x8A\x71\x14\xC8\x00\x51\xB7\xCC\x28",
-					"\xB2\x0A\xCD\x25\xAB\xB7\x68\x68\x69\x98\x28\xB9\x91\xA0\xBA\x89\x9D\x15\xC1\x90\x24\x3E\xDB\x22\xCF\x62\xA1\x24\xA0\x8D\xB5\x3A\x66\xAD\x86\x71\xBE\x8C\xB8\x9E\xD7\x8A\x31\x6F\xB0\x20\x8B\x75\xC6\x88\xA4\x8F\xBD\x7C\x01\x80\x02\x82\x10\xA4\xB9\x48\x61\x97\x9C\xC5\x0A\x8A\x69\xE8\x9D\xD1\x15\x80",
+					"\x27\x24\xA1\x40\x0A\xAE\xA7\x92\xAD\x0A\xE5\x6A\x01\xAF\x0A\xB1\xAD\x9D\x9E\x9E\xBB\x86\xA4\x9A\xAE\x8D\x90\xA8\x96\x9F\xBF\x84\xB3\x40\x0B\xE5\x6D\x09\xAE\xB1\xA5\xBC\xAA\x42\x0B\xE5\x6F\x05\x78\x0C\xE5\x71\x01\xAE\x0C\xCB\x8E\xB9\x43\x0C\xE5\x74\x09\xB6\xAF\xC3\x9A\xB5\xB2\xB8\xE1\xA0\xBD\xB2\xB9\x01\x75\x0F\xB6\xA2\xE3\xA8\xB2\xAC\xB0\x8F\xBC\x99\x7A\x0D\xEB\x8E\xAD\xB8\xBB\xE5\xB8\xB7\xBA\xBE\x68\x81\x47\x0D\xBD\xC2\xBB\xB6\xBD\xBE\x03\xC2\xC1\xC1\xBF\xEF\x8C\xB8\xC3\x73\x38\x31\xA9\x0C\xC0\xF2\xB1\xBD\xAC\xBF\x09\xE4\xB6\xC1\xC4\xF7\x85\xCB\xC2\xC2\x00\x3A\x00\xC7\xC4\x1A\xD5\xCE\xB8\xBC\x19\xC7\xC0\x03\x0E\x1F\xC1\xB8\xC4\xC1\x26\xE4\xCC\xCB\xCA\x02\x7D\x1A\x41\x4A\x95\xBC\x64\xCE\x7E\x57\x77\xC3\x43\x4A\xCB\x7A\xC2\x40\x4F\xF1\xB3\x44\x79\x42\x3E\xFD\xCA\x40\x42\x25\xF3\x4F\x3F\xD0\x06\x48\xD7\x6C\xCF\x00\x10\xD2\xD0\x98\x4E\xFC\x63\x4C\xD4\x45\xCD\x7C\xD3\xCE\x6C\x55\xDB\x73\xD5\x21\x57\x5B\xD6\x40\x52\xF0\x4E\xD5\x73\x33\x67\xDA\xD2\xD9\x6C\x73\x49\xD4\x58\x41\xF0\x43\xD9\x40\x3F\x57\x55\xDF\x6A\x6E",
+					"\xE0\x97\xDF\x6D\x79\xF5\xCB\x73\xDE\x56\xF0\x49\xD5\xD9\x2D\x40\xEF\xD6\xE0\x3E\x6C\x56\xE0\xDA\x88\xE1\xD7\x6F\xE2\x6B\xED\x49\xD4\xD0\x49\xD3\xD4\xD2\xE2\x6D\xCD\xED\xD2\xCA\x96\xDB\xE7\x56\xDA\x91\xDB\x49\xD4\xE4\x9A\xC3\x40\xDD\xE5\x72\xC9\xE9\xCE\x42\xA7\xEF\xCD\xE7\x40\xA4\xED\x40\xE9\xE8\x19\x59\xDA\x6D\xEC\xB4\xC3\xE8\xE7\x55\x7D\xF8\xCB\x68\xEE\xA1\xFA\xE6\xDD\xE6\x92\xEA\xEF\xEC\xF1\x1F\x76\xEB\xEC\xDE\xA5\xFF\xCC\xE5\xEA\x97\xC3\xFC\xED\xF3\x01\x73\xE7\x8F\xEB\x7B\x52\xFC\xF1\xF1\x7E\xCD\x70\xF1\xE4\xC2\xC7\xF3\xF4\xF7\xBE\xCF\xE8\xF2\xE8\xC6\xE6\xF3\xF9\xF2\x8E\xEA\xFB\xF4\xFB\x09\x54\xEE\xE8\xF4\x06\x59\xD3\x4F\xF7\x6B\xD9\xD6\xF4\x94\xD8\xD5\xFD\xD7\xF9\x1A\x38\x7E\xD2\x61\x7E\x7C\xBE\x54\x79\x6A\xCB\x66\x80\xF9\x5C\x6A\x7A\x05\xB0\x7E\x20\x02\x82\x81\xEF\x6D\x77\x7E\x00\xB5\x72\x21\xF2\x77\x61\xFF\x00\x06\x7E\x98\x12\x87\x80\xFB\x6E\x4B\x06\xA1\x89\x23\xD6\x41\x72\x76\x16\x9F\x1E\x09\x87\x78\x85\xF5\x5B\x23\x85\x8C\x6D\x87\xFB\x1B\x2F\x83\x05\x82\x21\x82\x29\x8A\x7B\x55\x30\x84\x76\x8D\x24\x82",
+					"\x69\x3C\x9D\x87\x3F\x3F\x8B\x83\x20\xAD\x23\x6E\x00\x19\x83\x72\x48\x8A\x88\xAD\x6D\x7C\x37\x48\x9A\x36\xBA\x4F\x88\x80\x2A\x90\x6A\x24\x54\x9C\x81\x16\xCD\x88\x8A\x2B\xA9\x7A\x20\x30\x87\x6C\xD4\x62\x87\x69\xF2\x27\x6A\x7F\x18\x85\x8D\xF7\x64\x89\x20\xCB\x25\x7B\x21\xE5\x2E\x8C\x03\x86\x22\x8E\x81\x19\x6D\x8E\x01\x2D\x88\x1E\xD5\x84\x8F\xF2\x10\x6F\x8F\x33\x69\x8D\xF7\x50\x6E\x35\x84\x05\x3B\x3C\x5F\x81\x21\x14\xD9\x88\x0F\xF2\x1D\x21\x50\x54\x8D\x8B\x73\x59\x62\x53\x48\xA9\x3D\x89\x77\x56\x93\x7A\x50\x68\x41\x2C\x8A\x21\x0F\x7E\x8A\x21\x27\x9E\x96\x20\x3D\x25\x3B\x71\x5F\x44\x96\x41\x7B\x07\x94\x85\x29\x92\x95\x02\x3C\x0D\x79\x59\x6C\x52\x4D\xA4\x4D\x89\x99\x56\x96\x92\x3C\x09\x8A\x01\xB0\x97\x8D\x1B\x65\x35\x47\x1D\x82\x99\x50\x92\x63\x8B\xE9\x23\x99\xCA\x54\x86\x89\xD3\x3B\x25\x95\xD1\x64\x4D\x47\x3F\x8E\x92\x36\xBD\x89\x9A\x4A\x44\x82\x99\x1D\x27\x90\x83\x12\x94\x63\x4D\x84\x72\x33\x8D\x22\x91\xA4\x5D\x23\x71\xE2\x81\x35\x47\x01\x41\x7E\x95\x5D\x20\x86\xE9\x93\x35\x47\x0B\x40\x98\x91\x61\x36\x9A\x4A\x5D",
+					"\x20\x89\x5D\x7E\x64\x38\x89\x27\x3E\xEB\x3D\x22\x8B\x5D\x7C\x48\x6C\xA6\x4D\x9B\xB0\x69\x9A\x2B\x81\x91\xA0\x86\x86\x20\xA1\x76\x8A\xA1\x42\x74\x46\xA0\x84\x59\x69\x6B\x10\xB9\x8E\x44\x86\x20\x93\xFA\x69\x3B\x71\x18\xAA\x22\x7F\x0D\xA9\x20\x4A\x5E\xA3\x3D\x67\x84\x3A\x42\x03\xA2\x9A\x85\x39\x97\xA4\x64\x45\x90\x4C\x83\x29\xA2\x00\x0D\x9A\x9D\x0A\x3E\x51\x45\x80\x03\x55\x9D\x88\x89\xA4\x09\x34\x99\x16\xA9\x5B\xA7\x56\x7B\xA1\x3F\x28\x2A\x20\x12\xB2\xA9\x9E\x85\x34\x54\x9F\x1C\x60\xA3\x43\x9B\xAF\x64\x2B\x48\xAA\x20\x23\xAD\xA5\x42\x36\x50\xAA\x8B\x41\x21\xAB\x03\x26\x40\x49\xE6\x99\x3C\xB0\x82\x22\xAA\x4D\xA9\x20\xAE\x5D\x78\x59\x9D\xA6\xA9\x20\x50\x6C\x9E\x41\x68\xAB\x9B\x67\x51\x5E\xA1\x03\x32\xAF\x1C\xE1\xAB\x3E\xAA\x82\x26\x5A\x5D\xAE\x5F\x28\xFC\xA3\xAD\xAA\xA9\x3B\xB0\x02\x3A\xAD\x5D\xC7\x9B\x3C\x7A\x83\x24\xA5\x69\xA6\x20\xB6\x01\xB4\x62\xC8\xB7\x86\xAF\x01\x3C\x5B\x4E\xCF\x32\xAD\x99\x82\x26\xB2\x01\x24\x9B\x38\x89\x23\x8A\xCF\x88\x66\xB1\x11\xA9\x20\x68\xC9\x88\xB2\x00\x3F\x5B\xB3\xA3\x2B\xB5\xD6\x2B",
+					"\xBF\xAC\x59\x5D\x27\x61\xB0\xA5\x37\x94\x3B\xAB\xB5\xD5\x8F\x3D\x23\x28\x79\xB7\x69\x62\x46\xB4\x00\x2B\xB3\xB7\x5A\xA4\xAF\x7A\x2B\xB7\xA6\x79\x8A\x25\x07\x78\xA2\x23\x0F\x51\xB1\x21\x4C\x85\xBB\xB5\x42\xB4\x89\x10\x54\xB0\x01\x21\x1C\xBD\x92\xC5\xA5\xA0\x04\xAD\xB5\x08\xEE\x8F\x3F\x52\x3B\xA2\xBD\x52\x85\xB2\x21\x23\x26\xBB\x34\xB5\x81\xBD\x39\x91\xB3\x21\x24\x2F\xBD\x34\xA1\x49\xBE\x48\xAD\xBB\x09\xFB\xA7\x37\x54\xFA\xAA\xB5\x6B\xCD\x0E\xBF\xD0\x2B\x51\xC0\x5F\x2D\xB7\x13\x5C\xB1\x0A\xEE\xB0\x50\xC1\x03\x39\xBB\x13\xD3\x0C\xBB\x2A\x1C\xBC\xAB\xC5\xA8\xBB\x40\x7B\x99\xB9\x81\x17\x0B\x99\x06\x2F\x97\x40\x1A\xCB\xB0\xE5\xA4\x4A\xC4\x02\x2A\xBD\x89\x86\xBB\x3C\xE2\x89\xA4\xBD\x01\x38\x09\x81\xB3\x3D\xAD\x7A\xAE\xC1\xB5\x1D\xC2\x22\x16\x33\xC1\x36\x65\x5D\x7F\xC6\x1A\xB0\xC4\x00\x5C\x0C\xC6\xE6\x10\x5F\xC7\xFB\xA2\xCA\x17\x45\xCD\x22\x69\x48\xCA\xC0\x42\xC0\x0C\x93\x8A\x24\x5B\x27\xC9\xC2\xC8\x62\x1C\xB8\x19\x5C\xB0\xB0\x1B\xEA\x89\xC7\x01\x26\x0C\x77\xE8\x0C\xBB\xC9\xB5\x9E\xBA\x03\x34\xA0\x98\x80\x0A\x0D\x29",
+					"\xEB\x3D\xA3\x69\xCD\xB4\x1B\x6E\xC4\x4C\xF0\xB1\xCA\xC8\x6E\x14\xCE\x92\x26\xA3\x21\xDA\xBF\xB2\x21\x70\x1A\xCE\x40\x1A\xB5\x9E\x3E\xDF\xB5\xB5\x72\x02\xD1\x40\x5E\x5D\x7B\x97\x96\x55\xB5\x74\x0A\xD2\xAC\x71\xBF\xD0\x21\xF6\x0A\xD2\xCF\x3A\xA7\x13\xBF\xBA\x69\x67\xBD\x96\x93\x3A\x9D\x7A\x2A\xF1\x9C\x22\x52\xD9\x27\x8A\x5D\x9E\x89\x16\xA2\xB0\x24\x56\xE8\x7B\xD5\xA0\xD1\xD4\x32\xEE\x2F\x9A\x98\x1C\x8E\xD3\xBA\x8D\x7F\xAD\x89\x90\x3A\x09\xA0\xA7\x9C\x9E\x88\x9F\x3B\x8A\x3D\xB8\x8D\x30\x9B\xD8\xBF\x82\x20",
 				};
 				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 			}
@@ -2334,13 +2423,13 @@ JsonAstInsReceiver : public vl::glr::AstInsReceiverBase
 				}
 			}
 
-			void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)
+			void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
 			{
 				auto cppFieldName = JsonCppFieldName((JsonFields)field);
 				switch((JsonFields)field)
 				{
 				case JsonFields::Literal_value:
-					return vl::glr::AssemblerSetEnumField(&vl::glr::json::JsonLiteral::value, object, field, enumItem, cppFieldName);
+					return vl::glr::AssemblerSetEnumField(&vl::glr::json::JsonLiteral::value, object, field, enumItem, weakAssignment, cppFieldName);
 				default:
 					return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
 				}
@@ -2523,6 +2612,3440 @@ namespace vl
 
 
 /***********************************************************************
+.\TRACEMANAGER\TMINPUT.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+			using namespace collections;
+
+/***********************************************************************
+Initialize
+***********************************************************************/
+
+			void TraceManager::Initialize(vint32_t startState)
+			{
+				state = TraceManagerState::WaitingForInput;
+
+				returnStacks.Clear();
+				traces.Clear();
+				competitions.Clear();
+				attendingCompetitions.Clear();
+
+				traces1.Clear();
+				traces2.Clear();
+				concurrentTraces = &traces1;
+				backupTraces = &traces2;
+
+				activeCompetitions = nullref;
+				initialReturnStackCache = {};
+
+				temporaryConditionStack.Clear();
+				temporaryConditionStackSize = 0;
+				MergeStack_MagicCounter = 0;
+
+				traceExecs.Clear();
+				insExecs.Resize(0);
+				insExec_Objects.Clear();
+				insExec_InsRefLinks.Clear();
+				insExec_ObjRefLinks.Clear();
+				insExec_ObjectStacks.Clear();
+				insExec_CreateStacks.Clear();
+
+				firstBranchTrace = nullref;
+				firstMergeTrace = nullref;
+				firstStep = nullref;
+				traceAmbiguities.Clear();
+				traceAmbiguityLinks.Clear();
+				executionSteps.Clear();
+
+				initialTrace = AllocateTrace();
+				initialTrace->state = startState;
+				concurrentCount = 1;
+				concurrentTraces->Add(initialTrace);
+			}
+
+/***********************************************************************
+GetInitialTrace
+***********************************************************************/
+
+			Trace* TraceManager::GetInitialTrace()
+			{
+				return initialTrace;
+			}
+
+/***********************************************************************
+GetInitialTrace
+***********************************************************************/
+
+			ExecutionStep* TraceManager::GetInitialExecutionStep()
+			{
+				return firstStep == nullref ? nullptr : GetExecutionStep(firstStep);
+			}
+
+/***********************************************************************
+Input
+***********************************************************************/
+
+			bool TraceManager::Input(vint32_t currentTokenIndex, regex::RegexToken* token, regex::RegexToken* lookAhead)
+			{
+				CHECK_ERROR(state == TraceManagerState::WaitingForInput, L"vl::glr::automaton::TraceManager::Input(vint, vint)#Wrong timing to call this function.");
+				vint32_t traceCount = concurrentCount;
+				vint32_t input = Executable::TokenBegin + (vint32_t)token->token;
+
+				BeginSwap();
+
+				// for each surviving trace
+				// step one TokenInput transition
+				// followed by multiple and EndingInput, LeftrecInput and their combination
+				// one surviving trace could create multiple surviving trace
+				for (vint32_t traceIndex = 0; traceIndex < traceCount; traceIndex++)
+				{
+					auto currentTrace = concurrentTraces->Get(traceIndex);
+					auto stateTrace = EnsureTraceWithValidStates(currentTrace);
+					vint32_t transitionIndex = executable.GetTransitionIndex(stateTrace->state, input);
+					auto&& edgeArray = executable.transitions[transitionIndex];
+					WalkAlongTokenEdges(currentTokenIndex, input, token, lookAhead, { currentTrace, stateTrace }, edgeArray);
+				}
+
+				// if competitions happen between new surviving traces
+				// remove traces that known to have lost the competition
+				CheckBackupTracesBeforeSwapping(currentTokenIndex);
+
+				EndSwap();
+
+				// if there are unused spaces in concurrentTraces
+				// set them to nullptr to clear out traces from the last round
+				for (vint32_t traceIndex = concurrentCount; traceIndex < concurrentTraces->Count(); traceIndex++)
+				{
+					concurrentTraces->Set(traceIndex, nullptr);
+				}
+
+				return concurrentCount > 0;
+			}
+
+/***********************************************************************
+FillSuccessorsAfterEndOfInput
+***********************************************************************/
+
+			void TraceManager::FillSuccessorsAfterEndOfInput(bool& ambiguityInvolved)
+			{
+				ambiguityInvolved = false;
+				List<Trace*> visiting;
+
+				// create a merge trace for multiple surviving traces
+				if (concurrentCount > 1)
+				{
+					auto newTrace = GetTrace(traces.Allocate());
+					for (vint32_t traceIndex = 0; traceIndex < concurrentCount; traceIndex++)
+					{
+						auto trace = concurrentTraces->Get(traceIndex);
+						auto first = trace;
+						auto last = trace;
+
+						if (trace->state == -1)
+						{
+							// a surviving trace could also be a merge trace
+							// in this case we move predecessors to the new trace
+							first = GetTrace(trace->predecessors.first);
+							last = GetTrace(trace->predecessors.last);
+						}
+
+						if (newTrace->predecessors.first == nullref)
+						{
+							newTrace->predecessors.first = first;
+							newTrace->predecessors.last = last;
+						}
+						else
+						{
+							GetTrace(newTrace->predecessors.last)->predecessors.siblingNext = first;
+							first->predecessors.siblingPrev = newTrace->predecessors.last;
+							newTrace->predecessors.last = last;
+						}
+					}
+					BeginSwap();
+					AddTrace(newTrace);
+					EndSwap();
+				}
+				visiting.Add(concurrentTraces->Get(0));
+
+				// fill successors based on predecessors
+				bool initialTraceVisited = false;
+				while (visiting.Count() > 0)
+				{
+					auto current = visiting[visiting.Count() - 1];
+					visiting.RemoveAt(visiting.Count() - 1);
+
+					// if (current->predecessorCount != 0)
+					// it means this trace has been processed when comming from another sibling
+					// but initialTrace->predecessorCount is always 0
+					// so initialTraceVisited is introduced
+					if (current == initialTrace)
+					{
+						if (initialTraceVisited) continue;
+						initialTraceVisited = true;
+					}
+					else if (current->predecessorCount != 0)
+					{
+						continue;
+					}
+
+					// fill successors
+					{
+						auto predecessorId = current->predecessors.first;
+						while (predecessorId != nullref)
+						{
+							auto predecessor = GetTrace(predecessorId);
+							predecessorId = predecessor->predecessors.siblingNext;
+							current->predecessorCount++;
+							predecessor->successorCount++;
+							AddTraceToCollection(predecessor, current, &Trace::successors);
+						}
+					}
+
+					// add predecessors to the list to continue
+					{
+						auto predecessorId = current->predecessors.last;
+						while (predecessorId != nullref)
+						{
+							auto predecessor = GetTrace(predecessorId);
+							predecessorId = predecessor->predecessors.siblingPrev;
+							visiting.Add(predecessor);
+						}
+					}
+
+					// set ambiguityInvolved when a trace has multiple predecessors
+					if (current->predecessorCount > 1)
+					{
+						ambiguityInvolved = true;
+					}
+				}
+			}
+
+/***********************************************************************
+EndOfInput
+***********************************************************************/
+
+			bool TraceManager::EndOfInput(bool& ambiguityInvolved)
+			{
+				CHECK_ERROR(state == TraceManagerState::WaitingForInput, L"vl::glr::automaton::TraceManager::EndOfInput()#Wrong timing to call this function.");
+				state = TraceManagerState::Finished;
+
+				vint32_t traceCount = concurrentCount;
+				BeginSwap();
+
+				// check all surviving traces and remove all that
+				//   1) does not stay in an ending state
+				//   2) return stack is not empty
+				// the remaining are all traces that successfully walked to the ending state of the root rule
+				for (vint32_t traceIndex = 0; traceIndex < traceCount; traceIndex++)
+				{
+					auto trace = concurrentTraces->Get(traceIndex);
+					auto actualTrace = EnsureTraceWithValidStates(trace);
+					auto& stateDesc = executable.states[actualTrace->state];
+					if (actualTrace->returnStack == nullref && stateDesc.endingState)
+					{
+						AddTrace(trace);
+					}
+				}
+
+				EndSwap();
+				if (concurrentCount == 0) return false;
+
+				FillSuccessorsAfterEndOfInput(ambiguityInvolved);
+				if (!ambiguityInvolved)
+				{
+					state = TraceManagerState::ResolvedAmbiguity;
+					auto step = GetExecutionStep(executionSteps.Allocate());
+					firstStep = step;
+
+					auto lastTrace = concurrentTraces->Get(0);
+					TraceInsLists insList;
+					ReadInstructionList(lastTrace, insList);
+
+					step->et_i.startTrace = initialTrace->allocatedIndex;
+					step->et_i.startIns = 0;
+					step->et_i.endTrace = lastTrace->allocatedIndex;
+					step->et_i.endIns = insList.c3 - 1;
+				}
+				return initialTrace;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMINPUT_AMBIGUITY.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+
+/***********************************************************************
+EnsureTraceWithValidStates
+***********************************************************************/
+
+			Trace* TraceManager::EnsureTraceWithValidStates(Trace* trace)
+			{
+				if (trace->state == -1)
+				{
+					return GetTrace(trace->predecessors.first);
+				}
+				else
+				{
+					return trace;
+				}
+			}
+
+/***********************************************************************
+AreTwoEndingInputTraceEqual
+***********************************************************************/
+
+			bool TraceManager::AreTwoEndingInputTraceEqual(Trace* newTrace, Trace* candidate)
+			{
+				// two traces equal to each other if
+				//   1) they are in the same state
+				//   2) they have the same executedReturnStack (and therefore the same returnStack)
+				//   3) they are attending same competitions
+				//   4) they have the same switchValues
+				//   5) the candidate has an ending input
+
+				candidate = EnsureTraceWithValidStates(candidate);
+
+				if (candidate->byInput != Executable::EndingInput) return false;
+				if (newTrace->state != candidate->state) return false;
+				if (newTrace->executedReturnStack != candidate->executedReturnStack) return false;
+				if (newTrace->returnStack != candidate->returnStack) return false;
+				if (newTrace->competitionRouting.attendingCompetitions != candidate->competitionRouting.attendingCompetitions) return false;
+				return true;
+			}
+
+/***********************************************************************
+MergeTwoEndingInputTrace
+***********************************************************************/
+
+			void TraceManager::MergeTwoEndingInputTrace(Trace* newTrace, Trace* candidate)
+			{
+				// goal of this function is to create a structure
+				// NEWTRACE ---+->AMBIGUITY
+				//             |
+				// CANDIDATE --+
+
+				// if CANDIDATE is not a merged trace
+				// a former trace will copy CANDIDATE and insert before CANDIDATE
+				// and CANDIDATE will be initialized to an empty trace
+
+				if (candidate->state == -1)
+				{
+					AddTraceToCollection(candidate, newTrace, &Trace::predecessors);
+				}
+				else
+				{
+					auto formerTrace = AllocateTrace();
+					auto formerTraceId = formerTrace->allocatedIndex;
+					auto candidateId = candidate->allocatedIndex;
+
+					*formerTrace = *candidate;
+					formerTrace->allocatedIndex = formerTraceId;
+
+					*candidate = {};
+					candidate->allocatedIndex = candidateId;
+
+					AddTraceToCollection(candidate, formerTrace, &Trace::predecessors);
+					AddTraceToCollection(candidate, newTrace, &Trace::predecessors);
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMINPUT_COMPETITION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+
+/***********************************************************************
+AttendCompetition
+***********************************************************************/
+
+			void TraceManager::AttendCompetition(
+				Trace* trace,
+				Ref<AttendingCompetitions>& newAttendingCompetitions,
+				Ref<AttendingCompetitions>& newCarriedCompetitions,
+				Ref<ReturnStack> returnStack,
+				vint32_t ruleId,
+				vint32_t clauseId,
+				bool forHighPriority
+			)
+			{
+				// a competition is defined by its rule, clause and the owner trace
+				// but we don't need to compare the trace
+				// since only transitions starting from that trace will search competitions in that trace
+				// we only create a new Competition object if it has not been created for the trace yet
+				Competition* competition = nullptr;
+				{
+					auto cid = trace->competitionRouting.holdingCompetitions;
+					while (cid != nullref)
+					{
+						auto cpt = GetCompetition(cid);
+						if (cpt->ruleId == ruleId && cpt->clauseId == clauseId)
+						{
+							competition = cpt;
+							break;
+						}
+						cid = cpt->nextHoldCompetition;
+					}
+				}
+
+				if (!competition)
+				{
+					// create a Competition object
+					competition = AllocateCompetition();
+					competition->nextHoldCompetition = trace->competitionRouting.holdingCompetitions;
+					trace->competitionRouting.holdingCompetitions = competition;
+
+					competition->currentTokenIndex = trace->currentTokenIndex;
+					competition->ruleId = ruleId;
+					competition->clauseId = clauseId;
+
+					competition->nextActiveCompetition = activeCompetitions;
+					activeCompetitions = competition;
+				}
+
+				// target traces from the current trace could attend different competitions
+				// but they also inherit all attending competitions from the current trace
+				// it is fine for different traces share all or part of AttendingCompetitions in their RuntimeRouting::attendingCompetitions linked list
+				// because if a competition is settled in the future
+				// AttendingCompetitions objects for this competition is going to be removed anyway
+				// sharing a linked list doesn't change the result
+
+				auto ac = AllocateAttendingCompetitions();
+				ac->competition = competition;
+				ac->forHighPriority = forHighPriority;
+				ac->returnStack = returnStack;
+
+				ac->nextActiveAC = newAttendingCompetitions;
+				newAttendingCompetitions = ac;
+
+				ac->nextCarriedAC = newCarriedCompetitions;
+				newCarriedCompetitions = ac;
+			}
+
+/***********************************************************************
+AttendCompetitionIfNecessary
+***********************************************************************/
+
+			void TraceManager::AttendCompetitionIfNecessary(
+				Trace* trace,
+				vint32_t currentTokenIndex,
+				EdgeDesc& edgeDesc,
+				Ref<AttendingCompetitions>& newAttendingCompetitions,
+				Ref<AttendingCompetitions>& newCarriedCompetitions,
+				Ref<ReturnStack>& newReturnStack
+			)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::AttendCompetitionIfNecessary(Trace*, EdgeDesc&, vint32_t&, vint32_t&)#"
+				newAttendingCompetitions = trace->competitionRouting.attendingCompetitions;
+				newCarriedCompetitions = trace->competitionRouting.carriedCompetitions;
+				newReturnStack = trace->returnStack;
+
+				// visit each compact transition in order
+				//   1) returns + token
+				//   2) ending
+				//   3) leftrec
+				// find out if any of them attends a competition
+
+				vint32_t edgeFromState = edgeDesc.fromState;
+				for (vint32_t returnRef = 0; returnRef < edgeDesc.returnIndices.count; returnRef++)
+				{
+					auto returnIndex = executable.returnIndices[edgeDesc.returnIndices.start + returnRef];
+					auto&& returnDesc = executable.returns[returnIndex];
+
+					if (returnDesc.priority != EdgePriority::NoCompetition)
+					{
+						// attend a competition from a ReturnDesc edge
+						// find out the rule id and the clause id for this competition
+						// a ReturnDesc is a compact transition which consumes a rule
+						// so it does not points to the ending state
+						// therefore we just need the toState of this ReturnDesc for reference
+						auto&& stateForClause = executable.states[returnDesc.returnState];
+						vint32_t competitionRule = stateForClause.rule;
+						vint32_t competitionClause = stateForClause.clause;
+						CHECK_ERROR(competitionRule != -1 && competitionClause != -1, ERROR_MESSAGE_PREFIX L"Illegal rule or clause id.");
+						AttendCompetition(trace, newAttendingCompetitions, newCarriedCompetitions, newReturnStack, competitionRule, competitionClause, returnDesc.priority == EdgePriority::HighPriority);
+					}
+
+					// push this ReturnDesc to the ReturnStack
+					newReturnStack = PushReturnStack(
+						newReturnStack, returnIndex,
+						trace,
+						currentTokenIndex,
+						(returnDesc.ruleType != ReturnRuleType::Reuse)
+					);
+					edgeFromState = executable.ruleStartStates[returnDesc.consumedRule];
+				}
+
+				if (edgeDesc.priority != EdgePriority::NoCompetition)
+				{
+					// attend a competition from a EdgeDesc edge
+					// find out the rule id and the clause id for this competition
+					auto&& fromState = executable.states[edgeFromState];
+					auto&& toState = executable.states[edgeDesc.toState];
+					vint32_t competitionRule = toState.rule;
+					vint32_t competitionClause = toState.clause;
+					if (toState.endingState)
+					{
+						competitionRule = fromState.rule;
+						competitionClause = fromState.clause;
+					}
+					CHECK_ERROR(competitionRule != -1 && competitionClause != -1, ERROR_MESSAGE_PREFIX L"Illegal rule or clause id.");
+					AttendCompetition(trace, newAttendingCompetitions, newCarriedCompetitions, newReturnStack, competitionRule, competitionClause, edgeDesc.priority == EdgePriority::HighPriority);
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
+CheckAttendingCompetitionsOnEndingEdge
+***********************************************************************/
+
+			void TraceManager::CheckAttendingCompetitionsOnEndingEdge(
+				Trace* trace,
+				EdgeDesc& edgeDesc,
+				Ref<AttendingCompetitions> acId,
+				Ref<ReturnStack> returnStack
+			)
+			{
+				while (acId != nullref)
+				{
+					// when executing an EndingInput transition, we announce high priority win a competition if
+					//   1) such EndingInput transitions ends the clause, and the state of the trace holding competition belongs to the same clause
+					//      we ensure this by comparing rule id, clause id in Competition
+					//      and compare ReturnStack object (not content) in AttendingCompetitions
+					//      the reason returnStack is not in Competition is that
+					//      different transitions always create new ReturnStack objects
+					//   2) this trace bets high
+					//   3) the competition has not been settled
+					auto ac = GetAttendingCompetitions(acId);
+					if (ac->returnStack == returnStack)
+					{
+						auto cpt = GetCompetition(ac->competition);
+						// ensure that this EndingInput edge and the competition belong to the same clause
+						auto&& stateDesc = executable.states[edgeDesc.fromState];
+						if (cpt->ruleId == stateDesc.rule && cpt->clauseId == stateDesc.clause)
+						{
+							// check if it is a high bet
+							if (ac->forHighPriority && cpt->status == CompetitionStatus::Holding)
+							{
+								cpt->status = CompetitionStatus::HighPriorityWin;
+							}
+						}
+					}
+					acId = ac->nextActiveAC;
+				}
+			}
+
+/***********************************************************************
+CheckBackupTracesBeforeSwapping
+***********************************************************************/
+
+			void TraceManager::CheckBackupTracesBeforeSwapping(vint32_t currentTokenIndex)
+			{
+				// try to find if any competition could be settled at this moment
+
+				{
+					// reset highCounter and lowCounter for any active competitions
+					auto cId = activeCompetitions;
+					while (cId != nullref)
+					{
+						auto cpt = GetCompetition(cId);
+						cpt->highCounter = 0;
+						cpt->lowCounter = 0;
+						cId = cpt->nextActiveCompetition;
+					}
+				}
+
+				// for any surviving traces
+				// add itself to the appriopriate counter for all attending competitions
+				for (vint i = 0; i < concurrentCount; i++)
+				{
+					auto trace = EnsureTraceWithValidStates(backupTraces->Get(i));
+					auto acId = trace->competitionRouting.attendingCompetitions;
+					while (acId != nullref)
+					{
+						auto ac = GetAttendingCompetitions(acId);
+						auto cpt = GetCompetition(ac->competition);
+						(ac->forHighPriority ? cpt->highCounter : cpt->lowCounter)++;
+						acId = ac->nextActiveAC;
+					}
+				}
+
+				// revisit all active competitions
+				// some competitions could have been settled
+				// but settled competitions will only be removed before consuming the next token
+				{
+					auto cId = activeCompetitions;
+					while (cId != nullref)
+					{
+						auto cpt = GetCompetition(cId);
+						if (cpt->status == CompetitionStatus::Holding)
+						{
+							if (cpt->highCounter > 0 && cpt->lowCounter == 0)
+							{
+								// if only high bet traces survive, high priority win
+								cpt->status = CompetitionStatus::HighPriorityWin;
+							}
+							else if (cpt->highCounter == 0 && cpt->lowCounter > 0)
+							{
+								// if only low bet traces survive
+								// low priority win after at least one token is consumed from when the competition is created
+								// low priority epsilon transitions could have been visited right after a competition is created
+								// but high priority token transitions could only be visited when consuming the next token
+								// if all high priority transitions are token transitions
+								// and all low priority transitions are epsilon transitions
+								// closing the competition too early will direct to a wrong result
+								// so we need to wait at least one step to see if any trace will visit the high priority transition in the future
+								if (cpt->currentTokenIndex != currentTokenIndex)
+								{
+									cpt->status = CompetitionStatus::LowPriorityWin;
+								}
+							}
+						}
+						cId = cpt->nextActiveCompetition;
+					}
+				}
+
+				// for any surviving traces
+				// if it loses any one of its attending competitions
+				// this trace will be removed
+				for (vint i = concurrentCount - 1; i >= 0; i--)
+				{
+					auto trace =EnsureTraceWithValidStates(backupTraces->Get(i));
+					auto acId = trace->competitionRouting.attendingCompetitions;
+					while (acId != nullref)
+					{
+						auto ac = GetAttendingCompetitions(acId);
+						auto cpt = GetCompetition(ac->competition);
+						if (cpt->status != CompetitionStatus::Holding)
+						{
+							ac->closed = true;
+							if (ac->forHighPriority != (cpt->status == CompetitionStatus::HighPriorityWin))
+							{
+								concurrentCount--;
+								backupTraces->RemoveAt(i);
+								goto TRACE_REMOVED;
+							}
+						}
+						acId = ac->nextActiveAC;
+					}
+				TRACE_REMOVED:;
+				}
+
+				// remove all settled competition from the active competitions linked list
+				{
+					auto pnext = &activeCompetitions;
+					while (*pnext != nullref)
+					{
+						auto cpt = GetCompetition(*pnext);
+						if (cpt->status != CompetitionStatus::Holding || (cpt->highCounter == 0 && cpt->lowCounter == 0))
+						{
+							*pnext = cpt->nextActiveCompetition;
+						}
+						else
+						{
+							pnext = &cpt->nextActiveCompetition;
+						}
+					}
+				}
+
+				// remove all settled AttendingCompetitions object from linked lists of any surviving trace
+				for (vint i = 0; i < concurrentCount; i++)
+				{
+					auto trace = EnsureTraceWithValidStates(backupTraces->Get(i));
+					auto* pnext = &trace->competitionRouting.attendingCompetitions;
+					while (*pnext != nullref)
+					{
+						auto ac = GetAttendingCompetitions(*pnext);
+						if (ac->closed)
+						{
+							*pnext = ac->nextActiveAC;
+						}
+						else
+						{
+							pnext = &ac->nextActiveAC;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMINPUT_RETURNSTACK.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+
+/***********************************************************************
+GetCurrentSuccessorInReturnStack
+***********************************************************************/
+
+			ReturnStackSuccessors* TraceManager::GetCurrentSuccessorInReturnStack(Ref<ReturnStack> base, vint32_t currentTokenIndex)
+			{
+				auto& cache = base == nullref ? initialReturnStackCache : GetReturnStack(base)->cache;
+				if (cache.successors.tokenIndex == currentTokenIndex)
+				{
+					return &cache.successors;
+				}
+				if (cache.lastSuccessors.tokenIndex == currentTokenIndex)
+				{
+					return &cache.lastSuccessors;
+				}
+
+				CHECK_ERROR(currentTokenIndex > cache.successors.tokenIndex, L"vl::glr::automaton::TraceManager::GetCurrentSuccessorInReturnStack(vint32_t, vint32_t)#ReturnStackSuccessors::tokenIndex corrupted.");
+				cache.lastSuccessors = cache.successors;
+				cache.successors = {};
+				cache.successors.tokenIndex = currentTokenIndex;
+				return &cache.successors;
+			}
+
+/***********************************************************************
+PushReturnStack
+***********************************************************************/
+
+			ReturnStack* TraceManager::PushReturnStack(Ref<ReturnStack> base, vint32_t returnIndex, Ref<Trace> fromTrace, vint32_t currentTokenIndex, bool allowReuse)
+			{
+				auto siblings = allowReuse ? GetCurrentSuccessorInReturnStack(base, currentTokenIndex) : nullptr;
+
+				if (siblings)
+				{
+					auto successorId = siblings->first;
+					while (successorId != nullref)
+					{
+						auto successor = GetReturnStack(successorId);
+						successorId = successor->cache.next;
+
+						if (successor->returnIndex == returnIndex && successor->fromTrace == fromTrace)
+						{
+							return successor;
+						}
+					}
+				}
+
+				auto returnStack = AllocateReturnStack();
+				returnStack->previous = base;
+				returnStack->returnIndex = returnIndex;
+				returnStack->fromTrace = fromTrace;
+				returnStack->cache.tokenIndex = currentTokenIndex;
+
+				if (siblings)
+				{
+					if (siblings->first == nullref)
+					{
+						siblings->first = returnStack;
+						siblings->last = returnStack;
+					}
+					else
+					{
+						GetReturnStack(siblings->last)->cache.next = returnStack;
+						returnStack->cache.prev = siblings->last;
+						siblings->last = returnStack;
+					}
+				}
+				return returnStack;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMINPUT_WALK.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+
+/***********************************************************************
+TraceManager::IsQualifiedTokenForCondition
+***********************************************************************/
+
+			bool TraceManager::IsQualifiedTokenForCondition(regex::RegexToken* token, StringLiteral condition)
+			{
+				if (condition.start == -1) return true;
+				if (token->length != condition.count) return false;
+				auto reading = executable.stringLiteralBuffer.Buffer();
+				if (memcmp(token->reading, reading + condition.start, sizeof(wchar_t) * condition.count) != 0) return false;
+				return true;
+			}
+
+/***********************************************************************
+TraceManager::IsQualifiedTokenForEdgeArray
+***********************************************************************/
+
+			bool TraceManager::IsQualifiedTokenForEdgeArray(regex::RegexToken* token, EdgeArray& edgeArray)
+			{
+				for (vint32_t edgeRef = 0; edgeRef < edgeArray.count; edgeRef++)
+				{
+					vint32_t byEdge = edgeArray.start + edgeRef;
+					auto& edgeDesc = executable.edges[byEdge];
+					if (IsQualifiedTokenForCondition(token, edgeDesc.condition)) return true;
+				}
+				return false;
+			}
+
+/***********************************************************************
+TraceManager::WalkAlongSingleEdge
+***********************************************************************/
+
+			WalkingTrace TraceManager::WalkAlongSingleEdge(
+				vint32_t currentTokenIndex,
+				vint32_t input,
+				WalkingTrace trace,
+				vint32_t byEdge,
+				EdgeDesc& edgeDesc
+			)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::WalkAlongSingleEdge(vint, vint, vint, Trace*, vint, EdgeDesc&)#"
+				vint32_t state = edgeDesc.toState;
+				Ref<ReturnStack> returnStack;
+				Ref<AttendingCompetitions> attendingCompetitions;
+				Ref<AttendingCompetitions> carriedCompetitions;
+				Ref<ReturnStack> executedReturnStack;
+				Trace* ambiguityTraceToMerge = nullptr;
+
+				// attend a competition hold by the current trace if the priority is set for this output transition
+				AttendCompetitionIfNecessary(trace.stateTrace, currentTokenIndex, edgeDesc, attendingCompetitions, carriedCompetitions, returnStack);
+
+				if (input == Executable::EndingInput)
+				{
+					// an EndingInput transition consume return record in the return stack
+					// such return will be popped from the return stack and stored in Trace::executedReturnStack
+					CHECK_ERROR(edgeDesc.returnIndices.count == 0, ERROR_MESSAGE_PREFIX L"Ending input edge is not allowed to push something into the return stack.");
+					if (returnStack != nullref)
+					{
+						executedReturnStack = returnStack;
+						auto rs = GetReturnStack(returnStack);
+						returnStack = rs->previous;
+						state = executable.returns[rs->returnIndex].returnState;
+					}
+
+					// an EndingInput transition also settle a competition if
+					//   1) there is a competition
+					//   2) the returnStack of the trace holding the competition is the same to the current returnStack
+					//   3) the target trace bets high priority
+					// in this case, high priority traces wins the competition
+					// but no traces are being removed for now, just mark the competition
+					CheckAttendingCompetitionsOnEndingEdge(trace.stateTrace, edgeDesc, attendingCompetitions, trace.stateTrace->returnStack);
+				}
+
+				// create a new trace for this current move
+				auto newTrace = AllocateTrace();
+				AddTraceToCollection(newTrace, trace.currentTrace, &Trace::predecessors);
+				newTrace->state = state;
+				newTrace->returnStack = returnStack;
+				newTrace->executedReturnStack = executedReturnStack;
+				newTrace->byEdge = byEdge;
+				newTrace->byInput = input;
+				newTrace->currentTokenIndex = currentTokenIndex;
+				newTrace->competitionRouting.attendingCompetitions = attendingCompetitions;
+				newTrace->competitionRouting.carriedCompetitions = carriedCompetitions;
+
+				if (input == Executable::EndingInput)
+				{
+					// see if the target trace has the same state to any other surviving trace
+					for (vint i = 0; i < concurrentCount; i++)
+					{
+						auto& candidate = backupTraces->operator[](i);
+						if (candidate->byInput == Executable::EndingInput || candidate->state == -1)
+						{
+							if (AreTwoEndingInputTraceEqual(newTrace, candidate))
+							{
+								// create a merging 
+								MergeTwoEndingInputTrace(newTrace, candidate);
+								return { nullptr,nullptr };
+							}
+						}
+					}
+				}
+
+				// add to the current trace list only if it is not involved in ambiguity resolving
+				AddTrace(newTrace);
+				return { newTrace,newTrace };
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
+TraceManager::WalkAlongEpsilonEdges
+***********************************************************************/
+
+			void TraceManager::WalkAlongLeftrecEdges(
+				vint32_t currentTokenIndex,
+				regex::RegexToken* lookAhead,
+				WalkingTrace trace,
+				EdgeArray& edgeArray
+			)
+			{
+				// if there is no more token
+				// then it is not possible for more left recursions
+				if (!lookAhead) return;
+
+				for (vint32_t edgeRef = 0; edgeRef < edgeArray.count; edgeRef++)
+				{
+					vint32_t byEdge = edgeArray.start + edgeRef;
+					auto& edgeDesc = executable.edges[byEdge];
+
+					// see if the target state could consume that token
+					vint32_t lookAheadTransitionIndex = executable.GetTransitionIndex(edgeDesc.toState, Executable::TokenBegin + (vint32_t)lookAhead->token);
+					auto& lookAheadEdgeArray = executable.transitions[lookAheadTransitionIndex];
+					if (!IsQualifiedTokenForEdgeArray(lookAhead, lookAheadEdgeArray)) continue;
+
+					// proceed only if it can
+					WalkAlongSingleEdge(currentTokenIndex, Executable::LeftrecInput, trace, byEdge, edgeDesc);
+
+					// A LeftrecInput transition points to a non ending state in another clause
+					// so there is no need to find other epsilon transitions after LeftrecInput
+				}
+			}
+
+			void TraceManager::WalkAlongEpsilonEdges(
+				vint32_t currentTokenIndex,
+				regex::RegexToken* lookAhead,
+				WalkingTrace trace
+			)
+			{
+				// if we could walk along multiple EndingInput transition
+				// but the last several transition will fail
+				// then creating them is wasting the performance
+				// so we count how many EndingInput transition we could walk along first
+
+				vint32_t endingCount = -1;
+
+				if (!lookAhead)
+				{
+					// if there is no more tokens
+					// then we have to go all the way to the end anyway
+					vint32_t currentState = trace.stateTrace->state;
+					auto currentReturnStack = trace.stateTrace->returnStack;
+
+					while (currentState != -1)
+					{
+						vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::EndingInput);
+						auto&& edgeArray = executable.transitions[transitionIndex];
+
+						// at most one EndingInput transition could exist from any state
+						CHECK_ERROR(edgeArray.count < 2, L"vl::glr::automaton::TraceManager::WalkAlongEpsilonEdges(vint32_t, vint32_t, Trace*)#Too many EndingInput transitions.");
+
+						if (edgeArray.count == 0)
+						{
+							// if there is no more EndingInput to go
+							// and the current state is not an ending state
+							// then we just give up
+
+							auto&& stateDesc = executable.states[currentState];
+							if (stateDesc.endingState)
+							{
+								currentState = -1;
+							}
+							else
+							{
+								return;
+							}
+						}
+						else if (currentReturnStack == nullref)
+						{
+							vint32_t byEdge = edgeArray.start;
+							auto& edgeDesc = executable.edges[byEdge];
+							currentState = edgeDesc.toState;
+						}
+						else
+						{
+							auto rs = GetReturnStack(currentReturnStack);
+							currentReturnStack = rs->previous;
+							currentState = executable.returns[rs->returnIndex].returnState;
+						}
+					}
+				}
+				else
+				{
+					// otherwise we see how many EndingInput transition we need to walk along
+					vint32_t currentCount = 0;
+					vint32_t currentState = trace.stateTrace->state;
+					auto currentReturnStack = trace.stateTrace->returnStack;
+
+					while (currentState != -1)
+					{
+						currentCount++;
+
+						// try LeftrecInput + lookAhead
+						{
+							vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::LeftrecInput);
+							auto&& edgeArray = executable.transitions[transitionIndex];
+							for (vint32_t edgeRef = 0; edgeRef < edgeArray.count; edgeRef++)
+							{
+								vint32_t byEdge = edgeArray.start + edgeRef;
+								auto& edgeDesc = executable.edges[byEdge];
+								vint32_t lookAheadTransitionIndex = executable.GetTransitionIndex(edgeDesc.toState, Executable::TokenBegin + (vint32_t)lookAhead->token);
+								auto& lookAheadEdgeArray = executable.transitions[lookAheadTransitionIndex];
+
+								// mark this EndingInput if any LeftrecInput + lookAhead transition exists
+								if (IsQualifiedTokenForEdgeArray(lookAhead, lookAheadEdgeArray))
+								{
+									endingCount = currentCount;
+									goto TRY_ENDING_INPUT;
+								}
+							}
+						}
+
+						// try lookAhead
+						{
+							vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::TokenBegin + (vint32_t)lookAhead->token);
+							auto&& edgeArray = executable.transitions[transitionIndex];
+
+							// mark this EndingInput if lookAhead transition exists
+							if (IsQualifiedTokenForEdgeArray(lookAhead, edgeArray))
+							{
+								endingCount = currentCount;
+							}
+						}
+
+						// try EndingInput
+					TRY_ENDING_INPUT:
+						{
+							vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::EndingInput);
+							auto&& edgeArray = executable.transitions[transitionIndex];
+
+							// at most one EndingInput transition could exist from any state
+							CHECK_ERROR(edgeArray.count < 2, L"vl::glr::automaton::TraceManager::WalkAlongEpsilonEdges(vint32_t, vint32_t, Trace*)#Too many EndingInput transitions.");
+
+							if (edgeArray.count == 0 || currentReturnStack == nullref)
+							{
+								// currentReturnStack == -1 means this is the last possible EndingInput
+								// no need to test forward
+								// because if the current EndingInput is doable
+								// it would have already been marked
+								currentState = -1;
+							}
+							else
+							{
+								auto rs = GetReturnStack(currentReturnStack);
+								currentReturnStack = rs->previous;
+								currentState = executable.returns[rs->returnIndex].returnState;
+							}
+						}
+					}
+				}
+
+				for (vint32_t i = 0; trace && (i < endingCount || endingCount == -1); i++)
+				{
+					{
+						// LeftrecInput transition is an epsilon transition
+						vint32_t transitionIndex = executable.GetTransitionIndex(trace.stateTrace->state, Executable::LeftrecInput);
+						auto&& edgeArray = executable.transitions[transitionIndex];
+						WalkAlongLeftrecEdges(currentTokenIndex, lookAhead, trace, edgeArray);
+					}
+
+					// EndingInput transition is an epsilon transition
+					vint32_t transitionIndex = executable.GetTransitionIndex(trace.stateTrace->state, Executable::EndingInput);
+					auto&& edgeArray = executable.transitions[transitionIndex];
+
+					// it has been ensured that edgeArray.count < 2
+					if (edgeArray.count == 0)
+					{
+						trace = { nullptr,nullptr };
+					}
+					else
+					{
+						vint32_t byEdge = edgeArray.start;
+						auto& edgeDesc = executable.edges[byEdge];
+						trace = WalkAlongSingleEdge(currentTokenIndex, Executable::EndingInput, trace, byEdge, edgeDesc);
+
+						// EndingInput could be followed by EndingInput or LeftrecInput
+					}
+				}
+			}
+
+/***********************************************************************
+TraceManager::WalkAlongTokenEdges
+***********************************************************************/
+
+			void TraceManager::WalkAlongTokenEdges(
+				vint32_t currentTokenIndex,
+				vint32_t input,
+				regex::RegexToken* token,
+				regex::RegexToken* lookAhead,
+				WalkingTrace trace,
+				EdgeArray& edgeArray
+			)
+			{
+				// find all transitions that has the expected input
+				// there could be multiple transitions with the same input
+				// but with different instructions and destinations
+				for (vint32_t edgeRef = 0; edgeRef < edgeArray.count; edgeRef++)
+				{
+					vint32_t byEdge = edgeArray.start + edgeRef;
+					auto& edgeDesc = executable.edges[edgeArray.start + edgeRef];
+					if (IsQualifiedTokenForCondition(token, edgeDesc.condition))
+					{
+						if (auto newTrace = WalkAlongSingleEdge(currentTokenIndex, input, trace, byEdge, edgeDesc))
+						{
+							// continue with as much EndingInput and LeftrecInput transitions as possible
+							// TokenInput could be followed by EndingInput or LeftrecInput
+							WalkAlongEpsilonEdges(currentTokenIndex, lookAhead, newTrace);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR.CPP
+***********************************************************************/
+
+#if defined VCZH_MSVC && defined _DEBUG
+#define VCZH_DO_DEBUG_CHECK
+#endif
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+/***********************************************************************
+DebugCheckTraceExecData
+***********************************************************************/
+
+#ifdef VCZH_DO_DEBUG_CHECK
+			void TraceManager::DebugCheckTraceExecData()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::DebugCheckTraceExecData()#"
+				IterateSurvivedTraces(
+					[this](Trace* trace, Trace* predecessor, vint32_t visitCount, vint32_t predecessorCount)
+					{
+						if (predecessorCount <= 1)
+						{
+							auto traceExec = GetTraceExec(trace->traceExecRef);
+							for (vint32_t insRef = 0; insRef < traceExec->insExecRefs.count; insRef++)
+							{
+								auto&& ins = ReadInstruction(insRef, traceExec->insLists);
+								auto insExec = GetInsExec(traceExec->insExecRefs.start + insRef);
+
+								// ensure BO/BOLR/DFA are closed
+								switch (ins.type)
+								{
+								case AstInsType::BeginObject:
+								case AstInsType::BeginObjectLeftRecursive:
+								case AstInsType::DelayFieldAssignment:
+									CHECK_ERROR(insExec->eoInsRefs != nullref, ERROR_MESSAGE_PREFIX L"Internal error: BO/BOLA/DFA not closed.");
+									break;
+								}
+
+								// ensure DFA are associated with objects closed
+								switch (ins.type)
+								{
+								case AstInsType::DelayFieldAssignment:
+									CHECK_ERROR(insExec->objRefs != nullref, ERROR_MESSAGE_PREFIX L"Internal error: DFA not associated.");
+									break;
+								}
+							}
+						}
+					}
+				);
+#undef ERROR_MESSAGE_PREFIX
+			}
+#endif
+
+/***********************************************************************
+PrepareTraceRoute
+***********************************************************************/
+
+			void TraceManager::PrepareTraceRoute()
+			{
+				CHECK_ERROR(state == TraceManagerState::Finished, L"vl::glr::automaton::TraceManager::PrepareTraceRoute()#Wrong timing to call this function.");
+				state = TraceManagerState::PreparedTraceRoute;
+
+				AllocateExecutionData();
+				PartialExecuteTraces();
+				BuildAmbiguityStructures();
+#ifdef VCZH_DO_DEBUG_CHECK
+				DebugCheckTraceExecData();
+#endif
+			}
+		}
+	}
+}
+
+#if defined VCZH_MSVC && defined _DEBUG
+#undef VCZH_DO_DEBUG_CHECK
+#endif
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR_ALLOCATEEXECUTIONDATA.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+/***********************************************************************
+AllocateExecutionData
+***********************************************************************/
+
+			void TraceManager::AllocateExecutionData()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::AllocateExecutionData()#"
+				vint32_t insExecCount = 0;
+				auto nextBranchTrace = &firstBranchTrace;
+				auto nextMergeTrace = &firstMergeTrace;
+				IterateSurvivedTraces([&](Trace* trace, Trace* predecessor, vint32_t visitCount, vint32_t predecessorCount)
+				{
+					// ensure traceExecRef reflects the partial order of the execution order of traces
+					if (predecessorCount > 1 && visitCount != predecessorCount) return;
+
+					CHECK_ERROR(trace->traceExecRef == nullref, ERROR_MESSAGE_PREFIX L"Internal error: IterateSurvivedTraces unexpectedly revisit a trace.");
+					trace->traceExecRef = traceExecs.Allocate();
+
+					auto traceExec = GetTraceExec(trace->traceExecRef);
+					traceExec->traceId = trace;
+					ReadInstructionList(trace, traceExec->insLists);
+					if (traceExec->insLists.c3 > 0)
+					{
+						traceExec->insExecRefs.start = insExecCount;
+						traceExec->insExecRefs.count = traceExec->insLists.c3;
+						insExecCount += traceExec->insLists.c3;
+					}
+
+					// fill branch trace linked list
+					if (trace->successors.first != trace->successors.last)
+					{
+						*nextBranchTrace = trace;
+						nextBranchTrace = &traceExec->nextBranchTrace;
+					}
+
+					// fill merge branch linked list
+					if (trace->predecessors.first != trace->predecessors.last)
+					{
+						*nextMergeTrace = trace;
+						nextMergeTrace = &traceExec->nextMergeTrace;
+					}
+				});
+				insExecs.Resize(insExecCount);
+#undef ERROR_MESSAGE_PREFIX
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR_BUILDAMBIGUITYSTRUCTURES.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+#define NEW_MERGE_STACK_MAGIC_COUNTER (void)(MergeStack_MagicCounter++)
+
+/***********************************************************************
+BuildAmbiguityStructures
+***********************************************************************/
+
+			Trace* TraceManager::StepForward(Trace* trace)
+			{
+				auto traceExec = GetTraceExec(trace->traceExecRef);
+
+				// for ordinary trace, go to its forwardTrace
+				if (traceExec->branchData.forwardTrace != trace)
+				{
+					return GetTrace(traceExec->branchData.forwardTrace);
+				}
+
+				// for initialTrace, stop
+				if (trace->predecessors.first == nullref)
+				{
+					return nullptr;
+				}
+
+				// for merge trace, go to the forwardTrace of its commonForwardTrace
+				if (trace->predecessors.first != trace->predecessors.last)
+				{
+					return GetTrace(GetTraceExec(GetTrace(traceExec->branchData.commonForwardBranch)->traceExecRef)->branchData.forwardTrace);
+				}
+
+				// otherwise, it is a successor of a branch trace
+				// go to its predecessor's forwardTrace
+				return GetTrace(GetTraceExec(GetTrace(trace->predecessors.first)->traceExecRef)->branchData.forwardTrace);
+			}
+
+			void TraceManager::BuildAmbiguityStructures()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::BuildAmbiguityStructures()#"
+				IterateSurvivedTraces(
+					[this](Trace* trace, Trace* predecessor, vint32_t visitCount, vint32_t predecessorCount)
+					{
+						auto traceExec = GetTraceExec(trace->traceExecRef);
+						if (predecessorCount == 0)
+						{
+							// for initialTrace, forwardTrace is itself
+							traceExec->branchData.forwardTrace = trace;
+						}
+						else if (predecessorCount == 1)
+						{
+							if (predecessor->successors.first != predecessor->successors.last)
+							{
+								// for any successors of a branch trace, forwardTrace is itself
+								traceExec->branchData.forwardTrace = trace;
+							}
+							else
+							{
+								// if any ordinary trace, use the data from its predecessor
+								traceExec->branchData.forwardTrace = GetTraceExec(predecessor->traceExecRef)->branchData.forwardTrace ;
+							}
+						}
+						else
+						{
+							CHECK_ERROR(predecessor->state != -1, ERROR_MESSAGE_PREFIX L"Predecessor trace of a merge trace cannot be a merge trace.");
+
+							if (visitCount == 1)
+							{
+								// for any merge trace, forwardTrace is itself
+								traceExec->branchData.forwardTrace = trace;
+
+								// for the first visiting, set commonForwardBranch to the forwardTrace of its first predecessor
+								traceExec->branchData.commonForwardBranch = GetTrace(GetTraceExec(predecessor->traceExecRef)->branchData.forwardTrace);
+							}
+							else
+							{
+								// find the latest forwardTrace of its commonForwardBranch and the forwardTrace of the predecessor
+								NEW_MERGE_STACK_MAGIC_COUNTER;
+
+								auto currentTrace = GetTrace(traceExec->branchData.commonForwardBranch);
+								while (currentTrace)
+								{
+									GetTraceExec(currentTrace->traceExecRef)->branchData.mergeCounter = MergeStack_MagicCounter;
+									currentTrace = StepForward(currentTrace);
+								}
+
+								currentTrace = GetTrace(GetTraceExec(predecessor->traceExecRef)->branchData.forwardTrace);
+								while (currentTrace)
+								{
+									if (GetTraceExec(currentTrace->traceExecRef)->branchData.mergeCounter == MergeStack_MagicCounter)
+									{
+										break;
+									}
+									currentTrace = StepForward(currentTrace);
+								}
+								CHECK_ERROR(currentTrace != nullptr, ERROR_MESSAGE_PREFIX L"Cannot determine commonForwardBranch of a merge trace.");
+								traceExec->branchData.commonForwardBranch = currentTrace;
+							}
+						}
+					}
+				);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+#undef NEW_MERGE_STACK_MAGIC_COUNTER
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR_PARTIALEXECUTETRACES.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+/***********************************************************************
+PartialExecuteTraces
+***********************************************************************/
+
+			void TraceManager::PartialExecuteTraces()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::PartialExecuteTraces()#"
+				IterateSurvivedTraces(
+					[this](Trace* trace, Trace* predecessor, vint32_t visitCount, vint32_t predecessorCount)
+					{
+						if (predecessorCount <= 1)
+						{
+							PartialExecuteOrdinaryTrace(trace);
+						}
+						else
+						{
+							if (visitCount > 1)
+							{
+								EnsureInsExecContextCompatible(predecessor, GetTrace(trace->predecessors.first));
+							}
+
+							if (visitCount == predecessorCount)
+							{
+								MergeInsExecContext(trace);
+							}
+						}
+					}
+				);
+#undef ERROR_MESSAGE_PREFIX
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR_PARTIALEXECUTETRACES_ENSUREINSEXECCONTEXTCOMPATIBLE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+/***********************************************************************
+EnsureInsExecContextCompatible
+***********************************************************************/
+
+			void TraceManager::EnsureInsExecContextCompatible(Trace* baselineTrace, Trace* commingTrace)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::EnsureInsExecContextCompatible(Trace*, Trace*)#"
+				auto&& contextComming = GetTraceExec(baselineTrace->traceExecRef)->context;
+				auto&& contextBaseline = GetTraceExec(commingTrace->traceExecRef)->context;
+				auto error = []()
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Execution results of traces to merge are different.");
+				};
+
+				// check if the two lriStored be both empty or non-empty
+				if ((contextBaseline.lriStoredObjects == nullref) != (contextComming.lriStoredObjects == nullref)) error();
+
+				// check if the two objectStack have the same depth
+				if ((contextBaseline.objectStack == nullref) != (contextComming.objectStack == nullref)) error();
+				if (contextBaseline.objectStack != nullref)
+				{
+					auto stackBaseline = GetInsExec_ObjectStack(contextBaseline.objectStack);
+					auto stackComming = GetInsExec_ObjectStack(contextComming.objectStack);
+					if (stackBaseline->pushedCount != stackComming->pushedCount) error();
+				}
+
+				// check if the two createStack have the same depth
+				// check each corresponding createStack have the same stackBase
+				auto stack1 = contextBaseline.createStack;
+				auto stack2 = contextComming.createStack;
+				while (stack1 != stack2)
+				{
+					if (stack1 == nullref || stack2 == nullref) error();
+
+					auto stackObj1 = GetInsExec_CreateStack(stack1);
+					auto stackObj2 = GetInsExec_CreateStack(stack2);
+
+					if (stackObj1->stackBase != stackObj2->stackBase) error();
+
+					stack1 = stackObj1->previous;
+					stack2 = stackObj2->previous;
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR_PARTIALEXECUTETRACES_MERGEINSEXECCONTEXT.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+			using namespace collections;
+
+#define NEW_MERGE_STACK_MAGIC_COUNTER (void)(MergeStack_MagicCounter++)
+
+/***********************************************************************
+MergeInsExecContext
+***********************************************************************/
+
+			void TraceManager::PushInsRefLinkWithCounter(Ref<InsExec_InsRefLink>& link, Ref<InsExec_InsRefLink> comming)
+			{
+				while (comming != nullref)
+				{
+					auto commingStack = GetInsExec_InsRefLink(comming);
+					comming = commingStack->previous;
+
+					auto insTrace = GetTrace(commingStack->trace);
+					auto insTraceExec = GetTraceExec(insTrace->traceExecRef);
+					auto insExec = GetInsExec(insTraceExec->insExecRefs.start + commingStack->ins);
+					if (insExec->mergeCounter == MergeStack_MagicCounter) continue;
+
+					insExec->mergeCounter = MergeStack_MagicCounter;
+					PushInsRefLink(link, commingStack->trace, commingStack->ins);
+				}
+			}
+
+			void TraceManager::PushObjRefLinkWithCounter(Ref<InsExec_ObjRefLink>& link, Ref<InsExec_ObjRefLink> comming)
+			{
+				while (comming != nullref)
+				{
+					auto commingStack = GetInsExec_ObjRefLink(comming);
+					comming = commingStack->previous;
+
+					auto ieObject = GetInsExec_Object(commingStack->id);
+					if (ieObject->mergeCounter == MergeStack_MagicCounter) continue;
+
+					ieObject->mergeCounter = MergeStack_MagicCounter;
+					PushObjRefLink(link, ieObject);
+				}
+			}
+
+			template<typename T, T* (TraceManager::* get)(Ref<T>), Ref<T> (InsExec_Context::* stack), typename TMerge>
+			Ref<T> TraceManager::MergeStack(Trace* mergeTrace, AllocateOnly<T>& allocator, TMerge&& merge)
+			{
+				Array<T*> stacks(mergeTrace->predecessorCount);
+
+				// fill the first level of stacks objects
+				{
+					vint index = 0;
+					auto predecessorId = mergeTrace->predecessors.first;
+					while (predecessorId != nullref)
+					{
+						auto predecessor = GetTrace(predecessorId);
+						auto traceExec = GetTraceExec(predecessor->traceExecRef);
+
+						auto stackId = traceExec->context.*stack;
+						stacks[index++] = stackId == nullref ? nullptr : (this->*get)(stackId);
+						predecessorId = predecessor->predecessors.siblingNext;
+					}
+				}
+
+				Ref<T> stackTop;
+				Ref<T>* pStackPrevious = &stackTop;
+				while (stacks[0])
+				{
+					// check if all stack objects are the same
+					bool sameStackObject = true;
+					for (vint index = 1; index < stacks.Count(); index++)
+					{
+						if (stacks[0] != stacks[index])
+						{
+							sameStackObject = false;
+							break;
+						}
+					}
+
+					if (sameStackObject)
+					{
+						// if yes, reuse this stack object
+						*pStackPrevious = stacks[0];
+						break;
+					}
+
+					// otherwise, create a new stack object to merge all
+					auto newStack = (this->*get)(allocator.Allocate());
+					*pStackPrevious = newStack;
+					pStackPrevious = &(newStack->previous);
+
+					// call this macro to create a one-time set for InsExec*
+					NEW_MERGE_STACK_MAGIC_COUNTER;
+					for (vint index = 0; index < stacks.Count(); index++)
+					{
+						// do not visit the same stack object repeatly
+						if (stacks[index]->mergeCounter == MergeStack_MagicCounter) continue;
+						stacks[index]->mergeCounter = MergeStack_MagicCounter;
+						merge(newStack, stacks[index]);
+
+						// do not visit the same object repeatly
+						PushObjRefLinkWithCounter(newStack->objectIds, stacks[index]->objectIds);
+					}
+
+					// move to next level of stack objects
+					for (vint index = 0; index < stacks.Count(); index++)
+					{
+						auto stackId = stacks[index]->previous;
+						stacks[index] = stackId == nullref ? nullptr : (this->*get)(stackId);
+					}
+				}
+				return stackTop;
+			}
+
+			void TraceManager::MergeInsExecContext(Trace* mergeTrace)
+			{
+				// merge stacks so that objects created in all branches are accessible
+				auto traceExec = GetTraceExec(mergeTrace->traceExecRef);
+
+				traceExec->context.objectStack = MergeStack<
+					InsExec_ObjectStack,
+					&TraceManager::GetInsExec_ObjectStack,
+					&InsExec_Context::objectStack
+				>(
+					mergeTrace,
+					insExec_ObjectStacks,
+					[this](InsExec_ObjectStack* newStack, InsExec_ObjectStack* commingStack)
+					{
+						// all commingStack->pushedCount are ensured to be the same
+						newStack->pushedCount = commingStack->pushedCount;
+					});
+
+				traceExec->context.createStack = MergeStack<
+					InsExec_CreateStack,
+					&TraceManager::GetInsExec_CreateStack,
+					&InsExec_Context::createStack
+				>(
+					mergeTrace,
+					insExec_CreateStacks,
+					[this](InsExec_CreateStack* newStack, InsExec_CreateStack* commingStack)
+					{
+						// all commingStack->stackBase are ensured to be the same
+						newStack->stackBase = commingStack->stackBase;
+						PushInsRefLinkWithCounter(newStack->createInsRefs, commingStack->createInsRefs);
+					});
+
+				NEW_MERGE_STACK_MAGIC_COUNTER;
+				auto predecessorId = mergeTrace->predecessors.first;
+				while (predecessorId != nullref)
+				{
+					auto predecessor = GetTrace(predecessorId);
+					predecessorId = predecessor->predecessors.siblingNext;
+					auto predecessorTraceExec = GetTraceExec(predecessor->traceExecRef);
+
+					// do not visit the same object repeatly
+					PushObjRefLinkWithCounter(traceExec->context.lriStoredObjects, predecessorTraceExec->context.lriStoredObjects);
+				}
+			}
+
+#undef NEW_MERGE_STACK_MAGIC_COUNTER
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR_PARTIALEXECUTETRACES_PARTIALEXECUTEORDINARYTRACE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+#define NEW_MERGE_STACK_MAGIC_COUNTER (void)(MergeStack_MagicCounter++)
+
+/***********************************************************************
+PartialExecuteOrdinaryTrace
+***********************************************************************/
+
+			InsExec_Object* TraceManager::NewObject()
+			{
+				return GetInsExec_Object(insExec_Objects.Allocate());
+			}
+
+			vint32_t TraceManager::GetStackBase(InsExec_Context& context)
+			{
+				if (context.createStack == nullref)
+				{
+					return 0;
+				}
+				else
+				{
+					return GetInsExec_CreateStack(context.createStack)->stackBase;
+				}
+			}
+
+			vint32_t TraceManager::GetStackTop(InsExec_Context& context)
+			{
+				if (context.objectStack == nullref)
+				{
+					return 0;
+				}
+				else
+				{
+					return GetInsExec_ObjectStack(context.objectStack)->pushedCount;
+				}
+			}
+
+			void TraceManager::PushInsRefLink(Ref<InsExec_InsRefLink>& link, Ref<Trace> trace, vint32_t ins)
+			{
+				auto newLink = GetInsExec_InsRefLink(insExec_InsRefLinks.Allocate());
+				newLink->previous = link;
+				newLink->trace = trace;
+				newLink->ins = ins;
+				link = newLink;
+			}
+
+			void TraceManager::PushObjRefLink(Ref<InsExec_ObjRefLink>& link, Ref<InsExec_Object> id)
+			{
+				auto newLink = GetInsExec_ObjRefLink(insExec_ObjRefLinks.Allocate());
+				newLink->previous = link;
+				newLink->id = id;
+				link = newLink;
+			}
+
+			Ref<InsExec_InsRefLink> TraceManager::JoinInsRefLink(Ref<InsExec_InsRefLink> first, Ref<InsExec_InsRefLink> second)
+			{
+				if (first == nullref) return second;
+				if (second == nullref) return first;
+
+				Ref<InsExec_InsRefLink> newStack;
+
+				while (first != nullref)
+				{
+					auto stack = GetInsExec_InsRefLink(first);
+					first = stack->previous;
+					PushInsRefLink(newStack, stack->trace, stack->ins);
+				}
+
+				while (second != nullref)
+				{
+					auto stack = GetInsExec_InsRefLink(second);
+					second = stack->previous;
+					PushInsRefLink(newStack, stack->trace, stack->ins);
+				}
+
+				return newStack;
+			}
+
+			Ref<InsExec_ObjRefLink> TraceManager::JoinObjRefLink(Ref<InsExec_ObjRefLink> first, Ref<InsExec_ObjRefLink> second)
+			{
+				if (first == nullref) return second;
+				if (second == nullref) return first;
+
+				Ref<InsExec_ObjRefLink> newStack;
+
+				while (first != nullref)
+				{
+					auto stack = GetInsExec_ObjRefLink(first);
+					first = stack->previous;
+					PushObjRefLink(newStack, stack->id);
+				}
+
+				while (second != nullref)
+				{
+					auto stack = GetInsExec_ObjRefLink(second);
+					second = stack->previous;
+					PushObjRefLink(newStack, stack->id);
+				}
+
+				return newStack;
+			}
+
+			InsExec_ObjectStack* TraceManager::PushObjectStackSingle(InsExec_Context& context, Ref<InsExec_Object> objectId)
+			{
+				auto ie = GetInsExec_ObjectStack(insExec_ObjectStacks.Allocate());
+				ie->previous = context.objectStack;
+				PushObjRefLink(ie->objectIds, objectId);
+				ie->pushedCount = GetStackTop(context) + 1;
+				context.objectStack = ie;
+				return ie;
+			}
+
+			InsExec_ObjectStack* TraceManager::PushObjectStackMultiple(InsExec_Context& context, Ref<InsExec_ObjRefLink> linkId)
+			{
+				auto ie = GetInsExec_ObjectStack(insExec_ObjectStacks.Allocate());
+				ie->previous = context.objectStack;
+				ie->objectIds = JoinObjRefLink(ie->objectIds, linkId);
+				ie->pushedCount = GetStackTop(context) + 1;
+				context.objectStack = ie;
+				return ie;
+			}
+
+			InsExec_CreateStack* TraceManager::PushCreateStack(InsExec_Context& context)
+			{
+				auto ie = GetInsExec_CreateStack(insExec_CreateStacks.Allocate());
+				ie->previous = context.createStack;
+				context.createStack = ie;
+				return ie;
+			}
+
+			void TraceManager::PartialExecuteOrdinaryTrace(Trace* trace)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::PartialExecuteOrdinaryTrace(Trace*)#"
+				InsExec_Context context;
+				if (trace->predecessors.first != nullref)
+				{
+					auto predecessor = GetTrace(trace->predecessors.first);
+					auto traceExec = GetTraceExec(predecessor->traceExecRef);
+					context = traceExec->context;
+				}
+
+				auto traceExec = GetTraceExec(trace->traceExecRef);
+				for (vint32_t insRef = 0; insRef < traceExec->insLists.c3; insRef++)
+				{
+					auto&& ins = ReadInstruction(insRef, traceExec->insLists);
+					auto insExec = GetInsExec(traceExec->insExecRefs.start + insRef);
+					insExec->contextBeforeExecution = context;
+
+					switch (ins.type)
+					{
+					case AstInsType::BeginObject:
+						{
+							// new object
+							auto ieObject = NewObject();
+							ieObject->bo_bolr_Trace = trace;
+							ieObject->bo_bolr_Ins = insRef;
+
+							// new create stack
+							auto ieCSTop = PushCreateStack(context);
+							PushInsRefLink(ieCSTop->createInsRefs, trace, insRef);
+							ieCSTop->stackBase = GetStackTop(context);
+							PushObjRefLink(ieCSTop->objectIds, ieObject);
+
+							// InsExec::createdObjectId
+							insExec->createdObjectId = ieObject;
+						}
+						break;
+					case AstInsType::BeginObjectLeftRecursive:
+						{
+							CHECK_ERROR(GetStackTop(context) - GetStackBase(context) >= 1, ERROR_MESSAGE_PREFIX L"Pushed values not enough.");
+
+							// observe the object stack top
+							auto ieOSTop = GetInsExec_ObjectStack(context.objectStack);
+
+							// new object
+							auto ieObject = NewObject();
+							ieObject->lrObjectIds = ieOSTop->objectIds;
+							ieObject->bo_bolr_Trace = trace;
+							ieObject->bo_bolr_Ins = insRef;
+
+							// new create stack, the top object is not frozen
+							auto ieCSTop = PushCreateStack(context);
+							PushInsRefLink(ieCSTop->createInsRefs, trace, insRef);
+							ieCSTop->stackBase = ieOSTop->pushedCount - 1;
+							PushObjRefLink(ieCSTop->objectIds, ieObject);
+
+							// InsExec::createdObjectId
+							insExec->createdObjectId = ieObject;
+						}
+						break;
+					case AstInsType::DelayFieldAssignment:
+						{
+							// new create stack
+							auto ieCSTop = PushCreateStack(context);
+							PushInsRefLink(ieCSTop->createInsRefs, trace, insRef);
+							ieCSTop->stackBase = GetStackTop(context);
+						}
+						break;
+					case AstInsType::ReopenObject:
+						{
+							CHECK_ERROR(GetStackTop(context) - GetStackBase(context) >= 1, ERROR_MESSAGE_PREFIX L"Pushed values not enough.");
+							CHECK_ERROR(context.createStack != nullref, ERROR_MESSAGE_PREFIX L"There is no created object.");
+
+							// pop an object
+							auto ieOSTop = GetInsExec_ObjectStack(context.objectStack);
+							context.objectStack = ieOSTop->previous;
+
+							// reopen an object
+							// ReopenObject in different branches could write to the same InsExec_CreateStack
+							// this happens when ambiguity happens in the !Rule syntax
+							// but the same InsExec_CreateStack means the clause of !Rule does not have ambiguity
+							// so ambiguity should also be resolved here
+							// and such ReopenObject will be the last instruction in a trace
+							// this means it is impossible to continue with InsExec_CreateStack polluted by sibling traces
+							// therefore adding multiple objects to the same InsExec_CreateStack in multiple branches is fine
+							// the successor trace will be a merge trace taking all of the information
+							auto ieCSTop = GetInsExec_CreateStack(context.createStack);
+							NEW_MERGE_STACK_MAGIC_COUNTER;
+							{
+								auto ref = ieCSTop->objectIds;
+								while (ref != nullref)
+								{
+									auto link = GetInsExec_ObjRefLink(ref);
+									auto ieObject = GetInsExec_Object(link->id);
+									ieObject->mergeCounter = MergeStack_MagicCounter;
+									ref = link->previous;
+								}
+							}
+							{
+								auto ref = ieOSTop->objectIds;
+								while (ref != nullref)
+								{
+									auto link = GetInsExec_ObjRefLink(ref);
+									auto ieObject = GetInsExec_Object(link->id);
+									if (ieObject->mergeCounter != MergeStack_MagicCounter)
+									{
+										ieObject->mergeCounter = MergeStack_MagicCounter;
+										PushObjRefLink(ieCSTop->objectIds, link->id);
+									}
+									ref = link->previous;
+								}
+							}
+
+							auto insRefLinkId = ieCSTop->createInsRefs;
+							while(insRefLinkId != nullref)
+							{
+								auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
+								insRefLinkId = insRefLink->previous;
+
+								// check if the top create stack is from DFA
+								auto traceCSTop = GetTrace(insRefLink->trace);
+								auto traceExecCSTop = GetTraceExec(traceCSTop->traceExecRef);
+								CHECK_ERROR(ReadInstruction(insRefLink->ins, traceExecCSTop->insLists).type == AstInsType::DelayFieldAssignment, ERROR_MESSAGE_PREFIX L"DelayFieldAssignment is not submitted before ReopenObject.");
+
+								auto insExecDfa = GetInsExec(traceExecCSTop->insExecRefs.start + insRefLink->ins);
+								auto ref = ieOSTop->objectIds;
+								while (ref != nullref)
+								{
+									auto link = GetInsExec_ObjRefLink(ref);
+									auto ieObject = GetInsExec_Object(link->id);
+									// InsExec_Object::dfaInsRefs
+									PushInsRefLink(ieObject->dfaInsRefs, insRefLink->trace, insRefLink->ins);
+									// InsExec::objRefs
+									PushObjRefLink(insExecDfa->objRefs, ieObject);
+									ref = link->previous;
+								}
+							}
+						}
+						break;
+					case AstInsType::EndObject:
+						{
+							CHECK_ERROR(context.createStack != nullref, ERROR_MESSAGE_PREFIX L"There is no created object.");
+
+							// pop a create stack
+							auto ieCSTop = GetInsExec_CreateStack(context.createStack);
+							context.createStack = ieCSTop->previous;
+
+							// push an object
+							CHECK_ERROR(ieCSTop->objectIds != nullref, ERROR_MESSAGE_PREFIX L"An object has not been associated to the create stack yet.");
+							PushObjectStackMultiple(context, ieCSTop->objectIds);
+
+							// InsExec::objRefs
+							insExec->objRefs = ieCSTop->objectIds;
+
+							// InsExec::eoInsRefs
+							auto insRefLinkId = ieCSTop->createInsRefs;
+							while (insRefLinkId != nullref)
+							{
+								auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
+								insRefLinkId = insRefLink->previous;
+
+								auto traceCSTop = GetTrace(insRefLink->trace);
+								auto traceExecCSTop = GetTraceExec(traceCSTop->traceExecRef);
+								auto insExecCreate = GetInsExec(traceExecCSTop->insExecRefs.start + insRefLink->ins);
+								PushInsRefLink(insExecCreate->eoInsRefs, trace, insRef);
+							}
+						}
+						break;
+					case AstInsType::DiscardValue:
+					case AstInsType::Field:
+					case AstInsType::FieldIfUnassigned:
+						{
+							CHECK_ERROR(GetStackTop(context) - GetStackBase(context) >= 1, ERROR_MESSAGE_PREFIX L"Pushed values not enough.");
+
+							auto ieObjTop = GetInsExec_ObjectStack(context.objectStack);
+							context.objectStack = ieObjTop->previous;
+						}
+						break;
+					case AstInsType::LriStore:
+						{
+							CHECK_ERROR(GetStackTop(context) - GetStackBase(context) >= 1, ERROR_MESSAGE_PREFIX L"Pushed values not enough.");
+							CHECK_ERROR(context.lriStoredObjects == nullref, ERROR_MESSAGE_PREFIX L"LriFetch is not executed before the next LriStore.");
+
+							auto ieObjTop = GetInsExec_ObjectStack(context.objectStack);
+							context.objectStack = ieObjTop->previous;
+							context.lriStoredObjects = ieObjTop->objectIds;
+						}
+						break;
+					case AstInsType::LriFetch:
+						{
+							CHECK_ERROR(context.lriStoredObjects != nullref, ERROR_MESSAGE_PREFIX L"LriStore is not executed before the next LriFetch.");
+							PushObjectStackMultiple(context, context.lriStoredObjects);
+							context.lriStoredObjects = nullref;
+						}
+						break;
+					case AstInsType::Token:
+					case AstInsType::EnumItem:
+						{
+							PushObjectStackSingle(context, Ref<InsExec_Object>(-2));
+						}
+						break;
+					case AstInsType::ResolveAmbiguity:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"ResolveAmbiguity should not appear in traces.");
+					default:;
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unrecognizabled instruction.");
+					}
+				}
+				traceExec->context = context;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+#undef NEW_MERGE_STACK_MAGIC_COUNTER
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMRA.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+/***********************************************************************
+ResolveAmbiguity
+***********************************************************************/
+
+			void TraceManager::ResolveAmbiguity()
+			{
+				CHECK_ERROR(state == TraceManagerState::PreparedTraceRoute, L"vl::glr::automaton::TraceManager::ResolveAmbiguity()#Wrong timing to call this function.");
+				state = TraceManagerState::ResolvedAmbiguity;
+
+				CheckMergeTraces();
+				BuildExecutionOrder();
+			}
+
+#undef NEW_MERGE_STACK_MAGIC_COUNTER
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMRA_BUILDEXECUTIONORDER.CPP
+***********************************************************************/
+
+#define DEFINE_EXECUTION_STEP_CONTEXT ExecutionStep*& root, ExecutionStep*& firstLeaf, ExecutionStep*& currentStep, ExecutionStep*& currentLeaf
+#define PASS_EXECUTION_STEP_CONTEXT root, firstLeaf, currentStep, currentLeaf
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+/***********************************************************************
+MarkNewLeafStep
+***********************************************************************/
+
+			void TraceManager::MarkNewLeafStep(ExecutionStep* step, ExecutionStep*& firstLeaf, ExecutionStep*& currentLeaf)
+			{
+				if (!firstLeaf)
+				{
+					firstLeaf = step;
+				}
+
+				if (currentLeaf)
+				{
+					currentLeaf->next = step;
+				}
+				currentLeaf = step;
+			}
+/***********************************************************************
+AppendStepLink
+***********************************************************************/
+
+			void TraceManager::AppendStepLink(ExecutionStep* first, ExecutionStep* last, bool leafNode, DEFINE_EXECUTION_STEP_CONTEXT)
+			{
+				if (!root)
+				{
+					root = first;
+				}
+
+				first->parent = currentStep;
+				currentStep = last;
+
+				if (leafNode)
+				{
+					MarkNewLeafStep(last, firstLeaf, currentLeaf);
+				}
+			}
+
+/***********************************************************************
+AppendStepsBeforeAmbiguity
+***********************************************************************/
+
+			void TraceManager::AppendStepsBeforeAmbiguity(Trace* startTrace, vint32_t startIns, TraceAmbiguity* ta, DEFINE_EXECUTION_STEP_CONTEXT)
+			{
+				// append a step from current position to the beginning of TraceAmbiguity
+				auto taFirst = GetTrace(ta->firstTrace);
+				auto taFirstExec = GetTraceExec(taFirst->traceExecRef);
+				if ( taFirst->traceExecRef > startTrace->traceExecRef ||
+					(taFirst->traceExecRef == startTrace->traceExecRef && ta->prefix > startIns))
+				{
+					if (ta->prefix > taFirstExec->insLists.c3)
+					{
+						// if the first ambiguous instruction is in successors of the branch trace
+						// execution from the current position to the end of the prefix
+						if (startTrace != taFirst || startIns < taFirstExec->insLists.c3)
+						{
+							auto step = GetExecutionStep(executionSteps.Allocate());
+							step->et_i.startTrace = startTrace->allocatedIndex;
+							step->et_i.startIns = startIns;
+							step->et_i.endTrace = taFirst->allocatedIndex;
+							step->et_i.endIns = taFirstExec->insLists.c3 - 1;
+							AppendStepLink(step, step, false, PASS_EXECUTION_STEP_CONTEXT);
+						}
+						if (ta->prefix > taFirstExec->insLists.c3)
+						{
+							auto prefixTrace = GetTrace(taFirst->successors.first);
+							auto step = GetExecutionStep(executionSteps.Allocate());
+							step->et_i.startTrace = prefixTrace->allocatedIndex;
+							step->et_i.startIns = 0;
+							step->et_i.endTrace = prefixTrace->allocatedIndex;
+							step->et_i.endIns = ta->prefix - taFirstExec->insLists.c3 - 1;
+							AppendStepLink(step, step, false, PASS_EXECUTION_STEP_CONTEXT);
+						}
+					}
+					else
+					{
+						// execute instructions before the first ambiguous instruction
+						if (startTrace != taFirst || startIns < ta->prefix)
+						{
+							auto step = GetExecutionStep(executionSteps.Allocate());
+							step->et_i.startTrace = startTrace->allocatedIndex;
+							step->et_i.startIns = startIns;
+							step->et_i.endTrace = taFirst->allocatedIndex;
+							step->et_i.endIns = ta->prefix - 1;
+							AppendStepLink(step, step, false, PASS_EXECUTION_STEP_CONTEXT);
+						}
+					}
+				}
+			}
+
+/***********************************************************************
+AppendStepsAfterAmbiguity
+***********************************************************************/
+
+			void TraceManager::AppendStepsAfterAmbiguity(Trace*& startTrace, vint32_t& startIns, TraceAmbiguity* ta, DEFINE_EXECUTION_STEP_CONTEXT)
+			{
+				auto taLast = GetTrace(ta->lastTrace);
+				auto taLastExec = GetTraceExec(taLast->traceExecRef);
+				if (ta->postfix > taLastExec->insLists.c3)
+				{
+					// if the last ambiguous instruction is in predecessors of the merge trace
+					// execute the postfix
+					auto postfixTrace = GetTrace(taLast->predecessors.first);
+					auto postfixTraceExec = GetTraceExec(postfixTrace->traceExecRef);
+					{
+						auto step = GetExecutionStep(executionSteps.Allocate());
+						step->et_i.startTrace = postfixTrace->allocatedIndex;
+						step->et_i.startIns = postfixTraceExec->insLists.c3 - (ta->postfix - taLastExec->insLists.c3);
+						step->et_i.endTrace = postfixTrace->allocatedIndex;
+						step->et_i.endIns = postfixTraceExec->insLists.c3 - 1;
+						AppendStepLink(step, step, false, PASS_EXECUTION_STEP_CONTEXT);
+					}
+
+					// set the corrent position to the beginning of taList
+					startTrace = taLast;
+					startIns = 0;
+				}
+				else
+				{
+					// otherwise set the current position to the instruction after the last ambiguous instruction
+					startTrace = taLast;
+					startIns = GetTraceExec(startTrace->traceExecRef)->insLists.c3 - ta->postfix;
+				}
+			}
+
+/***********************************************************************
+AppendStepsForAmbiguity
+***********************************************************************/
+
+			void TraceManager::AppendStepsForAmbiguity(TraceAmbiguity* ta, bool checkCoveredMark, DEFINE_EXECUTION_STEP_CONTEXT)
+			{
+				ExecutionStep* taStepFirst = nullptr;
+				ExecutionStep* taStepLast = nullptr;
+				BuildAmbiguousStepLink(ta, checkCoveredMark, taStepFirst, taStepLast);
+				AppendStepLink(taStepFirst, taStepLast, false, PASS_EXECUTION_STEP_CONTEXT);
+			}
+
+/***********************************************************************
+AppendStepsBeforeBranch
+***********************************************************************/
+
+			void TraceManager::AppendStepsBeforeBranch(Trace* startTrace, vint32_t startIns, Trace* branchTrace, TraceExec* branchTraceExec, DEFINE_EXECUTION_STEP_CONTEXT)
+			{
+				if (startTrace->traceExecRef < branchTrace->traceExecRef ||
+					(startTrace->traceExecRef == branchTrace->traceExecRef && startIns < branchTraceExec->insLists.c3))
+				{
+					auto step = GetExecutionStep(executionSteps.Allocate());
+					step->et_i.startTrace = startTrace->allocatedIndex;
+					step->et_i.startIns = startIns;
+					step->et_i.endTrace = branchTrace->allocatedIndex;
+					step->et_i.endIns = branchTraceExec->insLists.c3 - 1;
+					AppendStepLink(step, step, false, PASS_EXECUTION_STEP_CONTEXT);
+				}
+			}
+
+/***********************************************************************
+BuildStepTree
+***********************************************************************/
+
+			void TraceManager::BuildStepTree(Trace* startTrace, vint32_t startIns, Trace* endTrace, vint32_t endIns, ExecutionStep*& root, ExecutionStep*& firstLeaf, ExecutionStep* currentStep, ExecutionStep*& currentLeaf)
+			{
+				// find the next critical trace record which is or after startTrace
+				auto critical = GetTrace(GetTraceExec(startTrace->traceExecRef)->branchData.forwardTrace);
+
+				// traverse critical until we hit endTrace
+				while (true)
+				{
+					// skip if critical is before startTrace
+					if (critical && critical->traceExecRef < startTrace->traceExecRef)
+					{
+						goto NEXT_CRITICAL;
+					}
+
+					// if critical is empty
+					// or critical is after endTrace
+					// or critical is endTrace and the first ambiguous instruction is not before endIns
+
+					if (critical)
+					{
+						if (critical->traceExecRef < endTrace->traceExecRef)
+						{
+							goto CONTINUE_SEARCHING;
+						}
+						if (critical == endTrace)
+						{
+							auto criticalExec = GetTraceExec(critical->traceExecRef);
+							if (criticalExec->ambiguityBegins != nullref)
+							{
+								auto taLinkRef = criticalExec->ambiguityBegins;
+								while (taLinkRef != nullref)
+								{
+									auto taLink = GetTraceAmbiguityLink(taLinkRef);
+									taLinkRef = taLink->previous;
+
+									auto ta = GetTraceAmbiguity(taLink->ambiguity);
+									if (ta->prefix < endIns)
+									{
+										goto CONTINUE_SEARCHING;
+									}
+								}
+							}
+						}
+					}
+
+					// it means we have reached the end
+					break;
+
+				CONTINUE_SEARCHING:
+
+					// there is three kinds of critical node:
+					//   ambiguous trace (could also be a branch tree)
+					//   branch trace
+					//   predecessor of merge trace
+
+					{
+						auto criticalExec = GetTraceExec(critical->traceExecRef);
+						if (criticalExec->ambiguityBegins != nullref)
+						{
+							// check if the only one TraceAmbiguity covers all successors
+							bool singleCompleteAmbiguity = true;
+							{
+								auto firstSuccessor = GetTrace(critical->successors.first);
+								auto successorId = firstSuccessor->successors.siblingNext;
+								auto covered = GetTraceExec(firstSuccessor->traceExecRef)->ambiguityCoveredInForward;
+								while (successorId != nullref)
+								{
+									auto successor = GetTrace(successorId);
+									successorId = successor->successors.siblingNext;
+
+									if (covered != GetTraceExec(successor->traceExecRef)->ambiguityCoveredInForward)
+									{
+										singleCompleteAmbiguity = false;
+										break;
+									}
+								}
+							}
+
+							if (singleCompleteAmbiguity)
+							{
+								// if yes, it means the TraceAmbiguity will cover all successors
+								// run the ambiguity in place, no need for recursion
+								auto taLink = GetTraceAmbiguityLink(criticalExec->ambiguityBegins);
+								auto ta = GetTraceAmbiguity(taLink->ambiguity);
+
+								// append steps for ambiguity and fix the current position
+								AppendStepsBeforeAmbiguity(startTrace, startIns, ta, PASS_EXECUTION_STEP_CONTEXT);
+								AppendStepsForAmbiguity(ta, false, PASS_EXECUTION_STEP_CONTEXT);
+								AppendStepsAfterAmbiguity(startTrace, startIns, ta, PASS_EXECUTION_STEP_CONTEXT);
+
+								// fix critical
+								critical = GetTrace(GetTraceExec(startTrace->traceExecRef)->branchData.forwardTrace);
+								continue;
+							}
+							else
+							{
+								// there could be one or more TraceAmbiguity
+								// there could also be successors that are not covered by any TraceAmbiguity
+								auto taLinkRef = criticalExec->ambiguityBegins;
+								while (taLinkRef != nullref)
+								{
+									auto taLink = GetTraceAmbiguityLink(taLinkRef);
+									taLinkRef = taLink->previous;
+									auto ta = GetTraceAmbiguity(taLink->ambiguity);
+
+									auto branchStartTrace = startTrace;
+									auto branchStartIns = startIns;
+									auto branchStep = currentStep;
+
+#define PASS_BRANCH_STEP_CONTEXT	root, firstLeaf, branchStep, currentLeaf
+									AppendStepsBeforeAmbiguity(branchStartTrace, branchStartIns, ta, PASS_BRANCH_STEP_CONTEXT);
+									AppendStepsForAmbiguity(ta, true, PASS_BRANCH_STEP_CONTEXT);
+									AppendStepsAfterAmbiguity(branchStartTrace, branchStartIns, ta, PASS_BRANCH_STEP_CONTEXT);
+									BuildStepTree(branchStartTrace, branchStartIns, endTrace, endIns, PASS_BRANCH_STEP_CONTEXT);
+#undef PASS_BRANCH_STEP_CONTEXT
+								}
+
+								// treat the remaining successors as from a branch trace
+								AppendStepsBeforeBranch(startTrace, startIns, critical, criticalExec, PASS_EXECUTION_STEP_CONTEXT);
+
+								auto successorId = critical->successors.first;
+								while (successorId != nullref)
+								{
+									auto successor = GetTrace(successorId);
+									successorId = successor->successors.siblingNext;
+									if (GetTraceExec(successor->traceExecRef)->ambiguityCoveredInForward == nullref)
+									{
+										BuildStepTree(successor, 0, endTrace, endIns, PASS_EXECUTION_STEP_CONTEXT);
+									}
+								}
+								return;
+							}
+						}
+						else if (critical->successors.first != critical->successors.last)
+						{
+							// if critical is a branch tree
+
+							// append a step current position to the end of critical
+							AppendStepsBeforeBranch(startTrace, startIns, critical, criticalExec, PASS_EXECUTION_STEP_CONTEXT);
+
+							// recursively process all successors
+							auto successorId = critical->successors.first;
+							while (successorId != nullref)
+							{
+								auto successor = GetTrace(successorId);
+								successorId = successor->successors.siblingNext;
+								BuildStepTree(successor, 0, endTrace, endIns, PASS_EXECUTION_STEP_CONTEXT);
+							}
+							return;
+						}
+						else if (critical->predecessors.siblingPrev != critical->predecessors.siblingNext)
+						{
+							// if critical is a predecessor of a merge tree
+							// see if it could be an end
+							if (critical->successors.first == endTrace && endIns < 0)
+							{
+								// fix endTrace and endIns
+								endTrace = critical;
+								endIns = criticalExec->insLists.c3 + endIns;
+								break;
+							}
+							else
+							{
+								// otherwise, fix critical
+								critical = GetTrace(GetTraceExec(GetTrace(critical->successors.first)->traceExecRef)->branchData.forwardTrace);
+								continue;
+							}
+						}
+						else
+						{
+							// this happens when the forward trace is not critical
+						}
+					}
+
+				NEXT_CRITICAL:
+					auto criticalRef = GetTraceExec(critical->traceExecRef)->nextAmbiguityCriticalTrace;
+					critical = criticalRef == nullref ? nullptr : GetTrace(criticalRef);
+				}
+
+				if ( startTrace->traceExecRef < endTrace->traceExecRef ||
+					(startTrace->traceExecRef == endTrace->traceExecRef && startIns <= endIns))
+				{
+					auto step = GetExecutionStep(executionSteps.Allocate());
+					step->et_i.startTrace = startTrace->allocatedIndex;
+					step->et_i.startIns = startIns;
+					step->et_i.endTrace = endTrace->allocatedIndex;
+					step->et_i.endIns = endIns;
+					AppendStepLink(step, step, true, PASS_EXECUTION_STEP_CONTEXT);
+				}
+				else
+				{
+					MarkNewLeafStep(currentStep, firstLeaf, currentLeaf);
+				}
+			}
+
+/***********************************************************************
+ConvertStepTreeToLink
+***********************************************************************/
+
+			void TraceManager::ConvertStepTreeToLink(ExecutionStep* root, ExecutionStep* firstLeaf, ExecutionStep*& first, ExecutionStep*& last)
+			{
+				// calculate copyCount
+				Ref<ExecutionStep> currentLeafRef = firstLeaf;
+				while (currentLeafRef != nullref)
+				{
+					auto currentRef = currentLeafRef;
+					while (currentRef != nullref)
+					{
+						auto current = GetExecutionStep(currentRef);
+						current->copyCount++;
+						currentRef = current->parent;
+					}
+
+					currentLeafRef = GetExecutionStep(currentLeafRef)->next;
+				}
+
+				// for each leaf, build a step link from root to the leaf
+				// concat all link, fill first and last
+				currentLeafRef = firstLeaf;
+				while (currentLeafRef != nullref)
+				{
+					// disconnect currentLeaf to the next leaf
+					auto currentLeaf = GetExecutionStep(currentLeafRef);
+					auto nextLeafRef = currentLeaf->next;
+					currentLeaf->next = nullref;
+
+					// fix next from root to currentLeaf
+					auto current = currentLeaf;
+					while (current->parent != nullref)
+					{
+						auto parent = GetExecutionStep(current->parent);
+						parent->next = current;
+						current = parent;
+					}
+
+					// make a step link from root to currentLeaf
+					ExecutionStep* linkFirst = nullptr;
+					ExecutionStep* linkLast = nullptr;
+
+					Ref<ExecutionStep> currentRef = root;
+					while (currentRef != nullref)
+					{
+						// increase visitCount
+						auto current = GetExecutionStep(currentRef);
+						current->visitCount++;
+
+						if (current->visitCount == current->copyCount)
+						{
+							// if visitCount == copyCount
+							// it means current will not be copied in the next round
+							// sublink from current to currentLeaf copy be used directly
+							if (!linkFirst)
+							{
+								linkFirst = current;
+							}
+							if (linkLast)
+							{
+								linkLast->next = current;
+							}
+							linkLast = currentLeaf;
+							break;
+						}
+						else
+						{
+							// otherwise, copy current
+							static_assert(sizeof(ExecutionStep::ETI) >= sizeof(ExecutionStep::ETRA));
+							auto step = GetExecutionStep(executionSteps.Allocate());
+							step->type = current->type;
+							step->et_i = current->et_i;
+
+							if (!linkFirst)
+							{
+								linkFirst = step;
+							}
+							if (linkLast)
+							{
+								linkLast->next = step;
+							}
+							linkLast = step;
+							currentRef = current->next;
+						}
+					}
+
+					if (!first)
+					{
+						first = linkFirst;
+					}
+					if (last)
+					{
+						last->next = linkFirst;
+					}
+					last = linkLast;
+
+					currentLeafRef = nextLeafRef;
+				}
+			}
+
+/***********************************************************************
+BuildAmbiguousStepLink
+***********************************************************************/
+
+			void TraceManager::BuildAmbiguousStepLink(TraceAmbiguity* ta, bool checkCoveredMark, ExecutionStep*& first, ExecutionStep*& last)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CheckMergeTraces()#"
+				auto taFirst = GetTrace(ta->firstTrace);
+				auto taFirstExec = GetTraceExec(taFirst->traceExecRef);
+				auto taLast = GetTrace(ta->lastTrace);
+				auto taLastExec = GetTraceExec(taLast->traceExecRef);
+
+				ExecutionStep* root = GetExecutionStep(executionSteps.Allocate());
+				root->type = ExecutionType::Empty;
+
+				ExecutionStep* firstLeaf = nullptr;
+				ExecutionStep* currentLeaf = nullptr;
+
+				if (ta->prefix < taFirstExec->insLists.c3)
+				{
+					// if the first ambiguous instruction is in taFirst
+
+					// traverse all successors
+					auto successorId = taFirst->successors.first;
+					while (successorId != nullref)
+					{
+						auto successor = GetTrace(successorId);
+						successorId = successor->successors.siblingNext;
+						if (checkCoveredMark && GetTraceExec(successor->traceExecRef)->ambiguityCoveredInForward != ta)
+						{
+							continue;
+						}
+
+						// append a step to execute from the first ambiguous instruction
+						auto first = GetExecutionStep(executionSteps.Allocate());
+						first->parent = root;
+						first->et_i.startTrace = taFirst->allocatedIndex;
+						first->et_i.startIns = ta->prefix;
+						first->et_i.endTrace = taFirst->allocatedIndex;
+						first->et_i.endIns = taFirstExec->insLists.c3 - 1;
+
+						// run from successor to the end
+						BuildStepTree(
+							successor, 0,
+							taLast, taLastExec->insLists.c3 - ta->postfix - 1,
+							root, firstLeaf, first, currentLeaf
+							);
+					}
+				}
+				else
+				{
+					// if the first ambiguous instruction is in successor traces
+
+					// traverse all successors
+					auto successorId = taFirst->successors.first;
+					while (successorId != nullref)
+					{
+						auto successor = GetTrace(successorId);
+						successorId = successor->successors.siblingNext;
+						if (checkCoveredMark && GetTraceExec(successor->traceExecRef)->ambiguityCoveredInForward != ta)
+						{
+							continue;
+						}
+
+						// run from the first ambiguous instruction to the last
+						BuildStepTree(
+							successor, ta->prefix - taFirstExec->insLists.c3,
+							taLast, taLastExec->insLists.c3 - ta->postfix - 1,
+							root, firstLeaf, root, currentLeaf
+							);
+					}
+				}
+
+				// create the ResolveAmbiguity step
+				auto stepRA = GetExecutionStep(executionSteps.Allocate());
+				stepRA->type = ExecutionType::ResolveAmbiguity;
+				stepRA->et_ra.count = 0;
+				stepRA->et_ra.type = -1;
+				stepRA->et_ra.trace = taLast->allocatedIndex;
+				{
+					Ref<ExecutionStep> currentLeafRef = firstLeaf;
+					while (currentLeafRef != nullref)
+					{
+						stepRA->et_ra.count++;
+						currentLeafRef = GetExecutionStep(currentLeafRef)->next;
+					}
+				}
+				{
+					CHECK_ERROR(typeCallback != nullptr, ERROR_MESSAGE_PREFIX L"Missing ITypeCallback to resolve the type from multiple objects.");
+					auto linkRef = ta->bottomObjectIds;
+					while (linkRef != nullref)
+					{
+						auto link = GetInsExec_ObjRefLink(linkRef);
+						linkRef = link->previous;
+
+						auto ieObject = GetInsExec_Object(link->id);
+						auto ieTrace = GetTrace(ieObject->bo_bolr_Trace);
+						auto ieTraceExec = GetTraceExec(ieTrace->traceExecRef);
+
+						auto&& ins = ReadInstruction(ieObject->bo_bolr_Ins, ieTraceExec->insLists);
+						if (stepRA->et_ra.type == -1)
+						{
+							stepRA->et_ra.type = ins.param;
+						}
+						else
+						{
+							stepRA->et_ra.type = typeCallback->FindCommonBaseClass(stepRA->et_ra.type, ins.param);
+							CHECK_ERROR(stepRA->et_ra.type != -1, ERROR_MESSAGE_PREFIX L"Unable to resolve the type from multiple objects.");
+						}
+					}
+				}
+
+				// append the ResolveAmbiguity step to the step tree
+				ConvertStepTreeToLink(root, firstLeaf, first, last);
+
+				auto current = first;
+				while (current != last)
+				{
+					auto next = GetExecutionStep(current->next);
+					current->next = nullref;
+					next->parent = current;
+					current = next;
+				}
+
+				stepRA->parent = last;
+				last = stepRA;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
+BuildExecutionOrder
+***********************************************************************/
+
+			void TraceManager::BuildExecutionOrder()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CheckMergeTraces()#"
+				// get the instruction range
+				auto startTrace = initialTrace;
+				vint32_t startIns = 0;
+				auto endTrace = concurrentTraces->Get(0);
+				vint32_t endIns = GetTraceExec(endTrace->traceExecRef)->insLists.c3 - 1;
+
+				// build step tree
+				ExecutionStep* root = nullptr;
+				ExecutionStep* firstLeaf = nullptr;
+				ExecutionStep* currentLeaf = nullptr;
+				BuildStepTree(startTrace, startIns, endTrace, endIns, root, firstLeaf, nullptr, currentLeaf);
+
+				// BuildAmbiguousStepLink should have merged a tree to a link
+				CHECK_ERROR(firstLeaf != nullptr, ERROR_MESSAGE_PREFIX L"Ambiguity is not fully identified.");
+				CHECK_ERROR(firstLeaf->next == nullref, ERROR_MESSAGE_PREFIX L"Ambiguity is not fully identified.");
+
+				// fill firstStep
+				ExecutionStep* first = nullptr;
+				ExecutionStep* last = nullptr;
+				ConvertStepTreeToLink(root, firstLeaf, first, last);
+				firstStep = first;
+#undef ERROR_MESSAGE_PREFIX
+			}
+		}
+	}
+}
+
+#undef PASS_EXECUTION_STEP_CONTEXT
+#undef DEFINE_EXECUTION_STEP_CONTEXT
+
+/***********************************************************************
+.\TRACEMANAGER\TMRA_CHECKMERGETRACES.CPP
+***********************************************************************/
+
+#if defined VCZH_MSVC && defined _DEBUG
+#define VCZH_DO_DEBUG_CHECK
+#endif
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+			using namespace collections;
+
+#define NEW_MERGE_STACK_MAGIC_COUNTER (void)(MergeStack_MagicCounter++)
+
+/***********************************************************************
+CheckMergeTrace
+***********************************************************************/
+
+			template<typename TCallback>
+			bool TraceManager::SearchForObjects(Ref<InsExec_ObjRefLink> objRefLinkStartSet, bool withCounter, TCallback&& callback)
+			{
+				// check every object in the link
+				auto linkId = objRefLinkStartSet;
+				while (linkId != nullref)
+				{
+					auto objRefLink = GetInsExec_ObjRefLink(linkId);
+					linkId = objRefLink->previous;
+					auto ieObject = GetInsExec_Object(objRefLink->id);
+
+					if (withCounter)
+					{
+						// skip if it has been searched
+						if (ieObject->mergeCounter == MergeStack_MagicCounter) goto CHECK_NEXT_OBJECT;
+						ieObject->mergeCounter = MergeStack_MagicCounter;
+					}
+
+					if (!callback(ieObject)) return false;
+				CHECK_NEXT_OBJECT:;
+				}
+				return true;
+			}
+
+			template<typename TCallback>
+			bool TraceManager::SearchForAllLevelObjectsWithCounter(InsExec_Object* startObject, collections::List<Ref<InsExec_ObjRefLink>>& visitingIds, TCallback&& callback)
+			{
+#define PUSH_ID(ID)													\
+					do{												\
+						if (availableIds == visitingIds.Count())	\
+							visitingIds.Add(ID);					\
+						else										\
+							visitingIds[availableIds] = ID;			\
+						availableIds++;								\
+					} while (false)
+
+				vint availableIds = 0;
+				auto processObject = [&](InsExec_Object* ieObject)
+				{
+					// skip if it has been searched
+					if (ieObject->mergeCounter == MergeStack_MagicCounter) return true;
+					ieObject->mergeCounter = MergeStack_MagicCounter;
+					if (!callback(ieObject)) return false;
+
+					// keep searching until ieObject->lrObjectIds is empty
+					while (ieObject->lrObjectIds != nullref)
+					{
+						auto lrObjRefLink = GetInsExec_ObjRefLink(ieObject->lrObjectIds);
+						if (lrObjRefLink->previous == nullref)
+						{
+							// if ieObject->lrObjectIds has only one object
+							// continue in place
+							ieObject = GetInsExec_Object(lrObjRefLink->id);
+
+							// skip if it has been searched
+							if (ieObject->mergeCounter == MergeStack_MagicCounter) return true;
+							ieObject->mergeCounter = MergeStack_MagicCounter;
+							if (!callback(ieObject)) return false;
+						}
+						else
+						{
+							// otherwise
+							// the link is pushed and search it later
+							PUSH_ID(ieObject->lrObjectIds);
+							break;
+						}
+					}
+
+					return true;
+				};
+
+				// start with startObject
+				if (!processObject(startObject)) return false;
+				for (vint linkIdIndex = 0; linkIdIndex < availableIds; linkIdIndex++)
+				{
+					// for any new object link, check every object in it
+					auto linkId = visitingIds[linkIdIndex];
+					while (linkId != nullref)
+					{
+						auto objRefLink = GetInsExec_ObjRefLink(linkId);
+						linkId = objRefLink->previous;
+						auto ieObject = GetInsExec_Object(objRefLink->id);
+						if (!processObject(ieObject)) return false;
+					}
+				}
+				return true;
+#undef PUSH_ID
+			}
+
+#ifdef VCZH_DO_DEBUG_CHECK
+			void TraceManager::EnsureSameForwardTrace(Ref<Trace> currentTraceId, Ref<Trace> forwardTraceId)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::EnsureSameForwardTrace(vint32_t, vint32_t)#"
+				auto currentTrace = GetTrace(currentTraceId);
+				auto currentTraceExec = GetTraceExec(currentTrace->traceExecRef);
+				while (currentTraceExec->branchData.forwardTrace > forwardTraceId)
+				{
+					currentTrace = StepForward(currentTrace);
+					currentTraceExec = GetTraceExec(currentTrace->traceExecRef);
+				}
+				CHECK_ERROR(currentTraceExec->branchData.forwardTrace == forwardTraceId, ERROR_MESSAGE_PREFIX L"Internal error: assumption is broken.");
+#undef ERROR_MESSAGE_PREFIX
+			}
+#endif
+
+			template<typename TCallback>
+			bool TraceManager::SearchForTopCreateInstructions(InsExec_Object* ieObject, TCallback&& callback)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::SearchForTopCreateInstructions(InsExec_Object*, TCallback&&)#"
+				// find the first instruction in all create instructions
+				// its trace should be a common ancestor of all traces of all create instructions
+				auto trace = ieObject->bo_bolr_Trace;
+				vint32_t ins = ieObject->bo_bolr_Ins;
+
+				auto insRefLinkId = ieObject->dfaInsRefs;
+				while (insRefLinkId != nullref)
+				{
+					auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
+					insRefLinkId = insRefLink->previous;
+					if (insRefLink->trace < trace || (insRefLink->trace == trace && insRefLink->ins < ins))
+					{
+						trace = insRefLink->trace;
+						ins = insRefLink->ins;
+					}
+				}
+
+#ifdef VCZH_DO_DEBUG_CHECK
+				// ensure they actually have the same ancestor trace
+				auto forwardTraceId = GetTraceExec(GetTrace(trace)->traceExecRef)->branchData.forwardTrace;
+				EnsureSameForwardTrace(ieObject->bo_bolr_Trace, forwardTraceId);
+				insRefLinkId = ieObject->dfaInsRefs;
+				while (insRefLinkId != nullref)
+				{
+					auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
+					EnsureSameForwardTrace(GetInsExec_InsRefLink(insRefLinkId)->trace, forwardTraceId);
+					insRefLinkId = insRefLink->previous;
+				}
+#endif
+				// there will be only one top create instruction per object
+				return callback(trace, ins);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename TCallback>
+			bool TraceManager::SearchForTopCreateInstructionsInAllLevelsWithCounter(InsExec_Object* startObject, collections::List<Ref<InsExec_ObjRefLink>>& visitingIds, TCallback&& callback)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::SearchForTopCreateInstructionsInAllLevelsWithCounter(InsExec_Object*, List<vint32_t>&, TCallback&&)#"
+#ifdef VCZH_DO_DEBUG_CHECK
+				Ref<InsExec_InsRefLink> insForEachObject;
+#endif
+				Ref<Trace> trace;
+				vint32_t ins = -1;
+
+				bool succeeded = SearchForAllLevelObjectsWithCounter(startObject, visitingIds, [&](InsExec_Object* ieObject)
+				{
+					return SearchForTopCreateInstructions(ieObject, [&](Ref<Trace> createTraceId, vint32_t createIns)
+					{
+#ifdef VCZH_DO_DEBUG_CHECK
+						PushInsRefLink(insForEachObject, createTraceId, createIns);
+#endif
+						if (trace == nullref || createTraceId < trace || (createTraceId == trace && createIns < ins))
+						{
+							trace = createTraceId;
+							ins = createIns;
+						}
+						return true;
+					});
+				});
+				if (trace == nullref) return true;
+				if (!succeeded) return false;
+#ifdef VCZH_DO_DEBUG_CHECK
+				// ensure they actually have the same ancestor trace
+				auto forwardTraceId = GetTraceExec(GetTrace(trace)->traceExecRef)->branchData.forwardTrace;
+				auto insRefLinkId = insForEachObject;
+				while (insRefLinkId != nullref)
+				{
+					auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
+					EnsureSameForwardTrace(insRefLink->trace, forwardTraceId);
+					insRefLinkId = insRefLink->previous;
+				}
+#endif
+				// there will be only one top create instruction per object
+				// even when InsExec_Object::lrObjectIds are considered
+				return callback(trace, ins);
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			template<typename TCallback>
+			bool TraceManager::SearchForEndObjectInstructions(Trace* createTrace, vint32_t createIns, TCallback&& callback)
+			{
+				// all EndObject ending a BO/BOLR/DFA are considered
+				// there is no "bottom EndObject"
+				// each EndObject should be in different branches
+				auto traceExec = GetTraceExec(createTrace->traceExecRef);
+				auto insExec = GetInsExec(traceExec->insExecRefs.start + createIns);
+				auto insRefLinkId = insExec->eoInsRefs;
+				while (insRefLinkId != nullref)
+				{
+					auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
+					insRefLinkId = insRefLink->previous;
+					if (!callback(GetTrace(insRefLink->trace), insRefLink->ins)) return false;
+				}
+				return true;
+			}
+
+			bool TraceManager::ComparePrefix(TraceExec* baselineTraceExec, TraceExec* commingTraceExec, vint32_t prefix)
+			{
+				if (commingTraceExec->insLists.c3 < prefix) return false;
+				for (vint32_t i = 0; i < prefix; i++)
+				{
+					auto&& insBaseline = ReadInstruction(i, baselineTraceExec->insLists);
+					auto&& insComming = ReadInstruction(i, baselineTraceExec->insLists);
+					if (insBaseline != insComming) return false;
+				}
+
+				return true;
+			}
+
+			bool TraceManager::ComparePostfix(TraceExec* baselineTraceExec, TraceExec* commingTraceExec, vint32_t postfix)
+			{
+				if (commingTraceExec->insLists.c3 < postfix) return false;
+				for (vint32_t i = 0; i < postfix; i++)
+				{
+					auto&& insBaseline = ReadInstruction(baselineTraceExec->insLists.c3 - i - 1, baselineTraceExec->insLists);
+					auto&& insComming = ReadInstruction(baselineTraceExec->insLists.c3 - i - 1, baselineTraceExec->insLists);
+					if (insBaseline != insComming) return false;
+				}
+
+				return true;
+			}
+
+			template<typename TCallback>
+			bool TraceManager::CheckAmbiguityResolution(TraceAmbiguity* ta, collections::List<Ref<InsExec_ObjRefLink>>& visitingIds, TCallback&& callback)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CheckAmbiguityResolution(TraceAmbiguity&, List<vint32_t>&, TCallback&&)#"
+				// following conditions need to be satisfies if multiple objects could be the result of ambiguity
+				//
+				// BO/DFA that create objects must be
+				//   the same instruction in the same trace
+				//   in different trace
+				//     these traces share the same predecessor
+				//     prefix in these traces are the same
+				//
+				// EO that ed objects must be
+				//   the same instruction in the same trace
+				//   in different trace
+				//     these traces share the same successor
+				//     postfix in these traces are the same
+
+				// initialize TraceAmbiguity
+				Trace* first = nullptr;
+				Trace* last = nullptr;
+				TraceExec* firstTraceExec = nullptr;
+				TraceExec* lastTraceExec = nullptr;
+				bool foundBeginSame = false;
+				bool foundBeginPrefix = false;
+				bool foundEndSame = false;
+				bool foundEndPostfix = false;
+				bool succeeded = false;
+
+				// iterate all top objects
+				succeeded = callback([&](Ref<InsExec_ObjRefLink> objRefLink)
+				{
+					return SearchForObjects(objRefLink, false, [&](InsExec_Object* ieObject)
+					{
+						// check if BO/DFA satisfies the condition
+						NEW_MERGE_STACK_MAGIC_COUNTER;
+						return SearchForTopCreateInstructionsInAllLevelsWithCounter(ieObject, visitingIds, [&](Ref<Trace> createTraceId, vint32_t createIns)
+						{
+							auto createTrace = GetTrace(createTraceId);
+#ifdef VCZH_DO_DEBUG_CHECK
+							{
+								auto traceExec = GetTraceExec(createTrace->traceExecRef);
+								auto&& ins = ReadInstruction(createIns, traceExec->insLists);
+								CHECK_ERROR(ins.type == AstInsType::BeginObject || ins.type == AstInsType::DelayFieldAssignment, ERROR_MESSAGE_PREFIX L"The found instruction is not a BeginObject or DelayFieldAssignment instruction.");
+							}
+#endif
+
+							if (!first)
+							{
+								first = createTrace;
+								firstTraceExec = GetTraceExec(first->traceExecRef);
+								ta->firstTrace = createTrace;
+								ta->prefix = createIns;
+							}
+							else if (first == createTrace)
+							{
+								// check if two instruction is the same
+								if (ta->prefix != createIns) return false;
+								foundBeginSame = true;
+							}
+							else
+							{
+								// check if two instruction shares the same prefix
+								if (first->predecessors.first != createTrace->predecessors.first) return false;
+								auto createTraceExec = GetTraceExec(createTrace->traceExecRef);
+								if (!ComparePrefix(firstTraceExec, createTraceExec, ta->prefix)) return false;
+								foundBeginPrefix = true;
+							}
+
+							return true;
+						});
+					});
+				});
+				if (!succeeded) return false;
+
+				// iterate all bottom objects
+				NEW_MERGE_STACK_MAGIC_COUNTER;
+				succeeded = callback([&](Ref<InsExec_ObjRefLink> objRefLink)
+				{
+					return SearchForObjects(objRefLink, true, [&](InsExec_Object* ieObject)
+					{
+						PushObjRefLink(ta->bottomObjectIds, ieObject);
+
+						// check if BO/DFA satisfies the condition
+						return SearchForTopCreateInstructions(ieObject, [&](Ref<Trace> createTraceId, vint32_t createIns)
+						{
+							auto createTrace = GetTrace(createTraceId);
+#ifdef VCZH_DO_DEBUG_CHECK
+							{
+								auto traceExec = GetTraceExec(createTrace->traceExecRef);
+								auto&& ins = ReadInstruction(createIns, traceExec->insLists);
+								CHECK_ERROR(ins.type == AstInsType::BeginObject || ins.type == AstInsType::DelayFieldAssignment, ERROR_MESSAGE_PREFIX L"The found instruction is not a BeginObject or DelayFieldAssignment instruction.");
+							}
+#endif
+
+							// check if EO satisfies the condition
+							return SearchForEndObjectInstructions(createTrace, createIns, [&](Trace* eoTrace, vint32_t eoIns)
+							{
+#ifdef VCZH_DO_DEBUG_CHECK
+								{
+									auto traceExec = GetTraceExec(eoTrace->traceExecRef);
+									auto&& ins = ReadInstruction(eoIns, traceExec->insLists);
+									CHECK_ERROR(ins.type == AstInsType::EndObject, ERROR_MESSAGE_PREFIX L"The found instruction is not a EndObject instruction.");
+								}
+#endif
+
+								if (!last)
+								{
+									last = eoTrace;
+									lastTraceExec = GetTraceExec(last->traceExecRef);
+									ta->lastTrace = eoTrace;
+									ta->postfix = lastTraceExec->insLists.c3 - eoIns - 1;
+								}
+								else if (last == eoTrace)
+								{
+									// check if two instruction is the same
+									auto eoTraceExec = GetTraceExec(eoTrace->traceExecRef);
+									if (ta->postfix != eoTraceExec->insLists.c3 - eoIns - 1) return false;
+									foundEndSame = true;
+								}
+								else
+								{
+									// check if two instruction shares the same postfix
+									if (last->successors.first != eoTrace->successors.first) return false;
+									auto eoTraceExec = GetTraceExec(eoTrace->traceExecRef);
+									if (!ComparePostfix(lastTraceExec, eoTraceExec, ta->postfix + 1)) return false;
+									foundEndPostfix = true;
+								}
+								return true;
+							});
+						});
+					});
+				});
+				if (!succeeded) return false;
+
+				// ensure the statistics result is compatible
+				if (first && !foundBeginSame && !foundBeginPrefix) foundBeginSame = true;
+				if (last && !foundEndSame && !foundEndPostfix) foundEndSame = true;
+				if (foundBeginSame == foundBeginPrefix) return false;
+				if (foundEndSame == foundEndPostfix) return false;
+
+				// fix prefix if necessary
+				if (foundBeginPrefix)
+				{
+					auto first = GetTrace(GetTrace(ta->firstTrace)->predecessors.first);
+					auto traceExec = GetTraceExec(first->traceExecRef);
+					ta->firstTrace = first;
+					ta->prefix += traceExec->insLists.c3;
+				}
+
+				// fix postfix if necessary
+				if (foundEndPostfix)
+				{
+					// last will be a merge trace
+					// so ta->postfix doesn't need to change
+					auto last = GetTrace(GetTrace(ta->lastTrace)->successors.first);
+					auto traceExec = GetTraceExec(last->traceExecRef);
+					ta->lastTrace = last;
+				}
+
+				return true;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			bool TraceManager::CheckMergeTrace(TraceAmbiguity* ta, Trace* trace, TraceExec* traceExec, collections::List<Ref<InsExec_ObjRefLink>>& visitingIds)
+			{
+				// when a merge trace is the surviving trace
+				// objects in the top object stack are the result of ambiguity
+				if (trace->successorCount == 0)
+				{
+					auto ieOSTop = GetInsExec_ObjectStack(traceExec->context.objectStack);
+					return CheckAmbiguityResolution(ta, visitingIds, [=](auto&& callback)
+					{
+						return callback(ieOSTop->objectIds);
+					});
+				}
+
+				// otherwise
+				// objects in the top create stack are the result of ambiguity
+				// even when there is only one object in the stack
+
+				// but in some cases
+				// objects in the top object stack are the result of ambiguity
+				// when these objects are the only difference in branches
+				// here we need to test if the condition satisfied
+
+				{
+					// [CONDITION]
+					// the first predecessor must has a EndObject instruction
+					// count the number of instructions after EndObject
+					// these instructions are the postfix
+					vint32_t postfix = -1;
+					auto firstTrace = GetTrace(trace->predecessors.first);
+					auto firstTraceExec = GetTraceExec(firstTrace->traceExecRef);
+					for (vint32_t i = firstTraceExec->insLists.c3 - 1; i >= 0; i--)
+					{
+						auto&& ins = ReadInstruction(i, firstTraceExec->insLists);
+						if (ins.type == AstInsType::EndObject)
+						{
+							postfix = firstTraceExec->insLists.c3 - i - 1;
+							break;
+						}
+					}
+					if (postfix == -1)
+					{
+						goto CHECK_OBJECTS_IN_TOP_CREATE_STACK;
+					}
+
+					// [CONDITION]
+					// all predecessor must have a EndObject instruction
+					// posftix of all predecessors must be the same
+					{
+						auto predecessorId = trace->predecessors.last;
+						while (predecessorId != firstTrace)
+						{
+							auto predecessor = GetTrace(predecessorId);
+							predecessorId = predecessor->predecessors.siblingPrev;
+							if (!ComparePostfix(firstTraceExec, GetTraceExec(predecessor->traceExecRef), postfix + 1))
+							{
+								goto CHECK_OBJECTS_IN_TOP_CREATE_STACK;
+							}
+						}
+					}
+
+					// check if all EndObject ended objects are the result of ambiguity
+					if (postfix == 0)
+					{
+						// if EndObject is the last instruction of predecessors
+						// then their objRefs has been written to the top object stack
+						auto ieOSTop = GetInsExec_ObjectStack(traceExec->context.objectStack);
+						auto succeeded = CheckAmbiguityResolution(ta, visitingIds, [=](auto&& callback)
+						{
+							return callback(ieOSTop->objectIds);
+						});
+						if (succeeded) return true;
+					}
+					else
+					{
+						// otherwise find all objRefs of EndObject
+						auto succeeded = CheckAmbiguityResolution(ta, visitingIds, [=, &visitingIds](auto&& callback)
+						{
+							auto predecessorId = trace->predecessors.first;
+							while (predecessorId != nullref)
+							{
+								auto predecessor = GetTrace(predecessorId);
+								predecessorId = predecessor->predecessors.siblingNext;
+
+								// search for the object it ends
+								auto predecessorTraceExec = GetTraceExec(predecessor->traceExecRef);
+								auto indexEO = predecessorTraceExec->insLists.c3 - postfix - 1;
+								auto insExecEO = GetInsExec(predecessorTraceExec->insExecRefs.start + indexEO);
+								if (!callback(insExecEO->objRefs)) return false;
+							}
+							return true;
+						});
+						if (succeeded) return true;
+					}
+
+				}
+			CHECK_OBJECTS_IN_TOP_CREATE_STACK:
+				auto ieCSTop = GetInsExec_CreateStack(traceExec->context.createStack);
+				return CheckAmbiguityResolution(ta, visitingIds, [=](auto&& callback)
+				{
+					return callback(ieCSTop->objectIds);
+				});
+			}
+
+/***********************************************************************
+LinkAmbiguityCriticalTrace
+***********************************************************************/
+
+			void TraceManager::LinkAmbiguityCriticalTrace(Ref<Trace> traceId)
+			{
+				auto trace = GetTrace(traceId);
+				auto forward = GetTrace(GetTraceExec(trace->traceExecRef)->branchData.forwardTrace);
+				if (trace == forward) return;
+
+				auto nextAct = &GetTraceExec(forward->traceExecRef)->nextAmbiguityCriticalTrace;
+				while (*nextAct != nullref)
+				{
+					if (*nextAct == traceId) return;
+					if (*nextAct > traceId) break;
+					nextAct = &GetTraceExec(GetTrace(*nextAct)->traceExecRef)->nextAmbiguityCriticalTrace;
+				}
+
+				auto traceExec = GetTraceExec(trace->traceExecRef);
+				traceExec->nextAmbiguityCriticalTrace = *nextAct;
+				*nextAct = traceId;
+			}
+
+/***********************************************************************
+CheckTraceAmbiguity
+***********************************************************************/
+
+			void TraceManager::CheckTraceAmbiguity(TraceAmbiguity* ta)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CheckTraceAmbiguity(TraceAmbiguity*)#"
+				auto teFirst = GetTraceExec(GetTrace(ta->firstTrace)->traceExecRef);
+
+				if (teFirst->ambiguityBegins == nullref)
+				{
+					LinkAmbiguityCriticalTrace(ta->firstTrace);
+				}
+
+				// search in all ambiguityBegins and try to find one has the same lastTrace
+				TraceAmbiguityLink* taLinkToOverride = nullptr;
+				auto taLinkRef = teFirst->ambiguityBegins;
+				while (taLinkRef != nullref)
+				{
+					auto taLink = GetTraceAmbiguityLink(taLinkRef);
+					taLinkRef = taLink->previous;
+
+					auto ta2 = GetTraceAmbiguity(taLink->ambiguity);
+					if (ta->lastTrace == ta2->lastTrace)
+					{
+						// if there is any, try to override this TraceAmbiguity
+						taLinkToOverride = taLink;
+						break;
+					}
+				}
+
+				if (taLinkToOverride)
+				{
+					// if there is a TraceAmbiguity to override
+					// ensure they are equivalent
+					auto ta2 = GetTraceAmbiguity(taLinkToOverride->ambiguity);
+#ifdef VCZH_DO_DEBUG_CHECK
+					CHECK_ERROR(ta2->prefix == ta->prefix, ERROR_MESSAGE_PREFIX L"Incompatible TraceAmbiguity has been assigned at the same place.");
+					CHECK_ERROR(ta2->postfix == ta->postfix, ERROR_MESSAGE_PREFIX L"Incompatible TraceAmbiguity has been assigned at the same place.");
+#endif
+					// override ambiguityBegins
+					taLinkToOverride->ambiguity = ta;
+
+					// override TraceAmbiguity
+					ta->overridedAmbiguity = ta2;
+				}
+				else
+				{
+					// otherwise, append itself to the list
+					auto taLink = GetTraceAmbiguityLink(traceAmbiguityLinks.Allocate());
+					taLink->ambiguity = ta;
+					taLink->previous = teFirst->ambiguityBegins;
+					teFirst->ambiguityBegins = taLink;
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+/***********************************************************************
+DebugCheckTraceAmbiguityInSameTrace
+***********************************************************************/
+
+#ifdef VCZH_DO_DEBUG_CHECK
+			void TraceManager::DebugCheckTraceAmbiguitiesInSameTrace(Trace* trace, TraceExec* traceExec)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::DebugCheckTraceAmbiguityInSameTrace(Trace*, TraceExec*)#"
+
+				// if there are multiple ambiguityBegins
+				// first ambiguity instructions must all be in successors
+				vint faiInBranch = 0;
+				vint faiInSuccessor = 0;
+				auto taLinkRef = traceExec->ambiguityBegins;
+				while (taLinkRef != nullref)
+				{
+					auto taLink = GetTraceAmbiguityLink(taLinkRef);
+					taLinkRef = taLink->previous;
+
+					auto ta = GetTraceAmbiguity(taLink->ambiguity);
+					if (ta->prefix >= traceExec->insLists.c3)
+					{
+						faiInSuccessor++;
+					}
+					else
+					{
+						faiInBranch++;
+					}
+				}
+				CHECK_ERROR((faiInBranch == 1 && faiInSuccessor == 0) || faiInBranch == 0, ERROR_MESSAGE_PREFIX L"Incompatible TraceAmbiguity has been assigned at the same place.");
+#undef ERROR_MESSAGE_PREFIX
+			}
+#endif
+
+/***********************************************************************
+CategorizeTraceAmbiguities
+***********************************************************************/
+
+			void TraceManager::MarkAmbiguityCoveredForward(Trace* currentTrace, TraceAmbiguity* ta, Trace* firstTrace, TraceExec* firstTraceExec)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::MarkAmbiguityCoveredForward(Trace*, TraceAmbiguity*, Trace*, TraceExec*)#"
+				while (true)
+				{
+					auto forward = GetTrace(GetTraceExec(currentTrace->traceExecRef)->branchData.forwardTrace);
+					CHECK_ERROR(forward->traceExecRef > firstTraceExec, ERROR_MESSAGE_PREFIX L"Unexpected ambiguity resolving structure found.");
+
+					auto forwardExec = GetTraceExec(forward->traceExecRef);
+					if (forward->predecessors.first != forward->predecessors.last)
+					{
+						if (forwardExec->ambiguityDetected != nullref && forwardExec->ambiguityDetected != ta)
+						{
+							currentTrace = GetTrace(GetTraceAmbiguity(forwardExec->ambiguityDetected)->firstTrace);
+						}
+						else
+						{
+							auto predecessorId = forward->predecessors.first;
+							while (predecessorId != nullref)
+							{
+								auto predecessor = GetTrace(predecessorId);
+								predecessorId = predecessor->predecessors.siblingNext;
+								MarkAmbiguityCoveredForward(predecessor, ta, firstTrace, firstTraceExec);
+							}
+							return;
+						}
+					}
+					else if (forward->predecessors.first == firstTrace)
+					{
+						auto forwardExec = GetTraceExec(forward->traceExecRef);
+						CHECK_ERROR(forwardExec->ambiguityCoveredInForward == nullref || forwardExec->ambiguityCoveredInForward == ta, L"Unexpected ambiguity resolving structure found.");
+						forwardExec->ambiguityCoveredInForward = ta;
+						return;
+					}
+					else
+					{
+						currentTrace = GetTrace(forward->predecessors.first);
+					}
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			void TraceManager::CategorizeTraceAmbiguities(Trace* trace, TraceExec* traceExec)
+			{
+				// find all ambiguityBegins whose first ambiguity instruction is in successors
+				auto taLinkRef = traceExec->ambiguityBegins;
+				while (taLinkRef != nullref)
+				{
+					auto taLink = GetTraceAmbiguityLink(taLinkRef);
+					taLinkRef = taLink->previous;
+
+					auto ta = GetTraceAmbiguity(taLink->ambiguity);
+					if (ta->prefix >= traceExec->insLists.c3)
+					{
+						// mark ambiguityCoveredInForward
+						MarkAmbiguityCoveredForward(GetTrace(ta->lastTrace), ta, trace, traceExec);
+					}
+				}
+			}
+
+/***********************************************************************
+CheckMergeTraces
+***********************************************************************/
+
+			void TraceManager::CheckMergeTraces()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CheckMergeTraces()#"
+				// mark all branch trace critical
+				{
+					auto traceId = firstBranchTrace;
+					while (traceId != nullref)
+					{
+						LinkAmbiguityCriticalTrace(traceId);
+						traceId = GetTraceExec(GetTrace(traceId)->traceExecRef)->nextBranchTrace;
+					}
+				}
+
+				// mark all predecessor of merge trace critical
+				{
+					auto traceId = firstMergeTrace;
+					while (traceId != nullref)
+					{
+						auto trace = GetTrace(traceId);
+						auto predecessorId = trace->predecessors.first;
+						while (predecessorId != nullref)
+						{
+							LinkAmbiguityCriticalTrace(predecessorId);
+							predecessorId = GetTrace(predecessorId)->predecessors.siblingNext;
+						}
+						traceId = GetTraceExec(trace->traceExecRef)->nextMergeTrace;
+					}
+				}
+
+				// iterating TraceMergeExec
+				List<Ref<InsExec_ObjRefLink>> visitingIds;
+				auto traceId = firstMergeTrace;
+				while (traceId != nullref)
+				{
+					auto trace = GetTrace(traceId);
+					auto traceExec = GetTraceExec(trace->traceExecRef);
+					traceId = traceExec->nextMergeTrace;
+
+					auto ta = GetTraceAmbiguity(traceAmbiguities.Allocate());
+					bool succeeded = CheckMergeTrace(ta, trace, traceExec, visitingIds);
+					CHECK_ERROR(succeeded, ERROR_MESSAGE_PREFIX L"Failed to find ambiguous objects in a merge trace.");
+					traceExec->ambiguityDetected = ta;
+
+					// check if existing TraceAmbiguity in firstTrace are compatible
+					CheckTraceAmbiguity(ta);
+				}
+
+				// find all branch trace with ambiguityBegins
+				{
+					auto traceId = firstBranchTrace;
+					while (traceId != nullref)
+					{
+						auto trace = GetTrace(traceId);
+						auto traceExec = GetTraceExec(trace->traceExecRef);
+						traceId = traceExec->nextBranchTrace;
+
+						if (traceExec->ambiguityBegins != nullref)
+						{
+#ifdef VCZH_DO_DEBUG_CHECK
+							DebugCheckTraceAmbiguitiesInSameTrace(trace, traceExec);
+#endif
+							CategorizeTraceAmbiguities(trace, traceExec);
+						}
+					}
+				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+#undef NEW_MERGE_STACK_MAGIC_COUNTER
+		}
+	}
+}
+
+#if defined VCZH_MSVC && defined _DEBUG
+#undef VCZH_DO_DEBUG_CHECK
+#endif
+
+/***********************************************************************
 .\TRACEMANAGER\TRACEMANAGER.CPP
 ***********************************************************************/
 
@@ -2566,23 +6089,23 @@ TraceManager
 			{
 				auto errorMessage = L"vl::glr::automaton::TraceManager::AddTraceToCollection(Trace*, Trace*, TraceCollection(Trace::*))#Multiple to multiple predecessor-successor relationship is not supported.";
 				auto&& elementCollection = element->*collection;
-				if (elementCollection.siblingNext == -1 && elementCollection.siblingPrev == -1)
+				if (elementCollection.siblingNext == nullref && elementCollection.siblingPrev == nullref)
 				{
 					auto&& ownerCollection = owner->*collection;
-					if (ownerCollection.first == -1)
+					if (ownerCollection.first == nullref)
 					{
-						ownerCollection.first = element->allocatedIndex;
-						ownerCollection.last = element->allocatedIndex;
+						ownerCollection.first = element;
+						ownerCollection.last = element;
 					}
 					else
 					{
 						auto sibling = GetTrace(ownerCollection.last);
 						auto&& siblingCollection = sibling->*collection;
-						CHECK_ERROR(siblingCollection.siblingNext == -1, errorMessage);
+						CHECK_ERROR(siblingCollection.siblingNext == nullref, errorMessage);
 
-						siblingCollection.siblingNext = element->allocatedIndex;
-						elementCollection.siblingPrev = sibling->allocatedIndex;
-						ownerCollection.last = element->allocatedIndex;
+						siblingCollection.siblingNext = element;
+						elementCollection.siblingPrev = sibling;
+						ownerCollection.last = element;
 					}
 				}
 				else if (collection == &Trace::predecessors)
@@ -2620,8 +6143,8 @@ TraceManager
 
 					// clear sibilingPrev and sibilingNext because it belongs to no collection at this moment
 					// keep first and last so that it still knows its predecessors
-					copiedElement->predecessors.siblingPrev = -1;
-					copiedElement->predecessors.siblingNext = -1;
+					copiedElement->predecessors.siblingPrev = nullref;
+					copiedElement->predecessors.siblingNext = nullref;
 
 					// now it becomes
 					//                B(ending) -+
@@ -2634,20 +6157,33 @@ TraceManager
 				else
 				{
 					// Trace::predecessors is filled by Input
-					// Trace::successors is filled by PrepareTraceRoute
+					// Trace::successors is filled by EndOfInput
 					// if Input and EndOfInput succeeded
 					// there should not be any multiple to multiple relationship
 					CHECK_FAIL(errorMessage);
 				}
 			}
 
-			TraceManager::TraceManager(Executable& _executable, const ITypeCallback* _typeCallback)
+			TraceManager::TraceManager(Executable& _executable, const ITypeCallback* _typeCallback, vint blockSize)
 				: executable(_executable)
 				, typeCallback(_typeCallback)
+				, returnStacks(blockSize)
+				, traces(blockSize)
+				, competitions(blockSize)
+				, attendingCompetitions(blockSize)
+				, traceExecs(blockSize)
+				, insExec_Objects(blockSize)
+				, insExec_InsRefLinks(blockSize)
+				, insExec_ObjRefLinks(blockSize)
+				, insExec_ObjectStacks(blockSize)
+				, insExec_CreateStacks(blockSize)
+				, traceAmbiguities(blockSize)
+				, traceAmbiguityLinks(blockSize)
+				, executionSteps(blockSize)
 			{
 			}
 
-			ReturnStack* TraceManager::GetReturnStack(vint32_t index)
+			ReturnStack* TraceManager::GetReturnStack(Ref<ReturnStack> index)
 			{
 				return returnStacks.Get(index);
 			}
@@ -2657,7 +6193,7 @@ TraceManager
 				return returnStacks.Get(returnStacks.Allocate());
 			}
 
-			Trace* TraceManager::GetTrace(vint32_t index)
+			Trace* TraceManager::GetTrace(Ref<Trace> index)
 			{
 				return traces.Get(index);
 			}
@@ -2667,7 +6203,7 @@ TraceManager
 				return traces.Get(traces.Allocate());
 			}
 
-			Competition* TraceManager::GetCompetition(vint32_t index)
+			Competition* TraceManager::GetCompetition(Ref<Competition> index)
 			{
 				return competitions.Get(index);
 			}
@@ -2677,7 +6213,7 @@ TraceManager
 				return competitions.Get(competitions.Allocate());
 			}
 
-			AttendingCompetitions* TraceManager::GetAttendingCompetitions(vint32_t index)
+			AttendingCompetitions* TraceManager::GetAttendingCompetitions(Ref<AttendingCompetitions> index)
 			{
 				return attendingCompetitions.Get(index);
 			}
@@ -2687,27 +6223,147 @@ TraceManager
 				return attendingCompetitions.Get(attendingCompetitions.Allocate());
 			}
 
-			void TraceManager::Initialize(vint32_t startState)
+			InsExec* TraceManager::GetInsExec(vint32_t index)
 			{
-				state = TraceManagerState::WaitingForInput;
+				return &insExecs[index];
+			}
+			
+			InsExec_Object* TraceManager::GetInsExec_Object(Ref<InsExec_Object> index)
+			{
+				return insExec_Objects.Get(index);
+			}
 
-				returnStacks.Clear();
-				traces.Clear();
-				competitions.Clear();
-				attendingCompetitions.Clear();
+			InsExec_InsRefLink* TraceManager::GetInsExec_InsRefLink(Ref<InsExec_InsRefLink> index)
+			{
+				return insExec_InsRefLinks.Get(index);
+			}
 
-				traces1.Clear();
-				traces2.Clear();
-				concurrentTraces = &traces1;
-				backupTraces = &traces2;
+			InsExec_ObjRefLink* TraceManager::GetInsExec_ObjRefLink(Ref<InsExec_ObjRefLink> index)
+			{
+				return insExec_ObjRefLinks.Get(index);
+			}
 
-				activeCompetitions = -1;
-				initialReturnStackSuccessors = {};
+			InsExec_ObjectStack* TraceManager::GetInsExec_ObjectStack(Ref<InsExec_ObjectStack> index)
+			{
+				return insExec_ObjectStacks.Get(index);
+			}
 
-				initialTrace = AllocateTrace();
-				initialTrace->state = startState;
-				concurrentCount = 1;
-				concurrentTraces->Add(initialTrace);
+			InsExec_CreateStack* TraceManager::GetInsExec_CreateStack(Ref<InsExec_CreateStack> index)
+			{
+				return insExec_CreateStacks.Get(index);
+			}
+
+			TraceExec* TraceManager::GetTraceExec(Ref<TraceExec> index)
+			{
+				return traceExecs.Get(index);
+			}
+
+			TraceAmbiguity* TraceManager::GetTraceAmbiguity(Ref<TraceAmbiguity> index)
+			{
+				return traceAmbiguities.Get(index);
+			}
+
+			TraceAmbiguityLink* TraceManager::GetTraceAmbiguityLink(Ref<TraceAmbiguityLink> index)
+			{
+				return traceAmbiguityLinks.Get(index);
+			}
+
+			ExecutionStep* TraceManager::GetExecutionStep(Ref<ExecutionStep> index)
+			{
+				return executionSteps.Get(index);
+			}
+
+/***********************************************************************
+CreateExecutor
+***********************************************************************/
+
+			Ptr<IExecutor> CreateExecutor(Executable& executable, const IExecutor::ITypeCallback* typeCallback, vint blockSize)
+			{
+				return new TraceManager(executable, typeCallback, blockSize);
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TRACEMANAGER_COMMON.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+/***********************************************************************
+ReadInstructionList
+***********************************************************************/
+
+			void TraceManager::ReadInstructionList(Trace* trace, TraceInsLists& insLists)
+			{
+				// this function collects the following instructions in order:
+				//   1) byEdge.insBeforeInput
+				//   2) byEdge.insAfterInput
+				//   3) executedReturnStack.returnIndex.insAfterInput in order
+				if (trace->byEdge != -1)
+				{
+					auto& edgeDesc = executable.edges[trace->byEdge];
+					insLists.edgeInsBeforeInput = edgeDesc.insBeforeInput;
+					insLists.edgeInsAfterInput = edgeDesc.insAfterInput;
+				}
+				else
+				{
+					insLists.edgeInsBeforeInput = {};
+					insLists.edgeInsAfterInput = {};
+				}
+				if (trace->executedReturnStack != nullref)
+				{
+					auto returnStack = GetReturnStack(trace->executedReturnStack);
+					auto& returnDesc = executable.returns[returnStack->returnIndex];
+					insLists.returnInsAfterInput = returnDesc.insAfterInput;
+				}
+				else
+				{
+					insLists.returnInsAfterInput = {};
+				}
+
+				insLists.c1 = (vint32_t)(insLists.edgeInsBeforeInput.count);
+				insLists.c2 = (vint32_t)(insLists.c1 + insLists.edgeInsAfterInput.count);
+				insLists.c3 = (vint32_t)(insLists.c2 + insLists.returnInsAfterInput.count);
+			}
+
+/***********************************************************************
+ReadInstruction
+***********************************************************************/
+
+			AstIns& TraceManager::ReadInstruction(vint32_t instruction, TraceInsLists& insLists)
+			{
+				// access the instruction object from a trace
+				// the index is the instruction in a virtual instruction array
+				// defined by all InstructionArray in TraceInsLists combined together
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::ReadInstruction(vint, TraceInsLists&)#"
+				CHECK_ERROR(0 <= instruction && instruction < insLists.c3, ERROR_MESSAGE_PREFIX L"Instruction index out of range.");
+
+				vint32_t insRef = -1;
+				if (instruction < insLists.c1)
+				{
+					insRef = insLists.edgeInsBeforeInput.start + instruction;
+				}
+				else if (instruction < insLists.c2)
+				{
+					insRef = insLists.edgeInsAfterInput.start + (instruction - insLists.c1);
+				}
+				else if (instruction < insLists.c3)
+				{
+					insRef = insLists.returnInsAfterInput.start + (instruction - insLists.c2);
+				}
+				else
+				{
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Instruction index out of range.");
+				}
+
+				return executable.astInstructions[insRef];
+#undef ERROR_MESSAGE_PREFIX
 			}
 		}
 	}
@@ -2848,2030 +6504,121 @@ TraceManager::ExecuteTrace
 				}
 			};
 
-			Ptr<ParsingAstBase> TraceManager::ExecuteTrace(Trace* trace, IAstInsReceiver& receiver, collections::List<regex::RegexToken>& tokens)
-			{
 #define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::ExecuteTrace(Trace*, IAstInsReceiver&, List<RegexToken>&)#"
-				CHECK_ERROR(state == TraceManagerState::PreparedTraceRoute, ERROR_MESSAGE_PREFIX L"Wrong timing to call this function.");
+
+			void TraceManager::ExecuteSingleTrace(TraceManagerSubmitter& submitter, Trace* trace, vint32_t firstIns, vint32_t lastIns, TraceInsLists& insLists, collections::List<regex::RegexToken>& tokens)
+			{
+				for (vint32_t i = firstIns; i <= lastIns; i++)
+				{
+					auto& ins = ReadInstruction(i, insLists);
+					auto& token = tokens[trace->currentTokenIndex];
+					submitter.Submit(ins, token, trace->currentTokenIndex);
+				}
+			}
+
+			void TraceManager::ExecuteSingleStep(TraceManagerSubmitter& submitter, ExecutionStep* step, collections::List<regex::RegexToken>& tokens)
+			{
+				TraceInsLists temp;
+
+				switch (step->type)
+				{
+				case ExecutionType::Instruction:
+					{
+						// execute from the start trace
+						auto trace = GetTrace(Ref<Trace>(step->et_i.startTrace));
+
+						while (trace)
+						{
+							vint32_t firstIns = -1;
+							vint32_t lastIns = -1;
+							auto insLists = &temp;
+							if (trace->traceExecRef == nullref)
+							{
+								ReadInstructionList(trace, temp);
+							}
+							else
+							{
+								insLists = &GetTraceExec(trace->traceExecRef)->insLists;
+							}
+
+							// find instruction range to execute
+							if (trace->allocatedIndex == step->et_i.startTrace)
+							{
+								firstIns = step->et_i.startIns;
+							}
+							else
+							{
+								firstIns = 0;
+							}
+
+							if (trace->allocatedIndex == step->et_i.endTrace)
+							{
+								lastIns = step->et_i.endIns;
+							}
+							else
+							{
+								lastIns = insLists->c3 - 1;
+							}
+
+							// execute instructions
+							ExecuteSingleTrace(submitter, trace, firstIns, lastIns, *insLists, tokens);
+
+							// find the next trace
+							if (step->et_i.endTrace == trace->allocatedIndex)
+							{
+								break;
+							}
+							else if (trace->successors.first == nullref)
+							{
+								CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Successor trace missing!");
+							}
+							else if (trace->successors.first == trace->successors.last)
+							{
+								trace = GetTrace(trace->successors.first);
+							}
+							else
+							{
+								CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Ambiguity should not happen inside one execution step!");
+							}
+						}
+					}
+					break;
+				case ExecutionType::ResolveAmbiguity:
+					{
+						AstIns ins = { AstInsType::ResolveAmbiguity,step->et_ra.type,step->et_ra.count };
+						auto raTrace = GetTrace(Ref<Trace>(step->et_ra.trace));
+						raTrace = EnsureTraceWithValidStates(raTrace);
+						auto raToken = raTrace->currentTokenIndex;
+						submitter.Submit(ins, tokens[raToken], raToken);
+					}
+					break;
+				default:;
+				}
+			}
+
+			Ptr<ParsingAstBase> TraceManager::ExecuteTrace(IAstInsReceiver& receiver, collections::List<regex::RegexToken>& tokens)
+			{
+				CHECK_ERROR(state == TraceManagerState::ResolvedAmbiguity, ERROR_MESSAGE_PREFIX L"Wrong timing to call this function.");
 
 				TraceManagerSubmitter submitter;
 				submitter.receiver = &receiver;
 
-				// execute from the root trace
-
-				vint32_t startIns = 0;
-				while (trace)
+				// execute from the first step
+				auto step = GetInitialExecutionStep();
+				CHECK_ERROR(step != nullptr, L"Internal error: execution steps not built!");
+				while (step)
 				{
-					TraceInsLists insLists;
-					ReadInstructionList(trace, insLists);
+					// execute step
+					ExecuteSingleStep(submitter, step, tokens);
 
-					vint32_t minIns = 0;
-					vint32_t maxIns = insLists.c3 - 1;
-					if (trace->ambiguityMergeInsPostfix != -1)
-					{
-						minIns = insLists.c3 - trace->ambiguityMergeInsPostfix;
-					}
-					if (trace->ambiguityBranchInsPostfix != -1)
-					{
-						maxIns = insLists.c3 - trace->ambiguityBranchInsPostfix - 1;
-					}
-
-					// if the current trace is an ambiguity resolving trace
-					// we check if all predecessors has been visited
-					// if yes, we continue
-					// if no, we jump to the BeginObject and repeat it again
-
-					if (trace->ambiguity.traceBeginObject != -1 && trace->ambiguityRouting.predecessorCount == -1)
-					{
-						// we need to know how many predecessors there
-						// the number is calculated and cached when an ambiguity resolving trace is visited for the first time
-						trace->ambiguityRouting.predecessorCount = 0;
-						auto predecessorId = trace->predecessors.first;
-						while (predecessorId != -1)
-						{
-							trace->ambiguityRouting.predecessorCount++;
-							predecessorId = GetTrace(predecessorId)->predecessors.siblingNext;
-						}
-					}
-
-					if (trace->ambiguity.traceBeginObject != -1)
-					{
-						if (0 <= trace->ambiguity.insEndObject && trace->ambiguity.insEndObject < insLists.c3)
-						{
-							// execute from the beginning to EndObject instruction if it exists
-							// if ambiguityMergeInsPostfix exists
-							// then insEndObject will be the last instruction in the prefix
-							// so it is skipped and this loop does nothing
-							// the EndObject instruction has already been executed by its predecessors
-							for (vint32_t i = minIns; i <= trace->ambiguity.insEndObject; i++)
-							{
-								auto& ins = ReadInstruction(i, insLists);
-								auto& token = tokens[trace->currentTokenIndex];
-								submitter.Submit(ins, token, trace->currentTokenIndex);
-							}
-						}
-						else
-						{
-							// otherwise this must be the trace created by CreateLastMergingTrace
-							CHECK_ERROR(insLists.c3 == 0 && trace->successors.first == -1 && trace->successors.last == -1, ERROR_MESSAGE_PREFIX L"Instruction index out of range.");
-						}
-
-						// for any ambiguity resolving trace
-						// we check all predecessors has been visited
-						trace->ambiguityRouting.branchVisited++;
-						auto traceBeginObject = GetTrace(trace->ambiguity.traceBeginObject);
-
-						if (trace->ambiguityRouting.branchVisited == trace->ambiguityRouting.predecessorCount)
-						{
-							// if all predecessors has been visited
-							// we reset the number to 0
-							// because TraceManager::ExecuteTrace could be called multiple time
-							trace->ambiguityRouting.branchVisited = 0;
-							{
-								// submit a ResolveAmbiguity instruction
-								auto& token = tokens[trace->currentTokenIndex];
-								AstIns insResolve = { AstInsType::ResolveAmbiguity,trace->ambiguity.ambiguityType,trace->ambiguityRouting.predecessorCount };
-								submitter.Submit(insResolve, token, trace->currentTokenIndex);
-							}
-
-							// execute all instructions after EndObject
-							// these part should not be repeated
-							for (vint32_t i = trace->ambiguity.insEndObject + 1; i <= maxIns; i++)
-							{
-								auto& ins = ReadInstruction(i, insLists);
-								auto& token = tokens[trace->currentTokenIndex];
-								submitter.Submit(ins, token, trace->currentTokenIndex);
-							}
-						}
-						else
-						{
-							// if there are unvisited predecessors
-							// we jump to the BeginObject instruction and repeat it again
-							startIns = trace->ambiguity.insBeginObject;
-							trace = traceBeginObject;
-							goto FOUND_NEXT_TRACE;
-						}
-					}
-					else
-					{
-						// otherwise, just submit instructions
-						CHECK_ERROR(minIns <= startIns, ERROR_MESSAGE_PREFIX L"startIns corrupted.");
-						for (vint32_t i = startIns; i <= maxIns; i++)
-						{
-							auto& ins = ReadInstruction(i, insLists);
-							auto& token = tokens[trace->currentTokenIndex];
-							submitter.Submit(ins, token, trace->currentTokenIndex);
-						}
-					}
-
-					if (trace->successors.first == -1)
-					{
-						trace = nullptr;
-						startIns = 0;
-					}
-					else if (trace->successors.first == trace->successors.last)
-					{
-						trace = GetTrace(trace->successors.first);
-						startIns = 0;
-					}
-					else
-					{
-						// if there are multiple successors
-						// whenever this trace is visited
-						// we pick a different successor to continue
-						auto nextSuccessorId = trace->successors.first;
-						Trace* successor = nullptr;
-						for (vint i = 0; i <= trace->ambiguityRouting.branchVisited; i++)
-						{
-							CHECK_ERROR(nextSuccessorId != -1, ERROR_MESSAGE_PREFIX L"branchVisited corrupted.");
-							successor = GetTrace(nextSuccessorId);
-							nextSuccessorId = successor->successors.siblingNext;
-						}
-
-						if (nextSuccessorId == -1)
-						{
-							trace->ambiguityRouting.branchVisited = 0;
-						}
-						else
-						{
-							trace->ambiguityRouting.branchVisited++;
-						}
-
-						// this could happen when all BeginObject are in successors
-						// if the current successor is the first successor
-						// then we need to execute the prefix
-						if (startIns >= insLists.c3)
-						{
-							startIns -= insLists.c3;
-							if (trace->successors.first == successor->allocatedIndex)
-							{
-								ReadInstructionList(successor, insLists);
-								for (vint32_t i = 0; i < startIns; i++)
-								{
-									auto& ins = ReadInstruction(i, insLists);
-									auto& token = tokens[successor->currentTokenIndex];
-									submitter.Submit(ins, token, trace->currentTokenIndex);
-								}
-							}
-						}
-						else
-						{
-							startIns = 0;
-						}
-						trace = successor;
-					}
-				FOUND_NEXT_TRACE:;
+					// find the next step
+					step = step->next == nullref ? nullptr : GetExecutionStep(step->next);
 				}
 
 				submitter.ExecuteSubmitted();
 				return receiver.Finished();
+			}
 #undef ERROR_MESSAGE_PREFIX
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\TRACEMANAGER\TRACEMANAGER_INPUT.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace glr
-	{
-		namespace automaton
-		{
-
-/***********************************************************************
-Input
-***********************************************************************/
-
-			void TraceManager::Input(vint32_t currentTokenIndex, vint32_t token, vint32_t lookAhead)
-			{
-				CHECK_ERROR(state == TraceManagerState::WaitingForInput, L"vl::glr::automaton::TraceManager::Input(vint, vint)#Wrong timing to call this function.");
-				vint32_t traceCount = concurrentCount;
-				vint32_t input = Executable::TokenBegin + token;
-
-				BeginSwap();
-
-				// for each surviving trace
-				// step one TokenInput transition
-				// followed by multiple and EndingInput, LeftrecInput and their combination
-				// one surviving trace could create multiple surviving trace
-				for (vint32_t traceIndex = 0; traceIndex < traceCount; traceIndex++)
-				{
-					auto trace = concurrentTraces->Get(traceIndex);
-					vint32_t transitionIndex = executable.GetTransitionIndex(trace->state, input);
-					auto&& edgeArray = executable.transitions[transitionIndex];
-					WalkAlongTokenEdges(currentTokenIndex, input, lookAhead, trace, edgeArray);
-				}
-
-				// if competitions happen between new surviving traces
-				// remove traces that known to have lost the competition
-				CheckBackupTracesBeforeSwapping(currentTokenIndex);
-
-				EndSwap();
-
-				// if there are unused spaces in concurrentTraces
-				// set them to nullptr to clear out traces from the last round
-				for (vint32_t traceIndex = concurrentCount; traceIndex < concurrentTraces->Count(); traceIndex++)
-				{
-					concurrentTraces->Set(traceIndex, nullptr);
-				}
-			}
-
-/***********************************************************************
-EndOfInput
-***********************************************************************/
-
-			void TraceManager::EndOfInput()
-			{
-				CHECK_ERROR(state == TraceManagerState::WaitingForInput, L"vl::glr::automaton::TraceManager::EndOfInput()#Wrong timing to call this function.");
-				state = TraceManagerState::Finished;
-
-				vint32_t traceCount = concurrentCount;
-				BeginSwap();
-
-				// check all surviving traces and remove all that
-				//   1) does not stay in an ending state
-				//   2) return stack is not empty
-				// the remaining are all traces that successfully walked to the ending state of the root rule
-				for (vint32_t traceIndex = 0; traceIndex < traceCount; traceIndex++)
-				{
-					auto trace = concurrentTraces->Get(traceIndex);
-					auto& stateDesc = executable.states[trace->state];
-					if (trace->returnStack == -1 && stateDesc.endingState)
-					{
-						AddTrace(trace);
-					}
-				}
-
-				EndSwap();
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\TRACEMANAGER\TRACEMANAGER_INPUT_AMBIGUITY.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace glr
-	{
-		namespace automaton
-		{
-
-/***********************************************************************
-AreTwoTraceEqual
-***********************************************************************/
-
-			bool TraceManager::AreTwoEndingInputTraceEqual(vint32_t state, vint32_t returnStack, vint32_t executedReturnStack, vint32_t acId, Trace* candidate)
-			{
-				// two traces equal to each other if
-				//   1) they are in the same state
-				//   2) they have the same executedReturnStack (and therefore the same returnStack)
-				//   3) they are attending same competitions
-				//   4) the candidate has an ending input
-				// TODO: verify if we can do "acId == candidate->runtimeRouting.attendingCompetitions" or not
-
-				if (state != candidate->state) return false;
-				if (acId != candidate->competitionRouting.attendingCompetitions) return false;
-				if (candidate->byInput != Executable::EndingInput) return false;
-
-				if (executedReturnStack != candidate->executedReturnStack) return false;
-				if (returnStack != candidate->returnStack) return false;
-				return true;
-			}
-
-/***********************************************************************
-GetInstructionPostfix
-***********************************************************************/
-
-			vint32_t TraceManager::GetInstructionPostfix(EdgeDesc& oldEdge, EdgeDesc& newEdge)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::GetInstructionPostfix(EdgeDesc&, EdgeDesc&)#"
-				// given two equal traces, calculate their common instruction postfix length in insBeforeInput
-				// EndObject is the last instruction of the prefix
-
-				// EndObject may not be the first instruction in both edges
-				// and instructions before EndObject could be different
-				// the most common case is different {field = value} before EndObject
-				// if the ambiguity is created by two left recursive clauses which consume the same series of tokens
-
-				CHECK_ERROR(oldEdge.insAfterInput.count == 0, ERROR_MESSAGE_PREFIX L"EndingInput edge is not allowed to have insAfterInput.");
-				CHECK_ERROR(newEdge.insAfterInput.count == 0, ERROR_MESSAGE_PREFIX L"EndingInput edge is not allowed to have insAfterInput.");
-
-				// find the first EndObject instruction
-				vint32_t i1 = -1;
-				vint32_t i2 = -1;
-
-				for (vint32_t insRef = 0; insRef < oldEdge.insBeforeInput.count; insRef++)
-				{
-					auto&& ins = executable.instructions[oldEdge.insBeforeInput.start + insRef];
-					if (ins.type == AstInsType::EndObject)
-					{
-						i1 = insRef;
-						break;
-					}
-				}
-
-				for (vint32_t insRef = 0; insRef < newEdge.insBeforeInput.count; insRef++)
-				{
-					auto&& ins = executable.instructions[newEdge.insBeforeInput.start + insRef];
-					if (ins.type == AstInsType::EndObject)
-					{
-						i2 = insRef;
-						break;
-					}
-				}
-
-				CHECK_ERROR(i1 != -1, ERROR_MESSAGE_PREFIX L"EndObject from oldEdge not found.");
-				CHECK_ERROR(i2 != -1, ERROR_MESSAGE_PREFIX L"EndObject from newEdge not found.");
-
-				// ensure they have the same instruction postfix starting from EndObject
-				CHECK_ERROR(oldEdge.insBeforeInput.count - i1 == newEdge.insBeforeInput.count - i2, L"Two instruction postfix after EndObject not equal.");
-
-				vint32_t postfix = oldEdge.insBeforeInput.count - i1 - 1;
-				for (vint32_t postfixRef = 0; postfixRef < postfix; postfixRef++)
-				{
-					auto&& ins1 = executable.instructions[oldEdge.insBeforeInput.start + i1 + 1 + postfixRef];
-					auto&& ins2 = executable.instructions[newEdge.insBeforeInput.start + i2 + 1 + postfixRef];
-					CHECK_ERROR(ins1 == ins2, L"Two instruction postfix after EndObject not equal.");
-				}
-				return postfix;
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-MergeTwoEndingInputTrace
-***********************************************************************/
-
-			void TraceManager::MergeTwoEndingInputTrace(
-				Trace* trace,
-				Trace* ambiguityTraceToMerge,
-				vint32_t currentTokenIndex,
-				vint32_t input,
-				vint32_t byEdge,
-				EdgeDesc& edgeDesc,
-				vint32_t state,
-				vint32_t returnStack,
-				vint32_t attendingCompetitions,
-				vint32_t carriedCompetitions,
-				vint32_t executedReturnStack)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::MergeTwoEndingInputTrace(...)#"
-				// if ambiguity resolving happens
-				// find the instruction postfix
-				// the instruction prefix ends at EndObject of a trace
-				// and both instruction postfix should equal
-
-				// old == ambiguityTraceToMerge
-				// new == the trace that is being created (could skip)
-				auto& oldEdge = executable.edges[ambiguityTraceToMerge->byEdge];
-				vint32_t oldInsCount = oldEdge.insBeforeInput.count + oldEdge.insAfterInput.count;
-				vint32_t newInsCount = edgeDesc.insBeforeInput.count + edgeDesc.insAfterInput.count;
-				vint32_t returnInsCount = 0;
-				vint32_t postfix = GetInstructionPostfix(oldEdge, edgeDesc);
-
-				// if two state can merge
-				// then executedReturnStack == ambiguityTraceToMerge.executedReturnStack
-				// so two ReturnDesc.insAfterInput.count are identical
-				// and also instructions
-				if (executedReturnStack != -1)
-				{
-					auto rs = GetReturnStack(executedReturnStack);
-					auto& rd = executable.returns[rs->returnIndex];
-					returnInsCount = rd.insAfterInput.count;
-					postfix += returnInsCount;
-					oldInsCount += returnInsCount;
-					newInsCount += returnInsCount;
-				}
-
-				// a trace needs to be cut if EndObject is not its first instruction
-				bool needCut = oldInsCount > postfix + 1 || newInsCount > postfix + 1;
-
-				if (ambiguityTraceToMerge->ambiguityMergeInsPostfix == -1 && needCut)
-				{
-					// append an extra trace after predecessors of ambiguityTraceToMerge
-					Trace* firstFormer = nullptr;
-					Trace* lastFormer = nullptr;
-					vint32_t predecessorId = ambiguityTraceToMerge->predecessors.first;
-					while (predecessorId != -1)
-					{
-						auto predecessor = GetTrace(predecessorId);
-						predecessorId = predecessor->predecessors.siblingNext;
-
-						auto formerTrace = AllocateTrace();
-						{
-							vint32_t formerId = formerTrace->allocatedIndex;
-							*formerTrace = *ambiguityTraceToMerge;
-							formerTrace->allocatedIndex = formerId;
-						}
-
-						// connect predecessor and formerTrace
-						formerTrace->predecessors.first = predecessor->allocatedIndex;
-						formerTrace->predecessors.last = predecessor->allocatedIndex;
-						formerTrace->predecessors.siblingPrev = -1;
-						formerTrace->predecessors.siblingNext = -1;
-
-						// connect ambiguityTraceToMerge and formerTrace
-						if (firstFormer == nullptr)
-						{
-							firstFormer = formerTrace;
-							lastFormer = formerTrace;
-						}
-						else
-						{
-							lastFormer->predecessors.siblingNext = formerTrace->allocatedIndex;
-							formerTrace->predecessors.siblingPrev = lastFormer->allocatedIndex;
-							lastFormer = formerTrace;
-						}
-
-						// executedReturnStack is from the EndObject instruction
-						// which is available in the instruction postfix
-						// so formerTrace->executedReturnStack should be -1 and keep the previous return stack
-						formerTrace->executedReturnStack = -1;
-						formerTrace->returnStack = predecessor->returnStack;
-
-						// ambiguity is filled by PrepareTraceRoute, skipped
-						// runtimeRouting.holdingCompetition always belong to the second trace
-						// runtimeRouting.attendingCompetitions is inherited
-						// runtimeRouting.carriedCompetitions is inherited
-						formerTrace->competitionRouting = {};
-						formerTrace->competitionRouting.attendingCompetitions = ambiguityTraceToMerge->competitionRouting.attendingCompetitions;
-						formerTrace->competitionRouting.carriedCompetitions = ambiguityTraceToMerge->competitionRouting.carriedCompetitions;
-
-						// both traces need to have the same postfix
-						// since formerTrace doesn't have executedReturnStack but ambiguityTraceToMerge has
-						// the amount of returnInsCount need to cut from the postfix
-						formerTrace->ambiguityBranchInsPostfix = postfix - returnInsCount;
-					}
-
-					ambiguityTraceToMerge->ambiguityMergeInsPostfix = postfix;
-					ambiguityTraceToMerge->predecessors.first = firstFormer->allocatedIndex;
-					ambiguityTraceToMerge->predecessors.last = lastFormer->allocatedIndex;
-				}
-
-				if (needCut)
-				{
-					// otherwise, create a new trace with the instruction prefix
-					auto newTrace = AllocateTrace();
-					AddTraceToCollection(newTrace, trace, &Trace::predecessors);
-					newTrace->state = state;
-					newTrace->returnStack = returnStack;
-					newTrace->byEdge = byEdge;
-					newTrace->byInput = input;
-					newTrace->currentTokenIndex = currentTokenIndex;
-
-					// executedReturnStack == ambiguityTraceToMerge->executedReturnStack is ensured
-					// so no need to assign executedReturnStack to newTrace
-					// acid == ambiguityTraceToMerge->runtimeRouting.attendingCompetitions is ensure
-					//   this is affected by TODO: in TraceManager::AreTwoEndingInputTraceEqual
-					// and ambiguityTraceToMerge is supposed to inherit this value
-					newTrace->competitionRouting.attendingCompetitions = attendingCompetitions;
-					newTrace->competitionRouting.carriedCompetitions = carriedCompetitions;
-
-					// both traces need to have the same postfix
-					// since newTrace doesn't have executedReturnStack but ambiguityTraceToMerge has
-					// the amount of returnInsCount need to cut from the postfix
-					newTrace->ambiguityBranchInsPostfix = postfix - returnInsCount;
-
-					AddTraceToCollection(ambiguityTraceToMerge, newTrace, &Trace::predecessors);
-				}
-				else
-				{
-					// if EndObject is the first instruction of the new trace
-					// then no need to create the new trace
-					AddTraceToCollection(ambiguityTraceToMerge, trace, &Trace::predecessors);
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\TRACEMANAGER\TRACEMANAGER_INPUT_COMPETITION.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace glr
-	{
-		namespace automaton
-		{
-
-/***********************************************************************
-AttendCompetition
-***********************************************************************/
-
-			void TraceManager::AttendCompetition(Trace* trace, vint32_t& newAttendingCompetitions, vint32_t& newCarriedCompetitions, vint32_t returnStack, vint32_t ruleId, vint32_t clauseId, bool forHighPriority)
-			{
-				// a competition is defined by its rule, clause and the owner trace
-				// but we don't need to compare the trace
-				// since only transitions starting from that trace will search competitions in that trace
-				// we only create a new Competition object if it has not been created for the trace yet
-				Competition* competition = nullptr;
-				{
-					vint32_t cid = trace->competitionRouting.holdingCompetitions;
-					while (cid != -1)
-					{
-						auto cpt = GetCompetition(cid);
-						if (cpt->ruleId == ruleId && cpt->clauseId == clauseId)
-						{
-							competition = cpt;
-							break;
-						}
-						cid = cpt->nextHoldCompetition;
-					}
-				}
-
-				if (!competition)
-				{
-					// create a Competition object
-					competition = AllocateCompetition();
-					competition->nextHoldCompetition = trace->competitionRouting.holdingCompetitions;
-					trace->competitionRouting.holdingCompetitions = competition->allocatedIndex;
-
-					competition->currentTokenIndex = trace->currentTokenIndex;
-					competition->ruleId = ruleId;
-					competition->clauseId = clauseId;
-
-					competition->nextActiveCompetition = activeCompetitions;
-					activeCompetitions = competition->allocatedIndex;
-				}
-
-				// target traces from the current trace could attend different competitions
-				// but they also inherit all attending competitions from the current trace
-				// it is fine for different traces share all or part of AttendingCompetitions in their RuntimeRouting::attendingCompetitions linked list
-				// because if a competition is settled in the future
-				// AttendingCompetitions objects for this competition is going to be removed anyway
-				// sharing a linked list doesn't change the result
-
-				auto ac = AllocateAttendingCompetitions();
-				ac->competition = competition->allocatedIndex;
-				ac->forHighPriority = forHighPriority;
-				ac->returnStack = returnStack;
-
-				ac->nextActiveAC = newAttendingCompetitions;
-				newAttendingCompetitions = ac->allocatedIndex;
-
-				ac->nextCarriedAC = newCarriedCompetitions;
-				newCarriedCompetitions = ac->allocatedIndex;
-			}
-
-/***********************************************************************
-AttendCompetitionIfNecessary
-***********************************************************************/
-
-			ReturnStack* TraceManager::PushReturnStack(vint32_t base, vint32_t returnIndex, vint32_t currentTokenIndex)
-			{
-				auto siblings = base == -1 ? &initialReturnStackSuccessors : &GetReturnStack(base)->successors;
-
-				if (siblings->successorTokenIndex == -1 && currentTokenIndex - siblings->createdTokenIndex <= 1)
-				{
-					siblings->successorTokenIndex = currentTokenIndex;
-				}
-
-				if (siblings->successorTokenIndex == currentTokenIndex)
-				{
-					vint32_t successorId = siblings->first;
-					while (successorId != -1)
-					{
-						auto successor = GetReturnStack(successorId);
-						successorId = successor->successors.next;
-
-						if (successor->returnIndex == returnIndex)
-						{
-							return successor;
-						}
-					}
-				}
-
-				auto returnStack = AllocateReturnStack();
-				returnStack->previous = base;
-				returnStack->returnIndex = returnIndex;
-				returnStack->successors.createdTokenIndex = currentTokenIndex;
-
-				if (siblings->successorTokenIndex == currentTokenIndex)
-				{
-					if (siblings->first == -1)
-					{
-						siblings->first = returnStack->allocatedIndex;
-						siblings->last = returnStack->allocatedIndex;
-					}
-					else
-					{
-						GetReturnStack(siblings->last)->successors.next = returnStack->allocatedIndex;
-						returnStack->successors.prev = siblings->last;
-						siblings->last = returnStack->allocatedIndex;
-					}
-				}
-				return returnStack;
-			}
-
-/***********************************************************************
-AttendCompetitionIfNecessary
-***********************************************************************/
-
-			void TraceManager::AttendCompetitionIfNecessary(Trace* trace, vint32_t currentTokenIndex, EdgeDesc& edgeDesc, vint32_t& newAttendingCompetitions, vint32_t& newCarriedCompetitions, vint32_t& newReturnStack)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::AttendCompetitionIfNecessary(Trace*, EdgeDesc&, vint32_t&, vint32_t&)#"
-				newAttendingCompetitions = trace->competitionRouting.attendingCompetitions;
-				newCarriedCompetitions = trace->competitionRouting.carriedCompetitions;
-				newReturnStack = trace->returnStack;
-
-				// visit each compact transition in order
-				//   1) returns + token
-				//   2) ending
-				//   3) leftrec
-				// find out if any of them attends a competition
-
-				vint32_t edgeFromState = edgeDesc.fromState;
-				for (vint32_t returnRef = 0; returnRef < edgeDesc.returnIndices.count; returnRef++)
-				{
-					auto returnIndex = executable.returnIndices[edgeDesc.returnIndices.start + returnRef];
-					auto&& returnDesc = executable.returns[returnIndex];
-
-					if (returnDesc.priority != EdgePriority::NoCompetition)
-					{
-						// attend a competition from a ReturnDesc edge
-						// find out the rule id and the clause id for this competition
-						// a ReturnDesc is a compact transition which consumes a rule
-						// so it does not points to the ending state
-						// therefore we just need the toState of this ReturnDesc for reference
-						auto&& stateForClause = executable.states[returnDesc.returnState];
-						vint32_t competitionRule = stateForClause.rule;
-						vint32_t competitionClause = stateForClause.clause;
-						CHECK_ERROR(competitionRule != -1 && competitionClause != -1, ERROR_MESSAGE_PREFIX L"Illegal rule or clause id.");
-						AttendCompetition(trace, newAttendingCompetitions, newCarriedCompetitions, newReturnStack, competitionRule, competitionClause, returnDesc.priority == EdgePriority::HighPriority);
-					}
-
-					// push this ReturnDesc to the ReturnStack
-					newReturnStack = PushReturnStack(newReturnStack, returnIndex, currentTokenIndex)->allocatedIndex;
-					edgeFromState = executable.ruleStartStates[returnDesc.consumedRule];
-				}
-
-				if (edgeDesc.priority != EdgePriority::NoCompetition)
-				{
-					// attend a competition from a EdgeDesc edge
-					// find out the rule id and the clause id for this competition
-					auto&& fromState = executable.states[edgeFromState];
-					auto&& toState = executable.states[edgeDesc.toState];
-					vint32_t competitionRule = toState.rule;
-					vint32_t competitionClause = toState.clause;
-					if (toState.endingState)
-					{
-						competitionRule = fromState.rule;
-						competitionClause = fromState.clause;
-					}
-					CHECK_ERROR(competitionRule != -1 && competitionClause != -1, ERROR_MESSAGE_PREFIX L"Illegal rule or clause id.");
-					AttendCompetition(trace, newAttendingCompetitions, newCarriedCompetitions, newReturnStack, competitionRule, competitionClause, edgeDesc.priority == EdgePriority::HighPriority);
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-CheckAttendingCompetitionsOnEndingEdge
-***********************************************************************/
-
-			void TraceManager::CheckAttendingCompetitionsOnEndingEdge(Trace* trace, EdgeDesc& edgeDesc, vint32_t acId, vint32_t returnStack)
-			{
-				while (acId != -1)
-				{
-					// when executing an EndingInput transition, we announce high priority win a competition if
-					//   1) such EndingInput transitions ends the clause, and the state of the trace holding competition belongs to the same clause
-					//      we ensure this by comparing rule id, clause id in Competition
-					//      and compare ReturnStack object (not content) in AttendingCompetitions
-					//      the reason returnStack is not in Competition is that
-					//      different transitions always create new ReturnStack objects
-					//   2) this trace bets high
-					//   3) the competition has not been settled
-					auto ac = GetAttendingCompetitions(acId);
-					if (ac->returnStack == returnStack)
-					{
-						auto cpt = GetCompetition(ac->competition);
-						// ensure that this EndingInput edge and the competition belong to the same clause
-						auto&& stateDesc = executable.states[edgeDesc.fromState];
-						if (cpt->ruleId == stateDesc.rule && cpt->clauseId == stateDesc.clause)
-						{
-							// check if it is a high bet
-							if (ac->forHighPriority && cpt->status == CompetitionStatus::Holding)
-							{
-								cpt->status = CompetitionStatus::HighPriorityWin;
-							}
-						}
-					}
-					acId = ac->nextActiveAC;
-				}
-			}
-
-/***********************************************************************
-CheckBackupTracesBeforeSwapping
-***********************************************************************/
-
-			void TraceManager::CheckBackupTracesBeforeSwapping(vint32_t currentTokenIndex)
-			{
-				// try to find if any competition could be settled at this moment
-
-				{
-					// reset highCounter and lowCounter for any active competitions
-					auto cId = activeCompetitions;
-					while (cId != -1)
-					{
-						auto cpt = GetCompetition(cId);
-						cpt->highCounter = 0;
-						cpt->lowCounter = 0;
-						cId = cpt->nextActiveCompetition;
-					}
-				}
-
-				// for any surviving traces
-				// add itself to the appriopriate counter for all attending competitions
-				for (vint i = 0; i < concurrentCount; i++)
-				{
-					auto trace = backupTraces->Get(i);
-					auto acId = trace->competitionRouting.attendingCompetitions;
-					while (acId != -1)
-					{
-						auto ac = GetAttendingCompetitions(acId);
-						auto cpt = GetCompetition(ac->competition);
-						(ac->forHighPriority ? cpt->highCounter : cpt->lowCounter)++;
-						acId = ac->nextActiveAC;
-					}
-				}
-
-				// revisit all active competitions
-				// some competitions could have been settled
-				// but settled competitions will only be removed before consuming the next token
-				{
-					auto cId = activeCompetitions;
-					while (cId != -1)
-					{
-						auto cpt = GetCompetition(cId);
-						if (cpt->status == CompetitionStatus::Holding)
-						{
-							if (cpt->highCounter > 0 && cpt->lowCounter == 0)
-							{
-								// if only high bet traces survive, high priority win
-								cpt->status = CompetitionStatus::HighPriorityWin;
-							}
-							else if (cpt->highCounter == 0 && cpt->lowCounter > 0)
-							{
-								// if only low bet traces survive
-								// low priority win after at least one token is consumed from when the competition is created
-								// low priority epsilon transitions could have been visited right after a competition is created
-								// but high priority token transitions could only be visited when consuming the next token
-								// if all high priority transitions are token transitions
-								// and all low priority transitions are epsilon transitions
-								// closing the competition too early will direct to a wrong result
-								// so we need to wait at least one step to see if any trace will visit the high priority transition in the future
-								if (cpt->currentTokenIndex != currentTokenIndex)
-								{
-									cpt->status = CompetitionStatus::LowPriorityWin;
-								}
-							}
-						}
-						cId = cpt->nextActiveCompetition;
-					}
-				}
-
-				// for any surviving traces
-				// if it loses any one of its attending competitions
-				// this trace will be removed
-				for (vint i = concurrentCount - 1; i >= 0; i--)
-				{
-					auto trace = backupTraces->Get(i);
-					auto acId = trace->competitionRouting.attendingCompetitions;
-					while (acId != -1)
-					{
-						auto ac = GetAttendingCompetitions(acId);
-						auto cpt = GetCompetition(ac->competition);
-						if (cpt->status != CompetitionStatus::Holding)
-						{
-							ac->closed = true;
-							if (ac->forHighPriority != (cpt->status == CompetitionStatus::HighPriorityWin))
-							{
-								concurrentCount--;
-								backupTraces->RemoveAt(i);
-								goto TRACE_REMOVED;
-							}
-						}
-						acId = ac->nextActiveAC;
-					}
-				TRACE_REMOVED:;
-				}
-
-				// remove all settled competition from the active competitions linked list
-				{
-					vint32_t* pnext = &activeCompetitions;
-					while (*pnext != -1)
-					{
-						auto cpt = GetCompetition(*pnext);
-						if (cpt->status != CompetitionStatus::Holding || (cpt->highCounter == 0 && cpt->lowCounter == 0))
-						{
-							*pnext = cpt->nextActiveCompetition;
-						}
-						else
-						{
-							pnext = &cpt->nextActiveCompetition;
-						}
-					}
-				}
-
-				// remove all settled AttendingCompetitions object from linked lists of any surviving trace
-				for (vint i = 0; i < concurrentCount; i++)
-				{
-					auto trace = backupTraces->Get(i);
-					vint32_t* pnext = &trace->competitionRouting.attendingCompetitions;
-					while (*pnext != -1)
-					{
-						auto ac = GetAttendingCompetitions(*pnext);
-						if (ac->closed)
-						{
-							*pnext = ac->nextActiveAC;
-						}
-						else
-						{
-							pnext = &ac->nextActiveAC;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\TRACEMANAGER\TRACEMANAGER_INPUT_WALK.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace glr
-	{
-		namespace automaton
-		{
-
-/***********************************************************************
-TraceManager::WalkAlongSingleEdge
-***********************************************************************/
-
-			Trace* TraceManager::WalkAlongSingleEdge(
-				vint32_t currentTokenIndex,
-				vint32_t input,
-				Trace* trace,
-				vint32_t byEdge,
-				EdgeDesc& edgeDesc
-			)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::WalkAlongSingleEdge(vint, vint, vint, Trace*, vint, EdgeDesc&)#"
-				vint32_t state = edgeDesc.toState;
-				vint32_t returnStack = -1;
-				vint32_t attendingCompetitions = -1;
-				vint32_t carriedCompetitions = -1;
-				vint32_t executedReturnStack = -1;
-				Trace* ambiguityTraceToMerge = nullptr;
-
-				// attend a competition hold by the current trace if the priority is set for this output transition
-				AttendCompetitionIfNecessary(trace, currentTokenIndex, edgeDesc, attendingCompetitions, carriedCompetitions, returnStack);
-
-				if (input == Executable::EndingInput)
-				{
-					// an EndingInput transition consume return record in the return stack
-					// such return will be popped from the return stack and stored in Trace::executedReturnStack
-					CHECK_ERROR(edgeDesc.returnIndices.count == 0, ERROR_MESSAGE_PREFIX L"Ending input edge is not allowed to push something into the return stack.");
-					if (returnStack != -1)
-					{
-						executedReturnStack = returnStack;
-						auto rs = GetReturnStack(returnStack);
-						returnStack = rs->previous;
-						state = executable.returns[rs->returnIndex].returnState;
-					}
-
-					// an EndingInput transition also settle a competition if
-					//   1) there is a competition
-					//   2) the returnStack of the trace holding the competition is the same to the current returnStack
-					//   3) the target trace bets high priority
-					// in this case, high priority traces wins the competition
-					// but no traces are being removed for now, just mark the competition
-					CheckAttendingCompetitionsOnEndingEdge(trace, edgeDesc, attendingCompetitions, trace->returnStack);
-
-					// if the target trace has exactly the same to another surviving trace
-					// stop creating a Trace instance for the target trace
-					// instead connect the correct trace to that surviving trace and form a ambiguity resolving structure
-					for (vint i = 0; i < concurrentCount; i++)
-					{
-						auto candidate = backupTraces->Get(i);
-						if (AreTwoEndingInputTraceEqual(state, returnStack, executedReturnStack, attendingCompetitions, candidate))
-						{
-							ambiguityTraceToMerge = candidate;
-							break;
-						}
-					}
-				}
-
-				if (ambiguityTraceToMerge)
-				{
-					MergeTwoEndingInputTrace(
-						trace,
-						ambiguityTraceToMerge,
-						currentTokenIndex,
-						input,
-						byEdge,
-						edgeDesc,
-						state,
-						returnStack,
-						attendingCompetitions,
-						carriedCompetitions,
-						executedReturnStack);
-
-					// return nullptr so that there is no WalkAlongEpsilonEdges following WalkAlongSingleEdge
-					return nullptr;
-				}
-				else
-				{
-					// if ambiguity resolving doesn't happen
-					// create an instance of the target trace
-					// and connect the current trace to this target trace
-					auto newTrace = AllocateTrace();
-					AddTrace(newTrace);
-					AddTraceToCollection(newTrace, trace, &Trace::predecessors);
-					newTrace->state = state;
-					newTrace->returnStack = returnStack;
-					newTrace->executedReturnStack = executedReturnStack;
-					newTrace->byEdge = byEdge;
-					newTrace->byInput = input;
-					newTrace->currentTokenIndex = currentTokenIndex;
-					newTrace->competitionRouting.attendingCompetitions = attendingCompetitions;
-					newTrace->competitionRouting.carriedCompetitions = carriedCompetitions;
-
-					return newTrace;
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-TraceManager::WalkAlongEpsilonEdges
-***********************************************************************/
-
-			void TraceManager::WalkAlongLeftrecEdges(
-				vint32_t currentTokenIndex,
-				vint32_t lookAhead,
-				Trace* trace,
-				EdgeArray& edgeArray
-			)
-			{
-				// if there is no more token
-				// then it is not possible for more left recursions
-				if (lookAhead == -1) return;
-
-				for (vint32_t edgeRef = 0; edgeRef < edgeArray.count; edgeRef++)
-				{
-					vint32_t byEdge = edgeArray.start + edgeRef;
-					auto& edgeDesc = executable.edges[byEdge];
-
-					// see if the target state could consume that token
-					vint32_t lookAheadTransitionIndex = executable.GetTransitionIndex(edgeDesc.toState, Executable::TokenBegin + lookAhead);
-					auto& lookAheadEdgeArray = executable.transitions[lookAheadTransitionIndex];
-					if (lookAheadEdgeArray.count == 0) continue;
-
-					// proceed only if it can
-					WalkAlongSingleEdge(currentTokenIndex, Executable::LeftrecInput, trace, byEdge, edgeDesc);
-
-					// A LeftrecInput transition points to a non ending state in another clause
-					// so there is no need to find other epsilon transitions after LeftrecInput
-				}
-			}
-
-			void TraceManager::WalkAlongEpsilonEdges(
-				vint32_t currentTokenIndex,
-				vint32_t lookAhead,
-				Trace* trace
-			)
-			{
-				// if we could walk along multiple EndingInput transition
-				// but the last several transition will fail
-				// then creating them is wasting the performance
-				// so we count how many EndingInput transition we could walk along first
-
-				vint32_t endingCount = -1;
-
-				if (lookAhead == -1)
-				{
-					// if there is no more tokens
-					// then we have to go all the way to the end anyway
-					vint32_t currentState = trace->state;
-					vint32_t currentReturnStack = trace->returnStack;
-
-					while (currentState != -1)
-					{
-						vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::EndingInput);
-						auto&& edgeArray = executable.transitions[transitionIndex];
-
-						// at most one EndingInput transition could exist from any state
-						CHECK_ERROR(edgeArray.count < 2, L"vl::glr::automaton::TraceManager::WalkAlongEpsilonEdges(vint32_t, vint32_t, Trace*)#Too many EndingInput transitions.");
-
-						if (edgeArray.count == 0)
-						{
-							// if there is no more EndingInput to go
-							// and the current state is not an ending state
-							// then we just give up
-
-							auto&& stateDesc = executable.states[currentState];
-							if (stateDesc.endingState)
-							{
-								currentState = -1;
-							}
-							else
-							{
-								return;
-							}
-						}
-						else if (currentReturnStack == -1)
-						{
-							vint32_t byEdge = edgeArray.start;
-							auto& edgeDesc = executable.edges[byEdge];
-							currentState = edgeDesc.toState;
-						}
-						else
-						{
-							auto rs = GetReturnStack(currentReturnStack);
-							currentReturnStack = rs->previous;
-							currentState = executable.returns[rs->returnIndex].returnState;
-						}
-					}
-				}
-				else
-				{
-					// otherwise we see how many EndingInput transition we need to walk along
-					vint32_t currentCount = 0;
-					vint32_t currentState = trace->state;
-					vint32_t currentReturnStack = trace->returnStack;
-
-					while (currentState != -1)
-					{
-						currentCount++;
-
-						// try LeftrecInput + lookAhead
-						{
-							vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::LeftrecInput);
-							auto&& edgeArray = executable.transitions[transitionIndex];
-							for (vint32_t edgeRef = 0; edgeRef < edgeArray.count; edgeRef++)
-							{
-								vint32_t byEdge = edgeArray.start + edgeRef;
-								auto& edgeDesc = executable.edges[byEdge];
-								vint32_t lookAheadTransitionIndex = executable.GetTransitionIndex(edgeDesc.toState, Executable::TokenBegin + lookAhead);
-								auto& lookAheadEdgeArray = executable.transitions[lookAheadTransitionIndex];
-
-								// mark this EndingInput if any LeftrecInput + lookAhead transition exists
-								if (lookAheadEdgeArray.count > 0)
-								{
-									endingCount = currentCount;
-									goto TRY_ENDING_INPUT;
-								}
-							}
-						}
-
-						// try lookAhead
-						{
-							vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::TokenBegin + lookAhead);
-							auto&& edgeArray = executable.transitions[transitionIndex];
-
-							// mark this EndingInput if lookAhead transition exists
-							if (edgeArray.count > 0)
-							{
-								endingCount = currentCount;
-							}
-						}
-
-						// try EndingInput
-					TRY_ENDING_INPUT:
-						{
-							vint32_t transitionIndex = executable.GetTransitionIndex(currentState, Executable::EndingInput);
-							auto&& edgeArray = executable.transitions[transitionIndex];
-
-							// at most one EndingInput transition could exist from any state
-							CHECK_ERROR(edgeArray.count < 2, L"vl::glr::automaton::TraceManager::WalkAlongEpsilonEdges(vint32_t, vint32_t, Trace*)#Too many EndingInput transitions.");
-
-							if (edgeArray.count == 0 || currentReturnStack == -1)
-							{
-								// currentReturnStack == -1 means this is the last possible EndingInput
-								// no need to test forward
-								// because if the current EndingInput is doable
-								// it would have already been marked
-								currentState = -1;
-							}
-							else
-							{
-								auto rs = GetReturnStack(currentReturnStack);
-								currentReturnStack = rs->previous;
-								currentState = executable.returns[rs->returnIndex].returnState;
-							}
-						}
-					}
-				}
-
-				for (vint32_t i = 0; trace && (i < endingCount || endingCount == -1); i++)
-				{
-					{
-						// LeftrecInput transition is an epsilon transition
-						vint32_t transitionIndex = executable.GetTransitionIndex(trace->state, Executable::LeftrecInput);
-						auto&& edgeArray = executable.transitions[transitionIndex];
-						WalkAlongLeftrecEdges(currentTokenIndex, lookAhead, trace, edgeArray);
-					}
-
-					// EndingInput transition is an epsilon transition
-					vint32_t transitionIndex = executable.GetTransitionIndex(trace->state, Executable::EndingInput);
-					auto&& edgeArray = executable.transitions[transitionIndex];
-
-					// it has been ensured that edgeArray.count < 2
-					if (edgeArray.count == 0)
-					{
-						trace = nullptr;
-					}
-					else
-					{
-						vint32_t byEdge = edgeArray.start;
-						auto& edgeDesc = executable.edges[byEdge];
-						trace = WalkAlongSingleEdge(currentTokenIndex, Executable::EndingInput, trace, byEdge, edgeDesc);
-
-						// EndingInput could be followed by EndingInput or LeftrecInput
-					}
-				}
-			}
-
-/***********************************************************************
-TraceManager::WalkAlongTokenEdges
-***********************************************************************/
-
-			void TraceManager::WalkAlongTokenEdges(
-				vint32_t currentTokenIndex,
-				vint32_t input,
-				vint32_t lookAhead,
-				Trace* trace,
-				EdgeArray& edgeArray
-			)
-			{
-				// find all transitions that has the expected input
-				// there could be multiple transitions with the same input
-				// but with different instructions and destinations
-				for (vint32_t edgeRef = 0; edgeRef < edgeArray.count; edgeRef++)
-				{
-					vint32_t byEdge = edgeArray.start + edgeRef;
-					auto& edgeDesc = executable.edges[edgeArray.start + edgeRef];
-					if (auto newTrace = WalkAlongSingleEdge(currentTokenIndex, input, trace, byEdge, edgeDesc))
-					{
-						// continue with as much EndingInput and LeftrecInput transitions as possible
-						// TokenInput could be followed by EndingInput or LeftrecInput
-						WalkAlongEpsilonEdges(currentTokenIndex, lookAhead, newTrace);
-					}
-				}
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\TRACEMANAGER\TRACEMANAGER_PREPARETRACEROUTE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace glr
-	{
-		namespace automaton
-		{
-			using namespace collections;
-
-/***********************************************************************
-ReadInstructionList
-***********************************************************************/
-
-			void TraceManager::ReadInstructionList(Trace* trace, TraceInsLists& insLists)
-			{
-				// this function collects the following instructions in order:
-				//   1) byEdge.insBeforeInput
-				//   2) byEdge.insAfterInput
-				//   3) executedReturnStack.returnIndex.insAfterInput in order
-				if (trace->byEdge != -1)
-				{
-					auto& edgeDesc = executable.edges[trace->byEdge];
-					insLists.edgeInsBeforeInput = edgeDesc.insBeforeInput;
-					insLists.edgeInsAfterInput = edgeDesc.insAfterInput;
-				}
-				else
-				{
-					insLists.edgeInsBeforeInput = {};
-					insLists.edgeInsAfterInput = {};
-				}
-				if (trace->executedReturnStack != -1)
-				{
-					auto returnStack = GetReturnStack(trace->executedReturnStack);
-					auto& returnDesc = executable.returns[returnStack->returnIndex];
-					insLists.returnInsAfterInput = returnDesc.insAfterInput;
-				}
-				else
-				{
-					insLists.returnInsAfterInput = {};
-				}
-
-				insLists.c1 = (vint32_t)(insLists.edgeInsBeforeInput.count);
-				insLists.c2 = (vint32_t)(insLists.c1 + insLists.edgeInsAfterInput.count);
-				insLists.c3 = (vint32_t)(insLists.c2 + insLists.returnInsAfterInput.count);
-			}
-
-/***********************************************************************
-ReadInstruction
-***********************************************************************/
-
-			AstIns& TraceManager::ReadInstruction(vint32_t instruction, TraceInsLists& insLists)
-			{
-				// access the instruction object from a trace
-				// the index is the instruction in a virtual instruction array
-				// defined by all InstructionArray in TraceInsLists combined together
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::ReadInstruction(vint, TraceInsLists&)#"
-				CHECK_ERROR(0 <= instruction && instruction <= insLists.c3, ERROR_MESSAGE_PREFIX L"Instruction index out of range.");
-
-				vint insRef = -1;
-				if (instruction < insLists.c1)
-				{
-					insRef = insLists.edgeInsBeforeInput.start + instruction;
-				}
-				else if (instruction < insLists.c2)
-				{
-					insRef = insLists.edgeInsAfterInput.start + (instruction - insLists.c1);
-				}
-				else if (instruction < insLists.c3)
-				{
-					insRef = insLists.returnInsAfterInput.start + (instruction - insLists.c2);
-				}
-				else
-				{
-					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Instruction index out of range.");
-				}
-
-				return executable.instructions[insRef];
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-RunInstruction
-***********************************************************************/
-
-			bool TraceManager::RunInstruction(vint32_t instruction, TraceInsLists& insLists, vint32_t& objectCount, vint32_t& reopenCount)
-			{
-				// run an instruction to simulate the number of extra constructing AST objects in the stack
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::SearchSingleTraceForBeginObject(Trace*&, vint&, vint&)#"
-				auto& ins = ReadInstruction(instruction, insLists);
-				switch (ins.type)
-				{
-				case AstInsType::EndObject:
-					objectCount++;
-					break;
-				case AstInsType::ReopenObject:
-				case AstInsType::BeginObject:
-				case AstInsType::BeginObjectLeftRecursive:
-					CHECK_ERROR(objectCount > 0, ERROR_MESSAGE_PREFIX L"Encountered unbalanced instructions.");
-					objectCount--;
-					break;
-				default:;
-				}
-
-				switch (ins.type)
-				{
-				case AstInsType::ReopenObject:
-					reopenCount++;
-					break;
-				case AstInsType::DelayFieldAssignment:
-					reopenCount--;
-					break;
-				default:;
-				}
-
-				// if we found a ReopenObject
-				// we should continue to search until we reach BeginObject or BeginObjectLeftRecursive
-				return objectCount == 0 && (ins.type == AstInsType::BeginObject || ins.type == AstInsType::BeginObjectLeftRecursive);
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-AdjustToRealTrace
-***********************************************************************/
-
-			void TraceManager::AdjustToRealTrace(SharedBeginObject& shared)
-			{
-				TraceInsLists insLists;
-				ReadInstructionList(shared.traceBeginObject, insLists);
-				if (shared.insBeginObject >= insLists.c3)
-				{
-					shared.traceBeginObject = GetTrace(shared.traceBeginObject->successors.first);
-					shared.insBeginObject -= insLists.c3;
-				}
-			}
-
-/***********************************************************************
-FindBalancedBoOrBolr
-***********************************************************************/
-
-			void TraceManager::FindBalancedBoOrBolr(SharedBeginObject& balanced, vint32_t& objectCount, vint32_t& reopenCount)
-			{
-				// given the current instruction and the current constructing AST objects
-				// find the nearlest BeginObject or BeginObjectLeftRecursive before the current instruction
-				// that creates the bottom object
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::FindBalancedBoOrBolr(Trace*&, vint&, vint&)#"
-				TraceInsLists insLists;
-				ReadInstructionList(balanced.traceBeginObject, insLists);
-
-				while (true)
-				{
-					if (balanced.traceBeginObject->predecessors.first != balanced.traceBeginObject->predecessors.last)
-					{
-						// if there are multiple predecessors
-						// then this is a ambiguity resolving trace
-						auto ambiguityBegin = FillAmbiguityInfoForMergingTrace(balanced.traceBeginObject);
-
-						// execute all instructions until it reaches the first EndObject instruction
-						// and this EndObject instruction is not executed
-						for (auto i = balanced.insBeginObject; i > balanced.traceBeginObject->ambiguity.insEndObject; i--)
-						{
-							if (RunInstruction(i, insLists, objectCount, reopenCount))
-							{
-								balanced.insBeginObject = i;
-								return;
-							}
-						}
-
-						// since the BeginObject instruction for this EndObject instruction will be executed after calling FillAmbiguityInfoForMergingTrace
-						// must jump to the instruction before that BeginObject instruction
-
-						balanced = ambiguityBegin;
-						if (objectCount == 0)
-						{
-							return;
-						}
-						else
-						{
-							AdjustToRealTrace(balanced);
-							balanced.insBeginObject--;
-							ReadInstructionList(balanced.traceBeginObject, insLists);
-						}
-					}
-					else
-					{
-						// if there is only one predecessor
-						// run all instructions until we find the correct BeginObject or BeginObjectLeftRecursive instruction
-
-						vint32_t minIns = 0;
-						vint32_t maxIns = insLists.c3;
-						if (balanced.traceBeginObject->ambiguityMergeInsPostfix != -1)
-						{
-							minIns = insLists.c3 - balanced.traceBeginObject->ambiguityMergeInsPostfix;
-						}
-						if (balanced.traceBeginObject->ambiguityBranchInsPostfix != -1)
-						{
-							maxIns = insLists.c3 - balanced.traceBeginObject->ambiguityBranchInsPostfix - 1;
-						}
-						if (balanced.insBeginObject > maxIns)
-						{
-							balanced.insBeginObject = maxIns;
-						}
-
-						for (auto i = balanced.insBeginObject; i >= minIns; i--)
-						{
-							if (RunInstruction(i, insLists, objectCount, reopenCount))
-							{
-								balanced.insBeginObject = i;
-								return;
-							}
-						}
-
-						// if not found, then we continue searching in the predecessor trace
-						CHECK_ERROR(balanced.traceBeginObject->predecessors.first != -1, ERROR_MESSAGE_PREFIX L"Encountered unbalanced instructions.");
-
-						balanced.traceBeginObject = GetTrace(balanced.traceBeginObject->predecessors.first);
-						ReadInstructionList(balanced.traceBeginObject, insLists);
-						balanced.insBeginObject = insLists.c3 - 1;
-					}
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-FindBalancedBoOrDfa
-***********************************************************************/
-
-			void TraceManager::FindBalancedBoOrDfa(Trace* trace, vint32_t objectCount, SharedBeginObject& branch)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::FindBalancedBoOrDfa(Trace*, vint32_t, Trace*&, vint32_t&, vint32_t&)#"
-				// find the first balanced BeginObject or BeginObjectLeftRecursive
-				TraceInsLists branchInsLists;
-				ReadInstructionList(trace, branchInsLists);
-				branch.traceBeginObject = trace;
-				branch.insBeginObject = branchInsLists.c3 - 1;
-				vint32_t branchObjectCount = objectCount;
-				vint32_t branchReopenCount = 0;
-				FindBalancedBoOrBolr(branch, branchObjectCount, branchReopenCount);
-
-				// no matter if we found BeginObject or BeginObjectLeftRecursive
-				// we now know what type of the AST we need to resolve
-				AdjustToRealTrace(branch);
-				ReadInstructionList(branch.traceBeginObject, branchInsLists);
-				auto ins = ReadInstruction(branch.insBeginObject, branchInsLists);
-				branch.type = ins.param;
-
-				// if we found a BeginObjectLeftRecursive which creates the bottom object in stack
-				// then we should continue until we reach the BeginObject
-				// because such BeginObject creates objects that eventually become part of BeginObjectLeftRecursive created objects
-				// we cannot allow sharing the same child AST object in different parent AST objects.
-				while (ins.type == AstInsType::BeginObjectLeftRecursive)
-				{
-					branch.insBeginObject--;
-					FindBalancedBoOrBolr(branch, branchObjectCount, branchReopenCount);
-					AdjustToRealTrace(branch);
-					ReadInstructionList(branch.traceBeginObject, branchInsLists);
-					ins = ReadInstruction(branch.insBeginObject, branchInsLists);
-				}
-
-				// if branchReopenCount > 0
-				// it means there must be this amount of DelayFieldAssignment instruction before BeginOpen
-				// the first DelayFieldAssignment must be located
-				if (branchReopenCount > 0)
-				{
-					ReadInstructionList(branch.traceBeginObject, branchInsLists);
-					while (true)
-					{
-						branch.insBeginObject--;
-						if (branch.insBeginObject == -1)
-						{
-							// a merging trace must at least have one EndObject before the balanced BeginObject
-							// so it is not possible to see it here
-
-							CHECK_ERROR(
-								branch.traceBeginObject->predecessors.first == branch.traceBeginObject->predecessors.last,
-								ERROR_MESSAGE_PREFIX L"Unexpected merging trace when searching for DelayFieldAssignment."
-								);
-							CHECK_ERROR(
-								branch.traceBeginObject->predecessors.first != -1,
-								ERROR_MESSAGE_PREFIX L"Unexpected root trace when searching for DelayFieldAssignment."
-								);
-
-							branch.traceBeginObject = GetTrace(branch.traceBeginObject->predecessors.first);
-							ReadInstructionList(branch.traceBeginObject, branchInsLists);
-							branch.insBeginObject = branchInsLists.c3;
-						}
-						else
-						{
-							auto& ins = ReadInstruction(branch.insBeginObject, branchInsLists);
-							switch (ins.type)
-							{
-							case AstInsType::EndObject:
-								// if we see EndObject, find its balanced BeginObject or BeginObjectLeftRecursive
-								FindBalancedBoOrBolr(branch, branchObjectCount, branchReopenCount);
-								AdjustToRealTrace(branch);
-								ReadInstructionList(branch.traceBeginObject, branchInsLists);
-								break;
-							case AstInsType::ReopenObject:
-								branchReopenCount++;
-								break;
-							case AstInsType::DelayFieldAssignment:
-								branchReopenCount--;
-								if (branchReopenCount == 0)
-								{
-									return;
-								}
-								break;
-							default:;
-							}
-						}
-					}
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-MergeAmbiguityType
-***********************************************************************/
-
-			void TraceManager::MergeAmbiguityType(vint32_t& ambiguityType, vint32_t branchType)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::MergeAmbiguityType(vint32_t&, vint32_t)#"
-				if (ambiguityType == -1)
-				{
-					ambiguityType = branchType;
-				}
-				else if (typeCallback)
-				{
-					vint32_t newType = typeCallback->FindCommonBaseClass(ambiguityType, branchType);
-					CHECK_ERROR(newType != -1, ERROR_MESSAGE_PREFIX L"Failed to merge from ambiguity types.");
-					ambiguityType = newType;
-				}
-				else
-				{
-					CHECK_ERROR(ambiguityType == branchType, ERROR_MESSAGE_PREFIX L"TraceManager::ITypeCallback is not installed, unable to merge from ambiguity types.");
-				}
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-MergeSharedBeginObjectsSingleRoot
-***********************************************************************/
-
-			TraceManager::SharedBeginObject TraceManager::MergeSharedBeginObjectsSingleRoot(Trace* trace, collections::Dictionary<Trace*, SharedBeginObject>& predecessorToBranches)
-			{
-				// predecessorToBranches.Count() == 1
-				// it means all values in predecessorToBranches must be identical
-
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::MergeSharedBeginObjectsSingleRoot(Trace*, Dictionary<Trace*, SharedBeginObject>&)#"
-				SharedBeginObject shared;
-				vint32_t predecessorId = trace->predecessors.first;
-				while (predecessorId != -1)
-				{
-					auto predecessor = GetTrace(predecessorId);
-					auto branch = predecessorToBranches[predecessor];
-					predecessorId = predecessor->predecessors.siblingNext;
-
-					// BeginObject found from different predecessors must be the same
-					if (shared.traceBeginObject == nullptr)
-					{
-						shared = branch;
-					}
-					else
-					{
-						CHECK_ERROR(shared.traceBeginObject == branch.traceBeginObject && shared.insBeginObject == branch.insBeginObject, ERROR_MESSAGE_PREFIX L"BeginObject searched from different branches are not the same.");
-					}
-				}
-
-				shared.type = -1;
-				return shared;
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-MergeSharedBeginObjectsMultipleRoot
-***********************************************************************/
-
-			TraceManager::SharedBeginObject TraceManager::MergeSharedBeginObjectsMultipleRoot(Trace* trace, collections::Dictionary<Trace*, SharedBeginObject>& predecessorToBranches)
-			{
-				// predecessorToBranches.Count() == number of predecessors
-				// it means all values in predecessorToBranches must be identical
-				// after they are adjusted to locate in the common predecessor
-
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::MergeSharedBeginObjectsMultipleRoot(Trace*, Dictionary<Trace*, SharedBeginObject>&)#"
-				SharedBeginObject shared;
-				vint32_t predecessorId = trace->predecessors.first;
-
-				Trace* firstBranch = nullptr;
-				while (predecessorId != -1)
-				{
-					auto predecessor = GetTrace(predecessorId);
-					auto branch = predecessorToBranches[predecessor];
-					predecessorId = predecessor->predecessors.siblingNext;
-
-					if (firstBranch == nullptr)
-					{
-						firstBranch = branch.traceBeginObject;
-					}
-					Trace* currentBranch = branch.traceBeginObject;
-
-					// adjust branch to locate in its predecessor
-					{
-						TraceInsLists parentInsLists;
-						Trace* parentTrace = GetTrace(branch.traceBeginObject->predecessors.first);
-
-						ReadInstructionList(parentTrace, parentInsLists);
-						branch.traceBeginObject = parentTrace;
-						branch.insBeginObject += parentInsLists.c3;
-					}
-
-					// multiple BeginObject must belong to successors of the same trace
-					// and the instructions prefix before these BeginObject must be identical
-					if (shared.traceBeginObject == nullptr)
-					{
-						shared = branch;
-					}
-					else
-					{
-#define ERROR_MESSAGE ERROR_MESSAGE_PREFIX L"Failed to merge prefix from BeginObject of multiple successors."
-						CHECK_ERROR(shared.traceBeginObject == branch.traceBeginObject && shared.insBeginObject == branch.insBeginObject, ERROR_MESSAGE);
-
-						TraceInsLists sharedInsLists, firstInsLists, currentInsLists;
-						ReadInstructionList(shared.traceBeginObject, sharedInsLists);
-						ReadInstructionList(firstBranch, firstInsLists);
-						ReadInstructionList(currentBranch, currentInsLists);
-
-						vint32_t insBeginObject = shared.insBeginObject - sharedInsLists.c3;
-						CHECK_ERROR(insBeginObject < firstInsLists.c3, ERROR_MESSAGE);
-						CHECK_ERROR(insBeginObject < currentInsLists.c3, ERROR_MESSAGE);
-
-						for (vint32_t i = 0; i < insBeginObject; i++)
-						{
-							auto& ins1 = ReadInstruction(i, firstInsLists);
-							auto& ins2 = ReadInstruction(i, currentInsLists);
-							CHECK_ERROR(ins1 == ins2, ERROR_MESSAGE);
-						}
-#undef ERROR_MESSAGE
-					}
-				}
-
-				shared.type = -1;
-				return shared;
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-MergeSharedBeginObjectsMultipleRoot
-***********************************************************************/
-
-			TraceManager::SharedBeginObject TraceManager::MergeSharedBeginObjectsPartialMultipleRoot(Trace* trace, vint32_t ambiguityType, collections::Group<Trace*, Trace*>& beginToPredecessors, collections::Dictionary<Trace*, SharedBeginObject>& predecessorToBranches)
-			{
-				// some values in predecessorToBranches are the same but some are not
-				// the result is the same to one when all values in predecessorToBranches are different
-				// but we need to merge subset of predecessors which share the same value
-
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::MergeSharedBeginObjectsPartialMultipleRoot(Trace*, vint32_t, Group<Trace*, Trace*>&, Dictionary<Trace*, SharedBeginObject>&)#"
-				vint32_t predecessorId = trace->predecessors.first;
-				while (predecessorId != -1)
-				{
-					auto predecessor = GetTrace(predecessorId);
-					auto branch = predecessorToBranches[predecessor];
-					predecessorId = predecessor->predecessors.siblingNext;
-
-					// we start with the first predecessor from all subset
-					auto& subset = beginToPredecessors[branch.traceBeginObject];
-					if (subset.Count()==1 || predecessor != subset[0]) continue;
-
-#define ERROR_MESSAGE ERROR_MESSAGE_PREFIX L"Failed to merge prefix from BeginObject of multiple successors."
-					// ensure all value in the subset are identical
-					for (vint i = 1; i < subset.Count(); i++)
-					{
-						auto anotherBranch = predecessorToBranches[subset[i]];
-						CHECK_ERROR(branch.traceBeginObject == anotherBranch.traceBeginObject && branch.insBeginObject == anotherBranch.insBeginObject, ERROR_MESSAGE);
-					}
-
-					// ensure all predecessor in the subset are identical in their critical content
-					TraceInsLists insLists;
-					ReadInstructionList(predecessor, insLists);
-					for (vint i = 1; i < subset.Count(); i++)
-					{
-						auto anotherPredecessor = subset[i];
-						CHECK_ERROR(predecessor->state == anotherPredecessor->state, ERROR_MESSAGE);
-						CHECK_ERROR(predecessor->byInput == anotherPredecessor->byInput, ERROR_MESSAGE);
-						CHECK_ERROR(predecessor->currentTokenIndex == anotherPredecessor->currentTokenIndex, ERROR_MESSAGE);
-						CHECK_ERROR(predecessor->returnStack == anotherPredecessor->returnStack, ERROR_MESSAGE);
-
-						TraceInsLists anotherInsLists;
-						ReadInstructionList(anotherPredecessor, anotherInsLists);
-						CHECK_ERROR(insLists.c3 == anotherInsLists.c3, ERROR_MESSAGE);
-						for (vint32_t j = 0; j < insLists.c3; j++)
-						{
-							auto& ins1 = ReadInstruction(j, insLists);
-							auto& ins2 = ReadInstruction(j, anotherInsLists);
-							CHECK_ERROR(ins1 == ins2, ERROR_MESSAGE);
-						}
-					}
-
-					// ensure all predecessor in the subset has only one predecessor
-					// otherwise we are replacing the current issue with another same issue
-					for (vint i = 0; i < subset.Count(); i++)
-					{
-						auto anotherPredecessor = subset[i];
-						CHECK_ERROR(anotherPredecessor->predecessors.first == anotherPredecessor->predecessors.last, ERROR_MESSAGE);
-					}
-
-					// connect all predecessors of predecessors in the subset to the first one
-					for (vint i = 1; i < subset.Count(); i++)
-					{
-						auto p1 = subset[i];
-						auto p2 = GetTrace(p1->predecessors.first);
-						p2->successors = {};
-						AddTraceToCollection(predecessor, p2, &Trace::predecessors);
-						AddTraceToCollection(p2, predecessor, &Trace::successors);
-					}
-
-					// remove all predecessors in the subset except the first one
-					for (vint i = 1; i < subset.Count(); i++)
-					{
-						auto p = subset[i];
-						if (p->predecessors.siblingPrev != -1)
-						{
-							GetTrace(p->predecessors.siblingPrev)->predecessors.siblingNext = p->predecessors.siblingNext;
-						}
-						if (p->predecessors.siblingNext != -1)
-						{
-							GetTrace(p->predecessors.siblingNext)->predecessors.siblingPrev = p->predecessors.siblingPrev;
-						}
-						if (trace->predecessors.first == p->allocatedIndex)
-						{
-							trace->predecessors.first = p->predecessors.siblingNext;
-						}
-						if (trace->predecessors.last == p->allocatedIndex)
-						{
-							trace->predecessors.last = p->predecessors.siblingPrev;
-						}
-					}
-
-					// fix predecessor->ambiguity
-					predecessor->ambiguity.traceBeginObject = branch.traceBeginObject->allocatedIndex;
-					predecessor->ambiguity.insBeginObject = branch.insBeginObject;
-					predecessor->ambiguity.ambiguityType = ambiguityType;
-
-					for (vint32_t i = 0; i < insLists.c3; i++)
-					{
-						auto& ins = ReadInstruction(i, insLists);
-						if (ins.type == AstInsType::EndObject)
-						{
-							predecessor->ambiguity.insEndObject = i;
-							break;
-						}
-					}
-					CHECK_ERROR(predecessor->ambiguity.insEndObject != -1, ERROR_MESSAGE);
-#undef ERROR_MESSAGE
-				}
-				return MergeSharedBeginObjectsMultipleRoot(trace, predecessorToBranches);
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-FillAmbiguityInfoForMergingTrace
-***********************************************************************/
-
-			TraceManager::SharedBeginObject TraceManager::FillAmbiguityInfoForMergingTrace(Trace* trace)
-			{
-				// assuming that this is a ambiguity resolving trace
-				// find the first instruction that accesses the object which is closed by the first EndObject in this trace
-				// such instruction must be BeginObject
-				// it is possible that the object closed by EndObject is created by a BeginObjectLeftRecursive
-				// in this case we need to keep searching
-				// until we find the BeginObject which creates the object that is consumed by BeginObjectLeftRecursive
-				// by executing from such BeginObject instead of BeginObjectLeftRecursive for all branches
-				// we prevent the object created by such BeginObject to be shared in multiple other objects
-
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::FillAmbiguityInfoForMergingTrace(Trace*)#"
-				// skip if the instruction has been found
-				if (trace->ambiguity.traceBeginObject != -1)
-				{
-					SharedBeginObject shared;
-					shared.traceBeginObject = GetTrace(trace->ambiguity.traceBeginObject);
-					shared.insBeginObject = trace->ambiguity.insBeginObject;
-					shared.type = trace->ambiguity.ambiguityType;
-					return shared;
-				}
-
-				CHECK_ERROR(trace->predecessors.first != trace->predecessors.last, L"This function is not allowed to run on non-merging traces.");
-
-				// find the first EndObject instruction
-				TraceInsLists insLists;
-				ReadInstructionList(trace, insLists);
-
-				vint32_t insEndObject = -1;
-				for (vint32_t i = 0; i < insLists.c3; i++)
-				{
-					auto& ins = ReadInstruction(i, insLists);
-					if (ins.type == AstInsType::EndObject)
-					{
-						insEndObject = i;
-						break;
-					}
-				}
-				CHECK_ERROR(insEndObject != -1, ERROR_MESSAGE_PREFIX L"Cannot find EndObject instruction in the merging trace.");
-				if (trace->ambiguityMergeInsPostfix != -1)
-				{
-					CHECK_ERROR(insEndObject == insLists.c3 - trace->ambiguityMergeInsPostfix - 1, L"ambiguityMergeInsPostfix and insEndObject does not match.");
-				}
-
-				vint32_t ambiguityType = -1;
-				Group<Trace*, Trace*> beginToPredecessors;
-				Dictionary<Trace*, SharedBeginObject> predecessorToBranches;
-
-				// call FindBalancedBoOrBolr on all predecessors
-				auto predecessorId = trace->predecessors.first;
-				vint predecessorCount = 0;
-				while (predecessorId != -1)
-				{
-					predecessorCount++;
-					auto predecessor = GetTrace(predecessorId);
-
-					SharedBeginObject branch;
-					if (trace->ambiguityMergeInsPostfix == -1)
-					{
-						// theoretically we need to run from EndObject to the first instruction
-						// but there will be nothing interested before EndObject
-						// so just set objectCount to 1
-						FindBalancedBoOrDfa(predecessor, 1, branch);
-					}
-					else
-					{
-						// having a postfix means the predecessor is another half of this trace
-						// the EndObject instruction is in the predecessor
-						FindBalancedBoOrDfa(predecessor, 0, branch);
-					}
-
-					beginToPredecessors.Add(branch.traceBeginObject, predecessor);
-					predecessorToBranches.Add(predecessor, branch);
-
-					// if EndObject is not the first instruction
-					// then the all instruction prefix are stored in predecessors
-					// so no need to really touch the prefix in this trace.
-
-					MergeAmbiguityType(ambiguityType, branch.type);
-
-					predecessorId = predecessor->predecessors.siblingNext;
-				}
-
-				SharedBeginObject shared;
-				if (beginToPredecessors.Count() == 1)
-				{
-					shared = MergeSharedBeginObjectsSingleRoot(trace, predecessorToBranches);
-				}
-				else if (beginToPredecessors.Count() == predecessorCount)
-				{
-					shared = MergeSharedBeginObjectsMultipleRoot(trace, predecessorToBranches);
-				}
-				else
-				{
-					shared = MergeSharedBeginObjectsPartialMultipleRoot(trace, ambiguityType, beginToPredecessors, predecessorToBranches);
-				}
-
-				trace->ambiguity.insEndObject = insEndObject;
-				trace->ambiguity.insBeginObject = shared.insBeginObject;
-				trace->ambiguity.traceBeginObject = shared.traceBeginObject->allocatedIndex;
-				trace->ambiguity.ambiguityType = ambiguityType;
-				return shared;
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-/***********************************************************************
-FillAmbiguityInfoForPredecessorTraces
-***********************************************************************/
-
-			void TraceManager::FillAmbiguityInfoForPredecessorTraces(Trace* trace)
-			{
-				// fill Trace::ambiguity in any traces that could be reached by the current trace
-				while (trace)
-				{
-					if (trace->predecessors.first != trace->predecessors.last)
-					{
-						// if an ambiguity resolving trace has been filled
-						// then we could stop here
-						// because a previous call should have visited from this trace all the way to the root trace
-						if (trace->ambiguity.traceBeginObject == -1)
-						{
-							FillAmbiguityInfoForMergingTrace(trace);
-							trace = GetTrace(trace->ambiguity.traceBeginObject);
-						}
-						else
-						{
-							break;
-						}
-					}
-					else
-					{
-						if (trace->predecessors.first == -1) break;
-						trace = GetTrace(trace->predecessors.first);
-					}
-				}
-			}
-
-/***********************************************************************
-CreateLastMergingTrace
-***********************************************************************/
-
-			void TraceManager::CreateLastMergingTrace(Trace* rootTraceCandidate)
-			{
-				// if there are multiple surviving traces
-				// they are all EndingInput transition to the ending state
-				// and their last instruction are EndObject
-				// so we could merge every surviving trace to one
-
-				// first, we need to determine the ambiguity type
-				vint32_t ambiguityType = -1;
-				for (vint i = 0; i < concurrentCount; i++)
-				{
-					auto trace = concurrentTraces->Get(i);
-					if (trace->predecessors.first == trace->predecessors.last)
-					{
-						// if this trace has only one predecessor
-						// find its BeginObject or BeginObjectLeftRecursive instruction for the type
-						TraceInsLists insLists;
-						ReadInstructionList(trace, insLists);
-
-						SharedBeginObject balanced;
-						balanced.traceBeginObject = trace;
-						balanced.insBeginObject = insLists.c3 - 1;
-						vint32_t objectCount = 0;
-						vint32_t reopenCount = 0;
-						FindBalancedBoOrBolr(balanced, objectCount, reopenCount);
-
-						AdjustToRealTrace(balanced);
-						ReadInstructionList(balanced.traceBeginObject, insLists);
-						auto ins = ReadInstruction(balanced.insBeginObject, insLists);
-						MergeAmbiguityType(ambiguityType, ins.param);
-					}
-					else
-					{
-						// otherwise, the type has been calculated before
-						MergeAmbiguityType(ambiguityType, trace->ambiguity.ambiguityType);
-					}
-				}
-
-				// second, create a merging ending trace
-				// such merging ending trace has no instruction
-				// it just merges all ending traces
-				auto mergingTrace = AllocateTrace();
-				for (vint i = 0; i < concurrentCount; i++)
-				{
-					auto trace = concurrentTraces->Get(i);
-					if (i == 0)
-					{
-						// copy data from the first one
-						mergingTrace->state = trace->state;
-						mergingTrace->byInput = trace->byInput;
-						mergingTrace->currentTokenIndex = trace->currentTokenIndex;
-
-						// set the ambiguity data
-						// rootTraceCandidate has no instruction
-						// the first instructions of all successors are all we need
-						TraceInsLists insLists;
-						ReadInstructionList(mergingTrace, insLists);
-						mergingTrace->ambiguity.traceBeginObject = rootTraceCandidate->allocatedIndex;
-						mergingTrace->ambiguity.insBeginObject = 0;
-						mergingTrace->ambiguity.insEndObject = 0;
-						mergingTrace->ambiguity.ambiguityType = ambiguityType;
-					}
-
-					AddTraceToCollection(mergingTrace, trace, &Trace::predecessors);
-					AddTraceToCollection(trace, mergingTrace, &Trace::successors);
-				}
-
-				// finally, the new merging trace should be the only surviving trace
-				concurrentCount = 1;
-				concurrentTraces->Set(0, mergingTrace);
-				for (vint i = 1; i < concurrentTraces->Count(); i++)
-				{
-					concurrentTraces->Set(i, nullptr);
-				}
-			}
-
-/***********************************************************************
-PrepareTraceRoute
-***********************************************************************/
-
-			Trace* TraceManager::PrepareTraceRoute()
-			{
-				if (state == TraceManagerState::PreparedTraceRoute) return initialTrace;
-				CHECK_ERROR(state == TraceManagerState::Finished, L"vl::glr::automaton::TraceManager::PrepareTraceRoute()#Wrong timing to call this function.");
-				state = TraceManagerState::PreparedTraceRoute;
-
-				// we starts from all surviving traces
-				// and visit all predecessors
-				// until we reach the end
-				// so that we could skip all failed traces
-
-				SortedList<Trace*> available;
-				List<Trace*> visited;
-
-				for (vint i = 0; i < concurrentCount; i++)
-				{
-					auto trace = concurrentTraces->Get(i);
-					visited.Add(trace);
-				}
-
-				for (vint i = 0; i < visited.Count(); i++)
-				{
-					auto visiting = visited[i];
-					if (available.Contains(visiting)) continue;
-					available.Add(visiting);
-
-					// add the current trace to its predecessors' successors collection
-					// so that a succeeded trace only have other succeeded successors in its successor collection
-					auto predecessorId = visiting->predecessors.first;
-					while (predecessorId != -1)
-					{
-						auto predecessor = GetTrace(predecessorId);
-						AddTraceToCollection(predecessor, visiting, &Trace::successors);
-						predecessorId = predecessor->predecessors.siblingNext;
-						visited.Add(predecessor);
-					}
-				}
-
-				// find all ambiguity resolving traces and fill their Trace::ambiguity
-				for (vint i = 0; i < concurrentCount; i++)
-				{
-					auto trace = concurrentTraces->Get(i);
-					FillAmbiguityInfoForPredecessorTraces(trace);
-				}
-
-				// if there are multiple surviving traces
-				// check if the ambiguity happens in the root AST
-				if (concurrentCount > 1)
-				{
-					CreateLastMergingTrace(initialTrace);
-				}
-
-				return initialTrace;
-			}
 		}
 	}
 }
@@ -6306,22 +8053,22 @@ namespace vl
 		{
 			void XmlParserData(vl::stream::IStream& outputStream)
 			{
-				static const vl::vint dataLength = 2446; // 22181 bytes before compressing
+				static const vl::vint dataLength = 2518; // 23493 bytes before compressing
 				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 142;
+				static const vl::vint dataRemain = 214;
 				static const vl::vint dataSolidRows = 9;
 				static const vl::vint dataRows = 10;
 				static const char* compressed[] = {
-					"\xA5\x56\x00\x00\x86\x09\x00\x00\x0D\x00\x01\x82\x80\x08\x03\x82\x81\x82\x06\x89\x82\x85\x0A\x83\x06\x84\x07\x0A\x91\x0A\x9C\x0A\x82\x12\x84\x14\x0A\xA3\x42\x09\x8F\x7D\x8E\x8F\x8E\x0A\x80\x1F\x9F\x81\x93\x92\x8F\x92\x26\xFF\x68\x86\x9B\x93\x91\x96\x92\x0A\xA9\xAA\x91\x99\x91\x91\x91\x00\x34\xAC\xB9\x8E\x9B\x98\x98\x8F\x9A\x3D\xA7\x81\xA0\x93\xA3\x9B\x9E\x9D\x47\xBC\x89\xBE\x96\x82\x9B\x96\xA1\x4B\xD0\x8D\xA0\xA1\xAC\xA1\xAA\xA3\x53\xC8\x99\xAA\xAB\xAC\xA7\x80\xA7\x45\xCF\x96\xBD\xA2\xAF\xAC\xAA\xB2\x63\xE6\x9A\xAA\xBC\xAC\xB6\xAE\x81\x60\xD7\xB7\x8A\x88\x9A\xB9\xB1\xBB\x76\x89\x9B\x89\x85\xB8\xB4\xAC\xB7\x65\xF0\xA7\xA0\xC9\xB2\xC3\xB4\xC3\x6D\x88\xEF\xA1\x81\xBE\xBE\xB1\xBF\x8A\x81\xCC\xC3\xC1\xCD\xC3\xC9\xC3\x97\x89\xD9\xCB\xC2\x94\xCB\xCC\xC9\x9D\x98\xE1\xDA\xC3\xD4\xCD\xC7\x81\x03\x74\xB8\xAE\xCB\xD4\xC0\xC9\xCF\x96\xA5\xE0\xC7\xD5\xCF\xD6\xD9\xD8\xB4\xB0\xF6\xD9\xD7\xDB\xDE\xCE\x00\x04\x2A\xC9\x8C\x8C\xBA\x86\x02\xE1\xAC\xF9\x86\x87\x08\xE6\xD7\xC7\xE7\xAD\xB5\xD0\xEA\xEE\xE1\xEA\xDD\xE9\xC9\xD9\xD5\xF4",
+					"\xC5\x5B\x00\x00\xCE\x09\x00\x00\x0D\x00\x01\x82\x80\x08\x03\x82\x81\x82\x06\x89\x82\x85\x0A\x83\x06\x84\x07\x0A\x91\x0A\x9C\x0A\x82\x12\x84\x14\x0A\xA3\x42\x09\x8F\x7D\x8E\x8F\x8E\x0A\x80\x1F\x9F\x81\x93\x92\x8F\x92\x26\xFF\x68\x86\x9B\x93\x91\x96\x92\x0A\xA9\xAA\x91\x99\x91\x91\x91\x00\x34\xAC\xB9\x8E\x9B\x98\x98\x8F\x9A\x3D\xA7\x81\xA0\x93\xA3\x9B\x9E\x9D\x47\xBC\x89\xBE\x96\x82\x9B\x96\xA1\x4B\xD0\x8D\xA0\xA1\xAC\xA1\xAA\xA3\x53\xC8\x99\xAA\xAB\xAC\xA7\x80\xA7\x45\xCF\x96\xBD\xA2\xAF\xAC\xAA\xB2\x63\xE6\x9A\xAA\xBC\xAC\xB6\xAE\x81\x60\xD7\xB7\x8A\x88\x9A\xB9\xB1\xBB\x76\x89\x9B\x89\x85\xB8\xB4\xAC\xB7\x65\xF0\xA7\xA0\xC9\xB2\xC3\xB4\xC3\x6D\x88\xEF\xA1\x81\xBE\xBE\xB1\xBF\x8A\x81\xCC\xC3\xC1\xCD\xC3\xC9\xC3\x97\x89\xD9\xCB\xC2\x94\xCB\xCC\xC9\x9D\x98\xE1\xDA\xC3\xD4\xCD\xC7\x81\x03\x74\xB8\xAE\xCB\xD4\xC0\xC9\xCF\x96\xA5\xE0\xC7\xD5\xCF\xD6\xD9\xD8\xB4\xB0\xF6\xD9\xD7\xDB\xDE\xCE\x00\x04\x2A\xC9\x8C\x8C\xBA\x86\x02\xE1\xAC\xF9\x86\x87\x08\xE6\xD7\xC7\xE7\xAD\xB5\xD0\xEA\xEE\xE1\xEA\xDD\xE9\xC9\xD9\xD5\xF4",
 					"\xE2\xEA\x84\x84\x83\x7D\xDB\xDA\xFD\xEC\xEF\xEA\xEB\xDE\xD8\xE2\xEA\xE4\xF3\xF6\xF1\xF2\x00\x09\x4D\xEC\xEB\xFE\xF5\xF4\xF5\xF3\xBC\xF9\xFF\xDA\xF2\xD4\xFC\xD2\xDE\x0A\x32\x75\x7C\x7D\xF7\x6F\x7E\x7E\x69\xFB\x49\x8D\x7E\x82\xFF\x4C\x88\x82\x68\x0E\x45\x76\x82\x83\xB3\x54\x88\x6E\x85\xBE\x4B\x8A\x85\x83\x1B\x8F\x8C\x87\x87\x1E\xA1\x85\x85\x87\x23\xA0\x85\x8A\x88\x17\xA4\x89\x88\x69\x0C\x02\x85\x82\x7D\x07\xA7\x82\x8F\x8A\x28\x99\x86\x88\x8D\x33\xB6\x85\x8D\x7A\xF3\x7D\x81\x40\x40\x12\xB0\x88\x84\x8F\x03\xBE\x8F\x88\x81\x31\xB8\x8A\x92\x8E\x39\x84\x97\x92\x91\x49\x8C\x9B\x92\x93\x51\x8E\x90\x45\x90\x48\x83\x98\x7E\x96\x13\xAA\x82\x97\x97\x54\x9C\x92\x92\x97\x4E\x8F\x0E\x89\x95\x5B\xA4\x99\x9B\x8D\x60\xAB\x9B\x8E\x9B\x4D\xB0\x93\x96\x9C\xB6\x50\x07\x9A\x98\x59\xAA\x9D\x94\x9B\x61\xBA\x93\x98\x9F\x74\xBD\x90\xA3\x9E\x6F\x84\xA1\x9E\xA1\x73\x88\xAD\x9B\x7B\x12\x58\x90\x94\x9E\x8F\xBE\x99\x9F\xA0\xF6\x52\x07\x9E\x68\x13\x17\xA4\x68\x05\x9A\x85\xAF\x9E\xA7\x93\xA0\xA1\xA4\x69\x15\x1D\xA0\x6A\x05\xA6\xB1\x67\x05\xAA",
 					"\x8B\x9F\xA7\xA2\x41\x18\x2C\xA2\xA2\xA8\x45\xB5\xAF\x92\xAD\x68\x8A\xA3\xAF\xAB\xA1\xBC\xA2\x41\x06\xB2\x8A\x4A\x05\xB0\x09\x5B\x0E\x88\x45\x8E\x81\x4D\x06\x8B\x1E\x2E\x8F\x06\x8B\x20\x04\xBE\xA9\xA2\xF6\x61\x02\xB7\x40\x16\x49\xB7\xAC\x00\x23\x2E\x84\x0A\x8B\x25\x2E\x86\x0A\x8B\x27\x2E\x88\x46\xB6\xB9\x93\xBD\xA9\xAF\xD4\xAC\xB6\x6D\x0A\xD7\xA3\xA4\xAF\xB6\x2A\x31\xB8\xAC\xA4\xF7\x92\xA2\xBE\xAF\xF9\x94\xAE\xBB\xAE\xED\xBB\xB1\xC1\x40\x2B\x36\xBB\xB5\xBA\xFF\x81\xAA\xC2\xAE\xE7\x6C\x06\xC1\x0B\x2E\xAE\x0E\x8B\x0B\x2E\xB0\x0E\x89\x0C\x2E\xB2\x06\xC0\xC2\x02\xEB\xBD\xC4\xC0\x1E\xFD\xB3\xBC\xC7\x01\x73\x0B\xC4\xBE\x07\xE8\xC4\xC9\xCA\xFA\xA2\xCC\xBC\x00\x34\x27\xCD\xC8\xCB\xFE\x9F\xCB\xC2\xBA\x20\xE1\x45\x0E\xCC\x35\xEE\xC3\xC0\xCD\x23\xEA\xC2\xD2\x68\x36\x3C\xC1\xD3\xCC\x2B\xC9\xD3\xD1\xCF\x40\xEF\xC7\x0E\xD1\x2F\xCA\xD8\xD3\xD2\x47\xCC\xD2\xD6\xD5\x54\xD1\xD9\xD7\xCF\x57\xD5\xDE\xD6\xD6\x53\xE2\x68\x0C\xD4\x5C\xDB\xD1\xCB\xB6\x39\x24\xD7\xDB\xCA\x3A\x2A\xD9\xCF\xCD\x09\xC9\x4B\x0E\xDB\x70\xC6\x9C\x0C\xDD\x0C",
-					"\xEF\x7D\x0C\xDE\x38\xF5\xDE\xCF\xDA\x66\xEF\xD9\xDE\x41\x3E\x3C\xD4\x83\x0F\x86\xF6\xC9\x40\x10\x89\xFF\xD2\xE1\xDF\x83\xF1\xD0\xE7\xE4\x92\xD5\xE2\x41\x10\x8D\xDB\xB2\x11\xE6\x2B\xC3\x1C\xE7\x6F\x44\x1F\xE1\xD8\xD6\xA3\xDF\xD5\xD9\xE9\x2F\xC5\x12\xE8\x69\x46\x2B\xE3\xBF\x11\xAE\xE0\x6D\x2A\x42\x7B\x76\x4E\xBA\x4C\xDF\x76\xEF\xDC\xEE\xAC\x87\x77\x56\x4C\xB5\xC3\x4C\x72\xA2\xBC\xC9\x4D\x8B\x55\xC1\xC2\x43\xF2\xBA\xC5\xC6\x47\xF2\x5F\xC9\xC1\x4B\xF3\xED\x29\x79\xE2\x43\xF3\xAE\x51\xF0\x03\xF4\x1D\xCD\xF3\x40\xF6\xB5\x7E\xEE\x5E\x4C\xE2\xEE\x64\xF9\x51\xE7\xFF\xE9\x4A\xF6\xE1\x5D\xF5\xF4\xED\x45\x65\xF5\x6C\xF0\xF0\xC4\xFF\xF9\x42\xA9\x57\x52\xFE\x6E\xF4\xC9\x41\x72\xFD\x26\x36\x79\x40\x02\x8D\x36\xED\x60\x66\x7B\xBA\x7D\x7E\xEE\x3B\x77\x7F\x05\xBD\x33\x7F\xBD\x32\x27\xFF\x63\x7B\x7C\x85\x13\x86\x35\x17\x93\x7D\x05\x89\x2C\x7A\x06\x81\x82\x21\xE0\x7A\x35\x06\xFC\x7B\x83\xE5\x34\x48\x81\x01\x21\x85\x6F\x23\x81\x83\x12\x82\x7F\x84\x0D\x9F\x79\x51\x2C\x82\x26\x05\x83\x22\x7B\x51\x48\x84\x00\x79\x7E\x2E\x1A\xB5\x86",
-					"\x24\xEC\x70\x87\x07\xFA\x23\x86\xF4\x6E\x82\x79\x42\x83\x24\x01\xAA\x82\x82\x23\x80\x8E\x82\x45\x8A\x7F\x13\x9C\x89\x89\x8F\x0B\x89\x8A\x14\x93\x8A\x09\x80\x8A\x88\x10\x98\x8E\x7C\x47\x92\x79\x15\x9E\x27\x8B\xAB\x3E\x87\x87\x1F\x3A\x78\x0E\x98\x4A\x86\x1E\x98\x86\x89\x23\x21\x88\x17\xD6\x85\x7F\x1E\xB0\x89\x8D\x0A\x3D\x81\xD3\x3F\x85\x8C\xE6\x71\x80\x89\xFA\x77\x8E\x47\x67\x88\x8D\x8E\x1A\x7C\x90\x1F\x28\x90\x1A\xDA\x7A\x8F\x1C\xBF\x89\x85\x5F\x9A\x82\x16\xAF\x83\x8E\x32\x9E\x8E\x8C\x82\x86\x91\x1E\xE3\x8D\x23\x3E\xAF\x8A\x8A\x71\x95\x8C\xF5\x43\x86\x20\x37\xB5\x32\x91\x3F\x92\x8E\x1F\xA4\x97\x87\x48\xA4\x83\x92\x80\x8B\x95\x17\xC6\x71\x7F\x4C\xBF\x18\x82\x85\x9F\x20\x2E\xB9\x9D\x23\x5D\xBC\x92\x7B\xC4\x32\x94\x1D\x89\x21\x42\xE8\x4E\x86\x83\xB3\x8E\x82\x0D\x89\x8C\x8D\x47\xB6\x21\x7D\x59\x81\x94\xFE\x45\x20\x98\x6A\x8A\x26\x94\xBA\x27\x92\x35\xD3\x98\x78\x51\xAE\x7C\x95\x02\x38\x99\x01\x8A\x21\x99\xEC\x50\x8D\x9B\x44\x95\x91\x27\xD7\x95\x96\x50\xB8\x8B\x38\xDB\x86\x20\x2A\xFF\x1A\x8C\x4E\xBF\x1C\x80\xE2\x9A",
-					"\x86\x2F\xC9\x93\x21\x7D\x83\x9E\x20\xF1\x37\x29\x39\x92\x93\x25\x81\xAF\x95\xA0\xB6\x86\xA1\x0B\xE0\x91\x21\x80\xBE\x2C\x80\x01\x57\x28\x44\xC5\x24\x81\x79\x84\x82\xA1\x3A\x96\xA3\x39\x8F\xA4\x9C\x8A\x9B\xA6\x35\x15\xBE\xA0\x3C\x92\xAF\xA3\xDA\x16\x67\x98\xED\x61\x22\xF6\x62\x9A\x9B\x74\xB2\x9E\x9B\x01\x2C\x85\x35\xAE\xAD\x9E\x98\x80\x3B\x93\xDC\x9B\x8B\x4B\xD4\x8E\x7E\x9C\xBB\xA2\xA7\x03\x2A\xA2\x1E\x90\x8A\x8E\x16\xA2\x9C\x85\x48\xBD\xA1\x42\x10\x8C\x84\x02\x8E\xA3\x20\x11\xA6\x21\x31\xB2\x89\x20\x20\x46\x27\x4A\x06\x26\x4D\x42\x76\x49\x21\x46\x46\x26\x52\x09\x39\x53\x31\xA5\x57\x98\x4D\x2E\x41\x24\x64\xAE\x83\x26\x2E\x4A\xA1\x58\x47\x9C\x13\x2E\x4C\x87\xB3\x47\x9D\x12\x17\x69\xA0\x00\xCD\x47\x9A\x27\x2E\x42\x9D\x68\x47\x9F\x13\x2E\x5A\x7A\xB5\x47\x90\x14\xB6\x8A\x26\xAD\x0E\x81\x17\x59\x8A\x23\x5D\x63\xA2\x13\xB1\x09\x2D\xB2\x03\xA3\x1E\x44\x08\xB5\x5F\x98\xA4\x11\xAE\x42\x05\x67\x99\x52\x3C\xAA\x21\x0E\x67\x9A\x29\x15\xBA\x21\xCB\x8E\x87\x14\x9A\xA9\x20\x67\x8E\x88\x15\xCF\x89\x21\xB4\x0E\x89\x14\x69\x89",
-					"\x26\xB5\x05\xAA\x11\xB5\x06\x2B\xB7\x02\xAB\x1E\xB4\x83\x30\xB3\x81\xAC\x0E\x44\x12\x47\x97\xA6\xE2\xB6\xAE\xA6\xBC\x2B\xA4\x71\xBC\x3C\xA5\xF3\x22\x9F\xAE\x21\x2A\xA3\x5D\xAB\x62\xA7\xE5\x81\x72\xA9\x40\xBA\x74\x04\xF7\xAA\x8F\x35\xA2\x32\xA1\x4F\xBA\x75\x78\x81\x27\xAF\xA8\xAD\x97\x3D\x0A\xA4\x81\x48\x2A\x87\xAE\xAB\xA7\xBE\x3E\x0A\xA6\xBE\xEE\x5A\xA0\x3C\x85\x1C\xAE\x20\xDE\xA4\x37\x50\xC4\xB0\xAD\xFA\x91\x77\x20\xC6\x24\xBA\x58\xFE\xB4\x72\x81\x23\xB8\x00\x10\x81\x24\xA7\x68\x58\x64\xF9\x81\x21\xC1\x0A\x29\xAF\x40\x53\xB8\x65\xA9\x82\x26\xBD\xBA\x68\x56\xB6\x2B\x54\xA6\x23\x58\xC0\x92\xC7\x80\x58\x83\xB3\x68\xAB\x81\x37\xBB\x81\xC3\x5A\x5A\xB1\x1D\xC6\x57\x13\xC2\x24\xBE\x0B\x8B\x5B\x88\xCC\x6E\xAB\x81\x03\xC3\x81\x79\xA4\xC2\xE5\x01\x27\xC6\x81\x0B\xC2\x99\xBF\x33\xAC\x7E\xE7\x3F\xC7\x81\x1A\xC0\xC8\xA8\x71\x35\x91\x82\x2C\xC2\x24\xE4\x73\x53\x25\xB6\x77\x60\xBA\xC2\x21\x6C\x43\xC8\xA5\x11\xCA\x23\x91\x8B\x8D\x6A\xD0\x12\xC4\xC9\xD6\xA9\xCA\x6D\x5F\xC1\xA6\xE2\x9F\x5A\x5B\xE1\x4C\xC4\x00\x77\xA7\xAF\x2D",
-					"\xC2\x25\xBF\x0B\x85\x5F\x8C\xF3\x5D\xC9\x81\x22\xC6\xC9\xA6\x76\x35\x9D\x82\x2D\xC6\xDB\x67\x5F\xCA\xF6\x35\x9D\x42\x7B\xC2\x8D\x63\xB5\xB2\x20\xDA\x7F\xB4\xA2\xD1\xC0\x00\xED\x44\xD0\x3E\xC4\xB2\x62\x9A\xA7\xA0\xD1\x9A\xAA\xCF\xD1\xEA\xAA\x22\xC6\x6A\xC1\x66\x35\xC4\x86\xD1\xF6\xA4\xB9\xD1\x6A\xC3\x6C\x35\xCE\xC5\xD1\x0A\x2F\xD3\x87\xB6\x2D\x6C\x35\xF7\x6A\xCD\x2A\x80\xD5\x42\x27\xD1\x25\xC2\x6A\xCC\x71\x6A\xC5\xC7\xA2\x89\x28\xB0\x3B\xE1\xCF\xC9\x9C\x3D\xD4\x9F\xC4\xBB\x72\x35\xFC\x36\xC5\x2A\xA7\xB2\x4F\x8B\x81\x74\x35\xED\x72\xCD\x70\xDB\xD4\xAC\x0A\x27\xC1\x90\x03\xBA\xCD\x4A\x16\xA7\x92\xC9\xDC\xD6\xEF\x04\xBC\x09\x36\xAE\x0A\x4D\xEE\xCC\xDB\x69\xDB\xAC\xB8\x50\x16\xA6\x14\x36\xA2\xD9\x72\xC3\x25\xDD\x00\x0B\xD5\x48\x54\x06\xA6\x2B\x36\xA1\xC5\x95\xC2\x20\xBC\xB4\xDA\x20\x2C\x36\xA2\x0B\x36\xA8\x59\xBE\x81\x27\xCF\x81\x2B\xC0\xCF\xA0\x3C\x08\x72\xBF\x38\xDF\x81\x11\xDE\x76\x5E\x19\x73\xC1\x83\x2D\xE0\x66\xA2\xC9\x24\x02\xF6\xC4\x71\xDF\x0B\xE0\xD1\x39\xC3\xC2\x13\x2B\xDA\xEE\x61\x06\xA7\x31\x36\xA2\xC8",
-					"\x20\xE9\x21\xC6\x86\xC4\xB9\x32\x36\xA7\x0C\x36\xBE\xAC\x95\x81\x2B\xE5\x01\x84\xB9\x0D\x36\xAB\x0E\x4D\xD3\xC9\xE4\x83\x35\xE0\x00\xC8\xD6\x25\x1B\x36\xAF\x0C\x9B\x96\xCD\xE7\x03\x3F\xE6\xBC\x8A\x21\x0E\x9B\xB3\x0E\xA6\xDD\x5A\x5B\xCF\xFC\xD9\x21\x3A\x36\xA7\x0E\x36\xA7\xCF\xCC\xF8\xAA\x20\x19\xCE\x81\x0F\x99\x68\xE6\x40\x5E\xEB\x80\x3D\x19\x72\xE6\x03\x24\xEE\xEE\x7B\x09\x72\x9E\xE3\xEC\xB8\x7C\x19\x73\xD1\x82\x2A\xEB\x05\xBD\x09\x73\x75\xE2\x21\x9A\x88\xE1\x36\x3F\x1D\xE4\x34\x7B\xE3\x22\x9C\xFC\xE0\x70\xD1\x01\xF2\x20\x2C\x81\x24\x20\x2E\x41\x10\x9B\x87\xF4\xBC\x8C\xAA\x23\xE0\xDC\xC7\xBB\xC8\x8C\xD1\x24\x83\x0E\x44\x21\x36\xA2\xB2\xA4\xC2\x23\xF2\x02\x31\xEA\x03\x86\x19\x73\x3F\xC3\x21\xEF\xB6\x67\x13\xDF\x9C\x30\xF4\xC8\xC9\x26\xF4\xC3\xC7\x99\x22\x2B\xF0\x34\xD8\xEE\xF6\x20\xB6\xE0\xE8\x71\x8B\x16\xA7\x46\x36\xA0\x5E\xDA\x47\xD1\x40\x28\xF6\x27\x47\x06\x62\xF8\x6B\xC5\xB6\x42\x7D\xC6\x26\x48\x06\x62\xB7\x02\x37\xAC\xF2\xC1\xE1\x25\x48\x2E\x42\x12\x36\xAA\xD3\xED\x83\x20\xFB\x80\x00\xFE\x81\x94\x19\x72",
-					"\xF6\x80\x04\xF9\x90\x15\x17\x61\x2E\x43\xFC\xF3\xA1\x26\x12\x83\x52\xD3\xEB\xE3\xF4\xFA\x42\x17\x1E\x44\x4C\x36\xA4\x62\xDA\x50\x63\x31\xBC\x31\x82\xE3\xBE\xFF\xFF\x14\x6C\x12\x01\x86\x12\x6C\x63\x17\x6A\x69\x7C\xC4\x57\x57\xE2\x48\x6A\x72\x19\x5F\xD2\x47\x4C\xF9\x45\x13\x11\x89\x12\x0B\x81\x12\xF3\x45\x5C\xE3\x39\x78\x16\x86\x5C\x1A\x87\x79\x1B\x84\x5C\x1D\x8D\x53\x20\x8C\x81\xC6\x58\x51\x35\x16\x82\x29\x1A\x50\x36\x1A\x82\xD1\x55\x82\xC6\x5E\x4F\x27\x10\x83\x1E\x10\x61\x01\x64\x5C\x34\x8B\x54\xC6\x5D\x48\x35\x1A\x83\x29\x1A\x47\x36\x1E\x83\x21\x10\x84\x0A\x10",
+					"\xEF\x7D\x0C\xDE\x38\xF5\xDE\xCF\xDA\x66\xEF\xD9\xDE\x41\x3E\x3C\xD4\x83\x0F\x86\xF6\xC9\x40\x10\x89\xFF\xD2\xE1\xDF\x83\xF1\xD0\xE7\xE4\x92\xD5\xE2\x41\x10\x8D\xDB\xB2\x11\xE6\x2B\xC3\x1C\xE7\x6F\x44\x1F\xE1\xD8\xD6\xA3\xDF\xD5\xD9\xE9\x2F\xC5\x12\xE8\x69\x46\x2B\xE3\xBF\x11\xAE\xE0\x6D\x2A\x42\x7B\x76\x4E\xBA\x4C\x01\xB6\xE7\xED\x4A\xB9\xE0\x75\x53\x71\x57\x72\x45\xEF\x40\xCC\x4A\xA8\xEE\x42\x2D\x97\x53\xF2\x40\xC5\xEA\xB7\xF1\x42\xC9\xFE\x5B\xF1\x40\xCD\xFB\xE6\x49\xEF\x03\x51\xFE\x6B\xF4\x00\x15\xFD\xC7\xF3\x06\x5A\xF5\x6C\xF0\x7E\x72\x44\xFA\x6B\xE6\xC5\x59\xF9\xF0\x29\x5C\xF1\x7B\xF7\xBC\xF4\xEF\xEE\xFA\xED\xF2\xF6\xF1\xFC\x09\x69\x67\x57\xF9\xB5\x42\xFA\x41\x70\xF7\x77\x7A\x77\x45\x2C\x7A\x90\x60\x7A\x77\xBD\x25\x80\x9D\x07\x8A\x77\xF5\x65\x79\x25\x00\x8F\x82\x49\x5C\x71\x82\xD7\x15\x85\x7F\xF5\x69\x22\xF7\x7F\x6C\x81\x80\x22\x7A\x37\x17\x9A\x36\xFF\x1A\x8B\x80\xFC\x61\x7D\x28\x21\x9D\x37\x08\xCB\x35\x84\x01\x90\x78\x85\xF4\x73\x82\xFD\x4E\x76\x84\xD4\x30\x84\x7D\x32\x88\x5C\x86\x1D\x80\x00\xEE\x72\x21",
+					"\x85\x32\x2B\x84\xF1\x2D\x83\x24\xEC\x42\x27\x83\xBD\x20\x89\x10\xB9\x86\x20\x25\xA6\x26\x89\x4B\x9E\x20\xF7\x1B\x8D\x69\x25\x86\x8E\x83\x37\x92\x83\x48\x53\x84\x89\x8F\x17\x88\x00\x48\x9F\x85\x0C\xDB\x8A\x20\x2A\x91\x4C\x87\x61\x90\x83\x18\x9F\x2C\x7A\x1F\xBB\x85\x86\x02\x3A\x7E\x5F\x50\x81\x8B\x7F\x2E\x7D\x8B\x1E\x3F\x8A\x1B\xCF\x8B\x8C\x29\xA5\x88\x8F\x1D\x3F\x89\x1A\xDE\x4C\x86\x33\xA9\x24\x7F\x22\x8A\x8C\x0E\xE4\x89\x20\x3A\x9E\x26\x91\x4B\x9C\x89\x00\xC5\x88\x79\x2C\xA8\x79\x83\x2C\x93\x92\x17\x95\x97\x2A\x48\x81\x8A\x92\x34\x8E\x87\x09\x9D\x9D\x8F\x8E\x2D\x88\x90\xFF\x1F\x8A\x1C\x96\x85\x94\x3B\xAA\x6C\x87\x7B\x83\x26\x27\xC2\x8C\x78\x54\x82\x95\x28\xC4\x3A\x8B\x47\x08\x9A\x85\x94\x39\x97\x92\x26\x3C\x95\x1D\x9F\x2F\x96\x0C\x81\x9D\x95\xC5\x89\x93\x31\x8B\x9C\x8C\x85\x09\x9D\x8A\x41\x9F\x89\x84\x52\x78\x80\xF8\x62\x90\x81\xB4\x96\x77\x19\xF0\x8A\x9B\x43\xAD\x94\x7B\xAB\x95\x34\xF7\x4F\x99\x9A\x00\x21\x9A\x37\x14\x84\x82\x42\x67\x99\x81\x19\x96\x7C\x92\xF9\x6A\x9F\x70\x72\x9D\x88\x7A\x83\x21\x96\x35\x5C",
+					"\x84\x3B\x8E\x80\x98\x46\x86\x24\x9C\x98\x83\x22\x27\xA7\x9A\x93\x3C\xAB\x9D\x28\x5F\x82\x98\x37\x80\x0A\xA1\x6B\x82\x21\x3E\x57\x3F\x88\x44\xFE\x2F\x8B\x2F\xBC\x86\xA2\x0B\xBE\x93\x17\x80\xAE\xA1\x80\x1A\xA7\x7F\x08\xAE\x99\x48\x8D\x93\xA5\x7A\x91\xA2\xA4\x27\xA4\xA7\x55\x16\x65\x9A\x00\x2F\x79\x20\xE0\x8E\x9E\x40\x29\x89\x9C\xBD\x20\xA6\xA6\xF3\x98\xA6\x41\x3C\x95\xA7\x4C\x86\x24\x9D\x54\x89\x85\x50\xFF\x8A\xA4\x9F\x83\x27\x99\x54\x9C\x97\x50\xF1\x95\xA8\x81\xB7\xA7\x9F\xC6\x2F\xAB\x40\x5F\x33\x21\x89\x83\x22\x9A\x9C\x86\x20\x90\x06\x27\x4A\x83\x26\x49\x21\x76\x49\x21\xA3\x06\x26\x53\x84\x19\x55\xA5\xA5\x4D\xA5\x48\x1E\x1E\x45\x90\x29\xAA\xAD\x09\x3F\x12\x8B\x4F\x91\x56\xB8\x89\x20\x14\x2E\x49\x86\xB5\x2D\xAB\x9F\xDF\x2F\xA0\x00\xCD\x5C\xAF\x79\x6C\x91\x5A\xC1\xAF\x3C\x7B\xCF\x46\xB2\x7D\x74\xA6\xAF\x84\x21\x15\xAD\x0A\x23\x5D\x63\x83\x22\x14\xC8\x89\x22\xB2\x93\xA1\x23\x28\x2E\x4C\x97\x7A\x59\xB1\x20\xA4\x19\xAE\x42\x05\x6F\xB2\x00\x25\x16\x45\xEC\x8E\x61\x69\xA6\x1C\xB2\x85\x1E\xB7\xB3\xA7\x02\xB5\x42\x24",
+					"\xBF\xB2\x54\x28\xB2\x21\xAA\xBF\xB1\x2A\x2D\xB9\x21\xD7\x99\xB2\x15\xB2\xA6\x20\x6D\x99\xBB\x15\xDB\x89\x21\xB7\x99\xAC\x16\x8B\x48\x0A\xAC\x4F\xA5\xB1\x20\x7F\xBF\xAC\x3E\xA0\x31\xA7\xF7\x0E\x4C\x9D\xD3\xB1\x34\x3B\xFF\xAC\x37\x90\x0F\x9C\xBB\x28\x74\xA7\x79\x0F\x74\x40\xA4\xA3\xB9\xAA\xDA\x54\x89\x76\xB6\x3F\x98\xAB\x86\x49\x24\xEE\xB0\xBA\x42\x7A\x87\x3D\x67\x94\xAF\xBD\x59\xA3\x23\x5F\xDB\xA7\x9F\xFA\xB3\xBF\xBC\x09\x3F\xAA\xEF\x60\xA2\xA6\x5B\x49\xA8\xC0\x64\xB9\x73\x7D\x81\x2D\xA0\xD2\x21\x27\xAC\x03\xD4\x73\x43\xE8\xB6\x3F\x90\x1C\x52\x87\x33\x69\xA0\x82\x83\x2F\xAC\xFD\xBE\x68\x00\xD3\x83\x20\x7F\xF8\xB9\x20\x54\x5A\x5B\x55\x3A\xA4\x43\x88\xD8\x86\xBA\x85\x00\x58\xC3\x4C\x7D\xAB\x40\x61\xA5\xC2\x61\x6E\x46\x58\x29\xC6\x48\x8D\x83\x22\xC0\x02\x61\x23\x59\x30\xD3\x5F\x58\x83\x20\xC2\x1F\xCA\x21\xB0\x11\xD6\x71\x40\x45\xC2\x21\x0B\xF5\xC7\x3D\x89\xA6\x23\x7A\x96\xCA\x20\x13\xCF\xCA\xC2\xB6\x4E\xCB\x40\x28\xC7\xCA\x25\xDB\x5A\xCB\x33\xBB\xC2\x40\x7B\xA9\xC8\x81\x19\x5A\xCA\x6A\xBF\xAD\x87\x82\x26\xCA\x23",
+					"\xD1\x76\x48\x6B\xC1\x20\x97\xEE\xC8\xCB\x6D\x71\xC8\x38\x62\xC1\x23\xB7\x5A\x51\x5D\x1C\xF2\xBA\x5B\x6D\xC2\x21\x59\xDD\xC2\x21\x72\x41\xCF\x65\x73\xDF\x55\x9E\xD0\x9E\x49\x44\xCB\xCB\xD1\xE7\x48\xCF\x61\x85\xC0\x00\x47\xDD\x7B\xD1\xBE\xA2\x20\xF7\x48\xBA\xD2\xA9\x9D\xD1\x21\x96\xD1\xBF\xB6\x21\x22\x62\x3F\xC0\x04\xA5\x92\xDB\xA4\xA5\x96\xDB\xC1\x51\xCA\x22\x63\xA6\xD1\x66\xA9\xAD\xDC\x7A\x4B\xFB\xC4\xC4\x06\x25\x6A\xA9\xE3\x66\xD4\xFA\xA0\xD2\x21\x2B\xCE\xD5\x42\x6D\x66\xD5\xBB\x66\xD0\x89\xB5\xDF\xBD\x8B\x89\x25\x70\x53\xCC\x76\xD4\x32\xDF\xD0\xAC\x2E\xCB\xD1\xAE\x60\x35\xAE\x06\x2C\xCA\xAD\x21\x2B\x72\x53\xFC\x37\xD6\x30\xAA\x20\xB6\xC3\x8B\xD8\x83\x21\x76\xD4\xAD\x66\xD7\xA0\xFD\xB9\x21\x71\xD3\xC5\xDC\x03\x2C\xBA\xA9\xCA\x04\xD2\x30\xE1\xDD\xDD\x03\x90\xDE\x40\x4C\x04\xD2\x27\x14\xD1\xD0\xF7\xD3\xD8\x81\xFA\xD1\x20\x28\x14\xD2\x0A\x94\xCE\xDD\xC0\x83\x2A\xE0\x00\x01\xDD\xBB\x0A\x34\x08\xA5\xD6\x04\xD3\x61\x66\xD5\xE1\x18\xA2\x35\x48\x58\x04\xD2\x2D\x14\xD0\x59\xA9\xC3\x23\x8B\x86\x28\xC6\x42\xF6\x54\x0B",
+					"\x94\xDC\x36\xC5\x89\xC4\xE0\x00\x1E\x09\x73\x25\xE3\x23\xCA\xF4\xCE\xCA\xDE\x20\xE4\xC8\x8B\xDF\x09\xCA\xBF\x38\xC8\x0F\xC9\x27\xE6\xB5\x8D\xE5\x18\x14\xD3\x0C\x4A\xD1\xCE\xE7\x06\x20\xE9\x40\x22\xD0\xE3\x84\x25\x0C\xD2\x67\x14\xD1\x61\xE5\xC1\x20\xA5\xC4\x23\xD1\x69\x14\xD3\x1A\x14\xD4\xCC\xA4\xC3\x26\xEA\xE0\xC2\xDA\x41\x6D\x04\xD3\x37\x14\xD7\xCC\x5E\xE2\x22\xD5\x8F\xEF\x37\x90\x31\x0C\xD2\x73\x14\xD1\xB7\x5A\x56\xEB\x8C\xCE\xC2\x21\x75\x14\xD3\x1D\x14\xDB\xCE\xAA\xC0\xB2\x21\x40\xC6\xE4\x00\x79\x0B\xE7\x99\x47\xEA\x20\x81\xF4\xE6\x40\x7B\x05\xF0\xA6\x53\xEB\x20\x89\xF8\xD7\x40\x7D\x0D\xF1\x79\x5D\xE8\xF1\x8B\xDF\x0D\xE5\xAF\x68\xEC\x81\x3D\xEA\xF1\x01\x21\x11\xE6\x1F\xF2\x21\x3E\xC2\xF4\x37\x82\x1B\xF1\x6C\x26\xF3\x20\x43\xE7\xF1\x70\x0A\x2C\xF5\x98\xAD\xE4\x10\x17\x45\x14\xD2\xB2\xFF\xCE\x41\x18\xBD\xF5\x6A\xF0\xF7\xB2\x9E\xDB\xDA\x42\x07\x1E\x44\x44\x14\xD4\xF7\x02\x3F\xAE\xEB\x83\x23\xEE\xC1\xCA\x11\x73\x91\xC3\x20\xE9\xC2\xF9\x21\x45\x2A\xF6\x36\xCB\xE9\xFB\x45\x0A\x2A\xDA\xB1\xC3\x25\x11\xD7\xE1\x25",
+					"\xF4\xDA\xF9\x21\xF1\xC1\x21\xEC\x4D\xE6\x23\x23\x14\xD1\x12\x4A\xF0\x5A\x5B\x99\xDA\xCF\xA2\x93\x16\x61\xF8\xEE\xA6\xB5\xDC\xEB\xD0\x25\x06\x63\xB8\xF2\xC6\x26\xFE\xE8\x7D\x76\x0A\x15\x09\x2E\x26\x09\x94\x6C\x69\xBA\x73\x10\xFD\x71\x10\xEF\x72\x78\x98\x09\x39\x08\x80\x00\xD3\x7E\x7D\x02\x19\x09\x0F\x3E\x22\x11\x8D\x7D\xE9\x73\x10\x9A\x06\x30\xA5\x6E\x77\x11\x81\x80\x1A\x7A\x10\x9B\x0E\x22\x9C\x04\x69\x14\x3A\x2D\x10\x3D\x52\xDD\x51\x44\xCF\x5F\x82\x69\x77\x1D\xE0\x59\x12\xD1\x53\x17\xA6\x67\x7F\x69\x67\x50\xE1\x7B\x5E\xAE\x4A\x56\x7D\x5C\x12\x3F\x86\x12\xEC\x46\x13\xCE\x53\x4B\x29\x44\x84\x70\x57\x84\x21\x1A\x84\xC1\x76\x3B\x4C\x8D\x54\x08\x4F\x84\x26\x5D\x52\x1C\x5E\x12\x55\x83\x12\xCF\x46\x13\x59\x8E\x5D\x70\x5B\x85\x14\x6E\x1C\x0D\x63\x12\xBC\x46\x13\x63\x81\x12\x65\x8F\x85\x08\x46\x48\x2C\x1A\x86\x26\x14\x45\x36\x1E\x86\x21\x10\x87\x6A\x50",
 				};
 				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 			}
@@ -6374,10 +8121,10 @@ namespace vl
 					L"[27][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME @ \">\" ) >",
 					L"[28][XSubNode] BEGIN ",
 					L"[29][XSubNode] END [ENDING]",
-					L"[30][XSubNode]<< ( ( ( !XText @ | !XCData ) | !XComment ) | !XElement ) >>",
-					L"[31][XSubNode]<< ( ( ( !XText | !XCData ) | !XComment ) | !XElement @ ) >>",
-					L"[32][XSubNode]<< ( ( ( !XText | !XCData ) | !XComment @ ) | !XElement ) >>",
-					L"[33][XSubNode]<< ( ( ( !XText | !XCData @ ) | !XComment ) | !XElement ) >>",
+					L"[30][XSubNode]<< ( !XText @ | !XCData | !XComment | !XElement ) >>",
+					L"[31][XSubNode]<< ( !XText | !XCData @ | !XComment | !XElement ) >>",
+					L"[32][XSubNode]<< ( !XText | !XCData | !XComment @ | !XElement ) >>",
+					L"[33][XSubNode]<< ( !XText | !XCData | !XComment | !XElement @ ) >>",
 					L"[34][XInstruction] BEGIN ",
 					L"[35][XInstruction] END [ENDING]",
 					L"[36][XInstruction]< \"<?\" @ NAME { XAttribute } \"?>\" >",
@@ -6518,7 +8265,7 @@ XmlAstInsReceiver : public vl::glr::AstInsReceiverBase
 				}
 			}
 
-			void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem)
+			void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
 			{
 				auto cppFieldName = XmlCppFieldName((XmlFields)field);
 				return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);

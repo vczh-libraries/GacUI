@@ -29,7 +29,10 @@ namespace vl
 			template<typename T>
 			struct MappedOwning
 			{
+			private:
 				collections::List<Ptr<T>>				items;
+
+			public:
 				collections::List<WString>				order;
 				collections::Dictionary<WString, T*>	map;
 
@@ -40,6 +43,22 @@ namespace vl
 					order.Add(name);
 					map.Add(name, item);
 					return true;
+				}
+
+				Ptr<T> Remove(const WString& name)
+				{
+					vint indexKey = map.Keys().IndexOf(name);
+					if (indexKey == -1) return nullptr;
+
+					auto raw = map.Values()[indexKey];
+					vint indexItem = items.IndexOf(raw);
+					auto shared = items[indexItem];
+
+					items.RemoveAt(indexItem);
+					order.Remove(name);
+					map.Remove(name);
+
+					return shared;
 				}
 			};
 
@@ -57,72 +76,107 @@ namespace vl
 ParserSymbolManager
 ***********************************************************************/
 
+#define GLR_PARSER_ERROR_LIST(ERROR_ITEM)\
+			/* AstSymbolManager */\
+			ERROR_ITEM(DuplicatedFile,														fileName)\
+			ERROR_ITEM(FileDependencyNotExists,												fileName, dependency)\
+			ERROR_ITEM(FileCyclicDependency,												fileName, dependency)\
+			ERROR_ITEM(DuplicatedSymbol,													fileName, symbolName)\
+			ERROR_ITEM(DuplicatedSymbolGlobally,											fileName, symbolName, anotherFileName)\
+			ERROR_ITEM(DuplicatedClassProp,													fileName, className, propName)\
+			ERROR_ITEM(DuplicatedEnumItem,													fileName, enumName, propName)\
+			ERROR_ITEM(BaseClassNotExists,													fileName, className, typeName)\
+			ERROR_ITEM(BaseClassNotClass,													fileName, className, typeName)\
+			ERROR_ITEM(BaseClassCyclicDependency,											fileName, className)\
+			ERROR_ITEM(FieldTypeNotExists,													fileName, className, propName)\
+			ERROR_ITEM(FieldTypeNotClass,													fileName, className, propName)\
+			/* LexerSymbolManager */\
+			ERROR_ITEM(InvalidTokenDefinition,												code)\
+			ERROR_ITEM(DuplicatedToken,														tokenName)\
+			ERROR_ITEM(DuplicatedTokenByDisplayText,										tokenName)\
+			ERROR_ITEM(InvalidTokenRegex,													tokenName, errorMessage)\
+			ERROR_ITEM(TokenRegexNotPure,													tokenName)\
+			ERROR_ITEM(DuplicatedTokenFragment,												fragmentName)\
+			ERROR_ITEM(TokenFragmentNotExists,												fragmentName)\
+			/* SyntaxSymbolManager */\
+			ERROR_ITEM(DuplicatedRule,														ruleName)\
+			ERROR_ITEM(RuleIsIndirectlyLeftRecursive,										ruleName)													/* Indirect left recursion must be resolved before */\
+			ERROR_ITEM(LeftRecursionPlaceholderMixedWithSwitches,							ruleName, placeholder, targetRuleName)\
+			ERROR_ITEM(LeftRecursionInjectHasNoContinuation,								ruleName, placeholder, targetRuleName)\
+			/* SyntaxAst(ResolveName) */\
+			ERROR_ITEM(RuleNameConflictedWithToken,											ruleName)\
+			ERROR_ITEM(TypeNotExistsInRule,													ruleName, name)\
+			ERROR_ITEM(TypeNotClassInRule,													ruleName, name)\
+			ERROR_ITEM(TokenOrRuleNotExistsInRule,											ruleName, name)\
+			ERROR_ITEM(LiteralNotValidToken,												ruleName, name)\
+			ERROR_ITEM(LiteralIsDiscardedToken,												ruleName, name)\
+			ERROR_ITEM(ConditionalLiteralNotValidToken,										ruleName, name)\
+			ERROR_ITEM(ConditionalLiteralIsDiscardedToken,									ruleName, name)\
+			ERROR_ITEM(ConditionalLiteralIsDisplayText,										ruleName, name)\
+			ERROR_ITEM(DuplicatedSwitch,													switchName)\
+			ERROR_ITEM(UnusedSwitch,														switchName)\
+			ERROR_ITEM(SwitchNotExists,														ruleName, switchName)\
+			ERROR_ITEM(SyntaxInvolvesSwitchWithIllegalRuleName,								ruleName)													/* A syntax uses switch should not use rule name that has _SWITCH/SWITCH_ */\
+			ERROR_ITEM(SyntaxInvolvesPrefixMergeWithIllegalRuleName,						ruleName)													/* A syntax uses prefix_merge should not use rule name that has _LRI/_LRIP/LRI_/LRIP_ */\
+			ERROR_ITEM(SyntaxInvolvesPrefixMergeWithIllegalPlaceholderName,					ruleName, placeholderName)									/* A syntax uses prefix_merge should not use placeholder name that has _LRI/_LRIP/LRI_/LRIP_ */\
+			/* SyntaxAst(CalculateTypes) */\
+			ERROR_ITEM(RuleMixedPartialClauseWithOtherClause,								ruleName)\
+			ERROR_ITEM(RuleWithDifferentPartialTypes,										ruleName, ruleType, newType)\
+			ERROR_ITEM(RuleExplicitTypeIsNotCompatibleWithClauseType,						ruleName, ruleType, newType)								/* The type of the rule is explicitly specified, but it is incompatible with its clauses */\
+			ERROR_ITEM(RuleCannotResolveToDeterministicType,								ruleName, ruleType, newType)								/* Unable to resolve to one type from clauses (token, type) or (create, partial) */\
+			ERROR_ITEM(CyclicDependedRuleTypeIncompatible,									ruleName, ruleTypes)										/* Types of rules are not compatible to each other when they build cyclic dependency by reuse clauses */\
+			ERROR_ITEM(ReuseClauseCannotResolveToDeterministicType,							ruleName, ruleTypes)										/* A reuse clause contains multiple use rule but their types are not compatible to each other */\
+			ERROR_ITEM(ReuseClauseContainsNoUseRule,										ruleName)													/* A reuse clause contains no use rule therefore the type cannot be determined */\
+			/* SyntaxAst(ValidateSwitchesAndConditions, condition) */\
+			ERROR_ITEM(PushedSwitchIsNotTested,												ruleName, switchName)\
+			ERROR_ITEM(PrefixMergeAffectedBySwitches,										ruleName, prefixMergeRule, switchName)\
+			/* SyntaxAst(RewriteSyntax_Switch, condition) */\
+			ERROR_ITEM(NoSwitchUnaffectedRule)\
+			ERROR_ITEM(SwitchUnaffectedRuleExpandedToNoClause,								ruleName)\
+			ERROR_ITEM(SwitchAffectedRuleExpandedToNoClause,								ruleName, expandedRuleName)\
+			/* SyntaxAst(ValidateTypes) */\
+			ERROR_ITEM(FieldNotExistsInClause,												ruleName, clauseType, fieldName)							/* The field does not exist in the type of the clause */\
+			ERROR_ITEM(RuleTypeMismatchedToField,											ruleName, clauseType, fieldName, fieldRuleType)				/* The rule type is not compatible to the assigning field */\
+			ERROR_ITEM(AssignmentToNonEnumField,											ruleName, clauseType, fieldName)							/* Assignment can only assign fields in enum types */\
+			ERROR_ITEM(EnumItemMismatchedToField,											ruleName, clauseType, fieldName, enumItem)					/* Try to assign an unexisting or mismatched enum item to a field in an enum type */\
+			ERROR_ITEM(UseRuleWithPartialRule,												ruleName, useRuleName)										/* A use rule should not be used with a partial rule */\
+			ERROR_ITEM(UseRuleInNonReuseClause,												ruleName, useRuleName)										/* A use rule should only appear in reuse clause */\
+			ERROR_ITEM(PartialRuleUsedOnField,												ruleName, clauseType, partialRuleName, fieldName)			/* A partial rule does not create object, it cannot be assigned to a field */\
+			ERROR_ITEM(ClauseTypeMismatchedToPartialRule,									ruleName, clauseType, partialRuleName, partialRuleType)		/* A clause uses a partial rule of an incompatible type */\
+			ERROR_ITEM(LeftRecursionPlaceholderNotFoundInRule,								ruleName, placeholder, targetRuleName)						/* left_recursion_inject injects to a rule which doesn't accept the specified placeholder */\
+			ERROR_ITEM(LeftRecursionPlaceholderNotUnique,									ruleName, placeholder, targetRuleName)						/* left_recursion_inject injects to a rule which has multiple places accepting the specified placeholder */\
+			ERROR_ITEM(LeftRecursionInjectTargetIsPrefixOfAnotherSameEnding,				ruleName, placeholder, targetPrefixName, targetRuleName)	/* left_recursion_inject injects into two targets, A is a prefix of B, and both injection could end with the same target C, C could be B */\
+			ERROR_ITEM(LeftRecursionPlaceholderTypeMismatched,								ruleName, placeholder, targetRuleName, placeholderRuleName)\
+			ERROR_ITEM(PartialRuleInLeftRecursionInject,									ruleName, partialRuleName)\
+			ERROR_ITEM(PartialRuleInPrefixMerge,											ruleName, partialRuleName)\
+			/* SyntaxAst(ValidateStructure, counting) */\
+			ERROR_ITEM(ClauseNotCreateObject,												ruleName)													/* A reuse clause does not contain use rule in some potential sequences */\
+			ERROR_ITEM(UseRuleUsedInOptionalBody,											ruleName, useRuleName)\
+			ERROR_ITEM(UseRuleUsedInLoopBody,												ruleName, useRuleName)\
+			ERROR_ITEM(ClauseTooManyUseRule,												ruleName)													/* Multiple use rules in a potential sequence in a clause */\
+			ERROR_ITEM(NonArrayFieldAssignedInLoop,											ruleName, clauseType, fieldName)\
+			ERROR_ITEM(NonLoopablePartialRuleUsedInLoop,									ruleName, clauseType, partialRuleName)\
+			ERROR_ITEM(ClauseCouldExpandToEmptySequence,									ruleName)\
+			ERROR_ITEM(LoopBodyCouldExpandToEmptySequence,									ruleName)\
+			ERROR_ITEM(OptionalBodyCouldExpandToEmptySequence,								ruleName)\
+			ERROR_ITEM(NegativeOptionalEndsAClause,											ruleName)													/* Negative optional syntax cannot ends a clause */\
+			ERROR_ITEM(MultiplePrioritySyntaxInAClause,										ruleName)\
+			ERROR_ITEM(TooManyLeftRecursionPlaceholderClauses,								ruleName)\
+			/* SyntaxAst(ValidateStructure, relationship) */\
+			ERROR_ITEM(FieldAssignedMoreThanOnce,											ruleName, clauseType, fieldName)\
+			/* SyntaxAst(ValidateStructure, prefix_merge) */\
+			ERROR_ITEM(RuleMixedPrefixMergeWithClauseNotSyntacticallyBeginWithARule,		ruleName)													/* If a rule has prefix_merge clause, than all other clause must syntactically begins with a rule */\
+			ERROR_ITEM(RuleMixedPrefixMergeWithClauseNotBeginWithIndirectPrefixMerge,		ruleName, startRule)										/* If a rule has prefix_merge clause, than all other clause must directly or indirectly starts with prefix_merge */\
+			ERROR_ITEM(RuleIndirectlyBeginsWithPrefixMergeMixedLeftRecursionMarkers,		ruleName, prefixMergeRule, leftRecursionMarkerRule)\
+			ERROR_ITEM(RuleIndirectlyBeginsWithPrefixMergeMixedNonSimpleUseClause,			ruleName, prefixMergeRule)									/* If a rule indirectly begins with prefix_merge, then all clause must be, either a simple use clause begins with prefix_merge, or a clause not begins with prefix_merge */\
+			/* SyntaxAst(RewriteSyntax_PrefixMerge, prefix_merge) */\
+			ERROR_ITEM(PrefixExtractionAffectedRuleReferencedAnother,						ruleName, conflictedRule, prefixRule)						/* During left_recursion_inject clause generation, if prefix extracted affected the process, all !prefixRule clauses where prefixRule is the prefix of conflictedRule in any !conflictedRule clauses, prefixRule should not be affected */\
+
 			enum class ParserErrorType
 			{
-				// AstSymbolManager -------------------------------------------------------------------
-				DuplicatedFile,								// (fileName)
-				FileDependencyNotExists,					// (fileName, dependency)
-				FileCyclicDependency,						// (fileName, dependency)
-				DuplicatedSymbol,							// (fileName, symbolName)
-				DuplicatedSymbolGlobally,					// (fileName, symbolName, anotherFileName)
-				DuplicatedClassProp,						// (fileName, className, propName)
-				DuplicatedEnumItem,							// (fileName, enumName, propName)
-				BaseClassNotExists,							// (fileName, className, typeName)
-				BaseClassNotClass,							// (fileName, className, typeName)
-				BaseClassCyclicDependency,					// (fileName, className)
-				FieldTypeNotExists,							// (fileName, className, propName)
-				FieldTypeNotClass,							// (fileName, className, propName)
-
-				// LexerSymbolManager -----------------------------------------------------------------
-				InvalidTokenDefinition,						// (code)
-				DuplicatedToken,							// (tokenName)
-				DuplicatedTokenByDisplayText,				// (tokenName)
-				InvalidTokenRegex,							// (tokenName, errorMessage)
-				TokenRegexNotPure,							// (tokenName)
-
-				// SyntaxSymbolManager ----------------------------------------------------------------
-				DuplicatedRule,								// (ruleName)
-				RuleIsIndirectlyLeftRecursive,				// (ruleName)													: Indirect left recursion must be resolved before.
-
-				// SyntaxAst (ResolveName) ------------------------------------------------------------
-				RuleNameConflictedWithToken,				// (ruleName)
-				TypeNotExistsInRule,						// (ruleName, name)
-				TypeNotClassInRule,							// (ruleName, name)
-				TokenOrRuleNotExistsInRule,					// (ruleName, name)
-
-				// SyntaxAst (CalculateTypes) ---------------------------------------------------------
-				RuleMixedPartialClauseWithOtherClause,		// (ruleName)
-				RuleWithDifferentPartialTypes,				// (ruleName)
-				RuleCannotResolveToDeterministicType,		// (ruleName)													: Unable to resolve to one type from clauses (token, type) or (create, partial).
-				CyclicDependedRuleTypeIncompatible,			// (ruleName)													: Types of rules are not compatible to each other when they build cyclic dependency by reuse clauses.
-				ReuseClauseCannotResolveToDeterministicType,// (ruleName)													: A reuse clause contains multiple use rule but their types are not compatible to each other.
-				ReuseClauseContainsNoUseRule,				// (ruleName)													: A reuse clause contains no use rule therefore the type cannot be determined.
-
-				// SyntaxAst (ValidateTypes) ----------------------------------------------------------
-				FieldNotExistsInClause,						// (ruleName, clauseType, fieldName)							: The field does not exist in the type of the clause.
-				RuleTypeMismatchedToField,					// (ruleName, clauseType, fieldName, fieldRuleType)				: The rule type is not compatible to the assigning field.
-				AssignmentToNonEnumField,					// (ruleName, clauseType, fieldName)							: Assignment can only assign fields in enum types.
-				EnumItemMismatchedToField,					// (ruleName, clauseType, fieldName, enumItem)					: Try to assign an unexisting or mismatched enum item to a field in an enum type.
-				UseRuleWithPartialRule,						// (ruleName, useRuleName)										: A use rule should not be used with a partial rule.
-				UseRuleInNonReuseClause,					// (ruleName, useRuleName)										: A use rule should only appear in reuse clause.
-				PartialRuleUsedOnField,						// (ruleName, clauseType, partialRuleName, fieldName)			: A partial rule does not create object, it cannot be assigned to a field.
-				ClauseTypeMismatchedToPartialRule,			// (ruleName, clauseType, partialRuleName, partialRuleType)		: A clause uses a partial rule of an incompatible type.
-
-				// SyntaxAst (ValidateStructure, counting) --------------------------------------------
-				ClauseNotCreateObject,						// (ruleName)													: A reuse clause does not contain use rule in some potential sequences.
-				UseRuleUsedInOptionalBody,					// (ruleName, useRuleName)
-				UseRuleUsedInLoopBody,						// (ruleName, useRuleName)
-				ClauseTooManyUseRule,						// (ruleName)													: Multiple use rules in a potential sequence in a clause.
-				NonArrayFieldAssignedInLoop,				// (ruleName, clauseType, fieldName)
-				NonLoopablePartialRuleUsedInLoop,			// (ruleName, clauseType, partialRuleName)
-				ClauseCouldExpandToEmptySequence,			// (ruleName)
-				LoopBodyCouldExpandToEmptySequence,			// (ruleName)
-				OptionalBodyCouldExpandToEmptySequence,		// (ruleName)
-				NegativeOptionalEndsAClause,				// (ruleName)													: Negative optional syntax cannot ends a clause.
-				MultiplePrioritySyntaxInAClause,			// (ruleName)													: Too many syntax with priority in the a clause.
-
-				// SyntaxAst (ValidateStructure, relationship) ----------------------------------------
-				FieldAssignedMoreThanOnce,					// (ruleName, clauseType, fieldName)
+#define ParserErrorType_EnumItem(NAME, ...) NAME,
+				GLR_PARSER_ERROR_LIST(ParserErrorType_EnumItem)
+#undef ParserErrorType_EnumItem
 			};
 
 			enum class ParserDefFileType
@@ -162,7 +216,7 @@ ParserSymbolManager
 				StringItems					cppNss;
 				WString						headerGuard;
 
-				const auto&					Errors() { return errors; }
+				const auto&					Errors() const { return errors; }
 
 				template<typename ...TArgs>
 				void AddError(ParserErrorType type, ParserErrorLocation location, TArgs&& ...args)
@@ -170,17 +224,18 @@ ParserSymbolManager
 					ParserError error;
 					error.type = type;
 					error.location = location;
-
-					WString sargs[] = { WString(args)... };
-					WString* dargs[] = { &error.arg1,&error.arg2,&error.arg3,&error.arg4 };
-					constexpr vint sl = sizeof(sargs) / sizeof(*sargs);
-					constexpr vint dl = sizeof(dargs) / sizeof(*dargs);
-					constexpr vint ml = sl < dl ? sl : dl;
-					for (vint i = 0; i < ml; i++)
+					if constexpr (sizeof...(args) > 0)
 					{
-						*dargs[i] = sargs[i];
+						WString sargs[] = { WString(args)... };
+						WString* dargs[] = { &error.arg1,&error.arg2,&error.arg3,&error.arg4 };
+						constexpr vint sl = sizeof(sargs) / sizeof(*sargs);
+						constexpr vint dl = sizeof(dargs) / sizeof(*dargs);
+						constexpr vint ml = sl < dl ? sl : dl;
+						for (vint i = 0; i < ml; i++)
+						{
+							*dargs[i] = sargs[i];
+						}
 					}
-
 					errors.Add(std::move(error));
 				}
 			};
@@ -373,10 +428,10 @@ AstSymbolManager
 
 				AstDefFile*					CreateFile(const WString& name);
 
-				ParserSymbolManager&		Global() { return global; }
-				const auto&					Files() { return files.map; }
-				const auto&					FileOrder() { return files.order; }
-				const auto&					Symbols() { return symbolMap; }
+				const ParserSymbolManager&	Global() const { return global; }
+				const auto&					Files() const { return files.map; }
+				const auto&					FileOrder() const { return files.order; }
+				const auto&					Symbols() const { return symbolMap; }
 			};
 
 			extern AstDefFile*				CreateParserGenTypeAst(AstSymbolManager& manager);
@@ -442,13 +497,13 @@ LexerSymbolManager
 				TokenSymbol*				CreateToken(const WString& _name, const WString& _regex, ParsingTextRange codeRange = {});
 				TokenSymbol*				CreateDiscardedToken(const WString& _name, const WString& _regex, ParsingTextRange codeRange = {});
 
-				ParserSymbolManager&		Global() { return global; }
-				const auto&					Tokens() { return tokens.map; }
-				const auto&					TokensByDisplayText() { return tokensByDisplayText; }
-				const auto&					TokenOrder() { return tokens.order; }
+				const ParserSymbolManager&	Global() const { return global; }
+				const auto&					Tokens() const { return tokens.map; }
+				const auto&					TokensByDisplayText() const { return tokensByDisplayText; }
+				const auto&					TokenOrder() const { return tokens.order; }
 
 				template<typename ...TArgs>
-				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args)
+				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args) const
 				{
 					global.AddError(type, { ParserDefFileType::Lexer,WString::Empty,codeRange }, std::forward<TArgs&&>(args)...);
 				}
@@ -533,8 +588,8 @@ Utility
 
 			extern void							WriteCppStringBody(const WString& body, stream::StreamWriter& writer);
 			extern void							WriteFileComment(const WString& name, stream::StreamWriter& writer);
-			extern WString						WriteNssBegin(collections::List<WString>& cppNss, stream::StreamWriter& writer);
-			extern void							WriteNssEnd(collections::List<WString>& cppNss, stream::StreamWriter& writer);
+			extern WString						WriteNssBegin(const collections::List<WString>& cppNss, stream::StreamWriter& writer);
+			extern void							WriteNssEnd(const collections::List<WString>& cppNss, stream::StreamWriter& writer);
 			extern void							WriteLoadDataFunctionHeader(const WString& prefix, const WString& functionName, stream::StreamWriter& writer);
 			extern void							WriteLoadDataFunctionCpp(const WString& prefix, const WString& functionName, stream::MemoryStream& rawData, bool compressData, stream::StreamWriter& writer);
 		}
@@ -640,20 +695,48 @@ namespace vl
 		namespace parsergen
 		{
 			class GlrAlternativeSyntax;
+			class GlrAndCondition;
 			class GlrAssignment;
 			class GlrClause;
+			class GlrCondition;
 			class GlrCreateClause;
-			class GlrLiteralSyntax;
+			class GlrLeftRecursionInjectClause;
+			class GlrLeftRecursionInjectContinuation;
+			class GlrLeftRecursionPlaceholder;
+			class GlrLeftRecursionPlaceholderClause;
 			class GlrLoopSyntax;
+			class GlrNotCondition;
 			class GlrOptionalSyntax;
+			class GlrOrCondition;
 			class GlrPartialClause;
+			class GlrPrefixMergeClause;
+			class GlrPushConditionSyntax;
+			class GlrRefCondition;
 			class GlrRefSyntax;
 			class GlrReuseClause;
 			class GlrRule;
 			class GlrSequenceSyntax;
+			class GlrSwitchItem;
 			class GlrSyntax;
 			class GlrSyntaxFile;
+			class GlrTestConditionBranch;
+			class GlrTestConditionSyntax;
 			class GlrUseSyntax;
+
+			enum class GlrSwitchValue
+			{
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				False = 0,
+				True = 1,
+			};
+
+			enum class GlrRefType
+			{
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				Id = 0,
+				Literal = 1,
+				ConditionalLiteral = 2,
+			};
 
 			enum class GlrOptionalPriority
 			{
@@ -663,6 +746,84 @@ namespace vl
 				PreferSkip = 2,
 			};
 
+			enum class GlrAssignmentType
+			{
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				Strong = 0,
+				Weak = 1,
+			};
+
+			enum class GlrLeftRecursionConfiguration
+			{
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				Single = 0,
+				Multiple = 1,
+			};
+
+			enum class GlrLeftRecursionInjectContinuationType
+			{
+				UNDEFINED_ENUM_ITEM_VALUE = -1,
+				Optional = 0,
+				Required = 1,
+			};
+
+			class GlrCondition abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrCondition>
+			{
+			public:
+				class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
+				{
+				public:
+					virtual void Visit(GlrRefCondition* node) = 0;
+					virtual void Visit(GlrNotCondition* node) = 0;
+					virtual void Visit(GlrAndCondition* node) = 0;
+					virtual void Visit(GlrOrCondition* node) = 0;
+				};
+
+				virtual void Accept(GlrCondition::IVisitor* visitor) = 0;
+
+			};
+
+			class GlrRefCondition : public GlrCondition, vl::reflection::Description<GlrRefCondition>
+			{
+			public:
+				vl::glr::ParsingToken name;
+
+				void Accept(GlrCondition::IVisitor* visitor) override;
+			};
+
+			class GlrNotCondition : public GlrCondition, vl::reflection::Description<GlrNotCondition>
+			{
+			public:
+				vl::Ptr<GlrCondition> condition;
+
+				void Accept(GlrCondition::IVisitor* visitor) override;
+			};
+
+			class GlrAndCondition : public GlrCondition, vl::reflection::Description<GlrAndCondition>
+			{
+			public:
+				vl::Ptr<GlrCondition> first;
+				vl::Ptr<GlrCondition> second;
+
+				void Accept(GlrCondition::IVisitor* visitor) override;
+			};
+
+			class GlrOrCondition : public GlrCondition, vl::reflection::Description<GlrOrCondition>
+			{
+			public:
+				vl::Ptr<GlrCondition> first;
+				vl::Ptr<GlrCondition> second;
+
+				void Accept(GlrCondition::IVisitor* visitor) override;
+			};
+
+			class GlrSwitchItem : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrSwitchItem>
+			{
+			public:
+				vl::glr::ParsingToken name;
+				GlrSwitchValue value = GlrSwitchValue::UNDEFINED_ENUM_ITEM_VALUE;
+			};
+
 			class GlrSyntax abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrSyntax>
 			{
 			public:
@@ -670,12 +831,13 @@ namespace vl
 				{
 				public:
 					virtual void Visit(GlrRefSyntax* node) = 0;
-					virtual void Visit(GlrLiteralSyntax* node) = 0;
 					virtual void Visit(GlrUseSyntax* node) = 0;
 					virtual void Visit(GlrLoopSyntax* node) = 0;
 					virtual void Visit(GlrOptionalSyntax* node) = 0;
 					virtual void Visit(GlrSequenceSyntax* node) = 0;
 					virtual void Visit(GlrAlternativeSyntax* node) = 0;
+					virtual void Visit(GlrPushConditionSyntax* node) = 0;
+					virtual void Visit(GlrTestConditionSyntax* node) = 0;
 				};
 
 				virtual void Accept(GlrSyntax::IVisitor* visitor) = 0;
@@ -685,16 +847,9 @@ namespace vl
 			class GlrRefSyntax : public GlrSyntax, vl::reflection::Description<GlrRefSyntax>
 			{
 			public:
-				vl::glr::ParsingToken name;
+				GlrRefType refType = GlrRefType::UNDEFINED_ENUM_ITEM_VALUE;
+				vl::glr::ParsingToken literal;
 				vl::glr::ParsingToken field;
-
-				void Accept(GlrSyntax::IVisitor* visitor) override;
-			};
-
-			class GlrLiteralSyntax : public GlrSyntax, vl::reflection::Description<GlrLiteralSyntax>
-			{
-			public:
-				vl::glr::ParsingToken value;
 
 				void Accept(GlrSyntax::IVisitor* visitor) override;
 			};
@@ -743,6 +898,30 @@ namespace vl
 				void Accept(GlrSyntax::IVisitor* visitor) override;
 			};
 
+			class GlrPushConditionSyntax : public GlrSyntax, vl::reflection::Description<GlrPushConditionSyntax>
+			{
+			public:
+				vl::collections::List<vl::Ptr<GlrSwitchItem>> switches;
+				vl::Ptr<GlrSyntax> syntax;
+
+				void Accept(GlrSyntax::IVisitor* visitor) override;
+			};
+
+			class GlrTestConditionBranch : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrTestConditionBranch>
+			{
+			public:
+				vl::Ptr<GlrCondition> condition;
+				vl::Ptr<GlrSyntax> syntax;
+			};
+
+			class GlrTestConditionSyntax : public GlrSyntax, vl::reflection::Description<GlrTestConditionSyntax>
+			{
+			public:
+				vl::collections::List<vl::Ptr<GlrTestConditionBranch>> branches;
+
+				void Accept(GlrSyntax::IVisitor* visitor) override;
+			};
+
 			class GlrClause abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrClause>
 			{
 			public:
@@ -752,6 +931,9 @@ namespace vl
 					virtual void Visit(GlrCreateClause* node) = 0;
 					virtual void Visit(GlrPartialClause* node) = 0;
 					virtual void Visit(GlrReuseClause* node) = 0;
+					virtual void Visit(GlrLeftRecursionPlaceholderClause* node) = 0;
+					virtual void Visit(GlrLeftRecursionInjectClause* node) = 0;
+					virtual void Visit(GlrPrefixMergeClause* node) = 0;
 				};
 
 				virtual void Accept(GlrClause::IVisitor* visitor) = 0;
@@ -761,6 +943,7 @@ namespace vl
 			class GlrAssignment : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrAssignment>
 			{
 			public:
+				GlrAssignmentType type = GlrAssignmentType::UNDEFINED_ENUM_ITEM_VALUE;
 				vl::glr::ParsingToken field;
 				vl::glr::ParsingToken value;
 			};
@@ -794,16 +977,58 @@ namespace vl
 				void Accept(GlrClause::IVisitor* visitor) override;
 			};
 
+			class GlrLeftRecursionPlaceholder : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrLeftRecursionPlaceholder>
+			{
+			public:
+				vl::glr::ParsingToken flag;
+			};
+
+			class GlrLeftRecursionPlaceholderClause : public GlrClause, vl::reflection::Description<GlrLeftRecursionPlaceholderClause>
+			{
+			public:
+				vl::collections::List<vl::Ptr<GlrLeftRecursionPlaceholder>> flags;
+
+				void Accept(GlrClause::IVisitor* visitor) override;
+			};
+
+			class GlrLeftRecursionInjectContinuation : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrLeftRecursionInjectContinuation>
+			{
+			public:
+				vl::Ptr<GlrLeftRecursionPlaceholder> flag;
+				GlrLeftRecursionConfiguration configuration = GlrLeftRecursionConfiguration::UNDEFINED_ENUM_ITEM_VALUE;
+				GlrLeftRecursionInjectContinuationType type = GlrLeftRecursionInjectContinuationType::UNDEFINED_ENUM_ITEM_VALUE;
+				vl::collections::List<vl::Ptr<GlrLeftRecursionInjectClause>> injectionTargets;
+			};
+
+			class GlrLeftRecursionInjectClause : public GlrClause, vl::reflection::Description<GlrLeftRecursionInjectClause>
+			{
+			public:
+				vl::Ptr<GlrRefSyntax> rule;
+				vl::Ptr<GlrLeftRecursionInjectContinuation> continuation;
+
+				void Accept(GlrClause::IVisitor* visitor) override;
+			};
+
+			class GlrPrefixMergeClause : public GlrClause, vl::reflection::Description<GlrPrefixMergeClause>
+			{
+			public:
+				vl::Ptr<GlrRefSyntax> rule;
+
+				void Accept(GlrClause::IVisitor* visitor) override;
+			};
+
 			class GlrRule : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrRule>
 			{
 			public:
 				vl::glr::ParsingToken name;
+				vl::glr::ParsingToken type;
 				vl::collections::List<vl::Ptr<GlrClause>> clauses;
 			};
 
 			class GlrSyntaxFile : public vl::glr::ParsingAstBase, vl::reflection::Description<GlrSyntaxFile>
 			{
 			public:
+				vl::collections::List<vl::Ptr<GlrSwitchItem>> switches;
 				vl::collections::List<vl::Ptr<GlrRule>> rules;
 			};
 		}
@@ -816,34 +1041,71 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrCondition)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrCondition::IVisitor)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrRefCondition)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrNotCondition)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrAndCondition)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrOrCondition)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrSwitchValue)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrSwitchItem)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrSyntax)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrSyntax::IVisitor)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrRefType)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrRefSyntax)
-			DECL_TYPE_INFO(vl::glr::parsergen::GlrLiteralSyntax)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrUseSyntax)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrLoopSyntax)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrOptionalPriority)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrOptionalSyntax)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrSequenceSyntax)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrAlternativeSyntax)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrPushConditionSyntax)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrTestConditionBranch)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrTestConditionSyntax)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrClause)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrClause::IVisitor)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrAssignmentType)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrAssignment)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrCreateClause)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrPartialClause)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrReuseClause)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionPlaceholder)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionConfiguration)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectContinuationType)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectContinuation)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrLeftRecursionInjectClause)
+			DECL_TYPE_INFO(vl::glr::parsergen::GlrPrefixMergeClause)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrRule)
 			DECL_TYPE_INFO(vl::glr::parsergen::GlrSyntaxFile)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::parsergen::GlrSyntax::IVisitor)
-				void Visit(vl::glr::parsergen::GlrRefSyntax* node) override
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::parsergen::GlrCondition::IVisitor)
+				void Visit(vl::glr::parsergen::GlrRefCondition* node) override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
-				void Visit(vl::glr::parsergen::GlrLiteralSyntax* node) override
+				void Visit(vl::glr::parsergen::GlrNotCondition* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::glr::parsergen::GlrAndCondition* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::glr::parsergen::GlrOrCondition* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+			END_INTERFACE_PROXY(vl::glr::parsergen::GlrCondition::IVisitor)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::parsergen::GlrSyntax::IVisitor)
+				void Visit(vl::glr::parsergen::GlrRefSyntax* node) override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -873,6 +1135,16 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
 
+				void Visit(vl::glr::parsergen::GlrPushConditionSyntax* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::glr::parsergen::GlrTestConditionSyntax* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
 			END_INTERFACE_PROXY(vl::glr::parsergen::GlrSyntax::IVisitor)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::parsergen::GlrClause::IVisitor)
@@ -887,6 +1159,21 @@ namespace vl
 				}
 
 				void Visit(vl::glr::parsergen::GlrReuseClause* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::glr::parsergen::GlrLeftRecursionPlaceholderClause* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::glr::parsergen::GlrLeftRecursionInjectClause* node) override
+				{
+					INVOKE_INTERFACE_PROXY(Visit, node);
+				}
+
+				void Visit(vl::glr::parsergen::GlrPrefixMergeClause* node) override
 				{
 					INVOKE_INTERFACE_PROXY(Visit, node);
 				}
@@ -931,10 +1218,18 @@ namespace vl
 					MakeAlternativeSyntax& second(const vl::Ptr<GlrSyntax>& value);
 				};
 
+				class MakeAndCondition : public vl::glr::ParsingAstBuilder<GlrAndCondition>
+				{
+				public:
+					MakeAndCondition& first(const vl::Ptr<GlrCondition>& value);
+					MakeAndCondition& second(const vl::Ptr<GlrCondition>& value);
+				};
+
 				class MakeAssignment : public vl::glr::ParsingAstBuilder<GlrAssignment>
 				{
 				public:
 					MakeAssignment& field(const vl::WString& value);
+					MakeAssignment& type(GlrAssignmentType value);
 					MakeAssignment& value(const vl::WString& value);
 				};
 
@@ -946,10 +1241,32 @@ namespace vl
 					MakeCreateClause& type(const vl::WString& value);
 				};
 
-				class MakeLiteralSyntax : public vl::glr::ParsingAstBuilder<GlrLiteralSyntax>
+				class MakeLeftRecursionInjectClause : public vl::glr::ParsingAstBuilder<GlrLeftRecursionInjectClause>
 				{
 				public:
-					MakeLiteralSyntax& value(const vl::WString& value);
+					MakeLeftRecursionInjectClause& continuation(const vl::Ptr<GlrLeftRecursionInjectContinuation>& value);
+					MakeLeftRecursionInjectClause& rule(const vl::Ptr<GlrRefSyntax>& value);
+				};
+
+				class MakeLeftRecursionInjectContinuation : public vl::glr::ParsingAstBuilder<GlrLeftRecursionInjectContinuation>
+				{
+				public:
+					MakeLeftRecursionInjectContinuation& configuration(GlrLeftRecursionConfiguration value);
+					MakeLeftRecursionInjectContinuation& flag(const vl::Ptr<GlrLeftRecursionPlaceholder>& value);
+					MakeLeftRecursionInjectContinuation& injectionTargets(const vl::Ptr<GlrLeftRecursionInjectClause>& value);
+					MakeLeftRecursionInjectContinuation& type(GlrLeftRecursionInjectContinuationType value);
+				};
+
+				class MakeLeftRecursionPlaceholder : public vl::glr::ParsingAstBuilder<GlrLeftRecursionPlaceholder>
+				{
+				public:
+					MakeLeftRecursionPlaceholder& flag(const vl::WString& value);
+				};
+
+				class MakeLeftRecursionPlaceholderClause : public vl::glr::ParsingAstBuilder<GlrLeftRecursionPlaceholderClause>
+				{
+				public:
+					MakeLeftRecursionPlaceholderClause& flags(const vl::Ptr<GlrLeftRecursionPlaceholder>& value);
 				};
 
 				class MakeLoopSyntax : public vl::glr::ParsingAstBuilder<GlrLoopSyntax>
@@ -959,11 +1276,24 @@ namespace vl
 					MakeLoopSyntax& syntax(const vl::Ptr<GlrSyntax>& value);
 				};
 
+				class MakeNotCondition : public vl::glr::ParsingAstBuilder<GlrNotCondition>
+				{
+				public:
+					MakeNotCondition& condition(const vl::Ptr<GlrCondition>& value);
+				};
+
 				class MakeOptionalSyntax : public vl::glr::ParsingAstBuilder<GlrOptionalSyntax>
 				{
 				public:
 					MakeOptionalSyntax& priority(GlrOptionalPriority value);
 					MakeOptionalSyntax& syntax(const vl::Ptr<GlrSyntax>& value);
+				};
+
+				class MakeOrCondition : public vl::glr::ParsingAstBuilder<GlrOrCondition>
+				{
+				public:
+					MakeOrCondition& first(const vl::Ptr<GlrCondition>& value);
+					MakeOrCondition& second(const vl::Ptr<GlrCondition>& value);
 				};
 
 				class MakePartialClause : public vl::glr::ParsingAstBuilder<GlrPartialClause>
@@ -974,11 +1304,31 @@ namespace vl
 					MakePartialClause& type(const vl::WString& value);
 				};
 
+				class MakePrefixMergeClause : public vl::glr::ParsingAstBuilder<GlrPrefixMergeClause>
+				{
+				public:
+					MakePrefixMergeClause& rule(const vl::Ptr<GlrRefSyntax>& value);
+				};
+
+				class MakePushConditionSyntax : public vl::glr::ParsingAstBuilder<GlrPushConditionSyntax>
+				{
+				public:
+					MakePushConditionSyntax& switches(const vl::Ptr<GlrSwitchItem>& value);
+					MakePushConditionSyntax& syntax(const vl::Ptr<GlrSyntax>& value);
+				};
+
+				class MakeRefCondition : public vl::glr::ParsingAstBuilder<GlrRefCondition>
+				{
+				public:
+					MakeRefCondition& name(const vl::WString& value);
+				};
+
 				class MakeRefSyntax : public vl::glr::ParsingAstBuilder<GlrRefSyntax>
 				{
 				public:
 					MakeRefSyntax& field(const vl::WString& value);
-					MakeRefSyntax& name(const vl::WString& value);
+					MakeRefSyntax& literal(const vl::WString& value);
+					MakeRefSyntax& refType(GlrRefType value);
 				};
 
 				class MakeReuseClause : public vl::glr::ParsingAstBuilder<GlrReuseClause>
@@ -993,6 +1343,7 @@ namespace vl
 				public:
 					MakeRule& clauses(const vl::Ptr<GlrClause>& value);
 					MakeRule& name(const vl::WString& value);
+					MakeRule& type(const vl::WString& value);
 				};
 
 				class MakeSequenceSyntax : public vl::glr::ParsingAstBuilder<GlrSequenceSyntax>
@@ -1002,10 +1353,31 @@ namespace vl
 					MakeSequenceSyntax& second(const vl::Ptr<GlrSyntax>& value);
 				};
 
+				class MakeSwitchItem : public vl::glr::ParsingAstBuilder<GlrSwitchItem>
+				{
+				public:
+					MakeSwitchItem& name(const vl::WString& value);
+					MakeSwitchItem& value(GlrSwitchValue value);
+				};
+
 				class MakeSyntaxFile : public vl::glr::ParsingAstBuilder<GlrSyntaxFile>
 				{
 				public:
 					MakeSyntaxFile& rules(const vl::Ptr<GlrRule>& value);
+					MakeSyntaxFile& switches(const vl::Ptr<GlrSwitchItem>& value);
+				};
+
+				class MakeTestConditionBranch : public vl::glr::ParsingAstBuilder<GlrTestConditionBranch>
+				{
+				public:
+					MakeTestConditionBranch& condition(const vl::Ptr<GlrCondition>& value);
+					MakeTestConditionBranch& syntax(const vl::Ptr<GlrSyntax>& value);
+				};
+
+				class MakeTestConditionSyntax : public vl::glr::ParsingAstBuilder<GlrTestConditionSyntax>
+				{
+				public:
+					MakeTestConditionSyntax& branches(const vl::Ptr<GlrTestConditionBranch>& value);
 				};
 
 				class MakeUseSyntax : public vl::glr::ParsingAstBuilder<GlrUseSyntax>
@@ -1044,59 +1416,99 @@ namespace vl
 				/// <summary>A copy visitor, overriding all abstract methods with AST copying code.</summary>
 				class RuleAstVisitor
 					: public virtual vl::glr::CopyVisitorBase
+					, protected virtual GlrCondition::IVisitor
 					, protected virtual GlrSyntax::IVisitor
 					, protected virtual GlrClause::IVisitor
 				{
 				protected:
 					void CopyFields(GlrAlternativeSyntax* from, GlrAlternativeSyntax* to);
+					void CopyFields(GlrAndCondition* from, GlrAndCondition* to);
 					void CopyFields(GlrAssignment* from, GlrAssignment* to);
 					void CopyFields(GlrClause* from, GlrClause* to);
+					void CopyFields(GlrCondition* from, GlrCondition* to);
 					void CopyFields(GlrCreateClause* from, GlrCreateClause* to);
-					void CopyFields(GlrLiteralSyntax* from, GlrLiteralSyntax* to);
+					void CopyFields(GlrLeftRecursionInjectClause* from, GlrLeftRecursionInjectClause* to);
+					void CopyFields(GlrLeftRecursionInjectContinuation* from, GlrLeftRecursionInjectContinuation* to);
+					void CopyFields(GlrLeftRecursionPlaceholder* from, GlrLeftRecursionPlaceholder* to);
+					void CopyFields(GlrLeftRecursionPlaceholderClause* from, GlrLeftRecursionPlaceholderClause* to);
 					void CopyFields(GlrLoopSyntax* from, GlrLoopSyntax* to);
+					void CopyFields(GlrNotCondition* from, GlrNotCondition* to);
 					void CopyFields(GlrOptionalSyntax* from, GlrOptionalSyntax* to);
+					void CopyFields(GlrOrCondition* from, GlrOrCondition* to);
 					void CopyFields(GlrPartialClause* from, GlrPartialClause* to);
+					void CopyFields(GlrPrefixMergeClause* from, GlrPrefixMergeClause* to);
+					void CopyFields(GlrPushConditionSyntax* from, GlrPushConditionSyntax* to);
+					void CopyFields(GlrRefCondition* from, GlrRefCondition* to);
 					void CopyFields(GlrRefSyntax* from, GlrRefSyntax* to);
 					void CopyFields(GlrReuseClause* from, GlrReuseClause* to);
 					void CopyFields(GlrRule* from, GlrRule* to);
 					void CopyFields(GlrSequenceSyntax* from, GlrSequenceSyntax* to);
+					void CopyFields(GlrSwitchItem* from, GlrSwitchItem* to);
 					void CopyFields(GlrSyntax* from, GlrSyntax* to);
 					void CopyFields(GlrSyntaxFile* from, GlrSyntaxFile* to);
+					void CopyFields(GlrTestConditionBranch* from, GlrTestConditionBranch* to);
+					void CopyFields(GlrTestConditionSyntax* from, GlrTestConditionSyntax* to);
 					void CopyFields(GlrUseSyntax* from, GlrUseSyntax* to);
 
 				protected:
+					virtual void Visit(GlrSwitchItem* node);
+					virtual void Visit(GlrTestConditionBranch* node);
 					virtual void Visit(GlrAssignment* node);
+					virtual void Visit(GlrLeftRecursionPlaceholder* node);
+					virtual void Visit(GlrLeftRecursionInjectContinuation* node);
 					virtual void Visit(GlrRule* node);
 					virtual void Visit(GlrSyntaxFile* node);
 
+					void Visit(GlrRefCondition* node) override;
+					void Visit(GlrNotCondition* node) override;
+					void Visit(GlrAndCondition* node) override;
+					void Visit(GlrOrCondition* node) override;
+
 					void Visit(GlrRefSyntax* node) override;
-					void Visit(GlrLiteralSyntax* node) override;
 					void Visit(GlrUseSyntax* node) override;
 					void Visit(GlrLoopSyntax* node) override;
 					void Visit(GlrOptionalSyntax* node) override;
 					void Visit(GlrSequenceSyntax* node) override;
 					void Visit(GlrAlternativeSyntax* node) override;
+					void Visit(GlrPushConditionSyntax* node) override;
+					void Visit(GlrTestConditionSyntax* node) override;
 
 					void Visit(GlrCreateClause* node) override;
 					void Visit(GlrPartialClause* node) override;
 					void Visit(GlrReuseClause* node) override;
+					void Visit(GlrLeftRecursionPlaceholderClause* node) override;
+					void Visit(GlrLeftRecursionInjectClause* node) override;
+					void Visit(GlrPrefixMergeClause* node) override;
 
 				public:
+					virtual vl::Ptr<GlrCondition> CopyNode(GlrCondition* node);
 					virtual vl::Ptr<GlrSyntax> CopyNode(GlrSyntax* node);
 					virtual vl::Ptr<GlrClause> CopyNode(GlrClause* node);
+					virtual vl::Ptr<GlrSwitchItem> CopyNode(GlrSwitchItem* node);
+					virtual vl::Ptr<GlrTestConditionBranch> CopyNode(GlrTestConditionBranch* node);
 					virtual vl::Ptr<GlrAssignment> CopyNode(GlrAssignment* node);
+					virtual vl::Ptr<GlrLeftRecursionPlaceholder> CopyNode(GlrLeftRecursionPlaceholder* node);
+					virtual vl::Ptr<GlrLeftRecursionInjectContinuation> CopyNode(GlrLeftRecursionInjectContinuation* node);
 					virtual vl::Ptr<GlrRule> CopyNode(GlrRule* node);
 					virtual vl::Ptr<GlrSyntaxFile> CopyNode(GlrSyntaxFile* node);
 
 					vl::Ptr<GlrAlternativeSyntax> CopyNode(GlrAlternativeSyntax* node);
+					vl::Ptr<GlrAndCondition> CopyNode(GlrAndCondition* node);
 					vl::Ptr<GlrCreateClause> CopyNode(GlrCreateClause* node);
-					vl::Ptr<GlrLiteralSyntax> CopyNode(GlrLiteralSyntax* node);
+					vl::Ptr<GlrLeftRecursionInjectClause> CopyNode(GlrLeftRecursionInjectClause* node);
+					vl::Ptr<GlrLeftRecursionPlaceholderClause> CopyNode(GlrLeftRecursionPlaceholderClause* node);
 					vl::Ptr<GlrLoopSyntax> CopyNode(GlrLoopSyntax* node);
+					vl::Ptr<GlrNotCondition> CopyNode(GlrNotCondition* node);
 					vl::Ptr<GlrOptionalSyntax> CopyNode(GlrOptionalSyntax* node);
+					vl::Ptr<GlrOrCondition> CopyNode(GlrOrCondition* node);
 					vl::Ptr<GlrPartialClause> CopyNode(GlrPartialClause* node);
+					vl::Ptr<GlrPrefixMergeClause> CopyNode(GlrPrefixMergeClause* node);
+					vl::Ptr<GlrPushConditionSyntax> CopyNode(GlrPushConditionSyntax* node);
+					vl::Ptr<GlrRefCondition> CopyNode(GlrRefCondition* node);
 					vl::Ptr<GlrRefSyntax> CopyNode(GlrRefSyntax* node);
 					vl::Ptr<GlrReuseClause> CopyNode(GlrReuseClause* node);
 					vl::Ptr<GlrSequenceSyntax> CopyNode(GlrSequenceSyntax* node);
+					vl::Ptr<GlrTestConditionSyntax> CopyNode(GlrTestConditionSyntax* node);
 					vl::Ptr<GlrUseSyntax> CopyNode(GlrUseSyntax* node);
 				};
 			}
@@ -1127,6 +1539,20 @@ namespace vl
 			namespace empty_visitor
 			{
 				/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+				class ConditionVisitor : public vl::Object, public GlrCondition::IVisitor
+				{
+				protected:
+					// Dispatch (virtual) --------------------------------
+
+				public:
+					// Visitor Members -----------------------------------
+					void Visit(GlrRefCondition* node) override;
+					void Visit(GlrNotCondition* node) override;
+					void Visit(GlrAndCondition* node) override;
+					void Visit(GlrOrCondition* node) override;
+				};
+
+				/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
 				class SyntaxVisitor : public vl::Object, public GlrSyntax::IVisitor
 				{
 				protected:
@@ -1135,12 +1561,13 @@ namespace vl
 				public:
 					// Visitor Members -----------------------------------
 					void Visit(GlrRefSyntax* node) override;
-					void Visit(GlrLiteralSyntax* node) override;
 					void Visit(GlrUseSyntax* node) override;
 					void Visit(GlrLoopSyntax* node) override;
 					void Visit(GlrOptionalSyntax* node) override;
 					void Visit(GlrSequenceSyntax* node) override;
 					void Visit(GlrAlternativeSyntax* node) override;
+					void Visit(GlrPushConditionSyntax* node) override;
+					void Visit(GlrTestConditionSyntax* node) override;
 				};
 
 				/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
@@ -1154,6 +1581,9 @@ namespace vl
 					void Visit(GlrCreateClause* node) override;
 					void Visit(GlrPartialClause* node) override;
 					void Visit(GlrReuseClause* node) override;
+					void Visit(GlrLeftRecursionPlaceholderClause* node) override;
+					void Visit(GlrLeftRecursionInjectClause* node) override;
+					void Visit(GlrPrefixMergeClause* node) override;
 				};
 
 			}
@@ -1186,45 +1616,73 @@ namespace vl
 				/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
 				class RuleAstVisitor
 					: public vl::glr::JsonVisitorBase
+					, protected virtual GlrCondition::IVisitor
 					, protected virtual GlrSyntax::IVisitor
 					, protected virtual GlrClause::IVisitor
 				{
 				protected:
 					virtual void PrintFields(GlrAlternativeSyntax* node);
+					virtual void PrintFields(GlrAndCondition* node);
 					virtual void PrintFields(GlrAssignment* node);
 					virtual void PrintFields(GlrClause* node);
+					virtual void PrintFields(GlrCondition* node);
 					virtual void PrintFields(GlrCreateClause* node);
-					virtual void PrintFields(GlrLiteralSyntax* node);
+					virtual void PrintFields(GlrLeftRecursionInjectClause* node);
+					virtual void PrintFields(GlrLeftRecursionInjectContinuation* node);
+					virtual void PrintFields(GlrLeftRecursionPlaceholder* node);
+					virtual void PrintFields(GlrLeftRecursionPlaceholderClause* node);
 					virtual void PrintFields(GlrLoopSyntax* node);
+					virtual void PrintFields(GlrNotCondition* node);
 					virtual void PrintFields(GlrOptionalSyntax* node);
+					virtual void PrintFields(GlrOrCondition* node);
 					virtual void PrintFields(GlrPartialClause* node);
+					virtual void PrintFields(GlrPrefixMergeClause* node);
+					virtual void PrintFields(GlrPushConditionSyntax* node);
+					virtual void PrintFields(GlrRefCondition* node);
 					virtual void PrintFields(GlrRefSyntax* node);
 					virtual void PrintFields(GlrReuseClause* node);
 					virtual void PrintFields(GlrRule* node);
 					virtual void PrintFields(GlrSequenceSyntax* node);
+					virtual void PrintFields(GlrSwitchItem* node);
 					virtual void PrintFields(GlrSyntax* node);
 					virtual void PrintFields(GlrSyntaxFile* node);
+					virtual void PrintFields(GlrTestConditionBranch* node);
+					virtual void PrintFields(GlrTestConditionSyntax* node);
 					virtual void PrintFields(GlrUseSyntax* node);
 
 				protected:
+					void Visit(GlrRefCondition* node) override;
+					void Visit(GlrNotCondition* node) override;
+					void Visit(GlrAndCondition* node) override;
+					void Visit(GlrOrCondition* node) override;
+
 					void Visit(GlrRefSyntax* node) override;
-					void Visit(GlrLiteralSyntax* node) override;
 					void Visit(GlrUseSyntax* node) override;
 					void Visit(GlrLoopSyntax* node) override;
 					void Visit(GlrOptionalSyntax* node) override;
 					void Visit(GlrSequenceSyntax* node) override;
 					void Visit(GlrAlternativeSyntax* node) override;
+					void Visit(GlrPushConditionSyntax* node) override;
+					void Visit(GlrTestConditionSyntax* node) override;
 
 					void Visit(GlrCreateClause* node) override;
 					void Visit(GlrPartialClause* node) override;
 					void Visit(GlrReuseClause* node) override;
+					void Visit(GlrLeftRecursionPlaceholderClause* node) override;
+					void Visit(GlrLeftRecursionInjectClause* node) override;
+					void Visit(GlrPrefixMergeClause* node) override;
 
 				public:
 					RuleAstVisitor(vl::stream::StreamWriter& _writer);
 
+					void Print(GlrCondition* node);
 					void Print(GlrSyntax* node);
 					void Print(GlrClause* node);
+					void Print(GlrSwitchItem* node);
+					void Print(GlrTestConditionBranch* node);
 					void Print(GlrAssignment* node);
+					void Print(GlrLeftRecursionPlaceholder* node);
+					void Print(GlrLeftRecursionInjectContinuation* node);
 					void Print(GlrRule* node);
 					void Print(GlrSyntaxFile* node);
 				};
@@ -1258,6 +1716,7 @@ namespace vl
 				/// <summary>A traverse visitor, overriding all abstract methods with AST visiting code.</summary>
 				class RuleAstVisitor
 					: public vl::Object
+					, protected virtual GlrCondition::IVisitor
 					, protected virtual GlrSyntax::IVisitor
 					, protected virtual GlrClause::IVisitor
 				{
@@ -1265,56 +1724,96 @@ namespace vl
 					virtual void Traverse(vl::glr::ParsingToken& token);
 					virtual void Traverse(vl::glr::ParsingAstBase* node);
 					virtual void Traverse(GlrAlternativeSyntax* node);
+					virtual void Traverse(GlrAndCondition* node);
 					virtual void Traverse(GlrAssignment* node);
 					virtual void Traverse(GlrClause* node);
+					virtual void Traverse(GlrCondition* node);
 					virtual void Traverse(GlrCreateClause* node);
-					virtual void Traverse(GlrLiteralSyntax* node);
+					virtual void Traverse(GlrLeftRecursionInjectClause* node);
+					virtual void Traverse(GlrLeftRecursionInjectContinuation* node);
+					virtual void Traverse(GlrLeftRecursionPlaceholder* node);
+					virtual void Traverse(GlrLeftRecursionPlaceholderClause* node);
 					virtual void Traverse(GlrLoopSyntax* node);
+					virtual void Traverse(GlrNotCondition* node);
 					virtual void Traverse(GlrOptionalSyntax* node);
+					virtual void Traverse(GlrOrCondition* node);
 					virtual void Traverse(GlrPartialClause* node);
+					virtual void Traverse(GlrPrefixMergeClause* node);
+					virtual void Traverse(GlrPushConditionSyntax* node);
+					virtual void Traverse(GlrRefCondition* node);
 					virtual void Traverse(GlrRefSyntax* node);
 					virtual void Traverse(GlrReuseClause* node);
 					virtual void Traverse(GlrRule* node);
 					virtual void Traverse(GlrSequenceSyntax* node);
+					virtual void Traverse(GlrSwitchItem* node);
 					virtual void Traverse(GlrSyntax* node);
 					virtual void Traverse(GlrSyntaxFile* node);
+					virtual void Traverse(GlrTestConditionBranch* node);
+					virtual void Traverse(GlrTestConditionSyntax* node);
 					virtual void Traverse(GlrUseSyntax* node);
 
 				protected:
 					virtual void Finishing(vl::glr::ParsingAstBase* node);
 					virtual void Finishing(GlrAlternativeSyntax* node);
+					virtual void Finishing(GlrAndCondition* node);
 					virtual void Finishing(GlrAssignment* node);
 					virtual void Finishing(GlrClause* node);
+					virtual void Finishing(GlrCondition* node);
 					virtual void Finishing(GlrCreateClause* node);
-					virtual void Finishing(GlrLiteralSyntax* node);
+					virtual void Finishing(GlrLeftRecursionInjectClause* node);
+					virtual void Finishing(GlrLeftRecursionInjectContinuation* node);
+					virtual void Finishing(GlrLeftRecursionPlaceholder* node);
+					virtual void Finishing(GlrLeftRecursionPlaceholderClause* node);
 					virtual void Finishing(GlrLoopSyntax* node);
+					virtual void Finishing(GlrNotCondition* node);
 					virtual void Finishing(GlrOptionalSyntax* node);
+					virtual void Finishing(GlrOrCondition* node);
 					virtual void Finishing(GlrPartialClause* node);
+					virtual void Finishing(GlrPrefixMergeClause* node);
+					virtual void Finishing(GlrPushConditionSyntax* node);
+					virtual void Finishing(GlrRefCondition* node);
 					virtual void Finishing(GlrRefSyntax* node);
 					virtual void Finishing(GlrReuseClause* node);
 					virtual void Finishing(GlrRule* node);
 					virtual void Finishing(GlrSequenceSyntax* node);
+					virtual void Finishing(GlrSwitchItem* node);
 					virtual void Finishing(GlrSyntax* node);
 					virtual void Finishing(GlrSyntaxFile* node);
+					virtual void Finishing(GlrTestConditionBranch* node);
+					virtual void Finishing(GlrTestConditionSyntax* node);
 					virtual void Finishing(GlrUseSyntax* node);
 
 				protected:
+					void Visit(GlrRefCondition* node) override;
+					void Visit(GlrNotCondition* node) override;
+					void Visit(GlrAndCondition* node) override;
+					void Visit(GlrOrCondition* node) override;
+
 					void Visit(GlrRefSyntax* node) override;
-					void Visit(GlrLiteralSyntax* node) override;
 					void Visit(GlrUseSyntax* node) override;
 					void Visit(GlrLoopSyntax* node) override;
 					void Visit(GlrOptionalSyntax* node) override;
 					void Visit(GlrSequenceSyntax* node) override;
 					void Visit(GlrAlternativeSyntax* node) override;
+					void Visit(GlrPushConditionSyntax* node) override;
+					void Visit(GlrTestConditionSyntax* node) override;
 
 					void Visit(GlrCreateClause* node) override;
 					void Visit(GlrPartialClause* node) override;
 					void Visit(GlrReuseClause* node) override;
+					void Visit(GlrLeftRecursionPlaceholderClause* node) override;
+					void Visit(GlrLeftRecursionInjectClause* node) override;
+					void Visit(GlrPrefixMergeClause* node) override;
 
 				public:
+					void InspectInto(GlrCondition* node);
 					void InspectInto(GlrSyntax* node);
 					void InspectInto(GlrClause* node);
+					void InspectInto(GlrSwitchItem* node);
+					void InspectInto(GlrTestConditionBranch* node);
 					void InspectInto(GlrAssignment* node);
+					void InspectInto(GlrLeftRecursionPlaceholder* node);
+					void InspectInto(GlrLeftRecursionInjectContinuation* node);
 					void InspectInto(GlrRule* node);
 					void InspectInto(GlrSyntaxFile* node);
 				};
@@ -1762,65 +2261,103 @@ namespace vl
 			enum class ParserGenClasses : vl::vint32_t
 			{
 				AlternativeSyntax = 0,
-				Assignment = 1,
-				AstFile = 2,
-				Class = 3,
-				ClassProp = 4,
-				Clause = 5,
-				CreateClause = 6,
-				Enum = 7,
-				EnumItem = 8,
-				LiteralSyntax = 9,
-				LoopSyntax = 10,
-				OptionalSyntax = 11,
-				PartialClause = 12,
-				RefSyntax = 13,
-				ReuseClause = 14,
-				Rule = 15,
-				SequenceSyntax = 16,
-				Syntax = 17,
-				SyntaxFile = 18,
-				Type = 19,
-				UseSyntax = 20,
+				AndCondition = 1,
+				Assignment = 2,
+				AstFile = 3,
+				Class = 4,
+				ClassProp = 5,
+				Clause = 6,
+				Condition = 7,
+				CreateClause = 8,
+				Enum = 9,
+				EnumItem = 10,
+				LeftRecursionInjectClause = 11,
+				LeftRecursionInjectContinuation = 12,
+				LeftRecursionPlaceholder = 13,
+				LeftRecursionPlaceholderClause = 14,
+				LoopSyntax = 15,
+				NotCondition = 16,
+				OptionalSyntax = 17,
+				OrCondition = 18,
+				PartialClause = 19,
+				PrefixMergeClause = 20,
+				PushConditionSyntax = 21,
+				RefCondition = 22,
+				RefSyntax = 23,
+				ReuseClause = 24,
+				Rule = 25,
+				SequenceSyntax = 26,
+				SwitchItem = 27,
+				Syntax = 28,
+				SyntaxFile = 29,
+				TestConditionBranch = 30,
+				TestConditionSyntax = 31,
+				Type = 32,
+				UseSyntax = 33,
 			};
 
 			enum class ParserGenFields : vl::vint32_t
 			{
 				AlternativeSyntax_first = 0,
 				AlternativeSyntax_second = 1,
-				Assignment_field = 2,
-				Assignment_value = 3,
-				AstFile_types = 4,
-				Class_ambiguity = 5,
-				Class_baseClass = 6,
-				Class_props = 7,
-				ClassProp_name = 8,
-				ClassProp_propType = 9,
-				ClassProp_propTypeName = 10,
-				CreateClause_assignments = 11,
-				CreateClause_syntax = 12,
-				CreateClause_type = 13,
-				Enum_items = 14,
-				EnumItem_name = 15,
-				LiteralSyntax_value = 16,
-				LoopSyntax_delimiter = 17,
-				LoopSyntax_syntax = 18,
-				OptionalSyntax_priority = 19,
-				OptionalSyntax_syntax = 20,
-				PartialClause_assignments = 21,
-				PartialClause_syntax = 22,
-				PartialClause_type = 23,
-				RefSyntax_field = 24,
-				RefSyntax_name = 25,
-				ReuseClause_assignments = 26,
-				ReuseClause_syntax = 27,
-				Rule_clauses = 28,
-				Rule_name = 29,
-				SequenceSyntax_first = 30,
-				SequenceSyntax_second = 31,
-				SyntaxFile_rules = 32,
-				Type_name = 33,
-				UseSyntax_name = 34,
+				AndCondition_first = 2,
+				AndCondition_second = 3,
+				Assignment_field = 4,
+				Assignment_type = 5,
+				Assignment_value = 6,
+				AstFile_types = 7,
+				Class_ambiguity = 8,
+				Class_baseClass = 9,
+				Class_props = 10,
+				ClassProp_name = 11,
+				ClassProp_propType = 12,
+				ClassProp_propTypeName = 13,
+				CreateClause_assignments = 14,
+				CreateClause_syntax = 15,
+				CreateClause_type = 16,
+				Enum_items = 17,
+				EnumItem_name = 18,
+				LeftRecursionInjectClause_continuation = 19,
+				LeftRecursionInjectClause_rule = 20,
+				LeftRecursionInjectContinuation_configuration = 21,
+				LeftRecursionInjectContinuation_flag = 22,
+				LeftRecursionInjectContinuation_injectionTargets = 23,
+				LeftRecursionInjectContinuation_type = 24,
+				LeftRecursionPlaceholder_flag = 25,
+				LeftRecursionPlaceholderClause_flags = 26,
+				LoopSyntax_delimiter = 27,
+				LoopSyntax_syntax = 28,
+				NotCondition_condition = 29,
+				OptionalSyntax_priority = 30,
+				OptionalSyntax_syntax = 31,
+				OrCondition_first = 32,
+				OrCondition_second = 33,
+				PartialClause_assignments = 34,
+				PartialClause_syntax = 35,
+				PartialClause_type = 36,
+				PrefixMergeClause_rule = 37,
+				PushConditionSyntax_switches = 38,
+				PushConditionSyntax_syntax = 39,
+				RefCondition_name = 40,
+				RefSyntax_field = 41,
+				RefSyntax_literal = 42,
+				RefSyntax_refType = 43,
+				ReuseClause_assignments = 44,
+				ReuseClause_syntax = 45,
+				Rule_clauses = 46,
+				Rule_name = 47,
+				Rule_type = 48,
+				SequenceSyntax_first = 49,
+				SequenceSyntax_second = 50,
+				SwitchItem_name = 51,
+				SwitchItem_value = 52,
+				SyntaxFile_rules = 53,
+				SyntaxFile_switches = 54,
+				TestConditionBranch_condition = 55,
+				TestConditionBranch_syntax = 56,
+				TestConditionSyntax_branches = 57,
+				Type_name = 58,
+				UseSyntax_name = 59,
 			};
 
 			extern const wchar_t* ParserGenTypeName(ParserGenClasses type);
@@ -1834,7 +2371,7 @@ namespace vl
 				vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
 				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
 				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem) override;
+				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
 				vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
 			};
 		}
@@ -1867,31 +2404,42 @@ namespace vl
 				CLASS = 1,
 				ENUM = 2,
 				VAR = 3,
-				TOKEN = 4,
-				AS = 5,
-				PARTIAL = 6,
-				OPEN_ROUND = 7,
-				CLOSE_ROUND = 8,
-				OPEN_SQUARE = 9,
-				CLOSE_SQUARE = 10,
-				OPEN_CURLY = 11,
-				CLOSE_CURLY = 12,
-				COMMA = 13,
-				COLON = 14,
-				SEMICOLON = 15,
-				INFER = 16,
-				ALTERNATIVE = 17,
-				USE = 18,
-				ASSIGN = 19,
-				POSITIVE = 20,
-				NEGATIVE = 21,
-				ID = 22,
-				STRING = 23,
-				SPACE = 24,
-				COMMENT = 25,
+				SWITCH = 4,
+				TOKEN = 5,
+				AS = 6,
+				PARTIAL = 7,
+				OPEN_ROUND = 8,
+				CLOSE_ROUND = 9,
+				OPEN_SQUARE = 10,
+				CLOSE_SQUARE = 11,
+				OPEN_CURLY = 12,
+				CLOSE_CURLY = 13,
+				OPEN_PUSH = 14,
+				OPEN_TEST = 15,
+				AND = 16,
+				OR = 17,
+				COMMA = 18,
+				COLON = 19,
+				SEMICOLON = 20,
+				INFER = 21,
+				ALTERNATIVE = 22,
+				USE = 23,
+				ASSIGN = 24,
+				WEAK_ASSIGN = 25,
+				POSITIVE = 26,
+				NEGATIVE = 27,
+				LS_PH = 28,
+				LS_I = 29,
+				LS_IM = 30,
+				LS_PM = 31,
+				ID = 32,
+				STRING = 33,
+				CONDITIONAL_LITERAL = 34,
+				SPACE = 35,
+				COMMENT = 36,
 			};
 
-			constexpr vl::vint ParserGenTokenCount = 26;
+			constexpr vl::vint ParserGenTokenCount = 37;
 			extern bool ParserGenTokenDeleter(vl::vint token);
 			extern const wchar_t* ParserGenTokenId(ParserGenTokens token);
 			extern const wchar_t* ParserGenTokenDisplayText(ParserGenTokens token);
@@ -1923,15 +2471,30 @@ namespace vl
 		{
 			enum class RuleParserStates
 			{
-				OptionalBody = 0,
-				Syntax0 = 5,
-				Syntax1 = 26,
-				Syntax2 = 31,
-				Syntax = 37,
-				Assignment = 40,
-				Clause = 45,
-				Rule = 67,
-				File = 73,
+				Cond0 = 0,
+				Cond1 = 8,
+				Cond2 = 14,
+				Cond = 20,
+				SwitchItem = 23,
+				Switches = 28,
+				OptionalBody = 34,
+				TestBranch = 39,
+				Token = 45,
+				Syntax0 = 50,
+				Syntax1 = 81,
+				Syntax2 = 86,
+				Syntax = 92,
+				AssignmentOp = 95,
+				Assignment = 99,
+				Clause = 104,
+				Placeholder = 140,
+				RuleName = 143,
+				LriConfig = 146,
+				LriContinuationBody = 150,
+				LriContinuation = 159,
+				LriTarget = 165,
+				Rule = 172,
+				File = 180,
 			};
 
 			const wchar_t* RuleParserRuleName(vl::vint index);
@@ -1939,7 +2502,8 @@ namespace vl
 			extern void ParserGenRuleParserData(vl::stream::IStream& outputStream);
 
 			class RuleParser
-				: public vl::glr::ParserBase<ParserGenTokens, RuleParserStates, ParserGenAstInsReceiver>				, protected vl::glr::automaton::TraceManager::ITypeCallback
+				: public vl::glr::ParserBase<ParserGenTokens, RuleParserStates, ParserGenAstInsReceiver>
+				, protected vl::glr::automaton::IExecutor::ITypeCallback
 			{
 			protected:
 				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
@@ -1990,7 +2554,8 @@ namespace vl
 			extern void ParserGenTypeParserData(vl::stream::IStream& outputStream);
 
 			class TypeParser
-				: public vl::glr::ParserBase<ParserGenTokens, TypeParserStates, ParserGenAstInsReceiver>				, protected vl::glr::automaton::TraceManager::ITypeCallback
+				: public vl::glr::ParserBase<ParserGenTokens, TypeParserStates, ParserGenAstInsReceiver>
+				, protected vl::glr::automaton::IExecutor::ITypeCallback
 			{
 			protected:
 				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
@@ -2073,13 +2638,18 @@ EdgeSymbol
 				LeftRec,		// An epsilon edge that reduces the current rule, which is the first input of one of its left recursive clause.
 				Token,			// An token is read to execute this edge.
 				Rule,			// A rule is reduced to execute this edge.
+				LrPlaceholder,	// A left recursion placeholder is consumed to execute this edge. EdgeInput::token is the index of SyntaxSymbolManager::lrpFlags.
+				LrInject,		// A left recursion injection.
 			};
 
 			struct EdgeInput
 			{
 				EdgeInputType				type = EdgeInputType::Epsilon;
-				vint32_t					token = -1;
-				RuleSymbol*					rule = nullptr;
+				vint32_t					token = -1;										// useful when type == Token or LrPlaceholder or LrInject
+				Nullable<WString>			condition;
+
+				automaton::ReturnRuleType	ruleType = automaton::ReturnRuleType::Field;	// useful when type == Rule or LrInject
+				RuleSymbol*					rule = nullptr;									// useful when type == Rule or LrInject
 			};
 
 			enum class EdgeImportancy
@@ -2128,6 +2698,7 @@ RuleSymbol
 				friend class SyntaxSymbolManager;
 
 				using StateList = collections::List<StateSymbol*>;
+				using NameList = collections::SortedList<WString>;
 			protected:
 				SyntaxSymbolManager*		ownerManager;
 				WString						name;
@@ -2139,6 +2710,7 @@ RuleSymbol
 				bool						isPartial = false;
 				bool						assignedNonArrayField = false;
 				AstClassSymbol*				ruleType = nullptr;
+				NameList					lrFlags;
 
 				SyntaxSymbolManager*		Owner() { return ownerManager; }
 				const WString&				Name() { return name; }
@@ -2153,10 +2725,12 @@ SyntaxSymbolManager
 			enum class SyntaxPhase
 			{
 				EpsilonNFA,					// An automaton that has edges of Epsilon, Token, Rule.
+
 				CompactNFA,					// Epsilon edges are eliminated by compressing multiple edges into one.
 											// Epsilon edges to the ending state will be compressed to an Ending edge.
 											// The first edge of Rule in left-recursive clauses becomes a LeftRec edge, with its fromState changed to the ending state.
 											// fromState and toState of non-LeftRec edges belong to the same clause.
+
 				CrossReferencedNFA,			// Edges of Rule are compressed to an edge that pointing towards states in other clauses.
 											// Multiple edges of rule are stored in returnEdges in the order of execution.
 											// insBeforeInput of an edge contains insBeforeInput from its returnEdges.
@@ -2171,6 +2745,7 @@ SyntaxSymbolManager
 				using EdgeList = collections::List<Ptr<EdgeSymbol>>;
 				using RuleTypeMap = collections::Dictionary<RuleSymbol*, WString>;
 				using RuleList = collections::List<RuleSymbol*>;
+				using LrpFlagList = collections::SortedList<WString>;
 			protected:
 				MappedOwning<RuleSymbol>	rules;
 				StateList					states;
@@ -2185,6 +2760,7 @@ SyntaxSymbolManager
 				void						BuildCompactNFAInternal();
 
 				void						FixCrossReferencedRuleEdge(StateSymbol* startState, collections::Group<StateSymbol*, EdgeSymbol*>& orderedEdges, collections::List<EdgeSymbol*>& accumulatedEdges);
+				void						FixLeftRecursionInjectEdge(StateSymbol* startState, EdgeSymbol* injectEdge);
 				void						BuildCrossReferencedNFAInternal();
 			public:
 				SyntaxSymbolManager(ParserSymbolManager& _global);
@@ -2192,8 +2768,11 @@ SyntaxSymbolManager
 				WString						name;
 				RuleTypeMap					ruleTypes;
 				RuleList					parsableRules;
+				LrpFlagList					lrpFlags;
 
 				RuleSymbol*					CreateRule(const WString& name, ParsingTextRange codeRange = {});
+				void						RemoveRule(const WString& name);
+
 				StateSymbol*				CreateState(RuleSymbol* rule, vint32_t clauseId);
 				EdgeSymbol*					CreateEdge(StateSymbol* from, StateSymbol* to);
 
@@ -2203,13 +2782,13 @@ SyntaxSymbolManager
 				void						GetStatesInStableOrder(collections::List<StateSymbol*>& order);
 				WString						GetStateGlobalLabel(StateSymbol* state, vint index);
 
-				ParserSymbolManager&		Global() { return global; }
-				const auto&					Rules() { return rules.map; }
+				const ParserSymbolManager&	Global() const { return global; }
+				const auto&					Rules() const { return rules.map; }
 				const auto&					RuleOrder() { return rules.order; }
 				SyntaxPhase					Phase() { return phase; }
 
 				template<typename ...TArgs>
-				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args)
+				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args) const
 				{
 					global.AddError(type, { ParserDefFileType::Syntax,name,codeRange }, std::forward<TArgs&&>(args)...);
 				}
@@ -2243,41 +2822,116 @@ namespace vl
 		{
 			namespace compile_syntax
 			{
+				template<typename TClause>
+				struct GenericRuleClausePath
+				{
+					RuleSymbol*							ruleSymbol = nullptr;
+					TClause*							clause = nullptr;
+
+					GenericRuleClausePath() = default;
+					GenericRuleClausePath(RuleSymbol* _ruleSymbol, TClause* _clause)
+						: ruleSymbol(_ruleSymbol), clause(_clause) {}
+
+					bool operator==(const GenericRuleClausePath& p) const
+					{
+						if (ruleSymbol != p.ruleSymbol) return false;
+						if (clause != p.clause) return false;
+						return true;
+					}
+				};
+				using RuleClausePath = GenericRuleClausePath<GlrClause>;
+
+				using RuleSymbolPair = collections::Pair<RuleSymbol*, RuleSymbol*>;
+
 				using GlrRuleMap = collections::Dictionary<RuleSymbol*, GlrRule*>;
-				using LiteralTokenMap = collections::Dictionary<GlrLiteralSyntax*, vint32_t>;
-				using RuleReuseDependencies = collections::Group<RuleSymbol*, RuleSymbol*>;
+				using LiteralTokenMap = collections::Dictionary<GlrRefSyntax*, vint32_t>;
+				using RuleDependencies = collections::Group<RuleSymbol*, RuleSymbol*>;
 				using RuleKnownTypes = collections::Group<RuleSymbol*, AstClassSymbol*>;
-				using ClauseReuseDependencies = collections::Group<GlrClause*, RuleSymbol*>;
+				using ClauseReuseDependencies = collections::Group<GlrReuseClause*, RuleSymbol*>;
 				using ClauseTypeMap = collections::Dictionary<GlrClause*, AstClassSymbol*>;
+
+				using LeftRecursiveClauseMap = collections::Group<RuleSymbol*, GlrClause*>;
+				using LeftRecursionInjectClauseMap = collections::Group<RuleSymbol*, GlrLeftRecursionInjectClause*>;
+				using LeftRecursionPlaceholderClauseMap = collections::Group<RuleSymbol*, GlrLeftRecursionPlaceholderClause*>;
+				using PrefixMergeClauseMap = collections::Group<RuleSymbol*, GlrPrefixMergeClause*>;
+				using ClauseToRuleMap = collections::Dictionary<GlrClause*, RuleSymbol*>;
+				using ClauseToRuleGroup = collections::Group<GlrClause*, RuleSymbol*>;
+				using RulePathDependencies = collections::Group<RuleSymbol*, RuleClausePath>;
+				using PathToLastRuleMap = collections::Group<RuleSymbolPair, RuleClausePath>;
+
+				using ClauseList = collections::List<GlrClause*>;
 
 				struct VisitorContext
 				{
-					ParserSymbolManager&		global;
-					AstSymbolManager&			astManager;
-					LexerSymbolManager&			lexerManager;
-					SyntaxSymbolManager&		syntaxManager;
-					Ptr<CppParserGenOutput>		output;
+					const ParserSymbolManager&			global;
+					const AstSymbolManager&				astManager;
+					const LexerSymbolManager&			lexerManager;
+					const SyntaxSymbolManager&			syntaxManager;
 
-					GlrRuleMap					astRules;
-					LiteralTokenMap				literalTokens;
-					RuleReuseDependencies		ruleReuseDependencies;
-					RuleKnownTypes				ruleKnownTypes;
-					ClauseReuseDependencies		clauseReuseDependencies;
-					ClauseTypeMap				clauseTypes;
+					// ResolveName
+					GlrRuleMap							astRules;											// RuleSymbol -> GlrRule
+					LiteralTokenMap						literalTokens;
+					RuleDependencies					ruleReuseDependencies;								// RuleSymbol -> !rule in that rule
+					RuleKnownTypes						ruleKnownTypes;										// RuleSymbol -> explicitly declared object type in clauses
+					ClauseReuseDependencies				clauseReuseDependencies;							// GlrReuseClause -> !rule in that clause
+					ClauseTypeMap						clauseTypes;										// GlrClause -> type
+					ClauseToRuleMap						clauseToRules;										// GlrClause -> RuleSymbol that contain this clause
+					Ptr<regex::RegexLexer>				cachedLexer;
+
+					LeftRecursiveClauseMap				leftRecursiveClauses;								// RuleSymbol -> all clauses begins with that rule
+					LeftRecursionInjectClauseMap		directLriClauses, indirectLriClauses;				// RuleSymbol -> contained left_recursion_injection clauses
+																											// RuleSymbol -> reachable left_recursion_injection clauses
+					LeftRecursionPlaceholderClauseMap	directLrpClauses, indirectLrpClauses;				// RuleSymbol -> contained left_recursion_placeholder clauses
+																											// RuleSymbol -> reachable left_recursion_placeholder clauses
+					PrefixMergeClauseMap				directPmClauses, indirectPmClauses;					// RuleSymbol -> contained prefix_merge clauses
+																											// RuleSymbol -> reachable prefix_merge clauses
+
+					ClauseToRuleMap						simpleUseClauseToReferencedRules;					// GlrClause -> RuleSymbol when this clause is !RuleSymbol
+					ClauseToRuleGroup					clauseToStartRules;									// GlrClause -> RuleSymbol when this clause begins with RuleSymbol
+
+					RulePathDependencies				directStartRules, indirectStartRules;				// RuleSymbol -> {rule, clause begins with the rule}
+																											// RuleSymbol -> {rule, reachable clause begins with the rule}
+					RulePathDependencies				directSimpleUseRules, indirectSimpleUseRules;		// RuleSymbol -> {rule, clause that is !rule}
+																											// RuleSymbol -> {rule, reachable clause that is !rule}
+					PathToLastRuleMap					indirectStartPathToLastRules;						// {r1, r3} -> {r2, clause}, where r1 --(indirect)--> r2 --(direct)--> {r3, clause begins with r3 contained in r2}
+					PathToLastRuleMap					indirectSimpleUsePathToLastRules;					// {r1, r3} -> {r2, clause}, where r1 (indirect)::= !r2 (direct)::= {r3, clause that is !r3 contained in r2}
+
+					// ValidateStructure
+					ClauseList							clauseToConvertedToPrefixMerge;						// GlrClause when it should be converted to a prefix_merge clause
 
 					VisitorContext(
-						AstSymbolManager& _astManager,
-						LexerSymbolManager& _lexerManager,
-						SyntaxSymbolManager& _syntaxManager,
-						Ptr<CppParserGenOutput> _output
+						const AstSymbolManager& _astManager,
+						const LexerSymbolManager& _lexerManager,
+						const SyntaxSymbolManager& _syntaxManager
 					)
 						: global(_syntaxManager.Global())
 						, astManager(_astManager)
 						, lexerManager(_lexerManager)
 						, syntaxManager(_syntaxManager)
-						, output(_output)
 					{
 					}
+
+					const regex::RegexLexer& GetCachedLexer()
+					{
+						if (!cachedLexer)
+						{
+							auto tokens = From(lexerManager.TokenOrder())
+								.Select([&](const WString& name) { return lexerManager.Tokens()[name]->regex; });
+							cachedLexer = new regex::RegexLexer(tokens);
+						}
+						return *cachedLexer.Obj();
+					}
+				};
+
+				using SwitchMap = collections::Dictionary<WString, collections::Pair<bool, GlrSwitchItem*>>;
+				using RuleSwitchMap = collections::Group<RuleSymbol*, WString>;
+				using ClauseSwitchMap = collections::Group<GlrClause*, WString>;
+
+				struct VisitorSwitchContext
+				{
+					SwitchMap							switches;
+					ClauseSwitchMap						clauseAffectedSwitches;								// GlrClause -> all switches that affect how it parses
+					RuleSwitchMap						ruleAffectedSwitches;								// RuleSymbol -> all switches that affect how it parses
 				};
 			}
 
@@ -2285,9 +2939,10 @@ namespace vl
 Compiler
 ***********************************************************************/
 
+			extern WString						UnescapeLiteral(const WString& literal, wchar_t quot);
 			extern void							CompileAst(AstSymbolManager& astManager, AstDefFile* astDefFile, Ptr<GlrAstFile> file);
 			extern void							CompileLexer(LexerSymbolManager& lexerManager, const WString& input);
-			extern void							CompileSyntax(AstSymbolManager& astManager, LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, Ptr<CppParserGenOutput> output, collections::List<Ptr<GlrSyntaxFile>>& files);
+			extern Ptr<GlrSyntaxFile>			CompileSyntax(AstSymbolManager& astManager, LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, Ptr<CppParserGenOutput> output, collections::List<Ptr<GlrSyntaxFile>>& files);
 		}
 	}
 }
@@ -2340,6 +2995,68 @@ namespace vl
 	{
 		namespace parsergen
 		{
+
+/***********************************************************************
+AutomatonBuilder
+***********************************************************************/
+
+			class AutomatonBuilder
+			{
+			public:
+				struct StatePair
+				{
+					StateSymbol* begin;
+					StateSymbol* end;
+				};
+
+			protected:
+				using StatePosMap = collections::Dictionary<StateSymbol*, vint>;
+				using StateBuilder = Func<StatePair()>;
+				using AssignmentBuilder = Func<StatePair(StatePair)>;
+
+			protected:
+				RuleSymbol*					ruleSymbol;
+
+				WString						clauseDisplayText;
+				StatePosMap					startPoses;
+				StatePosMap					endPoses;
+
+				StateSymbol* CreateState()
+				{
+					return ruleSymbol->Owner()->CreateState(ruleSymbol, ruleSymbol->CurrentClauseId());
+				}
+
+				EdgeSymbol* CreateEdge(StateSymbol* from, StateSymbol* to)
+				{
+					return ruleSymbol->Owner()->CreateEdge(from, to);
+				}
+
+				StatePair					BuildRuleSyntaxInternal(RuleSymbol* rule, vint32_t field, automaton::ReturnRuleType ruleType);
+			public:
+				AutomatonBuilder(RuleSymbol* _ruleSymbol);
+
+				StatePair					BuildTokenSyntax(vint32_t tokenId, const WString& displayText, Nullable<WString> condition, vint32_t field);
+				StatePair					BuildFieldRuleSyntax(RuleSymbol* rule, vint32_t field);
+				StatePair					BuildPartialRuleSyntax(RuleSymbol* rule);
+				StatePair					BuildDiscardRuleSyntax(RuleSymbol* rule);
+				StatePair					BuildUseSyntax(RuleSymbol* rule);
+				StatePair					BuildLoopSyntax(const StateBuilder& loopBody, const StateBuilder& loopDelimiter, bool hasDelimiter);
+				StatePair					BuildOptionalSyntax(bool preferTake, bool preferSkip, const StateBuilder& optionalBody);
+				StatePair					BuildSequenceSyntax(collections::List<StateBuilder>& elements);
+				StatePair					BuildAlternativeSyntax(collections::List<StateBuilder>& elements);
+
+				StatePair					BuildClause(const StateBuilder& compileSyntax);
+				StatePair					BuildAssignment(StatePair pair, vint32_t enumItem, vint32_t field, bool weakAssignment);
+				StatePair					BuildCreateClause(vint32_t classId, const StateBuilder& compileSyntax);
+				StatePair					BuildPartialClause(const StateBuilder& compileSyntax);
+				StatePair					BuildReuseClause(const StateBuilder& compileSyntax);
+
+				StatePair					BuildLrpClause(collections::List<vint32_t>& flags, const Func<WString(vint32_t)>& flagName);
+				StatePair					BuildLriSyntax(vint32_t flag, RuleSymbol* rule);
+				StatePair					BuildLriSkip();
+				StatePair					BuildLriClauseSyntax(StateBuilder useOrLriSyntax, bool optional, collections::List<StateBuilder>&& continuations);
+			};
+
 			namespace syntax_writer
 			{
 
@@ -2510,22 +3227,26 @@ Operators
 
 				inline Rule drule(RuleSymbol* r)
 				{
+					CHECK_ERROR(!r->isPartial, L"vl::glr::parsergen::syntax_writer::drule(RuleSymbol*)#Rule should not be a partial rule.");
 					return { r,Rule::Discard };
 				}
 
 				inline Rule prule(RuleSymbol* r)
 				{
+					CHECK_ERROR(r->isPartial, L"vl::glr::parsergen::syntax_writer::prule(RuleSymbol*)#Rule should be a partial rule.");
 					return { r,Rule::Partial };
 				}
 
 				template<typename F>
 				inline Rule rule(RuleSymbol* r, F field)
 				{
+					CHECK_ERROR(!r->isPartial, L"vl::glr::parsergen::syntax_writer::rule(RuleSymbol*, F)#Rule should not be a partial rule.");
 					return { r,(vint32_t)field };
 				}
 
 				inline Use use(RuleSymbol* r)
 				{
+					CHECK_ERROR(!r->isPartial, L"vl::glr::parsergen::syntax_writer::use(RuleSymbol*)#Rule should not be a partial rule.");
 					return { r };
 				}
 
@@ -2583,287 +3304,145 @@ Builder
 
 				struct Clause
 				{
-					using StatePosMap = collections::Dictionary<StateSymbol*, vint>;
+					using StatePair = AutomatonBuilder::StatePair;
 				private:
-					struct StatePair
-					{
-						StateSymbol*			begin;
-						StateSymbol*			end;
-					};
-
-					RuleSymbol*					ruleSymbol;
-					WString						clauseDisplayText;
-					StatePosMap					startPoses;
-					StatePosMap					endPoses;
-
-					StateSymbol* CreateState()
-					{
-						return ruleSymbol->Owner()->CreateState(ruleSymbol, ruleSymbol->CurrentClauseId());
-					}
-
-					EdgeSymbol* CreateEdge(StateSymbol* from, StateSymbol* to)
-					{
-						return ruleSymbol->Owner()->CreateEdge(from, to);
-					}
+					AutomatonBuilder				builder;
 
 					StatePair Build(const Token& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-						{
-							auto edge = CreateEdge(pair.begin, pair.end);
-							edge->input.type = EdgeInputType::Token;
-							edge->input.token = clause.id;
-							if (clause.field != -1)
-							{
-								edge->insAfterInput.Add({ AstInsType::Token });
-								edge->insAfterInput.Add({ AstInsType::Field,clause.field });
-							}
-						}
-
-						clauseDisplayText += clause.display;
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+						return builder.BuildTokenSyntax(clause.id, clause.display, {}, clause.field);
 					}
 
 					StatePair Build(const Rule& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
+						switch (clause.field)
 						{
-							auto edge = CreateEdge(pair.begin, pair.end);
-							edge->input.type = EdgeInputType::Rule;
-							edge->input.rule = clause.rule;
-							switch (clause.field)
-							{
-							case Rule::Partial:
-								break;
-							case Rule::Discard:
-								edge->insAfterInput.Add({ AstInsType::DiscardValue });
-								break;
-							default:
-								edge->insAfterInput.Add({ AstInsType::Field,clause.field });
-							}
+						case Rule::Partial:
+							return builder.BuildPartialRuleSyntax(clause.rule);
+						case Rule::Discard:
+							return builder.BuildDiscardRuleSyntax(clause.rule);
+						default:
+							return builder.BuildFieldRuleSyntax(clause.rule, clause.field);
 						}
-
-						clauseDisplayText += clause.rule->Name();
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
 					}
 
 					StatePair Build(const Use& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-						{
-							auto edge = CreateEdge(pair.begin, pair.end);
-							edge->input.type = EdgeInputType::Rule;
-							edge->input.rule = clause.rule;
-							edge->insAfterInput.Add({ AstInsType::ReopenObject });
-						}
-
-						clauseDisplayText += L"!" + clause.rule->Name();
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+						return builder.BuildUseSyntax(clause.rule);
 					}
 
 					template<typename C>
 					StatePair Build(const Loop<C>& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-						clauseDisplayText += L"{ ";
-						auto bodyPair = Build(clause.body);
-						clauseDisplayText += L" }";
-
-						CreateEdge(pair.begin, bodyPair.begin);
-						CreateEdge(bodyPair.end, pair.end);
-						CreateEdge(pair.begin, pair.end);
-						CreateEdge(bodyPair.end, bodyPair.begin);
-
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+						return builder.BuildLoopSyntax(
+							[this, &clause]() { return Build(clause.body); },
+							{},
+							false
+							);
 					}
 
 					template<typename C1, typename C2>
 					StatePair Build(const LoopSep<C1, C2>& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-						clauseDisplayText += L"{ ";
-						auto bodyPair = Build(clause.body);
-						clauseDisplayText += L" ; ";
-						auto delimiterPair = Build(clause.delimiter);
-						clauseDisplayText += L" }";
-
-						CreateEdge(pair.begin, bodyPair.begin);
-						CreateEdge(bodyPair.end, pair.end);
-						CreateEdge(pair.begin, pair.end);
-						CreateEdge(bodyPair.end, delimiterPair.begin);
-						CreateEdge(delimiterPair.end, bodyPair.begin);
-
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+						return builder.BuildLoopSyntax(
+							[this, &clause]() { return Build(clause.body); },
+							[this, &clause]() { return Build(clause.delimiter); },
+							true
+							);
 					}
 
 					template<typename C>
 					StatePair Build(const Opt<C>& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
+						return builder.BuildOptionalSyntax(
+							false,
+							false,
+							[this, &clause]() { return Build(clause.body); }
+							);
+					}
 
-						clauseDisplayText += L"[ ";
-						auto bodyPair = Build(clause.body);
-						clauseDisplayText += L" ]";
+					template<typename C>
+					void CollectSeq(const C& clause, collections::List<Func<StatePair()>>& elements)
+					{
+						elements.Add([this, &clause] { return Build(clause); });
+					}
 
-						CreateEdge(pair.begin, bodyPair.begin);
-						CreateEdge(bodyPair.end, pair.end);
-						CreateEdge(pair.begin, pair.end);
-
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+					template<typename C1, typename C2>
+					void CollectSeq(const Seq<C1, C2>& clause, collections::List<Func<StatePair()>>& elements)
+					{
+						CollectSeq(clause.first, elements);
+						CollectSeq(clause.second, elements);
 					}
 
 					template<typename C1, typename C2>
 					StatePair Build(const Seq<C1, C2>& clause)
 					{
-						auto firstPair = Build(clause.first);
-						clauseDisplayText += L" ";
-						auto secondPair = Build(clause.second);
-						CreateEdge(firstPair.end, secondPair.begin);
-						return { firstPair.begin,secondPair.end };
+						collections::List<Func<StatePair()>> elements;
+						CollectSeq(clause, elements);
+						return builder.BuildSequenceSyntax(elements);
+					}
+
+					template<typename C>
+					void CollectAlt(const C& clause, collections::List<Func<StatePair()>>& elements)
+					{
+						elements.Add([this, &clause] { return Build(clause); });
+					}
+
+					template<typename C1, typename C2>
+					void CollectAlt(const Alt<C1, C2>& clause, collections::List<Func<StatePair()>>& elements)
+					{
+						CollectAlt(clause.first, elements);
+						CollectAlt(clause.second, elements);
 					}
 
 					template<typename C1, typename C2>
 					StatePair Build(const Alt<C1, C2>& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-						clauseDisplayText += L"( ";
-						auto firstPair = Build(clause.first);
-						clauseDisplayText += L" | ";
-						auto secondPair = Build(clause.second);
-						clauseDisplayText += L" )";
-
-						CreateEdge(pair.begin, firstPair.begin);
-						CreateEdge(firstPair.end, pair.end);
-						CreateEdge(pair.begin, secondPair.begin);
-						CreateEdge(secondPair.end, pair.end);
-
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+						collections::List<Func<StatePair()>> elements;
+						CollectAlt(clause, elements);
+						return builder.BuildAlternativeSyntax(elements);
 					}
 
 					template<typename C>
 					StatePair Build(const With<C>& clause)
 					{
-						auto pair = Build(clause.body);
-						auto withState = CreateState();
-						auto edge = CreateEdge(pair.end, withState);
-						edge->insBeforeInput.Add({ AstInsType::EnumItem,clause.enumItem });
-						edge->insBeforeInput.Add({ AstInsType::Field,clause.field });
-
-						endPoses.Add(withState, clauseDisplayText.Length());
-						return { pair.begin,withState };
+						return builder.BuildAssignment(Build(clause.body), clause.enumItem, clause.field, false);
 					}
 
 					template<typename C>
 					StatePair Build(const Create<C>& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-						clauseDisplayText += L"< ";
-						auto bodyPair = Build(clause.body);
-						clauseDisplayText += L" >";
-						{
-							auto edge = CreateEdge(pair.begin, bodyPair.begin);
-							edge->insBeforeInput.Add({ AstInsType::BeginObject,clause.type });
-						}
-						{
-							auto edge = CreateEdge(bodyPair.end, pair.end);
-							edge->insBeforeInput.Add({ AstInsType::EndObject });
-						}
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+						return builder.BuildCreateClause(
+							clause.type,
+							[this, &clause]() { return Build(clause.body); }
+							);
 					}
 
 					template<typename C>
 					StatePair Build(const Partial<C>& clause)
 					{
-						return Build(clause.body);
+						return builder.BuildPartialClause(
+							[this, &clause]() { return Build(clause.body); }
+							);
 					}
 
 					template<typename C>
 					StatePair Build(const Reuse<C>& clause)
 					{
-						StatePair pair;
-						pair.begin = CreateState();
-						pair.end = CreateState();
-						startPoses.Add(pair.begin, clauseDisplayText.Length());
-
-						clauseDisplayText += L"<< ";
-						auto bodyPair = Build(clause.body);
-						clauseDisplayText += L" >>";
-						{
-							auto edge = CreateEdge(pair.begin, bodyPair.begin);
-							edge->insBeforeInput.Add({ AstInsType::DelayFieldAssignment });
-						}
-						{
-							auto edge = CreateEdge(bodyPair.end, pair.end);
-							edge->insBeforeInput.Add({ AstInsType::EndObject });
-						}
-						endPoses.Add(pair.end, clauseDisplayText.Length());
-						return pair;
+						return builder.BuildReuseClause(
+							[this, &clause]() { return Build(clause.body); }
+							);
 					}
 
 					template<typename C>
 					void Assign(const C& clause)
 					{
-						ruleSymbol->NewClause();
-
-						clauseDisplayText = L"";
-						startPoses.Clear();
-						endPoses.Clear();
-
-						auto pair = Build(clause);
-						ruleSymbol->startStates.Add(pair.begin);
-						pair.end->endingState = true;
-
-						vint l = clauseDisplayText.Length();
-						for (auto [state, pos] : startPoses)
-						{
-							state->label = clauseDisplayText.Left(pos) + L"@ " + clauseDisplayText.Right(l - pos);
-						}
-						for (auto [state, pos] : endPoses)
-						{
-							state->label = clauseDisplayText.Left(pos) + L" @" + clauseDisplayText.Right(l - pos);
-						}
+						builder.BuildClause(
+							[this, &clause]() { return Build(clause); }
+							);
 					}
 				public:
-					Clause(RuleSymbol* _ruleSymbol) : ruleSymbol(_ruleSymbol) {}
+					Clause(RuleSymbol* _ruleSymbol) : builder(_ruleSymbol) {}
 
 					template<typename C>
 					Clause& operator=(const Create<C>& clause)

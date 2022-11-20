@@ -913,7 +913,7 @@ namespace vl
 				vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
 				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
 				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem) override;
+				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
 				vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
 			};
 		}
@@ -1003,7 +1003,8 @@ namespace vl
 			extern void GuiInstanceQueryParserData(vl::stream::IStream& outputStream);
 
 			class Parser
-				: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver>				, protected vl::glr::automaton::TraceManager::ITypeCallback
+				: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver>
+				, protected vl::glr::automaton::IExecutor::ITypeCallback
 			{
 			protected:
 				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
