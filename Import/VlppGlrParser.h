@@ -2503,6 +2503,14 @@ TraceManager
 /***********************************************************************
 .\TRACEMANAGER\TRACEMANAGER_COMMON.H
 ***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_PARSER2_TRACEMANAGER_TRACEMANAGER_COMMON
+#define VCZH_PARSER2_TRACEMANAGER_TRACEMANAGER_COMMON
+
 
 namespace vl
 {
@@ -2557,6 +2565,8 @@ IterateSurvivedTraces
 		}
 	}
 }
+
+#endif
 
 /***********************************************************************
 .\XML\GENERATED\XMLAST.H
