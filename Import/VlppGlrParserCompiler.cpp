@@ -8739,7 +8739,7 @@ VerifySwitchesAndConditionsVisitor
 				// GlrCondition::IVisitor
 				////////////////////////////////////////////////////////////////////////
 
-				void Traverse(GlrRefCondition* node)
+				void Traverse(GlrRefCondition* node) override
 				{
 					if (!testedSwitches.Contains(node->name.value))
 					{
@@ -16689,6 +16689,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 									CopyFrom(newEdge->insAfterInput, tokenEdge->insAfterInput, true);
 								}
 								break;
+							default:;
 							}
 						}
 
