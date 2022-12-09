@@ -72,7 +72,7 @@ void AttachDumpCompositionMenu(GuiWindow* window)
 void OpenMainWindow()
 {
 	{
-		auto theme = MakePtr<darkskin::Theme>();
+		auto theme = Ptr(new darkskin::Theme);
 		RegisterTheme(theme);
 	}
 	{

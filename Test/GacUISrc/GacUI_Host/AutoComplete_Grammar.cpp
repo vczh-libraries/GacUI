@@ -184,7 +184,7 @@ ParserParsingAnalyzer
 
 		Ptr<DescriptableObject> CreateCacheAsync(const RepeatingParsingOutput& output)
 		{
-			auto cache = MakePtr<Cache>();
+			auto cache = Ptr(new Cache);
 			if (auto definitions = output.node->GetMember(L"definitions").Cast<ParsingTreeArray>())
 			{
 				for (auto subNode : definitions->GetItems())
@@ -656,7 +656,7 @@ ParserGrammarExecutor
 	{
 	public:
 		ParserGrammarExecutor()
-			:RepeatingParsingExecutor(CreateBootstrapAutoRecoverParser(), L"ParserDecl", new ParserParsingAnalyzer)
+			:RepeatingParsingExecutor(CreateBootstrapAutoRecoverParser(), L"ParserDecl", Ptr(new ParserParsingAnalyzer))
 		{
 		}
 	};
@@ -696,9 +696,9 @@ ParserGrammarAutoComplete
 
 	void InstallTextBox(GuiMultilineTextBox* textBox)
 	{
-		auto executor = MakePtr<ParserGrammarExecutor>();
-		auto colorizer = MakePtr<ParserGrammarColorizer>(executor);
-		auto autoComplete = MakePtr<ParserGrammarAutoComplete>(executor);
+		auto executor = Ptr(new ParserGrammarExecutor);
+		auto colorizer = Ptr(new ParserGrammarColorizer(executor));
+		auto autoComplete = Ptr(new ParserGrammarAutoComplete(executor));
 		
 		textBox->SetColorizer(colorizer);
 		textBox->SetAutoComplete(autoComplete);

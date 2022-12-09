@@ -117,7 +117,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 {
 	auto td = composition->GetTypeDescriptor();
 	auto tdRoot = GetTypeDescriptor<GuiGraphicsComposition>();
-	auto element = MakePtr<XmlElement>();
+	auto element = Ptr(new XmlElement);
 	element->name.value = TypeNameToName(td->GetTypeName());
 
 	auto currentTd = td;
@@ -178,7 +178,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 
 		for (vint i = 0; i < props.Count(); i++)
 		{
-			auto attr = MakePtr<XmlAttribute>();
+			auto attr = Ptr(new XmlAttribute);
 			attr->name.value = props.Keys()[i];
 			attr->value.value = props.Values()[i];
 			element->attributes.Add(attr);
@@ -199,7 +199,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 	}
 
 	{
-		auto attr = MakePtr<XmlAttribute>();
+		auto attr = Ptr(new XmlAttribute);
 		attr->name.value = L"Address";
 		attr->value.value = PointerToHex(composition);
 		element->attributes.Insert(0, attr); 
@@ -207,7 +207,7 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 
 	if (auto ownedElement = composition->GetOwnedElement())
 	{
-		auto attr = MakePtr<XmlAttribute>();
+		auto attr = Ptr(new XmlAttribute);
 		attr->name.value = L"e:" + TypeNameToName(ownedElement->GetTypeDescriptor()->GetTypeName());
 		if (auto solidLabel = ownedElement.Cast<GuiSolidLabelElement>())
 		{
@@ -218,16 +218,16 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 
 	if (auto control = composition->GetAssociatedControl())
 	{
-		auto elementOwnedElement = MakePtr<XmlElement>();
+		auto elementOwnedElement = Ptr(new XmlElement);
 		elementOwnedElement->name.value = L"c:" + TypeNameToName(control->GetTypeDescriptor()->GetTypeName());
 		{
-			auto attr = MakePtr<XmlAttribute>();
+			auto attr = Ptr(new XmlAttribute);
 			attr->name.value = L"Text";
 			attr->value.value = control->GetText();
 			elementOwnedElement->attributes.Insert(0, attr);
 		}
 		{
-			auto attr = MakePtr<XmlAttribute>();
+			auto attr = Ptr(new XmlAttribute);
 			attr->name.value = L"ContainerComposition";
 			attr->value.value = PointerToHex(control->GetContainerComposition());
 			elementOwnedElement->attributes.Insert(0, attr);
@@ -271,35 +271,35 @@ Ptr<XmlElement> DumpCompositionToXml(GuiGraphicsComposition* composition)
 
 void DumpComposition(GuiGraphicsComposition* composition, TextWriter& writer)
 {
-	auto root = MakePtr<XmlElement>();
+	auto root = Ptr(new XmlElement);
 	root->name.value = L"GacUI";
 	{
-		auto attr = MakePtr<XmlAttribute>();
+		auto attr = Ptr(new XmlAttribute);
 		attr->name.value = L"xmlns:c";
 		attr->value.value = L"gacui://Control";
 		root->attributes.Add(attr);
 	}
 	{
-		auto attr = MakePtr<XmlAttribute>();
+		auto attr = Ptr(new XmlAttribute);
 		attr->name.value = L"xmlns:e";
 		attr->value.value = L"gacui://Element";
 		root->attributes.Add(attr);
 	}
 	{
-		auto attr = MakePtr<XmlAttribute>();
+		auto attr = Ptr(new XmlAttribute);
 		attr->name.value = L"xmlns:si";
 		attr->value.value = L"gacui://StackItem";
 		root->attributes.Add(attr);
 	}
 	{
-		auto attr = MakePtr<XmlAttribute>();
+		auto attr = Ptr(new XmlAttribute);
 		attr->name.value = L"xmlns:fi";
 		attr->value.value = L"gacui://FlowItem";
 		root->attributes.Add(attr);
 	}
 	root->subNodes.Add(DumpCompositionToXml(composition));
 
-	auto document = MakePtr<XmlDocument>();
+	auto document = Ptr(new XmlDocument);
 	document->rootElement = root;
 
 	XmlPrint(document, writer);
