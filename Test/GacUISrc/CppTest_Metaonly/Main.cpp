@@ -18,7 +18,7 @@ using namespace demo;
 void GuiMain()
 {
 	windows::SetWindowDefaultIcon(MAINICON);
-	theme::RegisterTheme(MakePtr<darkskin::Theme>());
+	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
 		demo::MainWindow window;
 		window.ForceCalculateSizeImmediately();

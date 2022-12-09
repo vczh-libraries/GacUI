@@ -19,7 +19,7 @@ void GuiMain()
 {
 	LoadDemoTypes();
 	windows::SetWindowDefaultIcon(MAINICON);
-	theme::RegisterTheme(MakePtr<darkskin::Theme>());
+	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
 		demo::MainWindow window;
 		window.ForceCalculateSizeImmediately();
