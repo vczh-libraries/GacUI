@@ -240,31 +240,31 @@ GuiPredefinedInstanceLoadersPlugin
 
 	#define ADD_TEMPLATE_CONTROL(TYPENAME, THEME_NAME)\
 		manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader<TYPENAME>(\
+		Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::" L ## #TYPENAME,\
 				theme::ThemeName::THEME_NAME\
 				)\
-			)
+			))
 
 	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, THEME_NAME)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-		new GuiTemplateControlInstanceLoader<TYPENAME>(\
+		Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				theme::ThemeName::THEME_NAME\
 				)\
-			)
+			))
 
 	#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, THEME_NAME, INIT_FUNCTION)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-		new GuiTemplateControlInstanceLoader<TYPENAME>(\
+		Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				theme::ThemeName::THEME_NAME,\
 				nullptr,\
 				INIT_FUNCTION\
 				)\
-			)
+			))
 
-					manager->SetLoader(new GuiControlInstanceLoader);
+					manager->SetLoader(Ptr(new GuiControlInstanceLoader));
 
 					/*													REAL-CONTROL-TYPE				THEME-NAME											*/
 					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,				CustomControl										);
