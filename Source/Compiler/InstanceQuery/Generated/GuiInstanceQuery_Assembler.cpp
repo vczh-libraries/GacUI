@@ -23,11 +23,11 @@ GuiInstanceQueryAstInsReceiver : public vl::glr::AstInsReceiverBase
 				switch((GuiInstanceQueryClasses)type)
 				{
 				case GuiInstanceQueryClasses::CascadeQuery:
-					return new vl::presentation::instancequery::GuiIqCascadeQuery();
+					return vl::Ptr(new vl::presentation::instancequery::GuiIqCascadeQuery);
 				case GuiInstanceQueryClasses::PrimaryQuery:
-					return new vl::presentation::instancequery::GuiIqPrimaryQuery();
+					return vl::Ptr(new vl::presentation::instancequery::GuiIqPrimaryQuery);
 				case GuiInstanceQueryClasses::SetQuery:
-					return new vl::presentation::instancequery::GuiIqSetQuery();
+					return vl::Ptr(new vl::presentation::instancequery::GuiIqSetQuery);
 				default:
 					return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
 				}

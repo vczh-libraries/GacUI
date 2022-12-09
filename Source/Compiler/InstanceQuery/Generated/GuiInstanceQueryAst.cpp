@@ -145,7 +145,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					Ptr<ITypeLoader> loader = new GuiInstanceQueryAstTypeLoader;
+					auto loader = Ptr(new GuiInstanceQueryAstTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
