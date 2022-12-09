@@ -638,8 +638,8 @@ GuiApplicationMain
 				{
 					GuiApplication app;
 					application = &app;
-					IAsyncScheduler::RegisterSchedulerForCurrentThread(new UIThreadAsyncScheduler);
-					IAsyncScheduler::RegisterDefaultScheduler(new OtherThreadAsyncScheduler);
+					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
+					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
 					GuiMain();
 					IAsyncScheduler::UnregisterDefaultScheduler();
 					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
@@ -709,7 +709,7 @@ GuiControl
 			{
 				if (!disposedFlag)
 				{
-					disposedFlag = new GuiDisposedFlag(this);
+					disposedFlag = Ptr(new GuiDisposedFlag(this));
 				}
 				return disposedFlag;
 			}
@@ -2056,7 +2056,7 @@ GuiTab
 				:GuiControl(themeName)
 				, tabPages(this)
 			{
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				SetFocusableComposition(boundsComposition);
 
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiTab::OnKeyDown);
@@ -2588,7 +2588,7 @@ GuiDatePicker
 				:GuiControl(themeName)
 				, nestedAlt(_nestedAlt)
 			{
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				SetDate(DateTime::LocalTime());
 				SetDateLocale(Locale::UserDefault());
 				SetAltComposition(boundsComposition);
@@ -3457,7 +3457,7 @@ GuiScroll
 				SmallMoveChanged.SetAssociatedComposition(boundsComposition);
 				BigMoveChanged.SetAssociatedComposition(boundsComposition);
 
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiScroll::OnKeyDown);
 				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
 				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
@@ -4445,7 +4445,7 @@ GuiWindow
 			{
 				owner->SetEnabled(false);
 				GetNativeWindow()->SetParent(owner->GetNativeWindow());
-				auto container = MakePtr<IGuiGraphicsEventHandler::Container>();
+				auto container = Ptr(new IGuiGraphicsEventHandler::Container);
 				container->handler = WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
 					GetApplication()->InvokeInMainThread(this, [=]()
@@ -5404,7 +5404,7 @@ DataProvider
 					}
 					if (selectedFilters.Count() > 0)
 					{
-						auto andFilter = MakePtr<DataAndFilter>();
+						auto andFilter = Ptr(new DataAndFilter);
 						for (auto filter : selectedFilters)
 						{
 							andFilter->AddSubFilter(filter);
@@ -5635,7 +5635,7 @@ DataProvider
 						}
 						else
 						{
-							Ptr<DataReverseSorter> reverseSorter = new DataReverseSorter();
+							auto reverseSorter = Ptr(new DataReverseSorter);
 							reverseSorter->SetSubSorter(sorter);
 							currentSorter = reverseSorter;
 						}
@@ -6450,7 +6450,7 @@ GuiBindableTreeView::ItemSourceNode
 							for (vint i = 0; i < newCount; i++)
 							{
 								Value value = childrenVirtualList->Get(start + i);
-								auto node = new ItemSourceNode(value, this);
+								auto node = Ptr(new ItemSourceNode(value, this));
 								children.Insert(start + i, node);
 							}
 							callback->OnAfterItemModified(this, start, oldCount, newCount);
@@ -6461,7 +6461,7 @@ GuiBindableTreeView::ItemSourceNode
 					for (vint i = 0; i < count; i++)
 					{
 						Value value = childrenVirtualList->Get(i);
-						auto node = new ItemSourceNode(value, this);
+						auto node = Ptr(new ItemSourceNode(value, this));
 						children.Add(node);
 					}
 				}
@@ -6576,7 +6576,7 @@ GuiBindableTreeView::ItemSourceNode
 
 			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetParent()
 			{
-				return parent;
+				return Ptr(parent);
 			}
 
 			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
@@ -6598,7 +6598,7 @@ GuiBindableTreeView::ItemSource
 
 			GuiBindableTreeView::ItemSource::ItemSource()
 			{
-				rootNode = new ItemSourceNode(this);
+				rootNode = Ptr(new ItemSourceNode(this));
 			}
 
 			GuiBindableTreeView::ItemSource::~ItemSource()
@@ -6676,7 +6676,7 @@ GuiBindableTreeView
 ***********************************************************************/
 
 			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName)
-				:GuiVirtualTreeView(themeName, new ItemSource)
+				:GuiVirtualTreeView(themeName, Ptr(new ItemSource))
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
 
@@ -7744,15 +7744,15 @@ GuiVirtualDataGrid
 					auto cellBorderProperty = [](const Value&) { return new CellBorderVisualizerTemplate; };
 
 					defaultMainColumnVisualizerFactory = 
-						MakePtr<DataVisualizerFactory>(cellBorderProperty,
-							MakePtr<DataVisualizerFactory>(focusRectangleProperty,
-								MakePtr<DataVisualizerFactory>(mainProperty)
-						));
+						Ptr(new DataVisualizerFactory(cellBorderProperty,
+							Ptr(new DataVisualizerFactory(focusRectangleProperty,
+								Ptr(new DataVisualizerFactory(mainProperty)
+						)))));
 					defaultSubColumnVisualizerFactory = 
-						MakePtr<DataVisualizerFactory>(cellBorderProperty,
-							MakePtr<DataVisualizerFactory>(focusRectangleProperty,
-								MakePtr<DataVisualizerFactory>(subProperty)
-						));
+						Ptr(new DataVisualizerFactory(cellBorderProperty,
+							Ptr(new DataVisualizerFactory(focusRectangleProperty,
+								Ptr(new DataVisualizerFactory(subProperty)
+						)))));
 				}
 
 				CHECK_ERROR(listViewItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleController*, GuiListControl::IItemProvider*)#Missing IListViewItemView from item provider.");
@@ -7781,7 +7781,7 @@ GuiVirtualDataGrid
 			{
 				SetStyleAndArranger(
 					[](const Value&) { return new list::DefaultDataGridItemTemplate; },
-					new list::ListViewColumnItemArranger
+					Ptr(new list::ListViewColumnItemArranger)
 				);
 			}
 
@@ -7957,7 +7957,7 @@ DataVisualizerFactory
 
 				Ptr<controls::list::IDataVisualizer> DataVisualizerFactory::CreateVisualizer(controls::list::IDataGridContext* dataGridContext)
 				{
-					auto dataVisualizer = MakePtr<DataVisualizerBase>();
+					auto dataVisualizer = Ptr(new DataVisualizerBase);
 					dataVisualizer->factory = this;
 					dataVisualizer->dataGridContext = dataGridContext;
 					dataVisualizer->visualizerTemplate = CreateItemTemplate(dataGridContext);
@@ -8046,7 +8046,7 @@ DataEditorFactory
 
 				Ptr<IDataEditor> DataEditorFactory::CreateEditor(controls::list::IDataGridContext* dataGridContext)
 				{
-					auto editor = MakePtr<DataEditorBase>();
+					auto editor = Ptr(new DataEditorBase);
 					editor->factory = this;
 					editor->dataGridContext = dataGridContext;
 
@@ -8107,7 +8107,7 @@ MainColumnVisualizerTemplate
 
 						image = GuiImageFrameElement::Create();
 						image->SetStretch(true);
-						cell->SetOwnedElement(image);
+						cell->SetOwnedElement(Ptr(image));
 					}
 					{
 						GuiCellComposition* cell = new GuiCellComposition;
@@ -8118,7 +8118,7 @@ MainColumnVisualizerTemplate
 						text = GuiSolidLabelElement::Create();
 						text->SetAlignments(Alignment::Left, Alignment::Center);
 						text->SetEllipse(true);
-						cell->SetOwnedElement(text);
+						cell->SetOwnedElement(Ptr(text));
 					}
 					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
@@ -8167,7 +8167,7 @@ SubColumnVisualizerTemplate
 
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					SetMargin(Margin(8, 0, 8, 0));
-					SetOwnedElement(text);
+					SetOwnedElement(Ptr(text));
 
 					TextChanged.AttachMethod(this, &SubColumnVisualizerTemplate::OnTextChanged);
 					FontChanged.AttachMethod(this, &SubColumnVisualizerTemplate::OnFontChanged);
@@ -8245,7 +8245,7 @@ CellBorderVisualizerTemplate
 
 					focusComposition = new GuiBoundsComposition();
 					{
-						auto focus = GuiFocusRectangleElement::Create();
+						auto focus = Ptr(GuiFocusRectangleElement::Create());
 						focusComposition->SetOwnedElement(focus);
 						focusComposition->SetAlignmentToParent(Margin(1, 1, 1, 1));
 					}
@@ -8284,13 +8284,13 @@ CellBorderVisualizerTemplate
 					auto bounds1 = new GuiBoundsComposition;
 					{
 						border1 = GuiSolidBorderElement::Create();
-						bounds1->SetOwnedElement(border1);
+						bounds1->SetOwnedElement(Ptr(border1));
 						bounds1->SetAlignmentToParent(Margin(-1, 0, 0, 0));
 					}
 					auto bounds2 = new GuiBoundsComposition;
 					{
 						border2 = GuiSolidBorderElement::Create();
-						bounds2->SetOwnedElement(border2);
+						bounds2->SetOwnedElement(Ptr(border2));
 						bounds2->SetAlignmentToParent(Margin(0, -1, 0, 0));
 					}
 					auto container = new GuiBoundsComposition();
@@ -9799,17 +9799,15 @@ GuiListControl
 
 #define ATTACH_ITEM_MOUSE_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiItemMouseEvent&, ItemStyle*, GuiGraphicsComposition*, GuiMouseEventArgs&)> func(this, &GuiListControl::OnItemMouseEvent);\
 						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
-							Curry(Curry(func)(ITEMEVENTNAME))(style)\
+							[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args){ OnItemMouseEvent(ITEMEVENTNAME, style, sender, args); }\
 							);\
 					}\
 
 #define ATTACH_ITEM_NOTIFY_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiItemNotifyEvent&, ItemStyle*, GuiGraphicsComposition*, GuiEventArgs&)> func(this, &GuiListControl::OnItemNotifyEvent);\
 						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
-							Curry(Curry(func)(ITEMEVENTNAME))(style)\
+							[this, style](GuiGraphicsComposition* sender, GuiEventArgs& args){ OnItemNotifyEvent(ITEMEVENTNAME, style, sender, args); }\
 							);\
 					}\
 
@@ -9818,7 +9816,7 @@ GuiListControl
 				vint index=visibleStyles.Keys().IndexOf(style);
 				if(index==-1)
 				{
-					Ptr<VisibleStyleHelper> helper=new VisibleStyleHelper;
+					auto helper=Ptr(new VisibleStyleHelper);
 					visibleStyles.Add(style, helper);
 
 					ATTACH_ITEM_MOUSE_EVENT(leftButtonDown, ItemLeftButtonDown);
@@ -9892,9 +9890,9 @@ GuiListControl
 				ItemMouseEnter.SetAssociatedComposition(boundsComposition);
 				ItemMouseLeave.SetAssociatedComposition(boundsComposition);
 
-				callback = new ItemCallback(this);
+				callback = Ptr(new ItemCallback(this));
 				itemProvider->AttachCallback(callback.Obj());
-				axis = new GuiDefaultAxis;
+				axis = Ptr(new GuiDefaultAxis);
 
 				if (acceptFocus)
 				{
@@ -10672,8 +10670,8 @@ ListViewColumnItemArranger
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
 								button->GetBoundsComposition()->SetBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
-								button->Clicked.AttachLambda(Curry(Func<void(vint, GuiGraphicsComposition*, GuiEventArgs&)>(this, &ListViewColumnItemArranger::ColumnClicked))(i));
-								button->GetBoundsComposition()->BoundsChanged.AttachLambda(Curry(Func<void(vint, GuiGraphicsComposition*, GuiEventArgs&)>(this, &ListViewColumnItemArranger::ColumnBoundsChanged))(i));
+								button->Clicked.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnClicked(i, sender, args); });
+								button->GetBoundsComposition()->BoundsChanged.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnBoundsChanged(i, sender, args); });
 								columnHeaderButtons.Add(button);
 								if (i > 0)
 								{
@@ -10703,7 +10701,7 @@ ListViewColumnItemArranger
 				{
 					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					columnItemViewCallback = new ColumnItemViewCallback(this);
+					columnItemViewCallback = Ptr(new ColumnItemViewCallback(this));
 				}
 
 				ListViewColumnItemArranger::~ListViewColumnItemArranger()
@@ -11226,37 +11224,37 @@ GuiListView
 				case ListViewView::BigIcon:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::BigIconListViewItemTemplate; },
-						new list::FixedSizeMultiColumnItemArranger
+						Ptr(new list::FixedSizeMultiColumnItemArranger)
 						);
 					break;
 				case ListViewView::SmallIcon:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::SmallIconListViewItemTemplate; },
-						new list::FixedSizeMultiColumnItemArranger
+						Ptr(new list::FixedSizeMultiColumnItemArranger)
 					);
 					break;
 				case ListViewView::List:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::ListListViewItemTemplate; },
-						new list::FixedHeightMultiColumnItemArranger
+						Ptr(new list::FixedHeightMultiColumnItemArranger)
 					);
 					break;
 				case ListViewView::Tile:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::TileListViewItemTemplate; },
-						new list::FixedSizeMultiColumnItemArranger
+						Ptr(new list::FixedSizeMultiColumnItemArranger)
 					);
 					break;
 				case ListViewView::Information:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::InformationListViewItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				case ListViewView::Detail:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DetailListViewItemTemplate; },
-						new list::ListViewColumnItemArranger
+						Ptr(new list::ListViewColumnItemArranger)
 					);
 					break;
 				default:;
@@ -11360,7 +11358,7 @@ BigIconListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -11373,7 +11371,7 @@ BigIconListViewItemTemplate
 							text->SetAlignments(Alignment::Center, Alignment::Top);
 							text->SetWrapLine(true);
 							text->SetEllipse(true);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 					}
 
@@ -11440,7 +11438,7 @@ SmallIconListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							GuiCellComposition* cell = new GuiCellComposition;
@@ -11451,7 +11449,7 @@ SmallIconListViewItemTemplate
 							text = GuiSolidLabelElement::Create();
 							text->SetAlignments(Alignment::Left, Alignment::Center);
 							text->SetEllipse(true);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 					}
 
@@ -11518,7 +11516,7 @@ ListListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -11528,7 +11526,7 @@ ListListViewItemTemplate
 
 							text = GuiSolidLabelElement::Create();
 							text->SetAlignments(Alignment::Left, Alignment::Center);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 					}
 
@@ -11579,11 +11577,11 @@ TileListViewItemTemplate
 					textTable->AddChild(cell);
 					cell->SetSite(textRow + 1, 0, 1, 1);
 
-					auto textElement = GuiSolidLabelElement::Create();
+					auto textElement = Ptr(GuiSolidLabelElement::Create());
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
 					textElement->SetEllipse(true);
 					cell->SetOwnedElement(textElement);
-					return textElement;
+					return textElement.Obj();
 				}
 
 				void TileListViewItemTemplate::ResetTextTable(vint textRows)
@@ -11621,7 +11619,7 @@ TileListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -11706,7 +11704,7 @@ InformationListViewItemTemplate
 					{
 						bottomLine = GuiSolidBackgroundElement::Create();
 						bottomLineComposition = new GuiBoundsComposition;
-						bottomLineComposition->SetOwnedElement(bottomLine);
+						bottomLineComposition->SetOwnedElement(Ptr(bottomLine));
 						bottomLineComposition->SetAlignmentToParent(Margin(8, -1, 8, 0));
 						bottomLineComposition->SetPreferredMinSize(Size(0, 1));
 						AddChild(bottomLineComposition);
@@ -11731,7 +11729,7 @@ InformationListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -11740,7 +11738,7 @@ InformationListViewItemTemplate
 
 							text = GuiSolidLabelElement::Create();
 							text->SetEllipse(true);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -11809,7 +11807,7 @@ InformationListViewItemTemplate
 									columnTexts[i] = GuiSolidLabelElement::Create();
 									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
 									columnTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-									cell->SetOwnedElement(columnTexts[i]);
+									cell->SetOwnedElement(Ptr(columnTexts[i]));
 								}
 								{
 									auto cell = new GuiCellComposition;
@@ -11820,7 +11818,7 @@ InformationListViewItemTemplate
 									dataTexts[i]->SetEllipse(true);
 									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
 									dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-									cell->SetOwnedElement(dataTexts[i]);
+									cell->SetOwnedElement(Ptr(dataTexts[i]));
 								}
 							}
 						}
@@ -11896,7 +11894,7 @@ DetailListViewItemTemplate
 
 								image = GuiImageFrameElement::Create();
 								image->SetStretch(true);
-								cell->SetOwnedElement(image);
+								cell->SetOwnedElement(Ptr(image));
 							}
 							{
 								auto cell = new GuiCellComposition;
@@ -11907,7 +11905,7 @@ DetailListViewItemTemplate
 								text = GuiSolidLabelElement::Create();
 								text->SetAlignments(Alignment::Left, Alignment::Center);
 								text->SetEllipse(true);
-								cell->SetOwnedElement(text);
+								cell->SetOwnedElement(Ptr(text));
 							}
 						}
 					}
@@ -11945,7 +11943,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetEllipse(true);
 								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
 								subItems[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-								cell->SetOwnedElement(subItems[i]);
+								cell->SetOwnedElement(Ptr(subItems[i]));
 							}
 							OnColumnChanged();
 						}
@@ -12037,7 +12035,7 @@ DefaultTextListItemTemplate
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
 
 					GuiBoundsComposition* textComposition = new GuiBoundsComposition;
-					textComposition->SetOwnedElement(textElement);
+					textComposition->SetOwnedElement(Ptr(textElement));
 					textComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 
 					if (auto bulletStyleController = CreateBulletStyle())
@@ -12345,19 +12343,19 @@ GuiTextList
 				case TextListView::Text:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DefaultTextListItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				case TextListView::Check:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DefaultCheckTextListItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				case TextListView::Radio:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DefaultRadioTextListItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				default:;
@@ -12831,14 +12829,14 @@ MemoryNodeProvider
 
 				Ptr<INodeProvider> MemoryNodeProvider::GetParent()
 				{
-					return parent;
+					return Ptr(parent);
 				}
 
 				Ptr<INodeProvider> MemoryNodeProvider::GetChild(vint index)
 				{
-					if(0<=index && index<childCount)
+					if (0 <= index && index < childCount)
 					{
-						return children[index].Obj();
+						return children[index];
 					}
 					else
 					{
@@ -12958,7 +12956,7 @@ MemoryNodeRootProvider
 
 				Ptr<INodeProvider> MemoryNodeRootProvider::GetRootNode()
 				{
-					return this;
+					return Ptr(this);
 				}
 
 				MemoryNodeProvider* MemoryNodeRootProvider::GetMemoryNode(INodeProvider* node)
@@ -13034,14 +13032,12 @@ GuiVirtualTreeListControl
 
 #define ATTACH_ITEM_MOUSE_EVENT(NODEEVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiNodeMouseEvent&, GuiGraphicsComposition*, GuiItemMouseEventArgs&)> func(this, &GuiVirtualTreeListControl::OnItemMouseEvent);\
-						ITEMEVENTNAME.AttachFunction(Curry(func)(NODEEVENTNAME));\
+						ITEMEVENTNAME.AttachFunction([this](GuiGraphicsComposition* sender, GuiItemMouseEventArgs& args){ OnItemMouseEvent(NODEEVENTNAME, sender, args); });\
 					}\
 
 #define ATTACH_ITEM_NOTIFY_EVENT(NODEEVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiNodeNotifyEvent&, GuiGraphicsComposition*, GuiItemEventArgs&)> func(this, &GuiVirtualTreeListControl::OnItemNotifyEvent);\
-						ITEMEVENTNAME.AttachFunction(Curry(func)(NODEEVENTNAME));\
+						ITEMEVENTNAME.AttachFunction([this](GuiGraphicsComposition* sender, GuiItemEventArgs& args){ OnItemNotifyEvent(NODEEVENTNAME, sender, args); });\
 					}\
 
 			void GuiVirtualTreeListControl::OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments)
@@ -13302,7 +13298,7 @@ GuiVirtualTreeView
 				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
 				SetStyleAndArranger(
 					[](const Value&) { return new tree::DefaultTreeItemTemplate; },
-					new list::FixedHeightItemArranger
+					Ptr(new list::FixedHeightItemArranger)
 				);
 			}
 
@@ -13315,7 +13311,7 @@ GuiTreeView
 ***********************************************************************/
 
 			GuiTreeView::GuiTreeView(theme::ThemeName themeName)
-				:GuiVirtualTreeView(themeName, new tree::TreeViewItemRootProvider)
+				:GuiVirtualTreeView(themeName, Ptr(new tree::TreeViewItemRootProvider))
 			{
 				nodes = nodeItemProvider->GetRoot().Cast<tree::TreeViewItemRootProvider>();
 			}
@@ -13399,7 +13395,7 @@ DefaultTreeItemTemplate
 
 						imageElement = GuiImageFrameElement::Create();
 						imageElement->SetStretch(true);
-						cell->SetOwnedElement(imageElement);
+						cell->SetOwnedElement(Ptr(imageElement));
 					}
 					{
 						GuiCellComposition* cell = new GuiCellComposition;
@@ -13410,7 +13406,7 @@ DefaultTreeItemTemplate
 						textElement = GuiSolidLabelElement::Create();
 						textElement->SetAlignments(Alignment::Left, Alignment::Center);
 						textElement->SetEllipse(true);
-						cell->SetOwnedElement(textElement);
+						cell->SetOwnedElement(Ptr(textElement));
 					}
 
 					FontChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnFontChanged);
@@ -13652,12 +13648,12 @@ IGuiAnimation
 
 			Ptr<IGuiAnimation> IGuiAnimation::CreateAnimation(const Func<void(vuint64_t)>& run, vuint64_t milliseconds)
 			{
-				return new GuiFiniteAnimation(run, milliseconds);
+				return Ptr(new GuiFiniteAnimation(run, milliseconds));
 			}
 
 			Ptr<IGuiAnimation> IGuiAnimation::CreateAnimation(const Func<void(vuint64_t)>& run)
 			{
-				return new GuiInfiniteAnimation(run);
+				return Ptr(new GuiInfiniteAnimation(run));
 			}
 
 /***********************************************************************
@@ -13819,7 +13815,7 @@ IGuiAnimationCoroutine
 
 			Ptr<IGuiAnimation> IGuiAnimationCoroutine::Create(const Creator& creator)
 			{
-				return new GuiCoroutineAnimation(creator);
+				return Ptr(new GuiCoroutineAnimation(creator));
 			}
 		}
 	}
@@ -14021,7 +14017,7 @@ GuiCommonDatePickerLook
 					listYears->SetHorizontalAlwaysVisible(false);
 					for (vint i = YearFirst; i <= YearLast; i++)
 					{
-						listYears->GetItems().Add(new list::TextItem(itow(i)));
+						listYears->GetItems().Add(Ptr(new list::TextItem(itow(i))));
 					}
 					comboYear = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listYears);
 					comboYear->SetAlt(L"Y");
@@ -14090,10 +14086,10 @@ GuiCommonDatePickerLook
 						dayTable->AddChild(cell);
 						cell->SetSite(1, i, 1, 1);
 
-						GuiSolidLabelElement* element = GuiSolidLabelElement::Create();
+						auto element = Ptr(GuiSolidLabelElement::Create());
 						element->SetAlignments(Alignment::Center, Alignment::Center);
 						element->SetColor(primaryTextColor);
-						labelDaysOfWeek[i] = element;
+						labelDaysOfWeek[i] = element.Obj();
 						cell->SetOwnedElement(element);
 					}
 
@@ -14119,10 +14115,10 @@ GuiCommonDatePickerLook
 							cell->AddChild(button->GetBoundsComposition());
 							buttonDays[j*DaysOfWeek + i] = button;
 
-							GuiSolidLabelElement* element = GuiSolidLabelElement::Create();
+							auto element = Ptr(GuiSolidLabelElement::Create());
 							element->SetAlignments(Alignment::Center, Alignment::Center);
 							element->SetText(L"0");
-							labelDays[j*DaysOfWeek + i] = element;
+							labelDays[j*DaysOfWeek + i] = element.Obj();
 
 							GuiBoundsComposition* elementBounds = new GuiBoundsComposition;
 							elementBounds->SetOwnedElement(element);
@@ -14133,7 +14129,7 @@ GuiCommonDatePickerLook
 					}
 				}
 				{
-					GuiSolidBackgroundElement* element = GuiSolidBackgroundElement::Create();
+					auto element = Ptr(GuiSolidBackgroundElement::Create());
 					element->SetColor(backgroundColor);
 					dayTable->SetOwnedElement(element);
 				}
@@ -14216,7 +14212,7 @@ GuiCommonDatePickerLook
 					listMonths->GetItems().Clear();
 					for (vint i = 1; i <= 12; i++)
 					{
-						listMonths->GetItems().Add(new list::TextItem(dateLocale.GetLongMonthName(i)));
+						listMonths->GetItems().Add(Ptr(new list::TextItem(dateLocale.GetLongMonthName(i))));
 					}
 
 					SetDate(currentDate);
@@ -14630,7 +14626,7 @@ GuiInstanceRootObject
 			{
 				if (!timerCallback)
 				{
-					timerCallback = new RootObjectTimerCallback(this, controlHost);
+					timerCallback = Ptr(new RootObjectTimerCallback(this, controlHost));
 					controlHost->GetTimerManager()->AddCallback(timerCallback);
 				}
 			}
@@ -14805,7 +14801,7 @@ GuiInstanceRootObject
 
 			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
 			{
-				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
+				return AddComponent(new GuiObjectComponent<GuiControlHost>(Ptr(controlHost)));
 			}
 
 			bool GuiInstanceRootObject::AddAnimation(Ptr<IGuiAnimation> animation)
@@ -15308,7 +15304,7 @@ GuiDocumentCommonInterface
 				documentElement->SetCallback(this);
 
 				documentComposition = new GuiBoundsComposition;
-				documentComposition->SetOwnedElement(documentElement);
+				documentComposition->SetOwnedElement(Ptr(documentElement));
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 				documentComposition->SetAlignmentToParent(Margin(5, 5, 5, 5));
 				_container->AddChild(documentComposition);
@@ -15329,7 +15325,7 @@ GuiDocumentCommonInterface
 
 				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
-				SetDocument(new DocumentModel);
+				SetDocument(Ptr(new DocumentModel));
 			}
 
 			void GuiDocumentCommonInterface::ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea)
@@ -15749,9 +15745,9 @@ GuiDocumentCommonInterface
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface()
 			{
-				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
+				undoRedoProcessor = Ptr(new GuiDocumentUndoRedoProcessor);
 
-				internalShortcutKeyManager=new GuiShortcutKeyManager;
+				internalShortcutKeyManager = Ptr(new GuiShortcutKeyManager);
 				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
 				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
 				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
@@ -15779,7 +15775,7 @@ GuiDocumentCommonInterface
 				{
 					if (value->paragraphs.Count() == 0)
 					{
-						value->paragraphs.Add(new DocumentParagraphRun);
+						value->paragraphs.Add(Ptr(new DocumentParagraphRun));
 					}
 					MergeBaselineAndDefaultFont(value);
 				}
@@ -15986,7 +15982,7 @@ GuiDocumentCommonInterface
 				Ptr<DocumentModel> document = documentElement->GetDocument();
 				if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
 				{
-					Ptr<GuiDocumentUndoRedoProcessor::SetAlignmentStruct> arguments = new GuiDocumentUndoRedoProcessor::SetAlignmentStruct;
+					auto arguments = Ptr(new GuiDocumentUndoRedoProcessor::SetAlignmentStruct);
 					arguments->start = first;
 					arguments->end = last;
 					arguments->originalAlignments.Resize(alignments.Count());
@@ -16227,7 +16223,7 @@ GuiDocumentCommonInterface
 				{
 					if (auto image = reader->GetImage())
 					{
-						auto imageData = MakePtr<GuiImageData>(image, 0);
+						auto imageData = Ptr(new GuiImageData(image, 0));
 						EditImage(GetCaretBegin(), GetCaretEnd(), imageData);
 						return true;
 					}
@@ -17040,10 +17036,10 @@ GuiTextBoxCommonInterface
 				,readonly(false)
 				,preventEnterDueToAutoComplete(false)
 			{
-				undoRedoProcessor=new GuiTextBoxUndoRedoProcessor;
+				undoRedoProcessor=Ptr(new GuiTextBoxUndoRedoProcessor);
 				AttachTextEditCallback(undoRedoProcessor);
 
-				internalShortcutKeyManager=new GuiShortcutKeyManager;
+				internalShortcutKeyManager=Ptr(new GuiShortcutKeyManager);
 				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
 				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
 				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));
@@ -17547,11 +17543,11 @@ GuiMultilineTextBox
 
 				textComposition = new GuiBoundsComposition;
 				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				textComposition->SetOwnedElement(textElement);
+				textComposition->SetOwnedElement(Ptr(textElement));
 				containerComposition->AddChild(textComposition);
 
-				callback = new TextElementOperatorCallback(this);
-				commandExecutor = new CommandExecutor(this);
+				callback = Ptr(new TextElementOperatorCallback(this));
+				commandExecutor = Ptr(new CommandExecutor(this));
 
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
@@ -17727,11 +17723,11 @@ GuiSinglelineTextBox
 				containerComposition->AddChild(textCompositionTable);
 
 				textComposition = new GuiCellComposition;
-				textComposition->SetOwnedElement(textElement);
+				textComposition->SetOwnedElement(Ptr(textElement));
 				textCompositionTable->AddChild(textComposition);
 				textComposition->SetSite(1, 0, 1, 1);
 
-				callback = new TextElementOperatorCallback(this);
+				callback = Ptr(new TextElementOperatorCallback(this));
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
 				Install(textElement, textComposition, this, boundsComposition, focusableComposition);
@@ -17818,7 +17814,7 @@ GuiTextBoxAutoCompleteBase::TextListControlProvider
 				autoCompleteList->GetItems().Clear();
 				for (auto item : items)
 				{
-					autoCompleteList->GetItems().Add(new list::TextItem(item.text));
+					autoCompleteList->GetItems().Add(Ptr(new list::TextItem(item.text)));
 				}
 			}
 
@@ -17856,7 +17852,7 @@ GuiTextBoxAutoCompleteBase
 			{
 				if (!autoCompleteControlProvider)
 				{
-					autoCompleteControlProvider = new TextListControlProvider;
+					autoCompleteControlProvider = Ptr(new TextListControlProvider);
 				}
 				autoCompleteControlProvider->GetAutoCompleteControl()->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
@@ -18394,7 +18390,7 @@ GuiTextBoxRegexColorizer
 				}
 				else
 				{
-					lexer = new regex::RegexLexer(tokenRegexes);
+					lexer = Ptr(new regex::RegexLexer(tokenRegexes));
 					colors.Resize(1 + tokenRegexes.Count() + extraTokenColors.Count());
 					colors[0] = defaultColor;
 					for (vint i = 0; i < tokenColors.Count(); i++)
@@ -18409,7 +18405,7 @@ GuiTextBoxRegexColorizer
 						regex::RegexProc proc;
 						proc.colorizeProc = &GuiTextBoxRegexColorizer::ColorizerProc;
 						proc.argument = colorizerArgument;
-						colorizer = new regex::RegexLexerColorizer(lexer->Colorize(proc));
+						colorizer = Ptr(new regex::RegexLexerColorizer(lexer->Colorize(proc)));
 					}
 				}
 			}
@@ -18628,7 +18624,7 @@ GuiTextBoxUndoRedoProcessor
 
 			void GuiTextBoxUndoRedoProcessor::TextEditNotify(const TextEditNotifyStruct& arguments)
 			{
-				Ptr<EditStep> step=new EditStep;
+				auto step=Ptr(new EditStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
@@ -18732,7 +18728,7 @@ GuiDocumentUndoRedoProcessor
 
 			void GuiDocumentUndoRedoProcessor::OnReplaceModel(const ReplaceModelStruct& arguments)
 			{
-				Ptr<ReplaceModelStep> step=new ReplaceModelStep;
+				auto step=Ptr(new ReplaceModelStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
@@ -18740,7 +18736,7 @@ GuiDocumentUndoRedoProcessor
 
 			void GuiDocumentUndoRedoProcessor::OnRenameStyle(const RenameStyleStruct& arguments)
 			{
-				Ptr<RenameStyleStep> step=new RenameStyleStep;
+				auto step=Ptr(new RenameStyleStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
@@ -18748,7 +18744,7 @@ GuiDocumentUndoRedoProcessor
 
 			void GuiDocumentUndoRedoProcessor::OnSetAlignment(Ptr<SetAlignmentStruct> arguments)
 			{
-				Ptr<SetAlignmentStep> step=new SetAlignmentStep;
+				auto step=Ptr(new SetAlignmentStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
@@ -19096,7 +19092,7 @@ GuiGrammarAutoComplete
 					// get all properties from the selected node
 					newContext.rule = selectedNode->GetCreatorRules()[selectedNode->GetCreatorRules().Count() - 1];
 					newContext.originalRange = selectedNode->GetCodeRange();
-					newContext.originalNode = dynamic_cast<ParsingTreeObject*>(selectedNode);
+					newContext.originalNode = Ptr(selectedNode);
 					newContext.modifiedNode = newContext.originalNode;
 					newContext.modifiedEditVersion = newContext.input.editVersion;
 
@@ -19481,7 +19477,7 @@ GuiGrammarAutoComplete
 						TextPos stopPosition = GlobalTextPosToModifiedTextPos(newContext, trace.inputStart);
 
 						// find all possible token before the current caret using the PDA
-						Ptr<AutoCompleteData> autoComplete = new AutoCompleteData;
+						auto autoComplete = Ptr(new AutoCompleteData);
 						SortedList<vint> tableTokenIndices;
 						RegexToken* editingToken = SearchValidInputToken(state, collector, stopPosition, newContext, tableTokenIndices);
 
@@ -19794,7 +19790,7 @@ GuiGrammarAutoComplete
 			}
 
 			GuiGrammarAutoComplete::GuiGrammarAutoComplete(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule)
-				:RepeatingParsingExecutor::CallbackBase(new RepeatingParsingExecutor(_grammarParser, _grammarRule))
+				:RepeatingParsingExecutor::CallbackBase(Ptr(new RepeatingParsingExecutor(_grammarParser, _grammarRule)))
 				,editing(false)
 			{
 				Initialize();
@@ -19919,7 +19915,7 @@ GuiGrammarColorizer
 			}
 
 			GuiGrammarColorizer::GuiGrammarColorizer(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule)
-				:RepeatingParsingExecutor::CallbackBase(new RepeatingParsingExecutor(_grammarParser, _grammarRule))
+				:RepeatingParsingExecutor::CallbackBase(Ptr(new RepeatingParsingExecutor(_grammarParser, _grammarRule)))
 			{
 				parsingExecutor->AttachCallback(this);
 				BeginSetColors();
@@ -20387,7 +20383,7 @@ RepeatingParsingExecutor
 						}
 						if((index=fieldSemanticAtts.Keys().IndexOf(fieldDesc))!=-1)
 						{
-							md.semantics=new List<vint>;
+							md.semantics=Ptr(new List<vint>);
 							for (auto argument : fieldSemanticAtts.Values()[index]->arguments)
 							{
 								md.semantics->Add(semanticIndexMap.IndexOf(argument));
@@ -21497,7 +21493,7 @@ GuiRibbonGroup
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, false);
 
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				{
 					stack = new GuiStackComposition();
 					stack->SetDirection(GuiStackComposition::Horizontal);
@@ -22165,7 +22161,7 @@ GuiRibbonGallery
 			GuiRibbonGallery::GuiRibbonGallery(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 
 				ScrollUpEnabledChanged.SetAssociatedComposition(boundsComposition);
 				ScrollDownEnabledChanged.SetAssociatedComposition(boundsComposition);
@@ -22318,7 +22314,7 @@ list::GroupedDataSource
 						{
 							for (auto [groupValue, index] : indexed(GetLazyList<Value>(itemSource)))
 							{
-								auto group = MakePtr<GalleryGroup>();
+								auto group = Ptr(new GalleryGroup);
 								group->name = titleProperty(groupValue);
 								group->itemValues = GetChildren(childrenProperty(groupValue));
 								AttachGroupChanged(group, index);
@@ -22327,7 +22323,7 @@ list::GroupedDataSource
 						}
 						else
 						{
-							auto group = MakePtr<GalleryGroup>();
+							auto group = Ptr(new GalleryGroup);
 							group->itemValues = GetChildren(itemSource);
 							AttachGroupChanged(group, 0);
 							groupedItemSource.Add(group);
@@ -22798,7 +22794,7 @@ GuiBindableRibbonGalleryList
 					itemListArranger = new ribbon_impl::GalleryItemArranger(this);
 					itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
 					itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					itemList->SetArranger(itemListArranger);
+					itemList->SetArranger(Ptr(itemListArranger));
 					itemList->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(joinedItemSource)));
 					itemList->SelectionChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListSelectionChanged);
 					itemList->ItemMouseEnter.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListItemMouseEnter);
@@ -23615,7 +23611,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 						return nullptr;
 					}
 
-					Ptr<ShortcutBuilder> builder = new ShortcutBuilder;
+					auto builder = Ptr(new ShortcutBuilder);
 					builder->text = text;
 					builder->ctrl = match->Groups().Contains(_ctrl);
 					builder->shift = match->Groups().Contains(_shift);
@@ -23644,7 +23640,7 @@ GuiToolstripCommandPlugin
 				void Load()override
 				{
 					IGuiParserManager* manager=GetParserManager();
-					manager->SetParser(L"SHORTCUT", new GuiToolstripCommandShortcutParser);
+					manager->SetParser(L"SHORTCUT", Ptr(new GuiToolstripCommandShortcutParser));
 				}
 
 				void Unload()override
@@ -23818,7 +23814,7 @@ GuiToolstripMenu
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				sharedSizeRootComposition->AddChild(stackComposition);
 				
-				toolstripItems = new GuiToolstripCollection(this, stackComposition);
+				toolstripItems = Ptr(new GuiToolstripCollection(this, stackComposition));
 			}
 
 			GuiToolstripMenu::~GuiToolstripMenu()
@@ -23843,7 +23839,7 @@ GuiToolstripMenuBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
+				toolstripItems=Ptr(new GuiToolstripCollection(nullptr, stackComposition));
 			}
 
 			GuiToolstripMenuBar::~GuiToolstripMenuBar()
@@ -23868,7 +23864,7 @@ GuiToolstripToolBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
+				toolstripItems=Ptr(new GuiToolstripCollection(nullptr, stackComposition));
 			}
 
 			GuiToolstripToolBar::~GuiToolstripToolBar()
@@ -24209,7 +24205,7 @@ GuiToolstripGroupContainer
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				groupCollection = new GroupCollection(this);
+				groupCollection = Ptr(new GroupCollection(this));
 			}
 
 			GuiToolstripGroupContainer::~GuiToolstripGroupContainer()
@@ -24264,7 +24260,7 @@ GuiToolstripGroup
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems = new GuiToolstripCollection(nullptr, stackComposition);
+				toolstripItems = Ptr(new GuiToolstripCollection(nullptr, stackComposition));
 			}
 
 			GuiToolstripGroup::~GuiToolstripGroup()
@@ -25158,7 +25154,7 @@ GuiGraphicsComposition
 			{
 				if(!eventReceiver)
 				{
-					eventReceiver=new GuiGraphicsEventReceiver(this);
+					eventReceiver=Ptr(new GuiGraphicsEventReceiver(this));
 				}
 				return eventReceiver.Obj();
 			}
@@ -29084,7 +29080,7 @@ SetPropertiesVisitor
 					{
 						length=run->GetRepresentationText().Length();
 
-						Ptr<GuiImageFrameElement> element=GuiImageFrameElement::Create();
+						auto element=Ptr(GuiImageFrameElement::Create());
 						element->SetImage(run->image, run->frameIndex);
 						element->SetStretch(true);
 
@@ -29131,7 +29127,7 @@ SetPropertiesVisitor
 							}
 							else
 							{
-								auto eo = MakePtr<Renderer::EmbeddedObject>();
+								auto eo = Ptr(new Renderer::EmbeddedObject);
 								eo->name = run->name;
 								eo->size = Size(0, 0);
 								eo->start = start;
@@ -29229,7 +29225,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				Ptr<ParagraphCache> cache=paragraphCaches[paragraphIndex];
 				if(!cache)
 				{
-					cache=new ParagraphCache;
+					cache=Ptr(new ParagraphCache);
 					cache->fullText=paragraph->GetText(false);
 					paragraphCaches[paragraphIndex]=cache;
 				}
@@ -33004,7 +33000,7 @@ GuiShortcutKeyManager
 						return item.Obj();
 					}
 				}
-				Ptr<GuiShortcutKeyItem> item=new GuiShortcutKeyItem(this, ctrl, shift, alt, key);
+				auto item=Ptr(new GuiShortcutKeyItem(this, ctrl, shift, alt, key));
 				shortcutKeyItems.Add(item);
 				return item.Obj();
 			}
@@ -33535,7 +33531,7 @@ DocumentModel
 		{
 			{
 				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp=Ptr(new DocumentStyleProperties);
 				sp->face=font.fontFamily;
 				sp->size=DocumentFontSize((double)font.size, false);
 				sp->color=Color();
@@ -33547,42 +33543,42 @@ DocumentModel
 				sp->antialias=font.antialias;
 				sp->verticalAntialias=font.verticalAntialias;
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles=sp;
 				styles.Add(L"#Default", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				sp->color=Color(255, 255, 255);
 				sp->backgroundColor=Color(51, 153, 255);
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles=sp;
 				styles.Add(L"#Selection", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles=sp;
 				styles.Add(L"#Context", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				sp->color=Color(0, 0, 255);
 				sp->underline=true;
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->parentStyleName=L"#Context";
 				style->styles=sp;
 				styles.Add(L"#NormalLink", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				sp->color=Color(255, 128, 0);
 				sp->underline=true;
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->parentStyleName=L"#Context";
 				style->styles=sp;
 				styles.Add(L"#ActiveLink", style);
@@ -33606,7 +33602,7 @@ DocumentModel
 		void DocumentModel::MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName)
 		{
 			auto indexDst = styles.Keys().IndexOf(styleName);
-			Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
+			auto sp = Ptr(new DocumentStyleProperties);
 			MergeStyle(sp, style);
 			if (indexDst != -1)
 			{
@@ -33615,7 +33611,7 @@ DocumentModel
 
 			if (indexDst == -1)
 			{
-				auto style = new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles = sp;
 				styles.Add(styleName, style);
 			}
@@ -33653,7 +33649,7 @@ DocumentModel
 
 		void DocumentModel::MergeDefaultFont(const FontProperties& defaultFont)
 		{
-			Ptr<DocumentStyleProperties> style = new DocumentStyleProperties;
+			auto style = Ptr(new DocumentStyleProperties);
 
 			style->face					=defaultFont.fontFamily;
 			style->size					=DocumentFontSize((double)defaultFont.size, false);
@@ -33708,7 +33704,7 @@ DocumentModel
 
 			if(!selectedStyle->resolvedStyles)
 			{
-				Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				selectedStyle->resolvedStyles = sp;
 
 				Ptr<DocumentStyle> currentStyle;
@@ -33845,7 +33841,7 @@ namespace vl
 				void Visit(DocumentImageRun* run)override
 				{
 					run->source = L"res://Image_" + itow(imageRuns.Count());
-					imageRuns.Add(run);
+					imageRuns.Add(Ptr(run));
 				}
 			};
 		}
@@ -33862,10 +33858,10 @@ namespace vl
 
 		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& clipboardStream)
 		{
-			auto tempResource = MakePtr<GuiResource>();
-			auto tempResourceItem = MakePtr<GuiResourceItem>();
+			auto tempResource = Ptr(new GuiResource);
+			auto tempResourceItem = Ptr(new GuiResourceItem);
 			tempResource->AddItem(L"Document", tempResourceItem);
-			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
+			auto tempResolver = Ptr(new GuiResourcePathResolver(tempResource, L""));
 
 			internal::ContextFreeReader reader(clipboardStream);
 			{
@@ -33895,8 +33891,8 @@ namespace vl
 					reader << (IStream&)memoryStream;
 					if (auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream))
 					{
-						auto imageItem = MakePtr<GuiResourceItem>();
-						imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
+						auto imageItem = Ptr(new GuiResourceItem);
+						imageItem->SetContent(L"Image", Ptr(new GuiImageData(image, 0)));
 						tempResource->AddItem(L"Image_" + itow(i), imageItem);
 					}
 				}
@@ -34598,7 +34594,7 @@ AddStyleNameVisitor	: Apply a style name on the specified range
 
 				Ptr<DocumentContainerRun> CreateContainer()override
 				{
-					Ptr<DocumentStylePropertiesRun> containerRun = new DocumentStylePropertiesRun;
+					auto containerRun = Ptr(new DocumentStylePropertiesRun);
 					containerRun->style = CopyStyle(style);
 					return containerRun;
 				}
@@ -34619,7 +34615,7 @@ AddStyleNameVisitor	: Apply a style name on the specified range
 
 				Ptr<DocumentContainerRun> CreateContainer()override
 				{
-					Ptr<DocumentHyperlinkRun> containerRun = new DocumentHyperlinkRun;
+					auto containerRun = Ptr(new DocumentHyperlinkRun);
 					containerRun->reference = reference;
 					containerRun->normalStyleName = normalStyleName;
 					containerRun->activeStyleName = activeStyleName;
@@ -34643,7 +34639,7 @@ AddStyleNameVisitor	: Apply a style name on the specified range
 
 				Ptr<DocumentContainerRun> CreateContainer()override
 				{
-					Ptr<DocumentStyleApplicationRun> containerRun = new DocumentStyleApplicationRun;
+					auto containerRun = Ptr(new DocumentStyleApplicationRun);
 					containerRun->styleName = styleName;
 					return containerRun;
 				}
@@ -34945,7 +34941,7 @@ Merge sibling runs if they are exactly the same
 					if (auto sibilingRun = nextRun.Cast<DocumentTextRun>())
 					{
 						run->text += sibilingRun->text;
-						replacedRun = run;
+						replacedRun = Ptr(run);
 					}
 				}
 
@@ -34965,7 +34961,7 @@ Merge sibling runs if they are exactly the same
 						if (run->style->verticalAntialias !=	sibilingRun->style->verticalAntialias)	return;
 
 						CopyFrom(run->runs, sibilingRun->runs, true);
-						replacedRun = run;
+						replacedRun = Ptr(run);
 					}
 				}
 
@@ -34976,7 +34972,7 @@ Merge sibling runs if they are exactly the same
 						if (run->styleName == sibilingRun->styleName)
 						{
 							CopyFrom(run->runs, sibilingRun->runs, true);
-							replacedRun = run;
+							replacedRun = Ptr(run);
 						}
 					}
 				}
@@ -34991,7 +34987,7 @@ Merge sibling runs if they are exactly the same
 							run->reference == sibilingRun->reference)
 						{
 							CopyFrom(run->runs, sibilingRun->runs, true);
-							replacedRun = run;
+							replacedRun = Ptr(run);
 						}
 					}
 				}
@@ -35135,21 +35131,21 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentTextRun* run)override
 				{
-					Ptr<DocumentTextRun> cloned = new DocumentTextRun;
+					auto cloned = Ptr(new DocumentTextRun);
 					cloned->text = run->text;
 					clonedRun = cloned;
 				}
 
 				void Visit(DocumentStylePropertiesRun* run)override
 				{
-					Ptr<DocumentStylePropertiesRun> cloned = new DocumentStylePropertiesRun;
+					auto cloned = Ptr(new DocumentStylePropertiesRun);
 					cloned->style = CopyStyle(run->style);
 					VisitContainer(cloned);
 				}
 
 				void Visit(DocumentStyleApplicationRun* run)override
 				{
-					Ptr<DocumentStyleApplicationRun> cloned = new DocumentStyleApplicationRun;
+					auto cloned = Ptr(new DocumentStyleApplicationRun);
 					cloned->styleName = run->styleName;
 
 					VisitContainer(cloned);
@@ -35157,7 +35153,7 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					Ptr<DocumentHyperlinkRun> cloned = new DocumentHyperlinkRun;
+					auto cloned = Ptr(new DocumentHyperlinkRun);
 					cloned->styleName = run->styleName;
 					cloned->normalStyleName = run->normalStyleName;
 					cloned->activeStyleName = run->activeStyleName;
@@ -35168,7 +35164,7 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentImageRun* run)override
 				{
-					Ptr<DocumentImageRun> cloned = new DocumentImageRun;
+					auto cloned = Ptr(new DocumentImageRun);
 					cloned->size = run->size;
 					cloned->baseline = run->baseline;
 					cloned->image = run->image;
@@ -35179,14 +35175,14 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
-					Ptr<DocumentEmbeddedObjectRun> cloned = new DocumentEmbeddedObjectRun;
+					auto cloned = Ptr(new DocumentEmbeddedObjectRun);
 					cloned->name = run->name;
 					clonedRun = cloned;
 				}
 
 				void Visit(DocumentParagraphRun* run)override
 				{
-					Ptr<DocumentParagraphRun> cloned = new DocumentParagraphRun;
+					auto cloned = Ptr(new DocumentParagraphRun);
 					cloned->alignment = run->alignment;
 
 					VisitContainer(cloned);
@@ -35226,7 +35222,7 @@ Clone the current run with its children
 					{
 						if (start <= range.start && range.end <= end && !deepCopy)
 						{
-							clonedRun = run;
+							clonedRun = Ptr(run);
 						}
 						else
 						{
@@ -35258,12 +35254,12 @@ Clone the current run with its children
 							}
 							else
 							{
-								clonedRun = run;
+								clonedRun = Ptr(run);
 							}
 						}
 						else
 						{
-							Ptr<DocumentTextRun> textRun = new DocumentTextRun;
+							auto textRun = Ptr(new DocumentTextRun);
 							vint copyStart = start>range.start ? start : range.start;
 							vint copyEnd = end<range.end ? end : range.end;
 							if (copyStart<copyEnd)
@@ -35302,7 +35298,7 @@ Clone the current run with its children
 						}
 						else
 						{
-							clonedRun = run;
+							clonedRun = Ptr(run);
 						}
 					}
 				}
@@ -35319,7 +35315,7 @@ Clone the current run with its children
 						}
 						else
 						{
-							clonedRun = run;
+							clonedRun = Ptr(run);
 						}
 					}
 				}
@@ -35337,7 +35333,7 @@ Clone the current run with its children
 			Ptr<DocumentStyleProperties> CopyStyle(Ptr<DocumentStyleProperties> style)
 			{
 				if (!style) return nullptr;
-				Ptr<DocumentStyleProperties> newStyle = new DocumentStyleProperties;
+				auto newStyle = Ptr(new DocumentStyleProperties);
 
 				newStyle->face = style->face;
 				newStyle->size = style->size;
@@ -35362,7 +35358,7 @@ Clone the current run with its children
 
 			Ptr<DocumentRun> CopyStyledText(List<DocumentContainerRun*>& styleRuns, const WString& text)
 			{
-				Ptr<DocumentTextRun> textRun = new DocumentTextRun;
+				auto textRun = Ptr(new DocumentTextRun);
 				textRun->text = text;
 
 				CloneRunVisitor visitor(textRun);
@@ -35555,10 +35551,10 @@ If a run decides that itself should be cut, then leftRun and rightRun contains n
 				{
 					RunRange range = runRanges[run];
 
-					Ptr<DocumentTextRun> leftText = new DocumentTextRun;
+					auto leftText = Ptr(new DocumentTextRun);
 					leftText->text = run->text.Sub(0, position - range.start);
 
-					Ptr<DocumentTextRun> rightText = new DocumentTextRun;
+					auto rightText = Ptr(new DocumentTextRun);
 					rightText->text = run->text.Sub(position - range.start, range.end - position);
 
 					leftRun = leftText;
@@ -35773,7 +35769,7 @@ Get the hyperlink run that contains the specified position
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					package->hyperlinks.Add(run);
+					package->hyperlinks.Add(Ptr(run));
 				}
 
 				void Visit(DocumentImageRun* run)override
@@ -35796,7 +35792,7 @@ Get the hyperlink run that contains the specified position
 		{
 			Ptr<DocumentHyperlinkRun::Package> LocateHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint row, vint start, vint end)
 			{
-				auto package = MakePtr<DocumentHyperlinkRun::Package>();
+				auto package = Ptr(new DocumentHyperlinkRun::Package);
 				package->row = row;
 				{
 					LocateHyperlinkVisitor visitor(runRanges, package, start, end);
@@ -35824,7 +35820,7 @@ Get the hyperlink run that contains the specified position
 					vint pos = runRanges[startRun.Obj()].start;
 					if (pos == 0) break;
 
-					auto newPackage = MakePtr<DocumentHyperlinkRun::Package>();
+					auto newPackage = Ptr(new DocumentHyperlinkRun::Package);
 					LocateHyperlinkVisitor visitor(runRanges, newPackage, pos - 1, pos);
 					run->Accept(&visitor);
 					if (newPackage->hyperlinks.Count() == 0) break;
@@ -35844,7 +35840,7 @@ Get the hyperlink run that contains the specified position
 					vint pos = runRanges[endRun.Obj()].end;
 					if (pos == length) break;
 
-					auto newPackage = MakePtr<DocumentHyperlinkRun::Package>();
+					auto newPackage = Ptr(new DocumentHyperlinkRun::Package);
 					LocateHyperlinkVisitor visitor(runRanges, newPackage, pos, pos + 1);
 					run->Accept(&visitor);
 					if (newPackage->hyperlinks.Count() == 0) break;
@@ -36035,12 +36031,12 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 						}
 					}
 					replacedRuns.Clear();
-					replacedRuns.Add(run);
+					replacedRuns.Add(Ptr(run));
 				}
 
 				void VisitContent(DocumentContentRun* run)
 				{
-					replacedRuns.Add(run);
+					replacedRuns.Add(Ptr(run));
 				}
 
 				void RemoveContainer(DocumentContainerRun* run)
@@ -36212,7 +36208,7 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						}
 					}
 					replacedRuns.Clear();
-					replacedRuns.Add(run);
+					replacedRuns.Add(Ptr(run));
 				}
 
 				void Visit(DocumentTextRun* run)override
@@ -36225,15 +36221,15 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						if (end<range.end)
 						{
 							run->text = run->text.Sub(end - range.start, range.end - end);
-							replacedRuns.Add(run);
+							replacedRuns.Add(Ptr(run));
 						}
 					}
 					else
 					{
 						if (end<range.end)
 						{
-							DocumentTextRun* firstRun = new DocumentTextRun;
-							DocumentTextRun* secondRun = new DocumentTextRun;
+							auto firstRun = Ptr(new DocumentTextRun);
+							auto secondRun = Ptr(new DocumentTextRun);
 
 							firstRun->text = run->text.Sub(0, start - range.start);
 							secondRun->text = run->text.Sub(end - range.start, range.end - end);
@@ -36244,7 +36240,7 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						else
 						{
 							run->text = run->text.Sub(0, start - range.start);
-							replacedRuns.Add(run);
+							replacedRuns.Add(Ptr(run));
 						}
 					}
 				}
@@ -36512,7 +36508,7 @@ Calculate if all text in the specified range has some common styles
 					}
 					else
 					{
-						style = new DocumentStyleProperties;
+						style = Ptr(new DocumentStyleProperties);
 						OverrideStyleItem(&DocumentStyleProperties::face, &FontProperties::fontFamily);
 						OverrideStyleItem(&DocumentStyleProperties::size, &FontProperties::size);
 						OverrideStyleItem(&DocumentStyleProperties::color, &DocumentModel::ResolvedStyle::color);
@@ -36750,7 +36746,7 @@ DocumentModel::EditRangeOperations
 				GetRunRange(paragraphs[i].Obj(), runRanges);
 			}
 
-			Ptr<DocumentModel> newDocument=new DocumentModel;
+			auto newDocument = Ptr(new DocumentModel);
 
 			// copy paragraphs
 			if(begin.row==end.row)
@@ -36797,7 +36793,7 @@ DocumentModel::EditRangeOperations
 					Ptr<DocumentStyle> style=styles[styleName];
 					if(deepCopy)
 					{
-						Ptr<DocumentStyle> newStyle=new DocumentStyle;
+						auto newStyle = Ptr(new DocumentStyle);
 						newStyle->parentStyleName=style->parentStyleName;
 						newStyle->styles=CopyStyle(style->styles);
 						newStyle->resolvedStyles=CopyStyle(style->resolvedStyles);
@@ -37115,13 +37111,13 @@ DocumentModel::EditImage
 
 		Ptr<DocumentImageRun> DocumentModel::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 		{
-			Ptr<DocumentImageRun> imageRun=new DocumentImageRun;
+			auto imageRun = Ptr(new DocumentImageRun);
 			imageRun->size=image->GetImage()->GetFrame(image->GetFrameIndex())->GetSize();
 			imageRun->baseline=imageRun->size.y;
 			imageRun->image=image->GetImage();
 			imageRun->frameIndex=image->GetFrameIndex();
 
-			Ptr<DocumentParagraphRun> paragraph=new DocumentParagraphRun;
+			auto paragraph = Ptr(new DocumentParagraphRun);
 			paragraph->runs.Add(imageRun);
 
 			Array<Ptr<DocumentParagraphRun>> runs(1);
@@ -37304,7 +37300,7 @@ DocumentModel::ClearStyle
 		END_OF_SUMMERIZING:
 			if (!style)
 			{
-				style = new DocumentStyleProperties;
+				style = Ptr(new DocumentStyleProperties);
 			}
 			return style;
 		}
@@ -37445,7 +37441,7 @@ document_operation_visitors::DeserializeNodeVisitor
 
 				void PrintText(const WString& text)
 				{
-					Ptr<DocumentTextRun> run = new DocumentTextRun;
+					auto run = Ptr(new DocumentTextRun);
 					run->text = text;
 					container->runs.Add(run);
 				}
@@ -37484,7 +37480,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"img")
 					{
-						Ptr<DocumentImageRun> run = new DocumentImageRun;
+						auto run = Ptr(new DocumentImageRun);
 						run->baseline = -1;
 
 						if (Ptr<XmlAttribute> source = XmlGetAttribute(node, L"source"))
@@ -37538,7 +37534,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"object")
 					{
-						Ptr<DocumentEmbeddedObjectRun> run = new DocumentEmbeddedObjectRun;
+						auto run = Ptr(new DocumentEmbeddedObjectRun);
 						run->baseline = -1;
 
 						if (auto name = XmlGetAttribute(node, L"name"))
@@ -37553,8 +37549,8 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"font")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						auto sp = Ptr(new DocumentStyleProperties);
 						run->style = sp;
 
 						for (auto att : node->attributes)
@@ -37585,40 +37581,40 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"b" || node->name.value == L"b-")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						run->style = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						run->style = Ptr(new DocumentStyleProperties);
 						run->style->bold = node->name.value == L"b";
 						container->runs.Add(run);
 						createdContainer = run;
 					}
 					else if (node->name.value == L"i" || node->name.value == L"i-")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						run->style = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						run->style = Ptr(new DocumentStyleProperties);
 						run->style->italic = node->name.value == L"i";
 						container->runs.Add(run);
 						createdContainer = run;
 					}
 					else if (node->name.value == L"u" || node->name.value == L"u-")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						run->style = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						run->style = Ptr(new DocumentStyleProperties);
 						run->style->underline = node->name.value == L"u";
 						container->runs.Add(run);
 						createdContainer = run;
 					}
 					else if (node->name.value == L"s" || node->name.value == L"s-")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						run->style = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						run->style = Ptr(new DocumentStyleProperties);
 						run->style->strikeline = node->name.value == L"s";
 						container->runs.Add(run);
 						createdContainer = run;
 					}
 					else if (node->name.value == L"ha")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						run->style = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						run->style = Ptr(new DocumentStyleProperties);
 						run->style->antialias = true;
 						run->style->verticalAntialias = false;
 						container->runs.Add(run);
@@ -37626,8 +37622,8 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"va")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						run->style = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						run->style = Ptr(new DocumentStyleProperties);
 						run->style->antialias = true;
 						run->style->verticalAntialias = true;
 						container->runs.Add(run);
@@ -37635,8 +37631,8 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"na")
 					{
-						Ptr<DocumentStylePropertiesRun> run = new DocumentStylePropertiesRun();
-						run->style = new DocumentStyleProperties;
+						auto run = Ptr(new DocumentStylePropertiesRun);
+						run->style = Ptr(new DocumentStyleProperties);
 						run->style->antialias = false;
 						run->style->verticalAntialias = false;
 						container->runs.Add(run);
@@ -37648,7 +37644,7 @@ document_operation_visitors::DeserializeNodeVisitor
 						{
 							WString styleName = att->value.value;
 
-							Ptr<DocumentStyleApplicationRun> run = new DocumentStyleApplicationRun;
+							auto run = Ptr(new DocumentStyleApplicationRun);
 							run->styleName = styleName;
 							container->runs.Add(run);
 							createdContainer = run;
@@ -37660,7 +37656,7 @@ document_operation_visitors::DeserializeNodeVisitor
 					}
 					else if (node->name.value == L"a")
 					{
-						Ptr<DocumentHyperlinkRun> run = new DocumentHyperlinkRun;
+						auto run = Ptr(new DocumentHyperlinkRun);
 						run->normalStyleName = L"#NormalLink";
 						run->activeStyleName = L"#ActiveLink";
 						if (Ptr<XmlAttribute> att = XmlGetAttribute(node, L"normal"))
@@ -37721,14 +37717,14 @@ document_operation_visitors::DeserializeNodeVisitor
 
 			Ptr<DocumentStyle> ParseDocumentStyle(Ptr<GuiResourceItem> resource, Ptr<XmlElement> styleElement, GuiResourceError::List& errors)
 			{
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 
 				if(Ptr<XmlAttribute> parent=XmlGetAttribute(styleElement, L"parent"))
 				{
 					style->parentStyleName=parent->value.value;
 				}
 
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				style->styles=sp;
 
 				for (auto att : XmlGetElements(styleElement))
@@ -37801,7 +37797,7 @@ DocumentModel
 
 		Ptr<DocumentModel> DocumentModel::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, Ptr<GuiResourcePathResolver> resolver, GuiResourceError::List& errors)
 		{
-			Ptr<DocumentModel> model = new DocumentModel;
+			auto model = Ptr(new DocumentModel);
 			if (xml->rootElement->name.value == L"Doc")
 			{
 				for (auto partElement : XmlGetElements(xml->rootElement))
@@ -37821,8 +37817,8 @@ DocumentModel
 										model->styles.Add(styleName, style);
 										if (styleName.Length() > 9 && styleName.Right(9) == L"-Override")
 										{
-											auto overridedStyle = MakePtr<DocumentStyle>();
-											overridedStyle->styles = new DocumentStyleProperties;
+											auto overridedStyle = Ptr(new DocumentStyle);
+											overridedStyle->styles = Ptr(new DocumentStyleProperties);
 											MergeStyle(overridedStyle->styles, style->styles);
 
 											styleName = styleName.Left(styleName.Length() - 9);
@@ -37857,7 +37853,7 @@ DocumentModel
 						{
 							if (p->name.value == L"p")
 							{
-								Ptr<DocumentParagraphRun> paragraph = new DocumentParagraphRun;
+								auto paragraph = Ptr(new DocumentParagraphRun);
 								if (Ptr<XmlAttribute> att = XmlGetAttribute(p, L"align"))
 								{
 									if (att->value.value == L"Left")
@@ -38009,7 +38005,7 @@ document_operation_visitors::SerializeRunVisitor
 					Ptr<XmlElement> oldParent = parent;
 					if (sp->face || sp->size || sp->color)
 					{
-						Ptr<XmlElement> element = new XmlElement;
+						auto element = Ptr(new XmlElement);
 						element->name.value = L"font";
 						parent->subNodes.Add(element);
 
@@ -38034,28 +38030,28 @@ document_operation_visitors::SerializeRunVisitor
 					}
 					if (sp->bold)
 					{
-						Ptr<XmlElement> element = new XmlElement;
+						auto element = Ptr(new XmlElement);
 						element->name.value = sp->bold.Value() ? L"b" : L"b-";
 						parent->subNodes.Add(element);
 						parent = element;
 					}
 					if (sp->italic)
 					{
-						Ptr<XmlElement> element = new XmlElement;
+						auto element = Ptr(new XmlElement);
 						element->name.value = sp->italic.Value() ? L"i" : L"i-";
 						parent->subNodes.Add(element);
 						parent = element;
 					}
 					if (sp->underline)
 					{
-						Ptr<XmlElement> element = new XmlElement;
+						auto element = Ptr(new XmlElement);
 						element->name.value = sp->underline.Value() ? L"u" : L"u-";
 						parent->subNodes.Add(element);
 						parent = element;
 					}
 					if (sp->strikeline)
 					{
-						Ptr<XmlElement> element = new XmlElement;
+						auto element = Ptr(new XmlElement);
 						element->name.value = sp->strikeline.Value() ? L"s" : L"s-";
 						parent->subNodes.Add(element);
 						parent = element;
@@ -38066,21 +38062,21 @@ document_operation_visitors::SerializeRunVisitor
 						bool va = sp->verticalAntialias ? sp->verticalAntialias.Value() : false;
 						if (!ha)
 						{
-							Ptr<XmlElement> element = new XmlElement;
+							auto element = Ptr(new XmlElement);
 							element->name.value = L"ha";
 							parent->subNodes.Add(element);
 							parent = element;
 						}
 						else if (!va)
 						{
-							Ptr<XmlElement> element = new XmlElement;
+							auto element = Ptr(new XmlElement);
 							element->name.value = L"va";
 							parent->subNodes.Add(element);
 							parent = element;
 						}
 						else
 						{
-							Ptr<XmlElement> element = new XmlElement;
+							auto element = Ptr(new XmlElement);
 							element->name.value = L"na";
 							parent->subNodes.Add(element);
 							parent = element;
@@ -38092,7 +38088,7 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentStyleApplicationRun* run)override
 				{
-					Ptr<XmlElement> element = new XmlElement;
+					auto element = Ptr(new XmlElement);
 					element->name.value = L"div";
 					XmlElementWriter(element).Attribute(L"style", run->styleName);
 					VisitContainer(element, run);
@@ -38100,7 +38096,7 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					Ptr<XmlElement> element = new XmlElement;
+					auto element = Ptr(new XmlElement);
 					element->name.value = L"a";
 					XmlElementWriter writer(element);
 					if (run->normalStyleName != L"#NormalLink")
@@ -38142,7 +38138,7 @@ document_operation_visitors::SerializeRunVisitor
 
 				void Visit(DocumentParagraphRun* run)override
 				{
-					Ptr<XmlElement> element = new XmlElement;
+					auto element = Ptr(new XmlElement);
 					element->name.value = L"p";
 
 					XmlElementWriter writer(element);
@@ -38173,12 +38169,12 @@ DocumentModel
 
 		Ptr<glr::xml::XmlDocument> DocumentModel::SaveToXml()
 		{
-			Ptr<XmlDocument> xml=new XmlDocument;
-			Ptr<XmlElement> doc=new XmlElement;
+			auto xml = Ptr(new XmlDocument);
+			auto doc = Ptr(new XmlElement);
 			doc->name.value=L"Doc";
 			xml->rootElement=doc;
 			{
-				Ptr<XmlElement> content=new XmlElement;
+				auto content = Ptr(new XmlElement);
 				content->name.value=L"Content";
 				doc->subNodes.Add(content);
 				
@@ -38189,7 +38185,7 @@ DocumentModel
 				}
 			}
 			{
-				Ptr<XmlElement> stylesElement=new XmlElement;
+				auto stylesElement = Ptr(new XmlElement);
 				stylesElement->name.value=L"Styles";
 				doc->subNodes.Add(stylesElement);
 
@@ -38200,7 +38196,7 @@ DocumentModel
 
 					Ptr<DocumentStyle> style=styles.Values().Get(i);
 					Ptr<DocumentStyleProperties> sp=style->styles;
-					Ptr<XmlElement> styleElement=new XmlElement;
+					auto styleElement = Ptr(new XmlElement);
 					styleElement->name.value=L"Style";
 					stylesElement->subNodes.Add(styleElement);
 
@@ -38312,8 +38308,8 @@ IGuiParserManager
 			void Load()override
 			{
 				parserManager = this;
-				SetParser(L"XML", new GuiParser_Xml());
-				SetParser(L"JSON", new GuiParser_Json());
+				SetParser(L"XML", Ptr(new GuiParser_Xml()));
+				SetParser(L"JSON", Ptr(new GuiParser_Json()));
 			}
 
 			void Unload()override
@@ -38839,11 +38835,11 @@ GuiResourceFolder
 				{
 					if (name == L"")
 					{
-						errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"A resource folder should have a name."));
+						errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"A resource folder should have a name."));
 					}
 					else
 					{
-						Ptr<GuiResourceFolder> folder = new GuiResourceFolder;
+						auto folder = Ptr(new GuiResourceFolder);
 						if (AddFolder(name, folder))
 						{
 							WString newContainingFolder = containingFolder;
@@ -38870,17 +38866,17 @@ GuiResourceFolder
 									}
 									else
 									{
-										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
+										errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"Failed to load file \"" + fileAbsolutePath + L"\"."));
 									}
 								}
 								else if (contentAtt->value.value == L"Import")
 								{
 									auto importUri = XmlGetValue(element);
-									folder->ImportFromUri(importUri, { { this },element->codeRange.start }, errors);
+									folder->ImportFromUri(importUri, { {Ptr(this)},element->codeRange.start }, errors);
 								}
 								else
 								{
-									errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"Folder's content attributes can only be \"Link\"."));
+									errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"Folder's content attributes can only be \"Link\"."));
 								}
 							}
 							if (folder->GetImportUri() == L"")
@@ -38890,7 +38886,7 @@ GuiResourceFolder
 						}
 						else
 						{
-							errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Duplicated resource folder name \"" + name + L"\"."));
+							errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"Duplicated resource folder name \"" + name + L"\"."));
 						}
 					}
 				}
@@ -38911,11 +38907,11 @@ GuiResourceFolder
 						}
 						else
 						{
-							errors.Add(GuiResourceError({ { this },element->codeRange.start }, L"File's content attributes can only be \"File\"."));
+							errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"File's content attributes can only be \"File\"."));
 						}
 					}
 
-					Ptr<GuiResourceItem> item = new GuiResourceItem;
+					auto item = Ptr(new GuiResourceItem);
 					if (AddItem(name, item))
 					{
 						WString type = element->name.value;
@@ -38930,13 +38926,13 @@ GuiResourceFolder
 								preloadResolver = GetResourceResolverManager()->GetTypeResolver(preloadType);
 								if (!preloadResolver)
 								{
-									errors.Add(GuiResourceError({ {this}, element->codeRange.start }, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
+									errors.Add(GuiResourceError({ {Ptr(this)}, element->codeRange.start }, L"[INTERNAL-ERROR] Unknown resource resolver \"" + preloadType + L"\" of resource type \"" + type + L"\"."));
 								}
 							}
 						}
 						else
 						{
-							errors.Add(GuiResourceError({ {this}, element->codeRange.start }, L"Unknown resource type \"" + type + L"\"."));
+							errors.Add(GuiResourceError({ {Ptr(this)}, element->codeRange.start }, L"Unknown resource type \"" + type + L"\"."));
 						}
 
 						if (typeResolver && preloadResolver)
@@ -38978,12 +38974,12 @@ GuiResourceFolder
 									else
 									{
 										item->SetContent(typeResolver->GetType(), nullptr);
-										errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));									}
+										errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + typeResolver->GetType() + L"\" is not a indirect load resource type."));									}
 								}
 							}
 							else
 							{
-								errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
+								errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"[INTERNAL-ERROR] Resource type \"" + preloadResolver->GetType() + L"\" is not a direct load resource type."));
 							}
 						}
 
@@ -38994,7 +38990,7 @@ GuiResourceFolder
 					}
 					else
 					{
-						errors.Add(GuiResourceError({ {this},element->codeRange.start }, L"Duplicated resource item name \"" + name + L"\"."));
+						errors.Add(GuiResourceError({ {Ptr(this)},element->codeRange.start }, L"Duplicated resource item name \"" + name + L"\"."));
 					}
 				}
 			}
@@ -39007,7 +39003,7 @@ GuiResourceFolder
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (resolver->XmlSerializable())
 				{
-					auto attName = MakePtr<XmlAttribute>();
+					auto attName = Ptr(new XmlAttribute);
 					attName->name.value = L"name";
 					attName->value.value = item->GetName();
 
@@ -39042,16 +39038,16 @@ GuiResourceFolder
 					}
 					else
 					{
-						auto xmlElement = MakePtr<XmlElement>();
+						auto xmlElement = Ptr(new XmlElement);
 						xmlElement->name.value = item->GetTypeName();
 						xmlParent->subNodes.Add(xmlElement);
 
-						auto attContent = MakePtr<XmlAttribute>();
+						auto attContent = Ptr(new XmlAttribute);
 						attContent->name.value = L"content";
 						attContent->value.value = L"File";
 						xmlElement->attributes.Add(attContent);
 
-						auto xmlText = MakePtr<XmlText>();
+						auto xmlText = Ptr(new XmlText);
 						xmlText->content.value = item->GetFileContentPath();
 						xmlElement->subNodes.Add(xmlText);
 					}
@@ -39060,34 +39056,34 @@ GuiResourceFolder
 
 			for (auto folder : folders.Values())
 			{
-				auto attName = MakePtr<XmlAttribute>();
+				auto attName = Ptr(new XmlAttribute);
 				attName->name.value = L"name";
 				attName->value.value = folder->GetName();
 
-				auto xmlFolder = MakePtr<XmlElement>();
+				auto xmlFolder = Ptr(new XmlElement);
 				xmlFolder->name.value = L"Folder";
 				xmlFolder->attributes.Add(attName);
 				xmlParent->subNodes.Add(xmlFolder);
 				
 				if (folder->GetImportUri() != L"")
 				{
-					auto attContent = MakePtr<XmlAttribute>();
+					auto attContent = Ptr(new XmlAttribute);
 					attContent->name.value = L"content";
 					attContent->value.value = L"Import";
 					xmlFolder->attributes.Add(attContent);
 
-					auto xmlText = MakePtr<XmlText>();
+					auto xmlText = Ptr(new XmlText);
 					xmlText->content.value = folder->GetImportUri();
 					xmlFolder->subNodes.Add(xmlText);
 				}
 				else if (folder->GetFileContentPath() != L"")
 				{
-					auto attContent = MakePtr<XmlAttribute>();
+					auto attContent = Ptr(new XmlAttribute);
 					attContent->name.value = L"content";
 					attContent->value.value = L"Link";
 					xmlFolder->attributes.Add(attContent);
 
-					auto xmlText = MakePtr<XmlText>();
+					auto xmlText = Ptr(new XmlText);
 					xmlText->content.value = folder->GetFileContentPath();
 					xmlFolder->subNodes.Add(xmlText);
 				}
@@ -39125,7 +39121,7 @@ GuiResourceFolder
 				reader << typeName << name;
 
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(typeNames[typeName]);
-				Ptr<GuiResourceItem> item = new GuiResourceItem;
+				auto item = Ptr(new GuiResourceItem);
 				if(AddItem(name, item))
 				{
 					WString type = typeNames[typeName];
@@ -39198,7 +39194,7 @@ GuiResourceFolder
 				}
 				else
 				{
-					errors.Add(GuiResourceError({ this }, L"[BINARY] Duplicated resource item name \"" + name + L"\"."));
+					errors.Add(GuiResourceError({Ptr(this)}, L"[BINARY] Duplicated resource item name \"" + name + L"\"."));
 				}
 			}
 
@@ -39208,14 +39204,14 @@ GuiResourceFolder
 				WString name, importUri;
 				reader << name << importUri;
 
-				auto folder = MakePtr<GuiResourceFolder>();
+				auto folder = Ptr(new GuiResourceFolder);
 				if (importUri == L"")
 				{
 					folder->LoadResourceFolderFromBinary(delayLoadings, reader, typeNames, errors);
 				}
 				else
 				{
-					folder->ImportFromUri(importUri, { { this },{0,0} }, errors);
+					folder->ImportFromUri(importUri, { {Ptr(this)},{0,0} }, errors);
 				}
 				AddFolder(name, folder);
 			}
@@ -39514,7 +39510,7 @@ GuiResourceFolder
 				Ptr<GuiResourceFolder> folder = GetFolder(name);
 				if (!folder)
 				{
-					folder = new GuiResourceFolder;
+					folder = Ptr(new GuiResourceFolder);
 					AddFolder(name, folder);
 				}
 				vint start = index - buffer + 1;
@@ -39527,7 +39523,7 @@ GuiResourceFolder
 					return false;
 				}
 
-				auto item = new GuiResourceItem;
+				auto item = Ptr(new GuiResourceItem);
 				item->SetContent(typeName, value);
 				return AddItem(path, item);
 			}
@@ -39566,32 +39562,32 @@ GuiResourceMetadata
 
 		Ptr<glr::xml::XmlDocument> GuiResourceMetadata::SaveToXml()
 		{
-			auto root = MakePtr<XmlElement>();
+			auto root = Ptr(new XmlElement);
 			root->name.value = L"ResourceMetadata";
 			{
-				auto attr = MakePtr<XmlAttribute>();
+				auto attr = Ptr(new XmlAttribute);
 				attr->name.value = L"Name";
 				attr->value.value = name;
 				root->attributes.Add(attr);
 			}
 			{
-				auto attr = MakePtr<XmlAttribute>();
+				auto attr = Ptr(new XmlAttribute);
 				attr->name.value = L"Version";
 				attr->value.value = version;
 				root->attributes.Add(attr);
 			}
 			{
-				auto xmlDeps = MakePtr<XmlElement>();
+				auto xmlDeps = Ptr(new XmlElement);
 				xmlDeps->name.value = L"Dependencies";
 				root->subNodes.Add(xmlDeps);
 
 				for (auto dep : dependencies)
 				{
-					auto xmlDep = MakePtr<XmlElement>();
+					auto xmlDep = Ptr(new XmlElement);
 					xmlDep->name.value = L"Resource";
 					xmlDeps->subNodes.Add(xmlDep);
 					{
-						auto attr = MakePtr<XmlAttribute>();
+						auto attr = Ptr(new XmlAttribute);
 						attr->name.value = L"Name";
 						attr->value.value = dep;
 						xmlDep->attributes.Add(attr);
@@ -39599,7 +39595,7 @@ GuiResourceMetadata
 				}
 			}
 
-			auto doc = MakePtr<XmlDocument>();
+			auto doc = Ptr(new XmlDocument);
 			doc->rootElement = root;
 			return doc;
 		}
@@ -39624,7 +39620,7 @@ GuiResource
 					{
 						if (item->GetContent())
 						{
-							Ptr<GuiResourcePathResolver> pathResolver = new GuiResourcePathResolver(resource, folder);
+							auto pathResolver = Ptr(new GuiResourcePathResolver(resource, folder));
 							Ptr<DescriptableObject> resource = indirectLoad->ResolveResource(item, pathResolver, errors);
 							if (resource)
 							{
@@ -39646,7 +39642,7 @@ GuiResource
 
 		GuiResource::GuiResource()
 		{
-			metadata = MakePtr<GuiResourceMetadata>();
+			metadata = Ptr(new GuiResourceMetadata);
 			metadata->version = CurrentVersionString;
 		}
 
@@ -39666,7 +39662,7 @@ GuiResource
 
 		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<glr::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
-			Ptr<GuiResource> resource = new GuiResource;
+			auto resource = Ptr(new GuiResource);
 			resource->SetFileContentPath(filePath, filePath);
 			resource->workingDirectory = workingDirectory;
 			DelayLoadingList delayLoadings;
@@ -39700,11 +39696,11 @@ GuiResource
 
 		Ptr<glr::xml::XmlDocument> GuiResource::SaveToXml()
 		{
-			auto xmlRoot = MakePtr<XmlElement>();
+			auto xmlRoot = Ptr(new XmlElement);
 			xmlRoot->name.value = L"Resource";
 			SaveResourceFolderToXml(xmlRoot);
 
-			auto doc = MakePtr<XmlDocument>();
+			auto doc = Ptr(new XmlDocument);
 			doc->rootElement = xmlRoot;
 			return doc;
 		}
@@ -39712,7 +39708,7 @@ GuiResource
 		Ptr<GuiResource> GuiResource::LoadPrecompiledBinary(stream::IStream& binaryStream, GuiResourceError::List& errors)
 		{
 			stream::internal::ContextFreeReader reader(binaryStream);
-			auto resource = MakePtr<GuiResource>();
+			auto resource = Ptr(new GuiResource);
 			{
 				WString metadata;
 				reader << metadata;
@@ -39770,15 +39766,15 @@ GuiResource
 		{
 			if (GetFolder(L"Precompiled"))
 			{
-				errors.Add(GuiResourceError({ this }, L"A precompiled resource cannot be compiled again."));
+				errors.Add(GuiResourceError({Ptr(this)}, L"A precompiled resource cannot be compiled again."));
 				return nullptr;
 			}
 
 			GuiResourcePrecompileContext context;
 			context.compilerCallback = callback ? callback->GetCompilerCallback() : nullptr;
 			context.rootResource = this;
-			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
-			context.targetFolder = new GuiResourceFolder;
+			context.resolver = Ptr(new GuiResourcePathResolver(Ptr(this), workingDirectory));
+			context.targetFolder = Ptr(new GuiResourceFolder);
 			
 			auto manager = GetResourceResolverManager();
 			vint maxPass = manager->GetMaxPrecompilePassIndex();
@@ -39828,7 +39824,7 @@ GuiResource
 			
 			GuiResourceInitializeContext context;
 			context.rootResource = this;
-			context.resolver = new GuiResourcePathResolver(this, workingDirectory);
+			context.resolver = Ptr(new GuiResourcePathResolver(Ptr(this), workingDirectory));
 			context.targetFolder = precompiledFolder;
 			context.usage = usage;
 
@@ -39953,7 +39949,7 @@ GuiResourcePathResResolver
 
 				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
 				{
-					return new GuiResourcePathResResolver(resource);
+					return Ptr(new GuiResourcePathResResolver(resource));
 				}
 			};
 		};
@@ -40006,7 +40002,7 @@ GuiImportResourcePathResResolver
 
 				Ptr<IGuiResourcePathResolver> CreateResolver(Ptr<GuiResource> resource, const WString& workingDirectory)override
 				{
-					return new GuiImportResourcePathResResolver;
+					return Ptr(new GuiImportResourcePathResResolver);
 				}
 			};
 		};
@@ -40045,8 +40041,8 @@ IGuiResourceResolverManager
 				globalStringKeyManager->InitializeConstants();
 
 				resourceResolverManager = this;
-				SetPathResolverFactory(new GuiResourcePathResResolver::Factory);
-				SetPathResolverFactory(new GuiImportResourcePathResResolver::Factory);
+				SetPathResolverFactory(Ptr(new GuiResourcePathResResolver::Factory));
+				SetPathResolverFactory(Ptr(new GuiImportResourcePathResResolver::Factory));
 			}
 
 			void Unload()override
@@ -40240,7 +40236,7 @@ Class Name Record (ClassNameRecord)
 			{
 				internal::ContextFreeReader reader(binaryStream);
 
-				auto obj = MakePtr<GuiResourceClassNameRecord>();
+				auto obj = Ptr(new GuiResourceClassNameRecord);
 				reader << obj->classNames;
 				return obj;
 			}
@@ -40297,7 +40293,7 @@ IGuiInstanceResourceManager
 			{
 				resourceManager = this;
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceClassNameRecordTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceClassNameRecordTypeResolver));
 			}
 
 			void Unload()override
@@ -40393,11 +40389,11 @@ IGuiInstanceResourceManager
 
 			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage)override
 			{
-				auto pr = MakePtr<PendingResource>();
+				auto pr = Ptr(new PendingResource);
 				pr->usage = usage;
 				CopyStream(resourceStream, pr->memoryStream);
 
-				pr->metadata = MakePtr<GuiResourceMetadata>();
+				pr->metadata = Ptr(new GuiResourceMetadata);
 				{
 					pr->memoryStream.SeekFromBegin(0);
 					stream::internal::ContextFreeReader reader(pr->memoryStream);
@@ -40522,7 +40518,7 @@ Image Type Resolver (Image)
 				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
 				if(image)
 				{
-					return new GuiImageData(image, 0);
+					return Ptr(new GuiImageData(image, 0));
 				}
 				else
 				{
@@ -40540,7 +40536,7 @@ Image Type Resolver (Image)
 				auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream);
 				if (image)
 				{
-					return new GuiImageData(image, 0);
+					return Ptr(new GuiImageData(image, 0));
 				}
 				else
 				{
@@ -40590,10 +40586,10 @@ Text Type Resolver (Text)
 			{
 				if (auto obj = content.Cast<GuiTextData>())
 				{
-					auto xmlContent = MakePtr<XmlText>();
+					auto xmlContent = Ptr(new XmlText);
 					xmlContent->content.value = obj->GetText();
 
-					auto xmlText = MakePtr<XmlElement>();
+					auto xmlText = Ptr(new XmlElement);
 					xmlText->name.value = L"Text";
 					xmlText->subNodes.Add(xmlContent);
 
@@ -40612,7 +40608,7 @@ Text Type Resolver (Text)
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
-				return new GuiTextData(XmlGetValue(element));
+				return Ptr(new GuiTextData(XmlGetValue(element)));
 			}
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
@@ -40620,12 +40616,12 @@ Text Type Resolver (Text)
 				WString text;
 				if(LoadTextFile(path, text))
 				{
-					return new GuiTextData(text);
+					return Ptr(new GuiTextData(text));
 				}
 				else
 				{
 					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
-					return 0;
+					return nullptr;
 				}
 			}
 
@@ -40634,7 +40630,7 @@ Text Type Resolver (Text)
 				stream::internal::ContextFreeReader reader(binaryStream);
 				WString text;
 				reader << text;
-				return new GuiTextData(text);
+				return Ptr(new GuiTextData(text));
 			}
 		};
 
@@ -40678,7 +40674,7 @@ Xml Type Resolver (Xml)
 			{
 				if (auto obj = content.Cast<XmlDocument>())
 				{
-					auto xmlXml = MakePtr<XmlElement>();
+					auto xmlXml = Ptr(new XmlElement());
 					xmlXml->name.value = L"Xml";
 					xmlXml->subNodes.Add(obj->rootElement);
 					return xmlXml;
@@ -40702,7 +40698,7 @@ Xml Type Resolver (Xml)
 				Ptr<XmlElement> root = XmlGetElements(element).First(0);
 				if(root)
 				{
-					Ptr<XmlDocument> xml=new XmlDocument;
+					auto xml = Ptr(new XmlDocument);
 					xml->rootElement=root;
 					return xml;
 				}
@@ -40816,10 +40812,10 @@ Type Resolver Plugin
 			void Load()override
 			{
 				IGuiResourceResolverManager* manager=GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceImageTypeResolver);
-				manager->SetTypeResolver(new GuiResourceTextTypeResolver);
-				manager->SetTypeResolver(new GuiResourceXmlTypeResolver);
-				manager->SetTypeResolver(new GuiResourceDocTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceImageTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceTextTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceXmlTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceDocTypeResolver));
 			}
 
 			void Unload()override

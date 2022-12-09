@@ -461,7 +461,7 @@ WindowsDirect2DParagraph (Initialization)
 					,dwriteFactory(GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory())
 					,renderTarget(dynamic_cast<IWindowsDirect2DRenderTarget*>(_renderTarget))
 					,paragraphText(_text)
-					,textLayout(0)
+					,textLayout(nullptr)
 					,wrapLine(true)
 					,maxWidth(-1)
 					,caret(-1)
@@ -1269,7 +1269,7 @@ WindowsDirect2DLayoutProvider
 
 			Ptr<IGuiGraphicsParagraph> WindowsDirect2DLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsDirect2DParagraph(this, text, renderTarget, callback);
+				return Ptr(new WindowsDirect2DParagraph(this, text, renderTarget, callback));
 			}
 		}
 	}
@@ -2197,7 +2197,7 @@ GuiImageFrameElementRenderer
 				}
 				else
 				{
-					bitmap=0;
+					bitmap=nullptr;
 					minSize=Size(0, 0);
 				}
 			}
@@ -2972,7 +2972,7 @@ CachedResourceAllocator
 
 				Ptr<Direct2DTextFormatPackage> CreateInternal(const FontProperties& fontProperties)
 				{
-					Ptr<Direct2DTextFormatPackage> textFormat = new Direct2DTextFormatPackage;
+					auto textFormat = Ptr(new Direct2DTextFormatPackage);
 					textFormat->textFormat = CreateDirect2DFont(fontProperties);
 					textFormat->trimming.granularity = DWRITE_TRIMMING_GRANULARITY_CHARACTER;
 					textFormat->trimming.delimiter = 0;
@@ -3041,7 +3041,7 @@ CachedResourceAllocator
 			public:
 				Ptr<text::CharMeasurer> CreateInternal(const FontProperties& value)
 				{
-					return new Direct2DCharMeasurer(CachedTextFormatAllocator::CreateDirect2DFont(value), value.size);
+					return Ptr(new Direct2DCharMeasurer(CachedTextFormatAllocator::CreateDirect2DFont(value), value.size));
 				}
 			};
 
@@ -3180,7 +3180,7 @@ WindowsDirect2DRenderTarget
 					}
 					else
 					{
-						return 0;
+						return nullptr;
 					}
 				}
 			public:
@@ -3226,7 +3226,7 @@ WindowsDirect2DRenderTarget
 					}
 					else
 					{
-						Ptr<WindowsDirect2DImageFrameCache> d2dCache=new WindowsDirect2DImageFrameCache(this);
+						auto d2dCache=Ptr(new WindowsDirect2DImageFrameCache(this));
 						if(frame->SetCache(this, d2dCache))
 						{
 							imageCaches.Add(d2dCache);
@@ -3234,7 +3234,7 @@ WindowsDirect2DRenderTarget
 						}
 						else
 						{
-							return 0;
+							return nullptr;
 						}
 					}
 				}
@@ -3434,7 +3434,7 @@ WindowsGDIResourceManager
 			public:
 				WindowsDirect2DResourceManager()
 				{
-					layoutProvider=new WindowsDirect2DLayoutProvider;
+					layoutProvider=Ptr(new WindowsDirect2DLayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override
@@ -3461,9 +3461,9 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					WindowsDirect2DRenderTarget* renderTarget=new WindowsDirect2DRenderTarget(window);
+					auto renderTarget=Ptr(new WindowsDirect2DRenderTarget(window));
 					renderTargets.Add(renderTarget);
-					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, renderTarget);
+					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override
@@ -3629,10 +3629,10 @@ WindowsGDIParagraph
 					,paragraphDC(nullptr)
 					,paragraphCallback(_paragraphCallback)
 				{
-					paragraph=new UniscribeParagraph;
+					paragraph=Ptr(new UniscribeParagraph);
 					paragraph->paragraphText=text;
 
-					Ptr<UniscribeFragment> fragment=new UniscribeFragment(_text);
+					auto fragment=Ptr(new UniscribeFragment(_text));
 					fragment->fontStyle=GetCurrentController()->ResourceService()->GetDefaultFont();
 					paragraph->documentFragments.Add(fragment);
 				}
@@ -3891,7 +3891,7 @@ WindowsGDILayoutProvider
 
 			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsGDIParagraph(this, text, renderTarget, callback);
+				return Ptr(new WindowsGDIParagraph(this, text, renderTarget, callback));
 			}
 		}
 	}
@@ -4233,17 +4233,17 @@ GuiGradientBackgroundElementRenderer
 					switch (shape.shapeType)
 					{
 					case ElementShapeType::Ellipse:
-						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, false);
+						targetRegion = Ptr(new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, false));
 						break;
 					case ElementShapeType::RoundRect:
-						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2);
+						targetRegion = Ptr(new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2));
 						break;
 					}
 
 					if (targetRegion)
 					{
 						oldRegion = renderTarget->GetDC()->GetClipRegion();
-						newRegion = new WinRegion(oldRegion, targetRegion, RGN_AND);
+						newRegion = Ptr(new WinRegion(oldRegion, targetRegion, RGN_AND));
 						renderTarget->GetDC()->ClipRegion(newRegion);
 					}
 
@@ -5125,7 +5125,7 @@ UniscribeFragment
 			Ptr<UniscribeFragment> UniscribeFragment::Copy(vint start, vint length)
 			{
 				vint end=start+length;
-				Ptr<UniscribeFragment> fragment=new UniscribeFragment(length==0?L"":text.Sub(start, length));
+				auto fragment=Ptr(new UniscribeFragment(length==0?L"":text.Sub(start, length)));
 				fragment->fontStyle=fontStyle;
 				fragment->fontObject=fontObject;
 
@@ -5751,7 +5751,7 @@ UniscribeTextRun
 
 						if(backgroundColor.a>0)
 						{
-							Ptr<WinBrush> brush=new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b));
+							auto brush=Ptr(new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b)));
 							dc->SetBrush(brush);
 							dc->FillRect(rect);
 						}
@@ -5855,7 +5855,7 @@ UniscribeEmbeddedObjectRun
 
 					if(backgroundColor.a>0)
 					{
-						Ptr<WinBrush> brush=new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b));
+						auto brush=Ptr(new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b)));
 						dc->SetBrush(brush);
 						dc->FillRect(rect);
 					}
@@ -5964,7 +5964,7 @@ UniscribeLine
 						for(vint i=0;i<scriptItemCount;i++)
 						{
 							SCRIPT_ITEM item=items[i];
-							Ptr<UniscribeItem> scriptItem=new UniscribeItem;
+							auto scriptItem = Ptr(new UniscribeItem);
 							scriptItem->startFromLine=item.iCharPos;
 							scriptItem->length=items[i+1].iCharPos-item.iCharPos;
 							scriptItem->itemText=lineText.Buffer()+item.iCharPos;
@@ -6020,7 +6020,7 @@ UniscribeLine
 											{
 												if(elementCurrent==currentStart)
 												{
-													auto run=MakePtr<UniscribeEmbeddedObjectRun>();
+													auto run=Ptr(new UniscribeEmbeddedObjectRun);
 													run->documentFragment=fragment;
 													run->scriptItem=scriptItem.Obj();
 													run->startFromLine=currentStart;
@@ -6039,7 +6039,7 @@ UniscribeLine
 								}
 								if(!skip)
 								{
-									Ptr<UniscribeTextRun> run=new UniscribeTextRun;
+									auto run = Ptr(new UniscribeTextRun);
 									run->documentFragment=fragment;
 									run->scriptItem=scriptItem.Obj();
 									run->startFromLine=currentStart;
@@ -6072,7 +6072,7 @@ UniscribeLine
 										vint start=breakings[i];
 										vint length=i==breakings.Count()-1?textRun->length-start:breakings[i+1]-start;
 
-										Ptr<UniscribeTextRun> newRun=new UniscribeTextRun;
+										auto newRun = Ptr(new UniscribeTextRun);
 										newRun->documentFragment=run->documentFragment;
 										newRun->scriptItem=run->scriptItem;
 										newRun->startFromLine=start+run->startFromLine;
@@ -6236,7 +6236,7 @@ UniscribeLine
 
 							// create a virtual line
 							{
-								Ptr<UniscribeVirtualLine> virtualLine=new UniscribeVirtualLine;
+								auto virtualLine = Ptr(new UniscribeVirtualLine);
 								virtualLine->firstRunIndex=startRun;
 								virtualLine->firstRunBoundsIndex=startRunFragmentCount;
 								virtualLine->lastRunIndex=availableLastRun;
@@ -6379,7 +6379,7 @@ UniscribeParagraph (Initialization)
 						{
 							if(!line)
 							{
-								line=new UniscribeLine;
+								line=Ptr(new UniscribeLine);
 								lines.Add(line);
 							}
 							line->documentFragments.Add(fragment);
@@ -6399,7 +6399,7 @@ UniscribeParagraph (Initialization)
 								}
 								if(!line)
 								{
-									line=new UniscribeLine;
+									line=Ptr(new UniscribeLine);
 									lines.Add(line);
 								}
 
@@ -6737,7 +6737,7 @@ UniscribeParagraph (Formatting)
 					{
 						text+=documentFragments[f1]->text;
 					}
-					Ptr<UniscribeFragment> elementFragment=new UniscribeFragment(text);
+					auto elementFragment=Ptr(new UniscribeFragment(text));
 
 					for(vint i=f1;i<=f2;i++)
 					{
@@ -7517,7 +7517,7 @@ WindowsGDIRenderTarget
 						else
 						{
 							Rect clipper=GetClipper();
-							dc->ClipRegion(new WinRegion(clipper.Left(), clipper.Top(), clipper.Right(), clipper.Bottom(), true));
+							dc->ClipRegion(Ptr(new WinRegion(clipper.Left(), clipper.Top(), clipper.Right(), clipper.Bottom(), true)));
 						}
 					}
 				}
@@ -7617,7 +7617,7 @@ CachedResourceAllocator
 			public:
 				Ptr<WinPen> CreateInternal(Color color)
 				{
-					return new WinPen(PS_SOLID, 1, RGB(color.r, color.g, color.b));
+					return Ptr(new WinPen(PS_SOLID, 1, RGB(color.r, color.g, color.b)));
 				}
 			};
 
@@ -7627,7 +7627,7 @@ CachedResourceAllocator
 			public:
 				Ptr<WinBrush> CreateInternal(Color color)
 				{
-					return color.a==0?new WinBrush:new WinBrush(RGB(color.r, color.g, color.b));
+					return color.a==0?Ptr(new WinBrush):Ptr(new WinBrush(RGB(color.r, color.g, color.b)));
 				}
 			};
 
@@ -7638,7 +7638,7 @@ CachedResourceAllocator
 				static Ptr<WinFont> CreateGdiFont(const FontProperties& value)
 				{
 					vint size=value.size<0?value.size:-value.size;
-					return new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold?FW_BOLD:FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias);
+					return Ptr(new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold?FW_BOLD:FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias));
 				}
 
 				Ptr<WinFont> CreateInternal(const FontProperties& value)
@@ -7703,7 +7703,7 @@ CachedResourceAllocator
 			public:
 				Ptr<text::CharMeasurer> CreateInternal(const FontProperties& value)
 				{
-					return new GdiCharMeasurer(CachedFontAllocator::CreateGdiFont(value), value.size);
+					return Ptr(new GdiCharMeasurer(CachedFontAllocator::CreateGdiFont(value), value.size));
 				}
 			};
 
@@ -7732,7 +7732,7 @@ WindowsGDIResourceManager
 				{
 					cachedFrame=frame;
 					Size size=frame->GetSize();
-					bitmap=new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true);
+					bitmap=Ptr(new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true));
 
 					IWICBitmap* wicBitmap=GetWindowsGDIObjectProvider()->GetWICBitmap(frame);
 					WICRect rect;
@@ -7767,7 +7767,7 @@ WindowsGDIResourceManager
 						{
 							vint w=bitmap->GetWidth();
 							vint h=bitmap->GetHeight();
-							disabledBitmap=new WinBitmap(w, h, WinBitmap::vbb32Bits, true);
+							disabledBitmap=Ptr(new WinBitmap(w, h, WinBitmap::vbb32Bits, true));
 							for(vint y=0;y<h;y++)
 							{
 								BYTE* read=bitmap->GetScanLines()[y];
@@ -7805,7 +7805,7 @@ WindowsGDIResourceManager
 			public:
 				WindowsGDIResourceManager()
 				{
-					layoutProvider=new WindowsGDILayoutProvider;
+					layoutProvider=Ptr(new WindowsGDILayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override
@@ -7828,9 +7828,9 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					WindowsGDIRenderTarget* renderTarget=new WindowsGDIRenderTarget(window);
+					auto renderTarget=Ptr(new WindowsGDIRenderTarget(window));
 					renderTargets.Add(renderTarget);
-					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, renderTarget);
+					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override
@@ -7845,7 +7845,7 @@ WindowsGDIResourceManager
 					if (!focusRectanglePen)
 					{
 						DWORD styleArray[] = { 1,1 };
-						focusRectanglePen = new WinPen(PS_USERSTYLE, PS_ENDCAP_FLAT, PS_JOIN_BEVEL, 1, RGB(255, 255, 255), (DWORD)(sizeof(styleArray) / sizeof(*styleArray)), styleArray);
+						focusRectanglePen = Ptr(new WinPen(PS_USERSTYLE, PS_ENDCAP_FLAT, PS_JOIN_BEVEL, 1, RGB(255, 255, 255), (DWORD)(sizeof(styleArray) / sizeof(*styleArray)), styleArray));
 					}
 					return focusRectanglePen;
 				}
@@ -7899,7 +7899,7 @@ WindowsGDIResourceManager
 					}
 					else
 					{
-						WindowsGDIImageFrameCache* gdiCache=new WindowsGDIImageFrameCache(this);
+						auto gdiCache=Ptr(new WindowsGDIImageFrameCache(this));
 						if(frame->SetCache(this, gdiCache))
 						{
 							return gdiCache->GetBitmap(enabled);
@@ -9001,7 +9001,7 @@ WindowsForm
 				bool								enabledActivate = true;
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
 				bool								supressingAlt = false;
-				Ptr<bool>							flagDisposed = new bool(false);
+				Ptr<bool>							flagDisposed = Ptr(new bool(false));
 				NativeMargin						customFramePadding;
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
@@ -9354,7 +9354,7 @@ WindowsForm
 							}
 							if (icon != NULL)
 							{
-								defaultIcon = new GuiImageData(CreateImageFromHICON(icon), 0);
+								defaultIcon = Ptr(new GuiImageData(CreateImageFromHICON(icon), 0));
 							}
 						}
 						return defaultIcon;
@@ -10283,7 +10283,7 @@ WindowListener 1.0
 				{
 					if (d2dRenderTarget)
 					{
-						d2dRenderTarget = 0;
+						d2dRenderTarget = nullptr;
 					}
 				}
 
@@ -10311,7 +10311,7 @@ WindowListener 1.1
 				{
 					IDXGIDevice* device = nullptr;
 					HRESULT hr = d3d11Device->QueryInterface(&device);
-					if (!SUCCEEDED(hr)) return 0;
+					if (!SUCCEEDED(hr)) return nullptr;
 					return device;
 				}
 
@@ -10321,7 +10321,7 @@ WindowListener 1.1
 					{
 						IDXGIAdapter* adapter = nullptr;
 						HRESULT hr = dxgiDevice->GetAdapter(&adapter);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						dxgiAdapter = adapter;
 					}
 
@@ -10329,7 +10329,7 @@ WindowListener 1.1
 					{
 						IDXGIFactory2* factory = nullptr;
 						HRESULT hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&factory);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						dxgiFactory = factory;
 					}
 
@@ -10344,7 +10344,7 @@ WindowListener 1.1
 
 						IDXGISwapChain1* swapChain = nullptr;
 						HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(d3d11Device, form->GetWindowHandle(), &props, nullptr, nullptr, &swapChain);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						dxgiSwapChain = swapChain;
 					}
 
@@ -10357,7 +10357,7 @@ WindowListener 1.1
 					{
 						ID2D1Device* device = nullptr;
 						HRESULT hr = d2dFactory1->CreateDevice(dxgiDevice, &device);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						d2d1Device = device;
 					}
 
@@ -10365,7 +10365,7 @@ WindowListener 1.1
 					{
 						ID2D1DeviceContext* deviceContext = nullptr;
 						HRESULT hr = d2d1Device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &deviceContext);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						d2dDeviceContext = deviceContext;
 					}
 
@@ -10378,7 +10378,7 @@ WindowListener 1.1
 					{
 						IDXGISurface* surface = nullptr;
 						HRESULT hr = swapChain->GetBuffer(0, __uuidof(IDXGISurface), (void**)&surface);
-						if (!SUCCEEDED(hr))return 0;
+						if (!SUCCEEDED(hr))return nullptr;
 						dxgiSurface = surface;
 					}
 
@@ -10388,7 +10388,7 @@ WindowListener 1.1
 
 						ID2D1Bitmap1* bitmap = nullptr;
 						HRESULT hr = deviceContext->CreateBitmapFromDxgiSurface(dxgiSurface.Obj(), props, &bitmap);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						d2dBitmap = bitmap;
 					}
 
@@ -10453,8 +10453,8 @@ WindowListener 1.1
 				{
 					if (d2dDeviceContext)
 					{
-						d2dDeviceContext = 0;
-						dxgiSwapChain = 0;
+						d2dDeviceContext = nullptr;
+						dxgiSwapChain = nullptr;
 					}
 				}
 
@@ -10559,7 +10559,7 @@ ControllerListener
 					{
 						device->Release();
 					}
-					return 0;
+					return nullptr;
 				}
 
 				void NativeWindowCreated(INativeWindow* window)
@@ -10597,11 +10597,11 @@ ControllerListener
 
 					if (d2dfactory1 && d3d11Device)
 					{
-						listener = new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj());
+						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj()));
 					}
 					else
 					{
-						listener = new Direct2DWindowsNativeWindowListener_1_0(window, d2dFactory.Obj());
+						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_0(window, d2dFactory.Obj()));
 					}
 					window->InstallListener(listener.Obj());
 					nativeWindowListeners.Add(window, listener);
@@ -11720,12 +11720,12 @@ IWinResourceService
 
 		WinBrush::Ptr CreateDefaultBrush()
 		{
-			return new WinBrush(RGB(255, 255, 255));
+			return Ptr(new WinBrush(RGB(255, 255, 255)));
 		}
 
 		WinPen::Ptr CreateDefaultPen()
 		{
-			return new WinPen(PS_SOLID, 0, RGB(0, 0, 0));
+			return Ptr(new WinPen(PS_SOLID, 0, RGB(0, 0, 0)));
 		}
 
 		WinFont::Ptr CreateDefaultFont()
@@ -11738,7 +11738,7 @@ IWinResourceService
 				NonClientMetrics.cbSize=sizeof(NONCLIENTMETRICS)-sizeof(NonClientMetrics.iPaddedBorderWidth);
 				SystemParametersInfo(SPI_GETNONCLIENTMETRICS, NonClientMetrics.cbSize, &NonClientMetrics, 0);
 			}
-			return new WinFont(&NonClientMetrics.lfMessageFont);
+			return Ptr(new WinFont(&NonClientMetrics.lfMessageFont));
 		}
 
 		class DefaultResourceService : public Object, public IWinResourceService
@@ -12199,7 +12199,7 @@ WinDC
 
 		WinRegion::Ptr WinDC::RegionFromPath()
 		{
-			return new WinRegion(::PathToRegion(FHandle));
+			return Ptr(new WinRegion(::PathToRegion(FHandle)));
 		}
 	
 		/*------------------------------------------------------------------------------*/
@@ -12253,7 +12253,7 @@ WinDC
 		{
 			HRGN Handle=CreateRectRgn(0, 0, 1, 1);
 			GetClipRgn(FHandle, Handle);
-			return new WinRegion(Handle);
+			return Ptr(new WinRegion(Handle));
 		}
 
 		RECT WinDC::GetClipBoundRect()
@@ -12789,7 +12789,7 @@ namespace vl
 					}
 					if (!buffer)
 					{
-						buffer = new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true);
+						buffer = Ptr(new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true));
 						buffer->GetWinDC()->SetBackTransparent(true);
 					}
 				}
@@ -12845,14 +12845,14 @@ namespace vl
 
 				void NativeWindowCreated(INativeWindow* window)
 				{
-					Ptr<GdiWindowsNativeWindowListener> listener=new GdiWindowsNativeWindowListener(window);
+					auto listener=Ptr(new GdiWindowsNativeWindowListener(window));
 					window->InstallListener(listener.Obj());
 					nativeWindowListeners.Add(window, listener);
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)
 				{
-					Ptr<GdiWindowsNativeWindowListener> listener=nativeWindowListeners[window];
+					auto listener=nativeWindowListeners[window];
 					nativeWindowListeners.Remove(window);
 					window->UninstallListener(listener.Obj());
 				}
@@ -13155,7 +13155,7 @@ WindowsAsyncService
 				Ptr<DelayItem> delay;
 				SPIN_LOCK(taskListLock)
 				{
-					delay=new DelayItem(this, proc, false, milliseconds);
+					delay=Ptr(new DelayItem(this, proc, false, milliseconds));
 					delayItems.Add(delay);
 				}
 				return delay;
@@ -13166,7 +13166,7 @@ WindowsAsyncService
 				Ptr<DelayItem> delay;
 				SPIN_LOCK(taskListLock)
 				{
-					delay=new DelayItem(this, proc, true, milliseconds);
+					delay=Ptr(new DelayItem(this, proc, true, milliseconds));
 					delayItems.Add(delay);
 				}
 				return delay;
@@ -13465,7 +13465,7 @@ WindowsClipboardWriter
 						UINT width = 0;
 						UINT height = 0;
 						wicBitmap->GetSize(&width, &height);
-						auto bitmap = MakePtr<WinBitmap>((vint)width, (vint)height, WinBitmap::vbb32Bits, true);
+						auto bitmap = Ptr(new WinBitmap((vint)width, (vint)height, WinBitmap::vbb32Bits, true));
 
 						WICRect rect;
 						rect.X = 0;
@@ -13511,15 +13511,15 @@ WindowsClipboardService
 			{
 				if (!reader)
 				{
-					if (!::OpenClipboard(ownerHandle)) return new WindowsFakeClipboardReader;
+					if (!::OpenClipboard(ownerHandle)) return Ptr(new WindowsFakeClipboardReader);
 					reader = new WindowsClipboardReader(this);
 				}
-				return reader;
+				return Ptr(reader);
 			}
 
 			Ptr<INativeClipboardWriter> WindowsClipboardService::WriteClipboard()
 			{
-				return new WindowsClipboardWriter(this);
+				return Ptr(new WindowsClipboardWriter(this));
 			}
 
 			void WindowsClipboardService::SetOwnerHandle(HWND handle)
@@ -13946,7 +13946,7 @@ WindowsImageFrame
 				UINT width = 0;
 				UINT height = 0;
 				frameBitmap->GetSize(&width, &height);
-				auto bitmap = MakePtr<WinBitmap>((vint)width, (vint)height, WinBitmap::vbb32Bits, true);
+				auto bitmap = Ptr(new WinBitmap((vint)width, (vint)height, WinBitmap::vbb32Bits, true));
 
 				WICRect rect;
 				rect.X = 0;
@@ -14034,7 +14034,7 @@ WindowsImage
 						HRESULT hr=bitmapDecoder->GetFrame((int)index, &frameDecode);
 						if(SUCCEEDED(hr))
 						{
-							frame=new WindowsImageFrame(this, frameDecode);
+							frame=Ptr(new WindowsImageFrame(this, frameDecode));
 							frameDecode->Release();
 						}
 					}
@@ -14272,7 +14272,7 @@ WindowsBitmapImage
 				:imageService(_imageService)
 				,formatType(_formatType)
 			{
-				frame = new WindowsImageFrame(this, sourceBitmap);
+				frame = Ptr(new WindowsImageFrame(this, sourceBitmap));
 			}
 
 			WindowsBitmapImage::~WindowsBitmapImage()
@@ -14388,11 +14388,11 @@ WindowsImageService
 					&bitmapDecoder);
 				if(SUCCEEDED(hr))
 				{
-					return new WindowsImage(this, bitmapDecoder);
+					return Ptr(new WindowsImage(this, bitmapDecoder));
 				}
 				else
 				{
-					return 0;
+					return nullptr;
 				}
 			}
 
@@ -14406,7 +14406,7 @@ WindowsImageService
 					HRESULT hr=imagingFactory->CreateDecoderFromStream(stream, NULL, WICDecodeMetadataCacheOnDemand, &bitmapDecoder);
 					if(SUCCEEDED(hr))
 					{
-						result=new WindowsImage(this, bitmapDecoder);
+						result=Ptr(new WindowsImage(this, bitmapDecoder));
 					}
 					stream->Release();
 				}
@@ -14435,7 +14435,7 @@ WindowsImageService
 				HRESULT hr=imagingFactory->CreateBitmapFromHBITMAP(handle, NULL, WICBitmapUseAlpha, &bitmap);
 				if(SUCCEEDED(hr))
 				{
-					Ptr<INativeImage> image=new WindowsBitmapImage(this, bitmap, INativeImage::Bmp);
+					auto image=Ptr(new WindowsBitmapImage(this, bitmap, INativeImage::Bmp));
 					bitmap->Release();
 					return image;
 				}
@@ -14451,7 +14451,7 @@ WindowsImageService
 				HRESULT hr=imagingFactory->CreateBitmapFromHICON(handle, &bitmap);
 				if(SUCCEEDED(hr))
 				{
-					Ptr<INativeImage> image=new WindowsBitmapImage(this, bitmap, INativeImage::Icon);
+					auto image=Ptr(new WindowsBitmapImage(this, bitmap, INativeImage::Icon));
 					bitmap->Release();
 					return image;
 				}
@@ -14723,7 +14723,7 @@ WindowsResourceService
 					systemCursors.Resize(INativeCursor::SystemCursorCount);
 					for(vint i=0;i<systemCursors.Count();i++)
 					{
-						systemCursors[i]=new WindowsCursor((INativeCursor::SystemCursorType)i);
+						systemCursors[i]=Ptr(new WindowsCursor((INativeCursor::SystemCursorType)i));
 					}
 				}
 				{
@@ -14859,7 +14859,7 @@ WindowsScreenService
 				MonitorEnumProcData* data=(MonitorEnumProcData*)dwData;
 				if(data->currentScreen==data->screenService->screens.Count())
 				{
-					data->screenService->screens.Add(new WindowsScreen());
+					data->screenService->screens.Add(Ptr(new WindowsScreen));
 				}
 				data->screenService->screens[data->currentScreen]->monitor=hMonitor;
 				data->currentScreen++;

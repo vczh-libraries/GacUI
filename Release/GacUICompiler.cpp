@@ -345,7 +345,7 @@ GuiInstanceGradientAnimation::LoadFromXml
 
 		Ptr<GuiInstanceGradientAnimation> GuiInstanceGradientAnimation::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			auto animation = MakePtr<GuiInstanceGradientAnimation>();
+			auto animation = Ptr(new GuiInstanceGradientAnimation);
 			animation->tagPosition = { {resource},xml->rootElement->codeRange.start };
 
 			if (auto classAttr = XmlGetAttribute(xml->rootElement, L"ref.Class"))
@@ -458,52 +458,52 @@ GuiInstanceGradientAnimation::SaveToXml
 
 		Ptr<glr::xml::XmlElement> GuiInstanceGradientAnimation::SaveToXml()
 		{
-			auto gradientElement = MakePtr<XmlElement>();
+			auto gradientElement = Ptr(new XmlElement);
 			{
-				auto classAttr = MakePtr<XmlAttribute>();
+				auto classAttr = Ptr(new XmlAttribute);
 				classAttr->name.value = L"ref.Class";
 				classAttr->value.value = className;
 				gradientElement->attributes.Add(classAttr);
 			}
 			{
-				auto typeAttr = MakePtr<XmlAttribute>();
+				auto typeAttr = Ptr(new XmlAttribute);
 				typeAttr->name.value = L"Type";
 				typeAttr->value.value = typeName;
 				gradientElement->attributes.Add(typeAttr);
 			}
 			if (interpolation != L"")
 			{
-				auto interpolationElement = MakePtr<XmlElement>();
+				auto interpolationElement = Ptr(new XmlElement);
 				interpolationElement->name.value = L"Interpolation";
 				gradientElement->subNodes.Add(interpolationElement);
 
-				auto cdata = MakePtr<XmlCData>();
+				auto cdata = Ptr(new XmlCData);
 				cdata->content.value = interpolation;
 				interpolationElement->subNodes.Add(cdata);
 			}
 			{
-				auto targetsElement = MakePtr<XmlElement>();
+				auto targetsElement = Ptr(new XmlElement);
 				targetsElement->name.value = L"Targets";
 				gradientElement->subNodes.Add(targetsElement);
 
 				for (auto target : targets)
 				{
-					auto targetElement = MakePtr<XmlElement>();
+					auto targetElement = Ptr(new XmlElement);
 					targetElement->name.value = L"Target";
 					targetsElement->subNodes.Add(targetElement);
 					{
-						auto nameAttr = MakePtr<XmlAttribute>();
+						auto nameAttr = Ptr(new XmlAttribute);
 						nameAttr->name.value = L"Name";
 						nameAttr->value.value = target.name;
 						targetElement->attributes.Add(nameAttr);
 					}
 					if (target.interpolation != L"")
 					{
-						auto interpolationElement = MakePtr<XmlElement>();
+						auto interpolationElement = Ptr(new XmlElement);
 						interpolationElement->name.value = L"Interpolation";
 						targetElement->subNodes.Add(interpolationElement);
 
-						auto cdata = MakePtr<XmlCData>();
+						auto cdata = Ptr(new XmlCData);
 						cdata->content.value = target.interpolation;
 						interpolationElement->subNodes.Add(cdata);
 					}
@@ -585,7 +585,7 @@ GuiInstanceGradientAnimation::EnumerateMembers
 			auto td = propInfo->GetReturn()->GetTypeDescriptor();
 			auto newAccessor = [=](Ptr<WfExpression> expression)
 			{
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = accessor(expression);
 				member->name.value = propInfo->GetName();
 				return member;
@@ -647,7 +647,7 @@ GuiInstanceGradientAnimation::InitStruct
 				{
 					return nullptr;
 				}
-				auto ref = MakePtr<WfReferenceExpression>();
+				auto ref = Ptr(new WfReferenceExpression);
 				ref->name.value = L"<ani>" + name;
 				return ref;
 			}
@@ -655,7 +655,7 @@ GuiInstanceGradientAnimation::InitStruct
 			{
 				List<ITypeDescriptor*> tds;
 				tds.Add(td);
-				auto ref = MakePtr<WfConstructorExpression>();
+				auto ref = Ptr(new WfConstructorExpression);
 
 				for (vint i = 0; i < tds.Count(); i++)
 				{
@@ -672,9 +672,9 @@ GuiInstanceGradientAnimation::InitStruct
 						auto currentPropInfo = currentTd->GetProperty(j);
 						if (auto expr = InitStruct(currentPropInfo, name, varNames))
 						{
-							auto pair = MakePtr<WfConstructorArgument>();
+							auto pair = Ptr(new WfConstructorArgument);
 
-							auto refName = MakePtr<WfReferenceExpression>();
+							auto refName = Ptr(new WfReferenceExpression);
 							refName->name.value = currentPropInfo->GetName();
 
 							pair->key = refName;
@@ -715,22 +715,22 @@ GuiInstanceGradientAnimation::Compile
 					CTOR_CHECK_PASS:;
 					}
 
-					auto module = MakePtr<WfModule>();
+					auto module = Ptr(new WfModule);
 					module->moduleType = WfModuleType::Module;
 					module->name.value = moduleName;
 					auto animationClass = Workflow_InstallClass(className, module);
 
-					auto typeInfo = MakePtr<SharedPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
+					auto typeInfo = Ptr(new SharedPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
 					auto typeInfoDouble = CreateTypeInfoFromTypeFlag(TypeFlag::F8);
 
 					auto notImplemented = []()
 					{
-						auto block = MakePtr<WfBlockStatement>();
+						auto block = Ptr(new WfBlockStatement);
 
-						auto stringExpr = MakePtr<WfStringExpression>();
+						auto stringExpr = Ptr(new WfStringExpression);
 						stringExpr->value.value = L"Not Implemented";
 
-						auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+						auto raiseStat = Ptr(new WfRaiseExceptionStatement);
 						raiseStat->expression = stringExpr;
 
 						block->statements.Add(raiseStat);
@@ -739,7 +739,7 @@ GuiInstanceGradientAnimation::Compile
 
 					{
 						// prop Begin : <TYPE> = <DEFAULT> {}
-						auto prop = MakePtr<WfAutoPropertyDeclaration>();
+						auto prop = Ptr(new WfAutoPropertyDeclaration);
 						animationClass->declarations.Add(prop);
 
 						prop->functionKind = WfFunctionKind::Normal;
@@ -751,7 +751,7 @@ GuiInstanceGradientAnimation::Compile
 					}
 					{
 						// prop End : <TYPE> = <DEFAULT> {}
-						auto prop = MakePtr<WfAutoPropertyDeclaration>();
+						auto prop = Ptr(new WfAutoPropertyDeclaration);
 						animationClass->declarations.Add(prop);
 
 						prop->functionKind = WfFunctionKind::Normal;
@@ -763,7 +763,7 @@ GuiInstanceGradientAnimation::Compile
 					}
 					{
 						// prop Current : <TYPE> = <DEFAULT> {}
-						auto prop = MakePtr<WfAutoPropertyDeclaration>();
+						auto prop = Ptr(new WfAutoPropertyDeclaration);
 						animationClass->declarations.Add(prop);
 
 						prop->functionKind = WfFunctionKind::Normal;
@@ -777,10 +777,10 @@ GuiInstanceGradientAnimation::Compile
 					auto createIntVar = [&](const WString& name, const WString& interpolation, GuiResourceTextPos interpolationPosition)
 					{
 						// prop <ani-int> : (func(double):double) = <VALUE> {const, not observe}
-						auto var = MakePtr<WfVariableDeclaration>();
+						auto var = Ptr(new WfVariableDeclaration);
 						animationClass->declarations.Add(var);
 
-						auto att = MakePtr<WfAttribute>();
+						auto att = Ptr(new WfAttribute);
 						att->category.value = L"cpp";
 						att->name.value = L"Private";
 						var->attributes.Add(att);
@@ -789,10 +789,10 @@ GuiInstanceGradientAnimation::Compile
 						var->type = GetTypeFromTypeInfo(TypeInfoRetriver<Func<double(double)>>::CreateTypeInfo().Obj());
 						if (interpolation == L"" || !generateImpl)
 						{
-							auto ref = MakePtr<WfOrderedNameExpression>();
+							auto ref = Ptr(new WfOrderedNameExpression);
 							ref->name.value = L"$1";
 
-							auto lambda = MakePtr<WfOrderedLambdaExpression>();
+							auto lambda = Ptr(new WfOrderedLambdaExpression);
 							lambda->body = ref;
 
 							var->expression = lambda;
@@ -848,26 +848,26 @@ GuiInstanceGradientAnimation::Compile
 
 					{
 						// func GetTimeScale(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>) : double
-						auto func = MakePtr<WfFunctionDeclaration>();
+						auto func = Ptr(new WfFunctionDeclaration);
 						animationClass->declarations.Add(func);
 
 						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"GetTimeScale";
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>begin";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>end";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>current";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
@@ -876,133 +876,133 @@ GuiInstanceGradientAnimation::Compile
 
 						if (generateImpl)
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							func->statement = block;
 							{
-								auto refZero = MakePtr<WfFloatingExpression>();
+								auto refZero = Ptr(new WfFloatingExpression);
 								refZero->value.value = L"0.0";
 
-								auto varScale = MakePtr<WfVariableDeclaration>();
+								auto varScale = Ptr(new WfVariableDeclaration);
 								varScale->name.value = L"<ani>scale";
 								varScale->expression = refZero;
 
-								auto declStat = MakePtr<WfVariableStatement>();
+								auto declStat = Ptr(new WfVariableStatement);
 								declStat->variable = varScale;
 								block->statements.Add(declStat);
 							}
 							EnumerateProperties([&](EnumerateMemberAccessor accessor, description::IPropertyInfo*, description::IPropertyInfo* propInfo)
 							{
-								auto subBlock = MakePtr<WfBlockStatement>();
+								auto subBlock = Ptr(new WfBlockStatement);
 								block->statements.Add(subBlock);
 
 								auto createVariable = [=](const WString& first, const WString& second, const WString& variable)
 								{
-									auto refBegin = MakePtr<WfReferenceExpression>();
+									auto refBegin = Ptr(new WfReferenceExpression);
 									refBegin->name.value = first;
 
-									auto firstExpr = MakePtr<WfTypeCastingExpression>();
+									auto firstExpr = Ptr(new WfTypeCastingExpression);
 									firstExpr->expression = accessor(refBegin);
 									firstExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 									firstExpr->strategy = WfTypeCastingStrategy::Strong;
 
-									auto refEnd = MakePtr<WfReferenceExpression>();
+									auto refEnd = Ptr(new WfReferenceExpression);
 									refEnd->name.value = second;
 
-									auto secondExpr = MakePtr<WfTypeCastingExpression>();
+									auto secondExpr = Ptr(new WfTypeCastingExpression);
 									secondExpr->expression = accessor(refEnd);
 									secondExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 									secondExpr->strategy = WfTypeCastingStrategy::Strong;
 
-									auto subExpr = MakePtr<WfBinaryExpression>();
+									auto subExpr = Ptr(new WfBinaryExpression);
 									subExpr->first = firstExpr;
 									subExpr->second = secondExpr;
 									subExpr->op = WfBinaryOperator::Sub;
 
-									auto refAbs = MakePtr<WfChildExpression>();
+									auto refAbs = Ptr(new WfChildExpression);
 									refAbs->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
 									refAbs->name.value = L"Abs";
 
-									auto callExpr = MakePtr<WfCallExpression>();
+									auto callExpr = Ptr(new WfCallExpression);
 									callExpr->function = refAbs;
 									callExpr->arguments.Add(subExpr);
 
-									auto varRef = MakePtr<WfVariableDeclaration>();
+									auto varRef = Ptr(new WfVariableDeclaration);
 									varRef->name.value = variable;
 									varRef->expression = callExpr;
 
-									auto declStat = MakePtr<WfVariableStatement>();
+									auto declStat = Ptr(new WfVariableStatement);
 									declStat->variable = varRef;
 									subBlock->statements.Add(declStat);
 								};
 								createVariable(L"<ani>begin", L"<ani>end", L"<ani>ref");
 								createVariable(L"<ani>current", L"<ani>end", L"<ani>cur");
 								{
-									auto refRef = MakePtr<WfReferenceExpression>();
+									auto refRef = Ptr(new WfReferenceExpression);
 									refRef->name.value = L"<ani>ref";
 
-									auto refEpsilon = MakePtr<WfFloatingExpression>();
+									auto refEpsilon = Ptr(new WfFloatingExpression);
 									refEpsilon->value.value = L"0.000001";
 
-									auto refMaxEpsilon = MakePtr<WfChildExpression>();
+									auto refMaxEpsilon = Ptr(new WfChildExpression);
 									refMaxEpsilon->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
 									refMaxEpsilon->name.value = L"Max";
 
-									auto callExprEpsilon = MakePtr<WfCallExpression>();
+									auto callExprEpsilon = Ptr(new WfCallExpression);
 									callExprEpsilon->function = refMaxEpsilon;
 									callExprEpsilon->arguments.Add(refRef);
 									callExprEpsilon->arguments.Add(refEpsilon);
 
-									auto refCur = MakePtr<WfReferenceExpression>();
+									auto refCur = Ptr(new WfReferenceExpression);
 									refCur->name.value = L"<ani>cur";
 
-									auto divExpr = MakePtr<WfBinaryExpression>();
+									auto divExpr = Ptr(new WfBinaryExpression);
 									divExpr->first = refCur;
 									divExpr->second = callExprEpsilon;
 									divExpr->op = WfBinaryOperator::Div;
 
-									auto refMax = MakePtr<WfChildExpression>();
+									auto refMax = Ptr(new WfChildExpression);
 									refMax->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
 									refMax->name.value = L"Max";
 
-									auto refScale = MakePtr<WfReferenceExpression>();
+									auto refScale = Ptr(new WfReferenceExpression);
 									refScale->name.value = L"<ani>scale";
 
-									auto callExpr = MakePtr<WfCallExpression>();
+									auto callExpr = Ptr(new WfCallExpression);
 									callExpr->function = refMax;
 									callExpr->arguments.Add(refScale);
 									callExpr->arguments.Add(divExpr);
 
-									auto refScale2 = MakePtr<WfReferenceExpression>();
+									auto refScale2 = Ptr(new WfReferenceExpression);
 									refScale2->name.value = L"<ani>scale";
 
-									auto assignExpr = MakePtr<WfBinaryExpression>();
+									auto assignExpr = Ptr(new WfBinaryExpression);
 									assignExpr->first = refScale2;
 									assignExpr->second = callExpr;
 									assignExpr->op = WfBinaryOperator::Assign;
 
-									auto exprStat = MakePtr<WfExpressionStatement>();
+									auto exprStat = Ptr(new WfExpressionStatement);
 									exprStat->expression = assignExpr;
 
 									subBlock->statements.Add(exprStat);
 								}
 							}, td);
 							{
-								auto refOne = MakePtr<WfFloatingExpression>();
+								auto refOne = Ptr(new WfFloatingExpression);
 								refOne->value.value = L"1.0";
 
-								auto refScale = MakePtr<WfReferenceExpression>();
+								auto refScale = Ptr(new WfReferenceExpression);
 								refScale->name.value = L"<ani>scale";
 
-								auto refMin = MakePtr<WfChildExpression>();
+								auto refMin = Ptr(new WfChildExpression);
 								refMin->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
 								refMin->name.value = L"Min";
 
-								auto callExpr = MakePtr<WfCallExpression>();
+								auto callExpr = Ptr(new WfCallExpression);
 								callExpr->function = refMin;
 								callExpr->arguments.Add(refOne);
 								callExpr->arguments.Add(refScale);
 
-								auto returnStat = MakePtr<WfReturnStatement>();
+								auto returnStat = Ptr(new WfReturnStatement);
 								returnStat->expression = callExpr;
 								block->statements.Add(returnStat);
 							}
@@ -1014,32 +1014,32 @@ GuiInstanceGradientAnimation::Compile
 					}
 					{
 						// func Interpolate(<ani>begin : <TYPE>, <ani>end : <TYPE>, <ani>current : <TYPE>, <ani>ratio : double) : void
-						auto func = MakePtr<WfFunctionDeclaration>();
+						auto func = Ptr(new WfFunctionDeclaration);
 						animationClass->declarations.Add(func);
 
 						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"Interpolate";
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>begin";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>end";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>current";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>ratio";
 							argument->type = GetTypeFromTypeInfo(typeInfoDouble.Obj());
 							func->arguments.Add(argument);
@@ -1048,7 +1048,7 @@ GuiInstanceGradientAnimation::Compile
 
 						if (generateImpl)
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							func->statement = block;
 
 							SortedList<WString> varNames;
@@ -1066,33 +1066,33 @@ GuiInstanceGradientAnimation::Compile
 
 								Ptr<WfExpression> part1, part2, propChain;
 								{
-									auto refParent = MakePtr<WfReferenceExpression>();
+									auto refParent = Ptr(new WfReferenceExpression);
 									refParent->name.value = L"<ani>begin";
 
-									auto refProp = MakePtr<WfTypeCastingExpression>();
+									auto refProp = Ptr(new WfTypeCastingExpression);
 									refProp->expression = (propChain = accessor(refParent));
 									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 									refProp->strategy = WfTypeCastingStrategy::Strong;
 
-									auto refOne = MakePtr<WfFloatingExpression>();
+									auto refOne = Ptr(new WfFloatingExpression);
 									refOne->value.value = L"1.0";
 
-									auto refInt = MakePtr<WfReferenceExpression>();
+									auto refInt = Ptr(new WfReferenceExpression);
 									refInt->name.value = intFunc;
 
-									auto refRatio = MakePtr<WfReferenceExpression>();
+									auto refRatio = Ptr(new WfReferenceExpression);
 									refRatio->name.value = L"<ani>ratio";
 
-									auto callExpr = MakePtr<WfCallExpression>();
+									auto callExpr = Ptr(new WfCallExpression);
 									callExpr->function = refInt;
 									callExpr->arguments.Add(refRatio);
 
-									auto subExpr = MakePtr<WfBinaryExpression>();
+									auto subExpr = Ptr(new WfBinaryExpression);
 									subExpr->first = refOne;
 									subExpr->second = callExpr;
 									subExpr->op = WfBinaryOperator::Sub;
 
-									auto mulExpr = MakePtr<WfBinaryExpression>();
+									auto mulExpr = Ptr(new WfBinaryExpression);
 									mulExpr->first = refProp;
 									mulExpr->second = subExpr;
 									mulExpr->op = WfBinaryOperator::Mul;
@@ -1100,25 +1100,25 @@ GuiInstanceGradientAnimation::Compile
 									part1 = mulExpr;
 								}
 								{
-									auto refParent = MakePtr<WfReferenceExpression>();
+									auto refParent = Ptr(new WfReferenceExpression);
 									refParent->name.value = L"<ani>end";
 
-									auto refProp = MakePtr<WfTypeCastingExpression>();
+									auto refProp = Ptr(new WfTypeCastingExpression);
 									refProp->expression = accessor(refParent);
 									refProp->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 									refProp->strategy = WfTypeCastingStrategy::Strong;
 
-									auto refInt = MakePtr<WfReferenceExpression>();
+									auto refInt = Ptr(new WfReferenceExpression);
 									refInt->name.value = intFunc;
 
-									auto refRatio = MakePtr<WfReferenceExpression>();
+									auto refRatio = Ptr(new WfReferenceExpression);
 									refRatio->name.value = L"<ani>ratio";
 
-									auto callExpr = MakePtr<WfCallExpression>();
+									auto callExpr = Ptr(new WfCallExpression);
 									callExpr->function = refInt;
 									callExpr->arguments.Add(refRatio);
 
-									auto mulExpr = MakePtr<WfBinaryExpression>();
+									auto mulExpr = Ptr(new WfBinaryExpression);
 									mulExpr->first = refProp;
 									mulExpr->second = callExpr;
 									mulExpr->op = WfBinaryOperator::Mul;
@@ -1128,7 +1128,7 @@ GuiInstanceGradientAnimation::Compile
 
 								Ptr<WfExpression> exprMixed;
 								{
-									auto addExpr = MakePtr<WfBinaryExpression>();
+									auto addExpr = Ptr(new WfBinaryExpression);
 									addExpr->first = part1;
 									addExpr->second = part2;
 									addExpr->op = WfBinaryOperator::Add;
@@ -1143,11 +1143,11 @@ GuiInstanceGradientAnimation::Compile
 									}
 									else
 									{
-										auto refRound = MakePtr<WfChildExpression>();
+										auto refRound = Ptr(new WfChildExpression);
 										refRound->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
 										refRound->name.value = L"Round";
 
-										auto callRoundExpr = MakePtr<WfCallExpression>();
+										auto callRoundExpr = Ptr(new WfCallExpression);
 										callRoundExpr->function = refRound;
 										callRoundExpr->arguments.Add(addExpr);
 
@@ -1155,12 +1155,12 @@ GuiInstanceGradientAnimation::Compile
 									}
 								}
 
-								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								auto castExpr = Ptr(new WfTypeCastingExpression);
 								castExpr->expression = exprMixed;
 								castExpr->type = GetTypeFromTypeInfo(propInfo->GetReturn());
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 
-								auto varRef = MakePtr<WfVariableDeclaration>();
+								auto varRef = Ptr(new WfVariableDeclaration);
 								{
 									WString name = L"";
 									while (auto member = propChain.Cast<WfMemberExpression>())
@@ -1173,26 +1173,26 @@ GuiInstanceGradientAnimation::Compile
 								}
 								varRef->expression = castExpr;
 
-								auto declStat = MakePtr<WfVariableStatement>();
+								auto declStat = Ptr(new WfVariableStatement);
 								declStat->variable = varRef;
 								block->statements.Add(declStat);
 							}, td);
 
 							for (auto target : targets)
 							{
-								auto refCurrent = MakePtr<WfReferenceExpression>();
+								auto refCurrent = Ptr(new WfReferenceExpression);
 								refCurrent->name.value = L"<ani>current";
 
-								auto refProp = MakePtr<WfMemberExpression>();
+								auto refProp = Ptr(new WfMemberExpression);
 								refProp->parent = refCurrent;
 								refProp->name.value = target.name;
 
-								auto assignExpr = MakePtr<WfBinaryExpression>();
+								auto assignExpr = Ptr(new WfBinaryExpression);
 								assignExpr->first = refProp;
 								assignExpr->second = InitStruct(td->GetPropertyByName(target.name, true), L"", varNames);
 								assignExpr->op = WfBinaryOperator::Assign;
 
-								auto exprStat = MakePtr<WfExpressionStatement>();
+								auto exprStat = Ptr(new WfExpressionStatement);
 								exprStat->expression = assignExpr;
 								block->statements.Add(exprStat);
 							}
@@ -1204,14 +1204,14 @@ GuiInstanceGradientAnimation::Compile
 					}
 					{
 						// func Interpolate(<ani>ratio : double) : void
-						auto func = MakePtr<WfFunctionDeclaration>();
+						auto func = Ptr(new WfFunctionDeclaration);
 						animationClass->declarations.Add(func);
 
 						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"Interpolate";
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>ratio";
 							argument->type = GetTypeFromTypeInfo(typeInfoDouble.Obj());
 							func->arguments.Add(argument);
@@ -1220,32 +1220,32 @@ GuiInstanceGradientAnimation::Compile
 
 						if (generateImpl)
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							func->statement = block;
 
-							auto refBegin = MakePtr<WfReferenceExpression>();
+							auto refBegin = Ptr(new WfReferenceExpression);
 							refBegin->name.value = L"Begin";
 
-							auto refEnd = MakePtr<WfReferenceExpression>();
+							auto refEnd = Ptr(new WfReferenceExpression);
 							refEnd->name.value = L"End";
 
-							auto refCurrent = MakePtr<WfReferenceExpression>();
+							auto refCurrent = Ptr(new WfReferenceExpression);
 							refCurrent->name.value = L"Current";
 
-							auto refRatio = MakePtr<WfReferenceExpression>();
+							auto refRatio = Ptr(new WfReferenceExpression);
 							refRatio->name.value = L"<ani>ratio";
 
-							auto refFunc = MakePtr<WfReferenceExpression>();
+							auto refFunc = Ptr(new WfReferenceExpression);
 							refFunc->name.value = L"Interpolate";
 
-							auto callExpr = MakePtr<WfCallExpression>();
+							auto callExpr = Ptr(new WfCallExpression);
 							callExpr->function = refFunc;
 							callExpr->arguments.Add(refBegin);
 							callExpr->arguments.Add(refEnd);
 							callExpr->arguments.Add(refCurrent);
 							callExpr->arguments.Add(refRatio);
 
-							auto exprStat = MakePtr<WfExpressionStatement>();
+							auto exprStat = Ptr(new WfExpressionStatement);
 							exprStat->expression = callExpr;
 
 							block->statements.Add(exprStat);
@@ -1257,20 +1257,20 @@ GuiInstanceGradientAnimation::Compile
 					}
 					{
 						// func CreateAnimation(<ani>target : <TYPE>, <ani>time : UInt64) : IGuiAnimation^
-						auto func = MakePtr<WfFunctionDeclaration>();
+						auto func = Ptr(new WfFunctionDeclaration);
 						animationClass->declarations.Add(func);
 
 						func->functionKind = WfFunctionKind::Normal;
 						func->anonymity = WfFunctionAnonymity::Named;
 						func->name.value = L"CreateAnimation";
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>target";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
 						}
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>time";
 							argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<vuint64_t>::CreateTypeInfo().Obj());
 							func->arguments.Add(argument);
@@ -1279,170 +1279,170 @@ GuiInstanceGradientAnimation::Compile
 
 						if (generateImpl)
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							func->statement = block;
 
 							{
-								auto refEnd = MakePtr<WfReferenceExpression>();
+								auto refEnd = Ptr(new WfReferenceExpression);
 								refEnd->name.value = L"End";
 
-								auto refTarget = MakePtr<WfReferenceExpression>();
+								auto refTarget = Ptr(new WfReferenceExpression);
 								refTarget->name.value = L"<ani>target";
 
-								auto refCurrent = MakePtr<WfReferenceExpression>();
+								auto refCurrent = Ptr(new WfReferenceExpression);
 								refCurrent->name.value = L"Current";
 
-								auto refFunc = MakePtr<WfReferenceExpression>();
+								auto refFunc = Ptr(new WfReferenceExpression);
 								refFunc->name.value = L"GetTimeScale";
 
-								auto callExpr = MakePtr<WfCallExpression>();
+								auto callExpr = Ptr(new WfCallExpression);
 								callExpr->function = refFunc;
 								callExpr->arguments.Add(refEnd);
 								callExpr->arguments.Add(refTarget);
 								callExpr->arguments.Add(refCurrent);
 
-								auto refTime = MakePtr<WfReferenceExpression>();
+								auto refTime = Ptr(new WfReferenceExpression);
 								refTime->name.value = L"<ani>time";
 
-								auto mulExpr = MakePtr<WfBinaryExpression>();
+								auto mulExpr = Ptr(new WfBinaryExpression);
 								mulExpr->first = refTime;
 								mulExpr->second = callExpr;
 								mulExpr->op = WfBinaryOperator::Mul;
 
-								auto refRound = MakePtr<WfChildExpression>();
+								auto refRound = Ptr(new WfChildExpression);
 								refRound->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Math>());
 								refRound->name.value = L"Round";
 
-								auto callRoundExpr = MakePtr<WfCallExpression>();
+								auto callRoundExpr = Ptr(new WfCallExpression);
 								callRoundExpr->function = refRound;
 								callRoundExpr->arguments.Add(mulExpr);
 
-								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								auto castExpr = Ptr(new WfTypeCastingExpression);
 								castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<vuint64_t>::CreateTypeInfo().Obj());
 								castExpr->expression = callRoundExpr;
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 
-								auto varDecl = MakePtr<WfVariableDeclaration>();
+								auto varDecl = Ptr(new WfVariableDeclaration);
 								varDecl->name.value = L"<ani>scaledTime";
 								varDecl->expression = castExpr;
 
-								auto varStat = MakePtr<WfVariableStatement>();
+								auto varStat = Ptr(new WfVariableStatement);
 								varStat->variable = varDecl;
 								block->statements.Add(varStat);
 							}
 							{
 								for (auto target : targets)
 								{
-									auto refBegin = MakePtr<WfReferenceExpression>();
+									auto refBegin = Ptr(new WfReferenceExpression);
 									refBegin->name.value = L"Begin";
 
-									auto refBeginProp = MakePtr<WfMemberExpression>();
+									auto refBeginProp = Ptr(new WfMemberExpression);
 									refBeginProp->parent = refBegin;
 									refBeginProp->name.value = target.name;
 
-									auto refCurrent = MakePtr<WfReferenceExpression>();
+									auto refCurrent = Ptr(new WfReferenceExpression);
 									refCurrent->name.value = L"Current";
 
-									auto refCurrentProp = MakePtr<WfMemberExpression>();
+									auto refCurrentProp = Ptr(new WfMemberExpression);
 									refCurrentProp->parent = refCurrent;
 									refCurrentProp->name.value = target.name;
 
-									auto assignExpr = MakePtr<WfBinaryExpression>();
+									auto assignExpr = Ptr(new WfBinaryExpression);
 									assignExpr->first = refBeginProp;
 									assignExpr->second = refCurrentProp;
 									assignExpr->op = WfBinaryOperator::Assign;
 
-									auto exprStat = MakePtr<WfExpressionStatement>();
+									auto exprStat = Ptr(new WfExpressionStatement);
 									exprStat->expression = assignExpr;
 
 									block->statements.Add(exprStat);
 								}
 							}
 							{
-								auto refEnd = MakePtr<WfReferenceExpression>();
+								auto refEnd = Ptr(new WfReferenceExpression);
 								refEnd->name.value = L"End";
 
-								auto refTarget = MakePtr<WfReferenceExpression>();
+								auto refTarget = Ptr(new WfReferenceExpression);
 								refTarget->name.value = L"<ani>target";
 
-								auto assignExpr = MakePtr<WfBinaryExpression>();
+								auto assignExpr = Ptr(new WfBinaryExpression);
 								assignExpr->first = refEnd;
 								assignExpr->second = refTarget;
 								assignExpr->op = WfBinaryOperator::Assign;
 
-								auto exprStat = MakePtr<WfExpressionStatement>();
+								auto exprStat = Ptr(new WfExpressionStatement);
 								exprStat->expression = assignExpr;
 
 								block->statements.Add(exprStat);
 							}
 							{
-								auto refCA = MakePtr<WfChildExpression>();
+								auto refCA = Ptr(new WfChildExpression);
 								refCA->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<IGuiAnimation>());
 								refCA->name.value = L"CreateAnimation";
 
-								auto funcExpr = MakePtr<WfFunctionExpression>();
+								auto funcExpr = Ptr(new WfFunctionExpression);
 								{
-									auto funcDecl = MakePtr<WfFunctionDeclaration>();
+									auto funcDecl = Ptr(new WfFunctionDeclaration);
 									funcExpr->function = funcDecl;
 
 									funcDecl->functionKind = WfFunctionKind::Normal;
 									funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
 									{
-										auto argument = MakePtr<WfFunctionArgument>();
+										auto argument = Ptr(new WfFunctionArgument);
 										argument->name.value = L"<ani>currentTime";
 										argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<vuint64_t>::CreateTypeInfo().Obj());
 										funcDecl->arguments.Add(argument);
 									}
 									funcDecl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 
-									auto subBlock = MakePtr<WfBlockStatement>();
+									auto subBlock = Ptr(new WfBlockStatement);
 									funcDecl->statement = subBlock;
 
 									{
-										auto refCurrentTime = MakePtr<WfReferenceExpression>();
+										auto refCurrentTime = Ptr(new WfReferenceExpression);
 										refCurrentTime->name.value = L"<ani>currentTime";
 
-										auto firstExpr = MakePtr<WfTypeCastingExpression>();
+										auto firstExpr = Ptr(new WfTypeCastingExpression);
 										firstExpr->expression = refCurrentTime;
 										firstExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 										firstExpr->strategy = WfTypeCastingStrategy::Strong;
 
-										auto refTime = MakePtr<WfReferenceExpression>();
+										auto refTime = Ptr(new WfReferenceExpression);
 										refTime->name.value = L"<ani>time";
 
-										auto secondExpr = MakePtr<WfTypeCastingExpression>();
+										auto secondExpr = Ptr(new WfTypeCastingExpression);
 										secondExpr->expression = refTime;
 										secondExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<double>::CreateTypeInfo().Obj());
 										secondExpr->strategy = WfTypeCastingStrategy::Strong;
 
-										auto divExpr = MakePtr<WfBinaryExpression>();
+										auto divExpr = Ptr(new WfBinaryExpression);
 										divExpr->first = firstExpr;
 										divExpr->second = secondExpr;
 										divExpr->op = WfBinaryOperator::Div;
 
-										auto refInt = MakePtr<WfReferenceExpression>();
+										auto refInt = Ptr(new WfReferenceExpression);
 										refInt->name.value = L"Interpolate";
 
-										auto callExpr = MakePtr<WfCallExpression>();
+										auto callExpr = Ptr(new WfCallExpression);
 										callExpr->function = refInt;
 										callExpr->arguments.Add(divExpr);
 
-										auto exprStat = MakePtr<WfExpressionStatement>();
+										auto exprStat = Ptr(new WfExpressionStatement);
 										exprStat->expression = callExpr;
 
 										subBlock->statements.Add(exprStat);
 									}
 								}
 
-								auto refTime = MakePtr<WfReferenceExpression>();
+								auto refTime = Ptr(new WfReferenceExpression);
 								refTime->name.value = L"<ani>time";
 
-								auto callExpr = MakePtr<WfCallExpression>();
+								auto callExpr = Ptr(new WfCallExpression);
 								callExpr->function = refCA;
 								callExpr->arguments.Add(funcExpr);
 								callExpr->arguments.Add(refTime);
 
-								auto returnStat = MakePtr<WfReturnStatement>();
+								auto returnStat = Ptr(new WfReturnStatement);
 								returnStat->expression = callExpr;
 
 								block->statements.Add(returnStat);
@@ -1455,12 +1455,12 @@ GuiInstanceGradientAnimation::Compile
 					}
 					{
 						// new (<ani>current : <TYPE>)
-						auto func = MakePtr<WfConstructorDeclaration>();
+						auto func = Ptr(new WfConstructorDeclaration);
 						animationClass->declarations.Add(func);
 
 						func->constructorType = WfConstructorType::SharedPtr;
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<ani>current";
 							argument->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							func->arguments.Add(argument);
@@ -1468,7 +1468,7 @@ GuiInstanceGradientAnimation::Compile
 
 						if (generateImpl)
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							func->statement = block;
 
 							{
@@ -1480,18 +1480,18 @@ GuiInstanceGradientAnimation::Compile
 								for (auto propName : propNames)
 								{
 									{
-										auto newExpr = MakePtr<WfNewClassExpression>();
+										auto newExpr = Ptr(new WfNewClassExpression);
 										newExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
 
-										auto refProp = MakePtr<WfReferenceExpression>();
+										auto refProp = Ptr(new WfReferenceExpression);
 										refProp->name.value = propName;
 
-										auto assignExpr = MakePtr<WfBinaryExpression>();
+										auto assignExpr = Ptr(new WfBinaryExpression);
 										assignExpr->first = refProp;
 										assignExpr->second = newExpr;
 										assignExpr->op = WfBinaryOperator::Assign;
 
-										auto exprStat = MakePtr<WfExpressionStatement>();
+										auto exprStat = Ptr(new WfExpressionStatement);
 										exprStat->expression = assignExpr;
 
 										block->statements.Add(exprStat);
@@ -1499,26 +1499,26 @@ GuiInstanceGradientAnimation::Compile
 									
 									for (auto target : targets)
 									{
-										auto refProp = MakePtr<WfReferenceExpression>();
+										auto refProp = Ptr(new WfReferenceExpression);
 										refProp->name.value = propName;
 
-										auto refPropProp = MakePtr<WfMemberExpression>();
+										auto refPropProp = Ptr(new WfMemberExpression);
 										refPropProp->parent = refProp;
 										refPropProp->name.value = target.name;
 
-										auto refCurrent = MakePtr<WfReferenceExpression>();
+										auto refCurrent = Ptr(new WfReferenceExpression);
 										refCurrent->name.value = L"<ani>current";
 
-										auto refCurrentProp = MakePtr<WfMemberExpression>();
+										auto refCurrentProp = Ptr(new WfMemberExpression);
 										refCurrentProp->parent = refCurrent;
 										refCurrentProp->name.value = target.name;
 
-										auto assignExpr = MakePtr<WfBinaryExpression>();
+										auto assignExpr = Ptr(new WfBinaryExpression);
 										assignExpr->first = refPropProp;
 										assignExpr->second = refCurrentProp;
 										assignExpr->op = WfBinaryOperator::Assign;
 
-										auto exprStat = MakePtr<WfExpressionStatement>();
+										auto exprStat = Ptr(new WfExpressionStatement);
 										exprStat->expression = assignExpr;
 
 										block->statements.Add(exprStat);
@@ -1574,12 +1574,12 @@ GuiInstancePropertyInfo
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Unsupported()
 		{
-			return new GuiInstancePropertyInfo;
+			return Ptr(new GuiInstancePropertyInfo);
 		}
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Assign(Ptr<description::ITypeInfo> typeInfo)
 		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
+			auto info = Ptr(new GuiInstancePropertyInfo);
 			info->support = SupportAssign;
 			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
@@ -1608,7 +1608,7 @@ GuiInstancePropertyInfo
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Set(Ptr<description::ITypeInfo> typeInfo)
 		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
+			auto info = Ptr(new GuiInstancePropertyInfo);
 			info->support = SupportSet;
 			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
@@ -1616,7 +1616,7 @@ GuiInstancePropertyInfo
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Array(Ptr<description::ITypeInfo> typeInfo)
 		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
+			auto info = Ptr(new GuiInstancePropertyInfo);
 			info->support = SupportArray;
 			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
@@ -1711,7 +1711,7 @@ GuiInstanceContext::ElementName Parser
 					return nullptr;
 				}
 
-				Ptr<ElementName> elementName = new ElementName;
+				auto elementName = Ptr(new ElementName);
 				if (match->Groups().Keys().Contains(_namespaceName))
 				{
 					elementName->namespaceName = match->Groups()[_namespaceName][0].Value();
@@ -2004,7 +2004,7 @@ GuiDefaultInstanceLoader
 					GuiInstancePropertyInfo::Support support = GuiInstancePropertyInfo::NotSupport;
 					if (ITypeInfo* propType = GetPropertyReflectionTypeInfo(propertyInfo, support))
 					{
-						Ptr<GuiInstancePropertyInfo> result = new GuiInstancePropertyInfo;
+						auto result = Ptr(new GuiInstancePropertyInfo);
 						result->support = support;
 						result->acceptableTypes.Add(CopyTypeInfo(propType));
 
@@ -2060,10 +2060,10 @@ GuiDefaultInstanceLoader
 
 				if (arguments.Count() > 0)
 				{
-					auto call = MakePtr<WfBaseConstructorCall>();
+					auto call = Ptr(new WfBaseConstructorCall);
 
 					auto baseTd = typeInfo.typeInfo->GetTypeDescriptor()->GetBaseTypeDescriptor(0);
-					auto baseTypeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
+					auto baseTypeInfo = Ptr(new TypeDescriptorTypeInfo(baseTd, TypeInfoHint::Normal));
 					call->type = GetTypeFromTypeInfo(baseTypeInfo.Obj());
 
 					auto ctor = baseTd->GetConstructorGroup()->GetMethod(0);
@@ -2093,7 +2093,7 @@ GuiDefaultInstanceLoader
 				auto defaultCtor = GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor());
 				auto instanceCtor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor());
 
-				auto create = MakePtr<WfNewClassExpression>();
+				auto create = Ptr(new WfNewClassExpression);
 				if (defaultCtor)
 				{
 					create->type = GetTypeFromTypeInfo(defaultCtor->GetReturn());
@@ -2120,22 +2120,22 @@ GuiDefaultInstanceLoader
 					}
 				}
 
-				auto refValue = MakePtr<WfReferenceExpression>();
+				auto refValue = Ptr(new WfReferenceExpression);
 				refValue->name.value = variableName.ToString();
 
-				auto assign = MakePtr<WfBinaryExpression>();
+				auto assign = Ptr(new WfBinaryExpression);
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = refValue;
 				assign->second = create;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = assign;
 				return stat;
 			}
 
 			Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 			{
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 
 				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
@@ -2150,36 +2150,36 @@ GuiDefaultInstanceLoader
 								if (values.Count() > 0)
 								{
 									{
-										auto refValue = MakePtr<WfReferenceExpression>();
+										auto refValue = Ptr(new WfReferenceExpression);
 										refValue->name.value = variableName.ToString();
 
-										auto refProp = MakePtr<WfMemberExpression>();
+										auto refProp = Ptr(new WfMemberExpression);
 										refProp->parent = refValue;
 										refProp->name.value = prop.ToString();
 
-										auto varDesc = MakePtr<WfVariableDeclaration>();
+										auto varDesc = Ptr(new WfVariableDeclaration);
 										varDesc->name.value = L"<collection>";
 										varDesc->expression = refProp;
 
-										auto stat = MakePtr<WfVariableStatement>();
+										auto stat = Ptr(new WfVariableStatement);
 										stat->variable = varDesc;
 										block->statements.Add(stat);
 									}
 
 									for (vint i = 0; i < values.Count(); i++)
 									{
-										auto refCollection = MakePtr<WfReferenceExpression>();
+										auto refCollection = Ptr(new WfReferenceExpression);
 										refCollection->name.value = L"<collection>";
 
-										auto refAdd = MakePtr<WfMemberExpression>();
+										auto refAdd = Ptr(new WfMemberExpression);
 										refAdd->parent = refCollection;
 										refAdd->name.value = L"Add";
 
-										auto call = MakePtr<WfCallExpression>();
+										auto call = Ptr(new WfCallExpression);
 										call->function = refAdd;
 										call->arguments.Add(values[i].expression);
 
-										auto stat = MakePtr<WfExpressionStatement>();
+										auto stat = Ptr(new WfExpressionStatement);
 										stat->expression = call;
 										block->statements.Add(stat);
 									}
@@ -2188,27 +2188,27 @@ GuiDefaultInstanceLoader
 							break;
 						case GuiInstancePropertyInfo::SupportArray:
 							{
-								auto refArray = MakePtr<WfConstructorExpression>();
+								auto refArray = Ptr(new WfConstructorExpression);
 								for (auto item : arguments.GetByIndex(index))
 								{
-									auto argument = MakePtr<WfConstructorArgument>();
+									auto argument = Ptr(new WfConstructorArgument);
 									argument->key = item.expression;
 									refArray->arguments.Add(argument);
 								}
 
-								auto refValue = MakePtr<WfReferenceExpression>();
+								auto refValue = Ptr(new WfReferenceExpression);
 								refValue->name.value = variableName.ToString();
 
-								auto refProp = MakePtr<WfMemberExpression>();
+								auto refProp = Ptr(new WfMemberExpression);
 								refProp->parent = refValue;
 								refProp->name.value = prop.ToString();
 
-								auto assign = MakePtr<WfBinaryExpression>();
+								auto assign = Ptr(new WfBinaryExpression);
 								assign->op = WfBinaryOperator::Assign;
 								assign->first = refProp;
 								assign->second = refArray;
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = assign;
 								block->statements.Add(stat);
 							}
@@ -2218,19 +2218,19 @@ GuiDefaultInstanceLoader
 								auto& propertyValue = arguments.GetByIndex(index)[0];
 								if (propertyValue.expression)
 								{
-									auto refValue = MakePtr<WfReferenceExpression>();
+									auto refValue = Ptr(new WfReferenceExpression);
 									refValue->name.value = variableName.ToString();
 
-									auto refProp = MakePtr<WfMemberExpression>();
+									auto refProp = Ptr(new WfMemberExpression);
 									refProp->parent = refValue;
 									refProp->name.value = prop.ToString();
 
-									auto assign = MakePtr<WfBinaryExpression>();
+									auto assign = Ptr(new WfBinaryExpression);
 									assign->op = WfBinaryOperator::Assign;
 									assign->first = refProp;
 									assign->second = propertyValue.expression;
 
-									auto stat = MakePtr<WfExpressionStatement>();
+									auto stat = Ptr(new WfExpressionStatement);
 									stat->expression = assign;
 									block->statements.Add(stat);
 								}
@@ -2256,10 +2256,10 @@ GuiDefaultInstanceLoader
 
 			Ptr<workflow::WfExpression> GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 			{
-				auto refValue = MakePtr<WfReferenceExpression>();
+				auto refValue = Ptr(new WfReferenceExpression);
 				refValue->name.value = variableName.ToString();
 
-				auto refProp = MakePtr<WfMemberExpression>();
+				auto refProp = Ptr(new WfMemberExpression);
 				refProp->parent = refValue;
 				refProp->name.value = propertyInfo.propertyName.ToString();
 
@@ -2391,7 +2391,7 @@ GuiInstanceLoaderManager
 		public:
 			GuiInstanceLoaderManager()
 			{
-				rootLoader = new GuiDefaultInstanceLoader;
+				rootLoader = Ptr(new GuiDefaultInstanceLoader);
 			}
 
 			GUI_PLUGIN_NAME(GacUI_Instance)
@@ -2403,7 +2403,7 @@ GuiInstanceLoaderManager
 			{
 				instanceLoaderManager = this;
 				IGuiParserManager* manager = GetParserManager();
-				manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);
+				manager->SetParser(L"INSTANCE-ELEMENT-NAME", Ptr(new GuiInstanceContextElementNameParser));
 			}
 
 			void Unload()override
@@ -2460,7 +2460,7 @@ GuiInstanceLoaderManager
 			{
 				if (IsTypeExists(loader->GetTypeName()) || !IsTypeExists(parentType)) return false;
 
-				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
+				auto typeInfo = Ptr(new VirtualTypeInfo);
 				typeInfo->typeName = loader->GetTypeName();
 				typeInfo->parentTypeName = parentType;
 				typeInfo->loader = loader;
@@ -2478,7 +2478,7 @@ GuiInstanceLoaderManager
 				ITypeDescriptor* typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(loader->GetTypeName().ToString());
 				if (typeDescriptor == 0) return false;
 
-				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
+				auto typeInfo = Ptr(new VirtualTypeInfo);
 				typeInfo->typeName = loader->GetTypeName();
 				typeInfo->typeDescriptor = typeDescriptor;
 				typeInfo->loader = loader;
@@ -2542,7 +2542,7 @@ GuiInstanceLoaderManager
 				}
 				else
 				{
-					return MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
+					return Ptr(new RawPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
 				}
 			}
 
@@ -2727,7 +2727,7 @@ GuiReferenceInstanceBinder (ref)
 			
 			Ptr<workflow::WfStatement> GenerateInstallStatement(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, IGuiInstanceLoader* loader, const IGuiInstanceLoader::PropertyInfo& prop, Ptr<GuiInstancePropertyInfo> propInfo, const WString& code, GuiResourceTextPos position, GuiResourceError::List& errors)override
 			{
-				auto expression = MakePtr<WfReferenceExpression>();
+				auto expression = Ptr(new WfReferenceExpression);
 				expression->name.value = code;
 				return Workflow_InstallEvalProperty(precompileContext, resolvingResult, variableName, loader, prop, propInfo, expression, position, errors);
 			}
@@ -2801,11 +2801,11 @@ GuiBindInstanceBinder (bind)
 			{
 				if(auto expression = Workflow_ParseExpression(precompileContext, { resolvingResult.resource }, code, position, errors))
 				{
-					auto inferExpr = MakePtr<WfInferExpression>();
+					auto inferExpr = Ptr(new WfInferExpression);
 					inferExpr->expression = expression;
 					inferExpr->type = GetTypeFromTypeInfo(propertyInfo->GetReturn());
 
-					auto bindExpr = MakePtr<WfBindExpression>();
+					auto bindExpr = Ptr(new WfBindExpression);
 					bindExpr->expression = inferExpr;
 
 					return Workflow_InstallBindProperty(precompileContext, resolvingResult, variableName, propertyInfo, bindExpr);
@@ -2896,16 +2896,16 @@ GuiLocalizedStringInstanceBinder (str)
 
 							if (defaultLs)
 							{
-								auto thisExpr = MakePtr<WfReferenceExpression>();
+								auto thisExpr = Ptr(new WfReferenceExpression);
 								thisExpr->name.value = L"<this>";
 								thisExpr->codeRange = refExpr->codeRange;
 
-								auto thisMember = MakePtr<WfMemberExpression>();
+								auto thisMember = Ptr(new WfMemberExpression);
 								thisMember->parent = thisExpr;
 								thisMember->name.value = defaultLs->name.ToString();
 								thisMember->codeRange = refExpr->codeRange;
 
-								auto refMember = MakePtr<WfMemberExpression>();
+								auto refMember = Ptr(new WfMemberExpression);
 								refMember->parent = thisMember;
 								refMember->name.value = refExpr->name.value;
 								refMember->codeRange = refExpr->codeRange;
@@ -2922,11 +2922,11 @@ GuiLocalizedStringInstanceBinder (str)
 						{
 							if (auto refStrings = memberExpr->parent.Cast<WfReferenceExpression>())
 							{
-								auto thisExpr = MakePtr<WfReferenceExpression>();
+								auto thisExpr = Ptr(new WfReferenceExpression);
 								thisExpr->name.value = L"<this>";
 								thisExpr->codeRange = refStrings->codeRange;
 
-								auto thisMember = MakePtr<WfMemberExpression>();
+								auto thisMember = Ptr(new WfMemberExpression);
 								thisMember->parent = thisExpr;
 								thisMember->name.value = refStrings->name.value;
 								thisMember->codeRange = refStrings->codeRange;
@@ -2946,7 +2946,7 @@ GuiLocalizedStringInstanceBinder (str)
 
 					if (errorCount == errors.Count())
 					{
-						auto bindExpr = MakePtr<WfBindExpression>();
+						auto bindExpr = Ptr(new WfBindExpression);
 						bindExpr->expression = expression;
 						bindExpr->codeRange = expression->codeRange;
 
@@ -3157,27 +3157,27 @@ GuiPredefinedInstanceBindersPlugin
 				WorkflowAstLoadTypes();
 				GuiInstanceQueryAstLoadTypes();
 				{
-					auto workflowParser = MakePtr<workflow::Parser>();
+					auto workflowParser = Ptr(new workflow::Parser);
 
 					IGuiParserManager* manager = GetParserManager();
-					manager->SetParser(L"WORKFLOW-TYPE", new GuiParser_WorkflowType(workflowParser));
-					manager->SetParser(L"WORKFLOW-EXPRESSION", new GuiParser_WorkflowExpression(workflowParser));
-					manager->SetParser(L"WORKFLOW-STATEMENT", new GuiParser_WorkflowStatement(workflowParser));
-					manager->SetParser(L"WORKFLOW-COPROVIDER-STATEMENT", new GuiParser_WorkflowCoProviderStatement(workflowParser));
-					manager->SetParser(L"WORKFLOW-DECLARATION", new GuiParser_WorkflowDeclaration(workflowParser));
-					manager->SetParser(L"WORKFLOW-MODULE", new GuiParser_WorkflowModule(workflowParser));
-					manager->SetParser(L"INSTANCE-QUERY", new GuiParser_InstanceQuery);
+					manager->SetParser(L"WORKFLOW-TYPE", Ptr(new GuiParser_WorkflowType(workflowParser)));
+					manager->SetParser(L"WORKFLOW-EXPRESSION", Ptr(new GuiParser_WorkflowExpression(workflowParser)));
+					manager->SetParser(L"WORKFLOW-STATEMENT", Ptr(new GuiParser_WorkflowStatement(workflowParser)));
+					manager->SetParser(L"WORKFLOW-COPROVIDER-STATEMENT", Ptr(new GuiParser_WorkflowCoProviderStatement(workflowParser)));
+					manager->SetParser(L"WORKFLOW-DECLARATION", Ptr(new GuiParser_WorkflowDeclaration(workflowParser)));
+					manager->SetParser(L"WORKFLOW-MODULE", Ptr(new GuiParser_WorkflowModule(workflowParser)));
+					manager->SetParser(L"INSTANCE-QUERY", Ptr(new GuiParser_InstanceQuery));
 				}
 				{
 					IGuiInstanceLoaderManager* manager=GetInstanceLoaderManager();
 
-					manager->AddInstanceBinder(new GuiResourceInstanceBinder);
-					manager->AddInstanceBinder(new GuiReferenceInstanceBinder);
-					manager->AddInstanceBinder(new GuiEvalInstanceBinder);
-					manager->AddInstanceBinder(new GuiBindInstanceBinder);
-					manager->AddInstanceBinder(new GuiFormatInstanceBinder);
-					manager->AddInstanceBinder(new GuiLocalizedStringInstanceBinder);
-					manager->AddInstanceEventBinder(new GuiEvalInstanceEventBinder);
+					manager->AddInstanceBinder(Ptr(new GuiResourceInstanceBinder));
+					manager->AddInstanceBinder(Ptr(new GuiReferenceInstanceBinder));
+					manager->AddInstanceBinder(Ptr(new GuiEvalInstanceBinder));
+					manager->AddInstanceBinder(Ptr(new GuiBindInstanceBinder));
+					manager->AddInstanceBinder(Ptr(new GuiFormatInstanceBinder));
+					manager->AddInstanceBinder(Ptr(new GuiLocalizedStringInstanceBinder));
+					manager->AddInstanceEventBinder(Ptr(new GuiEvalInstanceEventBinder));
 				}
 			}
 
@@ -3329,17 +3329,17 @@ GuiTemplatePropertyDeserializer
 				GuiResourceError::List& errors
 				)
 			{
-				auto funcCreateTemplate = MakePtr<WfFunctionDeclaration>();
+				auto funcCreateTemplate = Ptr(new WfFunctionDeclaration);
 				funcCreateTemplate->functionKind = WfFunctionKind::Normal;
 				funcCreateTemplate->anonymity = WfFunctionAnonymity::Anonymous;
 				funcCreateTemplate->returnType = GetTypeFromTypeInfo(returnTemplateType);
 
-				auto argViewModel = MakePtr<WfFunctionArgument>();
+				auto argViewModel = Ptr(new WfFunctionArgument);
 				argViewModel->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
 				argViewModel->name.value = L"<viewModel>";
 				funcCreateTemplate->arguments.Add(argViewModel);
 
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				funcCreateTemplate->statement = block;
 
 				ITypeDescriptor* stopControlTemplateTd = nullptr;
@@ -3399,13 +3399,13 @@ GuiTemplatePropertyDeserializer
 						stopControlTemplateTd = controlTemplateTd;
 					}
 
-					auto subBlock = MakePtr<WfBlockStatement>();
+					auto subBlock = Ptr(new WfBlockStatement);
 					block->statements.Add(subBlock);
 
 					Ptr<ITypeInfo> controlTemplateType;
 					{
-						auto elementType = MakePtr<TypeDescriptorTypeInfo>(controlTemplateTd, TypeInfoHint::Normal);
-						auto pointerType = MakePtr<RawPtrTypeInfo>(elementType);
+						auto elementType = Ptr(new TypeDescriptorTypeInfo(controlTemplateTd, TypeInfoHint::Normal));
+						auto pointerType = Ptr(new RawPtrTypeInfo(elementType));
 
 						controlTemplateType = pointerType;
 					}
@@ -3413,19 +3413,19 @@ GuiTemplatePropertyDeserializer
 					Ptr<WfBlockStatement> returnStatBlock;
 					if (viewModelType)
 					{
-						auto refViewModel = MakePtr<WfReferenceExpression>();
+						auto refViewModel = Ptr(new WfReferenceExpression);
 						refViewModel->name.value = L"<viewModel>";
 
-						auto condition = MakePtr<WfTypeTestingExpression>();
+						auto condition = Ptr(new WfTypeTestingExpression);
 						condition->test = WfTypeTesting::IsType;
 						condition->expression = refViewModel;
 						condition->type = GetTypeFromTypeInfo(viewModelType);
 
-						auto ifStat = MakePtr<WfIfStatement>();
+						auto ifStat = Ptr(new WfIfStatement);
 						subBlock->statements.Add(ifStat);
 						ifStat->expression = condition;
 
-						returnStatBlock = MakePtr<WfBlockStatement>();
+						returnStatBlock = Ptr(new WfBlockStatement);
 						ifStat->trueBranch = returnStatBlock;
 					}
 					else
@@ -3434,21 +3434,21 @@ GuiTemplatePropertyDeserializer
 					}
 
 					{
-						auto createControlTemplate = MakePtr<WfNewClassExpression>();
+						auto createControlTemplate = Ptr(new WfNewClassExpression);
 						createControlTemplate->type = GetTypeFromTypeInfo(controlTemplateType.Obj());
 						if (viewModelType)
 						{
-							auto refViewModel = MakePtr<WfReferenceExpression>();
+							auto refViewModel = Ptr(new WfReferenceExpression);
 							refViewModel->name.value = L"<viewModel>";
 
-							auto cast = MakePtr<WfTypeCastingExpression>();
+							auto cast = Ptr(new WfTypeCastingExpression);
 							cast->strategy = WfTypeCastingStrategy::Strong;
 							cast->expression = refViewModel;
 							cast->type = GetTypeFromTypeInfo(viewModelType);
 							createControlTemplate->arguments.Add(cast);
 						}
 
-						auto returnStat = MakePtr<WfReturnStatement>();
+						auto returnStat = Ptr(new WfReturnStatement);
 						returnStat->expression = createControlTemplate;
 						returnStatBlock->statements.Add(returnStat);
 					}
@@ -3456,16 +3456,16 @@ GuiTemplatePropertyDeserializer
 
 				if (!stopControlTemplateTd)
 				{
-					auto value = MakePtr<WfStringExpression>();
+					auto value = Ptr(new WfStringExpression);
 					value->value.value = L"Cannot find a matched control template to create.";
 
-					auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+					auto raiseStat = Ptr(new WfRaiseExceptionStatement);
 					raiseStat->expression = value;
 
 					block->statements.Add(raiseStat);
 				}
 
-				auto expr = MakePtr<WfFunctionExpression>();
+				auto expr = Ptr(new WfFunctionExpression);
 				expr->function = funcCreateTemplate;
 				return expr;
 			}
@@ -3484,7 +3484,7 @@ GuiTemplatePropertyDeserializer
 					List<ITypeDescriptor*> tds;
 					tds.Add(controlTemplateTd);
 					auto refFactory = CreateTemplateFactory(resolvingResult, tds, templateType.Obj(), templateType.Obj(), tagPosition, errors);
-					auto createStyle = MakePtr<WfNewClassExpression>();
+					auto createStyle = Ptr(new WfNewClassExpression);
 					createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataVisualizerFactory>>::CreateTypeInfo().Obj());
 					createStyle->arguments.Add(refFactory);
 
@@ -3494,7 +3494,7 @@ GuiTemplatePropertyDeserializer
 					}
 					else
 					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
+						auto nullExpr = Ptr(new WfLiteralExpression);
 						nullExpr->value = WfLiteralValue::Null;
 						createStyle->arguments.Add(nullExpr);
 					}
@@ -3512,7 +3512,7 @@ GuiTemplatePropertyDeserializer
 			{
 				auto templateType = TypeInfoRetriver<GuiGridEditorTemplate*>::CreateTypeInfo();
 				auto refFactory = CreateTemplateFactory(resolvingResult, controlTemplateTds, templateType.Obj(), templateType.Obj(), tagPosition, errors);
-				auto createStyle = MakePtr<WfNewClassExpression>();
+				auto createStyle = Ptr(new WfNewClassExpression);
 				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<list::DataEditorFactory>>::CreateTypeInfo().Obj());
 				createStyle->arguments.Add(refFactory);
 				return createStyle;
@@ -3698,10 +3698,10 @@ GuiItemPropertyDeserializer
 				{
 					if (refExpr->name.value != itemName)
 					{
-						auto refItem = MakePtr<WfReferenceExpression>();
+						auto refItem = Ptr(new WfReferenceExpression);
 						refItem->name.value = itemName;
 
-						auto member = MakePtr<WfMemberExpression>();
+						auto member = Ptr(new WfMemberExpression);
 						member->parent = refItem;
 						member->name.value = refExpr->name.value;
 
@@ -3711,7 +3711,7 @@ GuiItemPropertyDeserializer
 
 				bool isWritableItemProperty = IsWritableItemPropertyType(typeInfo);
 
-				auto funcDecl = MakePtr<WfFunctionDeclaration>();
+				auto funcDecl = Ptr(new WfFunctionDeclaration);
 				ITypeInfo* acceptValueType = nullptr;
 				funcDecl->functionKind = WfFunctionKind::Normal;
 				funcDecl->anonymity = WfFunctionAnonymity::Anonymous;
@@ -3719,7 +3719,7 @@ GuiItemPropertyDeserializer
 					auto genericType = typeInfo->GetElementType();
 					funcDecl->returnType = GetTypeFromTypeInfo(genericType->GetGenericArgument(0));
 					{
-						auto argument = MakePtr<WfFunctionArgument>();
+						auto argument = Ptr(new WfFunctionArgument);
 						argument->name.value = L"<item>";
 						argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(1));
 						funcDecl->arguments.Add(argument);
@@ -3728,13 +3728,13 @@ GuiItemPropertyDeserializer
 					if (isWritableItemProperty)
 					{
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<value>";
 							argument->type = GetTypeFromTypeInfo((acceptValueType = genericType->GetGenericArgument(2)));
 							funcDecl->arguments.Add(argument);
 						}
 						{
-							auto argument = MakePtr<WfFunctionArgument>();
+							auto argument = Ptr(new WfFunctionArgument);
 							argument->name.value = L"<update>";
 							argument->type = GetTypeFromTypeInfo(genericType->GetGenericArgument(3));
 							funcDecl->arguments.Add(argument);
@@ -3742,58 +3742,58 @@ GuiItemPropertyDeserializer
 					}
 				}
 
-				auto funcBlock = MakePtr<WfBlockStatement>();
+				auto funcBlock = Ptr(new WfBlockStatement);
 				funcDecl->statement = funcBlock;
 
 				{
-					auto refItem = MakePtr<WfReferenceExpression>();
+					auto refItem = Ptr(new WfReferenceExpression);
 					refItem->name.value = L"<item>";
 
-					auto refCast = MakePtr<WfTypeCastingExpression>();
+					auto refCast = Ptr(new WfTypeCastingExpression);
 					refCast->strategy = WfTypeCastingStrategy::Strong;
 					refCast->type = itemType;
 					refCast->expression = refItem;
 
-					auto varDecl = MakePtr<WfVariableDeclaration>();
+					auto varDecl = Ptr(new WfVariableDeclaration);
 					varDecl->name.value = itemName;
 					varDecl->expression = refCast;
 
-					auto varStat = MakePtr<WfVariableStatement>();
+					auto varStat = Ptr(new WfVariableStatement);
 					varStat->variable = varDecl;
 					funcBlock->statements.Add(varStat);
 				}
 
 				Ptr<WfReturnStatement> returnStat;
 				{
-					returnStat = MakePtr<WfReturnStatement>();
+					returnStat = Ptr(new WfReturnStatement);
 					returnStat->expression = propertyExpression;
 				}
 
 				if (isWritableItemProperty)
 				{
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					funcBlock->statements.Add(ifStat);
 					{
-						auto refUpdate = MakePtr<WfReferenceExpression>();
+						auto refUpdate = Ptr(new WfReferenceExpression);
 						refUpdate->name.value = L"<update>";
 
 						ifStat->expression = refUpdate;
 					}
 					{
-						auto block = MakePtr<WfBlockStatement>();
+						auto block = Ptr(new WfBlockStatement);
 						ifStat->trueBranch = block;
 
 						{
-							auto refValue = MakePtr<WfReferenceExpression>();
+							auto refValue = Ptr(new WfReferenceExpression);
 							refValue->name.value = L"<value>";
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = CopyExpression(propertyExpression, true);
 
 							if (acceptValueType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 							{
-								auto castExpr = MakePtr<WfExpectedTypeCastExpression>();
+								auto castExpr = Ptr(new WfExpectedTypeCastExpression);
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 								castExpr->expression = refValue;
 								assignExpr->second = castExpr;
@@ -3803,12 +3803,12 @@ GuiItemPropertyDeserializer
 								assignExpr->second = refValue;
 							}
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = assignExpr;
 							block->statements.Add(stat);
 						}
 						{
-							auto returnStat = MakePtr<WfReturnStatement>();
+							auto returnStat = Ptr(new WfReturnStatement);
 							block->statements.Add(returnStat);
 
 							auto returnType = typeInfo->GetElementType()->GetGenericArgument(0);
@@ -3816,7 +3816,7 @@ GuiItemPropertyDeserializer
 						}
 					}
 					{
-						auto block = MakePtr<WfBlockStatement>();
+						auto block = Ptr(new WfBlockStatement);
 						ifStat->falseBranch = block;
 
 						block->statements.Add(returnStat);
@@ -3827,7 +3827,7 @@ GuiItemPropertyDeserializer
 					funcBlock->statements.Add(returnStat);
 				}
 
-				auto funcExpr = MakePtr<WfFunctionExpression>();
+				auto funcExpr = Ptr(new WfFunctionExpression);
 				funcExpr->function = funcDecl;
 				return funcExpr;
 			}
@@ -3904,27 +3904,27 @@ GuiDataProcessorDeserializer
 					}
 				};
 
-				auto newExpr = MakePtr<WfNewInterfaceExpression>();
+				auto newExpr = Ptr(new WfNewInterfaceExpression);
 				newExpr->type = GetTypeFromTypeInfo(typeInfo);
 				{
-					auto decl = MakePtr<WfFunctionDeclaration>();
+					auto decl = Ptr(new WfFunctionDeclaration);
 					newExpr->declarations.Add(decl);
 					decl->functionKind = WfFunctionKind::Override;
 					decl->name.value = L"SetCallback";
 					decl->anonymity = WfFunctionAnonymity::Named;
 					decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
 					{
-						auto argument = MakePtr<WfFunctionArgument>();
+						auto argument = Ptr(new WfFunctionArgument);
 						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<IDataProcessorCallback*>::CreateTypeInfo().Obj());
 						argument->name.value = L"value";
 						decl->arguments.Add(argument);
 					}
 
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 					decl->statement = block;
 				}
 				{
-					auto decl = MakePtr<WfFunctionDeclaration>();
+					auto decl = Ptr(new WfFunctionDeclaration);
 					newExpr->declarations.Add(decl);
 					decl->functionKind = WfFunctionKind::Override;
 					decl->anonymity = WfFunctionAnonymity::Named;
@@ -3946,19 +3946,19 @@ GuiDataProcessorDeserializer
 
 					for (auto name : argumentNames)
 					{
-						auto argument = MakePtr<WfFunctionArgument>();
+						auto argument = Ptr(new WfFunctionArgument);
 						argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
 						argument->name.value = name;
 						decl->arguments.Add(argument);
 					}
 
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 					decl->statement = block;
 
-					auto inferExpr = MakePtr<WfInferExpression>();
+					auto inferExpr = Ptr(new WfInferExpression);
 					inferExpr->expression = propertyExpression;
 					{
-						auto funcType = MakePtr<WfFunctionType>();
+						auto funcType = Ptr(new WfFunctionType);
 						inferExpr->type = funcType;
 
 						funcType->result = CopyType(decl->returnType);
@@ -3968,14 +3968,14 @@ GuiDataProcessorDeserializer
 						}
 					}
 
-					auto callExpr = MakePtr<WfCallExpression>();
+					auto callExpr = Ptr(new WfCallExpression);
 					callExpr->function = inferExpr;
 					for (auto [name, index] : indexed(argumentNames))
 					{
-						auto refExpr = MakePtr<WfReferenceExpression>();
+						auto refExpr = Ptr(new WfReferenceExpression);
 						refExpr->name.value = name;
 
-						auto castExpr = MakePtr<WfTypeCastingExpression>();
+						auto castExpr = Ptr(new WfTypeCastingExpression);
 						castExpr->strategy = WfTypeCastingStrategy::Strong;
 						castExpr->type = (index == 0 ? itemType : CopyType(itemType));
 						castExpr->expression = refExpr;
@@ -3983,7 +3983,7 @@ GuiDataProcessorDeserializer
 						callExpr->arguments.Add(castExpr);
 					}
 
-					auto stat = MakePtr<WfReturnStatement>();
+					auto stat = Ptr(new WfReturnStatement);
 					stat->expression = callExpr;
 					block->statements.Add(stat);
 				}
@@ -4007,9 +4007,9 @@ GuiPredefinedInstanceDeserializersPlugin
 			void Load()override
 			{
 				IGuiInstanceLoaderManager* manager = GetInstanceLoaderManager();
-				manager->AddInstanceDeserializer(new GuiTemplatePropertyDeserializer);
-				manager->AddInstanceDeserializer(new GuiItemPropertyDeserializer);
-				manager->AddInstanceDeserializer(new GuiDataProcessorDeserializer);
+				manager->AddInstanceDeserializer(Ptr(new GuiTemplatePropertyDeserializer));
+				manager->AddInstanceDeserializer(Ptr(new GuiItemPropertyDeserializer));
+				manager->AddInstanceDeserializer(Ptr(new GuiDataProcessorDeserializer));
 			}
 
 			void Unload()override
@@ -4120,7 +4120,7 @@ namespace vl
 			auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
 			if (assemblyType && !compiled)
 			{
-				compiled = new GuiInstanceCompiledWorkflow;
+				compiled = Ptr(new GuiInstanceCompiledWorkflow);
 				compiled->type = assemblyType.Value();
 				context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
 			}
@@ -4444,7 +4444,7 @@ Instance Type Resolver (Instance)
 							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
 							if (!record)
 							{
-								record = MakePtr<GuiResourceClassNameRecord>();
+								record = Ptr(new GuiResourceClassNameRecord);
 								context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
 							}
 
@@ -4925,11 +4925,11 @@ Plugin
 			void Load()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
-				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
-				manager->SetTypeResolver(new GuiResourceInstanceStyleTypeResolver);
-				manager->SetTypeResolver(new GuiResourceAnimationTypeResolver);
-				manager->SetTypeResolver(new GuiResourceLocalizedStringsTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceSharedScriptTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceInstanceTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceInstanceStyleTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceAnimationTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceLocalizedStringsTypeResolver));
 			}
 
 			void Unload()override
@@ -4969,7 +4969,7 @@ GuiInstanceLocalizedStrings
 
 		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			auto ls = MakePtr<GuiInstanceLocalizedStrings>();
+			auto ls = Ptr(new GuiInstanceLocalizedStrings);
 
 			if (xml->rootElement->name.value!=L"LocalizedStrings")
 			{
@@ -5019,7 +5019,7 @@ GuiInstanceLocalizedStrings
 				}
 				else
 				{
-					auto lss = MakePtr<GuiInstanceLocalizedStrings::Strings>();
+					auto lss = Ptr(new GuiInstanceLocalizedStrings::Strings);
 					ls->strings.Add(lss);
 					lss->tagPosition = { { resource },xmlStrings->name.codeRange.start };
 					SplitBySemicolon(attLocales->value.value, lss->locales);
@@ -5064,7 +5064,7 @@ GuiInstanceLocalizedStrings
 							}
 							else
 							{
-								auto item = MakePtr<GuiInstanceLocalizedStrings::StringItem>();
+								auto item = Ptr(new GuiInstanceLocalizedStrings::StringItem);
 								item->name = attName->value.value;
 								item->text = attText->value.value;
 								item->textPosition = { {resource},attText->value.codeRange.start };
@@ -5086,16 +5086,16 @@ GuiInstanceLocalizedStrings
 
 		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStrings::SaveToXml()
 		{
-			auto xml = MakePtr<XmlElement>();
+			auto xml = Ptr(new XmlElement);
 			xml->name.value = L"LocalizedStrings";
 			{
-				auto att = MakePtr<XmlAttribute>();
+				auto att = Ptr(new XmlAttribute);
 				att->name.value = L"ref.Class";
 				att->value.value = className;
 				xml->attributes.Add(att);
 			}
 			{
-				auto att = MakePtr<XmlAttribute>();
+				auto att = Ptr(new XmlAttribute);
 				att->name.value = L"DefaultLocale";
 				att->value.value = defaultLocale;
 				xml->attributes.Add(att);
@@ -5103,11 +5103,11 @@ GuiInstanceLocalizedStrings
 
 			for (auto lss : strings)
 			{
-				auto xmlStrings = MakePtr<XmlElement>();
+				auto xmlStrings = Ptr(new XmlElement);
 				xml->subNodes.Add(xmlStrings);
 				xmlStrings->name.value = L"Strings";
 				{
-					auto att = MakePtr<XmlAttribute>();
+					auto att = Ptr(new XmlAttribute);
 					att->name.value = L"Strings";
 					att->value.value = lss->GetLocalesName();
 					xmlStrings->attributes.Add(att);
@@ -5115,16 +5115,16 @@ GuiInstanceLocalizedStrings
 
 				for (auto lssi : lss->items.Values())
 				{
-					auto xmlString = MakePtr<XmlElement>();
+					auto xmlString = Ptr(new XmlElement);
 					xmlStrings->subNodes.Add(xmlString);
 					{
-						auto att = MakePtr<XmlAttribute>();
+						auto att = Ptr(new XmlAttribute);
 						att->name.value = L"Name";
 						att->value.value = lssi->name;
 						xmlString->attributes.Add(att);
 					}
 					{
-						auto att = MakePtr<XmlAttribute>();
+						auto att = Ptr(new XmlAttribute);
 						att->name.value = L"Text";
 						att->value.value = lssi->text;
 						xmlString->attributes.Add(att);
@@ -5165,7 +5165,7 @@ GuiInstanceLocalizedStrings
 			const wchar_t* reading = text.Buffer();
 			const wchar_t* textPosCounter = reading;
 			glr::ParsingTextPos formatPos(0, 0);
-			auto textDesc = MakePtr<TextDesc>();
+			auto textDesc = Ptr(new TextDesc);
 
 			auto addError = [&](const WString& message)
 			{
@@ -5396,7 +5396,7 @@ GuiInstanceLocalizedStrings
 
 		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind)
 		{
-			auto func = MakePtr<WfFunctionDeclaration>();
+			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = functionKind;
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = functionName;
@@ -5405,7 +5405,7 @@ GuiInstanceLocalizedStrings
 			{
 				auto type = textDesc->parameters[textDesc->positions[i]];
 
-				auto argument = MakePtr<WfFunctionArgument>();
+				auto argument = Ptr(new WfFunctionArgument);
 				argument->name.value = L"<ls>" + itow(i);
 				argument->type = GetTypeFromTypeInfo(type.key.Obj());
 				func->arguments.Add(argument);
@@ -5416,12 +5416,12 @@ GuiInstanceLocalizedStrings
 
 		Ptr<workflow::WfExpression> GuiInstanceLocalizedStrings::GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls)
 		{
-			auto lsExpr = MakePtr<WfNewInterfaceExpression>();
+			auto lsExpr = Ptr(new WfNewInterfaceExpression);
 			{
-				auto refType = MakePtr<WfReferenceType>();
+				auto refType = Ptr(new WfReferenceType);
 				refType->name.value = GetInterfaceTypeName(false);
 
-				auto refPointer = MakePtr<WfSharedPointerType>();
+				auto refPointer = Ptr(new WfSharedPointerType);
 				refPointer->element = refType;
 
 				lsExpr->type = refPointer;
@@ -5433,7 +5433,7 @@ GuiInstanceLocalizedStrings
 				auto func = GenerateFunction(textDesc, lss->name, WfFunctionKind::Override);
 				lsExpr->declarations.Add(func);
 
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				func->statement = block;
 
 				Ptr<WfExpression> resultExpr;
@@ -5442,7 +5442,7 @@ GuiInstanceLocalizedStrings
 				{
 					if (resultExpr)
 					{
-						auto binaryExpr = MakePtr<WfBinaryExpression>();
+						auto binaryExpr = Ptr(new WfBinaryExpression);
 						binaryExpr->op = WfBinaryOperator::FlagAnd;
 						binaryExpr->first = resultExpr;
 						binaryExpr->second = strExpr;
@@ -5457,10 +5457,10 @@ GuiInstanceLocalizedStrings
 
 				for (vint i = 0; i < textDesc->parameters.Count(); i++)
 				{
-					auto varDesc = MakePtr<WfVariableDeclaration>();
+					auto varDesc = Ptr(new WfVariableDeclaration);
 					varDesc->name.value = L"<ls>_" + itow(i);
 
-					auto varStat = MakePtr<WfVariableStatement>();
+					auto varStat = Ptr(new WfVariableStatement);
 					varStat->variable = varDesc;
 					block->statements.Add(varStat);
 
@@ -5472,39 +5472,39 @@ GuiInstanceLocalizedStrings
 					{
 						auto refLoc = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
 
-						auto refFormats = MakePtr<WfChildExpression>();
+						auto refFormats = Ptr(new WfChildExpression);
 						refFormats->parent = refLoc;
 						refFormats->name.value = L"Get" + function + L"Formats";
 
-						auto refLocale = MakePtr<WfReferenceExpression>();
+						auto refLocale = Ptr(new WfReferenceExpression);
 						refLocale->name.value = L"<ls>locale";
 
-						auto callFormats = MakePtr<WfCallExpression>();
+						auto callFormats = Ptr(new WfCallExpression);
 						callFormats->function = refFormats;
 						callFormats->arguments.Add(refLocale);
 
-						auto refFirst = MakePtr<WfReferenceExpression>();
+						auto refFirst = Ptr(new WfReferenceExpression);
 						refFirst->name.value = L"<ls>First";
 
-						auto callFirst = MakePtr<WfCallExpression>();
+						auto callFirst = Ptr(new WfCallExpression);
 						{
 							callFirst->function = refFirst;
 							callFirst->arguments.Add(callFormats);
 						}
 
-						auto refLocale2 = MakePtr<WfReferenceExpression>();
+						auto refLocale2 = Ptr(new WfReferenceExpression);
 						refLocale2->name.value = L"<ls>locale";
 
-						auto refParameter = MakePtr<WfReferenceExpression>();
+						auto refParameter = Ptr(new WfReferenceExpression);
 						refParameter->name.value = L"<ls>" + itow(index);
 
 						auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
 
-						auto refFD = MakePtr<WfChildExpression>();
+						auto refFD = Ptr(new WfChildExpression);
 						refFD->parent = refLoc2;
 						refFD->name.value = L"Format" + function.Right(4);
 
-						auto callFD = MakePtr<WfCallExpression>();
+						auto callFD = Ptr(new WfCallExpression);
 						callFD->function = refFD;
 						callFD->arguments.Add(refLocale2);
 						callFD->arguments.Add(callFirst);
@@ -5514,22 +5514,22 @@ GuiInstanceLocalizedStrings
 					}
 					else if (function.Length() >= 5 && (function.Left(5) == L"Date:" || function.Left(5) == L"Time:"))
 					{
-						auto refLocale = MakePtr<WfReferenceExpression>();
+						auto refLocale = Ptr(new WfReferenceExpression);
 						refLocale->name.value = L"<ls>locale";
 
-						auto refFormat = MakePtr<WfStringExpression>();
+						auto refFormat = Ptr(new WfStringExpression);
 						refFormat->value.value = function.Right(function.Length() - 5);
 
-						auto refParameter = MakePtr<WfReferenceExpression>();
+						auto refParameter = Ptr(new WfReferenceExpression);
 						refParameter->name.value = L"<ls>" + itow(index);
 
 						auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
 
-						auto refFD = MakePtr<WfChildExpression>();
+						auto refFD = Ptr(new WfChildExpression);
 						refFD->parent = refLoc2;
 						refFD->name.value = L"Format" + function.Left(4);
 
-						auto callFD = MakePtr<WfCallExpression>();
+						auto callFD = Ptr(new WfCallExpression);
 						callFD->function = refFD;
 						callFD->arguments.Add(refLocale);
 						callFD->arguments.Add(refFormat);
@@ -5539,19 +5539,19 @@ GuiInstanceLocalizedStrings
 					}
 					else if (function == L"Number" || function == L"Currency")
 					{
-						auto refLocale = MakePtr<WfReferenceExpression>();
+						auto refLocale = Ptr(new WfReferenceExpression);
 						refLocale->name.value = L"<ls>locale";
 
-						auto refParameter = MakePtr<WfReferenceExpression>();
+						auto refParameter = Ptr(new WfReferenceExpression);
 						refParameter->name.value = L"<ls>" + itow(index);
 
 						auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
 
-						auto refFD = MakePtr<WfChildExpression>();
+						auto refFD = Ptr(new WfChildExpression);
 						refFD->parent = refLoc2;
 						refFD->name.value = L"Format" + function;
 
-						auto callFD = MakePtr<WfCallExpression>();
+						auto callFD = Ptr(new WfCallExpression);
 						callFD->function = refFD;
 						callFD->arguments.Add(refLocale);
 						callFD->arguments.Add(refParameter);
@@ -5560,7 +5560,7 @@ GuiInstanceLocalizedStrings
 					}
 					else
 					{
-						auto refParameter = MakePtr<WfReferenceExpression>();
+						auto refParameter = Ptr(new WfReferenceExpression);
 						refParameter->name.value = L"<ls>" + itow(index);
 
 						varDesc->expression = refParameter;
@@ -5571,14 +5571,14 @@ GuiInstanceLocalizedStrings
 				{
 					if (textDesc->texts[i] != L"")
 					{
-						auto strExpr = MakePtr<WfStringExpression>();
+						auto strExpr = Ptr(new WfStringExpression);
 						strExpr->value.value = textDesc->texts[i];
 						appendExpr(strExpr);
 					}
 
 					if (i < textDesc->parameters.Count())
 					{
-						auto refExpr = MakePtr<WfReferenceExpression>();
+						auto refExpr = Ptr(new WfReferenceExpression);
 						refExpr->name.value = L"<ls>_" + itow(i);
 						appendExpr(refExpr);
 					}
@@ -5586,10 +5586,10 @@ GuiInstanceLocalizedStrings
 
 				if (!resultExpr)
 				{
-					resultExpr = MakePtr<WfStringExpression>();
+					resultExpr = Ptr(new WfStringExpression);
 				}
 
-				auto returnStat = MakePtr<WfReturnStatement>();
+				auto returnStat = Ptr(new WfReturnStatement);
 				returnStat->expression = resultExpr;
 
 				block->statements.Add(returnStat);
@@ -5608,7 +5608,7 @@ GuiInstanceLocalizedStrings
 				return nullptr;
 			}
 
-			auto module = MakePtr<WfModule>();
+			auto module = Ptr(new WfModule);
 			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
 			{
@@ -5625,72 +5625,72 @@ GuiInstanceLocalizedStrings
 			}
 			auto lsClass = Workflow_InstallClass(className, module);
 			{
-				auto func = MakePtr<WfFunctionDeclaration>();
+				auto func = Ptr(new WfFunctionDeclaration);
 				lsClass->declarations.Add(func);
 				func->functionKind = WfFunctionKind::Static;
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"<ls>First";
 				func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
 				{
-					auto argument = MakePtr<WfFunctionArgument>();
+					auto argument = Ptr(new WfFunctionArgument);
 					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<LazyList<WString>>::CreateTypeInfo().Obj());
 					argument->name.value = L"<ls>formats";
 					func->arguments.Add(argument);
 				}
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				func->statement = block;
 
 				{
-					auto forStat = MakePtr<WfForEachStatement>();
+					auto forStat = Ptr(new WfForEachStatement);
 					block->statements.Add(forStat);
 					forStat->name.value = L"<ls>format";
 					forStat->direction = WfForEachDirection::Normal;
 
-					auto refArgument = MakePtr<WfReferenceExpression>();
+					auto refArgument = Ptr(new WfReferenceExpression);
 					refArgument->name.value = L"<ls>formats";
 					forStat->collection = refArgument;
 
-					auto forBlock = MakePtr<WfBlockStatement>();
+					auto forBlock = Ptr(new WfBlockStatement);
 					forStat->statement = forBlock;
 					{
-						auto refFormat = MakePtr<WfReferenceExpression>();
+						auto refFormat = Ptr(new WfReferenceExpression);
 						refFormat->name.value = L"<ls>format";
 
-						auto returnStat = MakePtr<WfReturnStatement>();
+						auto returnStat = Ptr(new WfReturnStatement);
 						returnStat->expression = refFormat;
 						forBlock->statements.Add(returnStat);
 					}
 				}
 				{
-					auto returnStat = MakePtr<WfReturnStatement>();
-					returnStat->expression = MakePtr<WfStringExpression>();
+					auto returnStat = Ptr(new WfReturnStatement);
+					returnStat->expression = Ptr(new WfStringExpression);
 					block->statements.Add(returnStat);
 				}
 			}
 			{
-				auto func = MakePtr<WfFunctionDeclaration>();
+				auto func = Ptr(new WfFunctionDeclaration);
 				lsClass->declarations.Add(func);
 
 				func->functionKind = WfFunctionKind::Static;
 				func->anonymity = WfFunctionAnonymity::Named;
 				func->name.value = L"Get";
 				{
-					auto refType = MakePtr<WfReferenceType>();
+					auto refType = Ptr(new WfReferenceType);
 					refType->name.value = GetInterfaceTypeName(false);
 
-					auto refPointer = MakePtr<WfSharedPointerType>();
+					auto refPointer = Ptr(new WfSharedPointerType);
 					refPointer->element = refType;
 
 					func->returnType = refPointer;
 				}
 				{
-					auto argument = MakePtr<WfFunctionArgument>();
+					auto argument = Ptr(new WfFunctionArgument);
 					argument->name.value = L"<ls>locale";
 					argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
 					func->arguments.Add(argument);
 				}
 
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 				func->statement = block;
 
 				auto defaultStrings = GetDefaultStrings();
@@ -5698,42 +5698,42 @@ GuiInstanceLocalizedStrings
 				{
 					if (ls != defaultStrings)
 					{
-						auto listExpr = MakePtr<WfConstructorExpression>();
+						auto listExpr = Ptr(new WfConstructorExpression);
 						for (auto locale : ls->locales)
 						{
-							auto strExpr = MakePtr<WfStringExpression>();
+							auto strExpr = Ptr(new WfStringExpression);
 							strExpr->value.value = locale;
 
-							auto item = MakePtr<WfConstructorArgument>();
+							auto item = Ptr(new WfConstructorArgument);
 							item->key = strExpr;
 							listExpr->arguments.Add(item);
 						}
 
-						auto refLocale = MakePtr<WfReferenceExpression>();
+						auto refLocale = Ptr(new WfReferenceExpression);
 						refLocale->name.value = L"<ls>locale";
 
-						auto inferExpr = MakePtr<WfInferExpression>();
+						auto inferExpr = Ptr(new WfInferExpression);
 						inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
 						inferExpr->expression = refLocale;
 
-						auto inExpr = MakePtr<WfSetTestingExpression>();
+						auto inExpr = Ptr(new WfSetTestingExpression);
 						inExpr->test = WfSetTesting::In;
 						inExpr->element = inferExpr;
 						inExpr->collection = listExpr;
 
-						auto ifStat = MakePtr<WfIfStatement>();
+						auto ifStat = Ptr(new WfIfStatement);
 						block->statements.Add(ifStat);
 						ifStat->expression = inExpr;
 
-						auto trueBlock = MakePtr<WfBlockStatement>();
+						auto trueBlock = Ptr(new WfBlockStatement);
 						ifStat->trueBranch = trueBlock;
 
-						auto returnStat = MakePtr<WfReturnStatement>();
+						auto returnStat = Ptr(new WfReturnStatement);
 						returnStat->expression = GenerateStrings(textDescs, ls);
 						trueBlock->statements.Add(returnStat);
 					}
 				}
-				auto returnStat = MakePtr<WfReturnStatement>();
+				auto returnStat = Ptr(new WfReturnStatement);
 				returnStat->expression = GenerateStrings(textDescs, defaultStrings);
 				block->statements.Add(returnStat);
 			}
@@ -5774,7 +5774,7 @@ GuiTextRepr
 
 		Ptr<GuiValueRepr> GuiTextRepr::Clone()
 		{
-			auto repr = MakePtr<GuiTextRepr>();
+			auto repr = Ptr(new GuiTextRepr);
 			GuiValueRepr::CloneBody(repr);
 			repr->text = text;
 			return repr;
@@ -5784,7 +5784,7 @@ GuiTextRepr
 		{
 			if (!fromStyle)
 			{
-				auto xmlText = MakePtr<XmlText>();
+				auto xmlText = Ptr(new XmlText);
 				xmlText->content.value = text;
 				xml->subNodes.Add(xmlText);
 			}
@@ -5801,7 +5801,7 @@ GuiAttSetterRepr
 			for (auto [name, index] : indexed(setters.Keys()))
 			{
 				auto src = setters.Values()[index];
-				auto dst = MakePtr<SetterValue>();
+				auto dst = Ptr(new SetterValue);
 
 				dst->binding = src->binding;
 				dst->attPosition = src->attPosition;
@@ -5816,7 +5816,7 @@ GuiAttSetterRepr
 			for (auto [name, index] : indexed(eventHandlers.Keys()))
 			{
 				auto src = eventHandlers.Values()[index];
-				auto dst = MakePtr<EventValue>();
+				auto dst = Ptr(new EventValue);
 
 				dst->binding = src->binding;
 				dst->value = src->value;
@@ -5830,7 +5830,7 @@ GuiAttSetterRepr
 			for (auto [name, index] : indexed(environmentVariables.Keys()))
 			{
 				auto src = environmentVariables.Values()[index];
-				auto dst = MakePtr<EnvVarValue>();
+				auto dst = Ptr(new EnvVarValue);
 
 				dst->value = src->value;
 				dst->fromStyle = src->fromStyle;
@@ -5845,7 +5845,7 @@ GuiAttSetterRepr
 
 		Ptr<GuiValueRepr> GuiAttSetterRepr::Clone()
 		{
-			auto repr = MakePtr<GuiAttSetterRepr>();
+			auto repr = Ptr(new GuiAttSetterRepr);
 			GuiAttSetterRepr::CloneBody(repr);
 			repr->fromStyle = fromStyle;
 			return repr;
@@ -5857,7 +5857,7 @@ GuiAttSetterRepr
 			{
 				if (instanceName != GlobalStringKey::Empty)
 				{
-					auto attName = MakePtr<XmlAttribute>();
+					auto attName = Ptr(new XmlAttribute);
 					attName->name.value = L"ref.Name";
 					attName->value.value = instanceName.ToString();
 					xml->attributes.Add(attName);
@@ -5884,7 +5884,7 @@ GuiAttSetterRepr
 
 						if (containsElement)
 						{
-							auto xmlProp = MakePtr<XmlElement>();
+							auto xmlProp = Ptr(new XmlElement);
 							xmlProp->name.value = L"att." + key.ToString();
 							if (value->binding != GlobalStringKey::Empty)
 							{
@@ -5908,7 +5908,7 @@ GuiAttSetterRepr
 								{
 									if (!textRepr->fromStyle)
 									{
-										auto att = MakePtr<XmlAttribute>();
+										auto att = Ptr(new XmlAttribute);
 										att->name.value = key.ToString();
 										if (value->binding != GlobalStringKey::Empty)
 										{
@@ -5930,7 +5930,7 @@ GuiAttSetterRepr
 					auto value = eventHandlers.Values()[i];
 					if (!value->fromStyle)
 					{
-						auto xmlEvent = MakePtr<XmlElement>();
+						auto xmlEvent = Ptr(new XmlElement);
 						xmlEvent->name.value = L"ev." + key.ToString();
 						if (value->binding != GlobalStringKey::Empty)
 						{
@@ -5938,7 +5938,7 @@ GuiAttSetterRepr
 						}
 						xml->subNodes.Add(xmlEvent);
 
-						auto xmlText = MakePtr<XmlCData>();
+						auto xmlText = Ptr(new XmlCData);
 						xmlText->content.value = value->value;
 						xmlEvent->subNodes.Add(xmlText);
 					}
@@ -5950,11 +5950,11 @@ GuiAttSetterRepr
 					auto value = environmentVariables.Values()[i];
 					if (!value->fromStyle)
 					{
-						auto xmlEnvVar = MakePtr<XmlElement>();
+						auto xmlEnvVar = Ptr(new XmlElement);
 						xmlEnvVar->name.value = L"env." + key.ToString();
 						xml->subNodes.Add(xmlEnvVar);
 
-						auto xmlText = MakePtr<XmlText>();
+						auto xmlText = Ptr(new XmlText);
 						xmlText->content.value = value->value;
 						xmlEnvVar->subNodes.Add(xmlText);
 					}
@@ -5968,7 +5968,7 @@ GuiConstructorRepr
 
 		Ptr<GuiValueRepr> GuiConstructorRepr::Clone()
 		{
-			auto repr = MakePtr<GuiConstructorRepr>();
+			auto repr = Ptr(new GuiConstructorRepr);
 			GuiAttSetterRepr::CloneBody(repr);
 			repr->fromStyle = fromStyle;
 			repr->typeNamespace = typeNamespace;
@@ -5981,7 +5981,7 @@ GuiConstructorRepr
 		{
 			if (!fromStyle)
 			{
-				auto xmlCtor = MakePtr<XmlElement>();
+				auto xmlCtor = Ptr(new XmlElement);
 				if (typeNamespace == GlobalStringKey::Empty)
 				{
 					xmlCtor->name.value = typeName.ToString();
@@ -5993,7 +5993,7 @@ GuiConstructorRepr
 
 				if (styleName)
 				{
-					auto attStyle = MakePtr<XmlAttribute>();
+					auto attStyle = Ptr(new XmlAttribute);
 					attStyle->name.value = L"ref.Style";
 					attStyle->value.value = styleName.Value();
 					xml->attributes.Add(attStyle);
@@ -6017,14 +6017,14 @@ GuiInstanceContext
 				{
 					if (Ptr<XmlText> text = xml->subNodes[0].Cast<XmlText>())
 					{
-						Ptr<GuiTextRepr> value = new GuiTextRepr;
+						auto value = Ptr(new GuiTextRepr);
 						value->text = text->content.value;
 						value->tagPosition = { {resource},text->content.codeRange.start };
 						values.Add(value);
 					}
 					else if (Ptr<XmlCData> text = xml->subNodes[0].Cast<XmlCData>())
 					{
-						Ptr<GuiTextRepr> value = new GuiTextRepr;
+						auto value = Ptr(new GuiTextRepr);
 						value->text = text->content.value;
 						value->tagPosition = { {resource},text->content.codeRange.start };
 						value->tagPosition.column += 9; // <![CDATA[
@@ -6059,7 +6059,7 @@ GuiInstanceContext
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
-				Ptr<GuiAttSetterRepr::SetterValue> defaultValue = new GuiAttSetterRepr::SetterValue;
+				auto defaultValue = Ptr(new GuiAttSetterRepr::SetterValue);
 
 				// collect default attributes
 				CollectDefaultAttributes(resource, defaultValue->values, xml, errors);
@@ -6082,14 +6082,14 @@ GuiInstanceContext
 							}
 							else
 							{
-								Ptr<GuiAttSetterRepr::SetterValue> sv = new GuiAttSetterRepr::SetterValue;
+								auto sv = Ptr(new GuiAttSetterRepr::SetterValue);
 								sv->binding = GlobalStringKey::Get(name->binding);
 								sv->attPosition = { {resource},element->codeRange.start };
 
 								if (name->binding == L"set")
 								{
 									// if the binding is "set", it means that this element is a complete setter element
-									Ptr<GuiAttSetterRepr> setter = new GuiAttSetterRepr;
+									auto setter = Ptr(new GuiAttSetterRepr);
 									FillAttSetter(resource, setter, element, errors);
 									sv->values.Add(setter);
 								}
@@ -6134,7 +6134,7 @@ GuiInstanceContext
 								{
 									if (Ptr<XmlText> text = element->subNodes[0].Cast<XmlText>())
 									{
-										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
+										auto value = Ptr(new GuiAttSetterRepr::EventValue);
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
 										value->attPosition = { {resource},element->codeRange.start };
@@ -6148,7 +6148,7 @@ GuiInstanceContext
 									}
 									else if (Ptr<XmlCData> text = element->subNodes[0].Cast<XmlCData>())
 									{
-										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
+										auto value = Ptr(new GuiAttSetterRepr::EventValue);
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
 										value->attPosition = { {resource},element->codeRange.start };
@@ -6195,7 +6195,7 @@ GuiInstanceContext
 							}
 							else
 							{
-								auto value = MakePtr<GuiAttSetterRepr::EnvVarValue>();
+								auto value = Ptr(new GuiAttSetterRepr::EnvVarValue);
 								value->value = att->value.value;
 								value->attPosition = { {resource},att->codeRange.start };
 								value->valuePosition = { {resource},att->value.codeRange.start };
@@ -6212,12 +6212,12 @@ GuiInstanceContext
 							}
 							else
 							{
-								auto sv = MakePtr<GuiAttSetterRepr::SetterValue>();
+								auto sv = Ptr(new GuiAttSetterRepr::SetterValue);
 								sv->binding = GlobalStringKey::Get(name->binding);
 								sv->attPosition = { {resource},att->codeRange.start };
 								setter->setters.Add(GlobalStringKey::Get(name->name), sv);
 
-								Ptr<GuiTextRepr> value = new GuiTextRepr;
+								auto value = Ptr(new GuiTextRepr);
 								value->text = att->value.value;
 								value->tagPosition = { {resource},att->value.codeRange.start };
 								value->tagPosition.column += 1;
@@ -6233,7 +6233,7 @@ GuiInstanceContext
 							}
 							else
 							{
-								auto value = MakePtr<GuiAttSetterRepr::EventValue>();
+								auto value = Ptr(new GuiAttSetterRepr::EventValue);
 								value->binding = GlobalStringKey::Get(name->binding);
 								value->value = att->value.value;
 								value->attPosition = { {resource},att->codeRange.start };
@@ -6263,7 +6263,7 @@ GuiInstanceContext
 				{
 					if (ctorName->IsCtorName())
 					{
-						Ptr<GuiConstructorRepr> ctor = new GuiConstructorRepr;
+						auto ctor = Ptr(new GuiConstructorRepr);
 						ctor->typeNamespace = GlobalStringKey::Get(ctorName->namespaceName);
 						ctor->typeName = GlobalStringKey::Get(ctorName->name);
 						// collect attributes as setters
@@ -6294,7 +6294,7 @@ GuiInstanceContext
 
 		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			Ptr<GuiInstanceContext> context = new GuiInstanceContext;
+			auto context = Ptr(new GuiInstanceContext);
 			context->tagPosition = { {resource},xml->rootElement->codeRange.start };
 
 			if (xml->rootElement->name.value == L"Instance")
@@ -6323,7 +6323,7 @@ GuiInstanceContext
 				CopyFrom(namespaceAttributes, xml->rootElement->attributes);
 				if (!XmlGetAttribute(xml->rootElement, L"xmlns"))
 				{
-					Ptr<XmlAttribute> att = new XmlAttribute;
+					auto att = Ptr(new XmlAttribute);
 					att->name.value = L"xmlns";
 					att->value.value =
 						L"presentation::controls::Gui*;"
@@ -6370,7 +6370,7 @@ GuiInstanceContext
 						vint index = context->namespaces.Keys().IndexOf(ns);
 						if (index == -1)
 						{
-							info = new NamespaceInfo;
+							info = Ptr(new NamespaceInfo);
 							info->name = ns;
 							info->attPosition = { {resource},att->codeRange.start };
 							context->namespaces.Add(ns, info);
@@ -6386,7 +6386,7 @@ GuiInstanceContext
 						for (auto pattern : patterns)
 						{
 							// add the pattern to the namespace
-							Ptr<GuiInstanceNamespace> ns = new GuiInstanceNamespace;
+							auto ns = Ptr(new GuiInstanceNamespace);
 							Pair<vint, vint> star = INVLOC.FindFirst(pattern, L"*", Locale::None);
 							if (star.key == -1)
 							{
@@ -6411,7 +6411,7 @@ GuiInstanceContext
 						auto attClass = XmlGetAttribute(element, L"Class");
 						if (attName && attClass)
 						{
-							auto parameter = MakePtr<GuiInstanceParameter>();
+							auto parameter = Ptr(new GuiInstanceParameter);
 							parameter->name = GlobalStringKey::Get(attName->value.value);
 							parameter->className = GlobalStringKey::Get(attClass->value.value);
 							parameter->tagPosition = { {resource},element->codeRange.start };
@@ -6431,7 +6431,7 @@ GuiInstanceContext
 						auto attDefault = XmlGetAttribute(element, L"Default");
 						if (attName && attClass)
 						{
-							auto localized = MakePtr<GuiInstanceLocalized>();
+							auto localized = Ptr(new GuiInstanceLocalized);
 							localized->name = GlobalStringKey::Get(attName->value.value);
 							localized->className = GlobalStringKey::Get(attClass->value.value);
 							localized->tagPosition = { { resource },element->codeRange.start };
@@ -6488,17 +6488,17 @@ GuiInstanceContext
 
 		Ptr<glr::xml::XmlDocument> GuiInstanceContext::SaveToXml()
 		{
-			auto xmlInstance = MakePtr<XmlElement>();
+			auto xmlInstance = Ptr(new XmlElement);
 			xmlInstance->name.value = L"Instance";
 
 			{
-				auto attCodeBehind = MakePtr<XmlAttribute>();
+				auto attCodeBehind = Ptr(new XmlAttribute);
 				attCodeBehind->name.value = L"ref.CodeBehind";
 				attCodeBehind->value.value = codeBehind ? L"true" : L"false";
 				xmlInstance->attributes.Add(attCodeBehind);
 			}
 
-			auto attClass = MakePtr<XmlAttribute>();
+			auto attClass = Ptr(new XmlAttribute);
 			attClass->name.value = L"ref.Class";
 			attClass->value.value = className;
 			xmlInstance->attributes.Add(attClass);
@@ -6508,7 +6508,7 @@ GuiInstanceContext
 				auto key = namespaces.Keys()[i];
 				auto value = namespaces.Values()[i];
 
-				auto xmlns = MakePtr<XmlAttribute>();
+				auto xmlns = Ptr(new XmlAttribute);
 				xmlns->name.value = L"xmlns";
 				if (key != GlobalStringKey::Empty)
 				{
@@ -6529,16 +6529,16 @@ GuiInstanceContext
 
 			for (auto parameter : parameters)
 			{
-				auto xmlParameter = MakePtr<XmlElement>();
+				auto xmlParameter = Ptr(new XmlElement);
 				xmlParameter->name.value = L"ref.Parameter";
 				xmlInstance->subNodes.Add(xmlParameter);
 
-				auto attName = MakePtr<XmlAttribute>();
+				auto attName = Ptr(new XmlAttribute);
 				attName->name.value = L"Name";
 				attName->value.value = parameter->name.ToString();
 				xmlParameter->attributes.Add(attName);
 
-				auto attClass = MakePtr<XmlAttribute>();
+				auto attClass = Ptr(new XmlAttribute);
 				attClass->name.value = L"Class";
 				attClass->value.value = parameter->className.ToString();
 				xmlParameter->attributes.Add(attClass);
@@ -6546,21 +6546,21 @@ GuiInstanceContext
 
 			for (auto localized : localizeds)
 			{
-				auto xmlParameter = MakePtr<XmlElement>();
+				auto xmlParameter = Ptr(new XmlElement);
 				xmlParameter->name.value = L"ref.LocalizedStrings";
 				xmlInstance->subNodes.Add(xmlParameter);
 
-				auto attName = MakePtr<XmlAttribute>();
+				auto attName = Ptr(new XmlAttribute);
 				attName->name.value = L"Name";
 				attName->value.value = localized->name.ToString();
 				xmlParameter->attributes.Add(attName);
 
-				auto attClass = MakePtr<XmlAttribute>();
+				auto attClass = Ptr(new XmlAttribute);
 				attClass->name.value = L"Class";
 				attClass->value.value = localized->className.ToString();
 				xmlParameter->attributes.Add(attClass);
 
-				auto attDefault = MakePtr<XmlAttribute>();
+				auto attDefault = Ptr(new XmlAttribute);
 				attDefault->name.value = L"Default";
 				attDefault->value.value = localized->defaultStrings ? L"true" : L"false";
 				xmlParameter->attributes.Add(attDefault);
@@ -6569,10 +6569,10 @@ GuiInstanceContext
 #define SERIALIZE_SCRIPT(NAME, SCRIPT)\
 			if (SCRIPT != L"")\
 			{\
-				auto xmlScript = MakePtr<XmlElement>();\
+				auto xmlScript = Ptr(new XmlElement);\
 				xmlScript->name.value = L"ref." #NAME;\
 				xmlInstance->subNodes.Add(xmlScript);\
-				auto text = MakePtr<XmlCData>();\
+				auto text = Ptr(new XmlCData);\
 				text->content.value = SCRIPT;\
 				xmlScript->subNodes.Add(text);\
 			}\
@@ -6585,7 +6585,7 @@ GuiInstanceContext
 
 			if (stylePaths.Count() > 0)
 			{
-				auto attStyles = MakePtr<XmlAttribute>();
+				auto attStyles = Ptr(new XmlAttribute);
 				attStyles->name.value = L"ref.Styles";
 				xmlInstance->attributes.Add(attStyles);
 
@@ -6601,7 +6601,7 @@ GuiInstanceContext
 
 			instance->FillXml(xmlInstance);
 
-			auto doc = MakePtr<XmlDocument>();
+			auto doc = Ptr(new XmlDocument);
 			doc->rootElement = xmlInstance;
 			return doc;
 		}
@@ -6636,7 +6636,7 @@ GuiInstanceContext
 				for (auto style : styles)
 				{
 					List<Ptr<GuiConstructorRepr>> output;
-					ExecuteQuery(style->query, this, output);
+					ExecuteQuery(style->query, Ptr(this), output);
 					for (auto ctor : output)
 					{
 						ApplyStyle(style, ctor);
@@ -6695,7 +6695,7 @@ GuiInstanceStyle
 
 		Ptr<GuiInstanceStyle> GuiInstanceStyle::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
-			auto style = MakePtr<GuiInstanceStyle>();
+			auto style = Ptr(new GuiInstanceStyle);
 			if (auto pathAttr = XmlGetAttribute(xml, L"ref.Path"))
 			{
 				auto position = pathAttr->value.codeRange.start;
@@ -6710,7 +6710,7 @@ GuiInstanceStyle
 			{
 				errors.Add(GuiResourceError({ {resource},xml->codeRange.start }, L"Missing attribute \"ref.Path\" in <Style>."));
 			}
-			style->setter = MakePtr<GuiAttSetterRepr>();
+			style->setter = Ptr(new GuiAttSetterRepr);
 			GuiInstanceContext::FillAttSetter(resource, style->setter, xml, errors);
 
 			SetStyleMarkVisitor visitor;
@@ -6720,10 +6720,10 @@ GuiInstanceStyle
 
 		Ptr<glr::xml::XmlElement> GuiInstanceStyle::SaveToXml()
 		{
-			auto xmlStyle = MakePtr<XmlElement>();
+			auto xmlStyle = Ptr(new XmlElement);
 			xmlStyle->name.value = L"Style";
 
-			auto attPath = MakePtr<XmlAttribute>();
+			auto attPath = Ptr(new XmlAttribute);
 			attPath->name.value = L"ref.Path";
 			attPath->value.value = GenerateToStream([&](StreamWriter& writer)
 			{
@@ -6741,7 +6741,7 @@ GuiInstanceStyleContext
 
 		Ptr<GuiInstanceStyleContext> GuiInstanceStyleContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			auto context = MakePtr<GuiInstanceStyleContext>();
+			auto context = Ptr(new GuiInstanceStyleContext);
 			if (xml->rootElement->name.value == L"Styles")
 			{
 				for (auto styleElement : XmlGetElements(xml->rootElement))
@@ -6768,7 +6768,7 @@ GuiInstanceStyleContext
 
 		Ptr<glr::xml::XmlDocument> GuiInstanceStyleContext::SaveToXml()
 		{
-			auto xmlStyles = MakePtr<XmlElement>();
+			auto xmlStyles = Ptr(new XmlElement);
 			xmlStyles->name.value = L"Styles";
 
 			for (auto style : styles)
@@ -6776,7 +6776,7 @@ GuiInstanceStyleContext
 				xmlStyles->subNodes.Add(style->SaveToXml());
 			}
 
-			auto doc = MakePtr<XmlDocument>();
+			auto doc = Ptr(new XmlDocument);
 			doc->rootElement = xmlStyles;
 			return doc;
 		}
@@ -6803,7 +6803,7 @@ GuiInstanceSharedScript
 			{
 				if (auto cdata = xml->rootElement->subNodes[0].Cast<XmlCData>())
 				{
-					auto script = MakePtr<GuiInstanceSharedScript>();
+					auto script = Ptr(new GuiInstanceSharedScript);
 					script->language = xml->rootElement->name.value;
 					script->code = cdata->content.value;
 					script->codePosition = { {resource},cdata->codeRange.start };
@@ -6817,10 +6817,10 @@ GuiInstanceSharedScript
 
 		Ptr<glr::xml::XmlElement> GuiInstanceSharedScript::SaveToXml()
 		{
-			auto cdata = MakePtr<XmlCData>();
+			auto cdata = Ptr(new XmlCData);
 			cdata->content.value = code;
 
-			auto xml = MakePtr<XmlElement>();
+			auto xml = Ptr(new XmlElement);
 			xml->name.value = language;
 			xml->subNodes.Add(cdata);
 
@@ -6900,19 +6900,19 @@ GuiAxisInstanceLoader
 						vint indexAxisDirection = arguments.Keys().IndexOf(_AxisDirection);
 						if (indexAxisDirection != -1)
 						{
-							auto createExpr = MakePtr<WfNewClassExpression>();
+							auto createExpr = Ptr(new WfNewClassExpression);
 							createExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiAxis>>::CreateTypeInfo().Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexAxisDirection)[0].expression);
 
-							auto refVariable = MakePtr<WfReferenceExpression>();
+							auto refVariable = Ptr(new WfReferenceExpression);
 							refVariable->name.value = variableName.ToString();
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refVariable;
 							assignExpr->second = createExpr;
 
-							auto assignStat = MakePtr<WfExpressionStatement>();
+							auto assignStat = Ptr(new WfExpressionStatement);
 							assignStat->expression = assignExpr;
 							return assignStat;
 						}
@@ -6965,7 +6965,7 @@ GuiCompositionInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
@@ -6978,14 +6978,14 @@ GuiCompositionInstanceLoader
 							Ptr<WfExpression> expr;
 							if (td->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddComponent = MakePtr<WfMemberExpression>();
+								auto refAddComponent = Ptr(new WfMemberExpression);
 								refAddComponent->parent = refControl;
 								refAddComponent->name.value = L"AddComponent";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddComponent;
 								call->arguments.Add(value);
 
@@ -6993,14 +6993,14 @@ GuiCompositionInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddControlHostComponent = MakePtr<WfMemberExpression>();
+								auto refAddControlHostComponent = Ptr(new WfMemberExpression);
 								refAddControlHostComponent->parent = refControl;
 								refAddControlHostComponent->name.value = L"AddControlHostComponent";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddControlHostComponent;
 								call->arguments.Add(value);
 
@@ -7008,14 +7008,14 @@ GuiCompositionInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<IGuiGraphicsElement>()))
 							{
-								auto refComposition = MakePtr<WfReferenceExpression>();
+								auto refComposition = Ptr(new WfReferenceExpression);
 								refComposition->name.value = variableName.ToString();
 
-								auto refOwnedElement = MakePtr<WfMemberExpression>();
+								auto refOwnedElement = Ptr(new WfMemberExpression);
 								refOwnedElement->parent = refComposition;
 								refOwnedElement->name.value = L"OwnedElement";
 
-								auto assign = MakePtr<WfBinaryExpression>();
+								auto assign = Ptr(new WfBinaryExpression);
 								assign->op = WfBinaryOperator::Assign;
 								assign->first = refOwnedElement;
 								assign->second = value;
@@ -7024,18 +7024,18 @@ GuiCompositionInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
-								auto refBoundsComposition = MakePtr<WfMemberExpression>();
+								auto refBoundsComposition = Ptr(new WfMemberExpression);
 								refBoundsComposition->parent = value;
 								refBoundsComposition->name.value = L"BoundsComposition";
 
-								auto refComposition = MakePtr<WfReferenceExpression>();
+								auto refComposition = Ptr(new WfReferenceExpression);
 								refComposition->name.value = variableName.ToString();
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refComposition;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(refBoundsComposition);
 
@@ -7043,14 +7043,14 @@ GuiCompositionInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
-								auto refComposition = MakePtr<WfReferenceExpression>();
+								auto refComposition = Ptr(new WfReferenceExpression);
 								refComposition->name.value = variableName.ToString();
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refComposition;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(value);
 
@@ -7059,7 +7059,7 @@ GuiCompositionInstanceLoader
 
 							if (expr)
 							{
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = expr;
 								block->statements.Add(stat);
 							}
@@ -7123,7 +7123,7 @@ GuiTableCompositionInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
@@ -7136,69 +7136,69 @@ GuiTableCompositionInstanceLoader
 								auto& columns = arguments.GetByIndex(indexColumns);
 
 								{
-									auto refComposition = MakePtr<WfReferenceExpression>();
+									auto refComposition = Ptr(new WfReferenceExpression);
 									refComposition->name.value = variableName.ToString();
 
-									auto refSetRowsAndColumns = MakePtr<WfMemberExpression>();
+									auto refSetRowsAndColumns = Ptr(new WfMemberExpression);
 									refSetRowsAndColumns->parent = refComposition;
 									refSetRowsAndColumns->name.value = L"SetRowsAndColumns";
 
-									auto rowsExpr = MakePtr<WfIntegerExpression>();
+									auto rowsExpr = Ptr(new WfIntegerExpression);
 									rowsExpr->value.value = itow(rows.Count());
 
-									auto columnsExpr = MakePtr<WfIntegerExpression>();
+									auto columnsExpr = Ptr(new WfIntegerExpression);
 									columnsExpr->value.value = itow(columns.Count());
 
-									auto call = MakePtr<WfCallExpression>();
+									auto call = Ptr(new WfCallExpression);
 									call->function = refSetRowsAndColumns;
 									call->arguments.Add(rowsExpr);
 									call->arguments.Add(columnsExpr);
 
-									auto stat = MakePtr<WfExpressionStatement>();
+									auto stat = Ptr(new WfExpressionStatement);
 									stat->expression = call;
 									block->statements.Add(stat);
 								}
 
 								for (vint i = 0; i < rows.Count(); i++)
 								{
-									auto refComposition = MakePtr<WfReferenceExpression>();
+									auto refComposition = Ptr(new WfReferenceExpression);
 									refComposition->name.value = variableName.ToString();
 
-									auto refSetRowOption = MakePtr<WfMemberExpression>();
+									auto refSetRowOption = Ptr(new WfMemberExpression);
 									refSetRowOption->parent = refComposition;
 									refSetRowOption->name.value = L"SetRowOption";
 
-									auto indexExpr = MakePtr<WfIntegerExpression>();
+									auto indexExpr = Ptr(new WfIntegerExpression);
 									indexExpr->value.value = itow(i);
 
-									auto call = MakePtr<WfCallExpression>();
+									auto call = Ptr(new WfCallExpression);
 									call->function = refSetRowOption;
 									call->arguments.Add(indexExpr);
 									call->arguments.Add(rows[i].expression);
 
-									auto stat = MakePtr<WfExpressionStatement>();
+									auto stat = Ptr(new WfExpressionStatement);
 									stat->expression = call;
 									block->statements.Add(stat);
 								}
 
 								for (vint i = 0; i < columns.Count(); i++)
 								{
-									auto refComposition = MakePtr<WfReferenceExpression>();
+									auto refComposition = Ptr(new WfReferenceExpression);
 									refComposition->name.value = variableName.ToString();
 
-									auto refSetColumnOption = MakePtr<WfMemberExpression>();
+									auto refSetColumnOption = Ptr(new WfMemberExpression);
 									refSetColumnOption->parent = refComposition;
 									refSetColumnOption->name.value = L"SetColumnOption";
 
-									auto indexExpr = MakePtr<WfIntegerExpression>();
+									auto indexExpr = Ptr(new WfIntegerExpression);
 									indexExpr->value.value = itow(i);
 
-									auto call = MakePtr<WfCallExpression>();
+									auto call = Ptr(new WfCallExpression);
 									call->function = refSetColumnOption;
 									call->arguments.Add(indexExpr);
 									call->arguments.Add(columns[i].expression);
 
-									auto stat = MakePtr<WfExpressionStatement>();
+									auto stat = Ptr(new WfExpressionStatement);
 									stat->expression = call;
 									block->statements.Add(stat);
 								}
@@ -7252,7 +7252,7 @@ GuiCellCompositionInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
@@ -7315,38 +7315,38 @@ GuiCellCompositionInstanceLoader
 						FINISH_SITE_PROPERTY:;
 
 							{
-								auto refComposition = MakePtr<WfReferenceExpression>();
+								auto refComposition = Ptr(new WfReferenceExpression);
 								refComposition->name.value = variableName.ToString();
 
-								auto refSetSite = MakePtr<WfMemberExpression>();
+								auto refSetSite = Ptr(new WfMemberExpression);
 								refSetSite->parent = refComposition;
 								refSetSite->name.value = L"SetSite";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refSetSite;
 
 								{
-									auto arg = MakePtr<WfIntegerExpression>();
+									auto arg = Ptr(new WfIntegerExpression);
 									arg->value.value = itow(site.row);
 									call->arguments.Add(arg);
 								}
 								{
-									auto arg = MakePtr<WfIntegerExpression>();
+									auto arg = Ptr(new WfIntegerExpression);
 									arg->value.value = itow(site.column);
 									call->arguments.Add(arg);
 								}
 								{
-									auto arg = MakePtr<WfIntegerExpression>();
+									auto arg = Ptr(new WfIntegerExpression);
 									arg->value.value = itow(site.rowSpan);
 									call->arguments.Add(arg);
 								}
 								{
-									auto arg = MakePtr<WfIntegerExpression>();
+									auto arg = Ptr(new WfIntegerExpression);
 									arg->value.value = itow(site.columnSpan);
 									call->arguments.Add(arg);
 								}
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = call;
 								block->statements.Add(stat);
 							}
@@ -7367,10 +7367,10 @@ Initialization
 
 			void LoadCompositions(IGuiInstanceLoaderManager* manager)
 			{
-				manager->SetLoader(new GuiAxisInstanceLoader);
-				manager->SetLoader(new GuiCompositionInstanceLoader);
-				manager->SetLoader(new GuiTableCompositionInstanceLoader);
-				manager->SetLoader(new GuiCellCompositionInstanceLoader);
+				manager->SetLoader(Ptr(new GuiAxisInstanceLoader));
+				manager->SetLoader(Ptr(new GuiCompositionInstanceLoader));
+				manager->SetLoader(Ptr(new GuiTableCompositionInstanceLoader));
+				manager->SetLoader(Ptr(new GuiCellCompositionInstanceLoader));
 			}
 		}
 	}
@@ -7460,19 +7460,19 @@ GuiDocumentItemInstanceLoader
 						if (indexName != -1)
 						{
 							auto type = TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo();
-							auto createExpr = MakePtr<WfNewClassExpression>();
+							auto createExpr = Ptr(new WfNewClassExpression);
 							createExpr->type = GetTypeFromTypeInfo(type.Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexName)[0].expression);
 
-							auto refVariable = MakePtr<WfReferenceExpression>();
+							auto refVariable = Ptr(new WfReferenceExpression);
 							refVariable->name.value = variableName.ToString();
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refVariable;
 							assignExpr->second = createExpr;
 
-							auto assignStat = MakePtr<WfExpressionStatement>();
+							auto assignStat = Ptr(new WfExpressionStatement);
 							assignStat->expression = assignExpr;
 							return assignStat;
 						}
@@ -7482,7 +7482,7 @@ GuiDocumentItemInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
@@ -7495,7 +7495,7 @@ GuiDocumentItemInstanceLoader
 							Ptr<WfExpression> compositionExpr;
 							if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
-								auto member = MakePtr<WfMemberExpression>();
+								auto member = Ptr(new WfMemberExpression);
 								member->parent = value;
 								member->name.value = L"BoundsComposition";
 								compositionExpr = member;
@@ -7507,22 +7507,22 @@ GuiDocumentItemInstanceLoader
 
 							if (compositionExpr)
 							{
-								auto refItem = MakePtr<WfReferenceExpression>();
+								auto refItem = Ptr(new WfReferenceExpression);
 								refItem->name.value = variableName.ToString();
 
-								auto refContainer = MakePtr<WfMemberExpression>();
+								auto refContainer = Ptr(new WfMemberExpression);
 								refContainer->parent = refItem;
 								refContainer->name.value = L"Container";
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refContainer;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(compositionExpr);
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = call;
 								block->statements.Add(stat);
 							}
@@ -7573,25 +7573,25 @@ GuiDocumentInstanceLoaderBase
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto refControl = MakePtr<WfReferenceExpression>();
+							auto refControl = Ptr(new WfReferenceExpression);
 							refControl->name.value = variableName.ToString();
 
-							auto refAddDocumentItem = MakePtr<WfMemberExpression>();
+							auto refAddDocumentItem = Ptr(new WfMemberExpression);
 							refAddDocumentItem->parent = refControl;
 							refAddDocumentItem->name.value = L"AddDocumentItem";
 
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = refAddDocumentItem;
 							call->arguments.Add(values[0].expression);
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
@@ -7641,9 +7641,9 @@ Initialization
 
 			void LoadDocumentControls(IGuiInstanceLoaderManager* manager)
 			{
-				manager->SetLoader(new GuiDocumentItemInstanceLoader);
-				manager->SetLoader(new GuiDocumentViewerInstanceLoader);
-				manager->SetLoader(new GuiDocumentLabelInstanceLoader);
+				manager->SetLoader(Ptr(new GuiDocumentItemInstanceLoader));
+				manager->SetLoader(Ptr(new GuiDocumentViewerInstanceLoader));
+				manager->SetLoader(Ptr(new GuiDocumentLabelInstanceLoader));
 			}
 		}
 	}
@@ -7668,23 +7668,23 @@ namespace vl
 			template<typename TItemTemplateStyle>
 			Ptr<WfStatement> CreateSetControlTemplateStyle(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, Ptr<WfExpression> argument, const WString& propertyName)
 			{
-				auto createStyle = MakePtr<WfNewClassExpression>();
+				auto createStyle = Ptr(new WfNewClassExpression);
 				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<TItemTemplateStyle>>::CreateTypeInfo().Obj());
 				createStyle->arguments.Add(argument);
 
-				auto refControl = MakePtr<WfReferenceExpression>();
+				auto refControl = Ptr(new WfReferenceExpression);
 				refControl->name.value = variableName.ToString();
 
-				auto refStyleProvider = MakePtr<WfMemberExpression>();
+				auto refStyleProvider = Ptr(new WfMemberExpression);
 				refStyleProvider->parent = refControl;
 				refStyleProvider->name.value = propertyName;
 
-				auto assign = MakePtr<WfBinaryExpression>();
+				auto assign = Ptr(new WfBinaryExpression);
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = refStyleProvider;
 				assign->second = createStyle;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = assign;
 				return stat;
 			}
@@ -7785,32 +7785,32 @@ GuiTreeViewInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Nodes)
 						{
-							auto refControl = MakePtr<WfReferenceExpression>();
+							auto refControl = Ptr(new WfReferenceExpression);
 							refControl->name.value = variableName.ToString();
 
-							auto refNodes = MakePtr<WfMemberExpression>();
+							auto refNodes = Ptr(new WfMemberExpression);
 							refNodes->parent = refControl;
 							refNodes->name.value = L"Nodes";
 
-							auto refChildren = MakePtr<WfMemberExpression>();
+							auto refChildren = Ptr(new WfMemberExpression);
 							refChildren->parent = refNodes;
 							refChildren->name.value = L"Children";
 
-							auto refAdd = MakePtr<WfMemberExpression>();
+							auto refAdd = Ptr(new WfMemberExpression);
 							refAdd->parent = refChildren;
 							refAdd->name.value = L"Add";
 
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = refAdd;
 							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
@@ -7911,7 +7911,7 @@ GuiTreeNodeInstanceLoader
 				{
 					if (CanCreate(typeInfo))
 					{
-						auto createItem = MakePtr<WfNewClassExpression>();
+						auto createItem = Ptr(new WfNewClassExpression);
 						createItem->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
 
 						vint imageIndex = arguments.Keys().IndexOf(_Image);
@@ -7921,7 +7921,7 @@ GuiTreeNodeInstanceLoader
 						{
 							if (imageIndex == -1)
 							{
-								auto nullExpr = MakePtr<WfLiteralExpression>();
+								auto nullExpr = Ptr(new WfLiteralExpression);
 								nullExpr->value = WfLiteralValue::Null;
 								createItem->arguments.Add(nullExpr);
 							}
@@ -7932,7 +7932,7 @@ GuiTreeNodeInstanceLoader
 
 							if (textIndex == -1)
 							{
-								createItem->arguments.Add(MakePtr<WfStringExpression>());
+								createItem->arguments.Add(Ptr(new WfStringExpression));
 							}
 							else
 							{
@@ -7940,19 +7940,19 @@ GuiTreeNodeInstanceLoader
 							}
 						}
 
-						auto createNode = MakePtr<WfNewClassExpression>();
+						auto createNode = Ptr(new WfNewClassExpression);
 						createNode->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo().Obj());
 						createNode->arguments.Add(createItem);
 
-						auto refNode = MakePtr<WfReferenceExpression>();
+						auto refNode = Ptr(new WfReferenceExpression);
 						refNode->name.value = variableName.ToString();
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = refNode;
 						assign->second = createNode;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 						return stat;
 					}
@@ -7961,73 +7961,73 @@ GuiTreeNodeInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto refNode = MakePtr<WfReferenceExpression>();
+							auto refNode = Ptr(new WfReferenceExpression);
 							refNode->name.value = variableName.ToString();
 
-							auto refChildren = MakePtr<WfMemberExpression>();
+							auto refChildren = Ptr(new WfMemberExpression);
 							refChildren->parent = refNode;
 							refChildren->name.value = L"Children";
 
-							auto refAdd = MakePtr<WfMemberExpression>();
+							auto refAdd = Ptr(new WfMemberExpression);
 							refAdd->parent = refChildren;
 							refAdd->name.value = L"Add";
 
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = refAdd;
 							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
 						else if (prop == _Tag)
 						{
 							{
-								auto refNode = MakePtr<WfReferenceExpression>();
+								auto refNode = Ptr(new WfReferenceExpression);
 								refNode->name.value = variableName.ToString();
 
-								auto refData = MakePtr<WfMemberExpression>();
+								auto refData = Ptr(new WfMemberExpression);
 								refData->parent = refNode;
 								refData->name.value = L"Data";
 
-								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								auto castExpr = Ptr(new WfTypeCastingExpression);
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 								castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
 								castExpr->expression = refData;
 
-								auto refProp = MakePtr<WfMemberExpression>();
+								auto refProp = Ptr(new WfMemberExpression);
 								refProp->parent = castExpr;
 								refProp->name.value = L"tag";
 
-								auto assign = MakePtr<WfBinaryExpression>();
+								auto assign = Ptr(new WfBinaryExpression);
 								assign->op = WfBinaryOperator::Assign;
 								assign->first = refProp;
 								assign->second = arguments.GetByIndex(index)[0].expression;
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = assign;
 								block->statements.Add(stat);
 							}
 
 							if (prop != _Tag)
 							{
-								auto refNode = MakePtr<WfReferenceExpression>();
+								auto refNode = Ptr(new WfReferenceExpression);
 								refNode->name.value = variableName.ToString();
 
-								auto refNotifyDataModified = MakePtr<WfMemberExpression>();
+								auto refNotifyDataModified = Ptr(new WfMemberExpression);
 								refNotifyDataModified->parent = refNode;
 								refNotifyDataModified->name.value = L"NotifyDataModified";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refNotifyDataModified;
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = call;
 								block->statements.Add(stat);
 							}
@@ -8074,16 +8074,16 @@ Initialization
 			{
 				manager->CreateVirtualType(
 					GlobalStringKey::Get(description::TypeInfo<GuiComboBoxListControl>::content.typeName),
-					new GuiComboBoxInstanceLoader
+					Ptr(new GuiComboBoxInstanceLoader)
 					);
 
-				manager->SetLoader(new GuiTreeViewInstanceLoader);
-				manager->SetLoader(new GuiBindableTreeViewInstanceLoader);
-				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
+				manager->SetLoader(Ptr(new GuiTreeViewInstanceLoader));
+				manager->SetLoader(Ptr(new GuiBindableTreeViewInstanceLoader));
+				manager->SetLoader(Ptr(new GuiBindableDataGridInstanceLoader));
 				
 				manager->CreateVirtualType(
 					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::content.typeName),
-					new GuiTreeNodeInstanceLoader
+					Ptr(new GuiTreeNodeInstanceLoader)
 					);
 			}
 		}
@@ -8193,7 +8193,7 @@ GuiControlInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
@@ -8206,14 +8206,14 @@ GuiControlInstanceLoader
 							Ptr<WfExpression> expr;
 							if (td->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddComponent = MakePtr<WfMemberExpression>();
+								auto refAddComponent = Ptr(new WfMemberExpression);
 								refAddComponent->parent = refControl;
 								refAddComponent->name.value = L"AddComponent";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddComponent;
 								call->arguments.Add(value);
 
@@ -8221,14 +8221,14 @@ GuiControlInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddControlHostComponent = MakePtr<WfMemberExpression>();
+								auto refAddControlHostComponent = Ptr(new WfMemberExpression);
 								refAddControlHostComponent->parent = refControl;
 								refAddControlHostComponent->name.value = L"AddControlHostComponent";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddControlHostComponent;
 								call->arguments.Add(value);
 
@@ -8236,14 +8236,14 @@ GuiControlInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refControl;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(value);
 
@@ -8251,18 +8251,18 @@ GuiControlInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refContainerComposition = MakePtr<WfMemberExpression>();
+								auto refContainerComposition = Ptr(new WfMemberExpression);
 								refContainerComposition->parent = refControl;
 								refContainerComposition->name.value = L"ContainerComposition";
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refContainerComposition;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(value);
 
@@ -8271,7 +8271,7 @@ GuiControlInstanceLoader
 
 							if (expr)
 							{
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = expr;
 								block->statements.Add(stat);
 							}
@@ -8294,21 +8294,21 @@ GuiPredefinedInstanceLoadersPlugin
 
 			void InitializeTrackerProgressBar(const WString& variableName, Ptr<WfBlockStatement> block)
 			{
-				auto refVariable = MakePtr<WfReferenceExpression>();
+				auto refVariable = Ptr(new WfReferenceExpression);
 				refVariable->name.value = variableName;
 
-				auto refSetPageSize = MakePtr<WfMemberExpression>();
+				auto refSetPageSize = Ptr(new WfMemberExpression);
 				refSetPageSize->parent = refVariable;
 				refSetPageSize->name.value = L"SetPageSize";
 
-				auto refZero = MakePtr<WfIntegerExpression>();
+				auto refZero = Ptr(new WfIntegerExpression);
 				refZero->value.value = L"0";
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = refSetPageSize;
 				call->arguments.Add(refZero);
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = call;
 				block->statements.Add(stat);
 			}
@@ -8337,31 +8337,31 @@ GuiPredefinedInstanceLoadersPlugin
 
 	#define ADD_TEMPLATE_CONTROL(TYPENAME, THEME_NAME)\
 		manager->SetLoader(\
-		new GuiTemplateControlInstanceLoader<TYPENAME>(\
+		Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::" L ## #TYPENAME,\
 				theme::ThemeName::THEME_NAME\
 				)\
-			)
+			))
 
 	#define ADD_VIRTUAL_CONTROL(VIRTUALTYPENAME, TYPENAME, THEME_NAME)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-		new GuiTemplateControlInstanceLoader<TYPENAME>(\
+		Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				theme::ThemeName::THEME_NAME\
 				)\
-			)
+			))
 
 	#define ADD_VIRTUAL_CONTROL_F(VIRTUALTYPENAME, TYPENAME, THEME_NAME, INIT_FUNCTION)\
 		manager->CreateVirtualType(GlobalStringKey::Get(description::TypeInfo<TYPENAME>::content.typeName),\
-		new GuiTemplateControlInstanceLoader<TYPENAME>(\
+		Ptr(new GuiTemplateControlInstanceLoader<TYPENAME>(\
 				L"presentation::controls::Gui" L ## #VIRTUALTYPENAME,\
 				theme::ThemeName::THEME_NAME,\
 				nullptr,\
 				INIT_FUNCTION\
 				)\
-			)
+			))
 
-					manager->SetLoader(new GuiControlInstanceLoader);
+					manager->SetLoader(Ptr(new GuiControlInstanceLoader));
 
 					/*													REAL-CONTROL-TYPE				THEME-NAME											*/
 					ADD_TEMPLATE_CONTROL	(							GuiCustomControl,				CustomControl										);
@@ -8514,21 +8514,21 @@ GuiCommonDatePickerLookLoader
 						if (indexBackgroundColor != -1 && indexPrimaryTextColor != -1 && indexSecondaryTextColor != -1)
 						{
 							auto type = TypeInfoRetriver<GuiCommonDatePickerLook*>::CreateTypeInfo();
-							auto createExpr = MakePtr<WfNewClassExpression>();
+							auto createExpr = Ptr(new WfNewClassExpression);
 							createExpr->type = GetTypeFromTypeInfo(type.Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexBackgroundColor)[0].expression);
 							createExpr->arguments.Add(arguments.GetByIndex(indexPrimaryTextColor)[0].expression);
 							createExpr->arguments.Add(arguments.GetByIndex(indexSecondaryTextColor)[0].expression);
 
-							auto refVariable = MakePtr<WfReferenceExpression>();
+							auto refVariable = Ptr(new WfReferenceExpression);
 							refVariable->name.value = variableName.ToString();
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refVariable;
 							assignExpr->second = createExpr;
 
-							auto assignStat = MakePtr<WfExpressionStatement>();
+							auto assignStat = Ptr(new WfExpressionStatement);
 							assignStat->expression = assignExpr;
 							return assignStat;
 						}
@@ -8596,19 +8596,19 @@ GuiCommonScrollViewLookLoader
 						if (indexDefaultScrollSize != -1)
 						{
 							auto type = TypeInfoRetriver<GuiCommonScrollViewLook*>::CreateTypeInfo();
-							auto createExpr = MakePtr<WfNewClassExpression>();
+							auto createExpr = Ptr(new WfNewClassExpression);
 							createExpr->type = GetTypeFromTypeInfo(type.Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexDefaultScrollSize)[0].expression);
 
-							auto refVariable = MakePtr<WfReferenceExpression>();
+							auto refVariable = Ptr(new WfReferenceExpression);
 							refVariable->name.value = variableName.ToString();
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refVariable;
 							assignExpr->second = createExpr;
 
-							auto assignStat = MakePtr<WfExpressionStatement>();
+							auto assignStat = Ptr(new WfExpressionStatement);
 							assignStat->expression = assignExpr;
 							return assignStat;
 						}
@@ -8623,8 +8623,8 @@ Initialization
 
 			void LoadTemplates(IGuiInstanceLoaderManager* manager)
 			{
-				manager->SetLoader(new GuiCommonDatePickerLookLoader);
-				manager->SetLoader(new GuiCommonScrollViewLookLoader);
+				manager->SetLoader(Ptr(new GuiCommonDatePickerLookLoader));
+				manager->SetLoader(Ptr(new GuiCommonScrollViewLookLoader));
 			}
 		}
 	}
@@ -8647,7 +8647,7 @@ namespace vl
 		{
 			Ptr<workflow::WfStatement> AddControlToToolstrip(GlobalStringKey variableName, IGuiInstanceLoader::ArgumentMap& arguments, GuiResourceError::List& errors)
 			{
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 
 				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
@@ -8660,18 +8660,18 @@ namespace vl
 						Ptr<WfExpression> expr;
 						if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 						{
-							auto refControl = MakePtr<WfReferenceExpression>();
+							auto refControl = Ptr(new WfReferenceExpression);
 							refControl->name.value = variableName.ToString();
 
-							auto refToolstripItems = MakePtr<WfMemberExpression>();
+							auto refToolstripItems = Ptr(new WfMemberExpression);
 							refToolstripItems->parent = refControl;
 							refToolstripItems->name.value = L"ToolstripItems";
 
-							auto refAdd = MakePtr<WfMemberExpression>();
+							auto refAdd = Ptr(new WfMemberExpression);
 							refAdd->parent = refToolstripItems;
 							refAdd->name.value = L"Add";
 
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = refAdd;
 							call->arguments.Add(value);
 
@@ -8680,7 +8680,7 @@ namespace vl
 
 						if (expr)
 						{
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = expr;
 							block->statements.Add(stat);
 						}
@@ -8756,7 +8756,7 @@ GuiToolstripMenuInstanceLoader
 			public:
 				static Ptr<WfExpression> ArgumentFunction(ArgumentMap&)
 				{
-					auto expr = MakePtr<WfLiteralExpression>();
+					auto expr = Ptr(new WfLiteralExpression);
 					expr->value = WfLiteralValue::Null;
 					return expr;
 				}
@@ -8864,14 +8864,14 @@ GuiToolstripButtonInstanceLoader
 				{
 					if (propertyInfo.propertyName == _SubMenu)
 					{
-						auto refControl = MakePtr<WfReferenceExpression>();
+						auto refControl = Ptr(new WfReferenceExpression);
 						refControl->name.value = variableName.ToString();
 
-						auto refEnsureToolstripSubMenu = MakePtr<WfMemberExpression>();
+						auto refEnsureToolstripSubMenu = Ptr(new WfMemberExpression);
 						refEnsureToolstripSubMenu->parent = refControl;
 						refEnsureToolstripSubMenu->name.value = L"EnsureToolstripSubMenu";
 
-						auto call = MakePtr<WfCallExpression>();
+						auto call = Ptr(new WfCallExpression);
 						call->function = refEnsureToolstripSubMenu;
 
 						return call;
@@ -8891,7 +8891,7 @@ GuiRibbonToolstripMenuInstanceLoader
 			public:
 				static Ptr<WfExpression> ArgumentFunction(ArgumentMap&)
 				{
-					auto expr = MakePtr<WfLiteralExpression>();
+					auto expr = Ptr(new WfLiteralExpression);
 					expr->value = WfLiteralValue::Null;
 					return expr;
 				}
@@ -8965,14 +8965,14 @@ Initialization
 
 			void LoadToolstripControls(IGuiInstanceLoaderManager* manager)
 			{
-				manager->SetLoader(new GuiToolstripMenuInstanceLoader);
-				manager->SetLoader(new GuiToolstripMenuBarInstanceLoader);
-				manager->SetLoader(new GuiToolstripToolBarInstanceLoader);
-				manager->SetLoader(new GuiToolstripGroupContainerInstanceLoader);
-				manager->SetLoader(new GuiToolstripGroupInstanceLoader);
-				manager->SetLoader(new GuiToolstripButtonInstanceLoader);
-				manager->SetLoader(new GuiRibbonButtonsInstanceLoader);
-				manager->SetLoader(new GuiRibbonToolstripMenuInstanceLoader);
+				manager->SetLoader(Ptr(new GuiToolstripMenuInstanceLoader));
+				manager->SetLoader(Ptr(new GuiToolstripMenuBarInstanceLoader));
+				manager->SetLoader(Ptr(new GuiToolstripToolBarInstanceLoader));
+				manager->SetLoader(Ptr(new GuiToolstripGroupContainerInstanceLoader));
+				manager->SetLoader(Ptr(new GuiToolstripGroupInstanceLoader));
+				manager->SetLoader(Ptr(new GuiToolstripButtonInstanceLoader));
+				manager->SetLoader(Ptr(new GuiRibbonButtonsInstanceLoader));
+				manager->SetLoader(Ptr(new GuiRibbonToolstripMenuInstanceLoader));
 			}
 		}
 	}
@@ -9430,7 +9430,7 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 				if (auto manager = GetGlobalTypeManager())
 				{
-					Ptr<ITypeLoader> loader = new GuiInstanceQueryAstTypeLoader;
+					auto loader = Ptr(new GuiInstanceQueryAstTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -9459,24 +9459,24 @@ namespace vl
 		{
 			void GuiInstanceQueryParserData(vl::stream::IStream& outputStream)
 			{
-				static const vl::vint dataLength = 2989; // 28122 bytes before compressing
+				static const vl::vint dataLength = 3046; // 28794 bytes before compressing
 				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 173;
+				static const vl::vint dataRemain = 230;
 				static const vl::vint dataSolidRows = 11;
 				static const vl::vint dataRows = 12;
 				static const char* compressed[] = {
-					"\xDA\x6D\x00\x00\xA5\x0B\x00\x00\x0D\x00\x01\x82\x80\x07\x03\x82\x81\x82\x06\x89\x82\x88\x0A\x87\x06\x84\x0C\x0A\x9D\x0A\x86\x1A\x87\x16\x84\x77\x02\x09\xBF\x7B\x8C\x8B\x8E\x84\x00\x1D\x9D\x9F\x81\x9C\x8B\x90\x93\x7F\x1F\x9F\x81\x0A\x8B\x91\x85\x96\x83\x27\xA8\x8A\x91\x96\x94\x91\x9B\x90\x37\xA2\xB3\x87\x99\x9D\x93\x9C\x9B\x3F\xB8\x81\xBA\x9A\x8C\x9F\xA0\x9F\x45\xC0\x89\xA2\xAB\xA4\xA0\x98\xA3\x4D\xC8\x8F\xAA\xA3\xAC\xA5\xAA\xA7\x03\xB4\x87\xBE\x8B\xAA\x99\xA8\xAE\x09\x99\xAE\x9D\xAD\x98\xB3\xAA\xA9\x59\xD0\xA7\xA6\xB9\xB4\xA9\xB6\xAB\x6F\xD8\x82\x9A\xAF\xAE\xAF\xB4\xBB\x71\xE8\x82\x83\x0C\x94\xB2\xBF\xBA\x65\xF8\xB3\xAA\xB3\x84\x01\xBE\xC0\x7F\xF7\x81\xCB\xC9\xC1\xBC\xB7\xC1\x6E\x90\xF0\xB2\xC2\xB9\x81\x03\xC3\x8A\x8D\xD4\xDA\xB1\x84\xB9\xCC\xC4\xA0\x9F\xE2\xCE\xC2\xC5\xCC\xC3\xCD\x8F\xA6\xD1\xCA\xD3\xC9\x82\x02\xCC\xA4\x8C\xE1\xD1\xDA\xCC\xD5\xCA\x90\xA7\xB6\xDC\xD8\xDB\xD4\xDD\xD6\xDF\xB7\x9E\xC3\x88\x86\x87\x94\xDB\xD9\xA8\xA5\xC0\xFB\xD2\xE3\x84\xD9\xE4\xB2\xA3\xD0\xF5\xDB\xE1\xD5\xEA\xE5\xCD\xBA\xD6\xF9",
+					"\x7A\x70\x00\x00\xDE\x0B\x00\x00\x0D\x00\x01\x82\x80\x07\x03\x82\x81\x82\x06\x89\x82\x88\x0A\x87\x06\x84\x0C\x0A\x9D\x0A\x86\x1A\x87\x16\x84\x77\x02\x09\xBF\x7B\x8C\x8B\x8E\x84\x00\x1D\x9D\x9F\x81\x9C\x8B\x90\x93\x7F\x1F\x9F\x81\x0A\x8B\x91\x85\x96\x83\x27\xA8\x8A\x91\x96\x94\x91\x9B\x90\x37\xA2\xB3\x87\x99\x9D\x93\x9C\x9B\x3F\xB8\x81\xBA\x9A\x8C\x9F\xA0\x9F\x45\xC0\x89\xA2\xAB\xA4\xA0\x98\xA3\x4D\xC8\x8F\xAA\xA3\xAC\xA5\xAA\xA7\x03\xB4\x87\xBE\x8B\xAA\x99\xA8\xAE\x09\x99\xAE\x9D\xAD\x98\xB3\xAA\xA9\x59\xD0\xA7\xA6\xB9\xB4\xA9\xB6\xAB\x6F\xD8\x82\x9A\xAF\xAE\xAF\xB4\xBB\x71\xE8\x82\x83\x0C\x94\xB2\xBF\xBA\x65\xF8\xB3\xAA\xB3\x84\x01\xBE\xC0\x7F\xF7\x81\xCB\xC9\xC1\xBC\xB7\xC1\x6E\x90\xF0\xB2\xC2\xB9\x81\x03\xC3\x8A\x8D\xD4\xDA\xB1\x84\xB9\xCC\xC4\xA0\x9F\xE2\xCE\xC2\xC5\xCC\xC3\xCD\x8F\xA6\xD1\xCA\xD3\xC9\x82\x02\xCC\xA4\x8C\xE1\xD1\xDA\xCC\xD5\xCA\x90\xA7\xB6\xDC\xD8\xDB\xD4\xDD\xD6\xDF\xB7\x9E\xC3\x88\x86\x87\x94\xDB\xD9\xA8\xA5\xC0\xFB\xD2\xE3\x84\xD9\xE4\xB2\xA3\xD0\xF5\xDB\xE1\xD5\xEA\xE5\xCD\xBA\xD6\xF9",
 					"\xE0\x01\x07\xE6\xED\xD8\xB9\xD7\xF1\xE7\xE2\xE8\xF0\xF2\xD3\xC8\xE7\xF4\xEC\xED\xF6\xF0\xF7\xBD\xDC\xCA\x1F\xE0\x03\x04\xFA\xF8\xBF\xF8\xC1\xE2\xFC\x07\xFB\xF7\xFF\xF1\x40\x89\x7E\x80\xFB\x41\x86\x83\x80\x07\x85\x88\x83\x82\x0A\x8D\x8C\x72\x78\x00\x63\x5A\x7B\x78\xEC\x44\x8F\x81\x82\x17\x8C\x89\x86\x83\xDB\x56\x8D\x84\x86\x1F\x9A\x81\x8B\x6D\x0E\x3E\x70\x89\x78\x27\xA8\x7B\x7B\x84\x0E\x52\x86\x78\x85\x13\xBA\x7B\x87\x8C\x23\xB4\x88\x8A\x88\x37\x9C\x89\x8F\x6E\x10\x26\x88\x8F\x47\x11\x3E\x8A\x8E\x8A\x30\xAF\x82\x8D\x8D\x48\xBB\x89\x90\x91\x47\x8A\x9E\x90\x93\xE2\x52\x04\x7F\x04\x42\xB6\x80\x95\x8A\x15\x98\x91\x8E\x87\xCA\x54\x04\x7D\x05\x55\x8B\x9A\x42\x05\x61\x8F\x99\x97\x8F\x67\x83\x99\x9A\x95\x6B\xA2\x9B\x96\x96\x46\x9C\x97\x94\x9A\x09\x57\x05\x9B\x9C\x6A\xAF\x94\x9D\x9C\x70\xA5\x7E\x9D\x7A\x7C\xBB\x9F\x9F\x8A\x81\xB9\x96\x40\x44\x2E\x83\xA5\x92\xA2\x4D\xB8\x9C\x9B\x84\x19\x34\x7A\x07\x9D\xD4\x5B\x04\xA6\x9E\x86\x8C\xA2\x9C\x75\x1C\x17\xA5\xA3\xA3\x9F\xAE\x91\xAA\x99\x98\xA0\xAA\xA5\x9F\x80\x8A\xA2\x45\xA2",
 					"\x02\x5E\x0E\xA7\xA9\x82\xA9\xA2\x43\x07\xAF\xB2\xA4\xA3\x40\x20\x35\xA7\xAE\xAD\x8B\xBC\xAD\xA1\x9B\xA4\xA3\xAE\xA2\xA8\xB0\x99\xA2\x41\x08\xF4\x62\x0A\xAD\xAF\xBB\x8D\xBC\xB0\x00\x23\x0B\xBF\xAD\xA9\xD6\x64\x04\x7D\x09\xD2\xA2\x74\x44\xAB\xCE\x93\xB2\xB0\xB0\xC3\x81\xB5\xB2\xA9\xBE\x9B\xA4\xB6\xB8\xE5\xA8\xAD\xB6\xB9\x06\x67\x04\x7C\x0A\xD9\xBD\x69\x09\xBC\xB1\xAB\xBA\xBB\xB3\xDC\x6A\x04\x7F\x0A\xF4\x86\xB6\xBD\xBD\xF8\xAC\xB3\xB8\xB1\xBC\xAC\x04\x7D\x0B\xFD\xA4\xBF\xBE\xBF\x01\xF7\xBE\xB7\xC0\xE8\x8E\xBE\x08\x7D\x16\x5C\xBD\xC3\x6F\x30\x09\xC4\xC3\xC2\x0A\xD7\xCC\xC3\xC3\xE9\x80\xC0\xC8\xC7\x1B\xDE\xCD\xC7\xC8\xCF\xB1\x04\x7E\x0C\x1A\xCA\x73\x0D\xCB\xE1\xB1\xC0\xBA\x42\x34\x34\x75\x0E\x42\x62\x5F\xB7\xBA\xCC\x3B\xF3\xCD\xCF\xCF\x2F\xB7\x04\x7C\x0E\x30\xCA\x49\x0D\xD1\x40\xD0\xCC\xCE\x41\x3A\x34\x7B\x0C\xCE\x3E\xFA\xC2\xD6\xD2\x51\xD4\xD9\xD1\xC8\x1F\xE2\x7D\x0C\xD2\x53\xD8\xD7\xCA\xC0\x5E\xE5\xC8\xCB\xD8\xE2\x7E\x0C\xD6\xD5\x5D\xC1\x4F\x0C\x7D\x40\x10\xD7\xD4\xC9\x11\xE6\xC2\xD8\xD8\x70\xCB\xDA\xA2\x10\xF4",
-					"\x43\x17\xDA\x40\x44\x3B\xD5\xDD\xD5\x61\xF1\xD4\xDA\xC3\x74\xF2\xD2\xE1\xE1\x83\xE2\xC2\x79\x11\xF4\x46\x1E\xDC\x00\x47\x0F\xE9\xE1\xD6\xF7\x88\x14\x7D\x12\x6E\xE9\xD6\xE2\xDD\x81\xDC\xEF\xDF\xDB\xCF\x8B\x14\x7C\x13\x8F\xCD\x12\xE4\xE2\xA8\xF7\xBE\x10\x7D\x4F\x19\xE8\xDB\xEB\x9D\xC0\xEF\xE6\xE6\x93\xDF\xD4\xE3\xED\x00\xD1\x17\xE8\xEE\x94\xCA\xEC\xEE\xED\xBE\xFF\x62\x17\xEE\x00\xD3\x14\x7C\x15\xAE\xF1\xE0\xE9\xED\x73\xFF\xED\xF1\xF0\xB7\x56\x14\x7F\x15\x8F\xD8\x14\xF1\xEF\xD8\xC0\xF9\xF7\xF3\xDB\xC7\xEE\xF2\xF7\xD0\xFB\x69\x17\xF5\xDA\xE5\xFC\xF6\xF9\xE0\xCC\xC2\x3D\xF2\x01\x46\x71\xE1\x4C\xF3\x49\x4F\x69\x5D\x39\xC3\x4E\xF8\x78\xF7\xC0\x09\xFC\xFC\x0A\x44\x74\x6B\xFC\x77\x2D\x48\xFF\x09\x27\x33\xBA\x39\x7B\x7F\x27\x31\x7E\x41\x7E\x79\x38\x00\xA4\x31\x26\xF9\x61\x32\x02\xC3\x3D\x2A\x07\x89\x3A\x80\x09\x8A\x21\x01\xF7\x21\x83\xAE\x13\x87\x20\x15\x9D\x29\x4C\x06\x35\x2F\x98\x35\x7A\x20\x08\x87\x47\x00\x86\x26\x82\xF0\x24\x81\x80\x27\x27\x85\xFB\x5D\x2F\x85\x07\xA7\x23\x83\x36\x84\x27\x01\x9E\x8A\x20\xBE\x35\x2D",
-					"\x85\xD7\x38\x80\x49\x1F\x81\x20\x19\x97\x3D\x83\x75\x24\x88\x00\x3E\x87\x2E\x20\xB1\x26\x84\x2D\x6B\x87\x40\x4E\x81\x87\x32\x75\x87\x82\x27\x37\x88\x78\x23\x82\x85\x93\x14\x8F\x89\x21\x3A\x89\x10\xD9\x8D\x8A\x92\x22\x88\x8C\x66\x85\x8D\x18\xEA\x8D\x23\x33\xA8\x8D\x8D\x6C\x9C\x22\x1B\xEF\x8B\x23\x39\xB4\x8E\x8E\x6F\x98\x8C\x1A\xFA\x80\x8C\x3E\x8F\x8E\x8F\x5C\x85\x87\x49\x48\x87\x2E\x25\xBE\x8F\x8B\x77\x91\x8F\x46\x46\x89\x84\x1C\x52\x8A\x20\x88\x90\x8E\x20\xA4\x2C\x90\x1A\x8A\x97\x1F\x3B\x89\x8A\x42\x07\x97\x92\x40\x95\x8E\x62\x42\x81\x26\x12\x91\x92\x8F\x4B\x95\x95\x2E\x9E\x89\x8F\x24\xEB\x8B\x94\x49\xB0\x82\x95\xAF\x8C\x95\x2C\xAE\x99\x86\x59\xB5\x94\x96\x58\x90\x97\x2D\x9C\x24\x94\x30\xBD\x97\x89\x4C\x89\x25\x72\x4A\x8D\x91\x8E\x3F\x91\x26\xC7\x87\x25\x30\xC2\x97\x3A\x62\x96\x95\x95\xA5\x90\x99\x1D\x9D\x94\x9A\x69\xBF\x19\x95\xB6\x99\x95\x36\xDB\x84\x8C\x6B\x98\x98\x97\xDC\x9A\x96\x36\xE0\x93\x8C\x71\xA1\x9B\x9B\xE5\x81\x25\x26\x85\x9A\x20\xEF\x3F\x87\x92\xEB\x84\x36\x12\xEE\x9D\x89\x4B\x8B\x99\x20\xF7\x8D",
-					"\x9A\x42\x0C\x26\x81\x32\x73\x99\x84\xD6\x99\x9D\x3E\x8F\x91\x20\x7E\xB7\x2F\x9B\xD1\x93\x95\x42\xBB\x93\x9A\x6F\x95\x9A\xA1\x1B\x24\x92\x3C\xED\x90\xA0\x88\x98\x94\x99\x13\xA9\x20\x3D\xFF\x76\x9F\x1E\xBC\x81\x21\x06\xA4\x36\x44\xC3\x94\xA3\x77\x81\xA6\xA3\x9A\x80\xA5\x45\x8C\xAF\x1F\x64\xA4\x22\xA0\x1F\xA6\x21\x48\x8D\x8D\xA3\x84\x03\xA1\x83\x2A\xA8\x97\x43\xAC\xA8\xA1\x86\x96\xA5\xA7\xD7\x9B\xA7\x38\x8B\xA3\xA8\x9F\xBC\xA2\xA8\xE7\x84\x9C\x1D\xC4\xA9\xA8\xA6\xA9\x9A\xA9\x4B\xA1\xAA\x43\xD3\xAF\xA6\xA4\x8F\xAE\xA9\x51\xB7\xA1\x58\x31\xA3\x21\x8D\xB4\xA6\x9A\xF9\x66\x88\x41\xDD\x3B\xA5\xA2\xBF\x18\xA6\x29\xB2\xA5\x57\x61\xAC\xAA\x81\x1E\xA8\x3C\x2E\xA1\x24\x5A\xEC\x99\xA7\x83\x96\xA9\xAB\x40\xB9\xAF\x5D\xD1\xAA\xAE\xAA\xAC\xA1\x7F\x37\xA3\x89\x49\xF5\x90\xAC\x94\xB4\xAE\x20\x6F\xB7\x39\x5C\x9D\x23\xAF\x8C\xAA\xAD\x9F\x36\xAD\xAD\x40\x09\xB8\x99\x9A\x86\x21\xB0\xA2\x9B\x9D\x59\xCD\xAB\x23\xC5\x9C\x25\xB1\x24\xB5\xAC\x47\xA7\xA1\xB3\xB4\x83\x23\xA6\x2E\x9B\xAF\x52\xFD\xA5\xAA\xBF\xA6\xAC\xB5\x47\xAE\xB4\x67\xD2",
-					"\xAD\xB5\xDA\xB1\xB6\xB6\x66\xB8\x86\x59\x9E\xBB\x22\xDD\xB3\xB6\xB7\x57\xBD\xB7\x25\xC0\xB9\xAA\xE2\x91\xAE\xB8\x4B\xA8\xB8\x1D\xCA\x82\x82\x85\x0A\x8B\xAC\xCF\xB8\xA6\x41\x51\xB2\xB1\x84\x14\xB9\x24\x5C\x18\xA0\x33\xF1\x92\x20\x23\xB9\x9A\x8C\xC0\xA0\x8A\x77\x9B\x9A\x82\x85\x22\xBE\xB0\x85\x25\xBE\xFC\x7D\x7A\xBB\x80\x0C\x82\x98\xEF\xA0\x00\x6A\xA9\x23\xBF\x8F\x33\xB8\x88\xF8\xA3\xB1\x57\xFA\xB2\x21\xF0\xAA\xBC\x85\xFF\xB3\x8A\x73\xE6\xB3\xC1\xF5\x96\xBC\xC0\x09\x36\x3E\x81\x86\x2A\xC0\x00\xC9\xC0\xC1\x06\x20\xBC\x84\xE9\xB4\x81\x09\xC2\x22\xC2\x0B\xC3\x21\x7F\x15\xC9\xC2\x81\x1B\xC6\x20\xFE\xA9\x23\x87\x83\x21\xC4\x83\x11\x40\xC4\x16\xC1\x23\x89\xA4\xC9\xC4\x00\x2B\xC5\xBF\x2D\xDF\xB9\x80\x90\x98\xBD\x0B\xF3\xC6\x35\x35\xC1\x20\x86\x8E\xC6\x21\x12\x6D\xBC\xB9\x39\xCF\x5B\x47\x2F\xC2\x99\x7C\xA6\x1C\x3E\x40\x92\x49\x7B\xF9\x97\x1C\xFA\x00\xBA\x65\x4B\xD4\x3A\x18\x93\x61\xCB\x84\x28\x1C\x3E\xF9\x98\x59\x95\x86\x29\x1C\xFA\x06\x8D\x53\x5B\xC3\x22\x3A\x74\x39\x7E\x2F\x61\xCA\x20\xEB\x04\xCF\x98\x6D\xBB\x88\x85",
-					"\x2C\x1E\xCB\x0A\x36\x50\x9B\x8A\x2D\x1C\x2C\xCA\x21\x57\x73\xC9\x22\x3B\x76\xC9\x20\x65\x79\xCE\x20\xEF\x14\x3E\x18\xF3\x5F\xCF\x81\x30\x1A\xD0\x0A\x3C\x5D\xA1\x82\x21\x1E\xFA\x1A\x0C\xCD\xCA\xB7\x37\x9C\xDC\xB5\x88\xEA\x1F\x22\xAC\xE2\x3F\x21\x3E\xC5\x9D\x63\x53\xAF\x47\x23\x62\x98\xB0\xC3\x63\xB3\x42\xCF\x4F\x5A\xC6\xA5\xD4\x39\x7C\x98\xDD\x36\x31\x9C\xD6\x3A\x1F\x29\xB2\xA8\x9D\x60\xB9\x57\xCA\x3F\x23\x23\xDB\x2E\xEC\x00\x05\xC4\x45\x66\xD4\x3B\x40\x91\xBC\x77\x44\x4D\x44\x83\x2C\xD7\x37\xF1\xB6\xD7\x9C\xC1\x45\xB4\xCD\x73\xB9\xD2\xBB\x3F\x22\x99\xC6\xDB\xCD\xAD\xAD\xB9\x7F\xF3\xA7\xDA\xA4\x8F\x2C\x7D\x67\x54\xD2\xBE\x0A\x2D\xC2\xAF\x8A\x23\x52\x50\x85\x77\x9F\xA9\xC9\x22\x9C\x91\xCB\xD6\x71\xDE\xC6\xD2\xD4\x34\x56\xB5\xAF\x4E\xDD\x80\x3E\xC7\xD3\xBB\xDC\x39\xAE\xF6\xD0\xDF\xE5\x50\x44\xBF\xCE\x5F\x20\xB2\x4D\xD0\x76\x7E\xDC\xC0\xDF\x09\x36\x5A\xC5\x5A\xC4\xDB\x79\xF6\x7A\x21\xF7\xC3\x22\xB6\xD1\xDA\x20\x77\x66\xDD\x37\x9B\xCD\x22\x42\x76\x49\xDC\x83\x30\x5F\xE2\x00\x65\xDB\x40\x60\x4D\xE3\x81\x04\xD5\x38",
-					"\xBB\xC2\xE6\x40\x54\x45\xE4\x81\x3A\x58\xE4\x0C\x6C\xDA\x41\x3D\x4D\xE5\x80\x0A\xD0\xE5\xA0\x6A\xCA\x41\x32\xE3\xDC\x7F\xFD\x34\xE5\x06\x3C\xE0\xC2\x86\x26\x61\x83\xCA\x53\xC7\x03\x20\xEB\xC8\xFD\xD6\x20\x28\xE8\xC3\x42\x89\xA0\xBA\xD2\xAB\xEC\xE9\x81\x36\x07\xC6\xCF\x51\xE0\x8C\x89\x23\xDB\x81\x34\xE3\xE8\x03\x2F\x68\xC1\xCA\x76\x20\x92\xCF\xE8\xEC\x02\x26\x6E\xC3\x82\x2D\x6D\xB5\xC1\x23\xEA\x95\xC9\x22\xD9\x92\xE5\xEA\x81\x38\x6E\xED\xCF\x53\xED\x77\x8A\x2A\xEF\x80\x35\xDA\xC8\x0A\x3D\x6C\xCC\xBB\x32\xE9\x87\xC9\x24\x4C\x09\x3F\xE9\xCF\x86\x2C\x71\xB1\xF3\x73\x20\x85\xFB\xE8\xDA\x81\x26\x72\xBC\xCA\x0D\xDB\x88\x4D\xE1\xD0\xDD\xD3\xD8\x85\x24\x70\xEF\xDC\x25\xDE\xE6\x90\xF1\xDD\xBA\xC1\x23\x75\x83\xF6\x38\x98\xB8\xE7\x51\x8D\xE6\xF0\x00\xAD\x60\xF6\x78\x2B\x5C\xF5\x81\x19\xF3\xE9\x35\xE0\x02\xEE\x32\xFD\x36\x57\x56\x67\xF6\x54\xF9\xF6\xF1\x3C\xFF\x36\x79\xF5\xF2\x20\xA2\xE4\xF5\xEE\xD5\x0B\x58\x3C\xC7\xF9\x20\xC9\xE2\x21\xDF\x80\xF9\x20\xE9\x69\xF2\x39\x03\xEF\xF8\x00\x51\xFF\xED\xD7\xD4\x7F\xFA\x1F\x3E\xCE",
-					"\xF6\xEB\xD3\x21\x48\x79\xF6\x7A\xE0\xF5\x50\xB9\xAF\xF3\x7C\xBC\xDB\x0B\x59\xAB\xE5\xFF\xEB\xD9\xB9\xFD\x09\x71\xF8\xF9\xAF\xFD\x09\xB7\xDF\x0B\x58\xDA\xCA\xFB\xF2\x00\x00\x06\x41\x6C\x1D\xD1\x28\x77\xFE\x72\x7D\xAF\x73\x06\x03\x82\x1E\x0C\x74\x77\x09\x17\x80\xDD\x79\x7B\x66\x0B\x80\xBD\x16\x71\xA3\x73\x2B\xAE\x79\x7B\x69\x0C\x79\xE2\x17\x72\x0E\x86\x10\xC6\x78\x7B\x00\x8B\x06\x1C\x8D\x1B\x37\x7F\x81\x03\x11\x82\xC1\x70\x80\x6D\x05\x82\xBF\x18\x30\x78\x7E\x7C\x03\x1E\x7B\x00\x8F\x06\x14\x80\x30\x32\x82\x10\x05\x80\x80\x72\x04\x5E\x09\x16\x07\xCD\x7A\x10\x0A\x70\x80\x77\x0E\x83\x06\x1B\x07\xCB\x29\x7D\xFF\x7B\x78\x03\x1C\x07\x2E\x87\x1B\x15\x37\x81\x01\x1A\x84\x08\x89\x7B\x7E\x0F\x84\xBB\x1E\x74\x28\x87\x2C\x0A\x10\x77\xD4\x76\x10\x80\x08\x85\xD6\x1F\x32\x78\x72\x7E\x33\x8F\x7A\x82\x07\x83\x0C\x36\x86\x3A\x8F\x7A\x85\x06\x84\x03\x19\x08\xCB\x2C\x86\x01\x13\x84\x4C\x82\x10\x8A\x00\x87\x02\x1E\x08\xCB\x2B\x83\x29\x8F\x7A\xCC\x3A\x1C\x76\x8C\x85\xB9\x71\x88\x1F\x1D\x80\xAD\x2F\x7A\x8F\x0F\x38\x88\x81\x10\x7E\x8C",
-					"\x2B\x1F\x10\x09\xDD\x62\x09\xCB\x2D\x88\x00\x03\x88\x01\x7A\x10\x93\x0D\x6D\x95\x0B\x2C\xDB\x2B\x79\xB9\x76\x09\x7A\x8E\x2C\x37\x3E\x78\x00\x0F\x89\x22\x87\x87\x01\x1A\x09\xA3\x8F\x2C\x44\x36\x8A\xA8\x8B\x82\xAA\x80\x00\x9E\x0D\x8A\xDC\x12\x76\x97\x5A\x10\x1F\x70\x8A\x00\x82\x0A\x6A\x8B\x1B\x6A\x79\x8B\x09\x1B\x8B\xA9\x80\x89\x0A\x15\x0A\xBF\x86\x1D\x41\x01\x64\xC4\x82\x8B\xC6\x89\x10\xA8\x09\x8C\xCA\x12\x78\xC2\x86\x10\x1E\x82\x10\x16\x83\x8B\xAB\x02\x8D\x44\x27\x8D\x01\x15\x74\x00\x8E\x0A\xAD\x82\x0B\xCB\x2E\x8D\x00\x00\x83\x00\x83\x0B\xAD\x87\x0B\xCB\x2F\x72\xBC\x83\x8B\xB8\x0C\x8D\x0A\x11\x39\xA6\x8E\x8E\xC5\x89\x89\x09\x1B\x0B\xF2\x89\x10\x97\x75\x8F\x5D\x8F\x7A\xBE\x0B\x8F\x06\x16\x3A\xA6\x87\x82\xD8\x8F\x7A\xC1\x02\x90\x8A\x26\x90\xDF\x8F\x7A\xC4\x0D\x8A\xC8\x0B\x2C\x0C\x97\x8E\xAF\x79\x0C\xAD\x8D\x0C\xCB\x20\x8E\x03\x1D\x8C\xF8\x84\x3B\xE2\x18\x8E\x03\x16\x8F\xCF\x8E\x91\xBD\x14\x65\xED\x2F\x7A\xCE\x0F\x38\x26\x93\x10\x1A\x93\x92\x03\x1F\x0C\xDD\x61\x0D\xCB\x2B\x92\x02\x10\x92\x2E\x92\x10\xD2\x0D\x6D",
-					"\xD4\x0B\x2C\x51\x8B\x84\x37\x91\x10\xD5\x08\x75\xDC\x10\x05\xAD\x8D\x93\x55\x80\x80\xDA\x02\x94\xE2\x18\x3C\x09\x12\x46\x46\x91\x81\x00\x8F\x0D\x4A\x9D\x1B\xE8\x7C\x6E\x09\x1A\x85\x02\x19\x31\xB9\x74\x0E\x62\x81\x37\x2C\x3D\x5E\xC3\x6F\x44\x8B\x63\x96\x7F\x63\x52\x28\x43\x69\x2A\x14\x16\xB6\x6A\x55\xD7\x64\x1F\xFA\x3E\x96\xDF\x6F\x96\x16\x30\x00\x13\x7E\x11\x75\x9B\x48\xDD\x64\x97\x79\x96\x44\x46\x4A\x97\x6C\x6D\x97\x97\x6E\x96\x9E\x65\x8D\xB1\x13\x6B\x9F\x5E\x96\x19\x71\x64\x29\x1E\x47\x00\x00\x48\x62\x4D\x97\x8F\x90\x6A\x6E\x9E\x6A\x92\x98\x77\x8D\x93\x99\x73\x60\x6D\x1E\x1A\x99\xC2\x53\x97\xB5\x6F\x11\xC0\x5D\x97\xA1\x90\x9A\x6E\x93\x9A\x58\x79\x12\xBF\x40\x00\xC7\x40\x44\x79\x60",
+					"\x43\x17\xDA\x40\x44\x3B\xD5\xDD\xD5\x61\xF1\xD4\xDA\xC3\x74\xF2\xD2\xE1\xE1\x83\xE2\xC2\x79\x11\xF4\x46\x1E\xDC\x00\x47\x0F\xE9\xE1\xD6\xF7\x88\x14\x7D\x12\x6E\xE9\xD6\xE2\xDD\x81\xDC\xEF\xDF\xDB\xCF\x8B\x14\x7C\x13\x8F\xCD\x12\xE4\xE2\xA8\xF7\xBE\x10\x7D\x4F\x19\xE8\xDB\xEB\x9D\xC0\xEF\xE6\xE6\x93\xDF\xD4\xE3\xED\x00\xD1\x17\xE8\xEE\x94\xCA\xEC\xEE\xED\xBE\xFF\x62\x17\xEE\x00\xD3\x14\x7C\x15\xAE\xF1\xE0\xE9\xED\x73\xFF\xED\xF1\xF0\xB7\x56\x14\x7F\x15\x8F\xD8\x14\xF1\xEF\xD8\xC0\xF9\xF7\xF3\xDB\xC7\xEE\xF2\xF7\xD0\xFB\x69\x17\xF5\xDA\xE5\xFC\xF6\xF9\xE0\xCC\xCE\x02\x71\x01\x79\xC3\x40\xFB\x70\xF1\x4E\x75\x42\xAF\x75\x5E\xFA\x40\xF0\xD7\x79\xFD\xFE\xF2\xCA\x44\x70\x69\x97\x35\x2D\x93\x7D\x79\x21\x00\xB7\x2B\x7F\x5D\x33\x7E\x41\x7F\x79\x38\x03\xA4\x31\x26\xF9\x61\x32\x02\xC3\x3D\x2A\x07\x89\x3B\x80\x27\x33\x82\x40\x16\x80\x3D\x08\x89\x86\x7F\x15\x9D\x29\x4C\x7C\x22\x81\x93\x37\x79\x20\xFC\x7C\x48\x01\x86\x25\x7F\xBB\x24\x87\x2E\x31\x27\x84\x00\x29\x84\x25\x17\x8F\x87\x24\x86\x25\x84\x49\x08\x85\x2E\x0D\x81\x26",
+					"\x86\x0D\x82\x86\x0A\x99\x89\x79\x0E\xA9\x25\x87\x0A\x20\x88\x78\x1C\x87\x3B\x18\xAD\x63\x85\x03\x2D\x84\x69\x32\x84\x87\x90\x0A\x8D\x89\x27\x37\x89\x4C\x23\x82\x88\x92\x0C\x8B\x8B\x59\x9D\x8A\x15\xE2\x8D\x22\x2D\xA0\x8B\x8C\x3A\x88\x8C\x0C\xE1\x89\x8D\x32\xA4\x8C\x23\x66\x87\x8C\x1C\xEF\x8B\x23\x38\xB2\x8F\x1F\x76\x92\x8D\x1E\xE7\x8B\x8E\x30\xBD\x8B\x8B\x7F\x90\x83\x11\xF7\x2E\x86\x00\x39\x87\x2E\x5F\x97\x8D\x1D\xF4\x8F\x1E\x2A\x80\x58\x8A\x02\x32\x89\x72\x01\x96\x85\x32\x54\x93\x87\x65\x45\x93\x21\x80\x8C\x91\x4B\xA1\x26\x91\xE7\x50\x92\x6B\x5D\x2E\x93\x8E\x20\x96\x85\x9D\x89\x95\x1B\xF3\x8B\x95\x45\xAD\x90\x8F\xAA\x8B\x8D\x0D\xB1\x97\x87\x59\xAF\x91\x91\x8A\x98\x97\x1D\x8C\x80\x3C\x27\x83\x91\x39\x0C\x2F\x95\x21\xD5\x8D\x22\x5D\xB2\x8E\x98\x67\x9C\x94\x16\xA4\x22\x87\xC0\x01\x9A\x96\x21\x23\x98\x29\xB4\x97\x82\x36\x90\x9E\x8D\xAF\x85\x94\x2B\xD7\x9B\x9B\x5A\xAA\x8E\x9B\xD8\x9C\x9A\x2B\xE2\x90\x97\x6C\x94\x9D\x97\xD6\x80\x9D\x37\xD5\x98\x92\x8B\x62\x95\x3B\x21\x8F\x94\x0F\x84\x9A\x21\x42\xB1\x20\x99\x60\x8A",
+					"\x9A\x22\x9B\x22\x87\x3F\x8F\x9A\x9D\x1B\x25\x93\x3F\xC9\x33\x9E\xD2\x05\x96\x9E\x27\x38\x9F\x16\xFA\x9B\x9F\x7E\x9D\x2B\xA0\xE8\x84\x26\x40\xD3\x96\x9D\x8A\xA4\x9A\x9B\xE3\x80\xA1\x39\xE4\x9E\x82\x24\x89\x20\xA1\x5E\x8C\x91\x47\xF4\x9F\xA3\x78\xA4\x9C\xA1\x8A\x8E\xA1\x5D\x10\xAB\x99\x68\x8A\x24\xA5\x82\x9F\x94\x78\x07\xA6\xA4\x8D\xA8\xA7\x8E\x2A\xB7\x2C\x4C\xFB\x93\xA3\xBA\x0A\xA7\x9E\x8C\x97\xA6\x1C\xB9\xA4\x35\x9D\x8A\x95\xA7\x88\x81\xA8\x23\xC4\xA0\x98\x46\x88\xAC\x34\x18\xBB\xA2\x46\xD1\xA4\xAB\x73\xAD\xA1\x9C\x53\xB6\xAB\x3E\xD2\xAC\x9D\x6F\x9D\xA8\xAB\x5F\xAB\x9D\x44\xDE\xA3\xAC\xB0\xA5\xAA\xAC\x57\xA8\xAF\x56\xD5\xA6\xA3\xAC\xB2\x9D\x88\xD7\x34\xA6\x4F\xA2\xA0\xAF\x77\xA0\xA1\x24\x3F\xA7\x26\x50\xE7\x8C\xA8\xF0\x06\xAF\x8E\x4F\xA4\xA1\x5D\xC4\x85\xA5\xB9\xAF\x93\xAF\x60\x9D\xAF\x75\x7F\xA2\x8F\xC0\xA0\x3C\xAD\x17\xBA\xAB\x3E\x90\xBE\xAD\xC8\xAD\xA9\xAC\x1B\x39\x7F\x1F\xF2\xA9\xA9\xB7\x89\x23\xB3\xF5\x95\xA4\x66\xFF\x18\xB1\x2D\x8A\xB1\x26\x8C\xA7\x8E\x63\xFA\x79\x89\x0F\x85\xB5\xB3\x27\xAB\xA9\x6B\xAB",
+					"\xAE\xA9\x97\xA2\xB7\xAC\x1B\x39\xAC\x49\x25\xBE\x96\x83\x3E\x9D\xB6\x09\x29\xB5\x6E\xCA\xAF\x95\xD3\xA7\x22\xB8\x5B\x8B\xB4\x17\x97\xB8\xB6\xAE\x8D\xBC\xB2\xA3\xB0\xBB\x73\x92\xBA\x90\xE9\xA9\xA9\xA3\xD1\xB4\xBB\x1D\xD1\xAB\x93\xD1\xBA\xB1\x24\xDD\xAD\xB9\x78\xD7\xBF\x1F\xF1\x9B\xAE\xBC\xFB\x88\xBE\x22\xEA\xB7\x8E\xF6\x8D\xB2\xA6\x33\xAA\x23\x7C\x1E\xA6\x21\xF9\xA4\xA5\xBE\xAE\xB8\xBD\x5D\x5C\x00\xBF\x94\x05\xA2\x20\x8A\xA3\xBC\x13\x92\x9D\x7D\xD9\x86\x22\xC0\x0A\x24\xC0\x00\x01\xCA\x21\x01\xE0\x80\xBE\xCA\x9F\x22\x32\xAC\xAF\x22\x0A\xF6\xB4\x7E\x09\xD9\xC3\x6B\x83\x2C\xB3\x81\x0E\xC5\x80\x1A\xC6\x23\x87\xFA\xBC\x84\xF9\xA1\xC3\x20\xF6\xB1\x8A\x42\x76\x38\xC3\x84\x2C\xC5\xC4\x2E\xC7\xC6\x40\x08\xCD\xC5\x03\xCD\xC2\xC6\x01\x34\xC4\x8C\x86\x2D\x3E\x10\xF5\xC3\x20\x3D\xC2\xC4\x8E\x80\x01\xC8\x0F\xC3\xC9\x42\x42\xDF\xC6\x40\x48\xC6\xC8\x25\xC1\x24\xC9\x1B\x83\xCB\x15\xBA\xCA\xC5\xCF\x8A\x24\xCA\x91\x86\xC1\x61\x37\xCE\xC8\x00\x25\x40\xBE\x29\xC3\x93\x1F\xFD\xB0\x00\x28\xC7\x8F\x8A\x02\x10\x7D\xFE\x0A\xC2\x4A\xF8",
+					"\x97\x8B\x00\x6A\xDC\xCA\x41\x2A\x6E\xCC\xEA\x23\xBB\x62\x75\xC9\x20\x01\x71\xC6\xCB\x84\x18\x59\xCF\x22\xDC\xCE\x41\x32\x8D\x52\x40\xD1\x8A\xD0\xEF\x6A\x22\x97\x06\xD7\x20\x44\xF8\x7B\x4C\xFD\xB7\x88\x02\x0E\xD5\xC1\x84\x16\x54\xCC\x1F\xB4\xD0\x00\x57\x89\x56\x4C\xF5\xBA\xD3\x57\x8A\x5A\xA7\x83\x2B\x00\x4D\xE3\xBB\x5E\xA3\xC2\x20\x03\x26\xDA\x20\x7E\x69\xD7\xC9\x9A\xDA\x09\x7F\x8A\xAF\xD5\x47\xD6\x62\x86\xDC\x3F\x20\xAE\xE2\x3F\x23\x2B\x84\x9D\x63\xA7\x8A\x53\x47\x63\xB3\xCC\xEA\x06\xBD\x37\x9E\x6F\x5B\x94\xD4\x34\x48\x65\xBB\xD5\x37\xE3\xBF\xD6\x75\x1F\x25\x91\x62\xD3\x44\x89\xD2\xCA\x3B\x47\x45\xCB\x2E\xD9\x40\x03\xC4\xC2\xDE\xD8\x77\x0A\xC5\xB4\x32\xDC\x3D\x45\x83\xD4\x3A\x32\xD9\xD4\xCD\x20\x7D\xCA\x73\x2C\xB4\xD5\x7F\x8B\xD9\xDD\x84\x24\x49\x2C\xFD\xB9\x7C\x4B\xCF\xDF\x37\x8F\x08\x55\xDE\x2F\x5F\xBD\x40\x2C\xAF\xC5\x70\xC9\x23\x52\xEE\x85\x71\x98\x81\x27\xAF\xDB\x1F\x27\xD2\x36\xC0\x75\xC1\xAA\xDC\xD8\xEA\x34\x50\xDF\x13\x53\xE1\x40\x5F\xCF\x45\x64\xDC\x3C\xDB\x1B\xF5\xE3\xF2\x10\x41\xB5\x09\x5F\x20\x59",
+					"\xEF\xD0\x75\xC8\xBE\xCD\xE2\x85\x16\x5E\x62\x7F\xC0\xE3\x40\x41\xD2\x20\x8E\xF3\xE2\xE4\xED\x4B\x5A\xAF\x8D\x2A\x20\x3B\x66\xE2\x21\xF0\x49\xE3\xBD\x68\xD3\x20\x30\x7F\xE1\x21\xA8\xC5\x3A\xB7\xC4\xE2\x20\x2A\x47\xEE\x20\xFA\x42\xE8\xC0\x6E\xD6\x21\x1E\x4F\xEB\x20\xAE\xCA\xE8\xE8\x6D\xC6\x20\xAA\xC6\xE4\x76\xE2\x2E\xEA\x41\x3E\xED\xE5\x84\x06\x64\xE5\x8A\x58\xC9\x40\x62\xE5\xE8\x9C\xC3\x24\xCE\x49\xCF\x45\x21\xCC\x8C\xED\xA6\xEE\xEA\x20\x36\x12\xCE\xA2\x36\xE1\xCB\x84\x34\xDB\x20\x56\xE5\xEE\x41\x4F\x69\xE4\xE5\x46\x26\xE8\x71\xFF\xEB\x40\x66\x68\xE2\x83\x2D\x6D\xF1\x03\x35\xED\xA5\x87\xF3\xB0\x64\xCA\x20\x6F\x90\xFC\x54\xE2\xB7\xE9\x21\xCD\xC2\x22\xE3\xCF\x5F\x21\xDF\x52\xE7\x36\xB2\xC9\xD6\xDE\x0A\x21\xF2\xE2\x82\x2C\x71\xC2\xF3\x73\x20\xA6\xFD\xEE\xE0\x83\x26\x73\xCC\xC1\x22\x09\x70\xBF\xDC\xE7\xE3\xE5\xF3\x7E\xCA\x24\x74\xB6\xEF\x58\xC2\xB2\xE2\x21\xD8\xC1\x20\xF4\xB9\xCA\x23\xEA\x24\xFB\x37\x42\xDA\xEF\x50\x3D\xF7\xED\x40\x2D\x71\xF8\xEE\x2B\x57\xF9\x03\x3A\xF6\x40\x1E\xFE\x59\x8F\x3A\x75\xFA\xE2\x2E\x56",
+					"\xC5\x5A\xFB\xEC\xE9\xC0\x06\x78\xE0\xFD\x37\xC5\xD8\xF2\x21\xE1\xF0\xF6\xFC\x55\x0B\x59\xA7\xEC\xF1\x20\xF7\xDB\xFE\xFC\xD2\x6C\xFA\x75\x28\xE4\xFE\x00\x36\xFD\xFC\x57\x72\x10\xD4\x3A\x7F\xCA\x12\x6A\xFD\x70\x71\x03\x11\x29\x01\x81\x10\xD6\x34\x80\x44\x28\x80\xED\x76\x7E\xE3\x3A\x67\x0A\x1D\x05\xCB\x2E\x7C\x09\x86\x7E\x5E\x0F\x38\x18\x81\x81\x0B\x80\x00\x5F\x07\x65\x0A\x13\x06\xCB\x27\x7D\xEF\x7F\x81\x64\x0A\x65\xBC\x21\x2D\xC1\x76\x82\xF7\x7F\x81\x67\x0A\x82\xCE\x21\x73\xBB\x73\x10\x2E\x80\x80\xB3\x72\x10\x6A\x02\x83\xCF\x2E\x2E\xC1\x7B\x7E\x27\x89\x83\x01\x1D\x06\xBD\x77\x1B\x49\x75\x83\xB3\x2A\x10\xDC\x71\x7A\x0A\x1F\x06\x45\x8B\x1B\x59\x78\x84\x01\x10\x84\x76\x7F\x81\x71\x0F\x84\xD6\x18\x30\xC1\x73\x7F\x03\x12\x7E\x42\x80\x00\x73\x0C\x83\x28\x3C\x85\x02\x1C\x82\x5F\x86\x07\x43\x6C\x07\xF2\x7E\x72\xE6\x7D\x07\x43\x63\x08\xCB\x2C\x7F\x41\x8B\x7A\x01\x14\x08\x58\x8A\x1C\x15\x34\x7C\x01\x12\x87\x2F\x8F\x85\x86\x07\x87\x1F\x10\x77\x52\x80\x00\x7C\x88\x83\x74\x80\x00\x88\x00\x88\x0A\x1F\x32\xC1\x76\x80\x5D\x86",
+					"\x7E\x8A\x02\x86\x85\x3E\x88\x65\x86\x7E\x8D\x03\x64\x93\x0B\x2C\x94\x81\x10\x2F\x7F\x85\x94\x03\x64\x9A\x0B\x2C\x66\x83\x10\x54\x8D\x7D\xE2\x62\x1E\x9D\x83\x10\x85\x8C\x84\x23\x7D\x1B\x34\x8D\x2A\xE6\x7B\x09\x8F\x3F\x8A\x01\x13\x8A\xBC\x2F\x11\x9C\x02\x82\x09\x10\x0A\xCB\x24\x8B\x00\x09\x8A\xB7\x8A\x10\xA1\x0A\x8B\x06\x15\x0A\xCB\x2B\x2D\xBC\x7F\x81\xA6\x04\x8C\x8A\x27\x33\xAE\x70\x00\xC8\x8D\x76\x1F\x8A\x0A\xCC\x8C\x2B\x44\x3F\x8C\xD1\x85\x85\x5F\x8E\x0A\xD5\x8E\x2C\x84\x7E\x5B\x40\x71\x7D\x1F\x82\x0B\x92\x8D\x1B\x8C\x70\x8E\x09\x11\x74\x94\x7F\x81\xB5\x05\x8E\xBF\x11\x04\x3C\x8A\x8E\x91\x76\x7E\xB8\x0E\x8E\xB7\x13\x7A\xE8\x86\x10\x47\x82\x10\x3E\x8F\x85\xBB\x06\x8F\x1D\x3B\x8F\x01\x17\x76\x5F\x8E\x0B\x43\x64\x0C\xCB\x22\x90\x00\x0A\x85\x5F\x85\x0C\x43\x6B\x0C\xCB\x21\x75\xC9\x8F\x85\xCC\x00\x90\xD6\x11\x39\xCF\x82\x91\xD2\x8F\x85\xCF\x06\x91\xCA\x18\x7B\x19\x9A\x10\x92\x7C\x8A\x06\x12\x0D\x1E\x9F\x11\xA6\x3F\x8C\x51\x8C\x8F\xE6\x75\x0D\x27\x94\x1D\x2B\x93\x90\xE6\x78\x0D\x43\x6E\x0D\xCB\x21\x93\x0B\x96\x7E",
+					"\xDF\x03\x64\xE5\x0B\x2C\x04\x93\x10\xF2\x81\x8C\xAD\x8F\x1B\x0C\x93\x10\x1A\x92\x94\x60\x7D\x1B\x78\x69\x73\x1F\x86\x0E\x8F\x3B\x94\x03\x1F\x93\x48\x93\x10\xE7\x0D\x8D\x00\x0B\x0E\xCB\x20\x95\x02\x15\x94\x53\x92\x10\xEC\x06\x95\xF0\x0B\x2C\x79\x83\x87\x5D\x91\x10\xF1\x0A\x77\xBC\x20\x05\x56\x93\x96\x7D\x87\x88\xF6\x08\x96\xCE\x28\x3C\x14\x89\x10\x6C\x96\x88\x65\x90\x00\xFB\x00\x97\xCF\x2D\x80\x11\x73\x67\x0A\x19\x31\x1F\x83\x43\xE9\x70\x30\x2C\x30\x5F\xB9\x6B\x45\xB5\x69\x98\xF0\x53\x52\xFD\x7E\x5F\x2A\x14\x16\xD9\x6F\x0F\x8C\x97\x7A\x8D\x92\x70\x28\x44\x1F\x82\x96\x31\x0B\x64\x16\xFC\x6F\x49\x70\x5B\x99\xC1\x70\x9A\x7A\x83\x79\x32\x5D\x4C\xBA\x68\x99\x34\x7D\x6D\x80\x11\x48\x3B\x7C\x83\x11\x47\x45\x29\x1E\x5E\x25\x12\x9B\x1C\x13\x5E\xCD\x46\x9B\xC3\x68\x99\xD1\x69\x9B\xA1\x9B\x9B\x56\x99\x12\xB4\x6F\x53\xD8\x6F\x11\xC3\x9A\x97\xCD\x4C\x44\xC7\x98\x99\xC8\x94\x9C\x64\x6A\x60\x34\x1E\x9C\x31\x1A\x60\x98\x60",
 				};
 				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 			}
@@ -9603,11 +9603,11 @@ GuiInstanceQueryAstInsReceiver : public vl::glr::AstInsReceiverBase
 				switch((GuiInstanceQueryClasses)type)
 				{
 				case GuiInstanceQueryClasses::CascadeQuery:
-					return new vl::presentation::instancequery::GuiIqCascadeQuery();
+					return vl::Ptr(new vl::presentation::instancequery::GuiIqCascadeQuery);
 				case GuiInstanceQueryClasses::PrimaryQuery:
-					return new vl::presentation::instancequery::GuiIqPrimaryQuery();
+					return vl::Ptr(new vl::presentation::instancequery::GuiIqPrimaryQuery);
 				case GuiInstanceQueryClasses::SetQuery:
-					return new vl::presentation::instancequery::GuiIqSetQuery();
+					return vl::Ptr(new vl::presentation::instancequery::GuiIqSetQuery);
 				default:
 					return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
 				}
@@ -9970,14 +9970,14 @@ WorkflowEventNamesVisitor
 					decl->name.value = handler->value;
 
 					{
-						auto att = MakePtr<WfAttribute>();
+						auto att = Ptr(new WfAttribute);
 						att->category.value = L"cpp";
 						att->name.value = L"Protected";
 
 						decl->attributes.Add(att);
 					}
 					{
-						auto att = MakePtr<WfAttribute>();
+						auto att = Ptr(new WfAttribute);
 						att->category.value = L"cpp";
 						att->name.value = L"UserImpl";
 
@@ -9985,13 +9985,13 @@ WorkflowEventNamesVisitor
 					}
 
 					{
-						auto block = MakePtr<WfBlockStatement>();
+						auto block = Ptr(new WfBlockStatement);
 						decl->statement = block;
 
-						auto stringExpr = MakePtr<WfStringExpression>();
+						auto stringExpr = Ptr(new WfStringExpression);
 						stringExpr->value.value = L"Not Implemented: " + handler->value;
 
-						auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+						auto raiseStat = Ptr(new WfRaiseExceptionStatement);
 						raiseStat->expression = stringExpr;
 						block->statements.Add(raiseStat);
 					}
@@ -10274,14 +10274,14 @@ Workflow_GenerateInstanceClass
 				{
 					if (baseWfType)
 					{
-						auto type = MakePtr<WfChildType>();
+						auto type = Ptr(new WfChildType);
 						type->parent = baseWfType;
 						type->name.value = fragments[i];
 						baseWfType = type;
 					}
 					else
 					{
-						auto type = MakePtr<WfTopQualifiedType>();
+						auto type = Ptr(new WfTopQualifiedType);
 						type->name.value = fragments[i];
 						baseWfType = type;
 					}
@@ -10301,17 +10301,17 @@ Workflow_GenerateInstanceClass
 				}
 				else
 				{
-					auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
+					auto typeInfo = Ptr(new TypeDescriptorTypeInfo(baseType->GetTypeDescriptor(), TypeInfoHint::Normal));
 					auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
 					instanceClass->baseTypes.Add(baseType);
 				}
 
 				if (context->codeBehind)
 				{
-					auto value = MakePtr<WfStringExpression>();
+					auto value = Ptr(new WfStringExpression);
 					value->value.value = instanceClass->name.value;
 
-					auto att = MakePtr<WfAttribute>();
+					auto att = Ptr(new WfAttribute);
 					att->category.value = L"cpp";
 					att->name.value = L"File";
 					att->value = value;
@@ -10326,15 +10326,15 @@ Workflow_GenerateInstanceClass
 
 			if (needFunctionBody)
 			{
-				auto baseConstructorType = MakePtr<WfReferenceType>();
+				auto baseConstructorType = Ptr(new WfReferenceType);
 				baseConstructorType->name.value = instanceClass->name.value + L"Constructor";
 				instanceClass->baseTypes.Add(baseConstructorType);
 
 				{
-					auto value = MakePtr<WfTypeOfTypeExpression>();
+					auto value = Ptr(new WfTypeOfTypeExpression);
 					value->type = CopyType(baseConstructorType);
 
-					auto att = MakePtr<WfAttribute>();
+					auto att = Ptr(new WfAttribute);
 					att->category.value = L"cpp";
 					att->name.value = L"Friend";
 					att->value = value;
@@ -10358,12 +10358,12 @@ Workflow_GenerateInstanceClass
 
 			auto notImplemented = []()
 			{
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 
-				auto stringExpr = MakePtr<WfStringExpression>();
+				auto stringExpr = Ptr(new WfStringExpression);
 				stringExpr->value.value = L"Not Implemented";
 
-				auto raiseStat = MakePtr<WfRaiseExceptionStatement>();
+				auto raiseStat = Ptr(new WfRaiseExceptionStatement);
 				raiseStat->expression = stringExpr;
 
 				block->statements.Add(raiseStat);
@@ -10423,14 +10423,14 @@ Workflow_GenerateInstanceClass
 			// Constructor Declaration
 			///////////////////////////////////////////////////////////////
 
-			auto ctor = MakePtr<WfConstructorDeclaration>();
+			auto ctor = Ptr(new WfConstructorDeclaration);
 			ctor->constructorType = WfConstructorType::RawPtr;
-			auto ctorBlock = (!needFunctionBody ? notImplemented() : MakePtr<WfBlockStatement>());
+			auto ctorBlock = (!needFunctionBody ? notImplemented() : Ptr(new WfBlockStatement));
 			ctor->statement = ctorBlock;
 
 			if (baseWfType)
 			{
-				auto call = MakePtr<WfBaseConstructorCall>();
+				auto call = Ptr(new WfBaseConstructorCall);
 				ctor->baseConstructorCalls.Add(call);
 				call->type = CopyType(instanceClass->baseTypes[0]);
 				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
@@ -10448,7 +10448,7 @@ Workflow_GenerateInstanceClass
 						);
 					if (!expression)
 					{
-						auto nullExpr = MakePtr<WfLiteralExpression>();
+						auto nullExpr = Ptr(new WfLiteralExpression);
 						nullExpr->value = WfLiteralValue::Null;
 						expression = nullExpr;
 					}
@@ -10470,7 +10470,7 @@ Workflow_GenerateInstanceClass
 					}
 					else
 					{
-						auto call = MakePtr<WfBaseConstructorCall>();
+						auto call = Ptr(new WfBaseConstructorCall);
 						ctor->baseConstructorCalls.Add(call);
 
 						call->type = CopyType(instanceClass->baseTypes[0]);
@@ -10511,7 +10511,7 @@ Workflow_GenerateInstanceClass
 
 					if (lsiTd)
 					{
-						auto prop = MakePtr<WfAutoPropertyDeclaration>();
+						auto prop = Ptr(new WfAutoPropertyDeclaration);
 						instanceClass->declarations.Add(prop);
 
 						prop->functionKind = WfFunctionKind::Normal;
@@ -10520,19 +10520,19 @@ Workflow_GenerateInstanceClass
 						prop->configConst = WfAPConst::Writable;
 						prop->configObserve = WfAPObserve::Observable;
 
-						auto localeNameExpr = MakePtr<WfStringExpression>();
+						auto localeNameExpr = Ptr(new WfStringExpression);
 						localeNameExpr->value.value = L"en-US";
 
-						auto defaultLocalExpr = MakePtr<WfTypeCastingExpression>();
+						auto defaultLocalExpr = Ptr(new WfTypeCastingExpression);
 						defaultLocalExpr->strategy = WfTypeCastingStrategy::Strong;
 						defaultLocalExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
 						defaultLocalExpr->expression = localeNameExpr;
 
-						auto getExpr = MakePtr<WfChildExpression>();
+						auto getExpr = Ptr(new WfChildExpression);
 						getExpr->parent = GetExpressionFromTypeDescriptor(lsTd);
 						getExpr->name.value = L"Get";
 
-						auto callExpr = MakePtr<WfCallExpression>();
+						auto callExpr = Ptr(new WfCallExpression);
 						callExpr->function = getExpr;
 						callExpr->arguments.Add(defaultLocalExpr);
 						prop->expression = callExpr;
@@ -10579,7 +10579,7 @@ Workflow_GenerateInstanceClass
 				{
 					if (needFunctionBody)
 					{
-						auto decl = MakePtr<WfVariableDeclaration>();
+						auto decl = Ptr(new WfVariableDeclaration);
 						instanceClass->declarations.Add(decl);
 
 						decl->name.value = L"<parameter>" + parameter->name.ToString();
@@ -10589,7 +10589,7 @@ Workflow_GenerateInstanceClass
 						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
 					{
-						auto decl = MakePtr<WfFunctionDeclaration>();
+						auto decl = Ptr(new WfFunctionDeclaration);
 						instanceClass->declarations.Add(decl);
 
 						decl->functionKind = WfFunctionKind::Normal;
@@ -10598,13 +10598,13 @@ Workflow_GenerateInstanceClass
 						decl->returnType = CopyType(type);
 						if (needFunctionBody)
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							decl->statement = block;
 
-							auto ref = MakePtr<WfReferenceExpression>();
+							auto ref = Ptr(new WfReferenceExpression);
 							ref->name.value = L"<parameter>" + parameter->name.ToString();
 
-							auto returnStat = MakePtr<WfReturnStatement>();
+							auto returnStat = Ptr(new WfReturnStatement);
 							returnStat->expression = ref;
 							block->statements.Add(returnStat);
 						}
@@ -10616,7 +10616,7 @@ Workflow_GenerateInstanceClass
 						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
 					{
-						auto decl = MakePtr<WfPropertyDeclaration>();
+						auto decl = Ptr(new WfPropertyDeclaration);
 						instanceClass->declarations.Add(decl);
 
 						decl->name.value = parameter->name.ToString();
@@ -10626,25 +10626,25 @@ Workflow_GenerateInstanceClass
 						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
 					{
-						auto argument = MakePtr<WfFunctionArgument>();
+						auto argument = Ptr(new WfFunctionArgument);
 						argument->name.value = L"<ctor-parameter>" + parameter->name.ToString();
 						argument->type = CopyType(type);
 						ctor->arguments.Add(argument);
 					}
 					if (needFunctionBody)
 					{
-						auto refLeft = MakePtr<WfReferenceExpression>();
+						auto refLeft = Ptr(new WfReferenceExpression);
 						refLeft->name.value = L"<parameter>" + parameter->name.ToString();
 
-						auto refRight = MakePtr<WfReferenceExpression>();
+						auto refRight = Ptr(new WfReferenceExpression);
 						refRight->name.value = L"<ctor-parameter>" + parameter->name.ToString();
 
-						auto assignExpr = MakePtr<WfBinaryExpression>();
+						auto assignExpr = Ptr(new WfBinaryExpression);
 						assignExpr->op = WfBinaryOperator::Assign;
 						assignExpr->first = refLeft;
 						assignExpr->second = refRight;
 
-						auto exprStat = MakePtr<WfExpressionStatement>();
+						auto exprStat = Ptr(new WfExpressionStatement);
 						exprStat->expression = assignExpr;
 
 						ctorBlock->statements.Add(exprStat);
@@ -10674,89 +10674,89 @@ Workflow_GenerateInstanceClass
 			if (needFunctionBody)
 			{
 				{
-					auto getRmExpr = MakePtr<WfChildExpression>();
+					auto getRmExpr = Ptr(new WfChildExpression);
 					getRmExpr->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<IGuiResourceManager>());
 					getRmExpr->name.value = L"GetResourceManager";
 
-					auto call1Expr = MakePtr<WfCallExpression>();
+					auto call1Expr = Ptr(new WfCallExpression);
 					call1Expr->function = getRmExpr;
 
-					auto getResExpr = MakePtr<WfMemberExpression>();
+					auto getResExpr = Ptr(new WfMemberExpression);
 					getResExpr->parent = call1Expr;
 					getResExpr->name.value = L"GetResourceFromClassName";
 
-					auto classNameExpr = MakePtr<WfStringExpression>();
+					auto classNameExpr = Ptr(new WfStringExpression);
 					classNameExpr->value.value = context->className;
 
-					auto call2Expr = MakePtr<WfCallExpression>();
+					auto call2Expr = Ptr(new WfCallExpression);
 					call2Expr->function = getResExpr;
 					call2Expr->arguments.Add(classNameExpr);
 
-					auto varDecl = MakePtr<WfVariableDeclaration>();
+					auto varDecl = Ptr(new WfVariableDeclaration);
 					varDecl->name.value = L"<resource>";
 					varDecl->expression = call2Expr;
 
-					auto varStat = MakePtr<WfVariableStatement>();
+					auto varStat = Ptr(new WfVariableStatement);
 					varStat->variable = varDecl;
 
 					ctorBlock->statements.Add(varStat);
 				}
 				{
-					auto resRef = MakePtr<WfReferenceExpression>();
+					auto resRef = Ptr(new WfReferenceExpression);
 					resRef->name.value = L"<resource>";
 
-					auto resRef2 = MakePtr<WfReferenceExpression>();
+					auto resRef2 = Ptr(new WfReferenceExpression);
 					resRef2->name.value = L"<resource>";
 
-					auto wdRef = MakePtr<WfMemberExpression>();
+					auto wdRef = Ptr(new WfMemberExpression);
 					wdRef->parent = resRef2;
 					wdRef->name.value = L"WorkingDirectory";
 
-					auto newClassExpr = MakePtr<WfNewClassExpression>();
+					auto newClassExpr = Ptr(new WfNewClassExpression);
 					newClassExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<GuiResourcePathResolver>>::CreateTypeInfo().Obj());
 					newClassExpr->arguments.Add(resRef);
 					newClassExpr->arguments.Add(wdRef);
 
-					auto varDecl = MakePtr<WfVariableDeclaration>();
+					auto varDecl = Ptr(new WfVariableDeclaration);
 					varDecl->name.value = L"<resolver>";
 					varDecl->expression = newClassExpr;
 
-					auto varStat = MakePtr<WfVariableStatement>();
+					auto varStat = Ptr(new WfVariableStatement);
 					varStat->variable = varDecl;
 
 					ctorBlock->statements.Add(varStat);
 				}
 				{
-					auto setRef = MakePtr<WfMemberExpression>();
-					setRef->parent = MakePtr<WfThisExpression>();
+					auto setRef = Ptr(new WfMemberExpression);
+					setRef->parent = Ptr(new WfThisExpression);
 					setRef->name.value = L"SetResourceResolver";
 
-					auto resolverRef = MakePtr<WfReferenceExpression>();
+					auto resolverRef = Ptr(new WfReferenceExpression);
 					resolverRef->name.value = L"<resolver>";
 
-					auto callExpr = MakePtr<WfCallExpression>();
+					auto callExpr = Ptr(new WfCallExpression);
 					callExpr->function = setRef;
 					callExpr->arguments.Add(resolverRef);
 
-					auto stat = MakePtr<WfExpressionStatement>();
+					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = callExpr;
 
 					ctorBlock->statements.Add(stat);
 				}
 				{
-					auto initRef = MakePtr<WfMemberExpression>();
-					initRef->parent = MakePtr<WfThisExpression>();
+					auto initRef = Ptr(new WfMemberExpression);
+					initRef->parent = Ptr(new WfThisExpression);
 					{
 						List<WString> fragments;
 						SplitTypeName(resolvingResult.context->className, fragments);
 						initRef->name.value = L"<" + From(fragments).Aggregate([](const WString& a, const WString& b) {return a + L"-" + b; }) + L">Initialize";
 					}
 
-					auto callExpr = MakePtr<WfCallExpression>();
+					auto callExpr = Ptr(new WfCallExpression);
 					callExpr->function = initRef;
-					callExpr->arguments.Add(MakePtr<WfThisExpression>());
+					callExpr->arguments.Add(Ptr(new WfThisExpression));
 
-					auto stat = MakePtr<WfExpressionStatement>();
+					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = callExpr;
 
 					ctorBlock->statements.Add(stat);
@@ -10775,12 +10775,12 @@ Workflow_GenerateInstanceClass
 					{
 						if (!stat.Cast<WfBlockStatement>())
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							block->statements.Add(stat);
 							stat = block;
 						}
 
-						auto decl = MakePtr<WfFunctionDeclaration>();
+						auto decl = Ptr(new WfFunctionDeclaration);
 						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"<instance-ctor>";
@@ -10789,13 +10789,13 @@ Workflow_GenerateInstanceClass
 						instanceClass->declarations.Add(decl);
 
 						{
-							auto refCtor = MakePtr<WfReferenceExpression>();
+							auto refCtor = Ptr(new WfReferenceExpression);
 							refCtor->name.value = L"<instance-ctor>";
 
-							auto callExpr = MakePtr<WfCallExpression>();
+							auto callExpr = Ptr(new WfCallExpression);
 							callExpr->function = refCtor;
 
-							auto exprStat = MakePtr<WfExpressionStatement>();
+							auto exprStat = Ptr(new WfExpressionStatement);
 							exprStat->expression = callExpr;
 							ctorBlock->statements.Add(exprStat);
 						}
@@ -10807,8 +10807,8 @@ Workflow_GenerateInstanceClass
 			// Destructor
 			///////////////////////////////////////////////////////////////
 
-			auto dtor = MakePtr<WfDestructorDeclaration>();
-			auto dtorBlock = MakePtr<WfBlockStatement>();
+			auto dtor = Ptr(new WfDestructorDeclaration);
+			auto dtorBlock = Ptr(new WfBlockStatement);
 			dtor->statement = dtorBlock;
 
 			///////////////////////////////////////////////////////////////
@@ -10823,12 +10823,12 @@ Workflow_GenerateInstanceClass
 					{
 						if (!stat.Cast<WfBlockStatement>())
 						{
-							auto block = MakePtr<WfBlockStatement>();
+							auto block = Ptr(new WfBlockStatement);
 							block->statements.Add(stat);
 							stat = block;
 						}
 
-						auto decl = MakePtr<WfFunctionDeclaration>();
+						auto decl = Ptr(new WfFunctionDeclaration);
 						decl->functionKind = WfFunctionKind::Normal;
 						decl->anonymity = WfFunctionAnonymity::Named;
 						decl->name.value = L"<instance-dtor>";
@@ -10837,13 +10837,13 @@ Workflow_GenerateInstanceClass
 						instanceClass->declarations.Add(decl);
 
 						{
-							auto refDtor = MakePtr<WfReferenceExpression>();
+							auto refDtor = Ptr(new WfReferenceExpression);
 							refDtor->name.value = L"<instance-dtor>";
 
-							auto callExpr = MakePtr<WfCallExpression>();
+							auto callExpr = Ptr(new WfCallExpression);
 							callExpr->function = refDtor;
 
-							auto exprStat = MakePtr<WfExpressionStatement>();
+							auto exprStat = Ptr(new WfExpressionStatement);
 							exprStat->expression = callExpr;
 							dtorBlock->statements.Add(exprStat);
 						}
@@ -10856,10 +10856,10 @@ Workflow_GenerateInstanceClass
 			///////////////////////////////////////////////////////////////
 
 			{
-				auto ref = MakePtr<WfReferenceExpression>();
+				auto ref = Ptr(new WfReferenceExpression);
 				ref->name.value = L"FinalizeGeneralInstance";
 
-				Ptr<WfExpression> thisExpr = MakePtr<WfThisExpression>();
+				Ptr<WfExpression> thisExpr = Ptr(new WfThisExpression);
 				ITypeDescriptor* types[] =
 				{
 					description::GetTypeDescriptor<GuiTemplate>(),
@@ -10889,10 +10889,10 @@ Workflow_GenerateInstanceClass
 						{
 							ref->name.value = L"FinalizeInstanceRecursively";
 
-							Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-							typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+							Ptr<ITypeInfo> typeInfo = Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal));
+							typeInfo = Ptr(new RawPtrTypeInfo(typeInfo));
 
-							auto inferExpr = MakePtr<WfInferExpression>();
+							auto inferExpr = Ptr(new WfInferExpression);
 							inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
 							inferExpr->expression = thisExpr;
 							thisExpr = inferExpr;
@@ -10901,11 +10901,11 @@ Workflow_GenerateInstanceClass
 					}
 				}
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = ref;
 				call->arguments.Add(thisExpr);
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = call;
 				dtorBlock->statements.Add(stat);
 			}
@@ -10950,7 +10950,7 @@ GuiWorkflowSharedManagerPlugin
 			{
 				if (!workflowManager)
 				{
-					workflowManager = new WfLexicalScopeManager(workflowParser);
+					workflowManager = Ptr(new WfLexicalScopeManager(workflowParser));
 				}
 				return workflowManager.Obj();
 			}
@@ -11671,7 +11671,7 @@ WorkflowReferenceNamesVisitor
 
 		Ptr<reflection::description::ITypeInfo> Workflow_GetSuggestedParameterType(reflection::description::ITypeDescriptor* typeDescriptor)
 		{
-			auto elementType = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+			auto elementType = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 			if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 			{
 				bool isShared = false;
@@ -11692,15 +11692,15 @@ WorkflowReferenceNamesVisitor
 				}
 				if (!isShared && !isRaw)
 				{
-					return MakePtr<SharedPtrTypeInfo>(elementType);
+					return Ptr(new SharedPtrTypeInfo(elementType));
 				}
 				else if (isShared)
 				{
-					return MakePtr<SharedPtrTypeInfo>(elementType);
+					return Ptr(new SharedPtrTypeInfo(elementType));
 				}
 				else
 				{
-					return MakePtr<RawPtrTypeInfo>(elementType);
+					return Ptr(new RawPtrTypeInfo(elementType));
 				}
 			}
 			else
@@ -12062,7 +12062,7 @@ WorkflowGenerateCreatingVisitor
 				{
 					repr->Accept(this);
 
-					auto ref = MakePtr<WfReferenceExpression>();
+					auto ref = Ptr(new WfReferenceExpression);
 					ref->name.value = ctor->instanceName.ToString();
 					argumentInfo.expression = ref;
 				}
@@ -12087,15 +12087,15 @@ WorkflowGenerateCreatingVisitor
 				vint errorCount = errors.Count();
 				if (auto expr = info.loader->GetParameter(precompileContext, resolvingResult, propInfo, repr->instanceName, setter->attPosition, errors))
 				{
-					auto refInstance = MakePtr<WfReferenceExpression>();
+					auto refInstance = Ptr(new WfReferenceExpression);
 					refInstance->name.value = setTarget->instanceName.ToString();
 
-					auto assign = MakePtr<WfBinaryExpression>();
+					auto assign = Ptr(new WfBinaryExpression);
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = refInstance;
 					assign->second = expr;
 
-					auto stat = MakePtr<WfExpressionStatement>();
+					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = assign;
 
 					return stat;
@@ -12343,18 +12343,18 @@ WorkflowGenerateCreatingVisitor
 					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, resolvingResult.rootCtorArguments);
 
 					{
-						auto refInstance = MakePtr<WfReferenceExpression>();
+						auto refInstance = Ptr(new WfReferenceExpression);
 						refInstance->name.value = repr->instanceName.ToString();
 
-						auto refThis = MakePtr<WfReferenceExpression>();
+						auto refThis = Ptr(new WfReferenceExpression);
 						refThis->name.value = L"<this>";
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = refInstance;
 						assign->second = refThis;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 
 						statements->statements.Add(stat);
@@ -12371,22 +12371,22 @@ WorkflowGenerateCreatingVisitor
 
 					for (auto parameter : resolvingResult.context->parameters)
 					{
-						auto refInstance = MakePtr<WfReferenceExpression>();
+						auto refInstance = Ptr(new WfReferenceExpression);
 						refInstance->name.value = parameter->name.ToString();
 
-						auto refThis = MakePtr<WfReferenceExpression>();
+						auto refThis = Ptr(new WfReferenceExpression);
 						refThis->name.value = L"<this>";
 
-						auto refParameter = MakePtr<WfMemberExpression>();
+						auto refParameter = Ptr(new WfMemberExpression);
 						refParameter->parent = refThis;
 						refParameter->name.value = parameter->name.ToString();
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = refInstance;
 						assign->second = refParameter;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 
 						statements->statements.Add(stat);
@@ -12449,23 +12449,23 @@ Workflow_InstallBindProperty
 		{
 			Ptr<WfExpression> resourceExpr;
 			{
-				auto refResolver = MakePtr<WfReferenceExpression>();
+				auto refResolver = Ptr(new WfReferenceExpression);
 				refResolver->name.value = L"<this>";
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = refResolver;
 				member->name.value = L"ResolveResource";
 
-				auto valueProtocol = MakePtr<WfStringExpression>();
+				auto valueProtocol = Ptr(new WfStringExpression);
 				valueProtocol->value.value = protocol;
 
-				auto valuePath = MakePtr<WfStringExpression>();
+				auto valuePath = Ptr(new WfStringExpression);
 				valuePath->value.value = path;
 
-				auto valueBool = MakePtr<WfLiteralExpression>();
+				auto valueBool = Ptr(new WfLiteralExpression);
 				valueBool->value = WfLiteralValue::True;
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = member;
 				call->arguments.Add(valueProtocol);
 				call->arguments.Add(valuePath);
@@ -12487,15 +12487,15 @@ Workflow_InstallBindProperty
 				}
 				else
 				{
-					auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
+					auto elementType = Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal));
+					auto pointerType = Ptr(new SharedPtrTypeInfo(elementType));
 					convertedType = pointerType;
 				}
 			}
 
 			Ptr<WfExpression> convertedExpr;
 			{
-				auto cast = MakePtr<WfTypeCastingExpression>();
+				auto cast = Ptr(new WfTypeCastingExpression);
 				cast->expression = resourceExpr;
 				cast->type = GetTypeFromTypeInfo(convertedType.Obj());
 				cast->strategy = WfTypeCastingStrategy::Strong;
@@ -12507,13 +12507,13 @@ Workflow_InstallBindProperty
 			{
 				if (td->GetSerializableType())
 				{
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = convertedExpr;
 					member->name.value = L"Text";
 
-					auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+					auto elementType = Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal));
 
-					auto cast = MakePtr<WfTypeCastingExpression>();
+					auto cast = Ptr(new WfTypeCastingExpression);
 					cast->expression = member;
 					cast->type = GetTypeFromTypeInfo(elementType.Obj());
 					cast->strategy = WfTypeCastingStrategy::Strong;
@@ -12522,7 +12522,7 @@ Workflow_InstallBindProperty
 				}
 				else if (td == description::GetTypeDescriptor<INativeImage>())
 				{
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = convertedExpr;
 					member->name.value = L"Image";
 
@@ -12559,42 +12559,42 @@ Workflow_InstallBindProperty
 
 		Ptr<workflow::WfStatement> Workflow_InstallBindProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression)
 		{
-			auto subBlock = MakePtr<WfBlockStatement>();
+			auto subBlock = Ptr(new WfBlockStatement);
 			{
-				auto var = MakePtr<WfVariableDeclaration>();
+				auto var = Ptr(new WfVariableDeclaration);
 				var->name.value = L"<created-subscription>";
 				var->expression = bindExpression;
 
-				auto stat = MakePtr<WfVariableStatement>();
+				auto stat = Ptr(new WfVariableStatement);
 				stat->variable = var;
 				subBlock->statements.Add(stat);
 			}
 			{
-				auto callback = MakePtr<WfFunctionDeclaration>();
+				auto callback = Ptr(new WfFunctionDeclaration);
 				callback->functionKind = WfFunctionKind::Normal;
 				callback->anonymity = WfFunctionAnonymity::Anonymous;
 				callback->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());;
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"<value>";
 					arg->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
 					callback->arguments.Add(arg);
 				}
-				auto callbackBlock = MakePtr<WfBlockStatement>();
+				auto callbackBlock = Ptr(new WfBlockStatement);
 				callback->statement = callbackBlock;
 				{
-					auto refSubscribee = MakePtr<WfReferenceExpression>();
+					auto refSubscribee = Ptr(new WfReferenceExpression);
 					refSubscribee->name.value = variableName.ToString();
 
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = refSubscribee;
 					member->name.value = propertyInfo->GetName();
 
-					auto var = MakePtr<WfVariableDeclaration>();
+					auto var = Ptr(new WfVariableDeclaration);
 					var->name.value = L"<old>";
 					var->expression = member;
 
-					auto stat = MakePtr<WfVariableStatement>();
+					auto stat = Ptr(new WfVariableStatement);
 					stat->variable = var;
 					callbackBlock->statements.Add(stat);
 				}
@@ -12605,99 +12605,99 @@ Workflow_InstallBindProperty
 						propertyType = propertyInfo->GetSetter()->GetParameter(0)->GetType();
 					}
 
-					auto refValue = MakePtr<WfReferenceExpression>();
+					auto refValue = Ptr(new WfReferenceExpression);
 					refValue->name.value = L"<value>";
 
-					auto cast = MakePtr<WfTypeCastingExpression>();
+					auto cast = Ptr(new WfTypeCastingExpression);
 					cast->strategy = WfTypeCastingStrategy::Strong;
 					cast->expression = refValue;
 					cast->type = GetTypeFromTypeInfo(propertyType);
 
-					auto var = MakePtr<WfVariableDeclaration>();
+					auto var = Ptr(new WfVariableDeclaration);
 					var->name.value = L"<new>";
 					var->expression = cast;
 
-					auto stat = MakePtr<WfVariableStatement>();
+					auto stat = Ptr(new WfVariableStatement);
 					stat->variable = var;
 					callbackBlock->statements.Add(stat);
 				}
 				{
-					auto refOld = MakePtr<WfReferenceExpression>();
+					auto refOld = Ptr(new WfReferenceExpression);
 					refOld->name.value = L"<old>";
 
-					auto refNew = MakePtr<WfReferenceExpression>();
+					auto refNew = Ptr(new WfReferenceExpression);
 					refNew->name.value = L"<new>";
 
-					auto compare = MakePtr<WfBinaryExpression>();
+					auto compare = Ptr(new WfBinaryExpression);
 					compare->op = WfBinaryOperator::EQ;
 					compare->first = refOld;
 					compare->second = refNew;
 
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					ifStat->expression = compare;
 					callbackBlock->statements.Add(ifStat);
 
-					auto ifBlock = MakePtr<WfBlockStatement>();
+					auto ifBlock = Ptr(new WfBlockStatement);
 					ifStat->trueBranch = ifBlock;
 
-					auto returnStat = MakePtr<WfReturnStatement>();
+					auto returnStat = Ptr(new WfReturnStatement);
 					ifBlock->statements.Add(returnStat);
 				}
 				{
-					auto refSubscribee = MakePtr<WfReferenceExpression>();
+					auto refSubscribee = Ptr(new WfReferenceExpression);
 					refSubscribee->name.value = variableName.ToString();
 
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = refSubscribee;
 					member->name.value = propertyInfo->GetName();
 
-					auto refNew = MakePtr<WfReferenceExpression>();
+					auto refNew = Ptr(new WfReferenceExpression);
 					refNew->name.value = L"<new>";
 
-					auto assign = MakePtr<WfBinaryExpression>();
+					auto assign = Ptr(new WfBinaryExpression);
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = member;
 					assign->second = refNew;
 
-					auto stat = MakePtr<WfExpressionStatement>();
+					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = assign;
 					callbackBlock->statements.Add(stat);
 				}
 
-				auto funcExpr = MakePtr<WfFunctionExpression>();
+				auto funcExpr = Ptr(new WfFunctionExpression);
 				funcExpr->function = callback;
 
-				auto refBind = MakePtr<WfReferenceExpression>();
+				auto refBind = Ptr(new WfReferenceExpression);
 				refBind->name.value = L"<created-subscription>";
 
-				auto refEvent = MakePtr<WfMemberExpression>();
+				auto refEvent = Ptr(new WfMemberExpression);
 				refEvent->parent = refBind;
 				refEvent->name.value = L"ValueChanged";
 
-				auto attachExpr = MakePtr<WfAttachEventExpression>();
+				auto attachExpr = Ptr(new WfAttachEventExpression);
 				attachExpr->event = refEvent;
 				attachExpr->function = funcExpr;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = attachExpr;
 				subBlock->statements.Add(stat);
 			}
 			{
-				auto refThis = MakePtr<WfReferenceExpression>();
+				auto refThis = Ptr(new WfReferenceExpression);
 				refThis->name.value = L"<this>";
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = refThis;
 				member->name.value = L"AddSubscription";
 
-				auto refBind = MakePtr<WfReferenceExpression>();
+				auto refBind = Ptr(new WfReferenceExpression);
 				refBind->name.value = L"<created-subscription>";
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = member;
 				call->arguments.Add(refBind);
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = call;
 				subBlock->statements.Add(stat);
 			}
@@ -12731,39 +12731,39 @@ Workflow_InstallEvent
 		{
 			vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
 
-			auto subBlock = MakePtr<WfBlockStatement>();
+			auto subBlock = Ptr(new WfBlockStatement);
 			{
-				auto var = MakePtr<WfReferenceExpression>();
+				auto var = Ptr(new WfReferenceExpression);
 				var->name.value = variableName.ToString();
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = var;
 				member->name.value = eventInfo->GetName();
 
-				auto refThis = MakePtr<WfReferenceExpression>();
+				auto refThis = Ptr(new WfReferenceExpression);
 				refThis->name.value = L"<this>";
 
-				auto handler = MakePtr<WfMemberExpression>();
+				auto handler = Ptr(new WfMemberExpression);
 				handler->parent = refThis;
 				handler->name.value = handlerName;
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = handler;
 				for (vint i = 0; i < count; i++)
 				{
-					auto argument = MakePtr<WfOrderedNameExpression>();
+					auto argument = Ptr(new WfOrderedNameExpression);
 					argument->name.value = L"$" + itow(i + 1);
 					call->arguments.Add(argument);
 				}
 
-				auto eventHandler = MakePtr<WfOrderedLambdaExpression>();
+				auto eventHandler = Ptr(new WfOrderedLambdaExpression);
 				eventHandler->body = call;
 
-				auto attachEvent = MakePtr<WfAttachEventExpression>();
+				auto attachEvent = Ptr(new WfAttachEventExpression);
 				attachEvent->event = member;
 				attachEvent->function = eventHandler;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = attachEvent;
 				subBlock->statements.Add(stat);
 			}
@@ -12777,7 +12777,7 @@ Workflow_GenerateEventHandler
 
 		Ptr<workflow::WfFunctionDeclaration> Workflow_GenerateEventHandler(GuiResourcePrecompileContext& precompileContext, description::IEventInfo* eventInfo)
 		{
-			auto func = MakePtr<WfFunctionDeclaration>();
+			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = WfFunctionKind::Normal;
 			func->anonymity = WfFunctionAnonymity::Anonymous;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
@@ -12817,13 +12817,13 @@ Workflow_GenerateEventHandler
 			if (standardName)
 			{
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"sender";
 					arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(1));
 					func->arguments.Add(arg);
 				}
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"arguments";
 					arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(2));
 					func->arguments.Add(arg);
@@ -12834,7 +12834,7 @@ Workflow_GenerateEventHandler
 				auto type = TypeInfoRetriver<Value>::CreateTypeInfo();
 				for (vint i = 0; i < count; i++)
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"arg" + itow(i + 1);
 					arg->type = GetTypeFromTypeInfo(type.Obj());
 					func->arguments.Add(arg);
@@ -12862,41 +12862,41 @@ Workflow_InstallEvalEvent
 			}
 			else
 			{
-				auto funcBlock = MakePtr<WfBlockStatement>();
+				auto funcBlock = Ptr(new WfBlockStatement);
 				funcBlock->statements.Add(evalStatement);
 				func->statement = funcBlock;
 			}
 
-			auto subBlock = MakePtr<WfBlockStatement>();
+			auto subBlock = Ptr(new WfBlockStatement);
 
 			{
-				auto eventHandlerLambda = MakePtr<WfFunctionExpression>();
+				auto eventHandlerLambda = Ptr(new WfFunctionExpression);
 				eventHandlerLambda->function = func;
 
-				auto eventHandler = MakePtr<WfVariableDeclaration>();
+				auto eventHandler = Ptr(new WfVariableDeclaration);
 				eventHandler->name.value = L"<event-handler>";
 				eventHandler->expression = eventHandlerLambda;
 
-				auto stat = MakePtr<WfVariableStatement>();
+				auto stat = Ptr(new WfVariableStatement);
 				stat->variable = eventHandler;
 				subBlock->statements.Add(stat);
 			}
 			{
-				auto var = MakePtr<WfReferenceExpression>();
+				auto var = Ptr(new WfReferenceExpression);
 				var->name.value = variableName.ToString();
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = var;
 				member->name.value = eventInfo->GetName();
 
-				auto eventHandler = MakePtr<WfReferenceExpression>();
+				auto eventHandler = Ptr(new WfReferenceExpression);
 				eventHandler->name.value = L"<event-handler>";
 
-				auto attachEvent = MakePtr<WfAttachEventExpression>();
+				auto attachEvent = Ptr(new WfAttachEventExpression);
 				attachEvent->event = member;
 				attachEvent->function = eventHandler;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = attachEvent;
 				subBlock->statements.Add(stat);
 			}
@@ -12925,7 +12925,7 @@ Workflow_CreateModuleWithUsings
 
 		Ptr<workflow::WfModule> Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context, const WString& moduleName)
 		{
-			auto module = MakePtr<WfModule>();
+			auto module = Ptr(new WfModule);
 			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
 
@@ -12935,7 +12935,7 @@ Workflow_CreateModuleWithUsings
 				auto nss = context->namespaces.Values()[index];
 				for (auto ns : nss->namespaces)
 				{
-					auto path = MakePtr<WfModuleUsingPath>();
+					auto path = Ptr(new WfModuleUsingPath);
 					module->paths.Add(path);
 
 					auto pathCode = ns->prefix + L"*" + ns->postfix;
@@ -12952,30 +12952,30 @@ Workflow_CreateModuleWithUsings
 							wildcard = nullptr;
 						}
 
-						auto item = MakePtr<WfModuleUsingItem>();
+						auto item = Ptr(new WfModuleUsingItem);
 						path->items.Add(item);
 						if (wildcard)
 						{
 							if (begin < wildcard)
 							{
-								auto fragment = MakePtr<WfModuleUsingNameFragment>();
+								auto fragment = Ptr(new WfModuleUsingNameFragment);
 								item->fragments.Add(fragment);
 								fragment->name.value = WString::CopyFrom(begin, vint(wildcard - begin));
 							}
 							{
-								auto fragment = MakePtr<WfModuleUsingWildCardFragment>();
+								auto fragment = Ptr(new WfModuleUsingWildCardFragment);
 								item->fragments.Add(fragment);
 							}
 							if (wildcard + 1 < end)
 							{
-								auto fragment = MakePtr<WfModuleUsingNameFragment>();
+								auto fragment = Ptr(new WfModuleUsingNameFragment);
 								item->fragments.Add(fragment);
 								fragment->name.value = WString::CopyFrom(wildcard + 1, vint(end - wildcard - 1));
 							}
 						}
 						else if (begin < end)
 						{
-							auto fragment = MakePtr<WfModuleUsingNameFragment>();
+							auto fragment = Ptr(new WfModuleUsingNameFragment);
 							item->fragments.Add(fragment);
 							fragment->name.value = WString::CopyFrom(begin, vint(end - begin));
 						}
@@ -13007,14 +13007,14 @@ Workflow_InstallClass
 				auto delimiter = wcsstr(reading, L"::");
 				if (delimiter)
 				{
-					auto ns = MakePtr<WfNamespaceDeclaration>();
+					auto ns = Ptr(new WfNamespaceDeclaration);
 					ns->name.value = WString::CopyFrom(reading, delimiter - reading);
 					decls->Add(ns);
 					decls = &ns->declarations;
 				}
 				else
 				{
-					auto ctorClass = MakePtr<WfClassDeclaration>();
+					auto ctorClass = Ptr(new WfClassDeclaration);
 					ctorClass->kind = WfClassKind::Class;
 					ctorClass->constructorType = WfConstructorType::Undefined;
 					ctorClass->name.value = reading;
@@ -13034,13 +13034,13 @@ Workflow_InstallCtorClass
 			auto ctorClass = Workflow_InstallClass(resolvingResult.context->className + L"Constructor", module);
 			Workflow_CreateVariablesForReferenceValues(ctorClass, resolvingResult);
 
-			auto thisParam = MakePtr<WfFunctionArgument>();
+			auto thisParam = Ptr(new WfFunctionArgument);
 			thisParam->name.value = L"<this>";
 			thisParam->type = GetTypeFromTypeInfo(resolvingResult.rootTypeInfo.typeInfo.Obj());
 
-			auto block = MakePtr<WfBlockStatement>();
+			auto block = Ptr(new WfBlockStatement);
 
-			auto func = MakePtr<WfFunctionDeclaration>();
+			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = WfFunctionKind::Normal;
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->arguments.Add(thisParam);
@@ -13053,7 +13053,7 @@ Workflow_InstallCtorClass
 				func->name.value = L"<" + From(fragments).Aggregate([](const WString& a, const WString& b) {return a + L"-" + b; }) + L">Initialize";
 			}
 			{
-				auto att = MakePtr<WfAttribute>();
+				auto att = Ptr(new WfAttribute);
 				att->category.value = L"cpp";
 				att->name.value = L"Protected";
 				func->attributes.Add(att);
@@ -13069,12 +13069,12 @@ Variable
 
 		void Workflow_CreatePointerVariable(Ptr<workflow::WfClassDeclaration> ctorClass, GlobalStringKey name, description::ITypeInfo* typeInfo)
 		{
-			auto var = MakePtr<WfVariableDeclaration>();
+			auto var = Ptr(new WfVariableDeclaration);
 			var->name.value = name.ToString();
 			var->type = GetTypeFromTypeInfo(typeInfo);
 
 			{
-				auto att = MakePtr<WfAttribute>();
+				auto att = Ptr(new WfAttribute);
 				att->category.value = L"cpp";
 				att->name.value = L"Protected";
 				var->attributes.Add(att);
@@ -13201,7 +13201,7 @@ Converter
 		{
 			if (typeDescriptor == description::GetTypeDescriptor<WString>())
 			{
-				auto valueExpr = MakePtr<WfStringExpression>();
+				auto valueExpr = Ptr(new WfStringExpression);
 				valueExpr->value.value = textValue;
 				return valueExpr;
 			}
@@ -13209,17 +13209,17 @@ Converter
 			{
 				bool value = false;
 				if (!TypedValueSerializerProvider<bool>::Deserialize(textValue, value)) return nullptr;
-				auto valueExpr = MakePtr<WfLiteralExpression>();
+				auto valueExpr = Ptr(new WfLiteralExpression);
 				valueExpr->value = value ? WfLiteralValue::True : WfLiteralValue::False;
 				return valueExpr;
 			}
 #define INTEGER_BRANCH(TYPE) \
 			else if (typeDescriptor == description::GetTypeDescriptor<TYPE>()) \
 			{ \
-				auto valueExpr = MakePtr<WfIntegerExpression>(); \
+				auto valueExpr = Ptr(new WfIntegerExpression); \
 				valueExpr->value.value = textValue; \
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
-				auto infer = MakePtr<WfInferExpression>(); \
+				auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal)); \
+				auto infer = Ptr(new WfInferExpression); \
 				infer->type = GetTypeFromTypeInfo(type.Obj()); \
 				infer->expression = valueExpr; \
 				return infer; \
@@ -13237,10 +13237,10 @@ Converter
 #define FLOATING_BRANCH(TYPE) \
 			else if (typeDescriptor == description::GetTypeDescriptor<TYPE>()) \
 			{ \
-				auto valueExpr = MakePtr<WfFloatingExpression>(); \
+				auto valueExpr = Ptr(new WfFloatingExpression); \
 				valueExpr->value.value = textValue; \
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
-				auto infer = MakePtr<WfInferExpression>(); \
+				auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal)); \
+				auto infer = Ptr(new WfInferExpression); \
 				infer->type = GetTypeFromTypeInfo(type.Obj()); \
 				infer->expression = valueExpr; \
 				return infer; \
@@ -13251,12 +13251,12 @@ Converter
 
 			else if (typeDescriptor->GetSerializableType())
 			{
-				auto str = MakePtr<WfStringExpression>();
+				auto str = Ptr(new WfStringExpression);
 				str->value.value = textValue;
 
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+				auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 
-				auto cast = MakePtr<WfTypeCastingExpression>();
+				auto cast = Ptr(new WfTypeCastingExpression);
 				cast->type = GetTypeFromTypeInfo(type.Obj());
 				cast->strategy = WfTypeCastingStrategy::Strong;
 				cast->expression = str;
@@ -13267,9 +13267,9 @@ Converter
 			{
 				if (auto valueExpr = Workflow_ParseExpression(precompileContext, location, L"{" + textValue + L"}", position, errors, { 0,1 })) // {
 				{
-					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+					auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 
-					auto infer = MakePtr<WfInferExpression>();
+					auto infer = Ptr(new WfInferExpression);
 					infer->type = GetTypeFromTypeInfo(type.Obj());
 					infer->expression = valueExpr;
 
@@ -13281,9 +13281,9 @@ Converter
 			{
 				if (auto valueExpr = Workflow_ParseExpression(precompileContext, location, L"(" + textValue + L")", position, errors, { 0,1 })) // {
 				{
-					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+					auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 
-					auto infer = MakePtr<WfInferExpression>();
+					auto infer = Ptr(new WfInferExpression);
 					infer->type = GetTypeFromTypeInfo(type.Obj());
 					infer->expression = valueExpr;
 
@@ -13330,7 +13330,7 @@ WorkflowScriptPositionVisitor
 				vint index = context.additionalProperties.Keys().IndexOf(nullptr);
 				if (index == -1)
 				{
-					context.additionalProperties.Add(nullptr, MakePtr<types::ScriptPosition>());
+					context.additionalProperties.Add(nullptr, Ptr(new types::ScriptPosition));
 				}
 				sp = context.additionalProperties[nullptr].Cast<types::ScriptPosition>();
 			}
@@ -13365,7 +13365,7 @@ WorkflowScriptPositionVisitor
 						record.computedPosition = { position.originalLocation,{ position.row + pos.row,pos.column } };
 					}
 
-					sp->nodePositions.Add(node, record);
+					sp->nodePositions.Add(Ptr(node), record);
 				}
 			}
 		};

@@ -631,19 +631,19 @@ Macros
 
 #define CLASS_MEMBER_GUIEVENT(EVENTNAME)\
 			AddEvent(\
-				new GuiEventInfoImpl<GuiEventArgumentTypeRetriver<decltype(&ClassType::EVENTNAME)>::Type>(\
+				Ptr(new GuiEventInfoImpl<GuiEventArgumentTypeRetriver<decltype(&ClassType::EVENTNAME)>::Type>(\
 					this,\
 					L ## #EVENTNAME,\
 					[](DescriptableObject* thisObject, bool addEventHandler){\
 						return &thisObject->SafeAggregationCast<ClassType>()->EVENTNAME;\
 					},\
 					false\
-				)\
+				))\
 			);\
 
 #define CLASS_MEMBER_GUIEVENT_COMPOSITION(EVENTNAME)\
 			AddEvent(\
-				new GuiEventInfoImpl<GuiEventArgumentTypeRetriver<decltype(&GuiGraphicsEventReceiver::EVENTNAME)>::Type>(\
+				Ptr(new GuiEventInfoImpl<GuiEventArgumentTypeRetriver<decltype(&GuiGraphicsEventReceiver::EVENTNAME)>::Type>(\
 					this,\
 					L ## #EVENTNAME,\
 					[](DescriptableObject* thisObject, bool addEventHandler){\
@@ -655,7 +655,7 @@ Macros
 						return &composition->GetEventReceiver()->EVENTNAME;\
 					},\
 					true\
-				)\
+				))\
 			);\
 
 #define CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(PROPERTYNAME)\

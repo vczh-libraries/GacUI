@@ -3274,7 +3274,7 @@ Event
 							currentHandler = &(*currentHandler)->next;
 						}
 					}
-					(*currentHandler) = new HandlerNode;
+					(*currentHandler) = Ptr(new HandlerNode);
 					(*currentHandler)->handler = handler;
 					return true;
 				}
@@ -3301,21 +3301,21 @@ Event
 				template<typename TClass, typename TMethod>
 				Ptr<IGuiGraphicsEventHandler> AttachMethod(TClass* receiver, TMethod TClass::* method)
 				{
-					auto handler=MakePtr<FunctionHandler>(FunctionType(receiver, method));
+					auto handler=Ptr(new FunctionHandler(FunctionType(receiver, method)));
 					Attach(handler);
 					return handler;
 				}
 
 				Ptr<IGuiGraphicsEventHandler> AttachFunction(RawFunctionType* function)
 				{
-					auto handler = MakePtr<FunctionHandler>(FunctionType(function));
+					auto handler = Ptr(new FunctionHandler(FunctionType(function)));
 					Attach(handler);
 					return handler;
 				}
 
 				Ptr<IGuiGraphicsEventHandler> AttachFunction(const FunctionType& function)
 				{
-					auto handler = MakePtr<FunctionHandler>(function);
+					auto handler = Ptr(new FunctionHandler(function));
 					Attach(handler);
 					return handler;
 				}
@@ -3323,7 +3323,7 @@ Event
 				template<typename TLambda>
 				Ptr<IGuiGraphicsEventHandler> AttachLambda(const TLambda& lambda)
 				{
-					auto handler = MakePtr<FunctionHandler>(FunctionType(lambda));
+					auto handler = Ptr(new FunctionHandler(FunctionType(lambda)));
 					Attach(handler);
 					return handler;
 				}
@@ -3720,10 +3720,10 @@ Workflow to C++ Codegen Helpers
 
 			static Ptr<reflection::description::IEventHandler> Attach(Event& e, Handler handler)
 			{
-				return MakePtr<EventHandlerImpl>(e.AttachLambda([=](Sender* sender, T& args)
+				return Ptr(new EventHandlerImpl(e.AttachLambda([=](Sender* sender, T& args)
 				{
 					handler(sender, &args);
-				}));
+				})));
 			}
 
 			static bool Detach(Event& e, Ptr<reflection::description::IEventHandler> handler)
@@ -5609,7 +5609,7 @@ Helpers
 					CHECK_ERROR(rendererFactory != nullptr, L"This element is not supported by the selected renderer.");
 
 					auto element = new TElement;
-					element->renderer = rendererFactory->Create();
+					element->renderer = Ptr(rendererFactory->Create());
 					element->renderer->Initialize(element);
 					return element;
 				}
@@ -5657,8 +5657,8 @@ Helpers
 					{\
 						TRENDERER* renderer=new TRENDERER;\
 						renderer->factory=this;\
-						renderer->element=0;\
-						renderer->renderTarget=0;\
+						renderer->element=nullptr;\
+						renderer->renderTarget=nullptr;\
 						return renderer;\
 					}\
 				};\
@@ -5672,7 +5672,7 @@ Helpers
 				{\
 					auto manager = GetGuiGraphicsResourceManager();\
 					CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element renderers.");\
-					manager->RegisterRendererFactory(TELEMENT::GetElementType(), new TRENDERER::Factory);\
+					manager->RegisterRendererFactory(TELEMENT::GetElementType(), Ptr(new TRENDERER::Factory));\
 				}\
 				IGuiGraphicsRendererFactory* GetFactory()override\
 				{\
@@ -11850,7 +11850,7 @@ extern void GuiApplicationMain();
 	public:\
 		GuiRegisterPluginClass_##TYPE()\
 		{\
-			vl::presentation::controls::GetPluginManager()->AddPlugin(new TYPE);\
+			vl::presentation::controls::GetPluginManager()->AddPlugin(Ptr(new TYPE));\
 		}\
 	} instance_GuiRegisterPluginClass_##TYPE;\
 
@@ -19762,7 +19762,7 @@ External Functions
 			template<typename T>
 			Ptr<T> Element_Constructor()
 			{
-				return T::Create();
+				return Ptr(T::Create());
 			}
 			extern presentation::elements::text::TextLines*					GuiColorizedTextElement_GetLines(presentation::elements::GuiColorizedTextElement* thisObject);
 

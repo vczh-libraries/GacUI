@@ -49,7 +49,7 @@ GuiInstanceSharedScript
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			if (initializeContext && !context)
 			{
-				context = new WfRuntimeGlobalContext(assembly);
+				context = Ptr(new WfRuntimeGlobalContext(assembly));
 				LoadFunction<void()>(context, L"<initialize>")();
 			}
 #else
@@ -188,11 +188,11 @@ Compiled Workflow Type Resolver (Workflow)
 				vint type;
 				reader << type;
 
-				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
+				auto obj = Ptr(new GuiInstanceCompiledWorkflow);
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
 				if (obj->type == GuiInstanceCompiledWorkflow::InstanceClass)
 				{
-					auto memoryStream = MakePtr<stream::MemoryStream>();
+					auto memoryStream = Ptr(new stream::MemoryStream);
 					reader << (stream::IStream&)*memoryStream.Obj();
 					obj->binaryToLoad = memoryStream;
 				}
@@ -216,7 +216,7 @@ Plugin
 			void Load()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceCompiledWorkflowTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceCompiledWorkflowTypeResolver));
 			}
 
 			void Unload()override
@@ -260,8 +260,8 @@ Type Declaration
 			END_STRUCT_MEMBER(SiteValue)
 
 			BEGIN_STRUCT_MEMBER(Color)
-				valueType = new SerializableValueType<Color>();
-				serializableType = new SerializableType<Color>();
+				valueType = Ptr(new SerializableValueType<Color>);
+				serializableType = Ptr(new SerializableType<Color>);
 				STRUCT_MEMBER(r)
 				STRUCT_MEMBER(g)
 				STRUCT_MEMBER(b)
@@ -369,8 +369,8 @@ Type Declaration
 #undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
 
 			BEGIN_STRUCT_MEMBER_FLAG(GlobalStringKey, TypeDescriptorFlags::Primitive)
-				valueType = new SerializableValueType<GlobalStringKey>();
-				serializableType = new SerializableType<GlobalStringKey>();
+				valueType = Ptr(new SerializableValueType<GlobalStringKey>);
+				serializableType = Ptr(new SerializableType<GlobalStringKey>);
 			END_STRUCT_MEMBER(GlobalStringKey)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeImageFrame)
@@ -671,8 +671,8 @@ Type Declaration
 			END_CLASS_MEMBER(GuiTextData)
 				
 			BEGIN_STRUCT_MEMBER(DocumentFontSize)
-				valueType = new SerializableValueType<DocumentFontSize>();
-				serializableType = new SerializableType<DocumentFontSize>();
+				valueType = Ptr(new SerializableValueType<DocumentFontSize>);
+				serializableType = Ptr(new SerializableType<DocumentFontSize>);
 				STRUCT_MEMBER(size)
 				STRUCT_MEMBER(relative)
 			END_STRUCT_MEMBER(DocumentFontSize)
@@ -928,7 +928,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiBasicTypeLoader;
+					auto loader=Ptr(new GuiBasicTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -1447,7 +1447,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiCompositionTypeLoader;
+					auto loader=Ptr(new GuiCompositionTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -2938,7 +2938,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiControlsTypeLoader;
+					auto loader=Ptr(new GuiControlsTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -3245,7 +3245,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiElementTypeLoader;
+					auto loader=Ptr(new GuiElementTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -3400,7 +3400,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiEventTypeLoader;
+					auto loader=Ptr(new GuiEventTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -3737,7 +3737,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiTemplateTypeLoader;
+					auto loader=Ptr(new GuiTemplateTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
