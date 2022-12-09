@@ -181,11 +181,11 @@ Compiled Workflow Type Resolver (Workflow)
 				vint type;
 				reader << type;
 
-				auto obj = MakePtr<GuiInstanceCompiledWorkflow>();
+				auto obj = Ptr(new GuiInstanceCompiledWorkflow);
 				obj->type = (GuiInstanceCompiledWorkflow::AssemblyType)type;
 				if (obj->type == GuiInstanceCompiledWorkflow::InstanceClass)
 				{
-					auto memoryStream = MakePtr<stream::MemoryStream>();
+					auto memoryStream = Ptr(new stream::MemoryStream);
 					reader << (stream::IStream&)*memoryStream.Obj();
 					obj->binaryToLoad = memoryStream;
 				}
@@ -209,7 +209,7 @@ Plugin
 			void Load()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceCompiledWorkflowTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceCompiledWorkflowTypeResolver));
 			}
 
 			void Unload()override
