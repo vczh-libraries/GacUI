@@ -309,17 +309,15 @@ GuiListControl
 
 #define ATTACH_ITEM_MOUSE_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiItemMouseEvent&, ItemStyle*, GuiGraphicsComposition*, GuiMouseEventArgs&)> func(this, &GuiListControl::OnItemMouseEvent);\
 						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
-							Curry(Curry(func)(ITEMEVENTNAME))(style)\
+							[this, style](GuiGraphicsComposition* sender, GuiMouseEventArgs& args){ OnItemMouseEvent(ITEMEVENTNAME, style, sender, args); }\
 							);\
 					}\
 
 #define ATTACH_ITEM_NOTIFY_EVENT(EVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiItemNotifyEvent&, ItemStyle*, GuiGraphicsComposition*, GuiEventArgs&)> func(this, &GuiListControl::OnItemNotifyEvent);\
 						helper->EVENTNAME##Handler = style->GetEventReceiver()->EVENTNAME.AttachFunction(\
-							Curry(Curry(func)(ITEMEVENTNAME))(style)\
+							[this, style](GuiGraphicsComposition* sender, GuiEventArgs& args){ OnItemNotifyEvent(ITEMEVENTNAME, style, sender, args); }\
 							);\
 					}\
 
@@ -328,7 +326,7 @@ GuiListControl
 				vint index=visibleStyles.Keys().IndexOf(style);
 				if(index==-1)
 				{
-					Ptr<VisibleStyleHelper> helper=new VisibleStyleHelper;
+					auto helper=Ptr(new VisibleStyleHelper);
 					visibleStyles.Add(style, helper);
 
 					ATTACH_ITEM_MOUSE_EVENT(leftButtonDown, ItemLeftButtonDown);
@@ -402,9 +400,9 @@ GuiListControl
 				ItemMouseEnter.SetAssociatedComposition(boundsComposition);
 				ItemMouseLeave.SetAssociatedComposition(boundsComposition);
 
-				callback = new ItemCallback(this);
+				callback = Ptr(new ItemCallback(this));
 				itemProvider->AttachCallback(callback.Obj());
-				axis = new GuiDefaultAxis;
+				axis = Ptr(new GuiDefaultAxis);
 
 				if (acceptFocus)
 				{

@@ -102,7 +102,7 @@ Event
 							currentHandler = &(*currentHandler)->next;
 						}
 					}
-					(*currentHandler) = new HandlerNode;
+					(*currentHandler) = Ptr(new HandlerNode);
 					(*currentHandler)->handler = handler;
 					return true;
 				}

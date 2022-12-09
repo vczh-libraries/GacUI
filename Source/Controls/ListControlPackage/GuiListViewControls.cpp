@@ -258,8 +258,8 @@ ListViewColumnItemArranger
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
 								button->GetBoundsComposition()->SetBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
-								button->Clicked.AttachLambda(Curry(Func<void(vint, GuiGraphicsComposition*, GuiEventArgs&)>(this, &ListViewColumnItemArranger::ColumnClicked))(i));
-								button->GetBoundsComposition()->BoundsChanged.AttachLambda(Curry(Func<void(vint, GuiGraphicsComposition*, GuiEventArgs&)>(this, &ListViewColumnItemArranger::ColumnBoundsChanged))(i));
+								button->Clicked.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnClicked(i, sender, args); });
+								button->GetBoundsComposition()->BoundsChanged.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnBoundsChanged(i, sender, args); });
 								columnHeaderButtons.Add(button);
 								if (i > 0)
 								{
@@ -289,7 +289,7 @@ ListViewColumnItemArranger
 				{
 					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					columnItemViewCallback = new ColumnItemViewCallback(this);
+					columnItemViewCallback = Ptr(new ColumnItemViewCallback(this));
 				}
 
 				ListViewColumnItemArranger::~ListViewColumnItemArranger()
@@ -812,37 +812,37 @@ GuiListView
 				case ListViewView::BigIcon:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::BigIconListViewItemTemplate; },
-						new list::FixedSizeMultiColumnItemArranger
+						Ptr(new list::FixedSizeMultiColumnItemArranger)
 						);
 					break;
 				case ListViewView::SmallIcon:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::SmallIconListViewItemTemplate; },
-						new list::FixedSizeMultiColumnItemArranger
+						Ptr(new list::FixedSizeMultiColumnItemArranger)
 					);
 					break;
 				case ListViewView::List:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::ListListViewItemTemplate; },
-						new list::FixedHeightMultiColumnItemArranger
+						Ptr(new list::FixedHeightMultiColumnItemArranger)
 					);
 					break;
 				case ListViewView::Tile:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::TileListViewItemTemplate; },
-						new list::FixedSizeMultiColumnItemArranger
+						Ptr(new list::FixedSizeMultiColumnItemArranger)
 					);
 					break;
 				case ListViewView::Information:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::InformationListViewItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				case ListViewView::Detail:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DetailListViewItemTemplate; },
-						new list::ListViewColumnItemArranger
+						Ptr(new list::ListViewColumnItemArranger)
 					);
 					break;
 				default:;

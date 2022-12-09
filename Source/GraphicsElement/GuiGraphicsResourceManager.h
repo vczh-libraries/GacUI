@@ -132,7 +132,7 @@ Helpers
 					CHECK_ERROR(rendererFactory != nullptr, L"This element is not supported by the selected renderer.");
 
 					auto element = new TElement;
-					element->renderer = rendererFactory->Create();
+					element->renderer = Ptr(rendererFactory->Create());
 					element->renderer->Initialize(element);
 					return element;
 				}

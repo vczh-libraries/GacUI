@@ -251,7 +251,7 @@ GuiInstanceRootObject
 
 			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
 			{
-				return AddComponent(Ptr(new GuiObjectComponent<GuiControlHost>(controlHost)));
+				return AddComponent(new GuiObjectComponent<GuiControlHost>(Ptr(controlHost)));
 			}
 
 			bool GuiInstanceRootObject::AddAnimation(Ptr<IGuiAnimation> animation)

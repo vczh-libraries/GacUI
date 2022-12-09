@@ -54,7 +54,7 @@ BigIconListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -67,7 +67,7 @@ BigIconListViewItemTemplate
 							text->SetAlignments(Alignment::Center, Alignment::Top);
 							text->SetWrapLine(true);
 							text->SetEllipse(true);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 					}
 
@@ -134,7 +134,7 @@ SmallIconListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							GuiCellComposition* cell = new GuiCellComposition;
@@ -145,7 +145,7 @@ SmallIconListViewItemTemplate
 							text = GuiSolidLabelElement::Create();
 							text->SetAlignments(Alignment::Left, Alignment::Center);
 							text->SetEllipse(true);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 					}
 
@@ -212,7 +212,7 @@ ListListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -222,7 +222,7 @@ ListListViewItemTemplate
 
 							text = GuiSolidLabelElement::Create();
 							text->SetAlignments(Alignment::Left, Alignment::Center);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 					}
 
@@ -273,11 +273,11 @@ TileListViewItemTemplate
 					textTable->AddChild(cell);
 					cell->SetSite(textRow + 1, 0, 1, 1);
 
-					auto textElement = GuiSolidLabelElement::Create();
+					auto textElement = Ptr(GuiSolidLabelElement::Create());
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
 					textElement->SetEllipse(true);
 					cell->SetOwnedElement(textElement);
-					return textElement;
+					return textElement.Obj();
 				}
 
 				void TileListViewItemTemplate::ResetTextTable(vint textRows)
@@ -315,7 +315,7 @@ TileListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -400,7 +400,7 @@ InformationListViewItemTemplate
 					{
 						bottomLine = GuiSolidBackgroundElement::Create();
 						bottomLineComposition = new GuiBoundsComposition;
-						bottomLineComposition->SetOwnedElement(bottomLine);
+						bottomLineComposition->SetOwnedElement(Ptr(bottomLine));
 						bottomLineComposition->SetAlignmentToParent(Margin(8, -1, 8, 0));
 						bottomLineComposition->SetPreferredMinSize(Size(0, 1));
 						AddChild(bottomLineComposition);
@@ -425,7 +425,7 @@ InformationListViewItemTemplate
 
 							image = GuiImageFrameElement::Create();
 							image->SetStretch(true);
-							cell->SetOwnedElement(image);
+							cell->SetOwnedElement(Ptr(image));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -434,7 +434,7 @@ InformationListViewItemTemplate
 
 							text = GuiSolidLabelElement::Create();
 							text->SetEllipse(true);
-							cell->SetOwnedElement(text);
+							cell->SetOwnedElement(Ptr(text));
 						}
 						{
 							auto cell = new GuiCellComposition;
@@ -503,7 +503,7 @@ InformationListViewItemTemplate
 									columnTexts[i] = GuiSolidLabelElement::Create();
 									columnTexts[i]->SetText(view->GetColumnText(view->GetDataColumn(i) + 1) + L": ");
 									columnTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-									cell->SetOwnedElement(columnTexts[i]);
+									cell->SetOwnedElement(Ptr(columnTexts[i]));
 								}
 								{
 									auto cell = new GuiCellComposition;
@@ -514,7 +514,7 @@ InformationListViewItemTemplate
 									dataTexts[i]->SetEllipse(true);
 									dataTexts[i]->SetText(view->GetSubItem(itemIndex, view->GetDataColumn(i)));
 									dataTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
-									cell->SetOwnedElement(dataTexts[i]);
+									cell->SetOwnedElement(Ptr(dataTexts[i]));
 								}
 							}
 						}
@@ -590,7 +590,7 @@ DetailListViewItemTemplate
 
 								image = GuiImageFrameElement::Create();
 								image->SetStretch(true);
-								cell->SetOwnedElement(image);
+								cell->SetOwnedElement(Ptr(image));
 							}
 							{
 								auto cell = new GuiCellComposition;
@@ -601,7 +601,7 @@ DetailListViewItemTemplate
 								text = GuiSolidLabelElement::Create();
 								text->SetAlignments(Alignment::Left, Alignment::Center);
 								text->SetEllipse(true);
-								cell->SetOwnedElement(text);
+								cell->SetOwnedElement(Ptr(text));
 							}
 						}
 					}
@@ -639,7 +639,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetEllipse(true);
 								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
 								subItems[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-								cell->SetOwnedElement(subItems[i]);
+								cell->SetOwnedElement(Ptr(subItems[i]));
 							}
 							OnColumnChanged();
 						}

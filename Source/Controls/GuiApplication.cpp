@@ -472,7 +472,7 @@ GuiApplicationMain
 					GuiApplication app;
 					application = &app;
 					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
-					IAsyncScheduler::RegisterDefaultScheduler(Otr(new OtherThreadAsyncScheduler));
+					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
 					GuiMain();
 					IAsyncScheduler::UnregisterDefaultScheduler();
 					IAsyncScheduler::UnregisterSchedulerForCurrentThread();

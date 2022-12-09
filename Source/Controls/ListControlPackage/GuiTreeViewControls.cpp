@@ -436,14 +436,14 @@ MemoryNodeProvider
 
 				Ptr<INodeProvider> MemoryNodeProvider::GetParent()
 				{
-					return parent;
+					return Ptr(parent);
 				}
 
 				Ptr<INodeProvider> MemoryNodeProvider::GetChild(vint index)
 				{
-					if(0<=index && index<childCount)
+					if (0 <= index && index < childCount)
 					{
-						return children[index].Obj();
+						return children[index];
 					}
 					else
 					{
@@ -563,7 +563,7 @@ MemoryNodeRootProvider
 
 				Ptr<INodeProvider> MemoryNodeRootProvider::GetRootNode()
 				{
-					return this;
+					return Ptr(this);
 				}
 
 				MemoryNodeProvider* MemoryNodeRootProvider::GetMemoryNode(INodeProvider* node)
@@ -639,14 +639,12 @@ GuiVirtualTreeListControl
 
 #define ATTACH_ITEM_MOUSE_EVENT(NODEEVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiNodeMouseEvent&, GuiGraphicsComposition*, GuiItemMouseEventArgs&)> func(this, &GuiVirtualTreeListControl::OnItemMouseEvent);\
-						ITEMEVENTNAME.AttachFunction(Curry(func)(NODEEVENTNAME));\
+						ITEMEVENTNAME.AttachFunction([this](GuiGraphicsComposition* sender, GuiItemMouseEventArgs& args){ OnItemMouseEvent(NODEEVENTNAME, sender, args); });\
 					}\
 
 #define ATTACH_ITEM_NOTIFY_EVENT(NODEEVENTNAME, ITEMEVENTNAME)\
 					{\
-						Func<void(GuiNodeNotifyEvent&, GuiGraphicsComposition*, GuiItemEventArgs&)> func(this, &GuiVirtualTreeListControl::OnItemNotifyEvent);\
-						ITEMEVENTNAME.AttachFunction(Curry(func)(NODEEVENTNAME));\
+						ITEMEVENTNAME.AttachFunction([this](GuiGraphicsComposition* sender, GuiItemEventArgs& args){ OnItemNotifyEvent(NODEEVENTNAME, sender, args); });\
 					}\
 
 			void GuiVirtualTreeListControl::OnNodeLeftButtonDoubleClick(compositions::GuiGraphicsComposition* sender, compositions::GuiNodeMouseEventArgs& arguments)
@@ -907,7 +905,7 @@ GuiVirtualTreeView
 				treeViewItemView = dynamic_cast<tree::ITreeViewItemView*>(GetNodeRootProvider()->RequestView(tree::ITreeViewItemView::Identifier));
 				SetStyleAndArranger(
 					[](const Value&) { return new tree::DefaultTreeItemTemplate; },
-					new list::FixedHeightItemArranger
+					Ptr(new list::FixedHeightItemArranger)
 				);
 			}
 
@@ -920,7 +918,7 @@ GuiTreeView
 ***********************************************************************/
 
 			GuiTreeView::GuiTreeView(theme::ThemeName themeName)
-				:GuiVirtualTreeView(themeName, new tree::TreeViewItemRootProvider)
+				:GuiVirtualTreeView(themeName, Ptr(new tree::TreeViewItemRootProvider))
 			{
 				nodes = nodeItemProvider->GetRoot().Cast<tree::TreeViewItemRootProvider>();
 			}
@@ -1004,7 +1002,7 @@ DefaultTreeItemTemplate
 
 						imageElement = GuiImageFrameElement::Create();
 						imageElement->SetStretch(true);
-						cell->SetOwnedElement(imageElement);
+						cell->SetOwnedElement(Ptr(imageElement));
 					}
 					{
 						GuiCellComposition* cell = new GuiCellComposition;
@@ -1015,7 +1013,7 @@ DefaultTreeItemTemplate
 						textElement = GuiSolidLabelElement::Create();
 						textElement->SetAlignments(Alignment::Left, Alignment::Center);
 						textElement->SetEllipse(true);
-						cell->SetOwnedElement(textElement);
+						cell->SetOwnedElement(Ptr(textElement));
 					}
 
 					FontChanged.AttachMethod(this, &DefaultTreeItemTemplate::OnFontChanged);
