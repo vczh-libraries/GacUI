@@ -360,9 +360,9 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					WindowsGDIRenderTarget* renderTarget=new WindowsGDIRenderTarget(window);
+					auto renderTarget=Ptr(new WindowsGDIRenderTarget(window));
 					renderTargets.Add(renderTarget);
-					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, renderTarget);
+					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override

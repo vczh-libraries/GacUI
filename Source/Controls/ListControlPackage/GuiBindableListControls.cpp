@@ -651,7 +651,7 @@ GuiBindableTreeView::ItemSourceNode
 					for (vint i = 0; i < count; i++)
 					{
 						Value value = childrenVirtualList->Get(i);
-						auto node = new ItemSourceNode(value, this);
+						auto node = Ptr(new ItemSourceNode(value, this));
 						children.Add(node);
 					}
 				}

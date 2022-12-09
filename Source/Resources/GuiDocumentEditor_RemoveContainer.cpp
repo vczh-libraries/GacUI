@@ -53,12 +53,12 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 						}
 					}
 					replacedRuns.Clear();
-					replacedRuns.Add(run);
+					replacedRuns.Add(Ptr(run));
 				}
 
 				void VisitContent(DocumentContentRun* run)
 				{
-					replacedRuns.Add(run);
+					replacedRuns.Add(Ptr(run));
 				}
 
 				void RemoveContainer(DocumentContainerRun* run)

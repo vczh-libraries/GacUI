@@ -92,7 +92,7 @@ namespace vl
 				void Visit(DocumentImageRun* run)override
 				{
 					run->source = L"res://Image_" + itow(imageRuns.Count());
-					imageRuns.Add(run);
+					imageRuns.Add(Ptr(run));
 				}
 			};
 		}

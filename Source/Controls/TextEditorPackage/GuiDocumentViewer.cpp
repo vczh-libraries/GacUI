@@ -693,7 +693,7 @@ GuiDocumentCommonInterface
 				{
 					if (value->paragraphs.Count() == 0)
 					{
-						value->paragraphs.Add(new DocumentParagraphRun);
+						value->paragraphs.Add(Ptr(new DocumentParagraphRun));
 					}
 					MergeBaselineAndDefaultFont(value);
 				}

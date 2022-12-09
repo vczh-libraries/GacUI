@@ -52,7 +52,7 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						}
 					}
 					replacedRuns.Clear();
-					replacedRuns.Add(run);
+					replacedRuns.Add(Ptr(run));
 				}
 
 				void Visit(DocumentTextRun* run)override
@@ -65,15 +65,15 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						if (end<range.end)
 						{
 							run->text = run->text.Sub(end - range.start, range.end - end);
-							replacedRuns.Add(run);
+							replacedRuns.Add(Ptr(run));
 						}
 					}
 					else
 					{
 						if (end<range.end)
 						{
-							DocumentTextRun* firstRun = new DocumentTextRun;
-							DocumentTextRun* secondRun = new DocumentTextRun;
+							auto firstRun = Ptr(new DocumentTextRun);
+							auto secondRun = Ptr(new DocumentTextRun);
 
 							firstRun->text = run->text.Sub(0, start - range.start);
 							secondRun->text = run->text.Sub(end - range.start, range.end - end);
@@ -84,7 +84,7 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 						else
 						{
 							run->text = run->text.Sub(0, start - range.start);
-							replacedRuns.Add(run);
+							replacedRuns.Add(Ptr(run));
 						}
 					}
 				}

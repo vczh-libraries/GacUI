@@ -91,7 +91,7 @@ WindowsResourceService
 					systemCursors.Resize(INativeCursor::SystemCursorCount);
 					for(vint i=0;i<systemCursors.Count();i++)
 					{
-						systemCursors[i]=new WindowsCursor((INativeCursor::SystemCursorType)i);
+						systemCursors[i]=Ptr(new WindowsCursor((INativeCursor::SystemCursorType)i));
 					}
 				}
 				{

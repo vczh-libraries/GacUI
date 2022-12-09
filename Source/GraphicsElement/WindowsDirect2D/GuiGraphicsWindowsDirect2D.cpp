@@ -681,9 +681,9 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					WindowsDirect2DRenderTarget* renderTarget=new WindowsDirect2DRenderTarget(window);
+					auto renderTarget=Ptr(new WindowsDirect2DRenderTarget(window));
 					renderTargets.Add(renderTarget);
-					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, renderTarget);
+					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override

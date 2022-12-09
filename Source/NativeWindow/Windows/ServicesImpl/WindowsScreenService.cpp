@@ -81,7 +81,7 @@ WindowsScreenService
 				MonitorEnumProcData* data=(MonitorEnumProcData*)dwData;
 				if(data->currentScreen==data->screenService->screens.Count())
 				{
-					data->screenService->screens.Add(new WindowsScreen());
+					data->screenService->screens.Add(Ptr(new WindowsScreen));
 				}
 				data->screenService->screens[data->currentScreen]->monitor=hMonitor;
 				data->currentScreen++;

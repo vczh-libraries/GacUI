@@ -919,7 +919,7 @@ WindowsForm
 				bool								enabledActivate = true;
 				List<Ptr<INativeMessageHandler>>	messageHandlers;
 				bool								supressingAlt = false;
-				Ptr<bool>							flagDisposed = new bool(false);
+				Ptr<bool>							flagDisposed = Ptr(new bool(false));
 				NativeMargin						customFramePadding;
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
@@ -1272,7 +1272,7 @@ WindowsForm
 							}
 							if (icon != NULL)
 							{
-								defaultIcon = new GuiImageData(CreateImageFromHICON(icon), 0);
+								defaultIcon = Ptr(new GuiImageData(CreateImageFromHICON(icon), 0));
 							}
 						}
 						return defaultIcon;
