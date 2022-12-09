@@ -56,7 +56,7 @@ ParsingGeneralParser
 					const RegexToken* token=&state.GetTokens().Get(i);
 					if(token->token==-1 || !token->completeToken)
 					{
-						errors.Add(new ParsingError(token, L"Unrecognizable token: \""+WString::CopyFrom(token->reading, token->length)+L"\"."));
+						errors.Add(Ptr(new ParsingError(token, L"Unrecognizable token: \""+WString::CopyFrom(token->reading, token->length)+L"\".")));
 					}
 				}
 
@@ -66,7 +66,7 @@ ParsingGeneralParser
 					if(!result)
 					{
 						const RegexToken* token=state.GetToken(state.GetCurrentToken());
-						errors.Add(new ParsingError(token, L"Internal error when parsing."));
+						errors.Add(Ptr(new ParsingError(token, L"Internal error when parsing.")));
 						return false;
 					}
 					else if(result.transitionType==ParsingState::TransitionResult::SkipToken)
@@ -74,7 +74,7 @@ ParsingGeneralParser
 						if(state.GetCurrentTableTokenIndex()==ParsingTable::TokenFinish)
 						{
 							const RegexToken* token=state.GetToken(state.GetCurrentToken());
-							errors.Add(new ParsingError(token, L"Failed to recover error when reaching the end of the input."));
+							errors.Add(Ptr(new ParsingError(token, L"Failed to recover error when reaching the end of the input.")));
 							return false;
 						}
 						else
@@ -86,7 +86,7 @@ ParsingGeneralParser
 					else if(!processor.Run(result))
 					{
 						const RegexToken* token=state.GetToken(state.GetCurrentToken());
-						errors.Add(new ParsingError(token, L"Internal error when building the parsing tree."));
+						errors.Add(Ptr(new ParsingError(token, L"Internal error when building the parsing tree.")));
 						return false;
 					}
 					if(result.tableTokenIndex==ParsingTable::TokenFinish && !processor.GetProcessingAmbiguityBranch())
@@ -106,7 +106,7 @@ ParsingGeneralParser
 				Ptr<ParsingTreeNode> node=builder.GetNode();
 				if(!node)
 				{
-					errors.Add(new ParsingError(L"Internal error when building the parsing tree after a succeeded parsing process."));
+					errors.Add(Ptr(new ParsingError(L"Internal error when building the parsing tree after a succeeded parsing process.")));
 					return 0;
 				}
 				return node;
@@ -117,7 +117,7 @@ ParsingGeneralParser
 				ParsingState state(input, table, codeIndex);
 				if(state.Reset(rule)==-1)
 				{
-					errors.Add(new ParsingError(L"Rule \""+rule+L"\" does not exist."));
+					errors.Add(Ptr(new ParsingError(L"Rule \""+rule+L"\" does not exist.")));
 					return 0;
 				}
 				return Parse(state, errors);
@@ -139,7 +139,7 @@ ParsingStrictParser
 			ParsingState::TransitionResult ParsingStrictParser::OnErrorRecover(ParsingState& state, vint currentTokenIndex, collections::List<Ptr<ParsingError>>& errors)
 			{
 				const RegexToken* token=state.GetToken(state.GetCurrentToken());
-				errors.Add(new ParsingError(token, (token==0?L"Error happened during parsing when reaching the end of the input.":L"Error happened during parsing.")));
+				errors.Add(Ptr(new ParsingError(token, (token==0?L"Error happened during parsing when reaching the end of the input.":L"Error happened during parsing."))));
 				return ParsingState::TransitionResult();
 			}
 
@@ -634,7 +634,7 @@ ParsingAmbiguousParser
 				if(ambiguityNodeType==L"")
 				{
 					const RegexToken* token=state.GetToken(state.GetCurrentToken());
-					errors.Add(new ParsingError(token, L"Ambiguity happens when reducing rule \""+ambiguityRuleName+L"\" but this rule does not have an associated ambiguous node type."));
+					errors.Add(Ptr(new ParsingError(token, L"Ambiguity happens when reducing rule \""+ambiguityRuleName+L"\" but this rule does not have an associated ambiguous node type.")));
 					return;
 				}
 
@@ -642,7 +642,7 @@ ParsingAmbiguousParser
 				if(affectedStackNodeCount==-1)
 				{
 					const RegexToken* token=state.GetToken(state.GetCurrentToken());
-					errors.Add(new ParsingError(token, (token==0?L"Failed to pass ambiguity checking during parsing when reaching to the end of the input.":L"Failed to pass ambiguity checking during parsing.")));
+					errors.Add(Ptr(new ParsingError(token, (token==0?L"Failed to pass ambiguity checking during parsing when reaching to the end of the input.":L"Failed to pass ambiguity checking during parsing."))));
 					return;
 				}
 
@@ -704,7 +704,7 @@ ParsingAmbiguousParser
 				if(end-begin==0)
 				{
 					const RegexToken* token=state.GetToken(state.GetCurrentToken());
-					errors.Add(new ParsingError(token, (token==0?L"Error happened during parsing when reaching to the end of the input.":L"Error happened during parsing.")));
+					errors.Add(Ptr(new ParsingError(token, (token==0?L"Error happened during parsing when reaching to the end of the input.":L"Error happened during parsing."))));
 				}
 				else if(end-begin==1)
 				{
@@ -877,11 +877,11 @@ Helper Functions
 				{
 					if(table->GetAmbiguity())
 					{
-						return new ParsingAmbiguousParser(table);
+						return Ptr(new ParsingAmbiguousParser(table));
 					}
 					else
 					{
-						return new ParsingStrictParser(table);
+						return Ptr(new ParsingStrictParser(table));
 					}
 				}
 				else
@@ -896,11 +896,11 @@ Helper Functions
 				{
 					if(table->GetAmbiguity())
 					{
-						return new ParsingAutoRecoverAmbiguousParser(table);
+						return Ptr(new ParsingAutoRecoverAmbiguousParser(table));
 					}
 					else
 					{
-						return new ParsingAutoRecoverParser(table);
+						return Ptr(new ParsingAutoRecoverParser(table));
 					}
 				}
 				else
@@ -1076,7 +1076,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new ParsingTypeLoader;
+					auto loader = Ptr(new ParsingTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -1322,8 +1322,8 @@ ParsingSymbolManager
 			{
 				globalSymbol=new ParsingSymbol(this, ParsingSymbol::Global, L"", 0, L"");
 				tokenTypeSymbol=new ParsingSymbol(this, ParsingSymbol::TokenType, L"token", 0, L"");
-				createdSymbols.Add(globalSymbol);
-				createdSymbols.Add(tokenTypeSymbol);
+				createdSymbols.Add(Ptr(globalSymbol));
+				createdSymbols.Add(Ptr(tokenTypeSymbol));
 			}
 
 			ParsingSymbolManager::~ParsingSymbolManager()
@@ -1347,13 +1347,13 @@ ParsingSymbolManager
 					if(!elementType->arrayTypeSymbol)
 					{
 						elementType->arrayTypeSymbol=new ParsingSymbol(this, ParsingSymbol::ArrayType, L"", elementType, L"");
-						createdSymbols.Add(elementType->arrayTypeSymbol);
+						createdSymbols.Add(Ptr(elementType->arrayTypeSymbol));
 					}
 					return elementType->arrayTypeSymbol;
 				}
 				else
 				{
-					return 0;
+					return nullptr;
 				}
 			}
 
@@ -1361,77 +1361,77 @@ ParsingSymbolManager
 			{
 				if((!baseType || baseType->GetType()==ParsingSymbol::ClassType) && (!parentType || parentType->IsType()))
 				{
-					ParsingSymbol* symbol=new ParsingSymbol(this, ParsingSymbol::ClassType, classDef->name, baseType, L"");
+					auto symbol = Ptr(new ParsingSymbol(this, ParsingSymbol::ClassType, classDef->name, baseType, L""));
 					if(TryAddSubSymbol(symbol, parentType?parentType:globalSymbol))
 					{
-						symbolClassDefinitionCache.Add(symbol, classDef);
-						classDefinitionSymbolCache.Add(classDef, symbol);
-						return symbol;
+						symbolClassDefinitionCache.Add(symbol.Obj(), classDef);
+						classDefinitionSymbolCache.Add(classDef, symbol.Obj());
+						return symbol.Obj();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			ParsingSymbol* ParsingSymbolManager::AddField(const WString& name, ParsingSymbol* classType, ParsingSymbol* fieldType)
 			{
 				if(classType && classType->GetType()==ParsingSymbol::ClassType && fieldType && fieldType->IsType())
 				{
-					ParsingSymbol* symbol=new ParsingSymbol(this, ParsingSymbol::ClassField, name, fieldType, L"");
+					auto symbol = Ptr(new ParsingSymbol(this, ParsingSymbol::ClassField, name, fieldType, L""));
 					if(TryAddSubSymbol(symbol, classType))
 					{
-						return symbol;
+						return symbol.Obj();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			ParsingSymbol* ParsingSymbolManager::AddEnum(const WString& name, ParsingSymbol* parentType)
 			{
 				if(!parentType || parentType->GetType()==ParsingSymbol::ClassType)
 				{
-					ParsingSymbol* symbol=new ParsingSymbol(this, ParsingSymbol::EnumType, name, 0, L"");
+					auto symbol = Ptr(new ParsingSymbol(this, ParsingSymbol::EnumType, name, 0, L""));
 					if(TryAddSubSymbol(symbol, parentType?parentType:globalSymbol))
 					{
-						return symbol;
+						return symbol.Obj();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			ParsingSymbol* ParsingSymbolManager::AddEnumItem(const WString& name, ParsingSymbol* enumType)
 			{
 				if(enumType && enumType->GetType()==ParsingSymbol::EnumType)
 				{
-					ParsingSymbol* symbol=new ParsingSymbol(this, ParsingSymbol::EnumItem, name, enumType, L"");
+					auto symbol = Ptr(new ParsingSymbol(this, ParsingSymbol::EnumItem, name, enumType, L""));
 					if(TryAddSubSymbol(symbol, enumType))
 					{
-						return symbol;
+						return symbol.Obj();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			ParsingSymbol* ParsingSymbolManager::AddTokenDefinition(const WString& name, const WString& regex)
 			{
-				ParsingSymbol* symbol=new ParsingSymbol(this, ParsingSymbol::TokenDef, name, tokenTypeSymbol, regex);
+				auto symbol = Ptr(new ParsingSymbol(this, ParsingSymbol::TokenDef, name, tokenTypeSymbol, regex));
 				if(TryAddSubSymbol(symbol, globalSymbol))
 				{
-					return symbol;
+					return symbol.Obj();
 				}
-				return 0;
+				return nullptr;
 			}
 
 			ParsingSymbol* ParsingSymbolManager::AddRuleDefinition(const WString& name, ParsingSymbol* ruleType)
 			{
 				if(ruleType && ruleType->IsType())
 				{
-					ParsingSymbol* symbol=new ParsingSymbol(this, ParsingSymbol::RuleDef, name, ruleType, L"");
+					auto symbol = Ptr(new ParsingSymbol(this, ParsingSymbol::RuleDef, name, ruleType, L""));
 					if(TryAddSubSymbol(symbol, globalSymbol))
 					{
-						return symbol;
+						return symbol.Obj();
 					}
 				}
-				return 0;
+				return nullptr;
 			}
 
 			ParsingSymbolManager::ClassDefinition* ParsingSymbolManager::CacheGetClassDefinition(ParsingSymbol* type)
@@ -1565,13 +1565,13 @@ FindType
 							}
 							else
 							{
-								errors.Add(new ParsingError(node, L"\""+node->name+L"\" in current scope is not a type."));
+								errors.Add(Ptr(new ParsingError(node, L"\"" + node->name + L"\" in current scope is not a type.")));
 							}
 							return;
 						}
 						currentScope=currentScope->GetParentSymbol();
 					}
-					errors.Add(new ParsingError(node, L"Cannot not find \""+node->name+L"\" in current scope."));
+					errors.Add(Ptr(new ParsingError(node, L"Cannot not find \"" + node->name + L"\" in current scope.")));
 				}
 
 				void Visit(ParsingDefinitionTokenType* node)override
@@ -1587,7 +1587,7 @@ FindType
 						ParsingSymbol* subType=type->SearchClassSubSymbol(node->subTypeName);
 						if(!subType)
 						{
-							errors.Add(new ParsingError(node, L"\""+GetTypeFullName(type)+L"\" does not has a sub type called \""+node->subTypeName+L"\"."));
+							errors.Add(Ptr(new ParsingError(node, L"\"" + GetTypeFullName(type) + L"\" does not has a sub type called \"" + node->subTypeName + L"\".")));
 						}
 						else if(subType->IsType())
 						{
@@ -1595,7 +1595,7 @@ FindType
 						}
 						else
 						{
-							errors.Add(new ParsingError(node, L"\""+GetTypeFullName(type)+L"\" contains a sub definition called \""+node->subTypeName+L"\" but this is not a type."));
+							errors.Add(Ptr(new ParsingError(node, L"\"" + GetTypeFullName(type) + L"\" contains a sub definition called \"" + node->subTypeName + L"\" but this is not a type.")));
 						}
 					}
 				}
@@ -1645,7 +1645,7 @@ PrepareSymbols
 				{
 					if(scope->SearchClassSubSymbol(node->name))
 					{
-						errors.Add(new ParsingError(node, L"Cannot redefine \""+node->name+L"\" to be "+subjectName+L"."));
+						errors.Add(Ptr(new ParsingError(node, L"Cannot redefine \"" + node->name + L"\" to be " + subjectName + L".")));
 						return false;
 					}
 					else
@@ -1664,7 +1664,7 @@ PrepareSymbols
 							ParsingSymbol* field=manager->AddField(node->name, scope, fieldType);
 							if(!field)
 							{
-								errors.Add(new ParsingError(node, L"A class field cannot be defined here."));
+								errors.Add(Ptr(new ParsingError(node, L"A class field cannot be defined here.")));
 							}
 						}
 					}
@@ -1694,7 +1694,7 @@ PrepareSymbols
 						}
 						else
 						{
-							errors.Add(new ParsingError(node, L"A class type cannot be defined here."));
+							errors.Add(Ptr(new ParsingError(node, L"A class type cannot be defined here.")));
 						}
 					}
 				}
@@ -1706,7 +1706,7 @@ PrepareSymbols
 						ParsingSymbol* enumItem=manager->AddEnumItem(node->name, scope);
 						if(!enumItem)
 						{
-							errors.Add(new ParsingError(node, L"An enum item cannot be defined here."));
+							errors.Add(Ptr(new ParsingError(node, L"An enum item cannot be defined here.")));
 						}
 					}
 				}
@@ -1726,7 +1726,7 @@ PrepareSymbols
 						}
 						else
 						{
-							errors.Add(new ParsingError(node, L"An enum type cannot be defined here."));
+							errors.Add(Ptr(new ParsingError(node, L"An enum type cannot be defined here.")));
 						}
 					}
 				}
@@ -1746,7 +1746,7 @@ PrepareSymbols
 				{
 					if(manager->GetGlobal()->GetSubSymbolByName(token->name))
 					{
-						errors.Add(new ParsingError(token.Obj(), L"Cannot redefine \""+token->name+L"\" to be a token definition."));
+						errors.Add(Ptr(new ParsingError(token.Obj(), L"Cannot redefine \""+token->name+L"\" to be a token definition.")));
 					}
 					else
 					{
@@ -1757,7 +1757,7 @@ PrepareSymbols
 						}
 						catch(const regex_internal::RegexException& ex)
 						{
-							errors.Add(new ParsingError(token.Obj(), L"Wrong token definition for \""+token->name+L"\": "+ex.Message()));
+							errors.Add(Ptr(new ParsingError(token.Obj(), L"Wrong token definition for \""+token->name+L"\": "+ex.Message())));
 						}
 					}
 				}
@@ -1766,7 +1766,7 @@ PrepareSymbols
 				{
 					if(manager->GetGlobal()->GetSubSymbolByName(rule->name))
 					{
-						errors.Add(new ParsingError(rule.Obj(), L"Cannot redefine \""+rule->name+L"\" to be a rule definition."));
+						errors.Add(Ptr(new ParsingError(rule.Obj(), L"Cannot redefine \""+rule->name+L"\" to be a rule definition.")));
 					}
 					else
 					{
@@ -1775,7 +1775,7 @@ PrepareSymbols
 						{
 							if(type->GetType()!=ParsingSymbol::ClassType)
 							{
-								errors.Add(new ParsingError(rule.Obj(), L"\""+GetTypeFullName(type)+L"\" cannot be a type of a rule because this is not a class type."));
+								errors.Add(Ptr(new ParsingError(rule.Obj(), L"\""+GetTypeFullName(type)+L"\" cannot be a type of a rule because this is not a class type.")));
 							}
 							manager->AddRuleDefinition(rule->name, type);
 						}
@@ -1817,12 +1817,12 @@ ValidateRuleStructure
 						}
 						if(!currentType)
 						{
-							errors.Add(new ParsingError(node, L"Cannot create type \""+GetTypeFullName(nodeType)+L"\" in a rule of type \""+GetTypeFullName(ruleType)+L"\" because there are no implicit conversions from the created type to the rule type."));
+							errors.Add(Ptr(new ParsingError(node, L"Cannot create type \""+GetTypeFullName(nodeType)+L"\" in a rule of type \""+GetTypeFullName(ruleType)+L"\" because there are no implicit conversions from the created type to the rule type.")));
 						}
 					}
 					else
 					{
-						errors.Add(new ParsingError(node, L"\""+GetTypeFullName(nodeType)+L"\" cannot be created because this is not a class type."));
+						errors.Add(Ptr(new ParsingError(node, L"\""+GetTypeFullName(nodeType)+L"\" cannot be created because this is not a class type.")));
 					}
 				}
 
@@ -1831,7 +1831,7 @@ ValidateRuleStructure
 					ParsingSymbol* symbol=manager->GetGlobal()->GetSubSymbolByName(node->name);
 					if(!symbol)
 					{
-						errors.Add(new ParsingError(node, L"Cannot find a token or a rule with name \""+node->name+L"\"."));
+						errors.Add(Ptr(new ParsingError(node, L"Cannot find a token or a rule with name \""+node->name+L"\".")));
 					}
 					else switch(symbol->GetType())
 					{
@@ -1848,7 +1848,7 @@ ValidateRuleStructure
 							}
 							if(discard)
 							{
-								errors.Add(new ParsingError(node, L"Cannot use discard token \""+node->name+L"\" as input."));
+								errors.Add(Ptr(new ParsingError(node, L"Cannot use discard token \""+node->name+L"\" as input.")));
 								break;
 							}
 						}
@@ -1860,7 +1860,7 @@ ValidateRuleStructure
 						}
 						break;
 					default:
-						errors.Add(new ParsingError(node, L"\""+node->name+L"\" is not a token definition or rule definition."));
+						errors.Add(Ptr(new ParsingError(node, L"\""+node->name+L"\" is not a token definition or rule definition.")));
 					}
 				}
 
@@ -1881,7 +1881,7 @@ ValidateRuleStructure
 							}
 						}
 					}
-					errors.Add(new ParsingError(node, L"Cannot find a token whose definition is exactly \"" + u32tow(regex) + L"\"."));
+					errors.Add(Ptr(new ParsingError(node, L"Cannot find a token whose definition is exactly \"" + u32tow(regex) + L"\".")));
 				}
 
 				void Visit(ParsingDefinitionSequenceGrammar* node)override
@@ -1912,7 +1912,7 @@ ValidateRuleStructure
 				{
 					if(loopCount>0)
 					{
-						errors.Add(new ParsingError(node, L"Parsing tree node creation (the \"as\" operator) is not allowed inside loops."));
+						errors.Add(Ptr(new ParsingError(node, L"Parsing tree node creation (the \"as\" operator) is not allowed inside loops.")));
 					}
 					if(ParsingSymbol* nodeType=FindType(node->type.Obj(), manager, 0, errors))
 					{
@@ -1925,7 +1925,7 @@ ValidateRuleStructure
 				{
 					if(!node->grammar.Cast<ParsingDefinitionPrimitiveGrammar>() && !node->grammar.Cast<ParsingDefinitionTextGrammar>())
 					{
-						errors.Add(new ParsingError(node, L"Only parsing tree node returned from a rule or a token can be assigned to a class field."));
+						errors.Add(Ptr(new ParsingError(node, L"Only parsing tree node returned from a rule or a token can be assigned to a class field.")));
 					}
 					node->grammar->Accept(this);
 				}
@@ -1934,17 +1934,17 @@ ValidateRuleStructure
 				{
 					if(loopCount>0)
 					{
-						errors.Add(new ParsingError(node, L"Parsing tree node reusing (the \"!\" operator) is not allowed inside loops."));
+						errors.Add(Ptr(new ParsingError(node, L"Parsing tree node reusing (the \"!\" operator) is not allowed inside loops.")));
 					}
 					if(!node->grammar.Cast<ParsingDefinitionPrimitiveGrammar>())
 					{
-						errors.Add(new ParsingError(node, L"Only parsing tree node returned from a rule can be reused."));
+						errors.Add(Ptr(new ParsingError(node, L"Only parsing tree node returned from a rule can be reused.")));
 					}
 					else if(ParsingSymbol* symbol=manager->CacheGetSymbol(node->grammar.Obj()))
 					{
 						if(symbol->GetType()!=ParsingSymbol::RuleDef)
 						{
-							errors.Add(new ParsingError(node, L"Only parsing tree node returned from a rule can be reused."));
+							errors.Add(Ptr(new ParsingError(node, L"Only parsing tree node returned from a rule can be reused.")));
 						}
 					}
 					if(ParsingSymbol* nodeType=manager->CacheGetType(node->grammar.Obj()))
@@ -2053,22 +2053,22 @@ ResolveRuleSymbols
 				{
 					if(currentFragmentEnds.Count()==0)
 					{
-						GrammarPathFragment* fragment=new GrammarPathFragment;
+						auto fragment = Ptr(new GrammarPathFragment);
 						fragment->grammar=node;
 						fragment->epsilon=epsilon;
 						fragment->createdType=createdType;
 						createdFragments.Add(fragment);
-						currentFragmentEnds.Add(fragment);
+						currentFragmentEnds.Add(fragment.Obj());
 					}
 					else for(vint i=0;i<currentFragmentEnds.Count();i++)
 					{
-						GrammarPathFragment* fragment=new GrammarPathFragment;
+						auto fragment = Ptr(new GrammarPathFragment);
 						fragment->grammar=node;
 						fragment->epsilon=epsilon;
 						fragment->createdType=createdType;
 						createdFragments.Add(fragment);
 						fragment->previousFragment=currentFragmentEnds[i];
-						currentFragmentEnds[i]=fragment;
+						currentFragmentEnds[i] = fragment.Obj();
 					}
 				}
 
@@ -2076,7 +2076,7 @@ ResolveRuleSymbols
 				{
 					for (auto fragment : currentFragmentEnds)
 					{
-						Ptr<GrammarPath> path=new GrammarPath;
+						auto path = Ptr(new GrammarPath);
 						paths.Add(path);
 
 						GrammarPathFragment* current=fragment;
@@ -2196,11 +2196,11 @@ ResolveRuleSymbols
 						ParsingSymbol* field=pathType->SearchClassSubSymbol(fieldName);
 						if(!field)
 						{
-							errors.Add(new ParsingError(node, L"There are multiple grammar paths with different created types get through this operation for class field \""+fieldName+L"\", but the common base type \""+GetTypeFullName(pathType)+L"\" of these types doesn't contains the required class field. Types: "+typeNames+L"; Paths: "+pathNames+L"."));
+							errors.Add(Ptr(new ParsingError(node, L"There are multiple grammar paths with different created types get through this operation for class field \""+fieldName+L"\", but the common base type \""+GetTypeFullName(pathType)+L"\" of these types doesn't contains the required class field. Types: "+typeNames+L"; Paths: "+pathNames+L".")));
 						}
 						else if(field->GetType()!=ParsingSymbol::ClassField)
 						{
-							errors.Add(new ParsingError(node, L"There are multiple grammar paths with different created types get through this operation for class field \""+fieldName+L"\", and the common base type \""+GetTypeFullName(pathType)+L"\" of these types contains a symbol called \""+fieldName+L"\", but this is not a class field. Types: "+typeNames+L"; Paths: "+pathNames+L"."));
+							errors.Add(Ptr(new ParsingError(node, L"There are multiple grammar paths with different created types get through this operation for class field \""+fieldName+L"\", and the common base type \""+GetTypeFullName(pathType)+L"\" of these types contains a symbol called \""+fieldName+L"\", but this is not a class field. Types: "+typeNames+L"; Paths: "+pathNames+L".")));
 						}
 						else
 						{
@@ -2209,7 +2209,7 @@ ResolveRuleSymbols
 					}
 					else
 					{
-						errors.Add(new ParsingError(node, L"There are multiple grammar paths with different created types get through this operation for class field \""+fieldName+L"\", but these types don't have a common base type. Types: "+typeNames+L"; Paths: "+pathNames+L"."));
+						errors.Add(Ptr(new ParsingError(node, L"There are multiple grammar paths with different created types get through this operation for class field \""+fieldName+L"\", but these types don't have a common base type. Types: "+typeNames+L"; Paths: "+pathNames+L".")));
 					}
 					return 0;
 				}
@@ -2258,7 +2258,7 @@ ResolveRuleSymbols
 						}
 						if(targetFieldType!=valueType && valueType->SearchCommonBaseClass(targetFieldType)!=targetFieldType)
 						{
-							errors.Add(new ParsingError(node, L"Cannot assign value from grammar {"+GrammarToString(node->grammar.Obj())+L"} of type \""+GetTypeFullName(valueType)+L"\" to the field \""+node->memberName+L"\" of type \""+GetTypeFullName(fieldType)+L"\"."));
+							errors.Add(Ptr(new ParsingError(node, L"Cannot assign value from grammar {"+GrammarToString(node->grammar.Obj())+L"} of type \""+GetTypeFullName(valueType)+L"\" to the field \""+node->memberName+L"\" of type \""+GetTypeFullName(fieldType)+L"\".")));
 						}
 					}
 				}
@@ -2276,7 +2276,7 @@ ResolveRuleSymbols
 
 						if(field->GetDescriptorSymbol()->GetType()!=ParsingSymbol::EnumType)
 						{
-							errors.Add(new ParsingError(node, L"Setter operation (the \"with\" operator) can only specify the value of a class field of an enum type. But \""+GetTypeFullName(field->GetDescriptorSymbol())+L"\" is not a enum type."));
+							errors.Add(Ptr(new ParsingError(node, L"Setter operation (the \"with\" operator) can only specify the value of a class field of an enum type. But \""+GetTypeFullName(field->GetDescriptorSymbol())+L"\" is not a enum type.")));
 						}
 						else
 						{
@@ -2284,11 +2284,11 @@ ResolveRuleSymbols
 							ParsingSymbol* enumItem=enumType->GetSubSymbolByName(node->value);
 							if(!enumItem)
 							{
-								errors.Add(new ParsingError(node, L"Type \""+GetTypeFullName(enumType)+L"\" from field \""+node->memberName+L"\" does not have an enum item called \""+node->value+L"\"."));
+								errors.Add(Ptr(new ParsingError(node, L"Type \""+GetTypeFullName(enumType)+L"\" from field \""+node->memberName+L"\" does not have an enum item called \""+node->value+L"\".")));
 							}
 							else if(enumItem->GetType()!=ParsingSymbol::EnumItem)
 							{
-								errors.Add(new ParsingError(node, L"Type \""+GetTypeFullName(enumType)+L"\" from field \""+node->memberName+L"\" has a symbol called \""+node->value+L"\", but this is not an enum item."));
+								errors.Add(Ptr(new ParsingError(node, L"Type \""+GetTypeFullName(enumType)+L"\" from field \""+node->memberName+L"\" has a symbol called \""+node->value+L"\", but this is not an enum item.")));
 							}
 						}
 					}
@@ -2328,15 +2328,15 @@ ResolveRuleSymbols
 
 						if(createdTypeCount==0)
 						{
-							errors.Add(new ParsingError(grammar.Obj(), L"No parsing tree node is created if the following path is chosen: \""+path->ToString()+L"\" in rule \""+rule->name+L"\"."));
+							errors.Add(Ptr(new ParsingError(grammar.Obj(), L"No parsing tree node is created if the following path is chosen: \""+path->ToString()+L"\" in rule \""+rule->name+L"\".")));
 						}
 						else if(createdTypeCount>1)
 						{
-							errors.Add(new ParsingError(grammar.Obj(), L"Multiple parsing tree nodes are created if the following path is chosen: \""+path->ToString()+L"\" in rule \""+rule->name+L"\"."));
+							errors.Add(Ptr(new ParsingError(grammar.Obj(), L"Multiple parsing tree nodes are created if the following path is chosen: \""+path->ToString()+L"\" in rule \""+rule->name+L"\".")));
 						}
 						if(transitionCount==0)
 						{
-							errors.Add(new ParsingError(grammar.Obj(), L"Rule \""+rule->name+L"\" is not allowed to infer to an empty token sequence."));
+							errors.Add(Ptr(new ParsingError(grammar.Obj(), L"Rule \""+rule->name+L"\" is not allowed to infer to an empty token sequence.")));
 						}
 					}
 
@@ -2350,7 +2350,7 @@ ResolveRuleSymbols
 							vint index=grammarPathMap.Keys().IndexOf(grammar);
 							if(index==-1)
 							{
-								container=new GrammarPathContainer;
+								container = Ptr(new GrammarPathContainer);
 								grammarPathMap.Add(grammar, container);
 							}
 							else
@@ -2383,15 +2383,15 @@ ResolveSymbols
 						WString ambiguousTypeText=TypeToString(node->ambiguousType.Obj());
 						if(!ambigiousType)
 						{
-							errors.Add(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" does not exist."));
+							errors.Add(Ptr(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" does not exist.")));
 						}
 						else if(ambigiousType->GetType()!=ParsingSymbol::ClassType)
 						{
-							errors.Add(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" is not a type."));
+							errors.Add(Ptr(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" is not a type.")));
 						}
 						else if(ambigiousType->GetDescriptorSymbol()!=manager->GetGlobal()->GetSubSymbolByName(node->name))
 						{
-							errors.Add(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" does not inherit from \""+node->name+L"\"."));
+							errors.Add(Ptr(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" does not inherit from \""+node->name+L"\".")));
 						}
 						else
 						{
@@ -2410,7 +2410,7 @@ ResolveSymbols
 							}
 							if(!correct)
 							{
-								errors.Add(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" can only contains one field called \"item\" which should be an array of \""+node->name+L"\"."));
+								errors.Add(Ptr(new ParsingError(node.Obj(), L"Ambiguous type \""+ambiguousTypeText+L"\" for type \""+node->name+L"\" can only contains one field called \"item\" which should be an array of \""+node->name+L"\".")));
 							}
 						}
 					}
@@ -2598,43 +2598,43 @@ Automaton
 
 			State* Automaton::RuleStartState(definitions::ParsingDefinitionRuleDefinition* ownerRule)
 			{
-				State* state=new State;
+				auto state = Ptr(new State);
 				states.Add(state);
 
 				state->ownerRule=ownerRule;
 				state->ownerRuleSymbol=symbolManager->GetGlobal()->GetSubSymbolByName(ownerRule->name);
 				state->stateName=ownerRule->name+L".Start";
 				state->stateExpression=L"@ <"+ownerRule->name+L">";
-				return state;
+				return state.Obj();
 			}
 
 			State* Automaton::RootRuleStartState(definitions::ParsingDefinitionRuleDefinition* ownerRule)
 			{
-				State* state=new State;
+				auto state = Ptr(new State);
 				states.Add(state);
 
 				state->ownerRule=ownerRule;
 				state->ownerRuleSymbol=symbolManager->GetGlobal()->GetSubSymbolByName(ownerRule->name);
 				state->stateName=ownerRule->name+L".RootStart";
 				state->stateExpression=L"@ $<"+ownerRule->name+L">";
-				return state;
+				return state.Obj();
 			}
 
 			State* Automaton::RootRuleEndState(definitions::ParsingDefinitionRuleDefinition* ownerRule)
 			{
-				State* state=new State;
+				auto state = Ptr(new State);
 				states.Add(state);
 
 				state->ownerRule=ownerRule;
 				state->ownerRuleSymbol=symbolManager->GetGlobal()->GetSubSymbolByName(ownerRule->name);
 				state->stateName=ownerRule->name+L".RootEnd";
 				state->stateExpression=L"$<"+ownerRule->name+L"> @";
-				return state;
+				return state.Obj();
 			}
 
 			State* Automaton::StartState(definitions::ParsingDefinitionRuleDefinition* ownerRule, definitions::ParsingDefinitionGrammar* grammarNode, definitions::ParsingDefinitionGrammar* stateNode)
 			{
-				State* state=new State;
+				auto state = Ptr(new State);
 				states.Add(state);
 
 				state->ownerRule=ownerRule;
@@ -2645,12 +2645,12 @@ Automaton
 				state->stateName=ownerRule->name+L"."+itow(++ruleDefToInfoMap[ownerRule]->stateNameCount);
 				stateNode=FindAppropriateGrammarState(grammarNode, stateNode, true);
 				state->stateExpression=L"<"+ownerRule->name+L">: "+GrammarStateToString(grammarNode, stateNode, true);
-				return state;
+				return state.Obj();
 			}
 
 			State* Automaton::EndState(definitions::ParsingDefinitionRuleDefinition* ownerRule, definitions::ParsingDefinitionGrammar* grammarNode, definitions::ParsingDefinitionGrammar* stateNode)
 			{
-				State* state=new State;
+				auto state = Ptr(new State);
 				states.Add(state);
 
 				state->ownerRule=ownerRule;
@@ -2661,7 +2661,7 @@ Automaton
 				state->stateName=ownerRule->name+L"."+itow(++ruleDefToInfoMap[ownerRule]->stateNameCount);
 				stateNode=FindAppropriateGrammarState(grammarNode, stateNode, false);
 				state->stateExpression=L"<"+ownerRule->name+L">: "+GrammarStateToString(grammarNode, stateNode, false);
-				return state;
+				return state.Obj();
 			}
 
 			State* Automaton::CopyState(State* oldState)
@@ -2681,15 +2681,15 @@ Automaton
 
 			Transition* Automaton::CreateTransition(State* start, State* end)
 			{
-				Transition* transition=new Transition;
+				auto transition = Ptr(new Transition);
 				transitions.Add(transition);
 
-				start->transitions.Add(transition);
-				end->inputs.Add(transition);
+				start->transitions.Add(transition.Obj());
+				end->inputs.Add(transition.Obj());
 
 				transition->source=start;
 				transition->target=end;
-				return transition;
+				return transition.Obj();
 			}
 
 			Transition* Automaton::TokenBegin(State* start, State* end)
@@ -2806,7 +2806,7 @@ CreateNondeterministicPDAFromEpsilonPDA::closure_searching
 				{
 					if(singleTransitionPath->source==state && closurePredicate(singleTransitionPath)!=ClosureItem::Blocked)
 					{
-						Ptr<List<Transition*>> path=new List<Transition*>;
+						auto path = Ptr(new List<Transition*>);
 						CopyFrom(*path.Obj(), transitionPath);
 						closure.Add(ClosureItem(state, path, true));
 						return;
@@ -2831,7 +2831,7 @@ CreateNondeterministicPDAFromEpsilonPDA::closure_searching
 					break;
 				case ClosureItem::Hit:
 					{
-						Ptr<List<Transition*>> path=new List<Transition*>;
+						auto path = Ptr(new List<Transition*>);
 						CopyFrom(*path.Obj(), transitionPath);
 						closure.Add(ClosureItem(state, path, false));
 					}
@@ -3017,7 +3017,7 @@ CreateEpsilonPDAVisitor
 					Create(node->grammar.Obj(), startState, middleState);
 					Transition* transition=automaton->Epsilon(middleState, endState);
 
-					Ptr<Action> action=new Action;
+					auto action = Ptr(new Action);
 					action->actionType=Action::Create;
 					action->actionSource=automaton->symbolManager->CacheGetType(node->type.Obj(), 0);
 					action->creatorRule=rule;
@@ -3028,7 +3028,7 @@ CreateEpsilonPDAVisitor
 				{
 					Transition* transition=Create(node->grammar.Obj(), startState, endState);
 
-					Ptr<Action> action=new Action;
+					auto action = Ptr(new Action);
 					action->actionType=Action::Assign;
 					action->actionSource=automaton->symbolManager->CacheGetSymbol(node);
 					action->creatorRule=rule;
@@ -3039,7 +3039,7 @@ CreateEpsilonPDAVisitor
 				{
 					Transition* transition=Create(node->grammar.Obj(), startState, endState);
 
-					Ptr<Action> action=new Action;
+					auto action = Ptr(new Action);
 					action->actionType=Action::Using;
 					action->creatorRule=rule;
 					transition->actions.Add(action);
@@ -3051,7 +3051,7 @@ CreateEpsilonPDAVisitor
 					Create(node->grammar.Obj(), startState, middleState);
 					Transition* transition=automaton->Epsilon(middleState, endState);
 
-					Ptr<Action> action=new Action;
+					auto action = Ptr(new Action);
 					action->actionType=Action::Setter;
 					action->actionSource=automaton->symbolManager->CacheGetSymbol(node);
 					action->actionTarget=action->actionSource->GetDescriptorSymbol()->GetSubSymbolByName(node->value);
@@ -3066,7 +3066,7 @@ CreateRuleEpsilonPDA
 
 			void CreateRuleEpsilonPDA(Ptr<Automaton> automaton, Ptr<definitions::ParsingDefinitionRuleDefinition> rule, ParsingSymbolManager* manager)
 			{
-				Ptr<RuleInfo> ruleInfo=new RuleInfo;
+				auto ruleInfo = Ptr(new RuleInfo);
 				automaton->AddRuleInfo(rule.Obj(), ruleInfo);
 
 				ruleInfo->rootRuleStartState=automaton->RootRuleStartState(rule.Obj());
@@ -3093,7 +3093,7 @@ CreateEpsilonPDA
 
 			Ptr<Automaton> CreateEpsilonPDA(Ptr<definitions::ParsingDefinition> definition, ParsingSymbolManager* manager)
 			{
-				Ptr<Automaton> automaton=new Automaton(manager);
+				auto automaton = Ptr(new Automaton(manager));
 				for (auto rule : definition->rules)
 				{
 					CreateRuleEpsilonPDA(automaton, rule, manager);
@@ -3279,7 +3279,7 @@ CollectAttribute
 			{
 				for (auto datt : atts)
 				{
-					Ptr<ParsingTable::AttributeInfo> tatt=new ParsingTable::AttributeInfo(datt->name);
+					auto tatt = Ptr(new ParsingTable::AttributeInfo(datt->name));
 					CopyFrom(tatt->arguments, datt->arguments);
 					att->attributes.Add(tatt);
 				}
@@ -3287,7 +3287,7 @@ CollectAttribute
 
 			Ptr<ParsingTable::AttributeInfoList> CreateAttributeInfo(List<Ptr<definitions::ParsingDefinitionAttribute>>& atts)
 			{
-				Ptr<ParsingTable::AttributeInfoList> att=new ParsingTable::AttributeInfoList;
+				auto att = Ptr(new ParsingTable::AttributeInfoList);
 				CollectAttributeInfo(att, atts);
 				return att;
 			}
@@ -3329,13 +3329,13 @@ GenerateTable
 						switch (t1->token)
 						{
 						case ParsingTable::NormalReduce:
-							errors.Add(new ParsingError(stateIds[state]->ownerRule, L"Conflict happened with normal reduce in transition of \""+tokenName+L"\" of state \""+stateName+L"\"."));
+							errors.Add(Ptr(new ParsingError(stateIds[state]->ownerRule, L"Conflict happened with normal reduce in transition of \"" + tokenName + L"\" of state \"" + stateName + L"\".")));
 							break;
 						case ParsingTable::LeftRecursiveReduce:
-							errors.Add(new ParsingError(stateIds[state]->ownerRule, L"Conflict happened with left recursive reduce in transition of \""+tokenName+L"\" of state \""+stateName+L"\"."));
+							errors.Add(Ptr(new ParsingError(stateIds[state]->ownerRule, L"Conflict happened with left recursive reduce in transition of \"" + tokenName + L"\" of state \"" + stateName + L"\".")));
 							break;
 						default:
-							errors.Add(new ParsingError(stateIds[state]->ownerRule, L"Conflict happened in transition of \""+tokenName+L"\" of state \""+stateName+L"\"."));
+							errors.Add(Ptr(new ParsingError(stateIds[state]->ownerRule, L"Conflict happened in transition of \"" + tokenName + L"\" of state \"" + stateName + L"\".")));
 							break;
 						}
 					}
@@ -3361,7 +3361,7 @@ GenerateTable
 				CollectType(manager->GetGlobal(), types);
 				for (auto type : types)
 				{
-					Ptr<ParsingTable::AttributeInfoList> typeAtt = new ParsingTable::AttributeInfoList;
+					auto typeAtt = Ptr(new ParsingTable::AttributeInfoList);
 					ParsingSymbol* parent = type;
 					while (parent)
 					{
@@ -3372,7 +3372,7 @@ GenerateTable
 						vint index = childTypeValues.Keys().IndexOf(parent);
 						if (index == -1)
 						{
-							children = new List<ParsingSymbol*>;
+							children = Ptr(new List<ParsingSymbol*>);
 							orderedChildTypeKeys.Add(parent);
 							childTypeValues.Add(parent, children);
 						}
@@ -3521,7 +3521,7 @@ GenerateTable
 				}
 				vint stateCount = stateIds.Count();
 
-				Ptr<ParsingTable> table = new ParsingTable(atts.Count(), typeAtts.Count(), treeFieldAtts.Count(), tokenCount, discardTokenCount, stateCount, definition->rules.Count());
+				auto table = Ptr(new ParsingTable(atts.Count(), typeAtts.Count(), treeFieldAtts.Count(), tokenCount, discardTokenCount, stateCount, definition->rules.Count()));
 
 				/***********************************************************************
 				fill attribute infos
@@ -3646,11 +3646,11 @@ GenerateTable
 						Ptr<ParsingTable::TransitionBag> bag = table->GetTransitionBag(stateIndex, tokenIndex);
 						if (!bag)
 						{
-							bag = new ParsingTable::TransitionBag;
+							bag = Ptr(new ParsingTable::TransitionBag);
 							table->SetTransitionBag(stateIndex, tokenIndex, bag);
 						}
 
-						Ptr<ParsingTable::TransitionItem> item = new ParsingTable::TransitionItem;
+						auto item = Ptr(new ParsingTable::TransitionItem);
 						item->token = tokenIndex;
 						item->targetState = stateIds.IndexOf(transition->target);
 						bag->transitionItems.Add(item);
@@ -3836,7 +3836,7 @@ CreateJointPDAFromNondeterministicPDA
 
 			Ptr<Automaton> CreateJointPDAFromNondeterministicPDA(Ptr<Automaton> nondeterministicPDA)
 			{
-				Ptr<Automaton> automaton=new Automaton(nondeterministicPDA->symbolManager);
+				auto automaton = Ptr(new Automaton(nondeterministicPDA->symbolManager));
 
 				// build rule info data
 				Dictionary<WString, ParsingDefinitionRuleDefinition*> ruleMap;
@@ -3844,8 +3844,8 @@ CreateJointPDAFromNondeterministicPDA
 				for (auto rule : nondeterministicPDA->orderedRulesDefs)
 				{
 					// build new rule info
-					Ptr<RuleInfo> ruleInfo=nondeterministicPDA->ruleDefToInfoMap[rule];
-					Ptr<RuleInfo> newRuleInfo=new RuleInfo;
+					auto ruleInfo = nondeterministicPDA->ruleDefToInfoMap[rule];
+					auto newRuleInfo = Ptr(new RuleInfo);
 					automaton->AddRuleInfo(rule, newRuleInfo);
 					ruleMap.Add(rule->name, rule);
 
@@ -3913,7 +3913,7 @@ CreateJointPDAFromNondeterministicPDA
 
 								{
 									Transition* shiftTransition=automaton->Epsilon(newSource, oldNewStateMap[oldRuleInfo->startState]);
-									Ptr<Action> action=new Action;
+									auto action = Ptr(new Action);
 									action->actionType=Action::Shift;
 									action->shiftReduceSource=newSource;
 									action->shiftReduceTarget=newTarget;
@@ -3924,7 +3924,7 @@ CreateJointPDAFromNondeterministicPDA
 								for (auto oldEndState : oldRuleInfo->endStates)
 								{
 									Transition* reduceTransition=automaton->NormalReduce(oldNewStateMap[oldEndState], newTarget);
-									Ptr<Action> action=new Action;
+									auto action = Ptr(new Action);
 									action->actionType=Action::Reduce;
 									action->shiftReduceSource=newSource;
 									action->shiftReduceTarget=newTarget;
@@ -4070,7 +4070,7 @@ MarkLeftRecursiveInJointPDA
 								{
 									if(shiftAction)
 									{
-										errors.Add(new ParsingError(state->ownerRule, L"Indirect left recursive transition in rule \""+state->ownerRule->name+L"\" is not allowed."));
+										errors.Add(Ptr(new ParsingError(state->ownerRule, L"Indirect left recursive transition in rule \"" + state->ownerRule->name + L"\" is not allowed.")));
 										goto FOUND_INDIRECT_LEFT_RECURSIVE_TRANSITION;
 									}
 									else
@@ -4113,7 +4113,7 @@ MarkLeftRecursiveInJointPDA
 									{
 										transition->transitionType = Transition::LeftRecursiveReduce;
 										// need to create a new action because in the previous phrases, these action object are shared and treated as read only
-										Ptr<Action> newAction=new Action;
+										auto newAction = Ptr(new Action);
 										newAction->actionType=Action::LeftRecursiveReduce;
 										newAction->actionSource=action->actionSource;
 										newAction->actionTarget=action->actionTarget;
@@ -4125,7 +4125,7 @@ MarkLeftRecursiveInJointPDA
 									}
 									else
 									{
-										errors.Add(new ParsingError(state->ownerRule, L"Left recursive reduce action in non-normal-reduce found in rule \""+state->ownerRule->name+L"\" is not allowed."));
+										errors.Add(Ptr(new ParsingError(state->ownerRule, L"Left recursive reduce action in non-normal-reduce found in rule \"" + state->ownerRule->name + L"\" is not allowed.")));
 									}
 								}
 							}
@@ -4480,12 +4480,12 @@ CreateNondeterministicPDAFromEpsilonPDA
 
 			Ptr<Automaton> CreateNondeterministicPDAFromEpsilonPDA(Ptr<Automaton> epsilonPDA)
 			{
-				Ptr<Automaton> automaton=new Automaton(epsilonPDA->symbolManager);
+				auto automaton = Ptr(new Automaton(epsilonPDA->symbolManager));
 				for (auto rule : epsilonPDA->orderedRulesDefs)
 				{
 					// build new rule info
-					Ptr<RuleInfo> ruleInfo=epsilonPDA->ruleDefToInfoMap[rule];
-					Ptr<RuleInfo> newRuleInfo=new RuleInfo;
+					auto ruleInfo = epsilonPDA->ruleDefToInfoMap[rule];
+					auto newRuleInfo = Ptr(new RuleInfo);
 					automaton->AddRuleInfo(rule, newRuleInfo);
 
 					newRuleInfo->rootRuleStartState=automaton->RootRuleStartState(rule);
@@ -4660,7 +4660,7 @@ ParsingDefinitionTypeWriter
 
 			ParsingDefinitionAttributeWriter::ParsingDefinitionAttributeWriter(const WString& name)
 			{
-				attribute=new ParsingDefinitionAttribute;
+				attribute = Ptr(new ParsingDefinitionAttribute);
 				attribute->name=name;
 			}
 
@@ -4701,14 +4701,14 @@ ParsingDefinitionTypeWriter
 
 			ParsingDefinitionTypeWriter::ParsingDefinitionTypeWriter(const WString& name)
 			{
-				Ptr<ParsingDefinitionPrimitiveType> primitiveType=new ParsingDefinitionPrimitiveType;
+				auto primitiveType = Ptr(new ParsingDefinitionPrimitiveType);
 				primitiveType->name=name;
 				type=primitiveType;
 			}
 
 			ParsingDefinitionTypeWriter ParsingDefinitionTypeWriter::Sub(const WString& subTypeName)const
 			{
-				Ptr<ParsingDefinitionSubType> subType=new ParsingDefinitionSubType;
+				auto subType = Ptr(new ParsingDefinitionSubType);
 				subType->parentType=type;
 				subType->subTypeName=subTypeName;
 				return ParsingDefinitionTypeWriter(subType);
@@ -4716,7 +4716,7 @@ ParsingDefinitionTypeWriter
 
 			ParsingDefinitionTypeWriter ParsingDefinitionTypeWriter::Array()const
 			{
-				Ptr<ParsingDefinitionArrayType> arrayType=new ParsingDefinitionArrayType;
+				auto arrayType = Ptr(new ParsingDefinitionArrayType);
 				arrayType->elementType=type;
 				return ParsingDefinitionTypeWriter(arrayType);
 			}
@@ -4733,7 +4733,7 @@ ParsingDefinitionTypeWriter
 
 			ParsingDefinitionTypeWriter TokenType()
 			{
-				Ptr<ParsingDefinitionTokenType> type=new ParsingDefinitionTokenType;
+				auto type = Ptr(new ParsingDefinitionTokenType);
 				return ParsingDefinitionTypeWriter(type);
 			}
 
@@ -4743,14 +4743,14 @@ ParsingDefinitionClassDefinitionWriter
 
 			ParsingDefinitionClassDefinitionWriter::ParsingDefinitionClassDefinitionWriter(const WString& name)
 			{
-				definition=new ParsingDefinitionClassDefinition;
+				definition = Ptr(new ParsingDefinitionClassDefinition);
 				definition->name=name;
 				currentDefinition=definition;
 			}
 
 			ParsingDefinitionClassDefinitionWriter::ParsingDefinitionClassDefinitionWriter(const WString& name, const ParsingDefinitionTypeWriter& parentType)
 			{
-				definition=new ParsingDefinitionClassDefinition;
+				definition = Ptr(new ParsingDefinitionClassDefinition);
 				definition->name=name;
 				definition->parentType=parentType.Type();
 				currentDefinition=definition;
@@ -4764,7 +4764,7 @@ ParsingDefinitionClassDefinitionWriter
 
 			ParsingDefinitionClassDefinitionWriter& ParsingDefinitionClassDefinitionWriter::Member(const WString& name, const ParsingDefinitionTypeWriter& type, const WString& unescapingFunction)
 			{
-				Ptr<ParsingDefinitionClassMemberDefinition> member=new ParsingDefinitionClassMemberDefinition;
+				auto member = Ptr(new ParsingDefinitionClassMemberDefinition);
 				member->name=name;
 				member->type=type.Type();
 				member->unescapingFunction=unescapingFunction;
@@ -4806,14 +4806,14 @@ ParsingDefinitionEnumDefinitionWriter
 
 			ParsingDefinitionEnumDefinitionWriter::ParsingDefinitionEnumDefinitionWriter(const WString& name)
 			{
-				definition=new ParsingDefinitionEnumDefinition;
+				definition = Ptr(new ParsingDefinitionEnumDefinition);
 				definition->name=name;
 				currentDefinition=definition;
 			}
 
 			ParsingDefinitionEnumDefinitionWriter& ParsingDefinitionEnumDefinitionWriter::Member(const WString& name)
 			{
-				Ptr<ParsingDefinitionEnumMemberDefinition> member=new ParsingDefinitionEnumMemberDefinition;
+				auto member = Ptr(new ParsingDefinitionEnumMemberDefinition);
 				member->name=name;
 				definition->members.Add(member);
 				currentDefinition=member;
@@ -4852,7 +4852,7 @@ ParsingDefinitionGrammarWriter
 
 			ParsingDefinitionGrammarWriter ParsingDefinitionGrammarWriter::operator+(const ParsingDefinitionGrammarWriter& next)const
 			{
-				Ptr<ParsingDefinitionSequenceGrammar> sequence=new ParsingDefinitionSequenceGrammar;
+				auto sequence = Ptr(new ParsingDefinitionSequenceGrammar);
 				sequence->first=grammar;
 				sequence->second=next.Grammar();
 				return ParsingDefinitionGrammarWriter(sequence);
@@ -4860,7 +4860,7 @@ ParsingDefinitionGrammarWriter
 
 			ParsingDefinitionGrammarWriter ParsingDefinitionGrammarWriter::operator|(const ParsingDefinitionGrammarWriter& next)const
 			{
-				Ptr<ParsingDefinitionAlternativeGrammar> alternative=new ParsingDefinitionAlternativeGrammar;
+				auto alternative = Ptr(new ParsingDefinitionAlternativeGrammar);
 				alternative->first=grammar;
 				alternative->second=next.Grammar();
 				return ParsingDefinitionGrammarWriter(alternative);
@@ -4868,14 +4868,14 @@ ParsingDefinitionGrammarWriter
 
 			ParsingDefinitionGrammarWriter ParsingDefinitionGrammarWriter::operator*()const
 			{
-				Ptr<ParsingDefinitionLoopGrammar> loop=new ParsingDefinitionLoopGrammar;
+				auto loop = Ptr(new ParsingDefinitionLoopGrammar);
 				loop->grammar=grammar;
 				return ParsingDefinitionGrammarWriter(loop);
 			}
 
 			ParsingDefinitionGrammarWriter ParsingDefinitionGrammarWriter::As(const ParsingDefinitionTypeWriter& type)const
 			{
-				Ptr<ParsingDefinitionCreateGrammar> create=new ParsingDefinitionCreateGrammar;
+				auto create = Ptr(new ParsingDefinitionCreateGrammar);
 				create->grammar=grammar;
 				create->type=type.Type();
 				return ParsingDefinitionGrammarWriter(create);
@@ -4883,7 +4883,7 @@ ParsingDefinitionGrammarWriter
 
 			ParsingDefinitionGrammarWriter ParsingDefinitionGrammarWriter::operator[](const WString& memberName)const
 			{
-				Ptr<ParsingDefinitionAssignGrammar> assign=new ParsingDefinitionAssignGrammar;
+				auto assign = Ptr(new ParsingDefinitionAssignGrammar);
 				assign->grammar=grammar;
 				assign->memberName=memberName;
 				return ParsingDefinitionGrammarWriter(assign);
@@ -4891,14 +4891,14 @@ ParsingDefinitionGrammarWriter
 
 			ParsingDefinitionGrammarWriter ParsingDefinitionGrammarWriter::operator!()const
 			{
-				Ptr<ParsingDefinitionUseGrammar> use=new ParsingDefinitionUseGrammar;
+				auto use = Ptr(new ParsingDefinitionUseGrammar);
 				use->grammar=grammar;
 				return ParsingDefinitionGrammarWriter(use);
 			}
 
 			ParsingDefinitionGrammarWriter ParsingDefinitionGrammarWriter::Set(const WString& memberName, const WString& value)const
 			{
-				Ptr<ParsingDefinitionSetterGrammar> setter=new ParsingDefinitionSetterGrammar;
+				auto setter = Ptr(new ParsingDefinitionSetterGrammar);
 				setter->grammar=grammar;
 				setter->memberName=memberName;
 				setter->value=value;
@@ -4912,21 +4912,21 @@ ParsingDefinitionGrammarWriter
 
 			ParsingDefinitionGrammarWriter Rule(const WString& name)
 			{
-				Ptr<ParsingDefinitionPrimitiveGrammar> grammar=new ParsingDefinitionPrimitiveGrammar;
+				auto grammar = Ptr(new ParsingDefinitionPrimitiveGrammar);
 				grammar->name=name;
 				return ParsingDefinitionGrammarWriter(grammar);
 			}
 
 			ParsingDefinitionGrammarWriter Text(const WString& text)
 			{
-				Ptr<ParsingDefinitionTextGrammar> grammar=new ParsingDefinitionTextGrammar;
+				auto grammar = Ptr(new ParsingDefinitionTextGrammar);
 				grammar->text=text;
 				return ParsingDefinitionGrammarWriter(grammar);
 			}
 
 			ParsingDefinitionGrammarWriter Opt(const ParsingDefinitionGrammarWriter& writer)
 			{
-				Ptr<ParsingDefinitionOptionalGrammar> grammar=new ParsingDefinitionOptionalGrammar;
+				auto grammar = Ptr(new ParsingDefinitionOptionalGrammar);
 				grammar->grammar=writer.Grammar();
 				return ParsingDefinitionGrammarWriter(grammar);
 			}
@@ -4985,7 +4985,7 @@ ParsingDefinitionWriter
 
 			ParsingDefinitionWriter::ParsingDefinitionWriter()
 			{
-				definition=new ParsingDefinition;
+				definition = Ptr(new ParsingDefinition);
 			}
 
 			ParsingDefinitionWriter& ParsingDefinitionWriter::Type(const ParsingDefinitionTypeDefinitionWriter& type)
@@ -5001,7 +5001,7 @@ ParsingDefinitionWriter
 
 			ParsingDefinitionTokenDefinitionWriter ParsingDefinitionWriter::TokenAtt(const WString& name, const WString& regex)
 			{
-				Ptr<ParsingDefinitionTokenDefinition> token=new ParsingDefinitionTokenDefinition;
+				auto token = Ptr(new ParsingDefinitionTokenDefinition);
 				token->name=name;
 				token->regex=regex;
 				token->discard=false;
@@ -5011,7 +5011,7 @@ ParsingDefinitionWriter
 
 			ParsingDefinitionWriter& ParsingDefinitionWriter::Discard(const WString& name, const WString& regex)
 			{
-				Ptr<ParsingDefinitionTokenDefinition> token=new ParsingDefinitionTokenDefinition;
+				auto token = Ptr(new ParsingDefinitionTokenDefinition);
 				token->name=name;
 				token->regex=regex;
 				token->discard=true;
@@ -5021,7 +5021,7 @@ ParsingDefinitionWriter
 
 			ParsingDefinitionRuleDefinitionWriter ParsingDefinitionWriter::Rule(const WString& name, const ParsingDefinitionTypeWriter& type)
 			{
-				Ptr<ParsingDefinitionRuleDefinition> rule=new ParsingDefinitionRuleDefinition;
+				auto rule = Ptr(new ParsingDefinitionRuleDefinition);
 				rule->name=name;
 				rule->type=type.Type();
 				definition->rules.Add(rule);
@@ -5577,7 +5577,7 @@ Bootstrap
 				}
 				else if(node->GetType()==L"AttributeDef")
 				{
-					Ptr<ParsingDefinitionAttribute> target=new ParsingDefinitionAttribute;
+					auto target = Ptr(new ParsingDefinitionAttribute);
 					SetName(target->name, node->GetMember(L"name"));
 					SetArray(target->arguments, node->GetMember(L"arguments"));
 					for(vint i=0;i<target->arguments.Count();i++)
@@ -5588,31 +5588,31 @@ Bootstrap
 				}
 				else if(node->GetType()==L"PrimitiveTypeObj")
 				{
-					Ptr<ParsingDefinitionPrimitiveType> target=new ParsingDefinitionPrimitiveType;
+					auto target = Ptr(new ParsingDefinitionPrimitiveType);
 					SetName(target->name, node->GetMember(L"name"));
 					return target;
 				}
 				else if(node->GetType()==L"TokenTypeObj")
 				{
-					Ptr<ParsingDefinitionTokenType> target=new ParsingDefinitionTokenType;
+					auto target = Ptr(new ParsingDefinitionTokenType);
 					return target;
 				}
 				else if(node->GetType()==L"SubTypeObj")
 				{
-					Ptr<ParsingDefinitionSubType> target=new ParsingDefinitionSubType;
+					auto target = Ptr(new ParsingDefinitionSubType);
 					SetMember(target->parentType, node->GetMember(L"parentType"));
 					SetName(target->subTypeName, node->GetMember(L"name"));
 					return target;
 				}
 				else if(node->GetType()==L"ArrayTypeObj")
 				{
-					Ptr<ParsingDefinitionArrayType> target=new ParsingDefinitionArrayType;
+					auto target = Ptr(new ParsingDefinitionArrayType);
 					SetMember(target->elementType, node->GetMember(L"elementType"));
 					return target;
 				}
 				else if(node->GetType()==L"ClassMemberDef")
 				{
-					Ptr<ParsingDefinitionClassMemberDefinition> target=new ParsingDefinitionClassMemberDefinition;
+					auto target = Ptr(new ParsingDefinitionClassMemberDefinition);
 					SetArray(target->attributes, node->GetMember(L"attributes"));
 					SetMember(target->type, node->GetMember(L"type"));
 					SetName(target->name, node->GetMember(L"name"));
@@ -5621,7 +5621,7 @@ Bootstrap
 				}
 				else if(node->GetType()==L"ClassTypeDef")
 				{
-					Ptr<ParsingDefinitionClassDefinition> target=new ParsingDefinitionClassDefinition;
+					auto target = Ptr(new ParsingDefinitionClassDefinition);
 					SetArray(target->attributes, node->GetMember(L"attributes"));
 					SetMember(target->ambiguousType, node->GetMember(L"ambiguousType"));
 					SetMember(target->parentType, node->GetMember(L"parentType"));
@@ -5632,14 +5632,14 @@ Bootstrap
 				}
 				else if(node->GetType()==L"EnumMemberDef")
 				{
-					Ptr<ParsingDefinitionEnumMemberDefinition> target=new ParsingDefinitionEnumMemberDefinition;
+					auto target = Ptr(new ParsingDefinitionEnumMemberDefinition);
 					SetArray(target->attributes, node->GetMember(L"attributes"));
 					SetName(target->name, node->GetMember(L"name"));
 					return target;
 				}
 				else if(node->GetType()==L"EnumTypeDef")
 				{
-					Ptr<ParsingDefinitionEnumDefinition> target=new ParsingDefinitionEnumDefinition;
+					auto target = Ptr(new ParsingDefinitionEnumDefinition);
 					SetArray(target->attributes, node->GetMember(L"attributes"));
 					SetName(target->name, node->GetMember(L"name"));
 					SetArray(target->members, node->GetMember(L"members"));
@@ -5647,65 +5647,65 @@ Bootstrap
 				}
 				else if(node->GetType()==L"PrimitiveGrammarDef")
 				{
-					Ptr<ParsingDefinitionPrimitiveGrammar> target=new ParsingDefinitionPrimitiveGrammar;
+					auto target = Ptr(new ParsingDefinitionPrimitiveGrammar);
 					SetName(target->name, node->GetMember(L"name"));
 					return target;
 				}
 				else if(node->GetType()==L"TextGrammarDef")
 				{
-					Ptr<ParsingDefinitionTextGrammar> target=new ParsingDefinitionTextGrammar;
+					auto target = Ptr(new ParsingDefinitionTextGrammar);
 					SetText(target->text, node->GetMember(L"text"));
 					return target;
 				}
 				else if(node->GetType()==L"SequenceGrammarDef")
 				{
-					Ptr<ParsingDefinitionSequenceGrammar> target=new ParsingDefinitionSequenceGrammar;
+					auto target = Ptr(new ParsingDefinitionSequenceGrammar);
 					SetMember(target->first, node->GetMember(L"first"));
 					SetMember(target->second, node->GetMember(L"second"));
 					return target;
 				}
 				else if(node->GetType()==L"AlternativeGrammarDef")
 				{
-					Ptr<ParsingDefinitionAlternativeGrammar> target=new ParsingDefinitionAlternativeGrammar;
+					auto target = Ptr(new ParsingDefinitionAlternativeGrammar);
 					SetMember(target->first, node->GetMember(L"first"));
 					SetMember(target->second, node->GetMember(L"second"));
 					return target;
 				}
 				else if(node->GetType()==L"LoopGrammarDef")
 				{
-					Ptr<ParsingDefinitionLoopGrammar> target=new ParsingDefinitionLoopGrammar;
+					auto target = Ptr(new ParsingDefinitionLoopGrammar);
 					SetMember(target->grammar, node->GetMember(L"grammar"));
 					return target;
 				}
 				else if(node->GetType()==L"OptionalGrammarDef")
 				{
-					Ptr<ParsingDefinitionOptionalGrammar> target=new ParsingDefinitionOptionalGrammar;
+					auto target = Ptr(new ParsingDefinitionOptionalGrammar);
 					SetMember(target->grammar, node->GetMember(L"grammar"));
 					return target;
 				}
 				else if(node->GetType()==L"CreateGrammarDef")
 				{
-					Ptr<ParsingDefinitionCreateGrammar> target=new ParsingDefinitionCreateGrammar;
+					auto target = Ptr(new ParsingDefinitionCreateGrammar);
 					SetMember(target->grammar, node->GetMember(L"grammar"));
 					SetMember(target->type, node->GetMember(L"type"));
 					return target;
 				}
 				else if(node->GetType()==L"AssignGrammarDef")
 				{
-					Ptr<ParsingDefinitionAssignGrammar> target=new ParsingDefinitionAssignGrammar;
+					auto target = Ptr(new ParsingDefinitionAssignGrammar);
 					SetMember(target->grammar, node->GetMember(L"grammar"));
 					SetName(target->memberName, node->GetMember(L"memberName"));
 					return target;
 				}
 				else if(node->GetType()==L"UseGrammarDef")
 				{
-					Ptr<ParsingDefinitionUseGrammar> target=new ParsingDefinitionUseGrammar;
+					auto target = Ptr(new ParsingDefinitionUseGrammar);
 					SetMember(target->grammar, node->GetMember(L"grammar"));
 					return target;
 				}
 				else if(node->GetType()==L"SetterGrammarDef")
 				{
-					Ptr<ParsingDefinitionSetterGrammar> target=new ParsingDefinitionSetterGrammar;
+					auto target = Ptr(new ParsingDefinitionSetterGrammar);
 					SetMember(target->grammar, node->GetMember(L"grammar"));
 					SetName(target->memberName, node->GetMember(L"memberName"));
 					SetText(target->value, node->GetMember(L"value"));
@@ -5713,7 +5713,7 @@ Bootstrap
 				}
 				else if(node->GetType()==L"TokenDef")
 				{
-					Ptr<ParsingDefinitionTokenDefinition> target=new ParsingDefinitionTokenDefinition;
+					auto target = Ptr(new ParsingDefinitionTokenDefinition);
 					SetArray(target->attributes, node->GetMember(L"attributes"));
 					SetName(target->name, node->GetMember(L"name"));
 					SetText(target->regex, node->GetMember(L"regex"));
@@ -5724,7 +5724,7 @@ Bootstrap
 				}
 				else if(node->GetType()==L"RuleDef")
 				{
-					Ptr<ParsingDefinitionRuleDefinition> target=new ParsingDefinitionRuleDefinition;
+					auto target = Ptr(new ParsingDefinitionRuleDefinition);
 					SetArray(target->attributes, node->GetMember(L"attributes"));
 					SetName(target->name, node->GetMember(L"name"));
 					SetMember(target->type, node->GetMember(L"type"));
@@ -5733,7 +5733,7 @@ Bootstrap
 				}
 				else if(node->GetType()==L"ParserDef")
 				{
-					Ptr<ParsingDefinition> target=new ParsingDefinition;
+					auto target = Ptr(new ParsingDefinition);
 					Ptr<ParsingTreeArray> defs=node->GetMember(L"definitions").Cast<ParsingTreeArray>();
 					if(defs)
 					{
@@ -7091,7 +7091,7 @@ ParsingState
 				,parsingRuleStartState(-1)
 			{
 				CopyFrom(tokens, table->GetLexer().Parse(input, {}, codeIndex));
-				walker=new ParsingTokenWalker(tokens, table);
+				walker = Ptr(new ParsingTokenWalker(tokens, table));
 			}
 
 			ParsingState::~ParsingState()
@@ -7135,7 +7135,7 @@ ParsingState
 				{
 					walker->Reset();
 					walker->Move();
-					stateGroup=new StateGroup(info);
+					stateGroup = Ptr(new StateGroup(info));
 					parsingRule=rule;
 					parsingRuleStartState=info.rootStartState;
 					return stateGroup->currentState;
@@ -7565,12 +7565,12 @@ ParsingState
 
 			Ptr<ParsingState::StateGroup> ParsingState::TakeSnapshot()
 			{
-				return new StateGroup(*stateGroup.Obj());
+				return Ptr(new StateGroup(*stateGroup.Obj()));
 			}
 
 			void ParsingState::RestoreSnapshot(Ptr<StateGroup> group)
 			{
-				stateGroup=new StateGroup(*group.Obj());
+				stateGroup = Ptr(new StateGroup(*group.Obj()));
 			}
 
 /***********************************************************************
@@ -7590,7 +7590,7 @@ ParsingTreeBuilder
 			void ParsingTreeBuilder::Reset()
 			{
 				createdObject=0;
-				operationTarget=new ParsingTreeObject();
+				operationTarget = Ptr(new ParsingTreeObject());
 				nodeStack.Clear();
 
 				processingAmbiguityBranch=false;
@@ -7666,8 +7666,8 @@ ParsingTreeBuilder
 						ambiguityBranchNodeStack.Clear();
 
 						{
-							Ptr<ParsingTreeObject> ambiguousNode=new ParsingTreeObject(result.ambiguityNodeType, operationTarget->GetCodeRange());
-							Ptr<ParsingTreeArray> items=new ParsingTreeArray(L"", operationTarget->GetCodeRange());
+							auto ambiguousNode = Ptr(new ParsingTreeObject(result.ambiguityNodeType, operationTarget->GetCodeRange()));
+							auto items = Ptr(new ParsingTreeArray(L"", operationTarget->GetCodeRange()));
 							for (auto node : ambiguityNodes)
 							{
 								items->AddItem(node);
@@ -7725,11 +7725,11 @@ ParsingTreeBuilder
 										Ptr<ParsingTreeToken> value;
 										if(result.token==0)
 										{
-											value=new ParsingTreeToken(L"", result.tokenIndexInStream);
+											value = Ptr(new ParsingTreeToken(L"", result.tokenIndexInStream));
 										}
 										else
 										{
-											value=new ParsingTreeToken(WString::CopyFrom(result.token->reading, result.token->length), result.tokenIndexInStream);
+											value = Ptr(new ParsingTreeToken(WString::CopyFrom(result.token->reading, result.token->length), result.tokenIndexInStream));
 											value->SetCodeRange(ParsingTextRange(result.token, result.token));
 										}
 										operationTarget->SetMember(ins.nameParameter, value);
@@ -7743,10 +7743,10 @@ ParsingTreeBuilder
 								break;
 							case ParsingTable::Instruction::Item:
 								{
-									Ptr<ParsingTreeArray> arr=operationTarget->GetMember(ins.nameParameter).Cast<ParsingTreeArray>();;
+									auto arr=operationTarget->GetMember(ins.nameParameter).Cast<ParsingTreeArray>();
 									if(!arr)
 									{
-										arr=new ParsingTreeArray();
+										arr = Ptr(new ParsingTreeArray());
 										operationTarget->SetMember(ins.nameParameter, arr);
 									}
 									ParsingTextRange arrRange=arr->GetCodeRange();
@@ -7756,11 +7756,11 @@ ParsingTreeBuilder
 										Ptr<ParsingTreeToken> value;
 										if(result.token==0)
 										{
-											value=new ParsingTreeToken(L"", result.tokenIndexInStream);
+											value = Ptr(new ParsingTreeToken(L"", result.tokenIndexInStream));
 										}
 										else
 										{
-											value=new ParsingTreeToken(WString::CopyFrom(result.token->reading, result.token->length), result.tokenIndexInStream);
+											value = Ptr(new ParsingTreeToken(WString::CopyFrom(result.token->reading, result.token->length), result.tokenIndexInStream));
 											value->SetCodeRange(ParsingTextRange(result.token, result.token));
 											itemRange=value->GetCodeRange();
 										}
@@ -7786,14 +7786,14 @@ ParsingTreeBuilder
 								break;
 							case ParsingTable::Instruction::Setter:
 								{
-									Ptr<ParsingTreeToken> value=new ParsingTreeToken(ins.value, -1);
+								auto value = Ptr(new ParsingTreeToken(ins.value, -1));
 									operationTarget->SetMember(ins.nameParameter, value);
 								}
 								break;
 							case ParsingTable::Instruction::Shift:
 								{
 									nodeStack.Add(operationTarget);
-									operationTarget=new ParsingTreeObject();
+									operationTarget = Ptr(new ParsingTreeObject());
 									createdObject=0;
 								}
 								break;
@@ -7821,7 +7821,7 @@ ParsingTreeBuilder
 							case ParsingTable::Instruction::LeftRecursiveReduce:
 								{
 									createdObject=operationTarget;
-									operationTarget=new ParsingTreeObject();
+									operationTarget = Ptr(new ParsingTreeObject());
 
 									if(result.shiftReduceRanges)
 									{
@@ -8127,7 +8127,7 @@ ParsingTable::LookAheadInfo
 							}
 							else
 							{
-								Ptr<LookAheadInfo> info=new LookAheadInfo;
+								auto info = Ptr(new LookAheadInfo);
 								info->state=item->targetState;
 								if(previous)
 								{
@@ -8470,7 +8470,7 @@ ParsingTable
 				{
 					discardTokenInfos[i].regexTokenIndex = regexTokenIndex++;
 				}
-				lexer = new RegexLexer(tokens);
+				lexer = Ptr(new RegexLexer(tokens));
 
 				ruleMap.Clear();
 				for (auto [rule, index] : indexed(ruleInfos))
@@ -8820,7 +8820,7 @@ ParsingTreeToken
 
 		Ptr<ParsingTreeNode> ParsingTreeToken::Clone()
 		{
-			Ptr<ParsingTreeToken> clone=new ParsingTreeToken(value, tokenIndex, codeRange);
+			auto clone = Ptr(new ParsingTreeToken(value, tokenIndex, codeRange));
 			return clone;
 		}
 
@@ -8870,7 +8870,7 @@ ParsingTreeObject
 
 		Ptr<ParsingTreeNode> ParsingTreeObject::Clone()
 		{
-			Ptr<ParsingTreeObject> clone=new ParsingTreeObject(type, codeRange);
+			auto clone = Ptr(new ParsingTreeObject(type, codeRange));
 			CopyFrom(clone->rules, rules);
 			for(vint i=0;i<members.Count();i++)
 			{
@@ -8971,7 +8971,7 @@ ParsingTreeArray
 
 		Ptr<ParsingTreeNode> ParsingTreeArray::Clone()
 		{
-			Ptr<ParsingTreeArray> clone=new ParsingTreeArray(elementType, codeRange);
+			auto clone = Ptr(new ParsingTreeArray(elementType, codeRange));
 			for(vint i=0;i<items.Count();i++)
 			{
 				Ptr<ParsingTreeNode> node=items.Get(i)->Clone();
@@ -9686,7 +9686,7 @@ namespace vl
 				ITypeManager* manager = GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader = new JsonTypeLoader;
+					auto loader = Ptr(new JsonTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -9947,49 +9947,49 @@ Parsing Tree Conversion Driver Implementation
 
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> ConvertClass(vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)override
 				{
-					if(obj->GetType()==L"Literal")
+					if(obj->GetType() == L"Literal")
 					{
-						vl::Ptr<JsonLiteral> tree = new JsonLiteral;
+						auto tree = vl::Ptr(new JsonLiteral);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<JsonNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"String")
+					else if(obj->GetType() == L"String")
 					{
-						vl::Ptr<JsonString> tree = new JsonString;
+						auto tree = vl::Ptr(new JsonString);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<JsonNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Number")
+					else if(obj->GetType() == L"Number")
 					{
-						vl::Ptr<JsonNumber> tree = new JsonNumber;
+						auto tree = vl::Ptr(new JsonNumber);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<JsonNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Array")
+					else if(obj->GetType() == L"Array")
 					{
-						vl::Ptr<JsonArray> tree = new JsonArray;
+						auto tree = vl::Ptr(new JsonArray);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<JsonNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"ObjectField")
+					else if(obj->GetType() == L"ObjectField")
 					{
-						vl::Ptr<JsonObjectField> tree = new JsonObjectField;
+						auto tree = vl::Ptr(new JsonObjectField);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<JsonNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Object")
+					else if(obj->GetType() == L"Object")
 					{
-						vl::Ptr<JsonObject> tree = new JsonObject;
+						auto tree = vl::Ptr(new JsonObject);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<JsonNode>(), obj, tokens);
@@ -10088,7 +10088,7 @@ Table Generation
 			{
 				vl::stream::MemoryStream stream;
 				JsonGetParserBuffer(stream);
-				vl::Ptr<vl::parsing::tabling::ParsingTable> table=new vl::parsing::tabling::ParsingTable(stream);
+				auto table = vl::Ptr(new vl::parsing::tabling::ParsingTable(stream));
 				table->Initialize();
 				return table;
 			}
@@ -10168,7 +10168,7 @@ Unescaping Function Foward Declarations
 						WString text=WString::CopyFrom(textBegin, vint(textEnd-textBegin));
 						ParsingTextRange range(&beginToken, &endToken);
 
-						Ptr<XmlText> xmlText=new XmlText;
+						auto xmlText = Ptr(new XmlText);
 						xmlText->codeRange=range;
 						xmlText->content.codeRange=range;
 						xmlText->content.value=XmlUnescapeValue(text);
@@ -10498,7 +10498,7 @@ XmlElementWriter
 
 			const XmlElementWriter& XmlElementWriter::Attribute(const WString& name, const WString& value)const
 			{
-				Ptr<XmlAttribute> node=new XmlAttribute;
+				auto node = Ptr(new XmlAttribute);
 				node->name.value=name;
 				node->value.value=value;
 				element->attributes.Add(node);
@@ -10507,7 +10507,7 @@ XmlElementWriter
 
 			XmlElementWriter XmlElementWriter::Element(const WString& name)const
 			{
-				Ptr<XmlElement> node=new XmlElement;
+				auto node = Ptr(new XmlElement);
 				node->name.value=name;
 				element->subNodes.Add(node);
 				return XmlElementWriter(node, this);
@@ -10520,7 +10520,7 @@ XmlElementWriter
 
 			const XmlElementWriter& XmlElementWriter::Text(const WString& value)const
 			{
-				Ptr<XmlText> node=new XmlText;
+				auto node = Ptr(new XmlText);
 				node->content.value=value;
 				element->subNodes.Add(node);
 				return *this;
@@ -10528,7 +10528,7 @@ XmlElementWriter
 
 			const XmlElementWriter& XmlElementWriter::CData(const WString& value)const
 			{
-				Ptr<XmlCData> node=new XmlCData;
+				auto node = Ptr(new XmlCData);
 				node->content.value=value;
 				element->subNodes.Add(node);
 				return *this;
@@ -10536,7 +10536,7 @@ XmlElementWriter
 
 			const XmlElementWriter& XmlElementWriter::Comment(const WString& value)const
 			{
-				Ptr<XmlComment> node=new XmlComment;
+				auto node = Ptr(new XmlComment);
 				node->content.value=value;
 				element->subNodes.Add(node);
 				return *this;
@@ -10739,7 +10739,7 @@ namespace vl
 				ITypeManager* manager = GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader = new XmlTypeLoader;
+					auto loader = Ptr(new XmlTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
@@ -10987,57 +10987,57 @@ Parsing Tree Conversion Driver Implementation
 
 				vl::Ptr<vl::parsing::ParsingTreeCustomBase> ConvertClass(vl::Ptr<vl::parsing::ParsingTreeObject> obj, const TokenList& tokens)override
 				{
-					if(obj->GetType()==L"Text")
+					if(obj->GetType() == L"Text")
 					{
-						vl::Ptr<XmlText> tree = new XmlText;
+						auto tree = vl::Ptr(new XmlText);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<XmlNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"CData")
+					else if(obj->GetType() == L"CData")
 					{
-						vl::Ptr<XmlCData> tree = new XmlCData;
+						auto tree = vl::Ptr(new XmlCData);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<XmlNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Attribute")
+					else if(obj->GetType() == L"Attribute")
 					{
-						vl::Ptr<XmlAttribute> tree = new XmlAttribute;
+						auto tree = vl::Ptr(new XmlAttribute);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<XmlNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Comment")
+					else if(obj->GetType() == L"Comment")
 					{
-						vl::Ptr<XmlComment> tree = new XmlComment;
+						auto tree = vl::Ptr(new XmlComment);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<XmlNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Element")
+					else if(obj->GetType() == L"Element")
 					{
-						vl::Ptr<XmlElement> tree = new XmlElement;
+						auto tree = vl::Ptr(new XmlElement);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<XmlNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Instruction")
+					else if(obj->GetType() == L"Instruction")
 					{
-						vl::Ptr<XmlInstruction> tree = new XmlInstruction;
+						auto tree = vl::Ptr(new XmlInstruction);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<XmlNode>(), obj, tokens);
 						return tree;
 					}
-					else if(obj->GetType()==L"Document")
+					else if(obj->GetType() == L"Document")
 					{
-						vl::Ptr<XmlDocument> tree = new XmlDocument;
+						auto tree = vl::Ptr(new XmlDocument);
 						vl::collections::CopyFrom(tree->creatorRules, obj->GetCreatorRules());
 						Fill(tree, obj, tokens);
 						Fill(tree.Cast<XmlNode>(), obj, tokens);
@@ -11175,7 +11175,7 @@ Table Generation
 			{
 				vl::stream::MemoryStream stream;
 				XmlGetParserBuffer(stream);
-				vl::Ptr<vl::parsing::tabling::ParsingTable> table=new vl::parsing::tabling::ParsingTable(stream);
+				auto table = vl::Ptr(new vl::parsing::tabling::ParsingTable(stream));
 				table->Initialize();
 				return table;
 			}

@@ -83,7 +83,7 @@ DescriptableObject
 		/// 
 		/// int main()
 		/// {
-		///     auto myClass = MakePtr<MyClass>();
+		///     auto myClass = Ptr(new MyClass);
 		///     myClass->data = L"Hello, world!";
 		/// 
 		///     Ptr<DescriptableObject> obj = myClass;
@@ -1947,7 +1947,7 @@ ValueType
 
 					Ptr<IBoxedValue> Copy()override
 					{
-						return new TypedBox<T>(value);
+						return Ptr(new TypedBox<T>(value));
 					}
 
 					CompareResult ComparePrimitive(Ptr<IBoxedValue> boxedValue)override
@@ -2542,7 +2542,6 @@ namespace vl
 	{
 		/// <summary>Base type of observable container which triggers callbacks whenever items are changed.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
-		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
 		/// <remarks>
 		/// <p>Methods are the same to <see cref="List`2"/>, except that operator[] is readonly.</p>
 		/// <p>
@@ -2565,11 +2564,12 @@ namespace vl
 		/// Arguments is exactly the same as <see cref="reflection::description::IValueObservableList::ItemChanged"/>.
 		/// </p>
 		/// </remarks>
-		template<typename T, typename K = typename KeyType<T>::Type>
+		template<typename T>
 		class ObservableListBase : public collections::EnumerableBase<T>
 		{
+			using K = typename KeyType<T>::Type;
 		protected:
-			collections::List<T, K>					items;
+			collections::List<T>					items;
 
 			virtual void NotifyUpdateInternal(vint start, vint count, vint newCount)
 			{
@@ -2768,7 +2768,6 @@ namespace vl
 
 		/// <summary>An observable container that maintain an implementation of <see cref="reflection::description::IValueObservableList"/>.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
-		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
 		template<typename T>
 		class ObservableList : public ObservableListBase<T>
 		{
@@ -2926,7 +2925,7 @@ Collections
 			///         LazyList<Ptr<MyClass>> cs = Range<vint>(1, 10)
 			///             .Select([](vint i)
 			///             {
-			///                 return MakePtr<MyClass>(i);
+			///                 return Ptr(new MyClass(i));
 			///             });
 			/// 
 			///         Value boxed = BoxParameter(cs);
@@ -3125,7 +3124,7 @@ Collections
 			///         CopyFrom(cs, Range<vint>(1, 10)
 			///             .Select([](vint i)
 			///             {
-			///                 return MakePtr<MyClass>(i);
+			///                 return Ptr(new MyClass(i));
 			///             })
 			///         );
 			/// 
@@ -3289,7 +3288,7 @@ Collections
 			///         CopyFrom(cs, Range<vint>(1, 10)
 			///             .Select([](vint i)
 			///             {
-			///                 return MakePtr<MyClass>(i);
+			///                 return Ptr(new MyClass(i));
 			///             })
 			///         );
 			/// 
@@ -3477,7 +3476,7 @@ Collections
 			///         CopyFrom(cs, Range<vint>(1, 10)
 			///             .Select([](vint i) -> Pair<vint, Ptr<MyClass>>
 			///             {
-			///                 return { i, MakePtr<MyClass>(i * i) };
+			///                 return { i, Ptr(new MyClass(i * i)) };
 			///             })
 			///         );
 			/// 
@@ -4308,8 +4307,8 @@ PrimitiveTypeDescriptor
 			protected:
 				void LoadInternal()override
 				{
-					this->valueType = new SerializableValueType<T>();
-					this->serializableType = new SerializableType<T>();
+					this->valueType = Ptr(new SerializableValueType<T>());
+					this->serializableType = Ptr(new SerializableType<T>());
 				}
 			};
 
@@ -4401,8 +4400,8 @@ EnumTypeDescriptor
 
 				void LoadInternal()override
 				{
-					this->enumType = new TEnumType;
-					this->valueType = new EnumValueType<T>();
+					this->enumType = Ptr(new TEnumType);
+					this->valueType = Ptr(new EnumValueType<T>());
 					TypedValueTypeDescriptorBase<T, TDFlags>::enumType = enumType;
 				}
 			};
@@ -4474,7 +4473,7 @@ StructTypeDescriptor
 			public:
 				StructTypeDescriptor()
 				{
-					this->valueType = new StructValueType<T>();
+					this->valueType = Ptr(new StructValueType<T>());
 				}
 
 				vint GetPropertyCount()override
@@ -4595,14 +4594,14 @@ TypeFlagTester
 			template<typename TDerived>
 			struct TypeFlagTester<TDerived, TypeFlags::ReadonlyListType>
 			{
-				template<typename T, typename K>
-				static void* Inherit(const collections::Array<T, K>* source){ return {}; }
-				template<typename T, typename K>
-				static void* Inherit(const collections::List<T, K>* source) { return {}; }
-				template<typename T, typename K>
-				static void* Inherit(const collections::SortedList<T, K>* source) { return {}; }
-				template<typename T, typename K>
-				static void* Inherit(const collections::ObservableListBase<T, K>* source) { return {}; }
+				template<typename T>
+				static void* Inherit(const collections::Array<T>* source){ return {}; }
+				template<typename T>
+				static void* Inherit(const collections::List<T>* source) { return {}; }
+				template<typename T>
+				static void* Inherit(const collections::SortedList<T>* source) { return {}; }
+				template<typename T>
+				static void* Inherit(const collections::ObservableListBase<T>* source) { return {}; }
 				static char Inherit(void* source){ return {}; }
 				static char Inherit(const void* source){ return {}; }
 
@@ -4612,8 +4611,8 @@ TypeFlagTester
 			template<typename TDerived>
 			struct TypeFlagTester<TDerived, TypeFlags::ArrayType>
 			{
-				template<typename T, typename K>
-				static void* Inherit(collections::Array<T, K>* source) { return {}; }
+				template<typename T>
+				static void* Inherit(collections::Array<T>* source) { return {}; }
 				static char Inherit(void* source) { return {}; }
 				static char Inherit(const void* source) { return {}; }
 
@@ -4623,10 +4622,10 @@ TypeFlagTester
 			template<typename TDerived>
 			struct TypeFlagTester<TDerived, TypeFlags::ListType>
 			{
-				template<typename T, typename K>
-				static void* Inherit(collections::List<T, K>* source) { return {}; }
-				template<typename T, typename K>
-				static void* Inherit(collections::ObservableListBase<T, K>* source) { return {}; }
+				template<typename T>
+				static void* Inherit(collections::List<T>* source) { return {}; }
+				template<typename T>
+				static void* Inherit(collections::ObservableListBase<T>* source) { return {}; }
 				static char Inherit(void* source){ return {}; }
 				static char Inherit(const void* source){ return {}; }
 
@@ -4847,7 +4846,7 @@ Basic Types
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					return MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<T>(), hint);
+					return Ptr(new TypeDescriptorTypeInfo(GetTypeDescriptor<T>(), hint));
 				}
 #endif
 			};
@@ -4866,7 +4865,7 @@ Decorated Types
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					return MakePtr<RawPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
+					return Ptr(new RawPtrTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo()));
 				}
 #endif
 			};
@@ -4881,7 +4880,7 @@ Decorated Types
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					return MakePtr<SharedPtrTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
+					return Ptr(new SharedPtrTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo()));
 				}
 #endif
 			};
@@ -4896,7 +4895,7 @@ Decorated Types
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					return MakePtr<NullableTypeInfo>(TypeInfoRetriver<T>::CreateTypeInfo());
+					return Ptr(new NullableTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo()));
 				}
 #endif
 			};
@@ -4915,12 +4914,12 @@ Containers
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<TCollectionType>(), hint);
+					auto arrayType = Ptr(new TypeDescriptorTypeInfo(GetTypeDescriptor<TCollectionType>(), hint));
 
-					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					auto genericType = Ptr(new GenericTypeInfo(arrayType));
 					genericType->AddGenericArgument(TypeInfoRetriver<typename T::ElementType>::CreateTypeInfo());
 
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					auto type = Ptr(new SharedPtrTypeInfo(genericType));
 					return type;
 				}
 #endif
@@ -4936,13 +4935,13 @@ Containers
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					auto arrayType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<TCollectionType>(), hint);
+					auto arrayType = Ptr(new TypeDescriptorTypeInfo(GetTypeDescriptor<TCollectionType>(), hint));
 
-					auto genericType = MakePtr<GenericTypeInfo>(arrayType);
+					auto genericType = Ptr(new GenericTypeInfo(arrayType));
 					genericType->AddGenericArgument(TypeInfoRetriver<typename T::KeyContainer::ElementType>::CreateTypeInfo());
 					genericType->AddGenericArgument(TypeInfoRetriver<typename T::ValueContainer::ElementType>::CreateTypeInfo());
 
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					auto type = Ptr(new SharedPtrTypeInfo(genericType));
 					return type;
 				}
 #endif
@@ -5020,13 +5019,13 @@ Functions
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				static Ptr<ITypeInfo> CreateTypeInfo(TypeInfoHint hint)
 				{
-					auto functionType = MakePtr<TypeDescriptorTypeInfo>(GetTypeDescriptor<IValueFunctionProxy>(), hint);
+					auto functionType = Ptr(new TypeDescriptorTypeInfo(GetTypeDescriptor<IValueFunctionProxy>(), hint));
  
-					auto genericType = MakePtr<GenericTypeInfo>(functionType);
+					auto genericType = Ptr(new GenericTypeInfo(functionType));
 					genericType->AddGenericArgument(TypeInfoRetriver<R>::CreateTypeInfo());
 					internal_helper::GenericArgumentAdder<TypeTuple<TArgs...>>::Add(genericType);
 
-					auto type = MakePtr<SharedPtrTypeInfo>(genericType);
+					auto type = Ptr(new SharedPtrTypeInfo(genericType));
 					return type;
 				}
 #endif
@@ -5165,7 +5164,7 @@ Basic Types
 					Ptr<T> result;
 					if(value.GetValueType()==Value::RawPtr || value.GetValueType()==Value::SharedPtr)
 					{
-						result = value.GetRawPtr()->SafeAggregationCast<T>();
+						result = Ptr(value.GetRawPtr()->SafeAggregationCast<T>());
 					}
 					if(!result)
 					{
@@ -5216,7 +5215,7 @@ Basic Types
 						typeDescriptor = GetTypeDescriptor<Type>();
 					}
 #endif
-					return Value::From(new IValueType::TypedBox<Type>(object), typeDescriptor);
+					return Value::From(Ptr(new IValueType::TypedBox<Type>(object)), typeDescriptor);
 				}
 
 				static T UnboxValue(const Value& value, ITypeDescriptor* typeDescriptor, const WString& valueName)
@@ -5851,13 +5850,13 @@ Collection Wrappers
 				Ptr<IValueEnumerator> CreateEnumerator()override
 				{
 					ENSURE_WRAPPER_POINTER;
-					return new ValueEnumeratorWrapper<
+					return Ptr(new ValueEnumeratorWrapper<
 						ValueEnumerableWrapper<T>,
 						Ptr<collections::IEnumerator<ElementType>>
 					>(
-						this,
-						wrapperPointer->CreateEnumerator()
-					);
+						Ptr(this),
+						Ptr(wrapperPointer->CreateEnumerator())
+					));
 				}
 
 				const Object* GetCollectionObject()override
@@ -6181,7 +6180,7 @@ Containers
 			{
 				auto colref = collection->template TryGetCollectionReference<TValueImpl<T*>>();
 				if (colref) return colref;
-				colref = MakePtr<TValueImpl<T*>>(collection);
+				colref = Ptr(new TValueImpl<T*>(collection));
 				collection->SetCollectionReference(colref);
 				return colref;
 			}
@@ -6517,7 +6516,7 @@ Functions
 				static Value BoxParameter(const Func<R(TArgs...)>& object, ITypeDescriptor* typeDescriptor)
 				{
 					typedef R(RawFunctionType)(TArgs...);
-					Ptr<IValueFunctionProxy> result=new ValueFunctionProxyWrapper<RawFunctionType>(object);
+					Ptr<IValueFunctionProxy> result=Ptr(new ValueFunctionProxyWrapper<RawFunctionType>(object));
 
 					ITypeDescriptor* td = nullptr;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -6628,7 +6627,7 @@ ConstructorArgumentAdder
 				{
 					static void Add(MethodInfoImpl* methodInfo, const wchar_t* parameterNames[], vint index)
 					{
-						methodInfo->AddParameter(new ParameterInfoImpl(methodInfo, parameterNames[index], TypeInfoRetriver<T0>::CreateTypeInfo()));
+						methodInfo->AddParameter(Ptr(new ParameterInfoImpl(methodInfo, parameterNames[index], TypeInfoRetriver<T0>::CreateTypeInfo())));
 						ConstructorArgumentAdder<TypeTuple<TNextArgs...>>::Add(methodInfo, parameterNames, index + 1);
 					}
 				};
@@ -6702,7 +6701,7 @@ namespace vl
 
 				static Ptr<reflection::description::IEventHandler> Attach(Event<void(TArgs...)>& e, Handler handler)
 				{
-					return MakePtr<EventHandlerImpl>(e.Add(handler));
+					return Ptr(new EventHandlerImpl(e.Add(handler)));
 				}
 
 				static bool Detach(Event<void(TArgs...)>& e, Ptr<reflection::description::IEventHandler> handler)
@@ -6834,13 +6833,11 @@ CustomConstructorInfoImpl<R(TArgs...)>
  
 				Value CreateFunctionProxyInternal(const Value& thisObject)override
 				{
-					Func<R(TArgs...)> proxy(
-						LAMBDA([](TArgs ...args)->R
-						{
-							R result = new TClass(args...);
-							return result;
-						})
-					);
+					auto proxy = Func([](TArgs ...args)->R
+					{
+						R result = R(new TClass(args...));
+						return result;
+					});
 					return BoxParameter(proxy);
 				}
 			public:
@@ -6939,7 +6936,7 @@ CustomExternalMethodInfoImpl<TClass, R(TArgs...)>
 				Value CreateFunctionProxyInternal(const Value& thisObject)override
 				{
 					TClass* object = UnboxValue<TClass*>(thisObject, GetOwnerTypeDescriptor(), L"thisObject");
-					Func<R(TArgs...)> proxy = Curry(Func<R(TClass*, TArgs...)>(method))(object);
+					auto proxy = Func([object, this](TArgs... args)->decltype(auto) { return method(object, args...); });
 					return BoxParameter(proxy);
 				}
 			public:
@@ -7111,7 +7108,7 @@ Type
 #define END_TYPE_INFO_NAMESPACE }}}
 #define ADD_TYPE_INFO(TYPENAME)\
 			{\
-				Ptr<ITypeDescriptor> type=new CustomTypeDescriptorSelector<TYPENAME>::CustomTypeDescriptorImpl();\
+				auto type = Ptr(new CustomTypeDescriptorSelector<TYPENAME>::CustomTypeDescriptorImpl());\
 				manager->SetTypeDescriptor(TypeInfo<TYPENAME>::content.typeName, type);\
 			}
 
@@ -7130,7 +7127,7 @@ InterfaceProxy
 #define INTERFACE_PROXY_CTOR_SHAREDPTR(INTERFACE)\
 			static Ptr<INTERFACE> Create(Ptr<IValueInterfaceProxy> proxy)\
 			{\
-				auto obj = new ValueInterfaceProxy<INTERFACE>();\
+				auto obj = Ptr(new ValueInterfaceProxy<INTERFACE>());\
 				obj->SetProxy(proxy);\
 				return obj;\
 			}\
@@ -7265,7 +7262,7 @@ Struct
 			};
 
 #define STRUCT_MEMBER(FIELDNAME)\
-	fields.Add(L ## #FIELDNAME, new StructFieldInfo<decltype(((StructType*)0)->FIELDNAME)>(this, &StructType::FIELDNAME, L ## #FIELDNAME));
+	fields.Add(L ## #FIELDNAME, Ptr(new StructFieldInfo<decltype(((StructType*)0)->FIELDNAME)>(this, &StructType::FIELDNAME, L ## #FIELDNAME)));
 
 /***********************************************************************
 Class
@@ -7363,11 +7360,11 @@ Field
 
 #define CLASS_MEMBER_FIELD(FIELDNAME)\
 			AddProperty(\
-				new CustomFieldInfoImpl<\
+				Ptr(new CustomFieldInfoImpl<\
 					ClassType,\
 					decltype(((ClassType*)0)->FIELDNAME)\
 					>(this, L ## #FIELDNAME, &ClassType::FIELDNAME)\
-				);
+				));
 
 /***********************************************************************
 Constructor
@@ -7379,14 +7376,14 @@ Constructor
 #define CLASS_MEMBER_CONSTRUCTOR(FUNCTIONTYPE, PARAMETERNAMES)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
-				AddConstructor(new CustomConstructorInfoImpl<FUNCTIONTYPE>(parameterNames));\
+				AddConstructor(Ptr(new CustomConstructorInfoImpl<FUNCTIONTYPE>(parameterNames)));\
 			}
 
 #define CLASS_MEMBER_EXTERNALCTOR_TEMPLATE(FUNCTIONTYPE, PARAMETERNAMES, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddConstructor(\
-					new CustomStaticMethodInfoImpl<FUNCTIONTYPE>(parameterNames, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
+					Ptr(new CustomStaticMethodInfoImpl<FUNCTIONTYPE>(parameterNames, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE))\
 					);\
 			}
 
@@ -7402,10 +7399,10 @@ Method
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddMethod(\
 					L ## #FUNCTIONNAME,\
-					new CustomExternalMethodInfoImpl<\
+					Ptr(new CustomExternalMethodInfoImpl<\
 						ClassType,\
 						vl::function_lambda::LambdaRetriveType<FUNCTIONTYPE>::FunctionType\
-						>(parameterNames, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
+						>(parameterNames, SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE))\
 					);\
 			}
 
@@ -7415,17 +7412,17 @@ Method
 #define CLASS_MEMBER_METHOD_OVERLOAD_RENAME_TEMPLATE(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE, INVOKETEMPLATE, CLOSURETEMPLATE)\
 			{\
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
-				auto methodInfo = new CustomMethodInfoImpl<\
+				auto methodInfo = Ptr(new CustomMethodInfoImpl<\
 						ClassType,\
 						vl::function_lambda::LambdaRetriveType<FUNCTIONTYPE>::FunctionType\
 						>\
-					(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME, INVOKETEMPLATE, CLOSURETEMPLATE);\
+					(parameterNames, (FUNCTIONTYPE)&ClassType::FUNCTIONNAME, INVOKETEMPLATE, CLOSURETEMPLATE));\
 				AddMethod(\
 					L ## #EXPECTEDNAME,\
 					methodInfo\
 					);\
 				MethodPointerBinaryDataRetriver<FUNCTIONTYPE> binaryDataRetriver(&ClassType::FUNCTIONNAME);\
-				MethodPointerBinaryDataRecorder<ClassType, TDFlags>::RecordMethod(binaryDataRetriver.GetBinaryData(), this, methodInfo);\
+				MethodPointerBinaryDataRecorder<ClassType, TDFlags>::RecordMethod(binaryDataRetriver.GetBinaryData(), this, methodInfo.Obj());\
 			}
 
 #define CLASS_MEMBER_METHOD_OVERLOAD_RENAME(EXPECTEDNAME, FUNCTIONNAME, PARAMETERNAMES, FUNCTIONTYPE)\
@@ -7449,9 +7446,9 @@ Static Method
 				const wchar_t* parameterNames[]=PARAMETERNAMES;\
 				AddMethod(\
 					L ## #FUNCTIONNAME,\
-					new CustomStaticMethodInfoImpl<\
+					Ptr(new CustomStaticMethodInfoImpl<\
 						std::remove_pointer_t<FUNCTIONTYPE>\
-						>(parameterNames, (FUNCTIONTYPE)SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE)\
+						>(parameterNames, (FUNCTIONTYPE)SOURCE, INVOKETEMPLATE, CLOSURETEMPLATE))\
 					);\
 			}
 
@@ -7470,10 +7467,10 @@ Event
 
 #define CLASS_MEMBER_EVENT(EVENTNAME)\
 			AddEvent(\
-				new CustomEventInfoImpl<\
+				Ptr(new CustomEventInfoImpl<\
 					ClassType,\
 					CustomEventFunctionTypeRetriver<decltype(&ClassType::EVENTNAME)>::Type\
-					>(this, L ## #EVENTNAME, &ClassType::EVENTNAME)\
+					>(this, L ## #EVENTNAME, &ClassType::EVENTNAME))\
 				);
 
 /***********************************************************************
@@ -7482,58 +7479,58 @@ Property
 
 #define CLASS_MEMBER_PROPERTY_READONLY(PROPERTYNAME, GETTER)\
 			AddProperty(\
-				new PropertyInfoImpl(\
+				Ptr(new PropertyInfoImpl(\
 					this,\
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
 					nullptr,\
 					nullptr\
-					)\
+					))\
 				);
 
 #define CLASS_MEMBER_PROPERTY(PROPERTYNAME, GETTER, SETTER)\
 			AddProperty(\
-				new PropertyInfoImpl(\
+				Ptr(new PropertyInfoImpl(\
 					this,\
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #SETTER, true)->GetMethod(0)),\
 					nullptr\
-					)\
+					))\
 				);
 
 #define CLASS_MEMBER_PROPERTY_EVENT(PROPERTYNAME, GETTER, SETTER, EVENT)\
 			AddProperty(\
-				new PropertyInfoImpl(\
+				Ptr(new PropertyInfoImpl(\
 					this,\
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #SETTER, true)->GetMethod(0)),\
 					dynamic_cast<EventInfoImpl*>(GetEventByName(L ## #EVENT, true))\
-					)\
+					))\
 				);
 
 #define CLASS_MEMBER_PROPERTY_EVENT_READONLY(PROPERTYNAME, GETTER, EVENT)\
 			AddProperty(\
-				new PropertyInfoImpl(\
+				Ptr(new PropertyInfoImpl(\
 					this,\
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
 					nullptr,\
 					dynamic_cast<EventInfoImpl*>(GetEventByName(L ## #EVENT, true))\
-					)\
+					))\
 				);
 
 #define CLASS_MEMBER_PROPERTY_REFERENCETEMPLATE(PROPERTYNAME, GETTER, SETTER, REFERENCETEMPLATE)\
 			AddProperty(\
-				new PropertyInfoImpl_StaticCpp(\
+				Ptr(new PropertyInfoImpl_StaticCpp(\
 					this,\
 					L ## #PROPERTYNAME,\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #GETTER, true)->GetMethod(0)),\
 					dynamic_cast<MethodInfoImpl*>(GetMethodGroupByName(L ## #SETTER, true)->GetMethod(0)),\
 					nullptr,\
 					WString::Unmanaged(REFERENCETEMPLATE)\
-					)\
+					))\
 				);
 
 #define CLASS_MEMBER_PROPERTY_READONLY_FAST(PROPERTYNAME)\

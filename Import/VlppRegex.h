@@ -1499,8 +1499,6 @@ namespace vl
 		class Automaton
 		{
 		public:
-			typedef Ptr<Automaton>		Ref;
-
 			collections::List<Ptr<State>>		states;
 			collections::List<Ptr<Transition>>	transitions;
 			collections::List<U32String>		captureNames;
@@ -1526,8 +1524,8 @@ namespace vl
 		extern bool								PureEpsilonChecker(Transition* transition);
 		extern bool								RichEpsilonChecker(Transition* transition);
 		extern bool								AreEqual(Transition* transA, Transition* transB);
-		extern Automaton::Ref					EpsilonNfaToNfa(Automaton::Ref source, bool(*epsilonChecker)(Transition*), collections::Dictionary<State*, State*>& nfaStateMap);
-		extern Automaton::Ref					NfaToDfa(Automaton::Ref source, collections::Group<State*, State*>& dfaStateMap);
+		extern Ptr<Automaton>					EpsilonNfaToNfa(Ptr<Automaton> source, bool(*epsilonChecker)(Transition*), collections::Dictionary<State*, State*>& nfaStateMap);
+		extern Ptr<Automaton>					NfaToDfa(Ptr<Automaton> source, collections::Group<State*, State*>& dfaStateMap);
 	}
 }
 
@@ -1580,8 +1578,7 @@ Regex Expression AST
 			NOT_COPYABLE(Expression);
 			Expression() = default;
 
-			typedef Ptr<Expression>											Ref;
-			typedef collections::Dictionary<U32String, Expression::Ref>		Map;
+			typedef collections::Dictionary<U32String, Ptr<Expression>>		Map;
 
 			virtual void				Apply(IRegexExpressionAlgorithm& algorithm)=0;
 			bool						IsEqual(Expression* expression);
@@ -1590,7 +1587,7 @@ Regex Expression AST
 			void						NormalizeCharSet(CharRange::List& subsets);
 			void						CollectCharSet(CharRange::List& subsets);
 			void						ApplyCharSet(CharRange::List& subsets);
-			Automaton::Ref				GenerateEpsilonNfa();
+			Ptr<Automaton>				GenerateEpsilonNfa();
 		};
 
 		class CharSetExpression : public Expression
@@ -1606,7 +1603,7 @@ Regex Expression AST
 		class LoopExpression : public Expression
 		{
 		public:
-			Expression::Ref				expression;		// The regex to loop
+			Ptr<Expression>				expression;		// The regex to loop
 			vint						min;			// Minimum count of looping
 			vint						max;			// Maximum count of looping, -1 for infinite
 			bool						preferLong;		// Prefer longer matching
@@ -1617,8 +1614,8 @@ Regex Expression AST
 		class SequenceExpression : public Expression
 		{
 		public:
-			Expression::Ref				left;			// First regex to match
-			Expression::Ref				right;			// Last regex to match
+			Ptr<Expression>				left;			// First regex to match
+			Ptr<Expression>				right;			// Last regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -1626,8 +1623,8 @@ Regex Expression AST
 		class AlternateExpression : public Expression
 		{
 		public:
-			Expression::Ref				left;			// First regex to match
-			Expression::Ref				right;			// Last regex to match
+			Ptr<Expression>				left;			// First regex to match
+			Ptr<Expression>				right;			// Last regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -1650,7 +1647,7 @@ Regex Expression AST
 		{
 		public:
 			U32String					name;			// Capture name, empty for anonymous capture
-			Expression::Ref				expression;		// Regex to match
+			Ptr<Expression>				expression;		// Regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -1667,7 +1664,7 @@ Regex Expression AST
 		class PositiveExpression : public Expression
 		{
 		public:
-			Expression::Ref				expression;		// Regex to match
+			Ptr<Expression>				expression;		// Regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -1675,7 +1672,7 @@ Regex Expression AST
 		class NegativeExpression : public Expression
 		{
 		public:
-			Expression::Ref				expression;		// Regex to match
+			Ptr<Expression>				expression;		// Regex to match
 
 			void						Apply(IRegexExpressionAlgorithm& algorithm);
 		};
@@ -1694,12 +1691,12 @@ Regex Expression AST
 			typedef Ptr<RegexExpression>						Ref;
 
 			Expression::Map				definitions;	// Named regex to be referred
-			Expression::Ref				expression;		// Regex to match
+			Ptr<Expression>				expression;		// Regex to match
 
 			NOT_COPYABLE(RegexExpression);
 			RegexExpression() = default;
 
-			Expression::Ref				Merge();
+			Ptr<Expression>				Merge();
 		};
 
 /***********************************************************************
@@ -1737,7 +1734,7 @@ Visitor
 				return returnValue;
 			}
 
-			ReturnType Invoke(Expression::Ref expression, ParameterType parameter)
+			ReturnType Invoke(Ptr<Expression> expression, ParameterType parameter)
 			{
 				parameterValue=&parameter;
 				expression->Apply(*this);
@@ -1825,7 +1822,7 @@ Visitor
 				expression->Apply(*this);
 			}
 
-			void Invoke(Expression::Ref expression, ParameterType parameter)
+			void Invoke(Ptr<Expression> expression, ParameterType parameter)
 			{
 				parameterValue=&parameter;
 				expression->Apply(*this);
@@ -1910,7 +1907,7 @@ Helper Functions
 		extern Ptr<Expression>			ParseJoin(const char32_t*& input);
 		extern Ptr<Expression>			ParseAlt(const char32_t*& input);
 		extern Ptr<Expression>			ParseExpression(const char32_t*& input);
-		extern RegexExpression::Ref		ParseRegexExpression(const U32String& code);
+		extern Ptr<RegexExpression>		ParseRegexExpression(const U32String& code);
 
 		extern U32String				EscapeTextForRegex(const U32String& literalString);
 		extern U32String				UnescapeTextForRegex(const U32String& escapedText);
@@ -1958,9 +1955,9 @@ namespace vl
 		class RegexNode : public Object
 		{
 		public:
-			vl::regex_internal::Expression::Ref		expression;
+			Ptr<vl::regex_internal::Expression>		expression;
 
-			RegexNode(vl::regex_internal::Expression::Ref _expression);
+			RegexNode(Ptr<vl::regex_internal::Expression> _expression);
 
 			RegexNode					Some()const;
 			RegexNode					Any()const;
@@ -2038,7 +2035,7 @@ namespace vl
 
 			void				ExpandCharRanges();
 		public:
-			PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets);
+			PureInterpretor(Ptr<Automaton> dfa, CharRange::List& subsets);
 			PureInterpretor(stream::IStream& inputStream);
 			~PureInterpretor();
 
@@ -2120,10 +2117,10 @@ namespace vl
 				bool								NeedKeepState;
 			};
 
-			Automaton::Ref							dfa;
+			Ptr<Automaton>							dfa;
 			UserData*								datas;
 		public:
-			RichInterpretor(Automaton::Ref _dfa);
+			RichInterpretor(Ptr<Automaton> _dfa);
 			~RichInterpretor();
 
 			template<typename TChar>

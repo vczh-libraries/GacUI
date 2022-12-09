@@ -143,12 +143,12 @@ RegexBase_
 					{
 						if (result.start > offset || keepEmpty)
 						{
-							matches.Add(new RegexMatch_<T>(RegexString_<T>(text, offset, result.start - offset)));
+							matches.Add(Ptr(new RegexMatch_<T>(RegexString_<T>(text, offset, result.start - offset))));
 						}
 					}
 					if (keepSuccess)
 					{
-						matches.Add(new RegexMatch_<T>(text, &result));
+						matches.Add(Ptr(new RegexMatch_<T>(text, &result)));
 					}
 					input = start + result.start + result.length;
 				}
@@ -158,7 +158,7 @@ RegexBase_
 					vint length = text.Length() - remain;
 					if (length || keepEmpty)
 					{
-						matches.Add(new RegexMatch_<T>(RegexString_<T>(text, remain, length)));
+						matches.Add(Ptr(new RegexMatch_<T>(RegexString_<T>(text, remain, length))));
 					}
 				}
 			}
@@ -174,12 +174,12 @@ RegexBase_
 					{
 						if (result.start > offset || keepEmpty)
 						{
-							matches.Add(new RegexMatch_<T>(RegexString_<T>(text, offset, result.start - offset)));
+							matches.Add(Ptr(new RegexMatch_<T>(RegexString_<T>(text, offset, result.start - offset))));
 						}
 					}
 					if (keepSuccess)
 					{
-						matches.Add(new RegexMatch_<T>(text, &result));
+						matches.Add(Ptr(new RegexMatch_<T>(text, &result)));
 					}
 					input = start + result.start + result.length;
 				}
@@ -189,7 +189,7 @@ RegexBase_
 					vint length = text.Length() - remain;
 					if (length || keepEmpty)
 					{
-						matches.Add(new RegexMatch_<T>(RegexString_<T>(text, remain, length)));
+						matches.Add(Ptr(new RegexMatch_<T>(RegexString_<T>(text, remain, length))));
 					}
 				}
 			}
@@ -209,11 +209,11 @@ RegexBase_
 				RichResult result;
 				if (rich->MatchHead(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch_<T>(text, &result);
+					return Ptr(new RegexMatch_<T>(text, &result));
 				}
 				else
 				{
-					return 0;
+					return nullptr;
 				}
 			}
 			else
@@ -221,11 +221,11 @@ RegexBase_
 				PureResult result;
 				if (pure->MatchHead(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch_<T>(text, &result);
+					return Ptr(new RegexMatch_<T>(text, &result));
 				}
 				else
 				{
-					return 0;
+					return nullptr;
 				}
 			}
 		}
@@ -238,11 +238,11 @@ RegexBase_
 				RichResult result;
 				if (rich->Match(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch_<T>(text, &result);
+					return Ptr(new RegexMatch_<T>(text, &result));
 				}
 				else
 				{
-					return 0;
+					return nullptr;
 				}
 			}
 			else
@@ -250,11 +250,11 @@ RegexBase_
 				PureResult result;
 				if (pure->Match(text.Buffer(), text.Buffer(), result))
 				{
-					return new RegexMatch_<T>(text, &result);
+					return Ptr(new RegexMatch_<T>(text, &result));
 				}
 				else
 				{
-					return 0;
+					return nullptr;
 				}
 			}
 		}
@@ -315,8 +315,8 @@ Regex_<T>
 		Regex_<T>::Regex_(const ObjectString<T>& code, bool preferPure)
 		{
 			CharRange::List subsets;
-			RegexExpression::Ref regex = ParseRegexExpression(U32<T>::ToU32(code));
-			Expression::Ref expression = regex->Merge();
+			auto regex = ParseRegexExpression(U32<T>::ToU32(code));
+			auto expression = regex->Merge();
 			expression->NormalizeCharSet(subsets);
 
 			bool pureRequired = false;
@@ -351,18 +351,18 @@ Regex_<T>
 				{
 					Dictionary<State*, State*> nfaStateMap;
 					Group<State*, State*> dfaStateMap;
-					Automaton::Ref eNfa = expression->GenerateEpsilonNfa();
-					Automaton::Ref nfa = EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
-					Automaton::Ref dfa = NfaToDfa(nfa, dfaStateMap);
+					Ptr<Automaton> eNfa = expression->GenerateEpsilonNfa();
+					Ptr<Automaton> nfa = EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
+					Ptr<Automaton> dfa = NfaToDfa(nfa, dfaStateMap);
 					pure = new PureInterpretor(dfa, subsets);
 				}
 				if (richRequired)
 				{
 					Dictionary<State*, State*> nfaStateMap;
 					Group<State*, State*> dfaStateMap;
-					Automaton::Ref eNfa = expression->GenerateEpsilonNfa();
-					Automaton::Ref nfa = EpsilonNfaToNfa(eNfa, RichEpsilonChecker, nfaStateMap);
-					Automaton::Ref dfa = NfaToDfa(nfa, dfaStateMap);
+					Ptr<Automaton> eNfa = expression->GenerateEpsilonNfa();
+					Ptr<Automaton> nfa = EpsilonNfaToNfa(eNfa, RichEpsilonChecker, nfaStateMap);
+					Ptr<Automaton> dfa = NfaToDfa(nfa, dfaStateMap);
 					rich = new RichInterpretor(dfa);
 
 					for (auto&& name : rich->CaptureNames())
@@ -984,13 +984,13 @@ RegexLexer_<T>
 		RegexLexer_<T>::RegexLexer_(const collections::IEnumerable<ObjectString<T>>& tokens)
 		{
 			// Build DFA for all tokens
-			List<Expression::Ref> expressions;
-			List<Automaton::Ref> dfas;
+			List<Ptr<Expression>> expressions;
+			List<Ptr<Automaton>> dfas;
 			CharRange::List subsets;
 			for (auto&& code : tokens)
 			{
-				RegexExpression::Ref regex = ParseRegexExpression(U32<T>::ToU32(code));
-				Expression::Ref expression = regex->Merge();
+				auto regex = ParseRegexExpression(U32<T>::ToU32(code));
+				auto expression = regex->Merge();
 				expression->CollectCharSet(subsets);
 				expressions.Add(expression);
 			}
@@ -998,18 +998,17 @@ RegexLexer_<T>
 			{
 				Dictionary<State*, State*> nfaStateMap;
 				Group<State*, State*> dfaStateMap;
-				Expression::Ref expression = expressions[i];
-				expression->ApplyCharSet(subsets);
-				Automaton::Ref eNfa = expression->GenerateEpsilonNfa();
-				Automaton::Ref nfa = EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
-				Automaton::Ref dfa = NfaToDfa(nfa, dfaStateMap);
+				expressions[i]->ApplyCharSet(subsets);
+				auto eNfa = expressions[i]->GenerateEpsilonNfa();
+				auto nfa = EpsilonNfaToNfa(eNfa, PureEpsilonChecker, nfaStateMap);
+				auto dfa = NfaToDfa(nfa, dfaStateMap);
 				dfas.Add(dfa);
 			}
 
 			// Mark all states in DFAs
 			for (vint i = 0; i < dfas.Count(); i++)
 			{
-				Automaton::Ref dfa = dfas[i];
+				Ptr<Automaton> dfa = dfas[i];
 				for (vint j = 0; j < dfa->states.Count(); j++)
 				{
 					if (dfa->states[j]->finalState)
@@ -1024,7 +1023,7 @@ RegexLexer_<T>
 			}
 
 			// Connect all DFAs to an e-NFA
-			Automaton::Ref bigEnfa = new Automaton;
+			auto bigEnfa = Ptr(new Automaton);
 			for (vint i = 0; i < dfas.Count(); i++)
 			{
 				CopyFrom(bigEnfa->states, dfas[i]->states, true);
@@ -1039,13 +1038,13 @@ RegexLexer_<T>
 			// Build a single DFA out of the e-NFA
 			Dictionary<State*, State*> nfaStateMap;
 			Group<State*, State*> dfaStateMap;
-			Automaton::Ref bigNfa = EpsilonNfaToNfa(bigEnfa, PureEpsilonChecker, nfaStateMap);
+			auto bigNfa = EpsilonNfaToNfa(bigEnfa, PureEpsilonChecker, nfaStateMap);
 			for (vint i = 0; i < nfaStateMap.Keys().Count(); i++)
 			{
 				void* userData = nfaStateMap.Values().Get(i)->userData;
 				nfaStateMap.Keys()[i]->userData = userData;
 			}
-			Automaton::Ref bigDfa = NfaToDfa(bigNfa, dfaStateMap);
+			auto bigDfa = NfaToDfa(bigNfa, dfaStateMap);
 			for (vint i = 0; i < dfaStateMap.Keys().Count(); i++)
 			{
 				void* userData = dfaStateMap.GetByIndex(i).Get(0)->userData;
@@ -1358,7 +1357,7 @@ PureInterpretor
 			}
 		}
 
-		PureInterpretor::PureInterpretor(Automaton::Ref dfa, CharRange::List& subsets)
+		PureInterpretor::PureInterpretor(Ptr<Automaton> dfa, CharRange::List& subsets)
 		{
 			stateCount = dfa->states.Count();
 			charSetCount = subsets.Count() + 1;
@@ -1388,13 +1387,13 @@ PureInterpretor
 							vint index = subsets.IndexOf(dfaTransition->range);
 							if (index == -1)
 							{
-								CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#Specified chars don't appear in the normalized char ranges.");
+								CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Ptr<Automaton>, CharRange::List&)#Specified chars don't appear in the normalized char ranges.");
 							}
 							transitions[i * charSetCount + index] = dfa->states.IndexOf(dfaTransition->target);
 						}
 						break;
 					default:
-						CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Automaton::Ref, CharRange::List&)#PureInterpretor only accepts Transition::Chars transitions.");
+						CHECK_ERROR(false, L"PureInterpretor::PureInterpretor(Ptr<Automaton>, CharRange::List&)#PureInterpretor only accepts Transition::Chars transitions.");
 					}
 				}
 			}
@@ -1695,8 +1694,8 @@ Data Structures for Backtracking
 			return current;
 		}
 
-		template<typename T, typename K>
-		void PushNonSaver(List<T, K>& elements, vint& count, const T& element)
+		template<typename T>
+		void PushNonSaver(List<T>& elements, vint& count, const T& element)
 		{
 			if (elements.Count() == count)
 			{
@@ -1709,8 +1708,8 @@ Data Structures for Backtracking
 			count++;
 		}
 
-		template<typename T, typename K>
-		T PopNonSaver(List<T, K>& elements, vint& count)
+		template<typename T>
+		T PopNonSaver(List<T>& elements, vint& count)
 		{
 			return elements[--count];
 		}
@@ -1731,7 +1730,7 @@ CaptureRecord
 RichInterpretor
 ***********************************************************************/
 
-		RichInterpretor::RichInterpretor(Automaton::Ref _dfa)
+		RichInterpretor::RichInterpretor(Ptr<Automaton> _dfa)
 			:dfa(_dfa)
 		{
 			datas = new UserData[dfa->states.Count()];
@@ -2084,23 +2083,23 @@ MergeAlgorithm
 		{
 		public:
 			Expression::Map			definitions;
-			RegexExpression* regex;
+			RegexExpression*		regex = nullptr;
 		};
 
-		class MergeAlgorithm : public RegexExpressionAlgorithm<Expression::Ref, MergeParameter*>
+		class MergeAlgorithm : public RegexExpressionAlgorithm<Ptr<Expression>, MergeParameter*>
 		{
 		public:
-			Expression::Ref Apply(CharSetExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(CharSetExpression* expression, MergeParameter* target) override
 			{
-				Ptr<CharSetExpression> result = new CharSetExpression;
+				auto result = Ptr(new CharSetExpression);
 				CopyFrom(result->ranges, expression->ranges);
 				result->reverse = expression->reverse;
 				return result;
 			}
 
-			Expression::Ref Apply(LoopExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(LoopExpression* expression, MergeParameter* target) override
 			{
-				Ptr<LoopExpression> result = new LoopExpression;
+				auto result = Ptr(new LoopExpression);
 				result->max = expression->max;
 				result->min = expression->min;
 				result->preferLong = expression->preferLong;
@@ -2108,67 +2107,67 @@ MergeAlgorithm
 				return result;
 			}
 
-			Expression::Ref Apply(SequenceExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(SequenceExpression* expression, MergeParameter* target) override
 			{
-				Ptr<SequenceExpression> result = new SequenceExpression;
+				auto result = Ptr(new SequenceExpression);
 				result->left = Invoke(expression->left, target);
 				result->right = Invoke(expression->right, target);
 				return result;
 			}
 
-			Expression::Ref Apply(AlternateExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(AlternateExpression* expression, MergeParameter* target) override
 			{
-				Ptr<AlternateExpression> result = new AlternateExpression;
+				auto result = Ptr(new AlternateExpression);
 				result->left = Invoke(expression->left, target);
 				result->right = Invoke(expression->right, target);
 				return result;
 			}
 
-			Expression::Ref Apply(BeginExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(BeginExpression* expression, MergeParameter* target) override
 			{
-				return new BeginExpression;
+				return Ptr(new BeginExpression);
 			}
 
-			Expression::Ref Apply(EndExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(EndExpression* expression, MergeParameter* target) override
 			{
-				return new EndExpression;
+				return Ptr(new EndExpression);
 			}
 
-			Expression::Ref Apply(CaptureExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(CaptureExpression* expression, MergeParameter* target) override
 			{
-				Ptr<CaptureExpression> result = new CaptureExpression;
+				auto result = Ptr(new CaptureExpression);
 				result->expression = Invoke(expression->expression, target);
 				result->name = expression->name;
 				return result;
 			}
 
-			Expression::Ref Apply(MatchExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(MatchExpression* expression, MergeParameter* target) override
 			{
-				Ptr<MatchExpression> result = new MatchExpression;
+				auto result = Ptr(new MatchExpression);
 				result->name = expression->name;
 				result->index = expression->index;
 				return result;
 			}
 
-			Expression::Ref Apply(PositiveExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(PositiveExpression* expression, MergeParameter* target) override
 			{
-				Ptr<PositiveExpression> result = new PositiveExpression;
+				auto result = Ptr(new PositiveExpression);
 				result->expression = Invoke(expression->expression, target);
 				return result;
 			}
 
-			Expression::Ref Apply(NegativeExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(NegativeExpression* expression, MergeParameter* target) override
 			{
-				Ptr<NegativeExpression> result = new NegativeExpression;
+				auto result = Ptr(new NegativeExpression);
 				result->expression = Invoke(expression->expression, target);
 				return result;
 			}
 
-			Expression::Ref Apply(UsingExpression* expression, MergeParameter* target)
+			Ptr<Expression> Apply(UsingExpression* expression, MergeParameter* target) override
 			{
 				if (target->definitions.Keys().Contains(expression->name))
 				{
-					Expression::Ref reference = target->definitions[expression->name];
+					Ptr<Expression> reference = target->definitions[expression->name];
 					if (reference)
 					{
 						return reference;
@@ -2181,7 +2180,7 @@ MergeAlgorithm
 				else if (target->regex->definitions.Keys().Contains(expression->name))
 				{
 					target->definitions.Add(expression->name, nullptr);
-					Expression::Ref result = Invoke(target->regex->definitions[expression->name], target);
+					Ptr<Expression> result = Invoke(target->regex->definitions[expression->name], target);
 					target->definitions.Set(expression->name, result);
 					return result;
 				}
@@ -2219,7 +2218,7 @@ CharSetExpression
 RegexExpression
 ***********************************************************************/
 
-		Expression::Ref RegexExpression::Merge()
+		Ptr<Expression> RegexExpression::Merge()
 		{
 			MergeParameter merge;
 			merge.regex = this;
@@ -2308,57 +2307,57 @@ CanTreatAsPureAlgorithm
 		class CanTreatAsPureAlgorithm : public RegexExpressionAlgorithm<bool, void*>
 		{
 		public:
-			bool Apply(CharSetExpression* expression, void* target)
+			bool Apply(CharSetExpression* expression, void* target) override
 			{
 				return true;
 			}
 
-			bool Apply(LoopExpression* expression, void* target)
+			bool Apply(LoopExpression* expression, void* target) override
 			{
 				return expression->preferLong && Invoke(expression->expression, 0);
 			}
 
-			bool Apply(SequenceExpression* expression, void* target)
+			bool Apply(SequenceExpression* expression, void* target) override
 			{
 				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
 			}
 
-			bool Apply(AlternateExpression* expression, void* target)
+			bool Apply(AlternateExpression* expression, void* target) override
 			{
 				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
 			}
 
-			bool Apply(BeginExpression* expression, void* target)
+			bool Apply(BeginExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(EndExpression* expression, void* target)
+			bool Apply(EndExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(CaptureExpression* expression, void* target)
+			bool Apply(CaptureExpression* expression, void* target) override
 			{
 				return Invoke(expression->expression, 0);
 			}
 
-			bool Apply(MatchExpression* expression, void* target)
+			bool Apply(MatchExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(PositiveExpression* expression, void* target)
+			bool Apply(PositiveExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(NegativeExpression* expression, void* target)
+			bool Apply(NegativeExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(UsingExpression* expression, void* target)
+			bool Apply(UsingExpression* expression, void* target) override
 			{
 				return false;
 			}
@@ -2431,51 +2430,51 @@ CharSetAlgorithm
 				}
 			}
 
-			void Apply(LoopExpression* expression, NormalizedCharSet* target)
+			void Apply(LoopExpression* expression, NormalizedCharSet* target) override
 			{
 				Invoke(expression->expression, target);
 			}
 
-			void Apply(SequenceExpression* expression, NormalizedCharSet* target)
+			void Apply(SequenceExpression* expression, NormalizedCharSet* target) override
 			{
 				Invoke(expression->left, target);
 				Invoke(expression->right, target);
 			}
 
-			void Apply(AlternateExpression* expression, NormalizedCharSet* target)
+			void Apply(AlternateExpression* expression, NormalizedCharSet* target) override
 			{
 				Invoke(expression->left, target);
 				Invoke(expression->right, target);
 			}
 
-			void Apply(BeginExpression* expression, NormalizedCharSet* target)
+			void Apply(BeginExpression* expression, NormalizedCharSet* target) override
 			{
 			}
 
-			void Apply(EndExpression* expression, NormalizedCharSet* target)
+			void Apply(EndExpression* expression, NormalizedCharSet* target) override
 			{
 			}
 
-			void Apply(CaptureExpression* expression, NormalizedCharSet* target)
-			{
-				Invoke(expression->expression, target);
-			}
-
-			void Apply(MatchExpression* expression, NormalizedCharSet* target)
-			{
-			}
-
-			void Apply(PositiveExpression* expression, NormalizedCharSet* target)
+			void Apply(CaptureExpression* expression, NormalizedCharSet* target) override
 			{
 				Invoke(expression->expression, target);
 			}
 
-			void Apply(NegativeExpression* expression, NormalizedCharSet* target)
+			void Apply(MatchExpression* expression, NormalizedCharSet* target) override
+			{
+			}
+
+			void Apply(PositiveExpression* expression, NormalizedCharSet* target) override
 			{
 				Invoke(expression->expression, target);
 			}
 
-			void Apply(UsingExpression* expression, NormalizedCharSet* target)
+			void Apply(NegativeExpression* expression, NormalizedCharSet* target) override
+			{
+				Invoke(expression->expression, target);
+			}
+
+			void Apply(UsingExpression* expression, NormalizedCharSet* target) override
 			{
 			}
 		};
@@ -2624,7 +2623,7 @@ EpsilonNfaAlgorithm
 		class EpsilonNfaInfo
 		{
 		public:
-			Automaton::Ref		automaton;
+			Ptr<Automaton>		automaton;
 		};
 
 		class EpsilonNfa
@@ -2657,7 +2656,7 @@ EpsilonNfaAlgorithm
 				}
 			}
 
-			EpsilonNfa Apply(CharSetExpression* expression, Automaton* target)
+			EpsilonNfa Apply(CharSetExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa nfa;
 				nfa.start = target->NewState();
@@ -2669,7 +2668,7 @@ EpsilonNfaAlgorithm
 				return nfa;
 			}
 
-			EpsilonNfa Apply(LoopExpression* expression, Automaton* target)
+			EpsilonNfa Apply(LoopExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa head;
 				for (vint i = 0; i < expression->min; i++)
@@ -2727,14 +2726,14 @@ EpsilonNfaAlgorithm
 				return head;
 			}
 
-			EpsilonNfa Apply(SequenceExpression* expression, Automaton* target)
+			EpsilonNfa Apply(SequenceExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa a = Invoke(expression->left, target);
 				EpsilonNfa b = Invoke(expression->right, target);
 				return Connect(a, b, target);
 			}
 
-			EpsilonNfa Apply(AlternateExpression* expression, Automaton* target)
+			EpsilonNfa Apply(AlternateExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa result;
 				result.start = target->NewState();
@@ -2748,7 +2747,7 @@ EpsilonNfaAlgorithm
 				return result;
 			}
 
-			EpsilonNfa Apply(BeginExpression* expression, Automaton* target)
+			EpsilonNfa Apply(BeginExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa result;
 				result.start = target->NewState();
@@ -2757,7 +2756,7 @@ EpsilonNfaAlgorithm
 				return result;
 			}
 
-			EpsilonNfa Apply(EndExpression* expression, Automaton* target)
+			EpsilonNfa Apply(EndExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa result;
 				result.start = target->NewState();
@@ -2766,7 +2765,7 @@ EpsilonNfaAlgorithm
 				return result;
 			}
 
-			EpsilonNfa Apply(CaptureExpression* expression, Automaton* target)
+			EpsilonNfa Apply(CaptureExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa result;
 				result.start = target->NewState();
@@ -2789,7 +2788,7 @@ EpsilonNfaAlgorithm
 				return result;
 			}
 
-			EpsilonNfa Apply(MatchExpression* expression, Automaton* target)
+			EpsilonNfa Apply(MatchExpression* expression, Automaton* target) override
 			{
 				vint capture = -1;
 				if (expression->name != U32String::Empty)
@@ -2808,7 +2807,7 @@ EpsilonNfaAlgorithm
 				return result;
 			}
 
-			EpsilonNfa Apply(PositiveExpression* expression, Automaton* target)
+			EpsilonNfa Apply(PositiveExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa result;
 				result.start = target->NewState();
@@ -2819,7 +2818,7 @@ EpsilonNfaAlgorithm
 				return result;
 			}
 
-			EpsilonNfa Apply(NegativeExpression* expression, Automaton* target)
+			EpsilonNfa Apply(NegativeExpression* expression, Automaton* target) override
 			{
 				EpsilonNfa result;
 				result.start = target->NewState();
@@ -2831,7 +2830,7 @@ EpsilonNfaAlgorithm
 				return result;
 			}
 
-			EpsilonNfa Apply(UsingExpression* expression, Automaton* target)
+			EpsilonNfa Apply(UsingExpression* expression, Automaton* target) override
 			{
 				CHECK_FAIL(L"RegexExpression::GenerateEpsilonNfa()#UsingExpression cannot create state machine.");
 			}
@@ -2841,9 +2840,9 @@ EpsilonNfaAlgorithm
 Expression
 ***********************************************************************/
 
-		Automaton::Ref Expression::GenerateEpsilonNfa()
+		Ptr<Automaton> Expression::GenerateEpsilonNfa()
 		{
-			Automaton::Ref automaton = new Automaton;
+			auto automaton = Ptr(new Automaton);
 			EpsilonNfa result = EpsilonNfaAlgorithm().Invoke(this, automaton.Obj());
 			automaton->startState = result.start;
 			result.end->finalState = true;
@@ -2873,57 +2872,57 @@ HasNoExtensionAlgorithm
 		class HasNoExtensionAlgorithm : public RegexExpressionAlgorithm<bool, void*>
 		{
 		public:
-			bool Apply(CharSetExpression* expression, void* target)
+			bool Apply(CharSetExpression* expression, void* target) override
 			{
 				return true;
 			}
 
-			bool Apply(LoopExpression* expression, void* target)
+			bool Apply(LoopExpression* expression, void* target) override
 			{
 				return expression->preferLong && Invoke(expression->expression, 0);
 			}
 
-			bool Apply(SequenceExpression* expression, void* target)
+			bool Apply(SequenceExpression* expression, void* target) override
 			{
 				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
 			}
 
-			bool Apply(AlternateExpression* expression, void* target)
+			bool Apply(AlternateExpression* expression, void* target) override
 			{
 				return Invoke(expression->left, 0) && Invoke(expression->right, 0);
 			}
 
-			bool Apply(BeginExpression* expression, void* target)
+			bool Apply(BeginExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(EndExpression* expression, void* target)
+			bool Apply(EndExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(CaptureExpression* expression, void* target)
+			bool Apply(CaptureExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(MatchExpression* expression, void* target)
+			bool Apply(MatchExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(PositiveExpression* expression, void* target)
+			bool Apply(PositiveExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(NegativeExpression* expression, void* target)
+			bool Apply(NegativeExpression* expression, void* target) override
 			{
 				return false;
 			}
 
-			bool Apply(UsingExpression* expression, void* target)
+			bool Apply(UsingExpression* expression, void* target) override
 			{
 				return false;
 			}
@@ -2961,7 +2960,7 @@ IsEqualAlgorithm
 		class IsEqualAlgorithm : public RegexExpressionAlgorithm<bool, Expression*>
 		{
 		public:
-			bool Apply(CharSetExpression* expression, Expression* target)
+			bool Apply(CharSetExpression* expression, Expression* target) override
 			{
 				CharSetExpression* expected = dynamic_cast<CharSetExpression*>(target);
 				if (expected)
@@ -2977,7 +2976,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(LoopExpression* expression, Expression* target)
+			bool Apply(LoopExpression* expression, Expression* target) override
 			{
 				LoopExpression* expected = dynamic_cast<LoopExpression*>(target);
 				if (expected)
@@ -2991,7 +2990,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(SequenceExpression* expression, Expression* target)
+			bool Apply(SequenceExpression* expression, Expression* target) override
 			{
 				SequenceExpression* expected = dynamic_cast<SequenceExpression*>(target);
 				if (expected)
@@ -3003,7 +3002,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(AlternateExpression* expression, Expression* target)
+			bool Apply(AlternateExpression* expression, Expression* target) override
 			{
 				AlternateExpression* expected = dynamic_cast<AlternateExpression*>(target);
 				if (expected)
@@ -3015,7 +3014,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(BeginExpression* expression, Expression* target)
+			bool Apply(BeginExpression* expression, Expression* target) override
 			{
 				BeginExpression* expected = dynamic_cast<BeginExpression*>(target);
 				if (expected)
@@ -3025,7 +3024,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(EndExpression* expression, Expression* target)
+			bool Apply(EndExpression* expression, Expression* target) override
 			{
 				EndExpression* expected = dynamic_cast<EndExpression*>(target);
 				if (expected)
@@ -3035,7 +3034,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(CaptureExpression* expression, Expression* target)
+			bool Apply(CaptureExpression* expression, Expression* target) override
 			{
 				CaptureExpression* expected = dynamic_cast<CaptureExpression*>(target);
 				if (expected)
@@ -3047,7 +3046,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(MatchExpression* expression, Expression* target)
+			bool Apply(MatchExpression* expression, Expression* target) override
 			{
 				MatchExpression* expected = dynamic_cast<MatchExpression*>(target);
 				if (expected)
@@ -3059,7 +3058,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(PositiveExpression* expression, Expression* target)
+			bool Apply(PositiveExpression* expression, Expression* target) override
 			{
 				PositiveExpression* expected = dynamic_cast<PositiveExpression*>(target);
 				if (expected)
@@ -3070,7 +3069,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(NegativeExpression* expression, Expression* target)
+			bool Apply(NegativeExpression* expression, Expression* target) override
 			{
 				NegativeExpression* expected = dynamic_cast<NegativeExpression*>(target);
 				if (expected)
@@ -3081,7 +3080,7 @@ IsEqualAlgorithm
 				return false;
 			}
 
-			bool Apply(UsingExpression* expression, Expression* target)
+			bool Apply(UsingExpression* expression, Expression* target) override
 			{
 				UsingExpression* expected = dynamic_cast<UsingExpression*>(target);
 				if (expected)
@@ -3249,7 +3248,7 @@ Helper Functions
 			}
 
 			{
-				LoopExpression* expression = new LoopExpression;
+				auto expression = Ptr(new LoopExpression);
 				expression->min = min;
 				expression->max = max;
 				expression->preferLong = !IsChar(input, U'?');
@@ -3267,15 +3266,15 @@ Helper Functions
 			}
 			else if (IsChar(input, U'^'))
 			{
-				return new BeginExpression;
+				return Ptr(new BeginExpression);
 			}
 			else if (IsChar(input, U'$'))
 			{
-				return new EndExpression;
+				return Ptr(new EndExpression);
 			}
 			else if (IsChar(input, U'\\') || IsChar(input, U'/'))
 			{
-				Ptr<CharSetExpression> expression = new CharSetExpression;
+				auto expression = Ptr(new CharSetExpression);
 				expression->reverse = false;
 				switch (*input)
 				{
@@ -3332,7 +3331,7 @@ Helper Functions
 			}
 			else if (IsChar(input, U'['))
 			{
-				Ptr<CharSetExpression> expression = new CharSetExpression;
+				auto expression = Ptr(new CharSetExpression);
 				if (IsChar(input, U'^'))
 				{
 					expression->reverse = true;
@@ -3429,7 +3428,7 @@ Helper Functions
 			}
 			else
 			{
-				CharSetExpression* expression = new CharSetExpression;
+				auto expression = Ptr(new CharSetExpression);
 				expression->reverse = false;
 				expression->ranges.Add(CharRange(*input, *input));
 				input++;
@@ -3446,7 +3445,7 @@ Helper Functions
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				PositiveExpression* expression = new PositiveExpression;
+				auto expression = Ptr(new PositiveExpression);
 				expression->expression = sub;
 				return expression;
 			}
@@ -3457,7 +3456,7 @@ Helper Functions
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				NegativeExpression* expression = new NegativeExpression;
+				auto expression = Ptr(new NegativeExpression);
 				expression->expression = sub;
 				return expression;
 			}
@@ -3476,7 +3475,7 @@ Helper Functions
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				UsingExpression* expression = new UsingExpression;
+				auto expression = Ptr(new UsingExpression);
 				expression->name = name;
 				return expression;
 			}
@@ -3506,7 +3505,7 @@ Helper Functions
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				MatchExpression* expression = new MatchExpression;
+				auto expression = Ptr(new MatchExpression);
 				expression->name = name;
 				expression->index = index;
 				return expression;
@@ -3522,30 +3521,30 @@ Helper Functions
 				{
 					goto NEED_GREATER;
 				}
-				Ptr<Expression> sub = ParseExpression(input);
+				auto sub = ParseExpression(input);
 				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				CaptureExpression* expression = new CaptureExpression;
+				auto expression = Ptr(new CaptureExpression);
 				expression->name = name;
 				expression->expression = sub;
 				return expression;
 			}
 			else if (IsStr(input, U"(?"))
 			{
-				Ptr<Expression> sub = ParseExpression(input);
+				auto sub = ParseExpression(input);
 				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
 				}
-				CaptureExpression* expression = new CaptureExpression;
+				auto expression = Ptr(new CaptureExpression);
 				expression->expression = sub;
 				return expression;
 			}
 			else if (IsChar(input, U'('))
 			{
-				Ptr<Expression> sub = ParseExpression(input);
+				auto sub = ParseExpression(input);
 				if (!IsChar(input, U')'))
 				{
 					goto NEED_RIGHT_BRACKET;
@@ -3588,13 +3587,13 @@ Helper Functions
 
 		Ptr<Expression> ParseJoin(const char32_t*& input)
 		{
-			Ptr<Expression> expression = ParseUnit(input);
+			auto expression = ParseUnit(input);
 			while (true)
 			{
-				Ptr<Expression> right = ParseUnit(input);
+				auto right = ParseUnit(input);
 				if (right)
 				{
-					SequenceExpression* sequence = new SequenceExpression;
+					auto sequence = Ptr(new SequenceExpression);
 					sequence->left = expression;
 					sequence->right = right;
 					expression = sequence;
@@ -3609,15 +3608,15 @@ Helper Functions
 
 		Ptr<Expression> ParseAlt(const char32_t*& input)
 		{
-			Ptr<Expression> expression = ParseJoin(input);
+			auto expression = ParseJoin(input);
 			while (true)
 			{
 				if (IsChar(input, U'|'))
 				{
-					Ptr<Expression> right = ParseJoin(input);
+					auto right = ParseJoin(input);
 					if (right)
 					{
-						AlternateExpression* alternate = new AlternateExpression;
+						auto alternate = Ptr(new AlternateExpression);
 						alternate->left = expression;
 						alternate->right = right;
 						expression = alternate;
@@ -3640,9 +3639,9 @@ Helper Functions
 			return ParseAlt(input);
 		}
 
-		RegexExpression::Ref ParseRegexExpression(const U32String& code)
+		Ptr<RegexExpression> ParseRegexExpression(const U32String& code)
 		{
-			RegexExpression::Ref regex = new RegexExpression;
+			auto regex = Ptr(new RegexExpression);
 			const char32_t* start = code.Buffer();
 			const char32_t* input = start;
 			try
@@ -3817,7 +3816,7 @@ namespace vl
 RegexNode
 ***********************************************************************/
 
-		RegexNode::RegexNode(vl::regex_internal::Expression::Ref _expression)
+		RegexNode::RegexNode(Ptr<vl::regex_internal::Expression> _expression)
 			:expression(_expression)
 		{
 		}
@@ -3839,7 +3838,7 @@ RegexNode
 
 		RegexNode RegexNode::Loop(vint min, vint max)const
 		{
-			LoopExpression* target = new LoopExpression;
+			auto target = Ptr(new LoopExpression);
 			target->min = min;
 			target->max = max;
 			target->preferLong = true;
@@ -3854,7 +3853,7 @@ RegexNode
 
 		RegexNode RegexNode::operator+(const RegexNode& node)const
 		{
-			SequenceExpression* target = new SequenceExpression;
+			auto target = Ptr(new SequenceExpression);
 			target->left = expression;
 			target->right = node.expression;
 			return RegexNode(target);
@@ -3862,7 +3861,7 @@ RegexNode
 
 		RegexNode RegexNode::operator|(const RegexNode& node)const
 		{
-			AlternateExpression* target = new AlternateExpression;
+			auto target = Ptr(new AlternateExpression);
 			target->left = expression;
 			target->right = node.expression;
 			return RegexNode(target);
@@ -3870,23 +3869,23 @@ RegexNode
 
 		RegexNode RegexNode::operator+()const
 		{
-			PositiveExpression* target = new PositiveExpression;
+			auto target = Ptr(new PositiveExpression);
 			target->expression = expression;
 			return RegexNode(target);
 		}
 
 		RegexNode RegexNode::operator-()const
 		{
-			NegativeExpression* target = new NegativeExpression;
+			auto target = Ptr(new NegativeExpression);
 			target->expression = expression;
 			return RegexNode(target);
 		}
 
 		RegexNode RegexNode::operator!()const
 		{
-			CharSetExpression* source = dynamic_cast<CharSetExpression*>(expression.Obj());
+			auto source = dynamic_cast<CharSetExpression*>(expression.Obj());
 			CHECK_ERROR(source, L"RegexNode::operator!()#operator ! can only applies on charset expressions.");
-			Ptr<CharSetExpression> target = new CharSetExpression;
+			auto target = Ptr(new CharSetExpression);
 			CopyFrom(target->ranges, source->ranges);
 			target->reverse = !source->reverse;
 			return RegexNode(target);
@@ -3894,10 +3893,10 @@ RegexNode
 
 		RegexNode RegexNode::operator%(const RegexNode& node)const
 		{
-			CharSetExpression* left = dynamic_cast<CharSetExpression*>(expression.Obj());
-			CharSetExpression* right = dynamic_cast<CharSetExpression*>(node.expression.Obj());
+			auto left = dynamic_cast<CharSetExpression*>(expression.Obj());
+			auto right = dynamic_cast<CharSetExpression*>(node.expression.Obj());
 			CHECK_ERROR(left && right && !left->reverse && !right->reverse, L"RegexNode::operator%(const RegexNode&)#operator % only connects non-reverse charset expressions.");
-			Ptr<CharSetExpression> target = new CharSetExpression;
+			auto target = Ptr(new CharSetExpression);
 			target->reverse = false;
 			CopyFrom(target->ranges, left->ranges);
 			for (vint i = 0; i < right->ranges.Count(); i++)
@@ -3916,7 +3915,7 @@ Regex Writer
 
 		RegexNode rCapture(const U32String& name, const RegexNode& node)
 		{
-			CaptureExpression* target = new CaptureExpression;
+			auto target = Ptr(new CaptureExpression);
 			target->name = name;
 			target->expression = node.expression;
 			return RegexNode(target);
@@ -3924,14 +3923,14 @@ Regex Writer
 
 		RegexNode rUsing(const U32String& name)
 		{
-			UsingExpression* target = new UsingExpression;
+			auto target = Ptr(new UsingExpression);
 			target->name = name;
 			return RegexNode(target);
 		}
 
 		RegexNode rMatch(const U32String& name, vint index)
 		{
-			MatchExpression* target = new MatchExpression;
+			auto target = Ptr(new MatchExpression);
 			target->name = name;
 			target->index = index;
 			return RegexNode(target);
@@ -3939,25 +3938,25 @@ Regex Writer
 
 		RegexNode rMatch(vint index)
 		{
-			MatchExpression* target = new MatchExpression;
+			auto target = Ptr(new MatchExpression);
 			target->index = index;
 			return RegexNode(target);
 		}
 
 		RegexNode rBegin()
 		{
-			return RegexNode(new BeginExpression);
+			return RegexNode(Ptr(new BeginExpression));
 		}
 
 		RegexNode rEnd()
 		{
-			return RegexNode(new EndExpression);
+			return RegexNode(Ptr(new EndExpression));
 		}
 
 		RegexNode rC(char32_t a, char32_t b)
 		{
 			if (!b)b = a;
-			CharSetExpression* target = new CharSetExpression;
+			auto target = Ptr(new CharSetExpression);
 			target->reverse = false;
 			target->AddRangeWithConflict(CharRange(a, b));
 			return RegexNode(target);
@@ -4011,27 +4010,27 @@ Automaton
 
 		State* Automaton::NewState()
 		{
-			State* state = new State;
+			auto state = Ptr(new State);
 			state->finalState = false;
 			state->userData = 0;
 			states.Add(state);
-			return state;
+			return state.Obj();
 		}
 
 		Transition* Automaton::NewTransition(State* start, State* end)
 		{
-			Transition* transition = new Transition;
+			auto transition = Ptr(new Transition);
 			transition->source = start;
 			transition->target = end;
-			start->transitions.Add(transition);
-			end->inputs.Add(transition);
+			start->transitions.Add(transition.Obj());
+			end->inputs.Add(transition.Obj());
 			transitions.Add(transition);
-			return transition;
+			return transition.Obj();
 		}
 
 		Transition* Automaton::NewChars(State* start, State* end, CharRange range)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::Chars;
 			transition->range = range;
 			return transition;
@@ -4039,35 +4038,35 @@ Automaton
 
 		Transition* Automaton::NewEpsilon(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::Epsilon;
 			return transition;
 		}
 
 		Transition* Automaton::NewBeginString(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::BeginString;
 			return transition;
 		}
 
 		Transition* Automaton::NewEndString(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::EndString;
 			return transition;
 		}
 
 		Transition* Automaton::NewNop(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::Nop;
 			return transition;
 		}
 
 		Transition* Automaton::NewCapture(State* start, State* end, vint capture)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::Capture;
 			transition->capture = capture;
 			return transition;
@@ -4075,7 +4074,7 @@ Automaton
 
 		Transition* Automaton::NewMatch(State* start, State* end, vint capture, vint index)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::Match;
 			transition->capture = capture;
 			transition->index = index;
@@ -4084,28 +4083,28 @@ Automaton
 
 		Transition* Automaton::NewPositive(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::Positive;
 			return transition;
 		}
 
 		Transition* Automaton::NewNegative(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::Negative;
 			return transition;
 		}
 
 		Transition* Automaton::NewNegativeFail(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::NegativeFail;
 			return transition;
 		}
 
 		Transition* Automaton::NewEnd(State* start, State* end)
 		{
-			Transition* transition = NewTransition(start, end);
+			auto transition = NewTransition(start, end);
 			transition->type = Transition::End;
 			return transition;
 		}
@@ -4183,9 +4182,9 @@ Helpers
 			}
 		}
 
-		Automaton::Ref EpsilonNfaToNfa(Automaton::Ref source, bool(*epsilonChecker)(Transition*), Dictionary<State*, State*>& nfaStateMap)
+		Ptr<Automaton> EpsilonNfaToNfa(Ptr<Automaton> source, bool(*epsilonChecker)(Transition*), Dictionary<State*, State*>& nfaStateMap)
 		{
-			Automaton::Ref target = new Automaton;
+			auto target = Ptr(new Automaton);
 			Dictionary<State*, State*> stateMap;	// source->target
 			List<State*> epsilonStates;				// current epsilon closure
 			List<Transition*> transitions;			// current non-epsilon transitions
@@ -4231,9 +4230,9 @@ Helpers
 			return target;
 		}
 
-		Automaton::Ref NfaToDfa(Automaton::Ref source, Group<State*, State*>& dfaStateMap)
+		Ptr<Automaton> NfaToDfa(Ptr<Automaton> source, Group<State*, State*>& dfaStateMap)
 		{
-			Automaton::Ref target = new Automaton;
+			auto target = Ptr(new Automaton);
 			CopyFrom(target->captureNames, source->captureNames);
 			State* startState = target->NewState();
 			target->startState = startState;

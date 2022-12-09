@@ -205,7 +205,7 @@ EnumerableCoroutine
 
 				Ptr<IValueEnumerator> CreateEnumerator()override
 				{
-					return new CoroutineEnumerator(creator);
+					return Ptr(new CoroutineEnumerator(creator));
 				}
 			};
 
@@ -225,7 +225,7 @@ EnumerableCoroutine
 
 			Ptr<IValueEnumerable> EnumerableCoroutine::Create(const Creator& creator)
 			{
-				return new CoroutineEnumerable(creator);
+				return Ptr(new CoroutineEnumerable(creator));
 			}
 
 /***********************************************************************
@@ -320,7 +320,7 @@ DelayAsync
 
 			Ptr<IAsync> IAsync::Delay(vint milliseconds)
 			{
-				return new DelayAsync(milliseconds);
+				return Ptr(new DelayAsync(milliseconds));
 			}
 
 /***********************************************************************
@@ -352,7 +352,7 @@ FutureAndPromiseAsync
 					SPIN_LOCK(lock)
 					{
 						if (status == AsyncStatus::Stopped || cr) return false;
-						cr = MakePtr<CoroutineResult>();
+						cr = Ptr(new CoroutineResult);
 						f();
 						if (status == AsyncStatus::Executing)
 						{
@@ -387,7 +387,7 @@ FutureAndPromiseAsync
 
 				Ptr<IPromise> GetPromise()override
 				{
-					return this;
+					return Ptr(this);
 				}
 
 				bool SendResult(const Value& result)override
@@ -409,7 +409,7 @@ FutureAndPromiseAsync
 
 			Ptr<IFuture> IFuture::Create()
 			{
-				return new FutureAndPromiseAsync();
+				return Ptr(new FutureAndPromiseAsync);
 			}
 
 /***********************************************************************
@@ -572,7 +572,7 @@ AsyncCoroutine
 				{
 					if (!context)
 					{
-						context = new AsyncContext;
+						context = Ptr(new AsyncContext);
 					}
 					return context;
 				}
@@ -584,7 +584,7 @@ AsyncCoroutine
 						async->coroutine->Resume(false, output);
 						if (async->coroutine->GetStatus() == CoroutineStatus::Stopped && async->callback)
 						{
-							auto result = MakePtr<CoroutineResult>();
+							auto result = Ptr(new CoroutineResult);
 							if (async->coroutine->GetFailure())
 							{
 								result->SetFailure(async->coroutine->GetFailure());
@@ -624,11 +624,11 @@ AsyncCoroutine
 
 			Ptr<IAsync> AsyncCoroutine::Create(const Creator& creator)
 			{
-				return new CoroutineAsync(creator);
+				return Ptr(new CoroutineAsync(creator));
 			}
 			void AsyncCoroutine::CreateAndRun(const Creator& creator)
 			{
-				MakePtr<CoroutineAsync>(creator)->Execute(
+				Ptr(new CoroutineAsync(creator))->Execute(
 					[](Ptr<CoroutineResult> cr)
 					{
 						if (cr->GetFailure())
@@ -685,7 +685,7 @@ StateMachine
 						else if (currentCoroutine->GetStatus() == CoroutineStatus::Stopped)
 						{
 							// leave a state machine
-							previousResult = MakePtr<CoroutineResult>();
+							previousResult = Ptr(new CoroutineResult);
 							if (auto failure = currentCoroutine->GetFailure())
 							{
 								previousResult->SetFailure(failure);
@@ -780,7 +780,7 @@ Sys
 
 					Ptr<IValueEnumerator> CreateEnumerator()override
 					{
-						return MakePtr<Enumerator>(list);
+						return Ptr(new Enumerator(list));
 					}
 				};
 			}
@@ -837,7 +837,7 @@ Sys
 				{
 					list = IValueList::Create(GetLazyList<Value>(value));
 				}
-				return new system_sys::ReverseEnumerable(list);
+				return Ptr(new system_sys::ReverseEnumerable(list));
 			}
 
 #define DEFINE_COMPARE(TYPE)\
@@ -897,42 +897,42 @@ Localization
 
 			collections::LazyList<Locale> Localization::Locales()
 			{
-				auto result = MakePtr<List<Locale>>();
+				auto result = Ptr(new List<Locale>);
 				Locale::Enumerate(*result.Obj());
 				return result;
 			}
 
 			collections::LazyList<WString> Localization::GetShortDateFormats(Locale locale)
 			{
-				auto result = MakePtr<List<WString>>();
+				auto result = Ptr(new List<WString>);
 				locale.GetShortDateFormats(*result.Obj());
 				return result;
 			}
 
 			collections::LazyList<WString> Localization::GetLongDateFormats(Locale locale)
 			{
-				auto result = MakePtr<List<WString>>();
+				auto result = Ptr(new List<WString>);
 				locale.GetLongDateFormats(*result.Obj());
 				return result;
 			}
 
 			collections::LazyList<WString> Localization::GetYearMonthDateFormats(Locale locale)
 			{
-				auto result = MakePtr<List<WString>>();
+				auto result = Ptr(new List<WString>);
 				locale.GetYearMonthDateFormats(*result.Obj());
 				return result;
 			}
 
 			collections::LazyList<WString> Localization::GetLongTimeFormats(Locale locale)
 			{
-				auto result = MakePtr<List<WString>>();
+				auto result = Ptr(new List<WString>);
 				locale.GetLongTimeFormats(*result.Obj());
 				return result;
 			}
 
 			collections::LazyList<WString> Localization::GetShortTimeFormats(Locale locale)
 			{
-				auto result = MakePtr<List<WString>>();
+				auto result = Ptr(new List<WString>);
 				locale.GetShortTimeFormats(*result.Obj());
 				return result;
 			}
@@ -1248,7 +1248,7 @@ WfLoadLibraryTypes
 				ITypeManager* manager = GetGlobalTypeManager();
 				if (manager)
 				{
-					Ptr<ITypeLoader> loader = new WfLibraryTypeLoader;
+					auto loader = Ptr(new WfLibraryTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif

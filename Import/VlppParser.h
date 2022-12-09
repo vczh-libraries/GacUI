@@ -2378,7 +2378,7 @@ Syntax Analyzer
 						range.reduceToken=reduceToken;
 						if(!shiftReduceRanges)
 						{
-							shiftReduceRanges=new collections::List<ShiftReduceRange>();
+							shiftReduceRanges = Ptr(new collections::List<ShiftReduceRange>());
 						}
 						shiftReduceRanges->Add(range);
 					}

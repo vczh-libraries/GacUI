@@ -1482,31 +1482,9 @@ EventObject
 ThreadPoolLite
 ***********************************************************************/
 
-		struct ThreadPoolQueueProcArgument
-		{
-			void(*proc)(void*);
-			void* argument;
-		};
-
-		DWORD WINAPI ThreadPoolQueueProc(void* argument)
-		{
-			Ptr<ThreadPoolQueueProcArgument> proc=(ThreadPoolQueueProcArgument*)argument;
-			ThreadLocalStorage::FixStorages();
-			try
-			{
-				proc->proc(proc->argument);
-				ThreadLocalStorage::ClearStorages();
-			}
-			catch (...)
-			{
-				ThreadLocalStorage::ClearStorages();
-			}
-			return 0;
-		}
-
 		DWORD WINAPI ThreadPoolQueueFunc(void* argument)
 		{
-			Ptr<Func<void()>> proc=(Func<void()>*)argument;
+			auto proc=Ptr((Func<void()>*)argument);
 			ThreadLocalStorage::FixStorages();
 			try
 			{
@@ -1530,18 +1508,7 @@ ThreadPoolLite
 
 		bool ThreadPoolLite::Queue(void(*proc)(void*), void* argument)
 		{
-			ThreadPoolQueueProcArgument* p=new ThreadPoolQueueProcArgument;
-			p->proc=proc;
-			p->argument=argument;
-			if(QueueUserWorkItem(&ThreadPoolQueueProc, p, WT_EXECUTEDEFAULT))
-			{
-				return true;
-			}
-			else
-			{
-				delete p;
-				return false;
-			}
+			return Queue([=]() {proc(argument); });
 		}
 
 		bool ThreadPoolLite::Queue(const Func<void()>& proc)

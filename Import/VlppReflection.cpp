@@ -802,12 +802,12 @@ MetaonlyTypeInfo
 				{
 					if (auto et = typeInfo->GetElementType())
 					{
-						elementType = new MetaonlyTypeInfo(_context, et);
+						elementType = Ptr(new MetaonlyTypeInfo(_context, et));
 					}
 					for (vint i = 0; i < typeInfo->GetGenericArgumentCount(); i++)
 					{
 						auto ga = typeInfo->GetGenericArgument(i);
-						genericArguments.Add(new MetaonlyTypeInfo(_context, ga));
+						genericArguments.Add(Ptr(new MetaonlyTypeInfo(_context, ga)));
 					}
 				}
 
@@ -1109,7 +1109,7 @@ IMethodInfo
 				{
 					for (vint i = 0; i < metadata->parameters.Count(); i++)
 					{
-						parameters.Add(new MetaonlyParameterInfo(context, metadata->parameters[i], metadata->ownerTypeDescriptor, this));
+						parameters.Add(Ptr(new MetaonlyParameterInfo(context, metadata->parameters[i], metadata->ownerTypeDescriptor, this)));
 					}
 				}
 
@@ -1445,11 +1445,11 @@ ITypeDescriptor
 
 					for (vint i = 0; i < metadata->methodGroups.Count(); i++)
 					{
-						methodGroups.Add(new MetaonlyMethodGroupInfo(context, metadata, metadata->methodGroups[i]));
+						methodGroups.Add(Ptr(new MetaonlyMethodGroupInfo(context, metadata, metadata->methodGroups[i])));
 					}
 					if (metadata->constructorGroup.start != -1)
 					{
-						constructorGroup = new MetaonlyMethodGroupInfo(context, metadata, metadata->constructorGroup);
+						constructorGroup = Ptr(new MetaonlyMethodGroupInfo(context, metadata, metadata->constructorGroup));
 					}
 				}
 
@@ -1697,7 +1697,7 @@ GenerateMetaonlyTypes
 
 			void GenerateMetaonlyTypeDescriptor(Writer& writer, ITypeDescriptor* td)
 			{
-				auto metadata = MakePtr<TypeDescriptorMetadata>();
+				auto metadata = Ptr(new TypeDescriptorMetadata);
 				if (auto cpp = td->GetCpp())
 				{
 					metadata->fullName = cpp->GetFullName();
@@ -1761,7 +1761,7 @@ GenerateMetaonlyTypes
 
 			void GenerateMetaonlyMethodInfo(Writer& writer, IMethodInfo* mi)
 			{
-				auto metadata = MakePtr<MethodInfoMetadata>();
+				auto metadata = Ptr(new MethodInfoMetadata);
 				if (auto cpp = mi->GetCpp())
 				{
 					metadata->invokeTemplate = cpp->GetInvokeTemplate();
@@ -1776,19 +1776,19 @@ GenerateMetaonlyTypes
 				for (vint i = 0; i < mi->GetParameterCount(); i++)
 				{
 					auto pi = mi->GetParameter(i);
-					auto piMetadata = MakePtr<ParameterInfoMetadata>();
+					auto piMetadata = Ptr(new ParameterInfoMetadata);
 					piMetadata->name = pi->GetName();
-					piMetadata->type = new MetaonlyTypeInfo(*writer.context.Obj(), pi->GetType());
+					piMetadata->type = Ptr(new MetaonlyTypeInfo(*writer.context.Obj(), pi->GetType()));
 					metadata->parameters.Add(piMetadata);
 				}
-				metadata->returnType = new MetaonlyTypeInfo(*writer.context.Obj(), mi->GetReturn());
+				metadata->returnType = Ptr(new MetaonlyTypeInfo(*writer.context.Obj(), mi->GetReturn()));
 				metadata->isStatic = mi->IsStatic();
 				writer << metadata;
 			}
 
 			void GenerateMetaonlyPropertyInfo(Writer& writer, IPropertyInfo* pi)
 			{
-				auto metadata = MakePtr<PropertyInfoMetadata>();;
+				auto metadata = Ptr(new PropertyInfoMetadata);;
 				if (auto cpp = pi->GetCpp())
 				{
 					metadata->referenceTemplate = cpp->GetReferenceTemplate();
@@ -1797,7 +1797,7 @@ GenerateMetaonlyTypes
 				metadata->ownerTypeDescriptor = writer.context->tdIndex[pi->GetOwnerTypeDescriptor()];
 				metadata->isReadable = pi->IsReadable();
 				metadata->isWritable = pi->IsWritable();
-				metadata->returnType = new MetaonlyTypeInfo(*writer.context.Obj(), pi->GetReturn());
+				metadata->returnType = Ptr(new MetaonlyTypeInfo(*writer.context.Obj(), pi->GetReturn()));
 				if (auto mi = pi->GetGetter())
 				{
 					metadata->getter = writer.context->miIndex[mi];
@@ -1815,7 +1815,7 @@ GenerateMetaonlyTypes
 
 			void GenerateMetaonlyEventInfo(Writer& writer, IEventInfo* ei)
 			{
-				auto metadata = MakePtr<EventInfoMetadata>();;
+				auto metadata = Ptr(new EventInfoMetadata);;
 				if (auto cpp = ei->GetCpp())
 				{
 					metadata->attachTemplate = cpp->GetAttachTemplate();
@@ -1824,7 +1824,7 @@ GenerateMetaonlyTypes
 				}
 				metadata->name = ei->GetName();
 				metadata->ownerTypeDescriptor = writer.context->tdIndex[ei->GetOwnerTypeDescriptor()];
-				metadata->handlerType = new MetaonlyTypeInfo(*writer.context.Obj(), ei->GetHandlerType());
+				metadata->handlerType = Ptr(new MetaonlyTypeInfo(*writer.context.Obj(), ei->GetHandlerType()));
 				for (vint i = 0; i < ei->GetObservingPropertyCount(); i++)
 				{
 					metadata->observingProperties.Add(writer.context->piIndex[ei->GetObservingProperty(i)]);
@@ -1835,7 +1835,7 @@ GenerateMetaonlyTypes
 			void GenerateMetaonlyTypes(stream::IStream& outputStream)
 			{
 				Writer writer(outputStream);
-				writer.context = MakePtr<MetaonlyWriterContext>();
+				writer.context = Ptr(new MetaonlyWriterContext);
 
 				Dictionary<WString, ITypeDescriptor*> tds;
 				List<IMethodInfo*> mis;
@@ -1951,9 +1951,9 @@ LoadMetaonlyTypes
 
 			Ptr<ITypeLoader> LoadMetaonlyTypes(stream::IStream& inputStream, const collections::Dictionary<WString, Ptr<ISerializableType>>& serializableTypes)
 			{
-				auto context = MakePtr<MetaonlyReaderContext>();
+				auto context = Ptr(new MetaonlyReaderContext);
 				CopyFrom(context->serializableTypes, serializableTypes);
-				auto loader = MakePtr<MetaonlyTypeLoader>();
+				auto loader = Ptr(new MetaonlyTypeLoader);
 				loader->context = context;
 				Reader reader(inputStream);
 				reader.context = context;
@@ -1969,25 +1969,25 @@ LoadMetaonlyTypes
 					{
 						Ptr<TypeDescriptorMetadata> metadata;
 						reader << metadata;
-						context->tds.Add(new MetaonlyTypeDescriptor(context.Obj(), metadata));
+						context->tds.Add(Ptr(new MetaonlyTypeDescriptor(context.Obj(), metadata)));
 					}
 					for (vint i = 0; i < miCount; i++)
 					{
 						Ptr<MethodInfoMetadata> metadata;
 						reader << metadata;
-						context->mis.Add(new MetaonlyMethodInfo(context.Obj(), metadata));
+						context->mis.Add(Ptr(new MetaonlyMethodInfo(context.Obj(), metadata)));
 					}
 					for (vint i = 0; i < piCount; i++)
 					{
 						Ptr<PropertyInfoMetadata> metadata;
 						reader << metadata;
-						context->pis.Add(new MetaonlyPropertyInfo(context.Obj(), metadata));
+						context->pis.Add(Ptr(new MetaonlyPropertyInfo(context.Obj(), metadata)));
 					}
 					for (vint i = 0; i < eiCount; i++)
 					{
 						Ptr<EventInfoMetadata> metadata;
 						reader << metadata;
-						context->eis.Add(new MetaonlyEventInfo(context.Obj(), metadata));
+						context->eis.Add(Ptr(new MetaonlyEventInfo(context.Obj(), metadata)));
 					}
 				}
 
@@ -2229,7 +2229,7 @@ DescriptableObject
 			{
 				if (value)
 				{
-					internalProperties = new InternalPropertyMap;
+					internalProperties = Ptr(new InternalPropertyMap);
 					internalProperties->Add(name, value);
 				}
 			}
@@ -2332,7 +2332,7 @@ description::Value
 				if (value)
 				{
 					rawPtr = value->SafeGetAggregationRoot();
-					sharedPtr = rawPtr;
+					sharedPtr = Ptr(rawPtr);
 				}
 #else
 				rawPtr = value.Obj();
@@ -3803,7 +3803,7 @@ TypeDescriptorImpl
 				vint index=methodGroups.Keys().IndexOf(name);
 				if(index==-1)
 				{
-					Ptr<MethodGroupInfoImpl> methodGroup=new MethodGroupInfoImpl(this, name);
+					auto methodGroup=Ptr(new MethodGroupInfoImpl(this, name));
 					methodGroups.Add(name, methodGroup);
 					return methodGroup.Obj();
 				}
@@ -3817,7 +3817,7 @@ TypeDescriptorImpl
 			{
 				if(!constructorGroup)
 				{
-					constructorGroup=new MethodGroupInfoImpl(this, L"");
+					constructorGroup=Ptr(new MethodGroupInfoImpl(this, L""));
 				}
 				return constructorGroup.Obj();
 			}
@@ -4141,8 +4141,8 @@ IValueEnumerable
 
 			Ptr<IValueEnumerable> IValueEnumerable::Create(collections::LazyList<Value> values)
 			{
-				Ptr<IEnumerable<Value>> enumerable = new LazyList<Value>(values);
-				return new ValueEnumerableWrapper<Ptr<IEnumerable<Value>>>(enumerable);
+				Ptr<IEnumerable<Value>> enumerable(new LazyList<Value>(values));
+				return Ptr(new ValueEnumerableWrapper<Ptr<IEnumerable<Value>>>(enumerable));
 			}
 
 /***********************************************************************
@@ -4161,9 +4161,9 @@ IValueArray
 
 			Ptr<IValueArray> IValueArray::Create(collections::LazyList<Value> values)
 			{
-				Ptr<Array<Value>> list = new Array<Value>;
+				auto list = Ptr(new Array<Value>);
 				CopyFrom(*list.Obj(), values);
-				return new ValueArrayWrapper<Ptr<Array<Value>>>(list);
+				return Ptr(new ValueArrayWrapper<Ptr<Array<Value>>>(list));
 			}
 
 /***********************************************************************
@@ -4182,9 +4182,9 @@ IValueList
 
 			Ptr<IValueList> IValueList::Create(collections::LazyList<Value> values)
 			{
-				Ptr<List<Value>> list = new List<Value>;
+				auto list = Ptr(new List<Value>);
 				CopyFrom(*list.Obj(), values);
-				return new ValueListWrapper<Ptr<List<Value>>>(list);
+				return Ptr(new ValueListWrapper<Ptr<List<Value>>>(list));
 			}
 
 /***********************************************************************
@@ -4218,9 +4218,9 @@ IObservableList
 
 			Ptr<IValueObservableList> IValueObservableList::Create(collections::LazyList<Value> values)
 			{
-				auto list = MakePtr<ReversedObservableList>();
+				auto list = Ptr(new ReversedObservableList);
 				CopyFrom(*list.Obj(), values);
-				auto wrapper = MakePtr<ValueObservableListWrapper<Ptr<ReversedObservableList>>>(list);
+				auto wrapper = Ptr(new ValueObservableListWrapper<Ptr<ReversedObservableList>>(list));
 				list->observableList = wrapper.Obj();
 				return wrapper;
 			}
@@ -4231,22 +4231,22 @@ IValueDictionary
 
 			Ptr<IValueDictionary> IValueDictionary::Create()
 			{
-				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
-				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
+				auto dictionary = Ptr(new Dictionary<Value, Value>);
+				return Ptr(new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary));
 			}
 
 			Ptr<IValueDictionary> IValueDictionary::Create(Ptr<IValueReadonlyDictionary> values)
 			{
-				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
+				auto dictionary = Ptr(new Dictionary<Value, Value>);
 				CopyFrom(*dictionary.Obj(), GetLazyList<Value, Value>(values));
-				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
+				return Ptr(new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary));
 			}
 
 			Ptr<IValueDictionary> IValueDictionary::Create(collections::LazyList<collections::Pair<Value, Value>> values)
 			{
-				Ptr<Dictionary<Value, Value>> dictionary = new Dictionary<Value, Value>;
+				auto dictionary = Ptr(new Dictionary<Value, Value>);
 				CopyFrom(*dictionary.Obj(), values);
-				return new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary);
+				return Ptr(new ValueDictionaryWrapper<Ptr<Dictionary<Value, Value>>>(dictionary));
 			}
 
 /***********************************************************************
@@ -4287,7 +4287,7 @@ IValueException
 
 			Ptr<IValueException> IValueException::Create(const WString& message)
 			{
-				return new DefaultValueException(message);
+				return Ptr(new DefaultValueException(message));
 			}
 		}
 	}
@@ -4866,8 +4866,8 @@ LoadPredefinedTypes
 			END_INTERFACE_MEMBER(IDescriptable)
 
 			BEGIN_STRUCT_MEMBER(DateTime)
-				valueType = new SerializableValueType<DateTime>();
-				serializableType = new SerializableType<DateTime>();
+				valueType = Ptr(new SerializableValueType<DateTime>());
+				serializableType = Ptr(new SerializableType<DateTime>());
 				STRUCT_MEMBER(year)
 				STRUCT_MEMBER(month)
 				STRUCT_MEMBER(dayOfWeek)
@@ -5146,8 +5146,8 @@ LoadPredefinedTypes
 			public:
 				void Load(ITypeManager* manager)override
 				{
-					manager->SetTypeDescriptor(TypeInfo<Value>::content.typeName, new TypedValueTypeDescriptorBase<Value, TypeDescriptorFlags::Object>);
-#define ADD_PRIMITIVE_TYPE(TYPE) manager->SetTypeDescriptor(TypeInfo<TYPE>::content.typeName, new PrimitiveTypeDescriptor<TYPE>());
+					manager->SetTypeDescriptor(TypeInfo<Value>::content.typeName, Ptr(new TypedValueTypeDescriptorBase<Value, TypeDescriptorFlags::Object>));
+#define ADD_PRIMITIVE_TYPE(TYPE) manager->SetTypeDescriptor(TypeInfo<TYPE>::content.typeName, Ptr(new PrimitiveTypeDescriptor<TYPE>()));
 					REFLECTION_PREDEFINED_PRIMITIVE_TYPES(ADD_PRIMITIVE_TYPE)
 #undef ADD_PRIMITIVE_TYPE
 					REFLECTION_PREDEFINED_COMPLEX_TYPES(ADD_TYPE_INFO, VoidValue)
@@ -5166,7 +5166,7 @@ LoadPredefinedTypes
 				ITypeManager* manager = GetGlobalTypeManager();
 				if (manager)
 				{
-					Ptr<ITypeLoader> loader = new PredefinedTypeLoader;
+					auto loader = Ptr(new PredefinedTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif

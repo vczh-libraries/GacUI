@@ -545,10 +545,11 @@ namespace vl
 			}
 
 			template<typename K2, typename V2>
-			auto CompareTo(const Pair<K2, V2>& pair) const -> std::enable_if_t<
-				std::is_same_v<std::remove_cvref_t<K>, std::remove_cvref_t<K2>> &&
-				std::is_same_v<std::remove_cvref_t<V>, std::remove_cvref_t<V2>>,
-				vint>
+			auto CompareTo(const Pair<K2, V2>& pair) const -> vint
+				requires (
+					std::is_same_v<std::remove_cvref_t<K>, std::remove_cvref_t<K2>>&&
+					std::is_same_v<std::remove_cvref_t<V>, std::remove_cvref_t<V2>>
+				)
 			{
 				if (key < pair.key)
 				{
@@ -661,10 +662,11 @@ namespace vl
 			}
 
 			template<typename K2, typename V2>
-			auto CompareTo(const Pair<K2, V2>& pair) const -> std::enable_if_t<
-				std::is_same_v<std::remove_cvref_t<K>, std::remove_cvref_t<K2>>&&
-				std::is_same_v<std::remove_cvref_t<V>, std::remove_cvref_t<V2>>,
-				vint>
+			auto CompareTo(const Pair<K2, V2>& pair) const -> vint
+				requires (
+					std::is_same_v<std::remove_cvref_t<K>, std::remove_cvref_t<K2>>&&
+					std::is_same_v<std::remove_cvref_t<V>, std::remove_cvref_t<V2>>
+				)
 			{
 				if (key < pair.key)
 				{
@@ -970,9 +972,12 @@ Ptr
 		/// <summary>Create a null pointer.</summary>
 		Ptr() = default;
 
+		/// <summary>Create a null pointer.</summary>
+		Ptr(std::nullptr_t) {};
+
 		/// <summary>Convert a pointer to an object to a shared pointer.</summary>
 		/// <param name="pointer">The pointer to the object.</param>
-		Ptr(T* pointer)
+		explicit Ptr(T* pointer)
 		{
 			if (pointer)
 			{
@@ -1009,8 +1014,8 @@ Ptr
 		/// <summary>Cast a shared pointer implicitly by copying another shared pointer.</summary>
 		/// <typeparam name="C">The type of the object before casting.</typeparam>
 		/// <param name="pointer">The shared pointer to cast.</param>
-		template<typename C, typename=std::enable_if_t<std::is_convertible_v<C*, T*>>>
-		Ptr(const Ptr<C>& pointer)
+		template<typename C>
+		Ptr(const Ptr<C>& pointer) requires (std::is_convertible_v<C*, T*>)
 		{
 			if (auto converted = pointer.Obj())
 			{
@@ -1025,8 +1030,8 @@ Ptr
 		/// <summary>Cast a shared pointer implicitly by moving another shared pointer.</summary>
 		/// <typeparam name="C">The type of the object before casting.</typeparam>
 		/// <param name="pointer">The shared pointer to cast.</param>
-		template<typename C, typename = std::enable_if_t<std::is_convertible_v<C*, T*>>>
-		Ptr(Ptr<C>&& pointer)
+		template<typename C>
+		Ptr(Ptr<C>&& pointer) requires (std::is_convertible_v<C*, T*>)
 		{
 			if (auto converted = pointer.Obj())
 			{
@@ -1065,24 +1070,13 @@ Ptr
 			return Ptr<C>((converted ? counter : 0), converted, originalReference, originalDestructor);
 		}
 
-		/// <summary>Replace the object inside this shared pointer.</summary>
+		/// <summary>Replace by nullptr.</summary>
 		/// <returns>The shared pointer itself.</returns>
-		/// <param name="pointer">The pointer to the new object.</param>
-		Ptr<T>& operator=(T* pointer)
+		/// <param name="pointer">The nullptr.</param>
+		Ptr<T>& operator=(std::nullptr_t)
 		{
 			Dec();
-			if (pointer)
-			{
-				counter = ReferenceCounterOperator<T>::CreateCounter(pointer);
-				reference = pointer;
-				originalReference = pointer;
-				originalDestructor = &ReferenceCounterOperator<T>::DeleteReference;
-				Inc();
-			}
-			else
-			{
-				SetEmptyNoIncDec();
-			}
+			SetEmptyNoIncDec();
 			return *this;
 		}
 
@@ -1202,6 +1196,9 @@ Ptr
 		}
 	};
 
+	template<typename C>
+	Ptr(C*) -> Ptr<C>;
+
 /***********************************************************************
 ComPtr
 ***********************************************************************/
@@ -1210,12 +1207,18 @@ ComPtr
 	class ComPtr
 	{
 	protected:
-		volatile vint*		counter;
-		T*					reference;
+		volatile vint* counter = nullptr;
+		T* reference = nullptr;
+
+		void SetEmpty()
+		{
+			counter = nullptr;
+			reference = nullptr;
+		}
 
 		void Inc()
 		{
-			if(counter)
+			if (counter)
 			{
 				INCRC(counter);
 			}
@@ -1223,14 +1226,13 @@ ComPtr
 
 		void Dec()
 		{
-			if(counter)
+			if (counter)
 			{
-				if(DECRC(counter)==0)
+				if (DECRC(counter) == 0)
 				{
 					delete counter;
 					reference->Release();
-					counter=0;
-					reference=0;
+					SetEmpty();
 				}
 			}
 		}
@@ -1242,46 +1244,40 @@ ComPtr
 
 		ComPtr(volatile vint* _counter, T* _reference)
 			:counter(_counter)
-			,reference(_reference)
+			, reference(_reference)
 		{
 			Inc();
 		}
 	public:
 
-		ComPtr()
-		{
-			counter=0;
-			reference=0;
-		}
+		ComPtr() = default;
+		ComPtr(std::nullptr_t) {}
 
 		ComPtr(T* pointer)
 		{
-			if(pointer)
+			if (pointer)
 			{
-				counter=new volatile vint(1);
-				reference=pointer;
+				counter = new volatile vint(1);
+				reference = pointer;
 			}
 			else
 			{
-				counter=0;
-				reference=0;
+				SetEmpty();
 			}
 		}
 
 		ComPtr(const ComPtr<T>& pointer)
 		{
-			counter=pointer.counter;
-			reference=pointer.reference;
+			counter = pointer.counter;
+			reference = pointer.reference;
 			Inc();
 		}
 
 		ComPtr(ComPtr<T>&& pointer)
 		{
-			counter=pointer.counter;
-			reference=pointer.reference;
-			
-			pointer.counter=0;
-			pointer.reference=0;
+			counter = pointer.counter;
+			reference = pointer.reference;
+			pointer.SetEmpty();
 		}
 
 		~ComPtr()
@@ -1289,29 +1285,35 @@ ComPtr
 			Dec();
 		}
 
+		ComPtr<T>& operator=(std::nullptr_t)
+		{
+			Dec();
+			SetEmpty();
+			return *this;
+		}
+
 		ComPtr<T>& operator=(T* pointer)
 		{
 			Dec();
-			if(pointer)
+			if (pointer)
 			{
-				counter=new vint(1);
-				reference=pointer;
+				counter = new vint(1);
+				reference = pointer;
 			}
 			else
 			{
-				counter=0;
-				reference=0;
+				SetEmpty();
 			}
 			return *this;
 		}
 
 		ComPtr<T>& operator=(const ComPtr<T>& pointer)
 		{
-			if(this!=&pointer)
+			if (this != &pointer)
 			{
 				Dec();
-				counter=pointer.counter;
-				reference=pointer.reference;
+				counter = pointer.counter;
+				reference = pointer.reference;
 				Inc();
 			}
 			return *this;
@@ -1319,81 +1321,79 @@ ComPtr
 
 		ComPtr<T>& operator=(ComPtr<T>&& pointer)
 		{
-			if(this!=&pointer)
+			if (this != &pointer)
 			{
 				Dec();
-				counter=pointer.counter;
-				reference=pointer.reference;
-				
-				pointer.counter=0;
-				pointer.reference=0;
+				counter = pointer.counter;
+				reference = pointer.reference;
+				pointer.SetEmpty();
 			}
 			return *this;
 		}
 
 		bool operator==(const T* pointer)const
 		{
-			return reference==pointer;
+			return reference == pointer;
 		}
 
 		bool operator!=(const T* pointer)const
 		{
-			return reference!=pointer;
+			return reference != pointer;
 		}
 
 		bool operator>(const T* pointer)const
 		{
-			return reference>pointer;
+			return reference > pointer;
 		}
 
 		bool operator>=(const T* pointer)const
 		{
-			return reference>=pointer;
+			return reference >= pointer;
 		}
 
 		bool operator<(const T* pointer)const
 		{
-			return reference<pointer;
+			return reference < pointer;
 		}
 
 		bool operator<=(const T* pointer)const
 		{
-			return reference<=pointer;
+			return reference <= pointer;
 		}
 
 		bool operator==(const ComPtr<T>& pointer)const
 		{
-			return reference==pointer.reference;
+			return reference == pointer.reference;
 		}
 
 		bool operator!=(const ComPtr<T>& pointer)const
 		{
-			return reference!=pointer.reference;
+			return reference != pointer.reference;
 		}
 
 		bool operator>(const ComPtr<T>& pointer)const
 		{
-			return reference>pointer.reference;
+			return reference > pointer.reference;
 		}
 
 		bool operator>=(const ComPtr<T>& pointer)const
 		{
-			return reference>=pointer.reference;
+			return reference >= pointer.reference;
 		}
 
 		bool operator<(const ComPtr<T>& pointer)const
 		{
-			return reference<pointer.reference;
+			return reference < pointer.reference;
 		}
 
 		bool operator<=(const ComPtr<T>& pointer)const
 		{
-			return reference<=pointer.reference;
+			return reference <= pointer.reference;
 		}
 
 		operator bool()const
 		{
-			return reference!=0;
+			return reference != nullptr;
 		}
 
 		T* Obj()const
@@ -1407,11 +1407,8 @@ ComPtr
 		}
 	};
 
-	template<typename T, typename ...TArgs>
-	Ptr<T> MakePtr(TArgs ...args)
-	{
-		return new T(args...);
-	}
+	template<typename C>
+	ComPtr(C*) ->ComPtr<C>;
 
 /***********************************************************************
 Traits
@@ -1983,10 +1980,10 @@ Array
 
 		/// <summary>Array: linear container with fixed size in runtime. All elements are contiguous in memory.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
-		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
-		template<typename T, typename K = typename KeyType<T>::Type>
+		template<typename T>
 		class Array : public ArrayBase<T>
 		{
+			using K = typename KeyType<T>::Type;
 		public:
 			/// <summary>Create an array.</summary>
 			/// <param name="size">The size of the array.</param>
@@ -2023,8 +2020,8 @@ Array
 				}
 			}
 
-			Array(const Array<T, K>&) = delete;
-			Array(Array<T, K>&& _move)
+			Array(const Array<T>&) = delete;
+			Array(Array<T>&& _move)
 			{
 				this->buffer = _move.buffer;
 				this->count = _move.count;
@@ -2032,8 +2029,8 @@ Array
 				_move.count = 0;
 			}
 
-			Array<T, K>& operator=(const Array<T, K>&) = delete;
-			Array<T, K>& operator=(Array<T, K>&& _move)
+			Array<T>& operator=(const Array<T>&) = delete;
+			Array<T>& operator=(Array<T>&& _move)
 			{
 				if (this->buffer)
 				{
@@ -2078,7 +2075,7 @@ Array
 			template<typename TItem>
 			bool Set(vint index, TItem&& item)
 			{
-				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T, K>::Set(vint)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T>::Set(vint)#Argument index not in range.");
 				this->buffer[index] = std::forward<TItem&&>(item);
 				return true;
 			}
@@ -2095,7 +2092,7 @@ Array
 			/// <param name="index">The index of the element.</param>
 			T& operator[](vint index)
 			{
-				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T, K>::operator[](vint)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index < this->count, L"Array<T>::operator[](vint)#Argument index not in range.");
 				return this->buffer[index];
 			}
 
@@ -2129,10 +2126,10 @@ ListBase
 
 		/// <summary>Base type for all list containers.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
-		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
-		template<typename T, typename K = typename KeyType<T>::Type>
+		template<typename T>
 		class ListBase abstract : public ArrayBase<T>
 		{
+			using K = typename KeyType<T>::Type;
 		protected:
 			vint					capacity = 0;
 
@@ -2147,8 +2144,8 @@ ListBase
 				}
 			}
 
-			ListBase(const ListBase<T, K>&) = delete;
-			ListBase(ListBase<T, K>&& _move)
+			ListBase(const ListBase<T>&) = delete;
+			ListBase(ListBase<T>&& _move)
 			{
 				this->buffer = _move.buffer;
 				this->count = _move.count;
@@ -2158,8 +2155,8 @@ ListBase
 				_move.capacity = 0;
 			}
 
-			ListBase<T, K>& operator=(const ListBase<T, K>&) = delete;
-			ListBase<T, K>& operator=(ListBase<T, K>&& _move)
+			ListBase<T>& operator=(const ListBase<T>&) = delete;
+			ListBase<T>& operator=(ListBase<T>&& _move)
 			{
 				if (this->buffer)
 				{
@@ -2181,7 +2178,7 @@ ListBase
 			bool RemoveAt(vint index)
 			{
 				vint previousCount = this->count;
-				CHECK_ERROR(index >= 0 && index < this->count, L"ListBase<T, K>::RemoveAt(vint)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index < this->count, L"ListBase<T>::RemoveAt(vint)#Argument index not in range.");
 				memory_management::CallMoveAssignmentsOverlapped(&this->buffer[index], &this->buffer[index + 1], this->count - index - 1);
 				this->count--;
 				memory_management::ReleaseUnnecessaryBuffer(this->buffer, this->capacity, previousCount, this->count);
@@ -2195,7 +2192,7 @@ ListBase
 			bool RemoveRange(vint index, vint _count)
 			{
 				vint previousCount = this->count;
-				CHECK_ERROR(index >= 0 && index <= this->count, L"ListBase<T, K>::RemoveRange(vint, vint)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index <= this->count, L"ListBase<T>::RemoveRange(vint, vint)#Argument index not in range.");
 				CHECK_ERROR(index + _count >= 0 && index + _count <= this->count, L"ListBase<T,K>::RemoveRange(vint, vint)#Argument _count not in range.");
 				memory_management::CallMoveAssignmentsOverlapped(&this->buffer[index], &this->buffer[index + _count], this->count - index - _count);
 				this->count -= _count;
@@ -2223,15 +2220,15 @@ List
 
 		/// <summary>List: linear container with dynamic size in runtime for unordered values. All elements are contiguous in memory.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
-		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
-		template<typename T, typename K = typename KeyType<T>::Type>
-		class List : public ListBase<T, K>
+		template<typename T>
+		class List : public ListBase<T>
 		{
+			using K = typename KeyType<T>::Type;
 		public:
 			/// <summary>Create an empty list.</summary>
 			List() = default;
-			List(List<T, K>&& container) : ListBase<T, K>(std::move(container)) {}
-			List<T, K>& operator=(List<T, K>&& _move) = default;
+			List(List<T>&& container) : ListBase<T>(std::move(container)) {}
+			List<T>& operator=(List<T>&& _move) = default;
 
 			/// <summary>Test does the list contain a value or not.</summary>
 			/// <returns>Returns true if the list contains the specified value.</returns>
@@ -2277,7 +2274,7 @@ List
 			/// <param name="item">The value to add.</param>
 			vint Insert(vint index, const T& item)
 			{
-				CHECK_ERROR(index >= 0 && index <= this->count, L"List<T, K>::Insert(vint, const T&)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index <= this->count, L"List<T>::Insert(vint, const T&)#Argument index not in range.");
 				memory_management::InsertUninitializedItems(this->buffer, this->capacity, this->count, index, 1);
 				memory_management::CallCopyCtors(&this->buffer[index], &item, 1);
 				return index;
@@ -2289,7 +2286,7 @@ List
 			/// <param name="item">The value to add.</param>
 			vint Insert(vint index, T&& item)
 			{
-				CHECK_ERROR(index >= 0 && index <= this->count, L"List<T, K>::Insert(vint, const T&)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index <= this->count, L"List<T>::Insert(vint, const T&)#Argument index not in range.");
 				memory_management::InsertUninitializedItems(this->buffer, this->capacity, this->count, index, 1);
 				memory_management::CallMoveCtors(&this->buffer[index], &item, 1);
 				return index;
@@ -2320,7 +2317,7 @@ List
 			template<typename TItem>
 			bool Set(vint index, TItem&& item)
 			{
-				CHECK_ERROR(index >= 0 && index < this->count, L"List<T, K>::Set(vint)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index < this->count, L"List<T>::Set(vint)#Argument index not in range.");
 				this->buffer[index] = std::forward<TItem&&>(item);
 				return true;
 			}
@@ -2330,14 +2327,14 @@ List
 				return Set<T>(index, std::move(item));
 			}
 
-			using ListBase<T, K>::operator[];
+			using ListBase<T>::operator[];
 
 			/// <summary>Get the reference to the specified element.</summary>
 			/// <returns>The reference to the specified element. It will crash when the index is out of range.</returns>
 			/// <param name="index">The index of the element.</param>
 			T& operator[](vint index)
 			{
-				CHECK_ERROR(index >= 0 && index < this->count, L"List<T, K>::operator[](vint)#Argument index not in range.");
+				CHECK_ERROR(index >= 0 && index < this->count, L"List<T>::operator[](vint)#Argument index not in range.");
 				return this->buffer[index];
 			}
 		};
@@ -2348,10 +2345,10 @@ SortedList
 
 		/// <summary>SortedList: linear container with dynamic size in runtime for ordered values. All elements are kept in order, and are contiguous in memory.</summary>
 		/// <typeparam name="T">Type of elements.</typeparam>
-		/// <typeparam name="K">Type of the key type of elements. It is recommended to use the default value.</typeparam>
-		template<typename T, typename K = typename KeyType<T>::Type>
-		class SortedList : public ListBase<T, K>
+		template<typename T>
+		class SortedList : public ListBase<T>
 		{
+			using K = typename KeyType<T>::Type;
 		protected:
 
 			/// <summary>Get the position of an element in this list by performing binary search.</summary>
@@ -2407,11 +2404,11 @@ SortedList
 		public:
 			/// <summary>Create an empty list.</summary>
 			SortedList() = default;
-			SortedList(SortedList<T, K>&& container) : ListBase<T, K>(std::move(container)) {}
-			SortedList<T, K>& operator=(SortedList<T, K> && _move) = default;
+			SortedList(SortedList<T>&& container) : ListBase<T>(std::move(container)) {}
+			SortedList<T>& operator=(SortedList<T> && _move) = default;
 
-			SortedList(const SortedList<T, K>&xs)
-				: ListBase<T, K>(std::move(const_cast<ListBase<T, K>&>(static_cast<const ListBase<T, K>&>(xs))))
+			SortedList(const SortedList<T>&xs)
+				: ListBase<T>(std::move(const_cast<ListBase<T>&>(static_cast<const ListBase<T>&>(xs))))
 			{
 			}
 
@@ -2458,7 +2455,7 @@ SortedList
 					{
 						IndexOfInternal<K>(KeyType<T>::GetKeyValue(item), outputIndex);
 					}
-					CHECK_ERROR(outputIndex >= 0 && outputIndex < this->count, L"SortedList<T, K>::Add(const T&)#Internal error, index not in range.");
+					CHECK_ERROR(outputIndex >= 0 && outputIndex < this->count, L"SortedList<T>::Add(const T&)#Internal error, index not in range.");
 					if (this->buffer[outputIndex] < item)
 					{
 						outputIndex++;
@@ -2620,22 +2617,22 @@ Random Access
 
 		namespace randomaccess_internal
 		{
-			template<typename T, typename K>
-			struct RandomAccessable<Array<T, K>>
+			template<typename T>
+			struct RandomAccessable<Array<T>>
 			{
 				static const bool							CanRead = true;
 				static const bool							CanResize = true;
 			};
 
-			template<typename T, typename K>
-			struct RandomAccessable<List<T, K>>
+			template<typename T>
+			struct RandomAccessable<List<T>>
 			{
 				static const bool							CanRead = true;
 				static const bool							CanResize = false;
 			};
 
-			template<typename T, typename K>
-			struct RandomAccessable<SortedList<T, K>>
+			template<typename T>
+			struct RandomAccessable<SortedList<T>>
 			{
 				static const bool							CanRead = true;
 				static const bool							CanResize = false;
@@ -2670,25 +2667,20 @@ namespace vl
 		/// <summary>Dictionary: one to one map container.</summary>
 		/// <typeparam name="KT">Type of keys.</typeparam>
 		/// <typeparam name="VT">Type of values.</typeparam>
-		/// <typeparam name="KK">Type of the key type of keys. It is recommended to use the default value.</typeparam>
-		/// <typeparam name="VK">Type of the key type of values. It is recommended to use the default value.</typeparam>
-		template<
-			typename KT,
-			typename VT,
-			typename KK=typename KeyType<KT>::Type, 
-			typename VK=typename KeyType<VT>::Type
-		>
+		template<typename KT, typename VT>
 		class Dictionary : public EnumerableBase<Pair<const KT&, const VT&>>
 		{
+			using KK = typename KeyType<KT>::Type;
+			using VK = typename KeyType<VT>::Type;
 			using KVPair = Pair<const KT&, const VT&>;
 		public:
-			typedef SortedList<KT, KK>			KeyContainer;
-			typedef List<VT, VK>				ValueContainer;
+			typedef SortedList<KT>					KeyContainer;
+			typedef List<VT>						ValueContainer;
 		protected:
 			class Enumerator : public Object, public virtual IEnumerator<KVPair>
 			{
 			private:
-				const Dictionary<KT, VT, KK, VK>*	container;
+				const Dictionary<KT, VT>*			container;
 				vint								index;
 				KVPair								current;
 
@@ -2700,7 +2692,7 @@ namespace vl
 					}
 				}
 			public:
-				Enumerator(const Dictionary<KT, VT, KK, VK>* _container, vint _index=-1)
+				Enumerator(const Dictionary<KT, VT>* _container, vint _index=-1)
 				{
 					container=_container;
 					index=_index;
@@ -2747,15 +2739,15 @@ namespace vl
 			Dictionary() = default;
 			~Dictionary() = default;
 
-			Dictionary(const Dictionary<KT, VT, KK, VK>&) = delete;
-			Dictionary(Dictionary<KT, VT, KK, VK>&& _move)
+			Dictionary(const Dictionary<KT, VT>&) = delete;
+			Dictionary(Dictionary<KT, VT>&& _move)
 				: keys(std::move(_move.keys))
 				, values(std::move(_move.values))
 			{
 			}
 
-			Dictionary<KT, VT, KK, VK>& operator=(const Dictionary<KT, VT, KK, VK>&) = delete;
-			Dictionary<KT, VT, KK, VK>& operator=(Dictionary<KT, VT, KK, VK> && _move)
+			Dictionary<KT, VT>& operator=(const Dictionary<KT, VT>&) = delete;
+			Dictionary<KT, VT>& operator=(Dictionary<KT, VT> && _move)
 			{
 				keys = std::move(_move.keys);
 				values = std::move(_move.values);
@@ -2907,25 +2899,20 @@ namespace vl
 		/// <summary>Group: one to many map container.</summary>
 		/// <typeparam name="KT">Type of keys.</typeparam>
 		/// <typeparam name="VT">Type of values.</typeparam>
-		/// <typeparam name="KK">Type of the key type of keys. It is recommended to use the default value.</typeparam>
-		/// <typeparam name="VK">Type of the key type of values. It is recommended to use the default value.</typeparam>
-		template<
-			typename KT,
-			typename VT,
-			typename KK=typename KeyType<KT>::Type,
-			typename VK=typename KeyType<VT>::Type
-		>
+		template<typename KT, typename VT>
 		class Group : public EnumerableBase<Pair<const KT&, const VT&>>
 		{
+			using KK = typename KeyType<KT>::Type;
+			using VK = typename KeyType<VT>::Type;
 			using KVPair = Pair<const KT&, const VT&>;
 		public:
-			typedef SortedList<KT, KK>		KeyContainer;
-			typedef List<VT, VK>			ValueContainer;
+			typedef SortedList<KT>					KeyContainer;
+			typedef List<VT>						ValueContainer;
 		protected:
 			class Enumerator : public Object, public virtual IEnumerator<KVPair>
 			{
 			private:
-				const Group<KT, VT, KK, VK>*		container;
+				const Group<KT, VT>*				container;
 				vint								keyIndex;
 				vint								valueIndex;
 				KVPair								current;
@@ -2942,7 +2929,7 @@ namespace vl
 					}
 				}
 			public:
-				Enumerator(const Group<KT, VT, KK, VK>* _container, vint _keyIndex=-1, vint _valueIndex=-1)
+				Enumerator(const Group<KT, VT>* _container, vint _keyIndex=-1, vint _valueIndex=-1)
 				{
 					container=_container;
 					keyIndex=_keyIndex;
@@ -3024,15 +3011,15 @@ namespace vl
 				Clear();
 			}
 
-			Group(const Group<KT, VT, KK, VK>&) = delete;
-			Group(Group<KT, VT, KK, VK>&& _move)
+			Group(const Group<KT, VT>&) = delete;
+			Group(Group<KT, VT>&& _move)
 				: keys(std::move(_move.keys))
 				, values(std::move(_move.values))
 			{
 			}
 
-			Group<KT, VT, KK, VK>& operator=(const Group<KT, VT, KK, VK>&) = delete;
-			Group<KT, VT, KK, VK>& operator=(Group<KT, VT, KK, VK> && _move)
+			Group<KT, VT>& operator=(const Group<KT, VT>&) = delete;
+			Group<KT, VT>& operator=(Group<KT, VT> && _move)
 			{
 				Clear();
 				keys = std::move(_move.keys);
@@ -3178,7 +3165,7 @@ namespace vl
 				if(index!=-1)
 				{
 					keys.RemoveAt(index);
-					List<VT, VK>* target=values[index];
+					auto target=values[index];
 					values.RemoveAt(index);
 					delete target;
 					return true;
@@ -3202,7 +3189,7 @@ namespace vl
 				vint index=keys.IndexOf(key);
 				if(index!=-1)
 				{
-					List<VT, VK>* target=values[index];
+					auto target=values[index];
 					target->Remove(value);
 					if(target->Count()==0)
 					{
@@ -3361,32 +3348,32 @@ Random Access
 ***********************************************************************/
 		namespace randomaccess_internal
 		{
-			template<typename KT, typename VT, typename KK, typename VK>
-			struct RandomAccessable<Dictionary<KT, VT, KK, VK>>
+			template<typename KT, typename VT>
+			struct RandomAccessable<Dictionary<KT, VT>>
 			{
 				static const bool							CanRead = true;
 				static const bool							CanResize = false;
 			};
 		
-			template<typename KT, typename VT, typename KK, typename VK>
-			struct RandomAccess<Dictionary<KT, VT, KK, VK>>
+			template<typename KT, typename VT>
+			struct RandomAccess<Dictionary<KT, VT>>
 			{
-				static vint GetCount(const Dictionary<KT, VT, KK, VK>& t)
+				static vint GetCount(const Dictionary<KT, VT>& t)
 				{
 					return t.Count();
 				}
 
-				static Pair<KT, VT> GetValue(const Dictionary<KT, VT, KK, VK>& t, vint index)
+				static Pair<KT, VT> GetValue(const Dictionary<KT, VT>& t, vint index)
 				{
 					return Pair<KT, VT>(t.Keys().Get(index), t.Values().Get(index));
 				}
 
-				static void AppendValue(Dictionary<KT, VT, KK, VK>& t, const Pair<KT, VT>& value)
+				static void AppendValue(Dictionary<KT, VT>& t, const Pair<KT, VT>& value)
 				{
 					t.Set(value.key, value.value);
 				}
 
-				static void AppendValue(Dictionary<KT, VT, KK, VK>& t, const Pair<const KT&, const VT&>& value)
+				static void AppendValue(Dictionary<KT, VT>& t, const Pair<const KT&, const VT&>& value)
 				{
 					t.Set(value.key, value.value);
 				}
@@ -3468,7 +3455,7 @@ Copy Functions for Containers
 					Ptr<IEnumerator<typename Ss::ElementType>> enumerator;
 					vint copyCount=0;
 
-					enumerator=ss.CreateEnumerator();
+					enumerator = Ptr(ss.CreateEnumerator());
 					while(enumerator->Next())
 					{
 						copyCount++;
@@ -3478,7 +3465,7 @@ Copy Functions for Containers
 					vint resizeCount=index+copyCount;
 					RandomAccess<Ds>::SetCount(ds, resizeCount);
 
-					enumerator=ss.CreateEnumerator();
+					enumerator = Ptr(ss.CreateEnumerator());
 					while(enumerator->Next())
 					{
 						RandomAccess<Ds>::SetValue(ds, index++, enumerator->Current());
@@ -3495,7 +3482,7 @@ Copy Functions for Containers
 					{
 						ds.Clear();
 					}
-					Ptr<IEnumerator<typename Ss::ElementType>> enumerator = ss.CreateEnumerator();
+					auto enumerator = Ptr(ss.CreateEnumerator());
 					while (enumerator->Next())
 					{
 						RandomAccess<Ds>::AppendValue(ds, enumerator->Current());
@@ -3772,8 +3759,8 @@ CompareEnumerable
 		template<typename T, typename U>
 		vint CompareEnumerable(const IEnumerable<T>& a, const IEnumerable<U>& b)
 		{
-			Ptr<IEnumerator<T>> ator = a.CreateEnumerator();
-			Ptr<IEnumerator<U>> btor = b.CreateEnumerator();
+			auto ator = Ptr(a.CreateEnumerator());
+			auto btor = Ptr(b.CreateEnumerator());
 			while (true)
 			{
 				bool a = ator->Next();
@@ -5351,7 +5338,7 @@ vl::Func<R(TArgs...)>
 		/// <param name="function">The function pointer.</param>
 		Func(R(*function)(TArgs...))
 		{
-			invoker = new internal_invokers::StaticInvoker<R, TArgs...>(function);
+			invoker = Ptr(new internal_invokers::StaticInvoker<R, TArgs...>(function));
 		}
 
 		/// <summary>Create a functor from a method.</summary>
@@ -5361,21 +5348,24 @@ vl::Func<R(TArgs...)>
 		template<typename C>
 		Func(C* sender, R(C::*function)(TArgs...))
 		{
-			invoker = new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function);
+			invoker = Ptr(new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function));
 		}
 
 		/// <summary>Create a functor from another compatible functor.</summary>
 		/// <typeparam name="C">Type of the functor to copy.</typeparam>
 		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
-		template<typename C, typename=std::enable_if_t<
-			std::is_same_v<void, R> ||
-			std::is_convertible_v<decltype(std::declval<C>()(std::declval<TArgs>()...)), R>
-			>>
+		template<typename C>
 		Func(C&& function)
+			requires (
+				std::is_invocable_v<C, TArgs...>
+			) && (
+				std::is_same_v<void, R> ||
+				std::is_convertible_v<decltype(std::declval<C>()(std::declval<TArgs>()...)), R>
+			)
 		{
 			if (!IsEmptyFunc(function))
 			{
-				invoker = new internal_invokers::ObjectInvoker<std::remove_cvref_t<C>, R, TArgs...>(std::forward<C&&>(function));
+				invoker = Ptr(new internal_invokers::ObjectInvoker<std::remove_cvref_t<C>, R, TArgs...>(std::forward<C&&>(function)));
 			}
 		}
 
@@ -5431,7 +5421,6 @@ vl::function_lambda::LambdaRetriveType<R(TArgs...)>
 		template<typename TObject, typename R, typename ...TArgs>
 		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
 		{
-			typedef Func<R(TArgs...)> Type;
 			typedef R(FunctionType)(TArgs...);
 			typedef R ResultType;
 			typedef TypeTuple<TArgs...> ParameterTypes;
@@ -5440,119 +5429,22 @@ vl::function_lambda::LambdaRetriveType<R(TArgs...)>
 		template<typename TObject, typename R, typename ...TArgs>
 		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
 		{
-			typedef Func<R(TArgs...)> Type;
 			typedef R(FunctionType)(TArgs...);
 			typedef R ResultType;
 			typedef TypeTuple<TArgs...> ParameterTypes;
 		};
 
-		/// <summary>Create a functor in [T:vl.Func`1] from another functor, with all type arguments autotimatically inferred. The "LAMBDA" macro is recommended for the same purpose for writing compact code.</summary>
-		/// <typeparam name="T">Type of the functor to copy.</typeparam>
-		/// <returns>A copied functor in [T:vl.Func`1].</returns>
-		/// <param name="functionObject">The functor to copy.</param>
-		template<typename T>
-		typename LambdaRetriveType<decltype(&T::operator())>::Type Lambda(T functionObject)
-		{
-			return functionObject;
-		}
-
 #define LAMBDA vl::function_lambda::Lambda
 	}
- 
-/***********************************************************************
-vl::function_binding::Binding<R(TArgs...)>
-***********************************************************************/
 
-	namespace function_binding
-	{
-		template<typename T>
-		struct Binding
-		{
-		};
-		 
-		template<typename T>
-		struct CR{typedef const T& Type;};
-		template<typename T>
-		struct CR<T&>{typedef T& Type;};
-		template<typename T>
-		struct CR<const T>{typedef const T& Type;};
-		template<typename T>
-		struct CR<const T&>{typedef const T& Type;};
- 
-		template<typename R, typename T0, typename ...TArgs>
-		struct Binding<R(T0, TArgs...)>
-		{
-			typedef R FunctionType(T0, TArgs...);
-			typedef R CurriedType(TArgs...);
-			typedef T0 FirstParameterType;
+	template<typename C>
+	Func(C&&) -> Func<typename function_lambda::LambdaRetriveType<decltype(&C::operator())>::FunctionType>;
 
-			class Binder : public Object
-			{
-			protected:
-				Func<FunctionType>				target;
-				T0								firstArgument;
-			public:
-				Binder(const Func<FunctionType>& _target, T0 _firstArgument)
-					:target(_target)
-					,firstArgument(std::forward<T0>(_firstArgument))
-				{
-				}
+	template<typename R, typename... TArgs>
+	Func(R(*)(TArgs...)) -> Func<R(TArgs...)>;
 
-				R operator()(TArgs ...args)const
-				{
-					return target(firstArgument, args...);
-				}
-			};
-
-			class Currier : public Object
-			{
-			protected:
-				Func<FunctionType>		target;
-			public:
-				Currier(const Func<FunctionType>& _target)
-					:target(_target)
-				{
-				}
-
-				Func<CurriedType> operator()(T0 firstArgument)const
-				{
-					return Binder(target, firstArgument);
-				}
-			};
-		}; 
-	}
- 
-	/// <summary>
-	/// Currize a function pointer.
-	/// Currizing means to create a new functor whose argument is the first argument of the original function.
-	/// Calling this functor will return another functor whose arguments are all remaining arguments of the original function.
-	/// Calling the returned function will call the original function.
-	/// </summary>
-	/// <typeparam name="T">Type of the function pointer.</typeparam>
-	/// <returns>The currized functor.</returns>
-	/// <param name="function">The function pointer to currize.</param>
-	template<typename T>
-	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
-	Curry(T* function)
-	{
-		return typename function_binding::Binding<T>::Currier(function);
-	}
-
-	/// <summary>
-	/// Currize a functor in [T:vl.Func`1].
-	/// Currizing means to create a new functor whose argument is the first argument of the original function.
-	/// Calling this functor will return another functor whose arguments are all remaining arguments of the original function.
-	/// Calling the returned function will call the original function.
-	/// </summary>
-	/// <typeparam name="T">Type of the functor.</typeparam>
-	/// <returns>The currized functor.</returns>
-	/// <param name="function">The functor to currize.</param>
-	template<typename T>
-	Func<Func<typename function_binding::Binding<T>::CurriedType>(typename function_binding::Binding<T>::FirstParameterType)>
-	Curry(const Func<T>& function)
-	{
-		return typename function_binding::Binding<T>::Currier(function);
-	}
+	template<typename C, typename R, typename... TArgs>
+	Func(C*, R(C::*)(TArgs...)) -> Func<R(TArgs...)>;
 }
 #endif
 
@@ -5771,7 +5663,7 @@ namespace vl
 		/// <param name="function">The callback.</param>
 		Ptr<EventHandler> Add(const Func<void(TArgs...)>& function)
 		{
-			Ptr<EventHandlerImpl> handler = new EventHandlerImpl(function);
+			auto handler = Ptr(new EventHandlerImpl(function));
 			handlers.Add(handler);
 			return handler;
 		}
@@ -5811,11 +5703,12 @@ namespace vl
  
 		/// <summary>Invoke all callbacks in the event.</summary>
 		/// <param name="args">Arguments to invoke all callbacks.</param>
-		void operator()(TArgs ...args)const
+		template<typename... TArgs2>
+		void operator()(TArgs2&& ...args)const
 		{
 			for(vint i = 0; i < handlers.Count(); i++)
 			{
-				handlers[i]->function(args...);
+				handlers[i]->function(std::forward<TArgs2&&>(args)...);
 			}
 		}
 	};
@@ -5860,7 +5753,7 @@ namespace vl
 		/// <param name="evaluator">The function.</param>
 		Lazy(const Func<T()>& evaluator)
 		{
-			internalValue=new Internal;
+			internalValue = Ptr(new Internal);
 			internalValue->evaluated=false;
 			internalValue->evaluator=evaluator;
 		}
@@ -5869,7 +5762,7 @@ namespace vl
 		/// <param name="value">The result.</param>0
 		Lazy(const T& value)
 		{
-			internalValue=new Internal;
+			internalValue = Ptr(new Internal);
 			internalValue->evaluated=true;
 			internalValue->value=value;
 		}
@@ -5884,7 +5777,7 @@ namespace vl
 
 		Lazy<T>& operator=(const Func<T()>& evaluator)
 		{
-			internalValue=new Internal;
+			internalValue = Ptr(new Internal);
 			internalValue->evaluated=false;
 			internalValue->evaluator=evaluator;
 			return *this;
@@ -5892,7 +5785,7 @@ namespace vl
 
 		Lazy<T>& operator=(const T& value)
 		{
-			internalValue=new Internal;
+			internalValue = Ptr(new Internal);
 			internalValue->evaluated=true;
 			internalValue->value=value;
 			return *this;
@@ -7423,7 +7316,7 @@ LazyList
 			template<typename F>
 			LazyList<T> OrderBy(F f)const
 			{
-				Ptr<List<T>> sorted = new List<T>;
+				auto sorted = Ptr(new List<T>);
 				CopyFrom(*sorted.Obj(), *this);
 				if (sorted->Count() > 0)
 				{
@@ -7455,7 +7348,7 @@ LazyList
 			template<typename F>
 			T Aggregate(F f)const
 			{
-				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				auto enumerator = Ptr(CreateEnumerator());
 				if (!enumerator->Next())
 				{
 					throw Error(L"LazyList<T>::Aggregate(F)#Aggregate failed to calculate from an empty container.");
@@ -7567,7 +7460,7 @@ LazyList
 			/// <returns>The first value.</returns>
 			T First()const
 			{
-				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				auto enumerator = Ptr(CreateEnumerator());
 				if (!enumerator->Next())
 				{
 					throw Error(L"LazyList<T>::First(F)#First failed to calculate from an empty container.");
@@ -7580,7 +7473,7 @@ LazyList
 			/// <param name="defaultValue">The argument to return if the lazy list is empty.</param>
 			T First(T defaultValue)const
 			{
-				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				auto enumerator = Ptr(CreateEnumerator());
 				if (!enumerator->Next())
 				{
 					return defaultValue;
@@ -7592,7 +7485,7 @@ LazyList
 			/// <returns>The last value.</returns>
 			T Last()const
 			{
-				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				auto enumerator = Ptr(CreateEnumerator());
 				if (!enumerator->Next())
 				{
 					throw Error(L"LazyList<T>::Last(F)#Last failed to calculate from an empty container.");
@@ -7613,7 +7506,7 @@ LazyList
 			/// <param name="defaultValue">The argument to return if the lazy list is empty.</param>
 			T Last(T defaultValue)const
 			{
-				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				auto enumerator = Ptr(CreateEnumerator());
 				while (enumerator->Next())
 				{
 					defaultValue = enumerator->Current();
@@ -7626,7 +7519,7 @@ LazyList
 			vint Count()const
 			{
 				vint result = 0;
-				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				auto enumerator = Ptr(CreateEnumerator());
 				while (enumerator->Next())
 				{
 					result++;
@@ -7638,7 +7531,7 @@ LazyList
 			/// <returns>Returns true if the lazy list is empty.</returns>
 			bool IsEmpty()const
 			{
-				Ptr<IEnumerator<T>> enumerator = CreateEnumerator();
+				auto enumerator = Ptr(CreateEnumerator());
 				return !enumerator->Next();
 			}
 
@@ -7839,7 +7732,7 @@ LazyList
 				}
 				else
 				{
-					Ptr<List<T>> xs = new List<T>;
+					auto xs = Ptr(new List<T>);
 					CopyFrom(*xs.Obj(), *this);
 					return xs;
 				}
