@@ -548,10 +548,10 @@ Workflow to C++ Codegen Helpers
 
 			static Ptr<reflection::description::IEventHandler> Attach(Event& e, Handler handler)
 			{
-				return MakePtr<EventHandlerImpl>(e.AttachLambda([=](Sender* sender, T& args)
+				return Ptr(new EventHandlerImpl(e.AttachLambda([=](Sender* sender, T& args)
 				{
 					handler(sender, &args);
-				}));
+				})));
 			}
 
 			static bool Detach(Event& e, Ptr<reflection::description::IEventHandler> handler)

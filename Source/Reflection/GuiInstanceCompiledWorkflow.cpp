@@ -42,7 +42,7 @@ GuiInstanceSharedScript
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			if (initializeContext && !context)
 			{
-				context = new WfRuntimeGlobalContext(assembly);
+				context = Ptr(new WfRuntimeGlobalContext(assembly));
 				LoadFunction<void()>(context, L"<initialize>")();
 			}
 #else

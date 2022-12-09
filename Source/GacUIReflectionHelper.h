@@ -81,7 +81,7 @@ External Functions
 			template<typename T>
 			Ptr<T> Element_Constructor()
 			{
-				return T::Create();
+				return Ptr(T::Create());
 			}
 			extern presentation::elements::text::TextLines*					GuiColorizedTextElement_GetLines(presentation::elements::GuiColorizedTextElement* thisObject);
 

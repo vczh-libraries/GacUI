@@ -29,8 +29,8 @@ Type Declaration
 			END_STRUCT_MEMBER(SiteValue)
 
 			BEGIN_STRUCT_MEMBER(Color)
-				valueType = new SerializableValueType<Color>();
-				serializableType = new SerializableType<Color>();
+				valueType = Ptr(new SerializableValueType<Color>);
+				serializableType = Ptr(new SerializableType<Color>);
 				STRUCT_MEMBER(r)
 				STRUCT_MEMBER(g)
 				STRUCT_MEMBER(b)
@@ -138,8 +138,8 @@ Type Declaration
 #undef GUI_DEFINE_KEYBOARD_CODE_ENUM_ITEM
 
 			BEGIN_STRUCT_MEMBER_FLAG(GlobalStringKey, TypeDescriptorFlags::Primitive)
-				valueType = new SerializableValueType<GlobalStringKey>();
-				serializableType = new SerializableType<GlobalStringKey>();
+				valueType = Ptr(new SerializableValueType<GlobalStringKey>);
+				serializableType = Ptr(new SerializableType<GlobalStringKey>);
 			END_STRUCT_MEMBER(GlobalStringKey)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeImageFrame)
@@ -440,8 +440,8 @@ Type Declaration
 			END_CLASS_MEMBER(GuiTextData)
 				
 			BEGIN_STRUCT_MEMBER(DocumentFontSize)
-				valueType = new SerializableValueType<DocumentFontSize>();
-				serializableType = new SerializableType<DocumentFontSize>();
+				valueType = Ptr(new SerializableValueType<DocumentFontSize>);
+				serializableType = Ptr(new SerializableType<DocumentFontSize>);
 				STRUCT_MEMBER(size)
 				STRUCT_MEMBER(relative)
 			END_STRUCT_MEMBER(DocumentFontSize)
@@ -697,7 +697,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiBasicTypeLoader;
+					auto loader=Ptr(new GuiBasicTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif

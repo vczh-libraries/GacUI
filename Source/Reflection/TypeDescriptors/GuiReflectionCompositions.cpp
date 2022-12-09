@@ -505,7 +505,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiCompositionTypeLoader;
+					auto loader=Ptr(new GuiCompositionTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif

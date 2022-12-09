@@ -1477,7 +1477,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiControlsTypeLoader;
+					auto loader=Ptr(new GuiControlsTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif

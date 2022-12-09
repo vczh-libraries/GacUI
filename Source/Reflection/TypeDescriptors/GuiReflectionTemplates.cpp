@@ -254,7 +254,7 @@ Type Loader
 				ITypeManager* manager=GetGlobalTypeManager();
 				if(manager)
 				{
-					Ptr<ITypeLoader> loader=new GuiTemplateTypeLoader;
+					auto loader=Ptr(new GuiTemplateTypeLoader);
 					return manager->AddTypeLoader(loader);
 				}
 #endif
