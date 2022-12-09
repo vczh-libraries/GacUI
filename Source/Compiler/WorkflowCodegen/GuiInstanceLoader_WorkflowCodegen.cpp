@@ -455,7 +455,7 @@ Workflow_GenerateInstanceClass
 				}
 				else
 				{
-					auto typeInfo = MakePtr<TypeDescriptorTypeInfo>(baseType->GetTypeDescriptor(), TypeInfoHint::Normal);
+					auto typeInfo = Ptr(new TypeDescriptorTypeInfo(baseType->GetTypeDescriptor(), TypeInfoHint::Normal));
 					auto baseType = GetTypeFromTypeInfo(typeInfo.Obj());
 					instanceClass->baseTypes.Add(baseType);
 				}
@@ -579,7 +579,7 @@ Workflow_GenerateInstanceClass
 
 			auto ctor = Ptr(new WfConstructorDeclaration);
 			ctor->constructorType = WfConstructorType::RawPtr;
-			auto ctorBlock = (!needFunctionBody ? notImplemented() : MakePtr<WfBlockStatement>());
+			auto ctorBlock = (!needFunctionBody ? notImplemented() : Ptr(new WfBlockStatement));
 			ctor->statement = ctorBlock;
 
 			if (baseWfType)
@@ -908,7 +908,7 @@ Workflow_GenerateInstanceClass
 
 					auto callExpr = Ptr(new WfCallExpression);
 					callExpr->function = initRef;
-					callExpr->arguments.Add(MakePtr<WfThisExpression>());
+					callExpr->arguments.Add(Ptr(new WfThisExpression));
 
 					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = callExpr;
@@ -1043,8 +1043,8 @@ Workflow_GenerateInstanceClass
 						{
 							ref->name.value = L"FinalizeInstanceRecursively";
 
-							Ptr<ITypeInfo> typeInfo = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-							typeInfo = MakePtr<RawPtrTypeInfo>(typeInfo);
+							Ptr<ITypeInfo> typeInfo = Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal));
+							typeInfo = Ptr(new RawPtrTypeInfo(typeInfo));
 
 							auto inferExpr = Ptr(new WfInferExpression);
 							inferExpr->type = GetTypeFromTypeInfo(typeInfo.Obj());
@@ -1104,7 +1104,7 @@ GuiWorkflowSharedManagerPlugin
 			{
 				if (!workflowManager)
 				{
-					workflowManager = new WfLexicalScopeManager(workflowParser);
+					workflowManager = Ptr(new WfLexicalScopeManager(workflowParser));
 				}
 				return workflowManager.Obj();
 			}

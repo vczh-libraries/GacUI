@@ -27,7 +27,7 @@ WorkflowScriptPositionVisitor
 				vint index = context.additionalProperties.Keys().IndexOf(nullptr);
 				if (index == -1)
 				{
-					context.additionalProperties.Add(nullptr, MakePtr<types::ScriptPosition>());
+					context.additionalProperties.Add(nullptr, Ptr(new types::ScriptPosition));
 				}
 				sp = context.additionalProperties[nullptr].Cast<types::ScriptPosition>();
 			}
@@ -62,7 +62,7 @@ WorkflowScriptPositionVisitor
 						record.computedPosition = { position.originalLocation,{ position.row + pos.row,pos.column } };
 					}
 
-					sp->nodePositions.Add(node, record);
+					sp->nodePositions.Add(Ptr(node), record);
 				}
 			}
 		};

@@ -58,8 +58,8 @@ Workflow_InstallBindProperty
 				}
 				else
 				{
-					auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
-					auto pointerType = MakePtr<SharedPtrTypeInfo>(elementType);
+					auto elementType = Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal));
+					auto pointerType = Ptr(new SharedPtrTypeInfo(elementType));
 					convertedType = pointerType;
 				}
 			}
@@ -82,7 +82,7 @@ Workflow_InstallBindProperty
 					member->parent = convertedExpr;
 					member->name.value = L"Text";
 
-					auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
+					auto elementType = Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal));
 
 					auto cast = Ptr(new WfTypeCastingExpression);
 					cast->expression = member;

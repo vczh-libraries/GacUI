@@ -691,7 +691,7 @@ WorkflowReferenceNamesVisitor
 
 		Ptr<reflection::description::ITypeInfo> Workflow_GetSuggestedParameterType(reflection::description::ITypeDescriptor* typeDescriptor)
 		{
-			auto elementType = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+			auto elementType = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 			if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 			{
 				bool isShared = false;
@@ -712,15 +712,15 @@ WorkflowReferenceNamesVisitor
 				}
 				if (!isShared && !isRaw)
 				{
-					return MakePtr<SharedPtrTypeInfo>(elementType);
+					return Ptr(new SharedPtrTypeInfo(elementType));
 				}
 				else if (isShared)
 				{
-					return MakePtr<SharedPtrTypeInfo>(elementType);
+					return Ptr(new SharedPtrTypeInfo(elementType));
 				}
 				else
 				{
-					return MakePtr<RawPtrTypeInfo>(elementType);
+					return Ptr(new RawPtrTypeInfo(elementType));
 				}
 			}
 			else

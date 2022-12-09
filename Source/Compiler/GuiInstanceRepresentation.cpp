@@ -313,7 +313,7 @@ GuiInstanceContext
 		{
 			if (auto parser = GetParserManager()->GetParser<ElementName>(L"INSTANCE-ELEMENT-NAME"))
 			{
-				Ptr<GuiAttSetterRepr::SetterValue> defaultValue = new GuiAttSetterRepr::SetterValue;
+				auto defaultValue = Ptr(new GuiAttSetterRepr::SetterValue);
 
 				// collect default attributes
 				CollectDefaultAttributes(resource, defaultValue->values, xml, errors);
@@ -336,7 +336,7 @@ GuiInstanceContext
 							}
 							else
 							{
-								Ptr<GuiAttSetterRepr::SetterValue> sv = new GuiAttSetterRepr::SetterValue;
+								auto sv = Ptr(new GuiAttSetterRepr::SetterValue);
 								sv->binding = GlobalStringKey::Get(name->binding);
 								sv->attPosition = { {resource},element->codeRange.start };
 
@@ -388,7 +388,7 @@ GuiInstanceContext
 								{
 									if (Ptr<XmlText> text = element->subNodes[0].Cast<XmlText>())
 									{
-										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
+										auto value = Ptr(new GuiAttSetterRepr::EventValue);
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
 										value->attPosition = { {resource},element->codeRange.start };
@@ -402,7 +402,7 @@ GuiInstanceContext
 									}
 									else if (Ptr<XmlCData> text = element->subNodes[0].Cast<XmlCData>())
 									{
-										auto value = MakePtr<GuiAttSetterRepr::EventValue>();
+										auto value = Ptr(new GuiAttSetterRepr::EventValue);
 										value->binding = GlobalStringKey::Get(name->binding);
 										value->value = text->content.value;
 										value->attPosition = { {resource},element->codeRange.start };
@@ -449,7 +449,7 @@ GuiInstanceContext
 							}
 							else
 							{
-								auto value = MakePtr<GuiAttSetterRepr::EnvVarValue>();
+								auto value = Ptr(new GuiAttSetterRepr::EnvVarValue);
 								value->value = att->value.value;
 								value->attPosition = { {resource},att->codeRange.start };
 								value->valuePosition = { {resource},att->value.codeRange.start };
@@ -466,7 +466,7 @@ GuiInstanceContext
 							}
 							else
 							{
-								auto sv = MakePtr<GuiAttSetterRepr::SetterValue>();
+								auto sv = Ptr(new GuiAttSetterRepr::SetterValue);
 								sv->binding = GlobalStringKey::Get(name->binding);
 								sv->attPosition = { {resource},att->codeRange.start };
 								setter->setters.Add(GlobalStringKey::Get(name->name), sv);
@@ -487,7 +487,7 @@ GuiInstanceContext
 							}
 							else
 							{
-								auto value = MakePtr<GuiAttSetterRepr::EventValue>();
+								auto value = Ptr(new GuiAttSetterRepr::EventValue);
 								value->binding = GlobalStringKey::Get(name->binding);
 								value->value = att->value.value;
 								value->attPosition = { {resource},att->codeRange.start };
@@ -624,7 +624,7 @@ GuiInstanceContext
 						vint index = context->namespaces.Keys().IndexOf(ns);
 						if (index == -1)
 						{
-							info = new NamespaceInfo;
+							info = Ptr(new NamespaceInfo);
 							info->name = ns;
 							info->attPosition = { {resource},att->codeRange.start };
 							context->namespaces.Add(ns, info);
@@ -890,7 +890,7 @@ GuiInstanceContext
 				for (auto style : styles)
 				{
 					List<Ptr<GuiConstructorRepr>> output;
-					ExecuteQuery(style->query, this, output);
+					ExecuteQuery(style->query, Ptr(this), output);
 					for (auto ctor : output)
 					{
 						ApplyStyle(style, ctor);

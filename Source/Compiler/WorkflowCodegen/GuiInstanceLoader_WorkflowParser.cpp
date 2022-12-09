@@ -106,7 +106,7 @@ Converter
 			{ \
 				auto valueExpr = Ptr(new WfIntegerExpression); \
 				valueExpr->value.value = textValue; \
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
+				auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal)); \
 				auto infer = Ptr(new WfInferExpression); \
 				infer->type = GetTypeFromTypeInfo(type.Obj()); \
 				infer->expression = valueExpr; \
@@ -127,7 +127,7 @@ Converter
 			{ \
 				auto valueExpr = Ptr(new WfFloatingExpression); \
 				valueExpr->value.value = textValue; \
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
+				auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal)); \
 				auto infer = Ptr(new WfInferExpression); \
 				infer->type = GetTypeFromTypeInfo(type.Obj()); \
 				infer->expression = valueExpr; \
@@ -142,7 +142,7 @@ Converter
 				auto str = Ptr(new WfStringExpression);
 				str->value.value = textValue;
 
-				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+				auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 
 				auto cast = Ptr(new WfTypeCastingExpression);
 				cast->type = GetTypeFromTypeInfo(type.Obj());
@@ -155,7 +155,7 @@ Converter
 			{
 				if (auto valueExpr = Workflow_ParseExpression(precompileContext, location, L"{" + textValue + L"}", position, errors, { 0,1 })) // {
 				{
-					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+					auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 
 					auto infer = Ptr(new WfInferExpression);
 					infer->type = GetTypeFromTypeInfo(type.Obj());
@@ -169,7 +169,7 @@ Converter
 			{
 				if (auto valueExpr = Workflow_ParseExpression(precompileContext, location, L"(" + textValue + L")", position, errors, { 0,1 })) // {
 				{
-					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
+					auto type = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 
 					auto infer = Ptr(new WfInferExpression);
 					infer->type = GetTypeFromTypeInfo(type.Obj());

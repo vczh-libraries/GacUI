@@ -75,7 +75,7 @@ GuiInstanceLocalizedStrings
 				}
 				else
 				{
-					auto lss = MakePtr<GuiInstanceLocalizedStrings::Strings>();
+					auto lss = Ptr(new GuiInstanceLocalizedStrings::Strings);
 					ls->strings.Add(lss);
 					lss->tagPosition = { { resource },xmlStrings->name.codeRange.start };
 					SplitBySemicolon(attLocales->value.value, lss->locales);
@@ -120,7 +120,7 @@ GuiInstanceLocalizedStrings
 							}
 							else
 							{
-								auto item = MakePtr<GuiInstanceLocalizedStrings::StringItem>();
+								auto item = Ptr(new GuiInstanceLocalizedStrings::StringItem);
 								item->name = attName->value.value;
 								item->text = attText->value.value;
 								item->textPosition = { {resource},attText->value.codeRange.start };

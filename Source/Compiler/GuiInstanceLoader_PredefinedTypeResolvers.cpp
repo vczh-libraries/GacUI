@@ -908,11 +908,11 @@ Plugin
 			void Load()override
 			{
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceSharedScriptTypeResolver);
-				manager->SetTypeResolver(new GuiResourceInstanceTypeResolver);
-				manager->SetTypeResolver(new GuiResourceInstanceStyleTypeResolver);
-				manager->SetTypeResolver(new GuiResourceAnimationTypeResolver);
-				manager->SetTypeResolver(new GuiResourceLocalizedStringsTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceSharedScriptTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceInstanceTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceInstanceStyleTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceAnimationTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceLocalizedStringsTypeResolver));
 			}
 
 			void Unload()override
