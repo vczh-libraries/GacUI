@@ -162,7 +162,7 @@ GuiToolstripMenu
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				sharedSizeRootComposition->AddChild(stackComposition);
 				
-				toolstripItems = new GuiToolstripCollection(this, stackComposition);
+				toolstripItems = Ptr(new GuiToolstripCollection(this, stackComposition));
 			}
 
 			GuiToolstripMenu::~GuiToolstripMenu()
@@ -187,7 +187,7 @@ GuiToolstripMenuBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
+				toolstripItems=Ptr(new GuiToolstripCollection(nullptr, stackComposition));
 			}
 
 			GuiToolstripMenuBar::~GuiToolstripMenuBar()
@@ -212,7 +212,7 @@ GuiToolstripToolBar
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems=new GuiToolstripCollection(nullptr, stackComposition);
+				toolstripItems=Ptr(new GuiToolstripCollection(nullptr, stackComposition));
 			}
 
 			GuiToolstripToolBar::~GuiToolstripToolBar()
@@ -553,7 +553,7 @@ GuiToolstripGroupContainer
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				groupCollection = new GroupCollection(this);
+				groupCollection = Ptr(new GroupCollection(this));
 			}
 
 			GuiToolstripGroupContainer::~GuiToolstripGroupContainer()
@@ -608,7 +608,7 @@ GuiToolstripGroup
 				stackComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				containerComposition->AddChild(stackComposition);
 
-				toolstripItems = new GuiToolstripCollection(nullptr, stackComposition);
+				toolstripItems = Ptr(new GuiToolstripCollection(nullptr, stackComposition));
 			}
 
 			GuiToolstripGroup::~GuiToolstripGroup()

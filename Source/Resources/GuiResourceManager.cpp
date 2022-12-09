@@ -54,7 +54,7 @@ Class Name Record (ClassNameRecord)
 			{
 				internal::ContextFreeReader reader(binaryStream);
 
-				auto obj = MakePtr<GuiResourceClassNameRecord>();
+				auto obj = Ptr(new GuiResourceClassNameRecord);
 				reader << obj->classNames;
 				return obj;
 			}
@@ -111,7 +111,7 @@ IGuiInstanceResourceManager
 			{
 				resourceManager = this;
 				IGuiResourceResolverManager* manager = GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceClassNameRecordTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceClassNameRecordTypeResolver));
 			}
 
 			void Unload()override
@@ -207,11 +207,11 @@ IGuiInstanceResourceManager
 
 			void LoadResourceOrPending(stream::IStream& resourceStream, GuiResourceError::List& errors, GuiResourceUsage usage)override
 			{
-				auto pr = MakePtr<PendingResource>();
+				auto pr = Ptr(new PendingResource);
 				pr->usage = usage;
 				CopyStream(resourceStream, pr->memoryStream);
 
-				pr->metadata = MakePtr<GuiResourceMetadata>();
+				pr->metadata = Ptr(new GuiResourceMetadata);
 				{
 					pr->memoryStream.SeekFromBegin(0);
 					stream::internal::ContextFreeReader reader(pr->memoryStream);

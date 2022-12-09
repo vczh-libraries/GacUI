@@ -335,7 +335,7 @@ GuiGraphicsComposition
 			{
 				if(!eventReceiver)
 				{
-					eventReceiver=new GuiGraphicsEventReceiver(this);
+					eventReceiver=Ptr(new GuiGraphicsEventReceiver(this));
 				}
 				return eventReceiver.Obj();
 			}

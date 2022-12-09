@@ -332,17 +332,17 @@ GuiGradientBackgroundElementRenderer
 					switch (shape.shapeType)
 					{
 					case ElementShapeType::Ellipse:
-						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, false);
+						targetRegion = Ptr(new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, false));
 						break;
 					case ElementShapeType::RoundRect:
-						targetRegion = new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2);
+						targetRegion = Ptr(new WinRegion(bounds.x1, bounds.y1, bounds.x2 + 1, bounds.y2 + 1, shape.radiusX * 2, shape.radiusY * 2));
 						break;
 					}
 
 					if (targetRegion)
 					{
 						oldRegion = renderTarget->GetDC()->GetClipRegion();
-						newRegion = new WinRegion(oldRegion, targetRegion, RGN_AND);
+						newRegion = Ptr(new WinRegion(oldRegion, targetRegion, RGN_AND));
 						renderTarget->GetDC()->ClipRegion(newRegion);
 					}
 

@@ -72,7 +72,7 @@ Image Type Resolver (Image)
 				Ptr<INativeImage> image = GetCurrentController()->ImageService()->CreateImageFromFile(path);
 				if(image)
 				{
-					return new GuiImageData(image, 0);
+					return Ptr(new GuiImageData(image, 0));
 				}
 				else
 				{
@@ -90,7 +90,7 @@ Image Type Resolver (Image)
 				auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream);
 				if (image)
 				{
-					return new GuiImageData(image, 0);
+					return Ptr(new GuiImageData(image, 0));
 				}
 				else
 				{
@@ -140,10 +140,10 @@ Text Type Resolver (Text)
 			{
 				if (auto obj = content.Cast<GuiTextData>())
 				{
-					auto xmlContent = MakePtr<XmlText>();
+					auto xmlContent = Ptr(new XmlText);
 					xmlContent->content.value = obj->GetText();
 
-					auto xmlText = MakePtr<XmlElement>();
+					auto xmlText = Ptr(new XmlElement);
 					xmlText->name.value = L"Text";
 					xmlText->subNodes.Add(xmlContent);
 
@@ -162,7 +162,7 @@ Text Type Resolver (Text)
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> element, GuiResourceError::List& errors)override
 			{
-				return new GuiTextData(XmlGetValue(element));
+				return Ptr(new GuiTextData(XmlGetValue(element)));
 			}
 
 			Ptr<DescriptableObject> ResolveResource(Ptr<GuiResourceItem> resource, const WString& path, GuiResourceError::List& errors)override
@@ -170,12 +170,12 @@ Text Type Resolver (Text)
 				WString text;
 				if(LoadTextFile(path, text))
 				{
-					return new GuiTextData(text);
+					return Ptr(new GuiTextData(text));
 				}
 				else
 				{
 					errors.Add(GuiResourceError({ resource }, L"Failed to load file \"" + path + L"\"."));
-					return 0;
+					return nullptr;
 				}
 			}
 
@@ -184,7 +184,7 @@ Text Type Resolver (Text)
 				stream::internal::ContextFreeReader reader(binaryStream);
 				WString text;
 				reader << text;
-				return new GuiTextData(text);
+				return Ptr(new GuiTextData(text));
 			}
 		};
 
@@ -228,7 +228,7 @@ Xml Type Resolver (Xml)
 			{
 				if (auto obj = content.Cast<XmlDocument>())
 				{
-					auto xmlXml = MakePtr<XmlElement>();
+					auto xmlXml = Ptr(new XmlElement());
 					xmlXml->name.value = L"Xml";
 					xmlXml->subNodes.Add(obj->rootElement);
 					return xmlXml;
@@ -366,10 +366,10 @@ Type Resolver Plugin
 			void Load()override
 			{
 				IGuiResourceResolverManager* manager=GetResourceResolverManager();
-				manager->SetTypeResolver(new GuiResourceImageTypeResolver);
-				manager->SetTypeResolver(new GuiResourceTextTypeResolver);
-				manager->SetTypeResolver(new GuiResourceXmlTypeResolver);
-				manager->SetTypeResolver(new GuiResourceDocTypeResolver);
+				manager->SetTypeResolver(Ptr(new GuiResourceImageTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceTextTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceXmlTypeResolver));
+				manager->SetTypeResolver(Ptr(new GuiResourceDocTypeResolver));
 			}
 
 			void Unload()override

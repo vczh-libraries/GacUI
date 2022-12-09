@@ -327,7 +327,7 @@ GuiToolstripCommandPlugin
 				void Load()override
 				{
 					IGuiParserManager* manager=GetParserManager();
-					manager->SetParser(L"SHORTCUT", new GuiToolstripCommandShortcutParser);
+					manager->SetParser(L"SHORTCUT", Ptr(new GuiToolstripCommandShortcutParser));
 				}
 
 				void Unload()override

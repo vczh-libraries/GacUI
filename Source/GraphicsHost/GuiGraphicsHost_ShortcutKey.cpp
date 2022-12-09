@@ -103,7 +103,7 @@ GuiShortcutKeyManager
 						return item.Obj();
 					}
 				}
-				Ptr<GuiShortcutKeyItem> item=new GuiShortcutKeyItem(this, ctrl, shift, alt, key);
+				auto item=Ptr(new GuiShortcutKeyItem(this, ctrl, shift, alt, key));
 				shortcutKeyItems.Add(item);
 				return item.Obj();
 			}

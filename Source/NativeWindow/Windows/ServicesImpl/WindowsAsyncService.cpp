@@ -184,7 +184,7 @@ WindowsAsyncService
 				Ptr<DelayItem> delay;
 				SPIN_LOCK(taskListLock)
 				{
-					delay=new DelayItem(this, proc, false, milliseconds);
+					delay=Ptr(new DelayItem(this, proc, false, milliseconds));
 					delayItems.Add(delay);
 				}
 				return delay;
@@ -195,7 +195,7 @@ WindowsAsyncService
 				Ptr<DelayItem> delay;
 				SPIN_LOCK(taskListLock)
 				{
-					delay=new DelayItem(this, proc, true, milliseconds);
+					delay=Ptr(new DelayItem(this, proc, true, milliseconds));
 					delayItems.Add(delay);
 				}
 				return delay;

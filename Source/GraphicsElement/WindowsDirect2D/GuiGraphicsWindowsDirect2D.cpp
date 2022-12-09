@@ -261,7 +261,7 @@ CachedResourceAllocator
 			public:
 				Ptr<text::CharMeasurer> CreateInternal(const FontProperties& value)
 				{
-					return new Direct2DCharMeasurer(CachedTextFormatAllocator::CreateDirect2DFont(value), value.size);
+					return Ptr(new Direct2DCharMeasurer(CachedTextFormatAllocator::CreateDirect2DFont(value), value.size));
 				}
 			};
 
@@ -400,7 +400,7 @@ WindowsDirect2DRenderTarget
 					}
 					else
 					{
-						return 0;
+						return nullptr;
 					}
 				}
 			public:
@@ -446,7 +446,7 @@ WindowsDirect2DRenderTarget
 					}
 					else
 					{
-						Ptr<WindowsDirect2DImageFrameCache> d2dCache=new WindowsDirect2DImageFrameCache(this);
+						auto d2dCache=Ptr(new WindowsDirect2DImageFrameCache(this));
 						if(frame->SetCache(this, d2dCache))
 						{
 							imageCaches.Add(d2dCache);
@@ -454,7 +454,7 @@ WindowsDirect2DRenderTarget
 						}
 						else
 						{
-							return 0;
+							return nullptr;
 						}
 					}
 				}
@@ -654,7 +654,7 @@ WindowsGDIResourceManager
 			public:
 				WindowsDirect2DResourceManager()
 				{
-					layoutProvider=new WindowsDirect2DLayoutProvider;
+					layoutProvider=Ptr(new WindowsDirect2DLayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override

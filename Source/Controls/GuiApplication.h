@@ -215,7 +215,7 @@ extern void GuiApplicationMain();
 	public:\
 		GuiRegisterPluginClass_##TYPE()\
 		{\
-			vl::presentation::controls::GetPluginManager()->AddPlugin(new TYPE);\
+			vl::presentation::controls::GetPluginManager()->AddPlugin(Ptr(new TYPE));\
 		}\
 	} instance_GuiRegisterPluginClass_##TYPE;\
 

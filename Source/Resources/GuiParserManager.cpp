@@ -67,8 +67,8 @@ IGuiParserManager
 			void Load()override
 			{
 				parserManager = this;
-				SetParser(L"XML", new GuiParser_Xml());
-				SetParser(L"JSON", new GuiParser_Json());
+				SetParser(L"XML", Ptr(new GuiParser_Xml()));
+				SetParser(L"JSON", Ptr(new GuiParser_Json()));
 			}
 
 			void Unload()override

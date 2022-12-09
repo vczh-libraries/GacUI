@@ -56,7 +56,7 @@ namespace vl
 					}
 					if (!buffer)
 					{
-						buffer = new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true);
+						buffer = Ptr(new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true));
 						buffer->GetWinDC()->SetBackTransparent(true);
 					}
 				}
@@ -112,14 +112,14 @@ namespace vl
 
 				void NativeWindowCreated(INativeWindow* window)
 				{
-					Ptr<GdiWindowsNativeWindowListener> listener=new GdiWindowsNativeWindowListener(window);
+					auto listener=Ptr(new GdiWindowsNativeWindowListener(window));
 					window->InstallListener(listener.Obj());
 					nativeWindowListeners.Add(window, listener);
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)
 				{
-					Ptr<GdiWindowsNativeWindowListener> listener=nativeWindowListeners[window];
+					auto listener=nativeWindowListeners[window];
 					nativeWindowListeners.Remove(window);
 					window->UninstallListener(listener.Obj());
 				}

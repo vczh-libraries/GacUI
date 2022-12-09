@@ -127,7 +127,7 @@ WindowsImageFrame
 				UINT width = 0;
 				UINT height = 0;
 				frameBitmap->GetSize(&width, &height);
-				auto bitmap = MakePtr<WinBitmap>((vint)width, (vint)height, WinBitmap::vbb32Bits, true);
+				auto bitmap = Ptr(new WinBitmap((vint)width, (vint)height, WinBitmap::vbb32Bits, true));
 
 				WICRect rect;
 				rect.X = 0;
@@ -215,7 +215,7 @@ WindowsImage
 						HRESULT hr=bitmapDecoder->GetFrame((int)index, &frameDecode);
 						if(SUCCEEDED(hr))
 						{
-							frame=new WindowsImageFrame(this, frameDecode);
+							frame=Ptr(new WindowsImageFrame(this, frameDecode));
 							frameDecode->Release();
 						}
 					}
@@ -453,7 +453,7 @@ WindowsBitmapImage
 				:imageService(_imageService)
 				,formatType(_formatType)
 			{
-				frame = new WindowsImageFrame(this, sourceBitmap);
+				frame = Ptr(new WindowsImageFrame(this, sourceBitmap));
 			}
 
 			WindowsBitmapImage::~WindowsBitmapImage()
@@ -569,11 +569,11 @@ WindowsImageService
 					&bitmapDecoder);
 				if(SUCCEEDED(hr))
 				{
-					return new WindowsImage(this, bitmapDecoder);
+					return Ptr(new WindowsImage(this, bitmapDecoder));
 				}
 				else
 				{
-					return 0;
+					return nullptr;
 				}
 			}
 
@@ -587,7 +587,7 @@ WindowsImageService
 					HRESULT hr=imagingFactory->CreateDecoderFromStream(stream, NULL, WICDecodeMetadataCacheOnDemand, &bitmapDecoder);
 					if(SUCCEEDED(hr))
 					{
-						result=new WindowsImage(this, bitmapDecoder);
+						result=Ptr(new WindowsImage(this, bitmapDecoder));
 					}
 					stream->Release();
 				}
@@ -616,7 +616,7 @@ WindowsImageService
 				HRESULT hr=imagingFactory->CreateBitmapFromHBITMAP(handle, NULL, WICBitmapUseAlpha, &bitmap);
 				if(SUCCEEDED(hr))
 				{
-					Ptr<INativeImage> image=new WindowsBitmapImage(this, bitmap, INativeImage::Bmp);
+					auto image=Ptr(new WindowsBitmapImage(this, bitmap, INativeImage::Bmp));
 					bitmap->Release();
 					return image;
 				}
@@ -632,7 +632,7 @@ WindowsImageService
 				HRESULT hr=imagingFactory->CreateBitmapFromHICON(handle, &bitmap);
 				if(SUCCEEDED(hr))
 				{
-					Ptr<INativeImage> image=new WindowsBitmapImage(this, bitmap, INativeImage::Icon);
+					auto image=Ptr(new WindowsBitmapImage(this, bitmap, INativeImage::Icon));
 					bitmap->Release();
 					return image;
 				}

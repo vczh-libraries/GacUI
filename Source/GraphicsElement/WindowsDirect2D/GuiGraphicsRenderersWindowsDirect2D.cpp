@@ -919,7 +919,7 @@ GuiImageFrameElementRenderer
 				}
 				else
 				{
-					bitmap=0;
+					bitmap=nullptr;
 					minSize=Size(0, 0);
 				}
 			}

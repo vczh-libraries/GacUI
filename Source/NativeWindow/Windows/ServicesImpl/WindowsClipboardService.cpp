@@ -209,7 +209,7 @@ WindowsClipboardWriter
 						UINT width = 0;
 						UINT height = 0;
 						wicBitmap->GetSize(&width, &height);
-						auto bitmap = MakePtr<WinBitmap>((vint)width, (vint)height, WinBitmap::vbb32Bits, true);
+						auto bitmap = Ptr(new WinBitmap((vint)width, (vint)height, WinBitmap::vbb32Bits, true));
 
 						WICRect rect;
 						rect.X = 0;
@@ -255,15 +255,15 @@ WindowsClipboardService
 			{
 				if (!reader)
 				{
-					if (!::OpenClipboard(ownerHandle)) return new WindowsFakeClipboardReader;
+					if (!::OpenClipboard(ownerHandle)) return Ptr(new WindowsFakeClipboardReader);
 					reader = new WindowsClipboardReader(this);
 				}
-				return reader;
+				return Ptr(reader);
 			}
 
 			Ptr<INativeClipboardWriter> WindowsClipboardService::WriteClipboard()
 			{
-				return new WindowsClipboardWriter(this);
+				return Ptr(new WindowsClipboardWriter(this));
 			}
 
 			void WindowsClipboardService::SetOwnerHandle(HWND handle)

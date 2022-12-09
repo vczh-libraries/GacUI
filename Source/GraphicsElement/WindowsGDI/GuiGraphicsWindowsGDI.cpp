@@ -49,7 +49,7 @@ WindowsGDIRenderTarget
 						else
 						{
 							Rect clipper=GetClipper();
-							dc->ClipRegion(new WinRegion(clipper.Left(), clipper.Top(), clipper.Right(), clipper.Bottom(), true));
+							dc->ClipRegion(Ptr(new WinRegion(clipper.Left(), clipper.Top(), clipper.Right(), clipper.Bottom(), true)));
 						}
 					}
 				}
@@ -149,7 +149,7 @@ CachedResourceAllocator
 			public:
 				Ptr<WinPen> CreateInternal(Color color)
 				{
-					return new WinPen(PS_SOLID, 1, RGB(color.r, color.g, color.b));
+					return Ptr(new WinPen(PS_SOLID, 1, RGB(color.r, color.g, color.b)));
 				}
 			};
 
@@ -159,7 +159,7 @@ CachedResourceAllocator
 			public:
 				Ptr<WinBrush> CreateInternal(Color color)
 				{
-					return color.a==0?new WinBrush:new WinBrush(RGB(color.r, color.g, color.b));
+					return color.a==0?Ptr(new WinBrush):Ptr(new WinBrush(RGB(color.r, color.g, color.b)));
 				}
 			};
 
@@ -170,7 +170,7 @@ CachedResourceAllocator
 				static Ptr<WinFont> CreateGdiFont(const FontProperties& value)
 				{
 					vint size=value.size<0?value.size:-value.size;
-					return new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold?FW_BOLD:FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias);
+					return Ptr(new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold?FW_BOLD:FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias));
 				}
 
 				Ptr<WinFont> CreateInternal(const FontProperties& value)
@@ -235,7 +235,7 @@ CachedResourceAllocator
 			public:
 				Ptr<text::CharMeasurer> CreateInternal(const FontProperties& value)
 				{
-					return new GdiCharMeasurer(CachedFontAllocator::CreateGdiFont(value), value.size);
+					return Ptr(new GdiCharMeasurer(CachedFontAllocator::CreateGdiFont(value), value.size));
 				}
 			};
 
@@ -264,7 +264,7 @@ WindowsGDIResourceManager
 				{
 					cachedFrame=frame;
 					Size size=frame->GetSize();
-					bitmap=new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true);
+					bitmap=Ptr(new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true));
 
 					IWICBitmap* wicBitmap=GetWindowsGDIObjectProvider()->GetWICBitmap(frame);
 					WICRect rect;
@@ -299,7 +299,7 @@ WindowsGDIResourceManager
 						{
 							vint w=bitmap->GetWidth();
 							vint h=bitmap->GetHeight();
-							disabledBitmap=new WinBitmap(w, h, WinBitmap::vbb32Bits, true);
+							disabledBitmap=Ptr(new WinBitmap(w, h, WinBitmap::vbb32Bits, true));
 							for(vint y=0;y<h;y++)
 							{
 								BYTE* read=bitmap->GetScanLines()[y];
@@ -337,7 +337,7 @@ WindowsGDIResourceManager
 			public:
 				WindowsGDIResourceManager()
 				{
-					layoutProvider=new WindowsGDILayoutProvider;
+					layoutProvider=Ptr(new WindowsGDILayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override
@@ -377,7 +377,7 @@ WindowsGDIResourceManager
 					if (!focusRectanglePen)
 					{
 						DWORD styleArray[] = { 1,1 };
-						focusRectanglePen = new WinPen(PS_USERSTYLE, PS_ENDCAP_FLAT, PS_JOIN_BEVEL, 1, RGB(255, 255, 255), (DWORD)(sizeof(styleArray) / sizeof(*styleArray)), styleArray);
+						focusRectanglePen = Ptr(new WinPen(PS_USERSTYLE, PS_ENDCAP_FLAT, PS_JOIN_BEVEL, 1, RGB(255, 255, 255), (DWORD)(sizeof(styleArray) / sizeof(*styleArray)), styleArray));
 					}
 					return focusRectanglePen;
 				}
@@ -431,7 +431,7 @@ WindowsGDIResourceManager
 					}
 					else
 					{
-						WindowsGDIImageFrameCache* gdiCache=new WindowsGDIImageFrameCache(this);
+						auto gdiCache=Ptr(new WindowsGDIImageFrameCache(this));
 						if(frame->SetCache(this, gdiCache))
 						{
 							return gdiCache->GetBitmap(enabled);

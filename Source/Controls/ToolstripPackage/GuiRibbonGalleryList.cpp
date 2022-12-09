@@ -68,7 +68,7 @@ list::GroupedDataSource
 						{
 							for (auto [groupValue, index] : indexed(GetLazyList<Value>(itemSource)))
 							{
-								auto group = MakePtr<GalleryGroup>();
+								auto group = Ptr(new GalleryGroup);
 								group->name = titleProperty(groupValue);
 								group->itemValues = GetChildren(childrenProperty(groupValue));
 								AttachGroupChanged(group, index);
@@ -77,7 +77,7 @@ list::GroupedDataSource
 						}
 						else
 						{
-							auto group = MakePtr<GalleryGroup>();
+							auto group = Ptr(new GalleryGroup);
 							group->itemValues = GetChildren(itemSource);
 							AttachGroupChanged(group, 0);
 							groupedItemSource.Add(group);
@@ -548,7 +548,7 @@ GuiBindableRibbonGalleryList
 					itemListArranger = new ribbon_impl::GalleryItemArranger(this);
 					itemList = new GuiBindableTextList(theme::ThemeName::RibbonGalleryItemList);
 					itemList->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
-					itemList->SetArranger(itemListArranger);
+					itemList->SetArranger(Ptr(itemListArranger));
 					itemList->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(joinedItemSource)));
 					itemList->SelectionChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListSelectionChanged);
 					itemList->ItemMouseEnter.AttachMethod(this, &GuiBindableRibbonGalleryList::OnItemListItemMouseEnter);

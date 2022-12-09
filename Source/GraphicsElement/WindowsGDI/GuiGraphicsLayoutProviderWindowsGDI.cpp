@@ -66,10 +66,10 @@ WindowsGDIParagraph
 					,paragraphDC(nullptr)
 					,paragraphCallback(_paragraphCallback)
 				{
-					paragraph=new UniscribeParagraph;
+					paragraph=Ptr(new UniscribeParagraph);
 					paragraph->paragraphText=text;
 
-					Ptr<UniscribeFragment> fragment=new UniscribeFragment(_text);
+					auto fragment=Ptr(new UniscribeFragment(_text));
 					fragment->fontStyle=GetCurrentController()->ResourceService()->GetDefaultFont();
 					paragraph->documentFragments.Add(fragment);
 				}
@@ -328,7 +328,7 @@ WindowsGDILayoutProvider
 
 			Ptr<IGuiGraphicsParagraph> WindowsGDILayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsGDIParagraph(this, text, renderTarget, callback);
+				return Ptr(new WindowsGDIParagraph(this, text, renderTarget, callback));
 			}
 		}
 	}

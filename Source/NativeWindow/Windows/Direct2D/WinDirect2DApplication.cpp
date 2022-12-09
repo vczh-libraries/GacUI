@@ -138,7 +138,7 @@ WindowListener 1.0
 				{
 					if (d2dRenderTarget)
 					{
-						d2dRenderTarget = 0;
+						d2dRenderTarget = nullptr;
 					}
 				}
 
@@ -166,7 +166,7 @@ WindowListener 1.1
 				{
 					IDXGIDevice* device = nullptr;
 					HRESULT hr = d3d11Device->QueryInterface(&device);
-					if (!SUCCEEDED(hr)) return 0;
+					if (!SUCCEEDED(hr)) return nullptr;
 					return device;
 				}
 
@@ -176,7 +176,7 @@ WindowListener 1.1
 					{
 						IDXGIAdapter* adapter = nullptr;
 						HRESULT hr = dxgiDevice->GetAdapter(&adapter);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						dxgiAdapter = adapter;
 					}
 
@@ -184,7 +184,7 @@ WindowListener 1.1
 					{
 						IDXGIFactory2* factory = nullptr;
 						HRESULT hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&factory);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						dxgiFactory = factory;
 					}
 
@@ -199,7 +199,7 @@ WindowListener 1.1
 
 						IDXGISwapChain1* swapChain = nullptr;
 						HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(d3d11Device, form->GetWindowHandle(), &props, nullptr, nullptr, &swapChain);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						dxgiSwapChain = swapChain;
 					}
 
@@ -212,7 +212,7 @@ WindowListener 1.1
 					{
 						ID2D1Device* device = nullptr;
 						HRESULT hr = d2dFactory1->CreateDevice(dxgiDevice, &device);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						d2d1Device = device;
 					}
 
@@ -220,7 +220,7 @@ WindowListener 1.1
 					{
 						ID2D1DeviceContext* deviceContext = nullptr;
 						HRESULT hr = d2d1Device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &deviceContext);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						d2dDeviceContext = deviceContext;
 					}
 
@@ -233,7 +233,7 @@ WindowListener 1.1
 					{
 						IDXGISurface* surface = nullptr;
 						HRESULT hr = swapChain->GetBuffer(0, __uuidof(IDXGISurface), (void**)&surface);
-						if (!SUCCEEDED(hr))return 0;
+						if (!SUCCEEDED(hr))return nullptr;
 						dxgiSurface = surface;
 					}
 
@@ -243,7 +243,7 @@ WindowListener 1.1
 
 						ID2D1Bitmap1* bitmap = nullptr;
 						HRESULT hr = deviceContext->CreateBitmapFromDxgiSurface(dxgiSurface.Obj(), props, &bitmap);
-						if (!SUCCEEDED(hr)) return 0;
+						if (!SUCCEEDED(hr)) return nullptr;
 						d2dBitmap = bitmap;
 					}
 
@@ -308,8 +308,8 @@ WindowListener 1.1
 				{
 					if (d2dDeviceContext)
 					{
-						d2dDeviceContext = 0;
-						dxgiSwapChain = 0;
+						d2dDeviceContext = nullptr;
+						dxgiSwapChain = nullptr;
 					}
 				}
 
@@ -414,7 +414,7 @@ ControllerListener
 					{
 						device->Release();
 					}
-					return 0;
+					return nullptr;
 				}
 
 				void NativeWindowCreated(INativeWindow* window)
@@ -452,11 +452,11 @@ ControllerListener
 
 					if (d2dfactory1 && d3d11Device)
 					{
-						listener = new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj());
+						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj()));
 					}
 					else
 					{
-						listener = new Direct2DWindowsNativeWindowListener_1_0(window, d2dFactory.Obj());
+						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_0(window, d2dFactory.Obj()));
 					}
 					window->InstallListener(listener.Obj());
 					nativeWindowListeners.Add(window, listener);

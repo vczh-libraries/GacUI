@@ -416,7 +416,7 @@ DocumentModel
 										if (styleName.Length() > 9 && styleName.Right(9) == L"-Override")
 										{
 											auto overridedStyle = Ptr(new DocumentStyle);
-											overridedStyle->styles = new DocumentStyleProperties;
+											overridedStyle->styles = Ptr(new DocumentStyleProperties);
 											MergeStyle(overridedStyle->styles, style->styles);
 
 											styleName = styleName.Left(styleName.Length() - 9);
