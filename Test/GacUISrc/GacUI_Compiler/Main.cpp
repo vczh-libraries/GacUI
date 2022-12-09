@@ -54,7 +54,7 @@ public:
 
 	void Load()override
 	{
-#define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, MakePtr<SerializableType<TYPE>>());
+#define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, Ptr(new SerializableType<TYPE>));
 		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
 		REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
 		INSTALL_SERIALIZABLE_TYPE(Color)

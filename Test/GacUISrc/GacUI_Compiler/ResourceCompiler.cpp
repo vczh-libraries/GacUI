@@ -134,7 +134,7 @@ FilePath CompileResources(
 
 	if (outputCppFolder != L"")
 	{
-		auto input = MakePtr<WfCppInput>(name);
+		auto input = Ptr(new WfCppInput(name));
 		input->multiFile = WfCppFileSwitch::Enabled;
 		input->reflection = WfCppFileSwitch::Enabled;
 		input->comment = L"Source: Host.sln";

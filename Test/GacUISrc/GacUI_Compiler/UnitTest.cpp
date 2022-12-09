@@ -26,9 +26,9 @@ void UnitTestInGuiMain()
 		volatile vint* rc2 = ReferenceCounterOperator<GuiControl>::CreateCounter(control);
 
 		ASSERT(*rc1 == 0);
-		Ptr<GuiBoundsComposition> a1 = bounds;
+		auto a1 = Ptr(bounds);
 		ASSERT(*rc1 == 1);
-		Ptr<GuiBoundsComposition> a2 = bounds;
+		auto a2 = Ptr(bounds);
 		ASSERT(*rc1 == 2);
 		Ptr<DescriptableObject> a3 = a1.Cast<DescriptableObject>();
 		ASSERT(*rc1 == 3);
@@ -36,9 +36,9 @@ void UnitTestInGuiMain()
 		ASSERT(*rc1 == 4);
 
 		ASSERT(*rc2 == 0);
-		Ptr<GuiControl> b1 = control;
+		auto b1 = Ptr(control);
 		ASSERT(*rc2 == 1);
-		Ptr<GuiControl> b2 = control;
+		auto b2 = Ptr(control);
 		ASSERT(*rc2 == 2);
 		Ptr<DescriptableObject> b3 = b1.Cast<DescriptableObject>();
 		ASSERT(*rc2 == 3);
