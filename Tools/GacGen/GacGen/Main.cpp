@@ -254,7 +254,7 @@ bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& 
 				return false;
 			}
 
-			auto metadata = MakePtr<GuiResourceMetadata>();
+			auto metadata = Ptr(new GuiResourceMetadata);
 			metadata->LoadFromXml(xmlMetadata, {}, errors);
 			if (errors.Count() > 0)
 			{
@@ -457,7 +457,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 		if (cppOutput)
 		{
 			PrintSuccessMessage(L"gacgen> Generating C++ source code ...");
-			auto input = MakePtr<WfCppInput>(cppOutput->name);
+			auto input = Ptr(new WfCppInput(cppOutput->name));
 			input->multiFile = WfCppFileSwitch::Enabled;
 			input->reflection = WfCppFileSwitch::Enabled;
 			input->comment = L"GacGen.exe " + FilePath(inputPath).GetName();
@@ -556,8 +556,8 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 	auto loadConfigResult = LoadConfig(inputPath);
 	if (!loadConfigResult.resource) return;
 
-	auto doc = MakePtr<XmlDocument>();
-	auto xmlRoot = MakePtr<XmlElement>();
+	auto doc = Ptr(new XmlDocument);
+	auto xmlRoot = Ptr(new XmlElement);
 	xmlRoot->name.value = L"ResourceMetadata";
 	doc->rootElement = xmlRoot;
 	
@@ -588,17 +588,17 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 			}
 		}
 
-		auto xmlInputs = MakePtr<XmlElement>();
+		auto xmlInputs = Ptr(new XmlElement);
 		xmlInputs->name.value = L"Inputs";
 		xmlRoot->subNodes.Add(xmlInputs);
 
 		for (auto path : paths)
 		{
-			auto xmlInput = MakePtr<XmlElement>();
+			auto xmlInput = Ptr(new XmlElement);
 			xmlInput->name.value = L"Input";
 			xmlInputs->subNodes.Add(xmlInput);
 			{
-				auto attr = MakePtr<XmlAttribute>();
+				auto attr = Ptr(new XmlAttribute);
 				attr->name.value = L"Path";
 				attr->value.value = path;
 				xmlInput->attributes.Add(attr);
@@ -618,17 +618,17 @@ void DumpResource(FilePath inputPath, FilePath outputPath)
 		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x64" / L"ScriptedCompressed.bin").GetFullPath());
 		paths.Add((FilePath(inputPath.GetFullPath() + L".log") / L"x64" / L"Assembly.bin").GetFullPath());
 
-		auto xmlOutputs = MakePtr<XmlElement>();
+		auto xmlOutputs = Ptr(new XmlElement);
 		xmlOutputs->name.value = L"Outputs";
 		xmlRoot->subNodes.Add(xmlOutputs);
 
 		for (auto path : paths)
 		{
-			auto xmlOutput = MakePtr<XmlElement>();
+			auto xmlOutput = Ptr(new XmlElement);
 			xmlOutput->name.value = L"Output";
 			xmlOutputs->subNodes.Add(xmlOutput);
 			{
-				auto attr = MakePtr<XmlAttribute>();
+				auto attr = Ptr(new XmlAttribute);
 				attr->name.value = L"Path";
 				attr->value.value = path;
 				xmlOutput->attributes.Add(attr);
@@ -685,7 +685,7 @@ public:
 			CHECK_FAIL(L"Unable to find the GacUI type metadata file!");
 		}
 
-#define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, MakePtr<SerializableType<TYPE>>());
+#define INSTALL_SERIALIZABLE_TYPE(TYPE) serializableTypes.Add(TypeInfo<TYPE>::content.typeName, Ptr(new SerializableType<TYPE>));
 		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
 		REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
 		INSTALL_SERIALIZABLE_TYPE(Color)

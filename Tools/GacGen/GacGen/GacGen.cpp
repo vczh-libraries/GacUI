@@ -72,13 +72,13 @@ bool CodegenConfig::LoadConfigString(Ptr<GuiResourceFolder> folder, const WStrin
 
 Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource, GuiResourceError::List& errors)
 {
-	Ptr<CodegenConfig> config = new CodegenConfig;
+	auto config = Ptr(new CodegenConfig);
 	config->resource = resource;
 	config->metadata = resource->GetMetadata();
 
 	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/Cpp/"))
 	{
-		auto out = MakePtr<CodegenConfig::CppOutput>();
+		auto out = Ptr(new CodegenConfig::CppOutput);
 		LoadConfigString(folder, L"Resource", out->resource);
 		LoadConfigString(folder, L"Compressed", out->compressed);
 		LoadConfigString(folder, L"SourceFolder", out->sourceFolder, false);
@@ -98,7 +98,7 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource, GuiResou
 
 	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/ResX86/"))
 	{
-		auto out = MakePtr<CodegenConfig::ResOutput>();
+		auto out = Ptr(new CodegenConfig::ResOutput);
 		LoadConfigString(folder, L"Resource", out->resource);
 		LoadConfigString(folder, L"Compressed", out->compressed);
 		LoadConfigString(folder, L"Assembly", out->assembly);
@@ -108,7 +108,7 @@ Ptr<CodegenConfig> CodegenConfig::LoadConfig(Ptr<GuiResource> resource, GuiResou
 
 	if (auto folder = resource->GetFolderByPath(L"GacGenConfig/ResX64/"))
 	{
-		auto out = MakePtr<CodegenConfig::ResOutput>();
+		auto out = Ptr(new CodegenConfig::ResOutput);
 		LoadConfigString(folder, L"Resource", out->resource);
 		LoadConfigString(folder, L"Compressed", out->compressed);
 		LoadConfigString(folder, L"Assembly", out->assembly);

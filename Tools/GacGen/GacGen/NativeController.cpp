@@ -157,18 +157,18 @@ public:
 	Ptr<INativeImage> CreateImageFromFile(const WString& path) override
 	{
 		FileStream imageStream(path, FileStream::ReadOnly);
-		return new NativeImage(this, imageStream);
+		return Ptr(new NativeImage(this, imageStream));
 	}
 
 	Ptr<INativeImage> CreateImageFromMemory(void* buffer, vint length) override
 	{
 		MemoryWrapperStream imageStream(buffer, length);
-		return new NativeImage(this, imageStream);
+		return Ptr(new NativeImage(this, imageStream));
 	}
 
 	Ptr<INativeImage> CreateImageFromStream(stream::IStream& imageStream) override
 	{
-		return new NativeImage(this, imageStream);
+		return Ptr(new NativeImage(this, imageStream));
 	}
 
 	////////////////////////////////////////////////////////////////////
