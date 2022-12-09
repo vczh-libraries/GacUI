@@ -51,7 +51,7 @@ GuiVrtualTypeInstanceLoader
 			public:
 				static Ptr<WfExpression> CreateThemeName(theme::ThemeName themeName)
 				{
-					auto refExpr = MakePtr<WfChildExpression>();
+					auto refExpr = Ptr(new WfChildExpression);
 					refExpr->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<ThemeName>());
 					switch (themeName)
 					{
@@ -85,7 +85,7 @@ GuiVrtualTypeInstanceLoader
 
 				Ptr<workflow::WfBaseConstructorCall> CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors)override
 				{
-					auto createControl = MakePtr<WfBaseConstructorCall>();
+					auto createControl = Ptr(new WfBaseConstructorCall);
 					createControl->type = GetTypeFromTypeInfo(TypeInfoRetriver<TControl>::CreateTypeInfo().Obj());
 					createControl->arguments.Add(CreateThemeName(themeName));
 					return createControl;
@@ -95,11 +95,11 @@ GuiVrtualTypeInstanceLoader
 				{
 					CHECK_ERROR(CanCreate(typeInfo), L"GuiTemplateControlInstanceLoader::CreateInstance()#Wrong type info is provided.");
 
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 					{
 						auto controlType = TypeInfoRetriver<TControl*>::CreateTypeInfo();
 
-						auto createControl = MakePtr<WfNewClassExpression>();
+						auto createControl = Ptr(new WfNewClassExpression);
 						createControl->type = GetTypeFromTypeInfo(controlType.Obj());
 						createControl->arguments.Add(CreateThemeName(themeName));
 
@@ -109,15 +109,15 @@ GuiVrtualTypeInstanceLoader
 						}
 						AddAdditionalArguments(resolvingResult, typeInfo, variableName, arguments, errors, createControl);
 
-						auto refVariable = MakePtr<WfReferenceExpression>();
+						auto refVariable = Ptr(new WfReferenceExpression);
 						refVariable->name.value = variableName.ToString();
 
-						auto assignExpr = MakePtr<WfBinaryExpression>();
+						auto assignExpr = Ptr(new WfBinaryExpression);
 						assignExpr->op = WfBinaryOperator::Assign;
 						assignExpr->first = refVariable;
 						assignExpr->second = createControl;
 
-						auto assignStat = MakePtr<WfExpressionStatement>();
+						auto assignStat = Ptr(new WfExpressionStatement);
 						assignStat->expression = assignExpr;
 						block->statements.Add(assignStat);
 					}

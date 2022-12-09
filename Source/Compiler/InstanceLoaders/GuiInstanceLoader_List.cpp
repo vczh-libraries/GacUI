@@ -12,23 +12,23 @@ namespace vl
 			template<typename TItemTemplateStyle>
 			Ptr<WfStatement> CreateSetControlTemplateStyle(types::ResolvingResult& resolvingResult, GlobalStringKey variableName, Ptr<WfExpression> argument, const WString& propertyName)
 			{
-				auto createStyle = MakePtr<WfNewClassExpression>();
+				auto createStyle = Ptr(new WfNewClassExpression);
 				createStyle->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<TItemTemplateStyle>>::CreateTypeInfo().Obj());
 				createStyle->arguments.Add(argument);
 
-				auto refControl = MakePtr<WfReferenceExpression>();
+				auto refControl = Ptr(new WfReferenceExpression);
 				refControl->name.value = variableName.ToString();
 
-				auto refStyleProvider = MakePtr<WfMemberExpression>();
+				auto refStyleProvider = Ptr(new WfMemberExpression);
 				refStyleProvider->parent = refControl;
 				refStyleProvider->name.value = propertyName;
 
-				auto assign = MakePtr<WfBinaryExpression>();
+				auto assign = Ptr(new WfBinaryExpression);
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = refStyleProvider;
 				assign->second = createStyle;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = assign;
 				return stat;
 			}
@@ -129,32 +129,32 @@ GuiTreeViewInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Nodes)
 						{
-							auto refControl = MakePtr<WfReferenceExpression>();
+							auto refControl = Ptr(new WfReferenceExpression);
 							refControl->name.value = variableName.ToString();
 
-							auto refNodes = MakePtr<WfMemberExpression>();
+							auto refNodes = Ptr(new WfMemberExpression);
 							refNodes->parent = refControl;
 							refNodes->name.value = L"Nodes";
 
-							auto refChildren = MakePtr<WfMemberExpression>();
+							auto refChildren = Ptr(new WfMemberExpression);
 							refChildren->parent = refNodes;
 							refChildren->name.value = L"Children";
 
-							auto refAdd = MakePtr<WfMemberExpression>();
+							auto refAdd = Ptr(new WfMemberExpression);
 							refAdd->parent = refChildren;
 							refAdd->name.value = L"Add";
 
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = refAdd;
 							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
@@ -255,7 +255,7 @@ GuiTreeNodeInstanceLoader
 				{
 					if (CanCreate(typeInfo))
 					{
-						auto createItem = MakePtr<WfNewClassExpression>();
+						auto createItem = Ptr(new WfNewClassExpression);
 						createItem->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
 
 						vint imageIndex = arguments.Keys().IndexOf(_Image);
@@ -265,7 +265,7 @@ GuiTreeNodeInstanceLoader
 						{
 							if (imageIndex == -1)
 							{
-								auto nullExpr = MakePtr<WfLiteralExpression>();
+								auto nullExpr = Ptr(new WfLiteralExpression);
 								nullExpr->value = WfLiteralValue::Null;
 								createItem->arguments.Add(nullExpr);
 							}
@@ -276,7 +276,7 @@ GuiTreeNodeInstanceLoader
 
 							if (textIndex == -1)
 							{
-								createItem->arguments.Add(MakePtr<WfStringExpression>());
+								createItem->arguments.Add(Ptr(new WfStringExpression));
 							}
 							else
 							{
@@ -284,19 +284,19 @@ GuiTreeNodeInstanceLoader
 							}
 						}
 
-						auto createNode = MakePtr<WfNewClassExpression>();
+						auto createNode = Ptr(new WfNewClassExpression);
 						createNode->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo().Obj());
 						createNode->arguments.Add(createItem);
 
-						auto refNode = MakePtr<WfReferenceExpression>();
+						auto refNode = Ptr(new WfReferenceExpression);
 						refNode->name.value = variableName.ToString();
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = refNode;
 						assign->second = createNode;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 						return stat;
 					}
@@ -305,73 +305,73 @@ GuiTreeNodeInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto refNode = MakePtr<WfReferenceExpression>();
+							auto refNode = Ptr(new WfReferenceExpression);
 							refNode->name.value = variableName.ToString();
 
-							auto refChildren = MakePtr<WfMemberExpression>();
+							auto refChildren = Ptr(new WfMemberExpression);
 							refChildren->parent = refNode;
 							refChildren->name.value = L"Children";
 
-							auto refAdd = MakePtr<WfMemberExpression>();
+							auto refAdd = Ptr(new WfMemberExpression);
 							refAdd->parent = refChildren;
 							refAdd->name.value = L"Add";
 
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = refAdd;
 							call->arguments.Add(arguments.GetByIndex(index)[0].expression);
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
 						else if (prop == _Tag)
 						{
 							{
-								auto refNode = MakePtr<WfReferenceExpression>();
+								auto refNode = Ptr(new WfReferenceExpression);
 								refNode->name.value = variableName.ToString();
 
-								auto refData = MakePtr<WfMemberExpression>();
+								auto refData = Ptr(new WfMemberExpression);
 								refData->parent = refNode;
 								refData->name.value = L"Data";
 
-								auto castExpr = MakePtr<WfTypeCastingExpression>();
+								auto castExpr = Ptr(new WfTypeCastingExpression);
 								castExpr->strategy = WfTypeCastingStrategy::Strong;
 								castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<tree::TreeViewItem>>::CreateTypeInfo().Obj());
 								castExpr->expression = refData;
 
-								auto refProp = MakePtr<WfMemberExpression>();
+								auto refProp = Ptr(new WfMemberExpression);
 								refProp->parent = castExpr;
 								refProp->name.value = L"tag";
 
-								auto assign = MakePtr<WfBinaryExpression>();
+								auto assign = Ptr(new WfBinaryExpression);
 								assign->op = WfBinaryOperator::Assign;
 								assign->first = refProp;
 								assign->second = arguments.GetByIndex(index)[0].expression;
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = assign;
 								block->statements.Add(stat);
 							}
 
 							if (prop != _Tag)
 							{
-								auto refNode = MakePtr<WfReferenceExpression>();
+								auto refNode = Ptr(new WfReferenceExpression);
 								refNode->name.value = variableName.ToString();
 
-								auto refNotifyDataModified = MakePtr<WfMemberExpression>();
+								auto refNotifyDataModified = Ptr(new WfMemberExpression);
 								refNotifyDataModified->parent = refNode;
 								refNotifyDataModified->name.value = L"NotifyDataModified";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refNotifyDataModified;
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = call;
 								block->statements.Add(stat);
 							}
@@ -418,16 +418,16 @@ Initialization
 			{
 				manager->CreateVirtualType(
 					GlobalStringKey::Get(description::TypeInfo<GuiComboBoxListControl>::content.typeName),
-					new GuiComboBoxInstanceLoader
+					Ptr(new GuiComboBoxInstanceLoader)
 					);
 
-				manager->SetLoader(new GuiTreeViewInstanceLoader);
-				manager->SetLoader(new GuiBindableTreeViewInstanceLoader);
-				manager->SetLoader(new GuiBindableDataGridInstanceLoader);
+				manager->SetLoader(Ptr(new GuiTreeViewInstanceLoader));
+				manager->SetLoader(Ptr(new GuiBindableTreeViewInstanceLoader));
+				manager->SetLoader(Ptr(new GuiBindableDataGridInstanceLoader));
 				
 				manager->CreateVirtualType(
 					GlobalStringKey::Get(description::TypeInfo<tree::MemoryNodeProvider>::content.typeName),
-					new GuiTreeNodeInstanceLoader
+					Ptr(new GuiTreeNodeInstanceLoader)
 					);
 			}
 		}

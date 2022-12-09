@@ -89,7 +89,7 @@ Converter
 		{
 			if (typeDescriptor == description::GetTypeDescriptor<WString>())
 			{
-				auto valueExpr = MakePtr<WfStringExpression>();
+				auto valueExpr = Ptr(new WfStringExpression);
 				valueExpr->value.value = textValue;
 				return valueExpr;
 			}
@@ -97,17 +97,17 @@ Converter
 			{
 				bool value = false;
 				if (!TypedValueSerializerProvider<bool>::Deserialize(textValue, value)) return nullptr;
-				auto valueExpr = MakePtr<WfLiteralExpression>();
+				auto valueExpr = Ptr(new WfLiteralExpression);
 				valueExpr->value = value ? WfLiteralValue::True : WfLiteralValue::False;
 				return valueExpr;
 			}
 #define INTEGER_BRANCH(TYPE) \
 			else if (typeDescriptor == description::GetTypeDescriptor<TYPE>()) \
 			{ \
-				auto valueExpr = MakePtr<WfIntegerExpression>(); \
+				auto valueExpr = Ptr(new WfIntegerExpression); \
 				valueExpr->value.value = textValue; \
 				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
-				auto infer = MakePtr<WfInferExpression>(); \
+				auto infer = Ptr(new WfInferExpression); \
 				infer->type = GetTypeFromTypeInfo(type.Obj()); \
 				infer->expression = valueExpr; \
 				return infer; \
@@ -125,10 +125,10 @@ Converter
 #define FLOATING_BRANCH(TYPE) \
 			else if (typeDescriptor == description::GetTypeDescriptor<TYPE>()) \
 			{ \
-				auto valueExpr = MakePtr<WfFloatingExpression>(); \
+				auto valueExpr = Ptr(new WfFloatingExpression); \
 				valueExpr->value.value = textValue; \
 				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal); \
-				auto infer = MakePtr<WfInferExpression>(); \
+				auto infer = Ptr(new WfInferExpression); \
 				infer->type = GetTypeFromTypeInfo(type.Obj()); \
 				infer->expression = valueExpr; \
 				return infer; \
@@ -139,12 +139,12 @@ Converter
 
 			else if (typeDescriptor->GetSerializableType())
 			{
-				auto str = MakePtr<WfStringExpression>();
+				auto str = Ptr(new WfStringExpression);
 				str->value.value = textValue;
 
 				auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 
-				auto cast = MakePtr<WfTypeCastingExpression>();
+				auto cast = Ptr(new WfTypeCastingExpression);
 				cast->type = GetTypeFromTypeInfo(type.Obj());
 				cast->strategy = WfTypeCastingStrategy::Strong;
 				cast->expression = str;
@@ -157,7 +157,7 @@ Converter
 				{
 					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 
-					auto infer = MakePtr<WfInferExpression>();
+					auto infer = Ptr(new WfInferExpression);
 					infer->type = GetTypeFromTypeInfo(type.Obj());
 					infer->expression = valueExpr;
 
@@ -171,7 +171,7 @@ Converter
 				{
 					auto type = MakePtr<TypeDescriptorTypeInfo>(typeDescriptor, TypeInfoHint::Normal);
 
-					auto infer = MakePtr<WfInferExpression>();
+					auto infer = Ptr(new WfInferExpression);
 					infer->type = GetTypeFromTypeInfo(type.Obj());
 					infer->expression = valueExpr;
 

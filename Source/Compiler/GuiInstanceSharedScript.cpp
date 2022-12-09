@@ -16,7 +16,7 @@ GuiInstanceSharedScript
 			{
 				if (auto cdata = xml->rootElement->subNodes[0].Cast<XmlCData>())
 				{
-					auto script = MakePtr<GuiInstanceSharedScript>();
+					auto script = Ptr(new GuiInstanceSharedScript);
 					script->language = xml->rootElement->name.value;
 					script->code = cdata->content.value;
 					script->codePosition = { {resource},cdata->codeRange.start };
@@ -30,10 +30,10 @@ GuiInstanceSharedScript
 
 		Ptr<glr::xml::XmlElement> GuiInstanceSharedScript::SaveToXml()
 		{
-			auto cdata = MakePtr<XmlCData>();
+			auto cdata = Ptr(new XmlCData);
 			cdata->content.value = code;
 
-			auto xml = MakePtr<XmlElement>();
+			auto xml = Ptr(new XmlElement);
 			xml->name.value = language;
 			xml->subNodes.Add(cdata);
 

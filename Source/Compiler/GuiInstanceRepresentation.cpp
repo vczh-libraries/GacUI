@@ -28,7 +28,7 @@ GuiTextRepr
 
 		Ptr<GuiValueRepr> GuiTextRepr::Clone()
 		{
-			auto repr = MakePtr<GuiTextRepr>();
+			auto repr = Ptr(new GuiTextRepr);
 			GuiValueRepr::CloneBody(repr);
 			repr->text = text;
 			return repr;
@@ -38,7 +38,7 @@ GuiTextRepr
 		{
 			if (!fromStyle)
 			{
-				auto xmlText = MakePtr<XmlText>();
+				auto xmlText = Ptr(new XmlText);
 				xmlText->content.value = text;
 				xml->subNodes.Add(xmlText);
 			}
@@ -55,7 +55,7 @@ GuiAttSetterRepr
 			for (auto [name, index] : indexed(setters.Keys()))
 			{
 				auto src = setters.Values()[index];
-				auto dst = MakePtr<SetterValue>();
+				auto dst = Ptr(new SetterValue);
 
 				dst->binding = src->binding;
 				dst->attPosition = src->attPosition;
@@ -70,7 +70,7 @@ GuiAttSetterRepr
 			for (auto [name, index] : indexed(eventHandlers.Keys()))
 			{
 				auto src = eventHandlers.Values()[index];
-				auto dst = MakePtr<EventValue>();
+				auto dst = Ptr(new EventValue);
 
 				dst->binding = src->binding;
 				dst->value = src->value;
@@ -84,7 +84,7 @@ GuiAttSetterRepr
 			for (auto [name, index] : indexed(environmentVariables.Keys()))
 			{
 				auto src = environmentVariables.Values()[index];
-				auto dst = MakePtr<EnvVarValue>();
+				auto dst = Ptr(new EnvVarValue);
 
 				dst->value = src->value;
 				dst->fromStyle = src->fromStyle;
@@ -99,7 +99,7 @@ GuiAttSetterRepr
 
 		Ptr<GuiValueRepr> GuiAttSetterRepr::Clone()
 		{
-			auto repr = MakePtr<GuiAttSetterRepr>();
+			auto repr = Ptr(new GuiAttSetterRepr);
 			GuiAttSetterRepr::CloneBody(repr);
 			repr->fromStyle = fromStyle;
 			return repr;
@@ -111,7 +111,7 @@ GuiAttSetterRepr
 			{
 				if (instanceName != GlobalStringKey::Empty)
 				{
-					auto attName = MakePtr<XmlAttribute>();
+					auto attName = Ptr(new XmlAttribute);
 					attName->name.value = L"ref.Name";
 					attName->value.value = instanceName.ToString();
 					xml->attributes.Add(attName);
@@ -138,7 +138,7 @@ GuiAttSetterRepr
 
 						if (containsElement)
 						{
-							auto xmlProp = MakePtr<XmlElement>();
+							auto xmlProp = Ptr(new XmlElement);
 							xmlProp->name.value = L"att." + key.ToString();
 							if (value->binding != GlobalStringKey::Empty)
 							{
@@ -162,7 +162,7 @@ GuiAttSetterRepr
 								{
 									if (!textRepr->fromStyle)
 									{
-										auto att = MakePtr<XmlAttribute>();
+										auto att = Ptr(new XmlAttribute);
 										att->name.value = key.ToString();
 										if (value->binding != GlobalStringKey::Empty)
 										{
@@ -184,7 +184,7 @@ GuiAttSetterRepr
 					auto value = eventHandlers.Values()[i];
 					if (!value->fromStyle)
 					{
-						auto xmlEvent = MakePtr<XmlElement>();
+						auto xmlEvent = Ptr(new XmlElement);
 						xmlEvent->name.value = L"ev." + key.ToString();
 						if (value->binding != GlobalStringKey::Empty)
 						{
@@ -192,7 +192,7 @@ GuiAttSetterRepr
 						}
 						xml->subNodes.Add(xmlEvent);
 
-						auto xmlText = MakePtr<XmlCData>();
+						auto xmlText = Ptr(new XmlCData);
 						xmlText->content.value = value->value;
 						xmlEvent->subNodes.Add(xmlText);
 					}
@@ -204,11 +204,11 @@ GuiAttSetterRepr
 					auto value = environmentVariables.Values()[i];
 					if (!value->fromStyle)
 					{
-						auto xmlEnvVar = MakePtr<XmlElement>();
+						auto xmlEnvVar = Ptr(new XmlElement);
 						xmlEnvVar->name.value = L"env." + key.ToString();
 						xml->subNodes.Add(xmlEnvVar);
 
-						auto xmlText = MakePtr<XmlText>();
+						auto xmlText = Ptr(new XmlText);
 						xmlText->content.value = value->value;
 						xmlEnvVar->subNodes.Add(xmlText);
 					}
@@ -222,7 +222,7 @@ GuiConstructorRepr
 
 		Ptr<GuiValueRepr> GuiConstructorRepr::Clone()
 		{
-			auto repr = MakePtr<GuiConstructorRepr>();
+			auto repr = Ptr(new GuiConstructorRepr);
 			GuiAttSetterRepr::CloneBody(repr);
 			repr->fromStyle = fromStyle;
 			repr->typeNamespace = typeNamespace;
@@ -235,7 +235,7 @@ GuiConstructorRepr
 		{
 			if (!fromStyle)
 			{
-				auto xmlCtor = MakePtr<XmlElement>();
+				auto xmlCtor = Ptr(new XmlElement);
 				if (typeNamespace == GlobalStringKey::Empty)
 				{
 					xmlCtor->name.value = typeName.ToString();
@@ -247,7 +247,7 @@ GuiConstructorRepr
 
 				if (styleName)
 				{
-					auto attStyle = MakePtr<XmlAttribute>();
+					auto attStyle = Ptr(new XmlAttribute);
 					attStyle->name.value = L"ref.Style";
 					attStyle->value.value = styleName.Value();
 					xml->attributes.Add(attStyle);
@@ -271,14 +271,14 @@ GuiInstanceContext
 				{
 					if (Ptr<XmlText> text = xml->subNodes[0].Cast<XmlText>())
 					{
-						Ptr<GuiTextRepr> value = new GuiTextRepr;
+						auto value = Ptr(new GuiTextRepr);
 						value->text = text->content.value;
 						value->tagPosition = { {resource},text->content.codeRange.start };
 						values.Add(value);
 					}
 					else if (Ptr<XmlCData> text = xml->subNodes[0].Cast<XmlCData>())
 					{
-						Ptr<GuiTextRepr> value = new GuiTextRepr;
+						auto value = Ptr(new GuiTextRepr);
 						value->text = text->content.value;
 						value->tagPosition = { {resource},text->content.codeRange.start };
 						value->tagPosition.column += 9; // <![CDATA[
@@ -343,7 +343,7 @@ GuiInstanceContext
 								if (name->binding == L"set")
 								{
 									// if the binding is "set", it means that this element is a complete setter element
-									Ptr<GuiAttSetterRepr> setter = new GuiAttSetterRepr;
+									auto setter = Ptr(new GuiAttSetterRepr);
 									FillAttSetter(resource, setter, element, errors);
 									sv->values.Add(setter);
 								}
@@ -471,7 +471,7 @@ GuiInstanceContext
 								sv->attPosition = { {resource},att->codeRange.start };
 								setter->setters.Add(GlobalStringKey::Get(name->name), sv);
 
-								Ptr<GuiTextRepr> value = new GuiTextRepr;
+								auto value = Ptr(new GuiTextRepr);
 								value->text = att->value.value;
 								value->tagPosition = { {resource},att->value.codeRange.start };
 								value->tagPosition.column += 1;
@@ -517,7 +517,7 @@ GuiInstanceContext
 				{
 					if (ctorName->IsCtorName())
 					{
-						Ptr<GuiConstructorRepr> ctor = new GuiConstructorRepr;
+						auto ctor = Ptr(new GuiConstructorRepr);
 						ctor->typeNamespace = GlobalStringKey::Get(ctorName->namespaceName);
 						ctor->typeName = GlobalStringKey::Get(ctorName->name);
 						// collect attributes as setters
@@ -548,7 +548,7 @@ GuiInstanceContext
 
 		Ptr<GuiInstanceContext> GuiInstanceContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			Ptr<GuiInstanceContext> context = new GuiInstanceContext;
+			auto context = Ptr(new GuiInstanceContext);
 			context->tagPosition = { {resource},xml->rootElement->codeRange.start };
 
 			if (xml->rootElement->name.value == L"Instance")
@@ -577,7 +577,7 @@ GuiInstanceContext
 				CopyFrom(namespaceAttributes, xml->rootElement->attributes);
 				if (!XmlGetAttribute(xml->rootElement, L"xmlns"))
 				{
-					Ptr<XmlAttribute> att = new XmlAttribute;
+					auto att = Ptr(new XmlAttribute);
 					att->name.value = L"xmlns";
 					att->value.value =
 						L"presentation::controls::Gui*;"
@@ -640,7 +640,7 @@ GuiInstanceContext
 						for (auto pattern : patterns)
 						{
 							// add the pattern to the namespace
-							Ptr<GuiInstanceNamespace> ns = new GuiInstanceNamespace;
+							auto ns = Ptr(new GuiInstanceNamespace);
 							Pair<vint, vint> star = INVLOC.FindFirst(pattern, L"*", Locale::None);
 							if (star.key == -1)
 							{
@@ -665,7 +665,7 @@ GuiInstanceContext
 						auto attClass = XmlGetAttribute(element, L"Class");
 						if (attName && attClass)
 						{
-							auto parameter = MakePtr<GuiInstanceParameter>();
+							auto parameter = Ptr(new GuiInstanceParameter);
 							parameter->name = GlobalStringKey::Get(attName->value.value);
 							parameter->className = GlobalStringKey::Get(attClass->value.value);
 							parameter->tagPosition = { {resource},element->codeRange.start };
@@ -685,7 +685,7 @@ GuiInstanceContext
 						auto attDefault = XmlGetAttribute(element, L"Default");
 						if (attName && attClass)
 						{
-							auto localized = MakePtr<GuiInstanceLocalized>();
+							auto localized = Ptr(new GuiInstanceLocalized);
 							localized->name = GlobalStringKey::Get(attName->value.value);
 							localized->className = GlobalStringKey::Get(attClass->value.value);
 							localized->tagPosition = { { resource },element->codeRange.start };
@@ -742,17 +742,17 @@ GuiInstanceContext
 
 		Ptr<glr::xml::XmlDocument> GuiInstanceContext::SaveToXml()
 		{
-			auto xmlInstance = MakePtr<XmlElement>();
+			auto xmlInstance = Ptr(new XmlElement);
 			xmlInstance->name.value = L"Instance";
 
 			{
-				auto attCodeBehind = MakePtr<XmlAttribute>();
+				auto attCodeBehind = Ptr(new XmlAttribute);
 				attCodeBehind->name.value = L"ref.CodeBehind";
 				attCodeBehind->value.value = codeBehind ? L"true" : L"false";
 				xmlInstance->attributes.Add(attCodeBehind);
 			}
 
-			auto attClass = MakePtr<XmlAttribute>();
+			auto attClass = Ptr(new XmlAttribute);
 			attClass->name.value = L"ref.Class";
 			attClass->value.value = className;
 			xmlInstance->attributes.Add(attClass);
@@ -762,7 +762,7 @@ GuiInstanceContext
 				auto key = namespaces.Keys()[i];
 				auto value = namespaces.Values()[i];
 
-				auto xmlns = MakePtr<XmlAttribute>();
+				auto xmlns = Ptr(new XmlAttribute);
 				xmlns->name.value = L"xmlns";
 				if (key != GlobalStringKey::Empty)
 				{
@@ -783,16 +783,16 @@ GuiInstanceContext
 
 			for (auto parameter : parameters)
 			{
-				auto xmlParameter = MakePtr<XmlElement>();
+				auto xmlParameter = Ptr(new XmlElement);
 				xmlParameter->name.value = L"ref.Parameter";
 				xmlInstance->subNodes.Add(xmlParameter);
 
-				auto attName = MakePtr<XmlAttribute>();
+				auto attName = Ptr(new XmlAttribute);
 				attName->name.value = L"Name";
 				attName->value.value = parameter->name.ToString();
 				xmlParameter->attributes.Add(attName);
 
-				auto attClass = MakePtr<XmlAttribute>();
+				auto attClass = Ptr(new XmlAttribute);
 				attClass->name.value = L"Class";
 				attClass->value.value = parameter->className.ToString();
 				xmlParameter->attributes.Add(attClass);
@@ -800,21 +800,21 @@ GuiInstanceContext
 
 			for (auto localized : localizeds)
 			{
-				auto xmlParameter = MakePtr<XmlElement>();
+				auto xmlParameter = Ptr(new XmlElement);
 				xmlParameter->name.value = L"ref.LocalizedStrings";
 				xmlInstance->subNodes.Add(xmlParameter);
 
-				auto attName = MakePtr<XmlAttribute>();
+				auto attName = Ptr(new XmlAttribute);
 				attName->name.value = L"Name";
 				attName->value.value = localized->name.ToString();
 				xmlParameter->attributes.Add(attName);
 
-				auto attClass = MakePtr<XmlAttribute>();
+				auto attClass = Ptr(new XmlAttribute);
 				attClass->name.value = L"Class";
 				attClass->value.value = localized->className.ToString();
 				xmlParameter->attributes.Add(attClass);
 
-				auto attDefault = MakePtr<XmlAttribute>();
+				auto attDefault = Ptr(new XmlAttribute);
 				attDefault->name.value = L"Default";
 				attDefault->value.value = localized->defaultStrings ? L"true" : L"false";
 				xmlParameter->attributes.Add(attDefault);
@@ -823,10 +823,10 @@ GuiInstanceContext
 #define SERIALIZE_SCRIPT(NAME, SCRIPT)\
 			if (SCRIPT != L"")\
 			{\
-				auto xmlScript = MakePtr<XmlElement>();\
+				auto xmlScript = Ptr(new XmlElement);\
 				xmlScript->name.value = L"ref." #NAME;\
 				xmlInstance->subNodes.Add(xmlScript);\
-				auto text = MakePtr<XmlCData>();\
+				auto text = Ptr(new XmlCData);\
 				text->content.value = SCRIPT;\
 				xmlScript->subNodes.Add(text);\
 			}\
@@ -839,7 +839,7 @@ GuiInstanceContext
 
 			if (stylePaths.Count() > 0)
 			{
-				auto attStyles = MakePtr<XmlAttribute>();
+				auto attStyles = Ptr(new XmlAttribute);
 				attStyles->name.value = L"ref.Styles";
 				xmlInstance->attributes.Add(attStyles);
 
@@ -855,7 +855,7 @@ GuiInstanceContext
 
 			instance->FillXml(xmlInstance);
 
-			auto doc = MakePtr<XmlDocument>();
+			auto doc = Ptr(new XmlDocument);
 			doc->rootElement = xmlInstance;
 			return doc;
 		}
@@ -949,7 +949,7 @@ GuiInstanceStyle
 
 		Ptr<GuiInstanceStyle> GuiInstanceStyle::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xml, GuiResourceError::List& errors)
 		{
-			auto style = MakePtr<GuiInstanceStyle>();
+			auto style = Ptr(new GuiInstanceStyle);
 			if (auto pathAttr = XmlGetAttribute(xml, L"ref.Path"))
 			{
 				auto position = pathAttr->value.codeRange.start;
@@ -964,7 +964,7 @@ GuiInstanceStyle
 			{
 				errors.Add(GuiResourceError({ {resource},xml->codeRange.start }, L"Missing attribute \"ref.Path\" in <Style>."));
 			}
-			style->setter = MakePtr<GuiAttSetterRepr>();
+			style->setter = Ptr(new GuiAttSetterRepr);
 			GuiInstanceContext::FillAttSetter(resource, style->setter, xml, errors);
 
 			SetStyleMarkVisitor visitor;
@@ -974,10 +974,10 @@ GuiInstanceStyle
 
 		Ptr<glr::xml::XmlElement> GuiInstanceStyle::SaveToXml()
 		{
-			auto xmlStyle = MakePtr<XmlElement>();
+			auto xmlStyle = Ptr(new XmlElement);
 			xmlStyle->name.value = L"Style";
 
-			auto attPath = MakePtr<XmlAttribute>();
+			auto attPath = Ptr(new XmlAttribute);
 			attPath->name.value = L"ref.Path";
 			attPath->value.value = GenerateToStream([&](StreamWriter& writer)
 			{
@@ -995,7 +995,7 @@ GuiInstanceStyleContext
 
 		Ptr<GuiInstanceStyleContext> GuiInstanceStyleContext::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			auto context = MakePtr<GuiInstanceStyleContext>();
+			auto context = Ptr(new GuiInstanceStyleContext);
 			if (xml->rootElement->name.value == L"Styles")
 			{
 				for (auto styleElement : XmlGetElements(xml->rootElement))
@@ -1022,7 +1022,7 @@ GuiInstanceStyleContext
 
 		Ptr<glr::xml::XmlDocument> GuiInstanceStyleContext::SaveToXml()
 		{
-			auto xmlStyles = MakePtr<XmlElement>();
+			auto xmlStyles = Ptr(new XmlElement);
 			xmlStyles->name.value = L"Styles";
 
 			for (auto style : styles)
@@ -1030,7 +1030,7 @@ GuiInstanceStyleContext
 				xmlStyles->subNodes.Add(style->SaveToXml());
 			}
 
-			auto doc = MakePtr<XmlDocument>();
+			auto doc = Ptr(new XmlDocument);
 			doc->rootElement = xmlStyles;
 			return doc;
 		}

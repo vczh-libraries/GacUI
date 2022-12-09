@@ -76,21 +76,21 @@ GuiCommonDatePickerLookLoader
 						if (indexBackgroundColor != -1 && indexPrimaryTextColor != -1 && indexSecondaryTextColor != -1)
 						{
 							auto type = TypeInfoRetriver<GuiCommonDatePickerLook*>::CreateTypeInfo();
-							auto createExpr = MakePtr<WfNewClassExpression>();
+							auto createExpr = Ptr(new WfNewClassExpression);
 							createExpr->type = GetTypeFromTypeInfo(type.Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexBackgroundColor)[0].expression);
 							createExpr->arguments.Add(arguments.GetByIndex(indexPrimaryTextColor)[0].expression);
 							createExpr->arguments.Add(arguments.GetByIndex(indexSecondaryTextColor)[0].expression);
 
-							auto refVariable = MakePtr<WfReferenceExpression>();
+							auto refVariable = Ptr(new WfReferenceExpression);
 							refVariable->name.value = variableName.ToString();
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refVariable;
 							assignExpr->second = createExpr;
 
-							auto assignStat = MakePtr<WfExpressionStatement>();
+							auto assignStat = Ptr(new WfExpressionStatement);
 							assignStat->expression = assignExpr;
 							return assignStat;
 						}
@@ -158,19 +158,19 @@ GuiCommonScrollViewLookLoader
 						if (indexDefaultScrollSize != -1)
 						{
 							auto type = TypeInfoRetriver<GuiCommonScrollViewLook*>::CreateTypeInfo();
-							auto createExpr = MakePtr<WfNewClassExpression>();
+							auto createExpr = Ptr(new WfNewClassExpression);
 							createExpr->type = GetTypeFromTypeInfo(type.Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexDefaultScrollSize)[0].expression);
 
-							auto refVariable = MakePtr<WfReferenceExpression>();
+							auto refVariable = Ptr(new WfReferenceExpression);
 							refVariable->name.value = variableName.ToString();
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refVariable;
 							assignExpr->second = createExpr;
 
-							auto assignStat = MakePtr<WfExpressionStatement>();
+							auto assignStat = Ptr(new WfExpressionStatement);
 							assignStat->expression = assignExpr;
 							return assignStat;
 						}
@@ -185,8 +185,8 @@ Initialization
 
 			void LoadTemplates(IGuiInstanceLoaderManager* manager)
 			{
-				manager->SetLoader(new GuiCommonDatePickerLookLoader);
-				manager->SetLoader(new GuiCommonScrollViewLookLoader);
+				manager->SetLoader(Ptr(new GuiCommonDatePickerLookLoader));
+				manager->SetLoader(Ptr(new GuiCommonScrollViewLookLoader));
 			}
 		}
 	}

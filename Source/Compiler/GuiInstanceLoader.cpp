@@ -26,12 +26,12 @@ GuiInstancePropertyInfo
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Unsupported()
 		{
-			return new GuiInstancePropertyInfo;
+			return Ptr(new GuiInstancePropertyInfo);
 		}
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Assign(Ptr<description::ITypeInfo> typeInfo)
 		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
+			auto info = Ptr(new GuiInstancePropertyInfo);
 			info->support = SupportAssign;
 			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
@@ -60,7 +60,7 @@ GuiInstancePropertyInfo
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Set(Ptr<description::ITypeInfo> typeInfo)
 		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
+			auto info = Ptr(new GuiInstancePropertyInfo);
 			info->support = SupportSet;
 			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
@@ -68,7 +68,7 @@ GuiInstancePropertyInfo
 
 		Ptr<GuiInstancePropertyInfo> GuiInstancePropertyInfo::Array(Ptr<description::ITypeInfo> typeInfo)
 		{
-			auto info = MakePtr<GuiInstancePropertyInfo>();
+			auto info = Ptr(new GuiInstancePropertyInfo);
 			info->support = SupportArray;
 			if (typeInfo) info->acceptableTypes.Add(typeInfo);
 			return info;
@@ -163,7 +163,7 @@ GuiInstanceContext::ElementName Parser
 					return nullptr;
 				}
 
-				Ptr<ElementName> elementName = new ElementName;
+				auto elementName = Ptr(new ElementName);
 				if (match->Groups().Keys().Contains(_namespaceName))
 				{
 					elementName->namespaceName = match->Groups()[_namespaceName][0].Value();
@@ -456,7 +456,7 @@ GuiDefaultInstanceLoader
 					GuiInstancePropertyInfo::Support support = GuiInstancePropertyInfo::NotSupport;
 					if (ITypeInfo* propType = GetPropertyReflectionTypeInfo(propertyInfo, support))
 					{
-						Ptr<GuiInstancePropertyInfo> result = new GuiInstancePropertyInfo;
+						auto result = Ptr(new GuiInstancePropertyInfo);
 						result->support = support;
 						result->acceptableTypes.Add(CopyTypeInfo(propType));
 
@@ -512,10 +512,10 @@ GuiDefaultInstanceLoader
 
 				if (arguments.Count() > 0)
 				{
-					auto call = MakePtr<WfBaseConstructorCall>();
+					auto call = Ptr(new WfBaseConstructorCall);
 
 					auto baseTd = typeInfo.typeInfo->GetTypeDescriptor()->GetBaseTypeDescriptor(0);
-					auto baseTypeInfo = MakePtr<TypeDescriptorTypeInfo>(baseTd, TypeInfoHint::Normal);
+					auto baseTypeInfo = Ptr(new TypeDescriptorTypeInfo(baseTd, TypeInfoHint::Normal));
 					call->type = GetTypeFromTypeInfo(baseTypeInfo.Obj());
 
 					auto ctor = baseTd->GetConstructorGroup()->GetMethod(0);
@@ -545,7 +545,7 @@ GuiDefaultInstanceLoader
 				auto defaultCtor = GetDefaultConstructor(typeInfo.typeInfo->GetTypeDescriptor());
 				auto instanceCtor = GetInstanceConstructor(typeInfo.typeInfo->GetTypeDescriptor());
 
-				auto create = MakePtr<WfNewClassExpression>();
+				auto create = Ptr(new WfNewClassExpression);
 				if (defaultCtor)
 				{
 					create->type = GetTypeFromTypeInfo(defaultCtor->GetReturn());
@@ -572,22 +572,22 @@ GuiDefaultInstanceLoader
 					}
 				}
 
-				auto refValue = MakePtr<WfReferenceExpression>();
+				auto refValue = Ptr(new WfReferenceExpression);
 				refValue->name.value = variableName.ToString();
 
-				auto assign = MakePtr<WfBinaryExpression>();
+				auto assign = Ptr(new WfBinaryExpression);
 				assign->op = WfBinaryOperator::Assign;
 				assign->first = refValue;
 				assign->second = create;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = assign;
 				return stat;
 			}
 
 			Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 			{
-				auto block = MakePtr<WfBlockStatement>();
+				auto block = Ptr(new WfBlockStatement);
 
 				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
@@ -602,36 +602,36 @@ GuiDefaultInstanceLoader
 								if (values.Count() > 0)
 								{
 									{
-										auto refValue = MakePtr<WfReferenceExpression>();
+										auto refValue = Ptr(new WfReferenceExpression);
 										refValue->name.value = variableName.ToString();
 
-										auto refProp = MakePtr<WfMemberExpression>();
+										auto refProp = Ptr(new WfMemberExpression);
 										refProp->parent = refValue;
 										refProp->name.value = prop.ToString();
 
-										auto varDesc = MakePtr<WfVariableDeclaration>();
+										auto varDesc = Ptr(new WfVariableDeclaration);
 										varDesc->name.value = L"<collection>";
 										varDesc->expression = refProp;
 
-										auto stat = MakePtr<WfVariableStatement>();
+										auto stat = Ptr(new WfVariableStatement);
 										stat->variable = varDesc;
 										block->statements.Add(stat);
 									}
 
 									for (vint i = 0; i < values.Count(); i++)
 									{
-										auto refCollection = MakePtr<WfReferenceExpression>();
+										auto refCollection = Ptr(new WfReferenceExpression);
 										refCollection->name.value = L"<collection>";
 
-										auto refAdd = MakePtr<WfMemberExpression>();
+										auto refAdd = Ptr(new WfMemberExpression);
 										refAdd->parent = refCollection;
 										refAdd->name.value = L"Add";
 
-										auto call = MakePtr<WfCallExpression>();
+										auto call = Ptr(new WfCallExpression);
 										call->function = refAdd;
 										call->arguments.Add(values[i].expression);
 
-										auto stat = MakePtr<WfExpressionStatement>();
+										auto stat = Ptr(new WfExpressionStatement);
 										stat->expression = call;
 										block->statements.Add(stat);
 									}
@@ -640,27 +640,27 @@ GuiDefaultInstanceLoader
 							break;
 						case GuiInstancePropertyInfo::SupportArray:
 							{
-								auto refArray = MakePtr<WfConstructorExpression>();
+								auto refArray = Ptr(new WfConstructorExpression);
 								for (auto item : arguments.GetByIndex(index))
 								{
-									auto argument = MakePtr<WfConstructorArgument>();
+									auto argument = Ptr(new WfConstructorArgument);
 									argument->key = item.expression;
 									refArray->arguments.Add(argument);
 								}
 
-								auto refValue = MakePtr<WfReferenceExpression>();
+								auto refValue = Ptr(new WfReferenceExpression);
 								refValue->name.value = variableName.ToString();
 
-								auto refProp = MakePtr<WfMemberExpression>();
+								auto refProp = Ptr(new WfMemberExpression);
 								refProp->parent = refValue;
 								refProp->name.value = prop.ToString();
 
-								auto assign = MakePtr<WfBinaryExpression>();
+								auto assign = Ptr(new WfBinaryExpression);
 								assign->op = WfBinaryOperator::Assign;
 								assign->first = refProp;
 								assign->second = refArray;
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = assign;
 								block->statements.Add(stat);
 							}
@@ -670,19 +670,19 @@ GuiDefaultInstanceLoader
 								auto& propertyValue = arguments.GetByIndex(index)[0];
 								if (propertyValue.expression)
 								{
-									auto refValue = MakePtr<WfReferenceExpression>();
+									auto refValue = Ptr(new WfReferenceExpression);
 									refValue->name.value = variableName.ToString();
 
-									auto refProp = MakePtr<WfMemberExpression>();
+									auto refProp = Ptr(new WfMemberExpression);
 									refProp->parent = refValue;
 									refProp->name.value = prop.ToString();
 
-									auto assign = MakePtr<WfBinaryExpression>();
+									auto assign = Ptr(new WfBinaryExpression);
 									assign->op = WfBinaryOperator::Assign;
 									assign->first = refProp;
 									assign->second = propertyValue.expression;
 
-									auto stat = MakePtr<WfExpressionStatement>();
+									auto stat = Ptr(new WfExpressionStatement);
 									stat->expression = assign;
 									block->statements.Add(stat);
 								}
@@ -708,10 +708,10 @@ GuiDefaultInstanceLoader
 
 			Ptr<workflow::WfExpression> GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 			{
-				auto refValue = MakePtr<WfReferenceExpression>();
+				auto refValue = Ptr(new WfReferenceExpression);
 				refValue->name.value = variableName.ToString();
 
-				auto refProp = MakePtr<WfMemberExpression>();
+				auto refProp = Ptr(new WfMemberExpression);
 				refProp->parent = refValue;
 				refProp->name.value = propertyInfo.propertyName.ToString();
 
@@ -843,7 +843,7 @@ GuiInstanceLoaderManager
 		public:
 			GuiInstanceLoaderManager()
 			{
-				rootLoader = new GuiDefaultInstanceLoader;
+				rootLoader = Ptr(new GuiDefaultInstanceLoader);
 			}
 
 			GUI_PLUGIN_NAME(GacUI_Instance)
@@ -855,7 +855,7 @@ GuiInstanceLoaderManager
 			{
 				instanceLoaderManager = this;
 				IGuiParserManager* manager = GetParserManager();
-				manager->SetParser(L"INSTANCE-ELEMENT-NAME", new GuiInstanceContextElementNameParser);
+				manager->SetParser(L"INSTANCE-ELEMENT-NAME", Ptr(new GuiInstanceContextElementNameParser));
 			}
 
 			void Unload()override
@@ -912,7 +912,7 @@ GuiInstanceLoaderManager
 			{
 				if (IsTypeExists(loader->GetTypeName()) || !IsTypeExists(parentType)) return false;
 
-				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
+				auto typeInfo = Ptr(new VirtualTypeInfo);
 				typeInfo->typeName = loader->GetTypeName();
 				typeInfo->parentTypeName = parentType;
 				typeInfo->loader = loader;
@@ -930,7 +930,7 @@ GuiInstanceLoaderManager
 				ITypeDescriptor* typeDescriptor = GetGlobalTypeManager()->GetTypeDescriptor(loader->GetTypeName().ToString());
 				if (typeDescriptor == 0) return false;
 
-				Ptr<VirtualTypeInfo> typeInfo = new VirtualTypeInfo;
+				auto typeInfo = Ptr(new VirtualTypeInfo);
 				typeInfo->typeName = loader->GetTypeName();
 				typeInfo->typeDescriptor = typeDescriptor;
 				typeInfo->loader = loader;
@@ -994,7 +994,7 @@ GuiInstanceLoaderManager
 				}
 				else
 				{
-					return MakePtr<RawPtrTypeInfo>(MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal));
+					return Ptr(new RawPtrTypeInfo(Ptr(new TypeDescriptorTypeInfo(td, TypeInfoHint::Normal))));
 				}
 			}
 

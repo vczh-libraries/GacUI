@@ -103,7 +103,7 @@ namespace vl
 			auto compiled = context.targetFolder->GetValueByPath(path).Cast<GuiInstanceCompiledWorkflow>();
 			if (assemblyType && !compiled)
 			{
-				compiled = new GuiInstanceCompiledWorkflow;
+				compiled = Ptr(new GuiInstanceCompiledWorkflow);
 				compiled->type = assemblyType.Value();
 				context.targetFolder->CreateValueByPath(path, L"Workflow", compiled);
 			}
@@ -427,7 +427,7 @@ Instance Type Resolver (Instance)
 							auto record = context.targetFolder->GetValueByPath(L"ClassNameRecord").Cast<GuiResourceClassNameRecord>();
 							if (!record)
 							{
-								record = MakePtr<GuiResourceClassNameRecord>();
+								record = Ptr(new GuiResourceClassNameRecord);
 								context.targetFolder->CreateValueByPath(L"ClassNameRecord", L"ClassNameRecord", record);
 							}
 

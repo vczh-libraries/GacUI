@@ -96,7 +96,7 @@ GuiControlInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
@@ -109,14 +109,14 @@ GuiControlInstanceLoader
 							Ptr<WfExpression> expr;
 							if (td->CanConvertTo(description::GetTypeDescriptor<GuiComponent>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddComponent = MakePtr<WfMemberExpression>();
+								auto refAddComponent = Ptr(new WfMemberExpression);
 								refAddComponent->parent = refControl;
 								refAddComponent->name.value = L"AddComponent";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddComponent;
 								call->arguments.Add(value);
 
@@ -124,14 +124,14 @@ GuiControlInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControlHost>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddControlHostComponent = MakePtr<WfMemberExpression>();
+								auto refAddControlHostComponent = Ptr(new WfMemberExpression);
 								refAddControlHostComponent->parent = refControl;
 								refAddControlHostComponent->name.value = L"AddControlHostComponent";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddControlHostComponent;
 								call->arguments.Add(value);
 
@@ -139,14 +139,14 @@ GuiControlInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refControl;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(value);
 
@@ -154,18 +154,18 @@ GuiControlInstanceLoader
 							}
 							else if (td->CanConvertTo(description::GetTypeDescriptor<GuiGraphicsComposition>()))
 							{
-								auto refControl = MakePtr<WfReferenceExpression>();
+								auto refControl = Ptr(new WfReferenceExpression);
 								refControl->name.value = variableName.ToString();
 
-								auto refContainerComposition = MakePtr<WfMemberExpression>();
+								auto refContainerComposition = Ptr(new WfMemberExpression);
 								refContainerComposition->parent = refControl;
 								refContainerComposition->name.value = L"ContainerComposition";
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refContainerComposition;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(value);
 
@@ -174,7 +174,7 @@ GuiControlInstanceLoader
 
 							if (expr)
 							{
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = expr;
 								block->statements.Add(stat);
 							}
@@ -197,21 +197,21 @@ GuiPredefinedInstanceLoadersPlugin
 
 			void InitializeTrackerProgressBar(const WString& variableName, Ptr<WfBlockStatement> block)
 			{
-				auto refVariable = MakePtr<WfReferenceExpression>();
+				auto refVariable = Ptr(new WfReferenceExpression);
 				refVariable->name.value = variableName;
 
-				auto refSetPageSize = MakePtr<WfMemberExpression>();
+				auto refSetPageSize = Ptr(new WfMemberExpression);
 				refSetPageSize->parent = refVariable;
 				refSetPageSize->name.value = L"SetPageSize";
 
-				auto refZero = MakePtr<WfIntegerExpression>();
+				auto refZero = Ptr(new WfIntegerExpression);
 				refZero->value.value = L"0";
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = refSetPageSize;
 				call->arguments.Add(refZero);
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = call;
 				block->statements.Add(stat);
 			}

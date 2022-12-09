@@ -96,7 +96,7 @@ WorkflowGenerateCreatingVisitor
 				{
 					repr->Accept(this);
 
-					auto ref = MakePtr<WfReferenceExpression>();
+					auto ref = Ptr(new WfReferenceExpression);
 					ref->name.value = ctor->instanceName.ToString();
 					argumentInfo.expression = ref;
 				}
@@ -121,15 +121,15 @@ WorkflowGenerateCreatingVisitor
 				vint errorCount = errors.Count();
 				if (auto expr = info.loader->GetParameter(precompileContext, resolvingResult, propInfo, repr->instanceName, setter->attPosition, errors))
 				{
-					auto refInstance = MakePtr<WfReferenceExpression>();
+					auto refInstance = Ptr(new WfReferenceExpression);
 					refInstance->name.value = setTarget->instanceName.ToString();
 
-					auto assign = MakePtr<WfBinaryExpression>();
+					auto assign = Ptr(new WfBinaryExpression);
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = refInstance;
 					assign->second = expr;
 
-					auto stat = MakePtr<WfExpressionStatement>();
+					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = assign;
 
 					return stat;
@@ -377,18 +377,18 @@ WorkflowGenerateCreatingVisitor
 					FillCtorArguments(repr, ctorLoader, ctorTypeInfo, resolvingResult.rootCtorArguments);
 
 					{
-						auto refInstance = MakePtr<WfReferenceExpression>();
+						auto refInstance = Ptr(new WfReferenceExpression);
 						refInstance->name.value = repr->instanceName.ToString();
 
-						auto refThis = MakePtr<WfReferenceExpression>();
+						auto refThis = Ptr(new WfReferenceExpression);
 						refThis->name.value = L"<this>";
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = refInstance;
 						assign->second = refThis;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 
 						statements->statements.Add(stat);
@@ -405,22 +405,22 @@ WorkflowGenerateCreatingVisitor
 
 					for (auto parameter : resolvingResult.context->parameters)
 					{
-						auto refInstance = MakePtr<WfReferenceExpression>();
+						auto refInstance = Ptr(new WfReferenceExpression);
 						refInstance->name.value = parameter->name.ToString();
 
-						auto refThis = MakePtr<WfReferenceExpression>();
+						auto refThis = Ptr(new WfReferenceExpression);
 						refThis->name.value = L"<this>";
 
-						auto refParameter = MakePtr<WfMemberExpression>();
+						auto refParameter = Ptr(new WfMemberExpression);
 						refParameter->parent = refThis;
 						refParameter->name.value = parameter->name.ToString();
 
-						auto assign = MakePtr<WfBinaryExpression>();
+						auto assign = Ptr(new WfBinaryExpression);
 						assign->op = WfBinaryOperator::Assign;
 						assign->first = refInstance;
 						assign->second = refParameter;
 
-						auto stat = MakePtr<WfExpressionStatement>();
+						auto stat = Ptr(new WfExpressionStatement);
 						stat->expression = assign;
 
 						statements->statements.Add(stat);

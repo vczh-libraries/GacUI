@@ -77,19 +77,19 @@ GuiDocumentItemInstanceLoader
 						if (indexName != -1)
 						{
 							auto type = TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo();
-							auto createExpr = MakePtr<WfNewClassExpression>();
+							auto createExpr = Ptr(new WfNewClassExpression);
 							createExpr->type = GetTypeFromTypeInfo(type.Obj());
 							createExpr->arguments.Add(arguments.GetByIndex(indexName)[0].expression);
 
-							auto refVariable = MakePtr<WfReferenceExpression>();
+							auto refVariable = Ptr(new WfReferenceExpression);
 							refVariable->name.value = variableName.ToString();
 
-							auto assignExpr = MakePtr<WfBinaryExpression>();
+							auto assignExpr = Ptr(new WfBinaryExpression);
 							assignExpr->op = WfBinaryOperator::Assign;
 							assignExpr->first = refVariable;
 							assignExpr->second = createExpr;
 
-							auto assignStat = MakePtr<WfExpressionStatement>();
+							auto assignStat = Ptr(new WfExpressionStatement);
 							assignStat->expression = assignExpr;
 							return assignStat;
 						}
@@ -99,7 +99,7 @@ GuiDocumentItemInstanceLoader
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
@@ -112,7 +112,7 @@ GuiDocumentItemInstanceLoader
 							Ptr<WfExpression> compositionExpr;
 							if (td->CanConvertTo(description::GetTypeDescriptor<GuiControl>()))
 							{
-								auto member = MakePtr<WfMemberExpression>();
+								auto member = Ptr(new WfMemberExpression);
 								member->parent = value;
 								member->name.value = L"BoundsComposition";
 								compositionExpr = member;
@@ -124,22 +124,22 @@ GuiDocumentItemInstanceLoader
 
 							if (compositionExpr)
 							{
-								auto refItem = MakePtr<WfReferenceExpression>();
+								auto refItem = Ptr(new WfReferenceExpression);
 								refItem->name.value = variableName.ToString();
 
-								auto refContainer = MakePtr<WfMemberExpression>();
+								auto refContainer = Ptr(new WfMemberExpression);
 								refContainer->parent = refItem;
 								refContainer->name.value = L"Container";
 
-								auto refAddChild = MakePtr<WfMemberExpression>();
+								auto refAddChild = Ptr(new WfMemberExpression);
 								refAddChild->parent = refContainer;
 								refAddChild->name.value = L"AddChild";
 
-								auto call = MakePtr<WfCallExpression>();
+								auto call = Ptr(new WfCallExpression);
 								call->function = refAddChild;
 								call->arguments.Add(compositionExpr);
 
-								auto stat = MakePtr<WfExpressionStatement>();
+								auto stat = Ptr(new WfExpressionStatement);
 								stat->expression = call;
 								block->statements.Add(stat);
 							}
@@ -190,25 +190,25 @@ GuiDocumentInstanceLoaderBase
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
 				{
-					auto block = MakePtr<WfBlockStatement>();
+					auto block = Ptr(new WfBlockStatement);
 
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
 						if (prop == GlobalStringKey::Empty)
 						{
-							auto refControl = MakePtr<WfReferenceExpression>();
+							auto refControl = Ptr(new WfReferenceExpression);
 							refControl->name.value = variableName.ToString();
 
-							auto refAddDocumentItem = MakePtr<WfMemberExpression>();
+							auto refAddDocumentItem = Ptr(new WfMemberExpression);
 							refAddDocumentItem->parent = refControl;
 							refAddDocumentItem->name.value = L"AddDocumentItem";
 
-							auto call = MakePtr<WfCallExpression>();
+							auto call = Ptr(new WfCallExpression);
 							call->function = refAddDocumentItem;
 							call->arguments.Add(values[0].expression);
 
-							auto stat = MakePtr<WfExpressionStatement>();
+							auto stat = Ptr(new WfExpressionStatement);
 							stat->expression = call;
 							block->statements.Add(stat);
 						}
@@ -258,9 +258,9 @@ Initialization
 
 			void LoadDocumentControls(IGuiInstanceLoaderManager* manager)
 			{
-				manager->SetLoader(new GuiDocumentItemInstanceLoader);
-				manager->SetLoader(new GuiDocumentViewerInstanceLoader);
-				manager->SetLoader(new GuiDocumentLabelInstanceLoader);
+				manager->SetLoader(Ptr(new GuiDocumentItemInstanceLoader));
+				manager->SetLoader(Ptr(new GuiDocumentViewerInstanceLoader));
+				manager->SetLoader(Ptr(new GuiDocumentLabelInstanceLoader));
 			}
 		}
 	}

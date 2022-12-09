@@ -20,23 +20,23 @@ Workflow_InstallBindProperty
 		{
 			Ptr<WfExpression> resourceExpr;
 			{
-				auto refResolver = MakePtr<WfReferenceExpression>();
+				auto refResolver = Ptr(new WfReferenceExpression);
 				refResolver->name.value = L"<this>";
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = refResolver;
 				member->name.value = L"ResolveResource";
 
-				auto valueProtocol = MakePtr<WfStringExpression>();
+				auto valueProtocol = Ptr(new WfStringExpression);
 				valueProtocol->value.value = protocol;
 
-				auto valuePath = MakePtr<WfStringExpression>();
+				auto valuePath = Ptr(new WfStringExpression);
 				valuePath->value.value = path;
 
-				auto valueBool = MakePtr<WfLiteralExpression>();
+				auto valueBool = Ptr(new WfLiteralExpression);
 				valueBool->value = WfLiteralValue::True;
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = member;
 				call->arguments.Add(valueProtocol);
 				call->arguments.Add(valuePath);
@@ -66,7 +66,7 @@ Workflow_InstallBindProperty
 
 			Ptr<WfExpression> convertedExpr;
 			{
-				auto cast = MakePtr<WfTypeCastingExpression>();
+				auto cast = Ptr(new WfTypeCastingExpression);
 				cast->expression = resourceExpr;
 				cast->type = GetTypeFromTypeInfo(convertedType.Obj());
 				cast->strategy = WfTypeCastingStrategy::Strong;
@@ -78,13 +78,13 @@ Workflow_InstallBindProperty
 			{
 				if (td->GetSerializableType())
 				{
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = convertedExpr;
 					member->name.value = L"Text";
 
 					auto elementType = MakePtr<TypeDescriptorTypeInfo>(td, TypeInfoHint::Normal);
 
-					auto cast = MakePtr<WfTypeCastingExpression>();
+					auto cast = Ptr(new WfTypeCastingExpression);
 					cast->expression = member;
 					cast->type = GetTypeFromTypeInfo(elementType.Obj());
 					cast->strategy = WfTypeCastingStrategy::Strong;
@@ -93,7 +93,7 @@ Workflow_InstallBindProperty
 				}
 				else if (td == description::GetTypeDescriptor<INativeImage>())
 				{
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = convertedExpr;
 					member->name.value = L"Image";
 
@@ -130,42 +130,42 @@ Workflow_InstallBindProperty
 
 		Ptr<workflow::WfStatement> Workflow_InstallBindProperty(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GlobalStringKey variableName, description::IPropertyInfo* propertyInfo, Ptr<workflow::WfExpression> bindExpression)
 		{
-			auto subBlock = MakePtr<WfBlockStatement>();
+			auto subBlock = Ptr(new WfBlockStatement);
 			{
-				auto var = MakePtr<WfVariableDeclaration>();
+				auto var = Ptr(new WfVariableDeclaration);
 				var->name.value = L"<created-subscription>";
 				var->expression = bindExpression;
 
-				auto stat = MakePtr<WfVariableStatement>();
+				auto stat = Ptr(new WfVariableStatement);
 				stat->variable = var;
 				subBlock->statements.Add(stat);
 			}
 			{
-				auto callback = MakePtr<WfFunctionDeclaration>();
+				auto callback = Ptr(new WfFunctionDeclaration);
 				callback->functionKind = WfFunctionKind::Normal;
 				callback->anonymity = WfFunctionAnonymity::Anonymous;
 				callback->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());;
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"<value>";
 					arg->type = GetTypeFromTypeInfo(TypeInfoRetriver<Value>::CreateTypeInfo().Obj());
 					callback->arguments.Add(arg);
 				}
-				auto callbackBlock = MakePtr<WfBlockStatement>();
+				auto callbackBlock = Ptr(new WfBlockStatement);
 				callback->statement = callbackBlock;
 				{
-					auto refSubscribee = MakePtr<WfReferenceExpression>();
+					auto refSubscribee = Ptr(new WfReferenceExpression);
 					refSubscribee->name.value = variableName.ToString();
 
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = refSubscribee;
 					member->name.value = propertyInfo->GetName();
 
-					auto var = MakePtr<WfVariableDeclaration>();
+					auto var = Ptr(new WfVariableDeclaration);
 					var->name.value = L"<old>";
 					var->expression = member;
 
-					auto stat = MakePtr<WfVariableStatement>();
+					auto stat = Ptr(new WfVariableStatement);
 					stat->variable = var;
 					callbackBlock->statements.Add(stat);
 				}
@@ -176,99 +176,99 @@ Workflow_InstallBindProperty
 						propertyType = propertyInfo->GetSetter()->GetParameter(0)->GetType();
 					}
 
-					auto refValue = MakePtr<WfReferenceExpression>();
+					auto refValue = Ptr(new WfReferenceExpression);
 					refValue->name.value = L"<value>";
 
-					auto cast = MakePtr<WfTypeCastingExpression>();
+					auto cast = Ptr(new WfTypeCastingExpression);
 					cast->strategy = WfTypeCastingStrategy::Strong;
 					cast->expression = refValue;
 					cast->type = GetTypeFromTypeInfo(propertyType);
 
-					auto var = MakePtr<WfVariableDeclaration>();
+					auto var = Ptr(new WfVariableDeclaration);
 					var->name.value = L"<new>";
 					var->expression = cast;
 
-					auto stat = MakePtr<WfVariableStatement>();
+					auto stat = Ptr(new WfVariableStatement);
 					stat->variable = var;
 					callbackBlock->statements.Add(stat);
 				}
 				{
-					auto refOld = MakePtr<WfReferenceExpression>();
+					auto refOld = Ptr(new WfReferenceExpression);
 					refOld->name.value = L"<old>";
 
-					auto refNew = MakePtr<WfReferenceExpression>();
+					auto refNew = Ptr(new WfReferenceExpression);
 					refNew->name.value = L"<new>";
 
-					auto compare = MakePtr<WfBinaryExpression>();
+					auto compare = Ptr(new WfBinaryExpression);
 					compare->op = WfBinaryOperator::EQ;
 					compare->first = refOld;
 					compare->second = refNew;
 
-					auto ifStat = MakePtr<WfIfStatement>();
+					auto ifStat = Ptr(new WfIfStatement);
 					ifStat->expression = compare;
 					callbackBlock->statements.Add(ifStat);
 
-					auto ifBlock = MakePtr<WfBlockStatement>();
+					auto ifBlock = Ptr(new WfBlockStatement);
 					ifStat->trueBranch = ifBlock;
 
-					auto returnStat = MakePtr<WfReturnStatement>();
+					auto returnStat = Ptr(new WfReturnStatement);
 					ifBlock->statements.Add(returnStat);
 				}
 				{
-					auto refSubscribee = MakePtr<WfReferenceExpression>();
+					auto refSubscribee = Ptr(new WfReferenceExpression);
 					refSubscribee->name.value = variableName.ToString();
 
-					auto member = MakePtr<WfMemberExpression>();
+					auto member = Ptr(new WfMemberExpression);
 					member->parent = refSubscribee;
 					member->name.value = propertyInfo->GetName();
 
-					auto refNew = MakePtr<WfReferenceExpression>();
+					auto refNew = Ptr(new WfReferenceExpression);
 					refNew->name.value = L"<new>";
 
-					auto assign = MakePtr<WfBinaryExpression>();
+					auto assign = Ptr(new WfBinaryExpression);
 					assign->op = WfBinaryOperator::Assign;
 					assign->first = member;
 					assign->second = refNew;
 
-					auto stat = MakePtr<WfExpressionStatement>();
+					auto stat = Ptr(new WfExpressionStatement);
 					stat->expression = assign;
 					callbackBlock->statements.Add(stat);
 				}
 
-				auto funcExpr = MakePtr<WfFunctionExpression>();
+				auto funcExpr = Ptr(new WfFunctionExpression);
 				funcExpr->function = callback;
 
-				auto refBind = MakePtr<WfReferenceExpression>();
+				auto refBind = Ptr(new WfReferenceExpression);
 				refBind->name.value = L"<created-subscription>";
 
-				auto refEvent = MakePtr<WfMemberExpression>();
+				auto refEvent = Ptr(new WfMemberExpression);
 				refEvent->parent = refBind;
 				refEvent->name.value = L"ValueChanged";
 
-				auto attachExpr = MakePtr<WfAttachEventExpression>();
+				auto attachExpr = Ptr(new WfAttachEventExpression);
 				attachExpr->event = refEvent;
 				attachExpr->function = funcExpr;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = attachExpr;
 				subBlock->statements.Add(stat);
 			}
 			{
-				auto refThis = MakePtr<WfReferenceExpression>();
+				auto refThis = Ptr(new WfReferenceExpression);
 				refThis->name.value = L"<this>";
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = refThis;
 				member->name.value = L"AddSubscription";
 
-				auto refBind = MakePtr<WfReferenceExpression>();
+				auto refBind = Ptr(new WfReferenceExpression);
 				refBind->name.value = L"<created-subscription>";
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = member;
 				call->arguments.Add(refBind);
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = call;
 				subBlock->statements.Add(stat);
 			}
@@ -302,39 +302,39 @@ Workflow_InstallEvent
 		{
 			vint count = eventInfo->GetHandlerType()->GetElementType()->GetGenericArgumentCount() - 1;
 
-			auto subBlock = MakePtr<WfBlockStatement>();
+			auto subBlock = Ptr(new WfBlockStatement);
 			{
-				auto var = MakePtr<WfReferenceExpression>();
+				auto var = Ptr(new WfReferenceExpression);
 				var->name.value = variableName.ToString();
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = var;
 				member->name.value = eventInfo->GetName();
 
-				auto refThis = MakePtr<WfReferenceExpression>();
+				auto refThis = Ptr(new WfReferenceExpression);
 				refThis->name.value = L"<this>";
 
-				auto handler = MakePtr<WfMemberExpression>();
+				auto handler = Ptr(new WfMemberExpression);
 				handler->parent = refThis;
 				handler->name.value = handlerName;
 
-				auto call = MakePtr<WfCallExpression>();
+				auto call = Ptr(new WfCallExpression);
 				call->function = handler;
 				for (vint i = 0; i < count; i++)
 				{
-					auto argument = MakePtr<WfOrderedNameExpression>();
+					auto argument = Ptr(new WfOrderedNameExpression);
 					argument->name.value = L"$" + itow(i + 1);
 					call->arguments.Add(argument);
 				}
 
-				auto eventHandler = MakePtr<WfOrderedLambdaExpression>();
+				auto eventHandler = Ptr(new WfOrderedLambdaExpression);
 				eventHandler->body = call;
 
-				auto attachEvent = MakePtr<WfAttachEventExpression>();
+				auto attachEvent = Ptr(new WfAttachEventExpression);
 				attachEvent->event = member;
 				attachEvent->function = eventHandler;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = attachEvent;
 				subBlock->statements.Add(stat);
 			}
@@ -348,7 +348,7 @@ Workflow_GenerateEventHandler
 
 		Ptr<workflow::WfFunctionDeclaration> Workflow_GenerateEventHandler(GuiResourcePrecompileContext& precompileContext, description::IEventInfo* eventInfo)
 		{
-			auto func = MakePtr<WfFunctionDeclaration>();
+			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = WfFunctionKind::Normal;
 			func->anonymity = WfFunctionAnonymity::Anonymous;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<void>::CreateTypeInfo().Obj());
@@ -388,13 +388,13 @@ Workflow_GenerateEventHandler
 			if (standardName)
 			{
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"sender";
 					arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(1));
 					func->arguments.Add(arg);
 				}
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"arguments";
 					arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(2));
 					func->arguments.Add(arg);
@@ -405,7 +405,7 @@ Workflow_GenerateEventHandler
 				auto type = TypeInfoRetriver<Value>::CreateTypeInfo();
 				for (vint i = 0; i < count; i++)
 				{
-					auto arg = MakePtr<WfFunctionArgument>();
+					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"arg" + itow(i + 1);
 					arg->type = GetTypeFromTypeInfo(type.Obj());
 					func->arguments.Add(arg);
@@ -433,41 +433,41 @@ Workflow_InstallEvalEvent
 			}
 			else
 			{
-				auto funcBlock = MakePtr<WfBlockStatement>();
+				auto funcBlock = Ptr(new WfBlockStatement);
 				funcBlock->statements.Add(evalStatement);
 				func->statement = funcBlock;
 			}
 
-			auto subBlock = MakePtr<WfBlockStatement>();
+			auto subBlock = Ptr(new WfBlockStatement);
 
 			{
-				auto eventHandlerLambda = MakePtr<WfFunctionExpression>();
+				auto eventHandlerLambda = Ptr(new WfFunctionExpression);
 				eventHandlerLambda->function = func;
 
-				auto eventHandler = MakePtr<WfVariableDeclaration>();
+				auto eventHandler = Ptr(new WfVariableDeclaration);
 				eventHandler->name.value = L"<event-handler>";
 				eventHandler->expression = eventHandlerLambda;
 
-				auto stat = MakePtr<WfVariableStatement>();
+				auto stat = Ptr(new WfVariableStatement);
 				stat->variable = eventHandler;
 				subBlock->statements.Add(stat);
 			}
 			{
-				auto var = MakePtr<WfReferenceExpression>();
+				auto var = Ptr(new WfReferenceExpression);
 				var->name.value = variableName.ToString();
 
-				auto member = MakePtr<WfMemberExpression>();
+				auto member = Ptr(new WfMemberExpression);
 				member->parent = var;
 				member->name.value = eventInfo->GetName();
 
-				auto eventHandler = MakePtr<WfReferenceExpression>();
+				auto eventHandler = Ptr(new WfReferenceExpression);
 				eventHandler->name.value = L"<event-handler>";
 
-				auto attachEvent = MakePtr<WfAttachEventExpression>();
+				auto attachEvent = Ptr(new WfAttachEventExpression);
 				attachEvent->event = member;
 				attachEvent->function = eventHandler;
 
-				auto stat = MakePtr<WfExpressionStatement>();
+				auto stat = Ptr(new WfExpressionStatement);
 				stat->expression = attachEvent;
 				subBlock->statements.Add(stat);
 			}
