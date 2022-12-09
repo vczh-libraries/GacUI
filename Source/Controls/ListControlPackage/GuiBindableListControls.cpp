@@ -640,7 +640,7 @@ GuiBindableTreeView::ItemSourceNode
 							for (vint i = 0; i < newCount; i++)
 							{
 								Value value = childrenVirtualList->Get(start + i);
-								auto node = new ItemSourceNode(value, this);
+								auto node = Ptr(new ItemSourceNode(value, this));
 								children.Insert(start + i, node);
 							}
 							callback->OnAfterItemModified(this, start, oldCount, newCount);
@@ -766,7 +766,7 @@ GuiBindableTreeView::ItemSourceNode
 
 			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetParent()
 			{
-				return parent;
+				return Ptr(parent);
 			}
 
 			Ptr<tree::INodeProvider> GuiBindableTreeView::ItemSourceNode::GetChild(vint index)
@@ -788,7 +788,7 @@ GuiBindableTreeView::ItemSource
 
 			GuiBindableTreeView::ItemSource::ItemSource()
 			{
-				rootNode = new ItemSourceNode(this);
+				rootNode = Ptr(new ItemSourceNode(this));
 			}
 
 			GuiBindableTreeView::ItemSource::~ItemSource()
@@ -866,7 +866,7 @@ GuiBindableTreeView
 ***********************************************************************/
 
 			GuiBindableTreeView::GuiBindableTreeView(theme::ThemeName themeName)
-				:GuiVirtualTreeView(themeName, new ItemSource)
+				:GuiVirtualTreeView(themeName, Ptr(new ItemSource))
 			{
 				itemSource = dynamic_cast<ItemSource*>(GetNodeRootProvider());
 

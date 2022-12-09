@@ -95,7 +95,7 @@ GuiDatePicker
 				:GuiControl(themeName)
 				, nestedAlt(_nestedAlt)
 			{
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				SetDate(DateTime::LocalTime());
 				SetDateLocale(Locale::UserDefault());
 				SetAltComposition(boundsComposition);

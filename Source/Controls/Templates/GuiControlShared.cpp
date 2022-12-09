@@ -76,7 +76,7 @@ GuiInstanceRootObject
 			{
 				if (!timerCallback)
 				{
-					timerCallback = new RootObjectTimerCallback(this, controlHost);
+					timerCallback = Ptr(new RootObjectTimerCallback(this, controlHost));
 					controlHost->GetTimerManager()->AddCallback(timerCallback);
 				}
 			}
@@ -251,7 +251,7 @@ GuiInstanceRootObject
 
 			bool GuiInstanceRootObject::AddControlHostComponent(GuiControlHost* controlHost)
 			{
-				return AddComponent(new GuiObjectComponent<GuiControlHost>(controlHost));
+				return AddComponent(Ptr(new GuiObjectComponent<GuiControlHost>(controlHost)));
 			}
 
 			bool GuiInstanceRootObject::AddAnimation(Ptr<IGuiAnimation> animation)

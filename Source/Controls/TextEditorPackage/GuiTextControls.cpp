@@ -167,11 +167,11 @@ GuiMultilineTextBox
 
 				textComposition = new GuiBoundsComposition;
 				textComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-				textComposition->SetOwnedElement(textElement);
+				textComposition->SetOwnedElement(Ptr(textElement));
 				containerComposition->AddChild(textComposition);
 
-				callback = new TextElementOperatorCallback(this);
-				commandExecutor = new CommandExecutor(this);
+				callback = Ptr(new TextElementOperatorCallback(this));
+				commandExecutor = Ptr(new CommandExecutor(this));
 
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
@@ -347,11 +347,11 @@ GuiSinglelineTextBox
 				containerComposition->AddChild(textCompositionTable);
 
 				textComposition = new GuiCellComposition;
-				textComposition->SetOwnedElement(textElement);
+				textComposition->SetOwnedElement(Ptr(textElement));
 				textCompositionTable->AddChild(textComposition);
 				textComposition->SetSite(1, 0, 1, 1);
 
-				callback = new TextElementOperatorCallback(this);
+				callback = Ptr(new TextElementOperatorCallback(this));
 				SetAcceptTabInput(true);
 				SetFocusableComposition(boundsComposition);
 				Install(textElement, textComposition, this, boundsComposition, focusableComposition);

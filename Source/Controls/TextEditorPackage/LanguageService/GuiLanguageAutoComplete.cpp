@@ -336,7 +336,7 @@ GuiGrammarAutoComplete
 					// get all properties from the selected node
 					newContext.rule = selectedNode->GetCreatorRules()[selectedNode->GetCreatorRules().Count() - 1];
 					newContext.originalRange = selectedNode->GetCodeRange();
-					newContext.originalNode = dynamic_cast<ParsingTreeObject*>(selectedNode);
+					newContext.originalNode = Ptr(selectedNode);
 					newContext.modifiedNode = newContext.originalNode;
 					newContext.modifiedEditVersion = newContext.input.editVersion;
 
@@ -721,7 +721,7 @@ GuiGrammarAutoComplete
 						TextPos stopPosition = GlobalTextPosToModifiedTextPos(newContext, trace.inputStart);
 
 						// find all possible token before the current caret using the PDA
-						Ptr<AutoCompleteData> autoComplete = new AutoCompleteData;
+						auto autoComplete = Ptr(new AutoCompleteData);
 						SortedList<vint> tableTokenIndices;
 						RegexToken* editingToken = SearchValidInputToken(state, collector, stopPosition, newContext, tableTokenIndices);
 
@@ -1034,7 +1034,7 @@ GuiGrammarAutoComplete
 			}
 
 			GuiGrammarAutoComplete::GuiGrammarAutoComplete(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule)
-				:RepeatingParsingExecutor::CallbackBase(new RepeatingParsingExecutor(_grammarParser, _grammarRule))
+				:RepeatingParsingExecutor::CallbackBase(Ptr(new RepeatingParsingExecutor(_grammarParser, _grammarRule)))
 				,editing(false)
 			{
 				Initialize();

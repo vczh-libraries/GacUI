@@ -45,7 +45,7 @@ GuiTextBoxAutoCompleteBase::TextListControlProvider
 				autoCompleteList->GetItems().Clear();
 				for (auto item : items)
 				{
-					autoCompleteList->GetItems().Add(new list::TextItem(item.text));
+					autoCompleteList->GetItems().Add(Ptr(new list::TextItem(item.text)));
 				}
 			}
 
@@ -83,7 +83,7 @@ GuiTextBoxAutoCompleteBase
 			{
 				if (!autoCompleteControlProvider)
 				{
-					autoCompleteControlProvider = new TextListControlProvider;
+					autoCompleteControlProvider = Ptr(new TextListControlProvider);
 				}
 				autoCompleteControlProvider->GetAutoCompleteControl()->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 

@@ -222,7 +222,7 @@ GuiDocumentCommonInterface
 				documentElement->SetCallback(this);
 
 				documentComposition = new GuiBoundsComposition;
-				documentComposition->SetOwnedElement(documentElement);
+				documentComposition->SetOwnedElement(Ptr(documentElement));
 				documentComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 				documentComposition->SetAlignmentToParent(Margin(5, 5, 5, 5));
 				_container->AddChild(documentComposition);
@@ -243,7 +243,7 @@ GuiDocumentCommonInterface
 
 				undoRedoProcessor->UndoRedoChanged.Add(this, &GuiDocumentCommonInterface::InvokeUndoRedoChanged);
 				undoRedoProcessor->ModifiedChanged.Add(this, &GuiDocumentCommonInterface::InvokeModifiedChanged);
-				SetDocument(new DocumentModel);
+				SetDocument(Ptr(new DocumentModel));
 			}
 
 			void GuiDocumentCommonInterface::ReplaceMouseArea(compositions::GuiGraphicsComposition* _mouseArea)
@@ -663,9 +663,9 @@ GuiDocumentCommonInterface
 
 			GuiDocumentCommonInterface::GuiDocumentCommonInterface()
 			{
-				undoRedoProcessor=new GuiDocumentUndoRedoProcessor;
+				undoRedoProcessor = Ptr(new GuiDocumentUndoRedoProcessor);
 
-				internalShortcutKeyManager=new GuiShortcutKeyManager;
+				internalShortcutKeyManager = Ptr(new GuiShortcutKeyManager);
 				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiDocumentCommonInterface::Undo));
 				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiDocumentCommonInterface::Redo));
 				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiDocumentCommonInterface::SelectAll));
@@ -900,7 +900,7 @@ GuiDocumentCommonInterface
 				Ptr<DocumentModel> document = documentElement->GetDocument();
 				if (0 <= first && first < document->paragraphs.Count() && 0 <= last && last < document->paragraphs.Count() && last - first + 1 == alignments.Count())
 				{
-					Ptr<GuiDocumentUndoRedoProcessor::SetAlignmentStruct> arguments = new GuiDocumentUndoRedoProcessor::SetAlignmentStruct;
+					auto arguments = Ptr(new GuiDocumentUndoRedoProcessor::SetAlignmentStruct);
 					arguments->start = first;
 					arguments->end = last;
 					arguments->originalAlignments.Resize(alignments.Count());
@@ -1141,7 +1141,7 @@ GuiDocumentCommonInterface
 				{
 					if (auto image = reader->GetImage())
 					{
-						auto imageData = MakePtr<GuiImageData>(image, 0);
+						auto imageData = Ptr(new GuiImageData(image, 0));
 						EditImage(GetCaretBegin(), GetCaretEnd(), imageData);
 						return true;
 					}

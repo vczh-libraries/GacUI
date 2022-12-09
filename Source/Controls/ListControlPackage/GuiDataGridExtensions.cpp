@@ -118,7 +118,7 @@ DataVisualizerFactory
 
 				Ptr<controls::list::IDataVisualizer> DataVisualizerFactory::CreateVisualizer(controls::list::IDataGridContext* dataGridContext)
 				{
-					auto dataVisualizer = MakePtr<DataVisualizerBase>();
+					auto dataVisualizer = Ptr(new DataVisualizerBase);
 					dataVisualizer->factory = this;
 					dataVisualizer->dataGridContext = dataGridContext;
 					dataVisualizer->visualizerTemplate = CreateItemTemplate(dataGridContext);
@@ -207,7 +207,7 @@ DataEditorFactory
 
 				Ptr<IDataEditor> DataEditorFactory::CreateEditor(controls::list::IDataGridContext* dataGridContext)
 				{
-					auto editor = MakePtr<DataEditorBase>();
+					auto editor = Ptr(new DataEditorBase);
 					editor->factory = this;
 					editor->dataGridContext = dataGridContext;
 
@@ -268,7 +268,7 @@ MainColumnVisualizerTemplate
 
 						image = GuiImageFrameElement::Create();
 						image->SetStretch(true);
-						cell->SetOwnedElement(image);
+						cell->SetOwnedElement(Ptr(image));
 					}
 					{
 						GuiCellComposition* cell = new GuiCellComposition;
@@ -279,7 +279,7 @@ MainColumnVisualizerTemplate
 						text = GuiSolidLabelElement::Create();
 						text->SetAlignments(Alignment::Left, Alignment::Center);
 						text->SetEllipse(true);
-						cell->SetOwnedElement(text);
+						cell->SetOwnedElement(Ptr(text));
 					}
 					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
@@ -328,7 +328,7 @@ SubColumnVisualizerTemplate
 
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					SetMargin(Margin(8, 0, 8, 0));
-					SetOwnedElement(text);
+					SetOwnedElement(Ptr(text));
 
 					TextChanged.AttachMethod(this, &SubColumnVisualizerTemplate::OnTextChanged);
 					FontChanged.AttachMethod(this, &SubColumnVisualizerTemplate::OnFontChanged);
@@ -406,7 +406,7 @@ CellBorderVisualizerTemplate
 
 					focusComposition = new GuiBoundsComposition();
 					{
-						auto focus = GuiFocusRectangleElement::Create();
+						auto focus = Ptr(GuiFocusRectangleElement::Create());
 						focusComposition->SetOwnedElement(focus);
 						focusComposition->SetAlignmentToParent(Margin(1, 1, 1, 1));
 					}
@@ -445,13 +445,13 @@ CellBorderVisualizerTemplate
 					auto bounds1 = new GuiBoundsComposition;
 					{
 						border1 = GuiSolidBorderElement::Create();
-						bounds1->SetOwnedElement(border1);
+						bounds1->SetOwnedElement(Ptr(border1));
 						bounds1->SetAlignmentToParent(Margin(-1, 0, 0, 0));
 					}
 					auto bounds2 = new GuiBoundsComposition;
 					{
 						border2 = GuiSolidBorderElement::Create();
-						bounds2->SetOwnedElement(border2);
+						bounds2->SetOwnedElement(Ptr(border2));
 						bounds2->SetAlignmentToParent(Margin(0, -1, 0, 0));
 					}
 					auto container = new GuiBoundsComposition();

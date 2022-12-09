@@ -162,7 +162,7 @@ GuiTextBoxUndoRedoProcessor
 
 			void GuiTextBoxUndoRedoProcessor::TextEditNotify(const TextEditNotifyStruct& arguments)
 			{
-				Ptr<EditStep> step=new EditStep;
+				auto step=Ptr(new EditStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
@@ -266,7 +266,7 @@ GuiDocumentUndoRedoProcessor
 
 			void GuiDocumentUndoRedoProcessor::OnReplaceModel(const ReplaceModelStruct& arguments)
 			{
-				Ptr<ReplaceModelStep> step=new ReplaceModelStep;
+				auto step=Ptr(new ReplaceModelStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
@@ -274,7 +274,7 @@ GuiDocumentUndoRedoProcessor
 
 			void GuiDocumentUndoRedoProcessor::OnRenameStyle(const RenameStyleStruct& arguments)
 			{
-				Ptr<RenameStyleStep> step=new RenameStyleStep;
+				auto step=Ptr(new RenameStyleStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);
@@ -282,7 +282,7 @@ GuiDocumentUndoRedoProcessor
 
 			void GuiDocumentUndoRedoProcessor::OnSetAlignment(Ptr<SetAlignmentStruct> arguments)
 			{
-				Ptr<SetAlignmentStep> step=new SetAlignmentStep;
+				auto step=Ptr(new SetAlignmentStep);
 				step->processor=this;
 				step->arguments=arguments;
 				PushStep(step);

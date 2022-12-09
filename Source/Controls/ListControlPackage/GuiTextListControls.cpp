@@ -36,7 +36,7 @@ DefaultTextListItemTemplate
 					textElement->SetAlignments(Alignment::Left, Alignment::Center);
 
 					GuiBoundsComposition* textComposition = new GuiBoundsComposition;
-					textComposition->SetOwnedElement(textElement);
+					textComposition->SetOwnedElement(Ptr(textElement));
 					textComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 
 					if (auto bulletStyleController = CreateBulletStyle())
@@ -344,19 +344,19 @@ GuiTextList
 				case TextListView::Text:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DefaultTextListItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				case TextListView::Check:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DefaultCheckTextListItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				case TextListView::Radio:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DefaultRadioTextListItemTemplate; },
-						new list::FixedHeightItemArranger
+						Ptr(new list::FixedHeightItemArranger)
 					);
 					break;
 				default:;

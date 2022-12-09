@@ -325,7 +325,7 @@ RepeatingParsingExecutor
 						}
 						if((index=fieldSemanticAtts.Keys().IndexOf(fieldDesc))!=-1)
 						{
-							md.semantics=new List<vint>;
+							md.semantics=Ptr(new List<vint>);
 							for (auto argument : fieldSemanticAtts.Values()[index]->arguments)
 							{
 								md.semantics->Add(semanticIndexMap.IndexOf(argument));

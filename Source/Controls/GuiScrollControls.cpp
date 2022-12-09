@@ -149,7 +149,7 @@ GuiScroll
 				SmallMoveChanged.SetAssociatedComposition(boundsComposition);
 				BigMoveChanged.SetAssociatedComposition(boundsComposition);
 
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiScroll::OnKeyDown);
 				boundsComposition->GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);
 				boundsComposition->GetEventReceiver()->rightButtonDown.AttachMethod(this, &GuiScroll::OnMouseDown);

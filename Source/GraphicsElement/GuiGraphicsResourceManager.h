@@ -180,8 +180,8 @@ Helpers
 					{\
 						TRENDERER* renderer=new TRENDERER;\
 						renderer->factory=this;\
-						renderer->element=0;\
-						renderer->renderTarget=0;\
+						renderer->element=nullptr;\
+						renderer->renderTarget=nullptr;\
 						return renderer;\
 					}\
 				};\
@@ -195,7 +195,7 @@ Helpers
 				{\
 					auto manager = GetGuiGraphicsResourceManager();\
 					CHECK_ERROR(manager != nullptr, L"SetGuiGraphicsResourceManager must be called before registering element renderers.");\
-					manager->RegisterRendererFactory(TELEMENT::GetElementType(), new TRENDERER::Factory);\
+					manager->RegisterRendererFactory(TELEMENT::GetElementType(), Ptr(new TRENDERER::Factory));\
 				}\
 				IGuiGraphicsRendererFactory* GetFactory()override\
 				{\

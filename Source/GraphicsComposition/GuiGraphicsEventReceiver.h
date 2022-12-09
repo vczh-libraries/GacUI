@@ -129,21 +129,21 @@ Event
 				template<typename TClass, typename TMethod>
 				Ptr<IGuiGraphicsEventHandler> AttachMethod(TClass* receiver, TMethod TClass::* method)
 				{
-					auto handler=MakePtr<FunctionHandler>(FunctionType(receiver, method));
+					auto handler=Ptr(new FunctionHandler(FunctionType(receiver, method)));
 					Attach(handler);
 					return handler;
 				}
 
 				Ptr<IGuiGraphicsEventHandler> AttachFunction(RawFunctionType* function)
 				{
-					auto handler = MakePtr<FunctionHandler>(FunctionType(function));
+					auto handler = Ptr(new FunctionHandler(FunctionType(function)));
 					Attach(handler);
 					return handler;
 				}
 
 				Ptr<IGuiGraphicsEventHandler> AttachFunction(const FunctionType& function)
 				{
-					auto handler = MakePtr<FunctionHandler>(function);
+					auto handler = Ptr(new FunctionHandler(function));
 					Attach(handler);
 					return handler;
 				}
@@ -151,7 +151,7 @@ Event
 				template<typename TLambda>
 				Ptr<IGuiGraphicsEventHandler> AttachLambda(const TLambda& lambda)
 				{
-					auto handler = MakePtr<FunctionHandler>(FunctionType(lambda));
+					auto handler = Ptr(new FunctionHandler(FunctionType(lambda)));
 					Attach(handler);
 					return handler;
 				}

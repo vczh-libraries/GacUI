@@ -185,7 +185,7 @@ GuiTab
 				:GuiControl(themeName)
 				, tabPages(this)
 			{
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				SetFocusableComposition(boundsComposition);
 
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiTab::OnKeyDown);

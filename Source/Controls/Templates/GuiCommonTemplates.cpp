@@ -197,7 +197,7 @@ GuiCommonDatePickerLook
 					listYears->SetHorizontalAlwaysVisible(false);
 					for (vint i = YearFirst; i <= YearLast; i++)
 					{
-						listYears->GetItems().Add(new list::TextItem(itow(i)));
+						listYears->GetItems().Add(Ptr(new list::TextItem(itow(i))));
 					}
 					comboYear = new GuiComboBoxListControl(theme::ThemeName::ComboBox, listYears);
 					comboYear->SetAlt(L"Y");
@@ -266,10 +266,10 @@ GuiCommonDatePickerLook
 						dayTable->AddChild(cell);
 						cell->SetSite(1, i, 1, 1);
 
-						GuiSolidLabelElement* element = GuiSolidLabelElement::Create();
+						auto element = Ptr(GuiSolidLabelElement::Create());
 						element->SetAlignments(Alignment::Center, Alignment::Center);
 						element->SetColor(primaryTextColor);
-						labelDaysOfWeek[i] = element;
+						labelDaysOfWeek[i] = element.Obj();
 						cell->SetOwnedElement(element);
 					}
 
@@ -295,10 +295,10 @@ GuiCommonDatePickerLook
 							cell->AddChild(button->GetBoundsComposition());
 							buttonDays[j*DaysOfWeek + i] = button;
 
-							GuiSolidLabelElement* element = GuiSolidLabelElement::Create();
+							auto element = Ptr(GuiSolidLabelElement::Create());
 							element->SetAlignments(Alignment::Center, Alignment::Center);
 							element->SetText(L"0");
-							labelDays[j*DaysOfWeek + i] = element;
+							labelDays[j*DaysOfWeek + i] = element.Obj();
 
 							GuiBoundsComposition* elementBounds = new GuiBoundsComposition;
 							elementBounds->SetOwnedElement(element);
@@ -309,7 +309,7 @@ GuiCommonDatePickerLook
 					}
 				}
 				{
-					GuiSolidBackgroundElement* element = GuiSolidBackgroundElement::Create();
+					auto element = Ptr(GuiSolidBackgroundElement::Create());
 					element->SetColor(backgroundColor);
 					dayTable->SetOwnedElement(element);
 				}
@@ -392,7 +392,7 @@ GuiCommonDatePickerLook
 					listMonths->GetItems().Clear();
 					for (vint i = 1; i <= 12; i++)
 					{
-						listMonths->GetItems().Add(new list::TextItem(dateLocale.GetLongMonthName(i)));
+						listMonths->GetItems().Add(Ptr(new list::TextItem(dateLocale.GetLongMonthName(i))));
 					}
 
 					SetDate(currentDate);

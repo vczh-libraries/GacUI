@@ -579,7 +579,7 @@ DataProvider
 					}
 					if (selectedFilters.Count() > 0)
 					{
-						auto andFilter = MakePtr<DataAndFilter>();
+						auto andFilter = Ptr(new DataAndFilter);
 						for (auto filter : selectedFilters)
 						{
 							andFilter->AddSubFilter(filter);
@@ -810,7 +810,7 @@ DataProvider
 						}
 						else
 						{
-							Ptr<DataReverseSorter> reverseSorter = new DataReverseSorter();
+							auto reverseSorter = Ptr(new DataReverseSorter);
 							reverseSorter->SetSubSorter(sorter);
 							currentSorter = reverseSorter;
 						}

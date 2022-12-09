@@ -620,10 +620,10 @@ GuiTextBoxCommonInterface
 				,readonly(false)
 				,preventEnterDueToAutoComplete(false)
 			{
-				undoRedoProcessor=new GuiTextBoxUndoRedoProcessor;
+				undoRedoProcessor=Ptr(new GuiTextBoxUndoRedoProcessor);
 				AttachTextEditCallback(undoRedoProcessor);
 
-				internalShortcutKeyManager=new GuiShortcutKeyManager;
+				internalShortcutKeyManager=Ptr(new GuiShortcutKeyManager);
 				AddShortcutCommand(VKEY::KEY_Z, Func<bool()>(this, &GuiTextBoxCommonInterface::Undo));
 				AddShortcutCommand(VKEY::KEY_Y, Func<bool()>(this, &GuiTextBoxCommonInterface::Redo));
 				AddShortcutCommand(VKEY::KEY_A, Func<void()>(this, &GuiTextBoxCommonInterface::SelectAll));

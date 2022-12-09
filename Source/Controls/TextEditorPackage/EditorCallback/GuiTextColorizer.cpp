@@ -299,7 +299,7 @@ GuiTextBoxRegexColorizer
 				}
 				else
 				{
-					lexer = new regex::RegexLexer(tokenRegexes);
+					lexer = Ptr(new regex::RegexLexer(tokenRegexes));
 					colors.Resize(1 + tokenRegexes.Count() + extraTokenColors.Count());
 					colors[0] = defaultColor;
 					for (vint i = 0; i < tokenColors.Count(); i++)
@@ -314,7 +314,7 @@ GuiTextBoxRegexColorizer
 						regex::RegexProc proc;
 						proc.colorizeProc = &GuiTextBoxRegexColorizer::ColorizerProc;
 						proc.argument = colorizerArgument;
-						colorizer = new regex::RegexLexerColorizer(lexer->Colorize(proc));
+						colorizer = Ptr(new regex::RegexLexerColorizer(lexer->Colorize(proc)));
 					}
 				}
 			}

@@ -655,15 +655,15 @@ GuiVirtualDataGrid
 					auto cellBorderProperty = [](const Value&) { return new CellBorderVisualizerTemplate; };
 
 					defaultMainColumnVisualizerFactory = 
-						MakePtr<DataVisualizerFactory>(cellBorderProperty,
-							MakePtr<DataVisualizerFactory>(focusRectangleProperty,
-								MakePtr<DataVisualizerFactory>(mainProperty)
-						));
+						Ptr(new DataVisualizerFactory(cellBorderProperty,
+							Ptr(new DataVisualizerFactory(focusRectangleProperty,
+								Ptr(new DataVisualizerFactory(mainProperty)
+						)))));
 					defaultSubColumnVisualizerFactory = 
-						MakePtr<DataVisualizerFactory>(cellBorderProperty,
-							MakePtr<DataVisualizerFactory>(focusRectangleProperty,
-								MakePtr<DataVisualizerFactory>(subProperty)
-						));
+						Ptr(new DataVisualizerFactory(cellBorderProperty,
+							Ptr(new DataVisualizerFactory(focusRectangleProperty,
+								Ptr(new DataVisualizerFactory(subProperty)
+						)))));
 				}
 
 				CHECK_ERROR(listViewItemView != nullptr, L"GuiVirtualDataGrid::GuiVirtualDataGrid(IStyleController*, GuiListControl::IItemProvider*)#Missing IListViewItemView from item provider.");
@@ -692,7 +692,7 @@ GuiVirtualDataGrid
 			{
 				SetStyleAndArranger(
 					[](const Value&) { return new list::DefaultDataGridItemTemplate; },
-					new list::ListViewColumnItemArranger
+					Ptr(new list::ListViewColumnItemArranger)
 				);
 			}
 

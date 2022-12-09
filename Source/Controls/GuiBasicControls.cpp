@@ -45,7 +45,7 @@ GuiControl
 			{
 				if (!disposedFlag)
 				{
-					disposedFlag = new GuiDisposedFlag(this);
+					disposedFlag = Ptr(new GuiDisposedFlag(this));
 				}
 				return disposedFlag;
 			}

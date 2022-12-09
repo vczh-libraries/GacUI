@@ -137,12 +137,12 @@ IGuiAnimation
 
 			Ptr<IGuiAnimation> IGuiAnimation::CreateAnimation(const Func<void(vuint64_t)>& run, vuint64_t milliseconds)
 			{
-				return new GuiFiniteAnimation(run, milliseconds);
+				return Ptr(new GuiFiniteAnimation(run, milliseconds));
 			}
 
 			Ptr<IGuiAnimation> IGuiAnimation::CreateAnimation(const Func<void(vuint64_t)>& run)
 			{
-				return new GuiInfiniteAnimation(run);
+				return Ptr(new GuiInfiniteAnimation(run));
 			}
 
 /***********************************************************************
@@ -304,7 +304,7 @@ IGuiAnimationCoroutine
 
 			Ptr<IGuiAnimation> IGuiAnimationCoroutine::Create(const Creator& creator)
 			{
-				return new GuiCoroutineAnimation(creator);
+				return Ptr(new GuiCoroutineAnimation(creator));
 			}
 		}
 	}

@@ -353,7 +353,7 @@ GuiRibbonGroup
 				SetAltComposition(boundsComposition);
 				SetAltControl(this, false);
 
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 				{
 					stack = new GuiStackComposition();
 					stack->SetDirection(GuiStackComposition::Horizontal);
@@ -1021,7 +1021,7 @@ GuiRibbonGallery
 			GuiRibbonGallery::GuiRibbonGallery(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
-				commandExecutor = new CommandExecutor(this);
+				commandExecutor = Ptr(new CommandExecutor(this));
 
 				ScrollUpEnabledChanged.SetAssociatedComposition(boundsComposition);
 				ScrollDownEnabledChanged.SetAssociatedComposition(boundsComposition);

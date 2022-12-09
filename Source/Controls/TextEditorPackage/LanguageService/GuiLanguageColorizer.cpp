@@ -102,7 +102,7 @@ GuiGrammarColorizer
 			}
 
 			GuiGrammarColorizer::GuiGrammarColorizer(Ptr<parsing::tabling::ParsingGeneralParser> _grammarParser, const WString& _grammarRule)
-				:RepeatingParsingExecutor::CallbackBase(new RepeatingParsingExecutor(_grammarParser, _grammarRule))
+				:RepeatingParsingExecutor::CallbackBase(Ptr(new RepeatingParsingExecutor(_grammarParser, _grammarRule)))
 			{
 				parsingExecutor->AttachCallback(this);
 				BeginSetColors();
