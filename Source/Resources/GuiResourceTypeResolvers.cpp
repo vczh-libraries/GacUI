@@ -252,7 +252,7 @@ Xml Type Resolver (Xml)
 				Ptr<XmlElement> root = XmlGetElements(element).First(0);
 				if(root)
 				{
-					Ptr<XmlDocument> xml=new XmlDocument;
+					auto xml = Ptr(new XmlDocument);
 					xml->rootElement=root;
 					return xml;
 				}

@@ -129,7 +129,7 @@ Calculate if all text in the specified range has some common styles
 					}
 					else
 					{
-						style = new DocumentStyleProperties;
+						style = Ptr(new DocumentStyleProperties);
 						OverrideStyleItem(&DocumentStyleProperties::face, &FontProperties::fontFamily);
 						OverrideStyleItem(&DocumentStyleProperties::size, &FontProperties::size);
 						OverrideStyleItem(&DocumentStyleProperties::color, &DocumentModel::ResolvedStyle::color);

@@ -503,7 +503,7 @@ GuiResourceFolder
 					}
 					else
 					{
-						Ptr<GuiResourceFolder> folder = new GuiResourceFolder;
+						auto folder = Ptr(new GuiResourceFolder);
 						if (AddFolder(name, folder))
 						{
 							WString newContainingFolder = containingFolder;
@@ -575,7 +575,7 @@ GuiResourceFolder
 						}
 					}
 
-					Ptr<GuiResourceItem> item = new GuiResourceItem;
+					auto item = Ptr(new GuiResourceItem);
 					if (AddItem(name, item))
 					{
 						WString type = element->name.value;
@@ -785,7 +785,7 @@ GuiResourceFolder
 				reader << typeName << name;
 
 				auto resolver = GetResourceResolverManager()->GetTypeResolver(typeNames[typeName]);
-				Ptr<GuiResourceItem> item = new GuiResourceItem;
+				auto item = Ptr(new GuiResourceItem);
 				if(AddItem(name, item))
 				{
 					WString type = typeNames[typeName];
@@ -1326,7 +1326,7 @@ GuiResource
 
 		Ptr<GuiResource> GuiResource::LoadFromXml(Ptr<glr::xml::XmlDocument> xml, const WString& filePath, const WString& workingDirectory, GuiResourceError::List& errors)
 		{
-			Ptr<GuiResource> resource = new GuiResource;
+			auto resource = Ptr(new GuiResource);
 			resource->SetFileContentPath(filePath, filePath);
 			resource->workingDirectory = workingDirectory;
 			DelayLoadingList delayLoadings;

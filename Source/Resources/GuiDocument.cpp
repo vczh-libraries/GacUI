@@ -144,7 +144,7 @@ DocumentModel
 		{
 			{
 				FontProperties font=GetCurrentController()->ResourceService()->GetDefaultFont();
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp=Ptr(new DocumentStyleProperties);
 				sp->face=font.fontFamily;
 				sp->size=DocumentFontSize((double)font.size, false);
 				sp->color=Color();
@@ -156,42 +156,42 @@ DocumentModel
 				sp->antialias=font.antialias;
 				sp->verticalAntialias=font.verticalAntialias;
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles=sp;
 				styles.Add(L"#Default", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				sp->color=Color(255, 255, 255);
 				sp->backgroundColor=Color(51, 153, 255);
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles=sp;
 				styles.Add(L"#Selection", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles=sp;
 				styles.Add(L"#Context", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				sp->color=Color(0, 0, 255);
 				sp->underline=true;
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->parentStyleName=L"#Context";
 				style->styles=sp;
 				styles.Add(L"#NormalLink", style);
 			}
 			{
-				Ptr<DocumentStyleProperties> sp=new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				sp->color=Color(255, 128, 0);
 				sp->underline=true;
 
-				Ptr<DocumentStyle> style=new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->parentStyleName=L"#Context";
 				style->styles=sp;
 				styles.Add(L"#ActiveLink", style);
@@ -215,7 +215,7 @@ DocumentModel
 		void DocumentModel::MergeBaselineStyle(Ptr<DocumentStyleProperties> style, const WString& styleName)
 		{
 			auto indexDst = styles.Keys().IndexOf(styleName);
-			Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
+			auto sp = Ptr(new DocumentStyleProperties);
 			MergeStyle(sp, style);
 			if (indexDst != -1)
 			{
@@ -224,7 +224,7 @@ DocumentModel
 
 			if (indexDst == -1)
 			{
-				auto style = new DocumentStyle;
+				auto style = Ptr(new DocumentStyle);
 				style->styles = sp;
 				styles.Add(styleName, style);
 			}
@@ -262,7 +262,7 @@ DocumentModel
 
 		void DocumentModel::MergeDefaultFont(const FontProperties& defaultFont)
 		{
-			Ptr<DocumentStyleProperties> style = new DocumentStyleProperties;
+			auto style = Ptr(new DocumentStyleProperties);
 
 			style->face					=defaultFont.fontFamily;
 			style->size					=DocumentFontSize((double)defaultFont.size, false);
@@ -317,7 +317,7 @@ DocumentModel
 
 			if(!selectedStyle->resolvedStyles)
 			{
-				Ptr<DocumentStyleProperties> sp = new DocumentStyleProperties;
+				auto sp = Ptr(new DocumentStyleProperties);
 				selectedStyle->resolvedStyles = sp;
 
 				Ptr<DocumentStyle> currentStyle;

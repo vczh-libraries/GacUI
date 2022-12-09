@@ -454,7 +454,7 @@ WindowsDirect2DParagraph (Initialization)
 					,dwriteFactory(GetWindowsDirect2DObjectProvider()->GetDirectWriteFactory())
 					,renderTarget(dynamic_cast<IWindowsDirect2DRenderTarget*>(_renderTarget))
 					,paragraphText(_text)
-					,textLayout(0)
+					,textLayout(nullptr)
 					,wrapLine(true)
 					,maxWidth(-1)
 					,caret(-1)
@@ -1262,7 +1262,7 @@ WindowsDirect2DLayoutProvider
 
 			Ptr<IGuiGraphicsParagraph> WindowsDirect2DLayoutProvider::CreateParagraph(const WString& text, IGuiGraphicsRenderTarget* renderTarget, elements::IGuiGraphicsParagraphCallback* callback)
 			{
-				return new WindowsDirect2DParagraph(this, text, renderTarget, callback);
+				return Ptr(new WindowsDirect2DParagraph(this, text, renderTarget, callback));
 			}
 		}
 	}

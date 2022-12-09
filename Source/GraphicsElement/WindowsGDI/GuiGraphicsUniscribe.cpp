@@ -142,7 +142,7 @@ UniscribeFragment
 			Ptr<UniscribeFragment> UniscribeFragment::Copy(vint start, vint length)
 			{
 				vint end=start+length;
-				Ptr<UniscribeFragment> fragment=new UniscribeFragment(length==0?L"":text.Sub(start, length));
+				auto fragment=Ptr(new UniscribeFragment(length==0?L"":text.Sub(start, length)));
 				fragment->fontStyle=fontStyle;
 				fragment->fontObject=fontObject;
 
@@ -768,7 +768,7 @@ UniscribeTextRun
 
 						if(backgroundColor.a>0)
 						{
-							Ptr<WinBrush> brush=new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b));
+							auto brush=Ptr(new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b)));
 							dc->SetBrush(brush);
 							dc->FillRect(rect);
 						}
@@ -872,7 +872,7 @@ UniscribeEmbeddedObjectRun
 
 					if(backgroundColor.a>0)
 					{
-						Ptr<WinBrush> brush=new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b));
+						auto brush=Ptr(new WinBrush(RGB(backgroundColor.r, backgroundColor.g, backgroundColor.b)));
 						dc->SetBrush(brush);
 						dc->FillRect(rect);
 					}
@@ -981,7 +981,7 @@ UniscribeLine
 						for(vint i=0;i<scriptItemCount;i++)
 						{
 							SCRIPT_ITEM item=items[i];
-							Ptr<UniscribeItem> scriptItem=new UniscribeItem;
+							auto scriptItem = Ptr(new UniscribeItem);
 							scriptItem->startFromLine=item.iCharPos;
 							scriptItem->length=items[i+1].iCharPos-item.iCharPos;
 							scriptItem->itemText=lineText.Buffer()+item.iCharPos;
@@ -1037,7 +1037,7 @@ UniscribeLine
 											{
 												if(elementCurrent==currentStart)
 												{
-													auto run=MakePtr<UniscribeEmbeddedObjectRun>();
+													auto run=Ptr(new UniscribeEmbeddedObjectRun);
 													run->documentFragment=fragment;
 													run->scriptItem=scriptItem.Obj();
 													run->startFromLine=currentStart;
@@ -1056,7 +1056,7 @@ UniscribeLine
 								}
 								if(!skip)
 								{
-									Ptr<UniscribeTextRun> run=new UniscribeTextRun;
+									auto run = Ptr(new UniscribeTextRun);
 									run->documentFragment=fragment;
 									run->scriptItem=scriptItem.Obj();
 									run->startFromLine=currentStart;
@@ -1089,7 +1089,7 @@ UniscribeLine
 										vint start=breakings[i];
 										vint length=i==breakings.Count()-1?textRun->length-start:breakings[i+1]-start;
 
-										Ptr<UniscribeTextRun> newRun=new UniscribeTextRun;
+										auto newRun = Ptr(new UniscribeTextRun);
 										newRun->documentFragment=run->documentFragment;
 										newRun->scriptItem=run->scriptItem;
 										newRun->startFromLine=start+run->startFromLine;
@@ -1253,7 +1253,7 @@ UniscribeLine
 
 							// create a virtual line
 							{
-								Ptr<UniscribeVirtualLine> virtualLine=new UniscribeVirtualLine;
+								auto virtualLine = Ptr(new UniscribeVirtualLine);
 								virtualLine->firstRunIndex=startRun;
 								virtualLine->firstRunBoundsIndex=startRunFragmentCount;
 								virtualLine->lastRunIndex=availableLastRun;
@@ -1396,7 +1396,7 @@ UniscribeParagraph (Initialization)
 						{
 							if(!line)
 							{
-								line=new UniscribeLine;
+								line=Ptr(new UniscribeLine);
 								lines.Add(line);
 							}
 							line->documentFragments.Add(fragment);
@@ -1416,7 +1416,7 @@ UniscribeParagraph (Initialization)
 								}
 								if(!line)
 								{
-									line=new UniscribeLine;
+									line=Ptr(new UniscribeLine);
 									lines.Add(line);
 								}
 
@@ -1754,7 +1754,7 @@ UniscribeParagraph (Formatting)
 					{
 						text+=documentFragments[f1]->text;
 					}
-					Ptr<UniscribeFragment> elementFragment=new UniscribeFragment(text);
+					auto elementFragment=Ptr(new UniscribeFragment(text));
 
 					for(vint i=f1;i<=f2;i++)
 					{

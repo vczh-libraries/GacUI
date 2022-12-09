@@ -46,7 +46,7 @@ DocumentModel::EditRangeOperations
 				GetRunRange(paragraphs[i].Obj(), runRanges);
 			}
 
-			Ptr<DocumentModel> newDocument=new DocumentModel;
+			auto newDocument = Ptr(new DocumentModel);
 
 			// copy paragraphs
 			if(begin.row==end.row)
@@ -93,7 +93,7 @@ DocumentModel::EditRangeOperations
 					Ptr<DocumentStyle> style=styles[styleName];
 					if(deepCopy)
 					{
-						Ptr<DocumentStyle> newStyle=new DocumentStyle;
+						auto newStyle = Ptr(new DocumentStyle);
 						newStyle->parentStyleName=style->parentStyleName;
 						newStyle->styles=CopyStyle(style->styles);
 						newStyle->resolvedStyles=CopyStyle(style->resolvedStyles);
@@ -411,13 +411,13 @@ DocumentModel::EditImage
 
 		Ptr<DocumentImageRun> DocumentModel::EditImage(TextPos begin, TextPos end, Ptr<GuiImageData> image)
 		{
-			Ptr<DocumentImageRun> imageRun=new DocumentImageRun;
+			auto imageRun = Ptr(new DocumentImageRun);
 			imageRun->size=image->GetImage()->GetFrame(image->GetFrameIndex())->GetSize();
 			imageRun->baseline=imageRun->size.y;
 			imageRun->image=image->GetImage();
 			imageRun->frameIndex=image->GetFrameIndex();
 
-			Ptr<DocumentParagraphRun> paragraph=new DocumentParagraphRun;
+			auto paragraph = Ptr(new DocumentParagraphRun);
 			paragraph->runs.Add(imageRun);
 
 			Array<Ptr<DocumentParagraphRun>> runs(1);
@@ -600,7 +600,7 @@ DocumentModel::ClearStyle
 		END_OF_SUMMERIZING:
 			if (!style)
 			{
-				style = new DocumentStyleProperties;
+				style = Ptr(new DocumentStyleProperties);
 			}
 			return style;
 		}

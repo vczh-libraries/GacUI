@@ -298,7 +298,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 						return nullptr;
 					}
 
-					Ptr<ShortcutBuilder> builder = new ShortcutBuilder;
+					auto builder = Ptr(new ShortcutBuilder);
 					builder->text = text;
 					builder->ctrl = match->Groups().Contains(_ctrl);
 					builder->shift = match->Groups().Contains(_shift);

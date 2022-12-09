@@ -261,7 +261,7 @@ Merge sibling runs if they are exactly the same
 					if (auto sibilingRun = nextRun.Cast<DocumentTextRun>())
 					{
 						run->text += sibilingRun->text;
-						replacedRun = run;
+						replacedRun = Ptr(run);
 					}
 				}
 
@@ -281,7 +281,7 @@ Merge sibling runs if they are exactly the same
 						if (run->style->verticalAntialias !=	sibilingRun->style->verticalAntialias)	return;
 
 						CopyFrom(run->runs, sibilingRun->runs, true);
-						replacedRun = run;
+						replacedRun = Ptr(run);
 					}
 				}
 
@@ -292,7 +292,7 @@ Merge sibling runs if they are exactly the same
 						if (run->styleName == sibilingRun->styleName)
 						{
 							CopyFrom(run->runs, sibilingRun->runs, true);
-							replacedRun = run;
+							replacedRun = Ptr(run);
 						}
 					}
 				}
@@ -307,7 +307,7 @@ Merge sibling runs if they are exactly the same
 							run->reference == sibilingRun->reference)
 						{
 							CopyFrom(run->runs, sibilingRun->runs, true);
-							replacedRun = run;
+							replacedRun = Ptr(run);
 						}
 					}
 				}

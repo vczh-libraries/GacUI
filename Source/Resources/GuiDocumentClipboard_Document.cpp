@@ -109,10 +109,10 @@ namespace vl
 
 		Ptr<DocumentModel> LoadDocumentFromClipboardStream(stream::IStream& clipboardStream)
 		{
-			auto tempResource = MakePtr<GuiResource>();
-			auto tempResourceItem = MakePtr<GuiResourceItem>();
+			auto tempResource = Ptr(new GuiResource);
+			auto tempResourceItem = Ptr(new GuiResourceItem);
 			tempResource->AddItem(L"Document", tempResourceItem);
-			auto tempResolver = MakePtr<GuiResourcePathResolver>(tempResource, L"");
+			auto tempResolver = Ptr(new GuiResourcePathResolver(tempResource, L""));
 
 			internal::ContextFreeReader reader(clipboardStream);
 			{
@@ -142,8 +142,8 @@ namespace vl
 					reader << (IStream&)memoryStream;
 					if (auto image = GetCurrentController()->ImageService()->CreateImageFromStream(memoryStream))
 					{
-						auto imageItem = MakePtr<GuiResourceItem>();
-						imageItem->SetContent(L"Image", MakePtr<GuiImageData>(image, 0));
+						auto imageItem = Ptr(new GuiResourceItem);
+						imageItem->SetContent(L"Image", Ptr(new GuiImageData(image, 0)));
 						tempResource->AddItem(L"Image_" + itow(i), imageItem);
 					}
 				}

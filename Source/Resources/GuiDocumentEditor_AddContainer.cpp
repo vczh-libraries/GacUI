@@ -99,7 +99,7 @@ AddStyleNameVisitor	: Apply a style name on the specified range
 
 				Ptr<DocumentContainerRun> CreateContainer()override
 				{
-					Ptr<DocumentStylePropertiesRun> containerRun = new DocumentStylePropertiesRun;
+					auto containerRun = Ptr(new DocumentStylePropertiesRun);
 					containerRun->style = CopyStyle(style);
 					return containerRun;
 				}
@@ -120,7 +120,7 @@ AddStyleNameVisitor	: Apply a style name on the specified range
 
 				Ptr<DocumentContainerRun> CreateContainer()override
 				{
-					Ptr<DocumentHyperlinkRun> containerRun = new DocumentHyperlinkRun;
+					auto containerRun = Ptr(new DocumentHyperlinkRun);
 					containerRun->reference = reference;
 					containerRun->normalStyleName = normalStyleName;
 					containerRun->activeStyleName = activeStyleName;
@@ -144,7 +144,7 @@ AddStyleNameVisitor	: Apply a style name on the specified range
 
 				Ptr<DocumentContainerRun> CreateContainer()override
 				{
-					Ptr<DocumentStyleApplicationRun> containerRun = new DocumentStyleApplicationRun;
+					auto containerRun = Ptr(new DocumentStyleApplicationRun);
 					containerRun->styleName = styleName;
 					return containerRun;
 				}

@@ -58,7 +58,7 @@ Get the hyperlink run that contains the specified position
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					package->hyperlinks.Add(run);
+					package->hyperlinks.Add(Ptr(run));
 				}
 
 				void Visit(DocumentImageRun* run)override
@@ -81,7 +81,7 @@ Get the hyperlink run that contains the specified position
 		{
 			Ptr<DocumentHyperlinkRun::Package> LocateHyperlink(DocumentParagraphRun* run, RunRangeMap& runRanges, vint row, vint start, vint end)
 			{
-				auto package = MakePtr<DocumentHyperlinkRun::Package>();
+				auto package = Ptr(new DocumentHyperlinkRun::Package);
 				package->row = row;
 				{
 					LocateHyperlinkVisitor visitor(runRanges, package, start, end);
@@ -109,7 +109,7 @@ Get the hyperlink run that contains the specified position
 					vint pos = runRanges[startRun.Obj()].start;
 					if (pos == 0) break;
 
-					auto newPackage = MakePtr<DocumentHyperlinkRun::Package>();
+					auto newPackage = Ptr(new DocumentHyperlinkRun::Package);
 					LocateHyperlinkVisitor visitor(runRanges, newPackage, pos - 1, pos);
 					run->Accept(&visitor);
 					if (newPackage->hyperlinks.Count() == 0) break;
@@ -129,7 +129,7 @@ Get the hyperlink run that contains the specified position
 					vint pos = runRanges[endRun.Obj()].end;
 					if (pos == length) break;
 
-					auto newPackage = MakePtr<DocumentHyperlinkRun::Package>();
+					auto newPackage = Ptr(new DocumentHyperlinkRun::Package);
 					LocateHyperlinkVisitor visitor(runRanges, newPackage, pos, pos + 1);
 					run->Accept(&visitor);
 					if (newPackage->hyperlinks.Count() == 0) break;

@@ -130,7 +130,7 @@ SetPropertiesVisitor
 					{
 						length=run->GetRepresentationText().Length();
 
-						Ptr<GuiImageFrameElement> element=GuiImageFrameElement::Create();
+						auto element=Ptr(GuiImageFrameElement::Create());
 						element->SetImage(run->image, run->frameIndex);
 						element->SetStretch(true);
 
@@ -177,7 +177,7 @@ SetPropertiesVisitor
 							}
 							else
 							{
-								auto eo = MakePtr<Renderer::EmbeddedObject>();
+								auto eo = Ptr(new Renderer::EmbeddedObject);
 								eo->name = run->name;
 								eo->size = Size(0, 0);
 								eo->start = start;
@@ -275,7 +275,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				Ptr<ParagraphCache> cache=paragraphCaches[paragraphIndex];
 				if(!cache)
 				{
-					cache=new ParagraphCache;
+					cache=Ptr(new ParagraphCache);
 					cache->fullText=paragraph->GetText(false);
 					paragraphCaches[paragraphIndex]=cache;
 				}

@@ -75,10 +75,10 @@ If a run decides that itself should be cut, then leftRun and rightRun contains n
 				{
 					RunRange range = runRanges[run];
 
-					Ptr<DocumentTextRun> leftText = new DocumentTextRun;
+					auto leftText = Ptr(new DocumentTextRun);
 					leftText->text = run->text.Sub(0, position - range.start);
 
-					Ptr<DocumentTextRun> rightText = new DocumentTextRun;
+					auto rightText = Ptr(new DocumentTextRun);
 					rightText->text = run->text.Sub(position - range.start, range.end - position);
 
 					leftRun = leftText;

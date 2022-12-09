@@ -35,21 +35,21 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentTextRun* run)override
 				{
-					Ptr<DocumentTextRun> cloned = new DocumentTextRun;
+					auto cloned = Ptr(new DocumentTextRun);
 					cloned->text = run->text;
 					clonedRun = cloned;
 				}
 
 				void Visit(DocumentStylePropertiesRun* run)override
 				{
-					Ptr<DocumentStylePropertiesRun> cloned = new DocumentStylePropertiesRun;
+					auto cloned = Ptr(new DocumentStylePropertiesRun);
 					cloned->style = CopyStyle(run->style);
 					VisitContainer(cloned);
 				}
 
 				void Visit(DocumentStyleApplicationRun* run)override
 				{
-					Ptr<DocumentStyleApplicationRun> cloned = new DocumentStyleApplicationRun;
+					auto cloned = Ptr(new DocumentStyleApplicationRun);
 					cloned->styleName = run->styleName;
 
 					VisitContainer(cloned);
@@ -57,7 +57,7 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentHyperlinkRun* run)override
 				{
-					Ptr<DocumentHyperlinkRun> cloned = new DocumentHyperlinkRun;
+					auto cloned = Ptr(new DocumentHyperlinkRun);
 					cloned->styleName = run->styleName;
 					cloned->normalStyleName = run->normalStyleName;
 					cloned->activeStyleName = run->activeStyleName;
@@ -68,7 +68,7 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentImageRun* run)override
 				{
-					Ptr<DocumentImageRun> cloned = new DocumentImageRun;
+					auto cloned = Ptr(new DocumentImageRun);
 					cloned->size = run->size;
 					cloned->baseline = run->baseline;
 					cloned->image = run->image;
@@ -79,14 +79,14 @@ If clonedRun field is assigned then it will be added to the cloned container run
 
 				void Visit(DocumentEmbeddedObjectRun* run)override
 				{
-					Ptr<DocumentEmbeddedObjectRun> cloned = new DocumentEmbeddedObjectRun;
+					auto cloned = Ptr(new DocumentEmbeddedObjectRun);
 					cloned->name = run->name;
 					clonedRun = cloned;
 				}
 
 				void Visit(DocumentParagraphRun* run)override
 				{
-					Ptr<DocumentParagraphRun> cloned = new DocumentParagraphRun;
+					auto cloned = Ptr(new DocumentParagraphRun);
 					cloned->alignment = run->alignment;
 
 					VisitContainer(cloned);
@@ -126,7 +126,7 @@ Clone the current run with its children
 					{
 						if (start <= range.start && range.end <= end && !deepCopy)
 						{
-							clonedRun = run;
+							clonedRun = Ptr(run);
 						}
 						else
 						{
@@ -158,12 +158,12 @@ Clone the current run with its children
 							}
 							else
 							{
-								clonedRun = run;
+								clonedRun = Ptr(run);
 							}
 						}
 						else
 						{
-							Ptr<DocumentTextRun> textRun = new DocumentTextRun;
+							auto textRun = Ptr(new DocumentTextRun);
 							vint copyStart = start>range.start ? start : range.start;
 							vint copyEnd = end<range.end ? end : range.end;
 							if (copyStart<copyEnd)
@@ -202,7 +202,7 @@ Clone the current run with its children
 						}
 						else
 						{
-							clonedRun = run;
+							clonedRun = Ptr(run);
 						}
 					}
 				}
@@ -219,7 +219,7 @@ Clone the current run with its children
 						}
 						else
 						{
-							clonedRun = run;
+							clonedRun = Ptr(run);
 						}
 					}
 				}
@@ -237,7 +237,7 @@ Clone the current run with its children
 			Ptr<DocumentStyleProperties> CopyStyle(Ptr<DocumentStyleProperties> style)
 			{
 				if (!style) return nullptr;
-				Ptr<DocumentStyleProperties> newStyle = new DocumentStyleProperties;
+				auto newStyle = Ptr(new DocumentStyleProperties);
 
 				newStyle->face = style->face;
 				newStyle->size = style->size;
@@ -262,7 +262,7 @@ Clone the current run with its children
 
 			Ptr<DocumentRun> CopyStyledText(List<DocumentContainerRun*>& styleRuns, const WString& text)
 			{
-				Ptr<DocumentTextRun> textRun = new DocumentTextRun;
+				auto textRun = Ptr(new DocumentTextRun);
 				textRun->text = text;
 
 				CloneRunVisitor visitor(textRun);

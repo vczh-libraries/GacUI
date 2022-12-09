@@ -192,7 +192,7 @@ CachedResourceAllocator
 
 				Ptr<Direct2DTextFormatPackage> CreateInternal(const FontProperties& fontProperties)
 				{
-					Ptr<Direct2DTextFormatPackage> textFormat = new Direct2DTextFormatPackage;
+					auto textFormat = Ptr(new Direct2DTextFormatPackage);
 					textFormat->textFormat = CreateDirect2DFont(fontProperties);
 					textFormat->trimming.granularity = DWRITE_TRIMMING_GRANULARITY_CHARACTER;
 					textFormat->trimming.delimiter = 0;
