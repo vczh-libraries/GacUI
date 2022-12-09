@@ -57,7 +57,7 @@ WString GetTestOutputPath()
 #endif
 
 #define INSTALL_SERIALIZABLE_TYPE(TYPE)\
-	serializableTypes.Add(TypeInfo<TYPE>::content.typeName, MakePtr<SerializableType<TYPE>>());
+	serializableTypes.Add(TypeInfo<TYPE>::content.typeName, Ptr(new SerializableType<TYPE>));
 
 void GuiMain()
 {
