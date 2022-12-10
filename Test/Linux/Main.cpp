@@ -13,7 +13,7 @@ using namespace demo;
 
 void GuiMain()
 {
-	theme::RegisterTheme(MakePtr<darkskin::Theme>());
+	theme::RegisterTheme(Ptr(new darkskin::Theme));
 	{
 		demo::MainWindow window;
 		window.ForceCalculateSizeImmediately();
