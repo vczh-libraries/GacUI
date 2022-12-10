@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_RESOURCES_GUIRESOURCE
 
 #include "../NativeWindow/GuiNativeWindow.h"
+#include "GuiPluginManager.h"
 
 namespace vl
 {

@@ -9,7 +9,6 @@ namespace vl
 		using namespace stream;
 		using namespace glr::xml;
 		using namespace reflection::description;
-		using namespace controls;
 
 /***********************************************************************
 Class Name Record (ClassNameRecord)

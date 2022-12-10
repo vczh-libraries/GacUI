@@ -95,6 +95,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Load.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Save.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.h" />
   </ItemGroup>

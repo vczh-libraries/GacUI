@@ -295,6 +295,9 @@
       <Filter>Resources\DocumentClipboard</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiApplication.h">
@@ -522,5 +525,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUI.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

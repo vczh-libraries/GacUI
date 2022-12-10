@@ -32,7 +32,7 @@ namespace vl
 
 			using namespace presentation::controls;
 
-			class GuiReflectionPlugin : public Object, public IGuiPlugin
+			class GuiReflectionPlugin : public Object, public presentation::IGuiPlugin
 			{
 			public:
 

@@ -1,12 +1,10 @@
 #include "GuiParserManager.h"
-#include "../Controls/GuiApplication.h"
 
 namespace vl
 {
 	namespace presentation
 	{
 		using namespace collections;
-		using namespace controls;
 		using namespace glr::xml;
 		using namespace glr::json;
 		using namespace regex;

@@ -6,7 +6,6 @@ namespace vl
 {
 	namespace presentation
 	{
-		using namespace controls;
 		using namespace collections;
 		using namespace glr::xml;
 		using namespace stream;
