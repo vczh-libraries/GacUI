@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{0101d690-3104-4623-879d-d89c6a41c479}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\DocumentEditor">
+      <UniqueIdentifier>{f8162dec-2bfe-413a-a1d9-eed6d2fc7b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\DocumentClipboard">
+      <UniqueIdentifier>{ff810bd8-62ea-4d11-abd5-126bee1bac10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GraphicsElement">
+      <UniqueIdentifier>{e18aabfd-b37e-40d7-a84c-ad01cf7bdeb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NativeWindow">
+      <UniqueIdentifier>{71a8c4f2-90df-457d-931b-4e673ef15366}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Edit.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Load.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Save.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_AddContainer.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ClearUnnecessaryRun.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CloneRun.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CollectStyle.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CutRun.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_GetRunRange.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleHyperlink.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleStyle.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveContainer.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveRun.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ReplaceStyleName.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_Document.cpp">
+      <Filter>Resources\DocumentClipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_HtmlFormat.cpp">
+      <Filter>Resources\DocumentClipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp">
+      <Filter>Resources\DocumentClipboard</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.cpp">
+      <Filter>GraphicsElement</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.cpp">
+      <Filter>GraphicsElement</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.cpp">
+      <Filter>GraphicsElement</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp">
+      <Filter>GraphicsElement</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp">
+      <Filter>NativeWindow</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor.h">
+      <Filter>Resources\DocumentEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard.h">
+      <Filter>Resources\DocumentClipboard</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.h">
+      <Filter>GraphicsElement</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentInterfaces.h">
+      <Filter>GraphicsElement</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.h">
+      <Filter>GraphicsElement</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.h">
+      <Filter>GraphicsElement</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.h">
+      <Filter>GraphicsElement</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.h">
+      <Filter>GraphicsElement</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.h">
+      <Filter>NativeWindow</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

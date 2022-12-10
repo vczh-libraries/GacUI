@@ -25,23 +25,8 @@
     <Filter Include="GraphicsComposition">
       <UniqueIdentifier>{2c8a3885-4a06-4efc-9575-8670e591af73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GraphicsElement">
-      <UniqueIdentifier>{da11ae94-12a1-4889-9ce8-2115fceb4006}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GraphicsHost">
       <UniqueIdentifier>{f6d95b7d-2211-44ea-bee0-5aa0cfaec6e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="NativeWindow">
-      <UniqueIdentifier>{d33cd480-65d6-4675-bf27-617f14e08340}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{c42cbe6c-4aef-4509-9315-8f2de2dddf23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resources\DocumentEditor">
-      <UniqueIdentifier>{dfc997f3-ea34-42e7-9ad1-1ff7acb337d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resources\DocumentClipboard">
-      <UniqueIdentifier>{e0a030ef-f3ea-4964-9d26-6f47b1172fc2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -198,18 +183,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.cpp">
       <Filter>GraphicsComposition</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.cpp">
-      <Filter>GraphicsElement</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.cpp">
-      <Filter>GraphicsElement</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.cpp">
-      <Filter>GraphicsElement</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp">
-      <Filter>GraphicsElement</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost.cpp">
       <Filter>GraphicsHost</Filter>
     </ClCompile>
@@ -222,82 +195,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.cpp">
       <Filter>GraphicsHost</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp">
-      <Filter>NativeWindow</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Edit.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Load.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Save.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_AddContainer.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ClearUnnecessaryRun.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CloneRun.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CollectStyle.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CutRun.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_GetRunRange.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleHyperlink.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleStyle.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveContainer.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveRun.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ReplaceStyleName.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_Document.cpp">
-      <Filter>Resources\DocumentClipboard</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_HtmlFormat.cpp">
-      <Filter>Resources\DocumentClipboard</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp">
-      <Filter>Resources\DocumentClipboard</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiApplication.h">
@@ -471,24 +369,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\IncludeForward.h">
       <Filter>GraphicsComposition</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.h">
-      <Filter>GraphicsElement</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentInterfaces.h">
-      <Filter>GraphicsElement</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.h">
-      <Filter>GraphicsElement</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.h">
-      <Filter>GraphicsElement</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.h">
-      <Filter>GraphicsElement</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.h">
-      <Filter>GraphicsElement</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost.h">
       <Filter>GraphicsHost</Filter>
     </ClInclude>
@@ -501,32 +381,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.h">
       <Filter>GraphicsHost</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.h">
-      <Filter>NativeWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor.h">
-      <Filter>Resources\DocumentEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard.h">
-      <Filter>Resources\DocumentClipboard</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUI.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
