@@ -1,8 +1,9 @@
 # TODO
 
-## Issues
+## Progressing
 
-- Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
+- `INativeHostedController` + `INativeHostedWindow`.
+  - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
 
 ## OS Provider Features
 
@@ -33,6 +34,7 @@
   - A window can be called to update all its controls' and components' template.
 - UI Automation.
 - Test Automation on Tutorials.
+- Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
 
 ## GacUI Resource Compiler
 
@@ -55,8 +57,6 @@
 
 ## Porting to New Platforms
 
-- `INativeHostedController` + `INativeHostedWindow`.
-  - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
 - SyncTree architecture that streams layout/element changes per `GuiControlHost`.
   - or called remoting whatever
 - Port GacUI to other platforms:
