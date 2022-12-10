@@ -2,7 +2,7 @@
 
 #include "DarkSkin.h"
 #include "MainWindow.h"
-#include "../../../Source/NativeWindow/Windows/WinNativeWindow.h"
+#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 #include "resource.h"
 
 using namespace vl;

@@ -1,4 +1,5 @@
 #include "GuiGraphicsUniscribe.h"
+#include "GuiGraphicsWindowsGDI.h"
 
 #pragma comment(lib, "usp10.lib")
 

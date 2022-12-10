@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
 
-#include "..\..\GuiNativeWindow.h"
+#include "..\..\..\NativeWindow\GuiNativeWindow.h"
 
 namespace vl
 {

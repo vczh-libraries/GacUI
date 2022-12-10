@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
 #define VCZH_PRESENTATION_WINDOWS_WINNATIVEWINDOW
 
-#include "..\GuiNativeWindow.h"
+#include "..\..\NativeWindow\GuiNativeWindow.h"
 #include "ServicesImpl\WindowsImageService.h"
 
 namespace vl

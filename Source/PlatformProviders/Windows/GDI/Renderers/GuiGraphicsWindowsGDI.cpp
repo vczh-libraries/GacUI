@@ -1,8 +1,6 @@
 #include "GuiGraphicsWindowsGDI.h"
 #include "GuiGraphicsRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
-#include "..\..\Controls\GuiApplication.h"
-#include "..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
 
 namespace vl
 {
@@ -490,6 +488,8 @@ NativeMain
 
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
+
+extern void GuiApplicationMain();
 
 void RendererMainGDI()
 {

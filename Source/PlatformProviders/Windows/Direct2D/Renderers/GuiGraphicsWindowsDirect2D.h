@@ -9,8 +9,9 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSWINDOWSDIRECT2D
 
-#include "..\..\GraphicsElement\GuiGraphicsTextElement.h"
-#include "..\..\GraphicsComposition\IncludeForward.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsTextElement.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
+#include "..\..\..\..\GraphicsComposition\GuiGraphicsEventReceiver.h"
 #include <d2d1_1.h>
 #include <dwrite_1.h>
 #include <d2d1effects.h>

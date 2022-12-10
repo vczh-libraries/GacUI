@@ -1,10 +1,7 @@
 #include "GuiGraphicsWindowsDirect2D.h"
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
-#include "..\..\NativeWindow\Windows\ServicesImpl\WindowsImageService.h"
-#include "..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
-#include "..\..\Controls\GuiApplication.h"
-#include "..\..\NativeWindow\Windows\GDI\WinGDI.h"
+#include "..\..\ServicesImpl\WindowsImageService.h"
 #include <math.h>
 
 namespace vl
@@ -754,6 +751,8 @@ NativeMain
 
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
+
+extern void GuiApplicationMain();
 
 void RendererMainDirect2D()
 {

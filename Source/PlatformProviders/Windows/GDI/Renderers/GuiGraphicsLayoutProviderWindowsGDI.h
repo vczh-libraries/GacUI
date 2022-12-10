@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI
 
-#include "..\GuiGraphicsDocumentInterfaces.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentInterfaces.h"
 
 namespace vl
 {

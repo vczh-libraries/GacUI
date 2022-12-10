@@ -1,4 +1,5 @@
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
+#include "GuiGraphicsWindowsGDI.h"
 #include "GuiGraphicsUniscribe.h"
 #include <math.h>
 

@@ -8,8 +8,7 @@ Interfaces:
 
 #ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSCLIPBOARDSERVICE
-
-#include "..\..\GuiNativeWindow.h"
+#include "..\..\..\NativeWindow\GuiNativeWindow.h"
 #include "..\WinNativeDpiAwareness.h"
 
 namespace vl

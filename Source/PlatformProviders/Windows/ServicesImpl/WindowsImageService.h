@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSIMAGESERIVCE
 
-#include "..\..\GuiNativeWindow.h"
+#include "..\..\..\NativeWindow\GuiNativeWindow.h"
 #include "..\WinNativeDpiAwareness.h"
 #include <wincodec.h>
 

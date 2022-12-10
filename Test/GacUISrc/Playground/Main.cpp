@@ -3,7 +3,7 @@
 #define GAC_HEADER_USE_NAMESPACE
 #include "DarkSkinReflection.h"
 #include "../../../Source/GacUI.h"
-#include "../../../Source/NativeWindow/Windows/WinNativeWindow.h"
+#include "../../../Source/PlatformProviders/Windows/WinNativeWindow.h"
 #include "../GacUI_Compiler/ResourceCompiler.h"
 
 using namespace vl;

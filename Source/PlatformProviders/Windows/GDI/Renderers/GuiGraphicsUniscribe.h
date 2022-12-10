@@ -9,8 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSUNISCRIBE
 #define VCZH_PRESENTATION_ELEMENTS_GUIGRAPHICSUNISCRIBE
 
-#include "GuiGraphicsLayoutProviderWindowsGDI.h"
-#include "GuiGraphicsWindowsGDI.h"
+#include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentInterfaces.h"
+#include "..\WinGDI.h"
 #include <usp10.h>
 
 namespace vl

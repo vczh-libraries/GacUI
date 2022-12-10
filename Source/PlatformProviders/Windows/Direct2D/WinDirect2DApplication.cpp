@@ -1,5 +1,5 @@
 #include "WinDirect2DApplication.h"
-#include "..\..\..\GraphicsElement\WindowsDirect2D\GuiGraphicsWindowsDirect2D.h"
+#include "Renderers\GuiGraphicsWindowsDirect2D.h"
 #include <ShellScalingApi.h>
 
 #pragma comment(lib, "d2d1.lib")

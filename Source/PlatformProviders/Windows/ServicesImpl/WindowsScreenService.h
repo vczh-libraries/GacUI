@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
 #define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSSCREENSERVICE
 
-#include "..\..\GuiNativeWindow.h"
+#include "..\..\..\NativeWindow\GuiNativeWindow.h"
 #include "..\WinNativeDpiAwareness.h"
 
 namespace vl

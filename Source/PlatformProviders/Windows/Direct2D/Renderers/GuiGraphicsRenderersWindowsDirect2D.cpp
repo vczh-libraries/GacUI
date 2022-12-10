@@ -1,6 +1,6 @@
 #include <math.h>
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
-#include "..\..\NativeWindow\Windows\Direct2D\WinDirect2DApplication.h"
+#include "..\WinDirect2DApplication.h"
 
 namespace vl
 {
