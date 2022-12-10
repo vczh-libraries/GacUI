@@ -33,6 +33,7 @@
   - New default control templates with animation, written in XML generated C++ code.
   - A window can be called to update all its controls' and components' template.
 - UI Automation.
+- Test Automation on virtual command line mode by comparing characters rendered on a very small viewport.
 - Test Automation on Tutorials.
 - Use the embedded data codegen / compress / decompress functions from `VlppParser2` to replace one in `GacUI`.
 
@@ -61,7 +62,7 @@
   - or called remoting whatever
 - Port GacUI to other platforms:
   - Windows
-    - Command/Powershell Line in Windows (hosted)
+    - Command-line/Powershell in Windows (hosted)
     - GDI (hosted mode)
     - Direct2d (hosted mode)
     - UWP (hosted mode + sync tree, optional)
@@ -76,22 +77,21 @@
 
 ## Binders for other Programming Languages
 
-- XML still generate C++ files, and they need to be compiled to an appropriate form.
-- Other programming languages doesn't access GacUI objects, instead they implement view model interfaces that defined in XML.
-- Users need to compile C++ code by themselves.
-- Users are not required to write C++ code, but they can.
-- Users can add attributes in XML defined interfaces, so that GacGen can generate a list of them. After that, by reading generated workflow assembly files, glue code can be generated so that users can implement required view modelinterfaces directly. I will provide some tools for listed languages.
-- Resources need to be generated in C++ files, because other languages cannot access GacUI objects, which means they cannot load resources manually.
+- Xml still generates C++ files with optional files.
+  - User need to compile C++ code by themselves into a DLL.
+  - User need to specify all involved (including the default) themes.
+  - Generated DLL functions are for implementing view model or SyncTree.
+  - ViewModel metadata in JSON are also provided.
+  - Resources are required to be generated in C++ files since the DLL won't provide interfaces for loading external resources.
+- Applications written in other language can:
+  - Implement view model.
+  - Render the UI via SyncTree.
 - Languages:
-  - [ ] JavaScript / TypeScript through Web assembly
-  - [ ] .NET (core?) through dll
-  - [ ] Python through dll
-- Alternative option:
-  - SyncViewMode technique (or call remoting whatever)
-  - UI.exe connect view model
-    - Compiled from generated code
-    - Using dll or rpc to connect to a server written by other languages to serve view model objects.
-    - Each way is provided from the library, end users only need a GuiMain function, offered from tutorials.
+  - JavaScript / TypeScript through Web assembly
+  - .NET (core?)
+  - Python
+- Other options:
+  - UI becomes an EXE, the view model implementation is communicated via pipe or socket.
 
 ## Optional
 
