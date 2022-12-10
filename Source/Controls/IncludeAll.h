@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_INCLUDEALL
 
 #include "GuiBasicControls.h"
+#include "../Application/Controls/GuiApplication.h"
 #include "GuiLabelControls.h"
 #include "GuiButtonControls.h"
 #include "GuiContainerControls.h"
@@ -17,7 +18,6 @@ Interfaces:
 #include "GuiLabelControls.h"
 #include "GuiScrollControls.h"
 #include "GuiWindowControls.h"
-#include "GuiApplication.h"
 #include "GuiDialogs.h"
 
 #include "ListControlPackage/GuiListControls.h"

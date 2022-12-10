@@ -1,5 +1,5 @@
 #include "GuiComboControls.h"
-#include "../GuiApplication.h"
+#include "../../Application/Controls/GuiApplication.h"
 
 namespace vl
 {

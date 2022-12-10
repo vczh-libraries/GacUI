@@ -1,5 +1,5 @@
 #include "GuiToolstripCommand.h"
-#include "../GuiApplication.h"
+#include "../GuiWindowControls.h"
 #include "../../GraphicsHost/GuiGraphicsHost_ShortcutKey.h"
 #include "../../Resources/GuiParserManager.h"
 

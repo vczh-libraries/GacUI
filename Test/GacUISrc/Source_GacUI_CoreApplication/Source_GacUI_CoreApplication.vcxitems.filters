@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Application">
+      <UniqueIdentifier>{c4ea78a4-3672-42f9-b176-db5fe82df4bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\Controls">
+      <UniqueIdentifier>{821999ad-6e05-4b05-8551-9592afd37362}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.h">
+      <Filter>Application\Controls</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.cpp">
+      <Filter>Application\Controls</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

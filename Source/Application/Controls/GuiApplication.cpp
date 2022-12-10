@@ -1,5 +1,5 @@
 #include "GuiApplication.h"
-#include "../Resources/GuiPluginManager.h"
+#include "../../Resources/GuiPluginManager.h"
 #include "Templates/GuiThemeStyleFactory.h"
 
 extern void GuiMain();
