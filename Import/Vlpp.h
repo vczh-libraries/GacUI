@@ -7194,7 +7194,7 @@ LazyList
 				lazyList.enumeratorPrototype = nullptr;
 			}
 			
-			/// <summary>Create a lazy list from a container. It is very useful to <see cref="MakePtr`2"/> a container as an intermediate result and then put in a lazy list.</summary>
+			/// <summary>Create a lazy list from a container. It is very useful to <see cref="Ptr`1"/> a container as an intermediate result and then put in a lazy list.</summary>
 			/// <typeparam name="TContainer">Type of the container.</typeparam>
 			/// <param name="container">The container.</param>
 			template<typename TContainer>
