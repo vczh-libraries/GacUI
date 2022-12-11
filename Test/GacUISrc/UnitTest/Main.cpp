@@ -30,12 +30,25 @@ WString GetTestResourcePath()
 {
 #if defined VCZH_MSVC
 #ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Resources\\";
+	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests";
 #else
-	return GetExePath() + L"..\\..\\Resources\\";
+	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests";
 #endif
 #elif defined VCZH_GCC
-	return L"../Resources/";
+	return L"../Resources/CompilerErrorTests";
+#endif
+}
+
+WString GetTestBaselinePath()
+{
+#if defined VCZH_MSVC
+#ifdef _WIN64
+	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests\\x64";
+#else
+	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\x86";
+#endif
+#elif defined VCZH_GCC
+	return L"../Resources/CompilerErrorTests/x64";
 #endif
 }
 
@@ -43,9 +56,9 @@ WString GetTestOutputPath()
 {
 #if defined VCZH_MSVC
 #ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\..\\Output\\x64";
 #else
-	return GetExePath() + L"..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\Output\\x86";
 #endif
 #elif defined VCZH_GCC
 	return L"../Output/";
