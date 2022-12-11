@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSEVENTRECEIVER
 #define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSEVENTRECEIVER
 
-#include "../NativeWindow/GuiNativeWindow.h"
+#include "../../NativeWindow/GuiNativeWindow.h"
 
 namespace vl
 {

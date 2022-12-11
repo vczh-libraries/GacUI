@@ -15,8 +15,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Tab.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Tab.cpp" />
   </ItemGroup>
 </Project>

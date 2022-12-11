@@ -7,15 +7,69 @@
     <Filter Include="Application\Controls">
       <UniqueIdentifier>{821999ad-6e05-4b05-8551-9592afd37362}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application\GraphicsHost">
+      <UniqueIdentifier>{bf43552f-ae1a-40dc-b740-1d3c472693da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\GraphicsCompositions">
+      <UniqueIdentifier>{211a6e47-634b-4bcc-b5d5-d7158fb6b5d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.h">
       <Filter>Application\Controls</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.h">
+      <Filter>Application\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.h">
+      <Filter>Application\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Tab.h">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.h">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.h">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.h">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.h">
+      <Filter>Application\GraphicsCompositions</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h">
+      <Filter>Application\GraphicsCompositions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.cpp">
       <Filter>Application\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.cpp">
+      <Filter>Application\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.cpp">
+      <Filter>Application\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.cpp">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.cpp">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Tab.cpp">
+      <Filter>Application\GraphicsHost</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.cpp">
+      <Filter>Application\GraphicsCompositions</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.cpp">
+      <Filter>Application\GraphicsCompositions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -9,8 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
 #define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
 
-#include "../GraphicsElement/GuiGraphicsElementInterfaces.h"
-#include "../NativeWindow/GuiNativeWindow.h"
+#include "../../GraphicsElement/GuiGraphicsElementInterfaces.h"
 #include "GuiGraphicsEventReceiver.h"
 
 namespace vl
@@ -282,6 +281,19 @@ Basic Construction
 				bool								IsSizeAffectParent()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetPreferredBounds()override;
+			};
+			
+			/// <summary>
+			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
+			/// </summary>
+			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
+			{
+			public:
+				GuiWindowComposition();
+				~GuiWindowComposition();
+
+				Rect								GetBounds()override;
+				void								SetMargin(Margin value)override;
 			};
 
 /***********************************************************************

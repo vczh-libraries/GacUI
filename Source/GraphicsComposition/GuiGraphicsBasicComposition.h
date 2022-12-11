@@ -21,19 +21,6 @@ namespace vl
 /***********************************************************************
 Basic Compositions
 ***********************************************************************/
-			
-			/// <summary>
-			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
-			/// </summary>
-			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
-			{
-			public:
-				GuiWindowComposition();
-				~GuiWindowComposition();
-
-				Rect								GetBounds()override;
-				void								SetMargin(Margin value)override;
-			};
 
 			/// <summary>
 			/// Represents a composition that is free to change the expected bounds.

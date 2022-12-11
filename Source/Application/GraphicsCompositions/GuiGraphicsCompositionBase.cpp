@@ -18,6 +18,36 @@ namespace vl
 			}
 
 /***********************************************************************
+GuiWindowComposition
+***********************************************************************/
+
+			GuiWindowComposition::GuiWindowComposition()
+			{
+			}
+
+			GuiWindowComposition::~GuiWindowComposition()
+			{
+			}
+
+			Rect GuiWindowComposition::GetBounds()
+			{
+				Rect bounds;
+				if (relatedHostRecord)
+				{
+					if (auto window = relatedHostRecord->host->GetNativeWindow())
+					{
+						bounds = Rect(Point(0, 0), window->Convert(window->GetClientSize()));
+					}
+				}
+				UpdatePreviousBounds(bounds);
+				return bounds;
+			}
+
+			void GuiWindowComposition::SetMargin(Margin value)
+			{
+			}
+
+/***********************************************************************
 GuiGraphicsComposition
 ***********************************************************************/
 

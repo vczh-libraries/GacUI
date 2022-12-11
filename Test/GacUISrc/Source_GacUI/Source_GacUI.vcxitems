@@ -14,14 +14,12 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiBasicControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiContainerControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDateTimeControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDialogs.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiLabelControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiWindowControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableListControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiComboControls.cpp" />
@@ -56,8 +54,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.cpp" />
@@ -65,20 +61,14 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsStackComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiBasicControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiContainerControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDateTimeControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDialogs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiLabelControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiWindowControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\IncludeAll.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\IncludeForward.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiBindableDataGrid.h" />
@@ -118,8 +108,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsCompositionBase.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsEventReceiver.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.h" />
@@ -129,9 +117,5 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsTableComposition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\IncludeAll.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\IncludeForward.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Alt.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.h" />
   </ItemGroup>
 </Project>
