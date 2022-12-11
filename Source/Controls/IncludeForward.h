@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_INCLUDEFORWARD
 
 #include "../Application/Controls/GuiApplication.h"
+#include "Templates/GuiControlTemplates.h"
 
 namespace vl
 {

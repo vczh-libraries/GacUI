@@ -1,5 +1,5 @@
 #include "GuiDialogs.h"
-#include "GuiWindowControls.h"
+#include "../Application/Controls/GuiWindowControls.h"
 
 namespace vl
 {

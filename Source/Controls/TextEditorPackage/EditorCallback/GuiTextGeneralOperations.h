@@ -9,7 +9,6 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUITEXTGENERALOPERATIONS
 #define VCZH_PRESENTATION_CONTROLS_GUITEXTGENERALOPERATIONS
 
-#include "../../Templates/GuiControlShared.h"
 #include "../../../GraphicsElement/GuiGraphicsTextElement.h"
 
 namespace vl

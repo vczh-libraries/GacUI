@@ -11,6 +11,7 @@ Interfaces:
 
 #include "../../GraphicsElement/GuiGraphicsTextElement.h"
 #include "../../Application/Controls/GuiThemeManager.h"
+#include "../../GraphicsComposition/IncludeForward.h"
 
 namespace vl
 {

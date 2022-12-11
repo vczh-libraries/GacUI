@@ -1,5 +1,4 @@
 #include "GuiButtonControls.h"
-#include "Templates/GuiControlTemplates.h"
 
 namespace vl
 {
