@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLS
 
 #include "../GuiContainerControls.h"
+#include "../../GraphicsComposition/GuiGraphicsAxis.h"
 
 namespace vl
 {

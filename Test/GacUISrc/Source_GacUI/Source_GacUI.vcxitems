@@ -32,7 +32,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiAnimation.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiCommonTemplates.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlShared.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.cpp" />
@@ -82,7 +81,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\ListControlPackage\GuiTreeViewControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiAnimation.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiCommonTemplates.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlShared.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiThemeStyleFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\TextEditorPackage\EditorCallback\GuiTextAutoComplete.h" />

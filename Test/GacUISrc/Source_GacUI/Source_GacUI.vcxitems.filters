@@ -81,9 +81,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiCommonTemplates.cpp">
       <Filter>Controls\Templates</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlShared.cpp">
-      <Filter>Controls\Templates</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.cpp">
       <Filter>Controls\Templates</Filter>
     </ClCompile>
@@ -223,9 +220,6 @@
       <Filter>Controls\Templates</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiCommonTemplates.h">
-      <Filter>Controls\Templates</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlShared.h">
       <Filter>Controls\Templates</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\Templates\GuiControlTemplates.h">

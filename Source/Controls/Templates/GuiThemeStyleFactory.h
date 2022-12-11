@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
 #define VCZH_PRESENTATION_CONTROLS_GUITHEMESTYLEFACTORY
 
-#include "../../Application/Controls/GuiThemeManager.h"
+#include "GuiControlTemplates.h"
 
 namespace vl
 {
@@ -17,7 +17,6 @@ namespace vl
 	{
 		namespace theme
 		{
-
 			class Theme;
 
 			/// <summary>Partial control template collections. [F:vl.presentation.theme.GetCurrentTheme] will returns an object, which walks through multiple registered [T:vl.presentation.theme.ThemeTemplates] to create a correct template object for a control.</summary>

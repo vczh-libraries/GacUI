@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUIANIMATION
 #define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUIANIMATION
 
-#include "GuiControlShared.h"
+#include "../../Application/Controls/GuiInstanceRootObject.h"
 
 namespace vl
 {
