@@ -18,6 +18,7 @@ namespace vl
 		namespace controls
 		{
 			class GuiControl;
+			class GuiControlHost;
 		}
 
 		namespace compositions

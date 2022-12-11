@@ -11,7 +11,7 @@ Interfaces:
 
 #include "../GraphicsHost/GuiGraphicsHost_Alt.h"
 #include "../GraphicsHost/GuiGraphicsHost_Tab.h"
-#include "../../Controls/Templates/GuiControlTemplates.h"
+#include "GuiThemeManager.h"
 
 namespace vl
 {

@@ -1,5 +1,6 @@
 #include "GuiGraphicsHost.h"
 #include "../Controls/GuiWindowControls.h"
+#include "../../GraphicsElement/GuiGraphicsResourceManager.h"
 
 namespace vl
 {
