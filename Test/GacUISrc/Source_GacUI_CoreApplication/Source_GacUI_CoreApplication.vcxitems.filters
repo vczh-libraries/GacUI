@@ -51,6 +51,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.h">
       <Filter>Application\GraphicsCompositions</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.h">
+      <Filter>Application\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.cpp">
@@ -88,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.cpp">
       <Filter>Application\GraphicsCompositions</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.cpp">
+      <Filter>Application\Controls</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

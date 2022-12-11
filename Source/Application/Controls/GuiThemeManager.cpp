@@ -4,7 +4,7 @@ namespace vl
 {
 	namespace presentation
 	{
-		namespace theme
+		namespace templates
 		{
 
 /***********************************************************************
@@ -33,6 +33,12 @@ GuiTemplate
 			{
 				FinalizeInstanceRecursively(this);
 			}
+
+/***********************************************************************
+Template Declarations
+***********************************************************************/
+
+			GUI_CORE_CONTROL_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_IMPL)
 		}
 	}
 }

@@ -31,11 +31,8 @@ namespace vl
 		{
 
 #define GUI_CONTROL_TEMPLATE_DECL(F)\
-			F(GuiControlTemplate,				GuiTemplate)				\
-			F(GuiLabelTemplate,					GuiControlTemplate)			\
 			F(GuiSinglelineTextBoxTemplate,		GuiControlTemplate)			\
 			F(GuiDocumentLabelTemplate,			GuiControlTemplate)			\
-			F(GuiWindowTemplate,				GuiControlTemplate)			\
 			F(GuiMenuTemplate,					GuiWindowTemplate)			\
 			F(GuiButtonTemplate,				GuiControlTemplate)			\
 			F(GuiSelectableButtonTemplate,		GuiButtonTemplate)			\
@@ -98,22 +95,6 @@ GuiListItemTemplate
 Control Template
 ***********************************************************************/
 
-			enum class BoolOption
-			{
-				AlwaysTrue,
-				AlwaysFalse,
-				Customizable,
-			};
-
-#define GuiControlTemplate_PROPERTIES(F)\
-				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
-				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
-				F(GuiControlTemplate, bool, Focused, false)\
-
-#define GuiLabelTemplate_PROPERTIES(F)\
-				F(GuiLabelTemplate, Color, DefaultTextColor, {})\
-				F(GuiLabelTemplate, Color, TextColor, {})\
-
 #define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
 				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
 				F(GuiSinglelineTextBoxTemplate, Color, CaretColor, {})\
@@ -121,27 +102,6 @@ Control Template
 #define GuiDocumentLabelTemplate_PROPERTIES(F)\
 				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
 				F(GuiDocumentLabelTemplate, Color, CaretColor, {})\
-
-#define GuiWindowTemplate_PROPERTIES(F)\
-				F(GuiWindowTemplate, BoolOption, MaximizedBoxOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, MinimizedBoxOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, BorderOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, SizeBoxOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, IconVisibleOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, TitleBarOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, bool, MaximizedBox, true)\
-				F(GuiWindowTemplate, bool, MinimizedBox, true)\
-				F(GuiWindowTemplate, bool, Border, true)\
-				F(GuiWindowTemplate, bool, SizeBox, true)\
-				F(GuiWindowTemplate, bool, IconVisible, true)\
-				F(GuiWindowTemplate, bool, TitleBar, true)\
-				F(GuiWindowTemplate, bool, Maximized, false)\
-				F(GuiWindowTemplate, bool, Activated, false)\
-				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\
-				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
-				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\
-				F(GuiWindowTemplate, Margin, CustomFramePadding, {})\
-				F(GuiWindowTemplate, Ptr<GuiImageData>, Icon, {})\
 
 #define GuiMenuTemplate_PROPERTIES(F)
 

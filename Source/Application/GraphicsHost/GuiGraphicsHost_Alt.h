@@ -15,6 +15,11 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace controls
+		{
+			class GuiControl;
+		}
+
 		namespace compositions
 		{
 

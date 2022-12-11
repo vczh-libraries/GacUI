@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiThemeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.h" />
@@ -30,6 +31,7 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiThemeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.cpp" />
