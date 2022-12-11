@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{5395cea2-f2a6-4dfa-a8c3-070e8f3b5a43}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentInterfaces.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsDocumentElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_Document.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_HtmlFormat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_RichTextFormat.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_AddContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ClearUnnecessaryRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CloneRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CollectStyle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_CutRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_GetRunRange.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleHyperlink.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_LocaleStyle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_RemoveRun.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_ReplaceStyleName.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentEditor_SummerizeStyle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Edit.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Load.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument_Save.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiParserManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiPluginManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiResourceTypeResolvers.cpp" />
+  </ItemGroup>
+</Project>

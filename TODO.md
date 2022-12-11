@@ -25,6 +25,10 @@
 - Chart control.
 - Code editor (need VlppParser2)
 - Dock container.
+  - Use drag and drop to perform docking
+  - A small framework for implementing dock guiding UI
+  - A predefined dockable tool window for users that are fine with the default behavior about how to transfer content to the dock container
+  - A "binary tree layout/control" for implementing VS-like dock container
 - Touch support.
 
 ## Architecture

@@ -1,5 +1,5 @@
 #include "GuiGraphicsResponsiveComposition.h"
-#include "../Controls/GuiBasicControls.h"
+#include "../Application/Controls/GuiBasicControls.h"
 
 namespace vl
 {

@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_REFLECTION_GUIRESOURCEMANAGER
 #define VCZH_PRESENTATION_REFLECTION_GUIRESOURCEMANAGER
 
-#include "../Controls/GuiApplication.h"
+#include "GuiResource.h"
 
 namespace vl
 {

@@ -17,16 +17,12 @@
     <category name="wfruntime" pattern="\Import\VlppWorkflowRuntime."/>
     <category name="wfcompiler" pattern="\Import\VlppWorkflowCompiler."/>
     <category name="gacui" pattern="\Source\">
-      <except pattern="\Windows\" />
-      <except pattern="\WindowsDirect2D\" />
-      <except pattern="\WindowsGDI\" />
+      <except pattern="\PlatformProviders\Windows\" />
       <except pattern="\Reflection\" />
       <except pattern="\Compiler\" />
       <except pattern="\Skins\" />
     </category>
-    <category name="windows" pattern="\Source\GraphicsElement\WindowsDirect2D\" />
-    <category name="windows" pattern="\Source\GraphicsElement\WindowsGDI\" />
-    <category name="windows" pattern="\Source\NativeWindow\Windows\" />
+    <category name="windows" pattern="\Source\PlatformProviders\Windows\" />
     <category name="reflection" pattern="\Source\Reflection\" />
     <category name="compiler" pattern="\Source\Compiler\" />
     <category name="darkskin" pattern="\Skins\DarkSkin\Source\">

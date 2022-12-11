@@ -1,6 +1,6 @@
 #include "GuiToolstripCommand.h"
-#include "../GuiApplication.h"
-#include "../../GraphicsHost/GuiGraphicsHost_ShortcutKey.h"
+#include "../../Application/Controls/GuiWindowControls.h"
+#include "../../Application/GraphicsHost/GuiGraphicsHost_ShortcutKey.h"
 #include "../../Resources/GuiParserManager.h"
 
 namespace vl

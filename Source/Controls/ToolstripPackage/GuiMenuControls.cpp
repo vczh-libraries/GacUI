@@ -1,5 +1,5 @@
 #include "GuiMenuControls.h"
-#include "../../GraphicsHost/GuiGraphicsHost.h"
+#include "../../Application/GraphicsHost/GuiGraphicsHost.h"
 #include "../Templates/GuiThemeStyleFactory.h"
 
 namespace vl

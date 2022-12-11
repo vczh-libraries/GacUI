@@ -32,6 +32,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\GraphicsHost\GuiGraphicsHost_ShortcutKey.h"
 #include "..\..\Source\GraphicsHost\GuiGraphicsHost_Tab.h"
 #include "..\..\Source\GraphicsHost\GuiGraphicsHost.h"
+#include "..\..\Source\Resources\GuiPluginManager.h"
 #include "..\..\Source\Resources\GuiResource.h"
 #include "..\..\Source\Controls\Templates\GuiControlShared.h"
 #include "..\..\Source\Controls\Templates\GuiAnimation.h"

@@ -9,7 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUISCROLLCONTROLS
 #define VCZH_PRESENTATION_CONTROLS_GUISCROLLCONTROLS
 
-#include "GuiBasicControls.h"
+#include "../Application/Controls/GuiBasicControls.h"
+#include "Templates/GuiControlTemplates.h"
 
 namespace vl
 {

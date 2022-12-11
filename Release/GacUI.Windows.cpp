@@ -5,7 +5,2811 @@ DEVELOPER: Zihan Chen(vczh)
 #include "GacUI.Windows.h"
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.CPP
+.\WINNATIVEDPIAWARENESS.CPP
+***********************************************************************/
+
+#pragma comment(lib, "Shcore.lib")
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+#define USE_API(NAME, API) static auto proc_##API = (decltype(&API))(GetProcAddress(GetModuleHandle(L#NAME), #API))
+
+			void InitDpiAwareness(bool dpiAware)
+			{
+				USE_API(user32, SetProcessDpiAwarenessContext);
+				USE_API(shcore, SetProcessDpiAwareness);
+
+				if(proc_SetProcessDpiAwarenessContext)
+				{
+					proc_SetProcessDpiAwarenessContext(dpiAware ? DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2:  DPI_AWARENESS_CONTEXT_UNAWARE);
+					return;
+				}
+
+				if(proc_SetProcessDpiAwareness)
+				{
+					proc_SetProcessDpiAwareness(dpiAware ? PROCESS_PER_MONITOR_DPI_AWARE : PROCESS_DPI_UNAWARE);
+					return;
+				}
+			}
+
+			void DpiAwared_GetDpiForMonitor(HMONITOR monitor, UINT* x, UINT* y)
+			{
+				USE_API(shcore, GetDpiForMonitor);
+
+				if (proc_GetDpiForMonitor)
+				{
+					if (proc_GetDpiForMonitor(monitor, MDT_DEFAULT, x, y) == S_OK)
+					{
+						return;
+					}
+				}
+				*x = 96;
+				*y = 96;
+			}
+
+			void DpiAwared_GetDpiForWindow(HWND handle, UINT* x, UINT* y)
+			{
+				USE_API(user32, GetDpiForWindow);
+
+				if (proc_GetDpiForWindow)
+				{
+					*x = *y = proc_GetDpiForWindow(handle);
+				}
+				else
+				{
+					HMONITOR monitor = MonitorFromWindow(handle, MONITOR_DEFAULTTONULL);
+					if (monitor == NULL)
+					{
+						*x = *y = 96;
+					}
+					else
+					{
+						DpiAwared_GetDpiForMonitor(monitor, x, y);
+					}
+				}
+			}
+
+			void DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle, UINT dpi)
+			{
+				USE_API(user32, AdjustWindowRectExForDpi);
+
+				if (proc_AdjustWindowRectExForDpi)
+				{
+					proc_AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), dpi);
+				}
+				else
+				{
+					AdjustWindowRect(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
+				}
+			}
+
+			int DpiAwared_GetSystemMetrics(int index, UINT dpi)
+			{
+				USE_API(user32, GetSystemMetricsForDpi);
+
+				if (proc_GetSystemMetricsForDpi)
+				{
+					return proc_GetSystemMetricsForDpi(index, dpi);
+				}
+				else
+				{
+					return GetSystemMetrics(index);
+				}
+			}
+
+#undef USE_API
+		}
+	}
+}
+
+/***********************************************************************
+.\WINNATIVEWINDOW.CPP
+***********************************************************************/
+#include <CommCtrl.h>
+
+#pragma comment(lib, "Imm32.lib")
+#pragma comment(lib, "Shlwapi.lib")
+#pragma comment(lib, "Comctl32.lib")
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			using namespace collections;
+
+			LPCWSTR defaultIconResourceName = nullptr;
+
+			HICON CreateWindowDefaultIcon(vint size = 0)
+			{
+				if (!defaultIconResourceName) return NULL;
+				return (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, (int)size, (int)size, (size ? 0 : LR_DEFAULTSIZE) | LR_SHARED);
+			}
+
+			void SetWindowDefaultIcon(UINT resourceId)
+			{
+				CHECK_ERROR(defaultIconResourceName == nullptr, L"vl::presentation::windows::SetWindowDefaultIcon(UINT)#This function can only be called once.");
+				defaultIconResourceName = MAKEINTRESOURCE(resourceId);
+			}
+
+			HWND GetHWNDFromNativeWindowHandle(INativeWindow* window)
+			{
+				if(!window) return NULL;
+				IWindowsForm* form=GetWindowsForm(window);
+				if(!form) return NULL;
+				return form->GetWindowHandle();
+			}
+
+/***********************************************************************
+WindowsClass
+***********************************************************************/
+
+			class WinClass : public Object
+			{
+			protected:
+				WString									name;
+				WNDCLASSEX								windowClass;
+				ATOM									windowAtom;
+
+			public:
+				WinClass(WString _name, bool shadow, bool ownDC, WNDPROC procedure, HINSTANCE hInstance)
+				{
+					name=_name;
+					ZeroMemory(&windowClass, sizeof(windowClass));
+					windowClass.cbSize=sizeof(windowClass);
+					windowClass.style=CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | (shadow?CS_DROPSHADOW:0) | (ownDC?CS_OWNDC:0);
+					windowClass.lpfnWndProc=procedure;
+					windowClass.cbClsExtra=0;
+					windowClass.cbWndExtra=0;
+					windowClass.hInstance=hInstance;
+					if (defaultIconResourceName)
+					{
+						windowClass.hIcon = CreateWindowDefaultIcon();
+					}
+					windowClass.hCursor=NULL;//LoadCursor(NULL,IDC_ARROW);
+					windowClass.hbrBackground=GetSysColorBrush(COLOR_BTNFACE);
+					windowClass.lpszMenuName=NULL;
+					windowClass.lpszClassName=name.Buffer();
+					windowClass.hIconSm=NULL;
+					windowAtom=RegisterClassEx(&windowClass);
+				}
+
+				bool IsAvailable()
+				{
+					return windowAtom!=0;
+				}
+
+				WString GetName()
+				{
+					return name;
+				}
+
+				ATOM GetClassAtom()
+				{
+					return windowAtom;
+				}
+			};
+
+/***********************************************************************
+WindowsForm
+***********************************************************************/
+
+			class WindowsForm : public Object, public INativeWindow, public IWindowsForm
+			{
+			protected:
+				
+				LONG_PTR InternalGetExStyle()
+				{
+					return GetWindowLongPtr(handle, GWL_EXSTYLE);
+				}
+
+				void InternalSetExStyle(LONG_PTR exStyle)
+				{
+					LONG_PTR result = SetWindowLongPtr(handle, GWL_EXSTYLE, exStyle);
+					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+				}
+
+				LONG_PTR InternalGetStyle()
+				{
+					return GetWindowLongPtr(handle, GWL_STYLE);
+				}
+
+				void InternalSetStyle(LONG_PTR style)
+				{
+					SetWindowLongPtr(handle, GWL_STYLE, style);
+					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+				}
+
+				LONG_PTR TurnOnStyle(LONG_PTR combination, LONG_PTR style)
+				{
+					return combination | style;
+				}
+
+				LONG_PTR TurnOffStyle(LONG_PTR combination, LONG_PTR style)
+				{
+					return combination & (~style);
+				}
+
+				bool GetExStyle(LONG_PTR exStyle)
+				{
+					return (InternalGetExStyle() & exStyle) != 0;
+				}
+
+				void SetExStyle(LONG_PTR exStyle, bool available)
+				{
+					if (available)
+					{
+						InternalSetExStyle(TurnOnStyle(InternalGetExStyle(), exStyle));
+					}
+					else
+					{
+						InternalSetExStyle(TurnOffStyle(InternalGetExStyle(), exStyle));
+					}
+				}
+
+				bool GetStyle(LONG_PTR style)
+				{
+					return (InternalGetStyle() & style) != 0;
+				}
+
+				void SetStyle(LONG_PTR style, bool available)
+				{
+					if (available)
+					{
+						InternalSetStyle(TurnOnStyle(InternalGetStyle(), style));
+					}
+					else
+					{
+						InternalSetStyle(TurnOffStyle(InternalGetStyle(), style));
+					}
+				}
+#pragma push_macro("_CONTROL")
+#if defined _CONTROL
+#undef _CONTROL
+#endif
+				NativeWindowMouseInfo ConvertMouse(WPARAM wParam, LPARAM lParam, bool wheelMessage, bool nonClient)
+				{
+					NativeWindowMouseInfo info;
+
+					info.nonClient = false;
+					if (nonClient)
+					{
+						switch (wParam)
+						{
+						case HTMINBUTTON:
+						case HTMAXBUTTON:
+						case HTCLOSE:
+							break;
+						default:
+							info.nonClient = true;
+							break;
+						}
+					}
+
+					if(wheelMessage)
+					{
+						info.wheel=GET_WHEEL_DELTA_WPARAM(wParam);
+						wParam=GET_KEYSTATE_WPARAM(wParam);
+					}
+					else
+					{
+						info.wheel=0;
+					}
+
+					if (nonClient)
+					{
+						info.ctrl = WinIsKeyPressing(VKEY::KEY_CONTROL);
+						info.shift = WinIsKeyPressing(VKEY::KEY_SHIFT);
+						info.left= WinIsKeyPressing(VKEY::KEY_LBUTTON);
+						info.middle= WinIsKeyPressing(VKEY::KEY_MBUTTON);
+						info.right = WinIsKeyPressing(VKEY::KEY_RBUTTON);
+						
+						POINTS point = MAKEPOINTS(lParam);
+						NativePoint offset = GetClientBoundsInScreen().LeftTop();
+						info.x = point.x - offset.x.value;
+						info.y = point.y - offset.y.value;
+					}
+					else
+					{
+						info.ctrl=((VKEY)wParam & VKEY::KEY_CONTROL)!=(VKEY)0;
+						info.shift=((VKEY)wParam & VKEY::KEY_SHIFT)!= (VKEY)0;
+						info.left=((VKEY)wParam & VKEY::KEY_LBUTTON)!= (VKEY)0;
+						info.middle=((VKEY)wParam & VKEY::KEY_MBUTTON)!= (VKEY)0;
+						info.right=((VKEY)wParam & VKEY::KEY_RBUTTON)!= (VKEY)0;
+
+						POINTS point = MAKEPOINTS(lParam);
+
+						if (wheelMessage)
+						{
+							NativePoint offset = GetClientBoundsInScreen().LeftTop();
+							info.x = point.x - offset.x.value;
+							info.y = point.y - offset.y.value;
+						}
+						else
+						{
+							info.x = point.x;
+							info.y = point.y;
+						}
+					}
+					return info;
+				}
+
+				NativeWindowKeyInfo ConvertKey(WPARAM wParam, LPARAM lParam)
+				{
+					NativeWindowKeyInfo info;
+					info.code=(VKEY)wParam;
+					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
+					info.autoRepeatKeyDown = (((vuint32_t)lParam) >> 30) % 2 == 1;
+					return info;
+				}
+
+				NativeWindowCharInfo ConvertChar(WPARAM wParam)
+				{
+					NativeWindowCharInfo info;
+					info.code=(wchar_t)wParam;
+					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
+					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
+					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
+					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
+					return info;
+				}
+#pragma pop_macro("_CONTROL")
+
+				void TrackMouse(bool enable)
+				{
+					TRACKMOUSEEVENT trackMouseEvent;
+					trackMouseEvent.cbSize=sizeof(trackMouseEvent);
+					trackMouseEvent.hwndTrack=handle;
+					trackMouseEvent.dwFlags=(enable?0:TME_CANCEL) | TME_HOVER | TME_LEAVE;
+					trackMouseEvent.dwHoverTime=HOVER_DEFAULT;
+					TrackMouseEvent(&trackMouseEvent);
+				}
+
+				void UpdateCompositionForContent()
+				{
+					HIMC imc = ImmGetContext(handle);
+					COMPOSITIONFORM cf;
+					cf.dwStyle = CFS_POINT;
+					cf.ptCurrentPos.x = (int)caretPoint.x.value;
+					cf.ptCurrentPos.y = (int)caretPoint.y.value;
+					ImmSetCompositionWindow(imc, &cf);
+					ImmReleaseContext(handle, imc);
+				}
+
+				bool supressClosePopups = false;
+
+				static void ClosePopupsOf(WindowsForm* owner, SortedList<WindowsForm*>& exceptions)
+				{
+					for (vint i = 0; i < owner->childWindows.Count(); i++)
+					{
+						auto popup = owner->childWindows[i];
+						if (popup->windowMode != Normal && popup->IsVisible())
+						{
+							if (!exceptions.Contains(popup))
+							{
+								popup->Hide(false);
+							}
+						}
+						ClosePopupsOf(popup, exceptions);
+					}
+				}
+
+				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
+				{
+					if (!supressClosePopups)
+					{
+						bool closePopups = false;
+						WindowsForm* activatedWindow = nullptr;
+						WindowsForm* rootWindow = nullptr;
+						SortedList<WindowsForm*> exceptions;
+
+						switch (uMsg)
+						{
+						case WM_ACTIVATEAPP:
+							if (wParam == FALSE)
+							{
+								closePopups = true;
+							}
+							break;
+						case WM_ACTIVATE:
+							switch (LOWORD(wParam))
+							{
+							case WA_ACTIVE:
+							case WA_CLICKACTIVE:
+								activatedWindow = this;
+								closePopups = true;
+								break;
+							}
+							break;
+						case WM_LBUTTONDOWN:
+						case WM_MBUTTONDOWN:
+						case WM_RBUTTONDOWN:
+						case WM_NCLBUTTONDOWN:
+						case WM_NCMBUTTONDOWN:
+						case WM_NCRBUTTONDOWN:
+							activatedWindow = this;
+							closePopups = true;
+							break;
+						}
+
+						if (activatedWindow)
+						{
+							rootWindow = activatedWindow;
+							exceptions.Add(rootWindow);
+							while (auto parentWindow = rootWindow->parentWindow)
+							{
+								rootWindow = parentWindow;
+								exceptions.Add(parentWindow);
+							}
+						}
+
+						if (closePopups)
+						{
+							List<IWindowsForm*> allRootWindows;
+							GetAllCreatedWindows(allRootWindows, true);
+
+							for (vint i = 0; i < allRootWindows.Count(); i++)
+							{
+								if (auto windowsForm = dynamic_cast<WindowsForm*>(allRootWindows[i]))
+								{
+									ClosePopupsOf(windowsForm, exceptions);
+								}
+							}
+						}
+					}
+
+					bool nonClient = false;
+
+					switch(uMsg)
+					{
+					// ************************************** moving and sizing
+					case WM_MOVING:case WM_SIZING:
+						{
+							LPRECT rawBounds=(LPRECT)lParam;
+							NativeRect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->Moving(bounds, false, (uMsg == WM_SIZING));
+							}
+							if(		rawBounds->left!=bounds.Left().value
+								||	rawBounds->top!=bounds.Top().value
+								||	rawBounds->right!=bounds.Right().value
+								||	rawBounds->bottom!=bounds.Bottom().value)
+							{
+								rawBounds->left=(int)bounds.Left().value;
+								rawBounds->top=(int)bounds.Top().value;
+								rawBounds->right=(int)bounds.Right().value;
+								rawBounds->bottom=(int)bounds.Bottom().value;
+								result=TRUE;
+							}
+						}
+						break;
+					case WM_MOVE:case WM_SIZE:
+						{
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->Moved();
+							}
+						}
+						break;
+					case WM_DPICHANGED:
+						{
+							dpiX = LOWORD(wParam);
+							dpiY = HIWORD(wParam);
+							UpdateDpiAwaredFields(false);
+							auto newRect = (RECT*)lParam;
+							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->DpiChanged();
+							}
+						}
+						break;
+					// ************************************** state
+					case WM_ENABLE:
+						{
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								if(wParam==TRUE)
+								{
+									listeners[i]->Enabled();
+								}
+								else
+								{
+									listeners[i]->Disabled();
+								}
+							}
+						}
+						break;
+					case WM_SETFOCUS:
+						{
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->GotFocus();
+							}
+						}
+						break;
+					case WM_KILLFOCUS:
+						{
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->LostFocus();
+							}
+						}
+						break;
+					case WM_MOUSEACTIVATE:
+						if (!enabledActivate)
+						{
+							result = MA_NOACTIVATE;
+							return true;
+						}
+						break;
+					case WM_ACTIVATE:
+						{
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
+								{
+									listeners[i]->Activated();
+								}
+								else
+								{
+									listeners[i]->Deactivated();
+								}
+							}
+						}
+						break;
+					case WM_SHOWWINDOW:
+						if (lParam == 0)
+						{
+							if (wParam == TRUE)
+							{
+								for (vint i = 0; i < listeners.Count(); i++)
+								{
+									listeners[i]->Opened();
+								}
+							}
+							else
+							{
+								for (vint i = 0; i < listeners.Count(); i++)
+								{
+									listeners[i]->Closed();
+								}
+							}
+						}
+						break;
+					case WM_CLOSE:
+						{
+							bool cancel=false;
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->Closing(cancel);
+							}
+							return cancel;
+						}
+						break;
+					// ************************************** mouse
+					case WM_NCLBUTTONDOWN:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_LBUTTONDOWN:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->LeftButtonDown(info);
+							}
+						}
+						break;
+					case WM_NCLBUTTONUP:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_LBUTTONUP:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->LeftButtonUp(info);
+							}
+						}
+						break;
+					case WM_NCLBUTTONDBLCLK:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_LBUTTONDBLCLK:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->LeftButtonDoubleClick(info);
+							}
+						}
+						break;
+					case WM_NCRBUTTONDOWN:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_RBUTTONDOWN:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->RightButtonDown(info);
+							}
+						}
+						break;
+					case WM_NCRBUTTONUP:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_RBUTTONUP:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->RightButtonUp(info);
+							}
+						}
+						break;
+					case WM_NCRBUTTONDBLCLK:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_RBUTTONDBLCLK:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->RightButtonDoubleClick(info);
+							}
+						}
+						break;
+					case WM_NCMBUTTONDOWN:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_MBUTTONDOWN:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->MiddleButtonDown(info);
+							}
+						}
+						break;
+					case WM_NCMBUTTONUP:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_MBUTTONUP:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->MiddleButtonUp(info);
+							}
+						}
+						break;
+					case WM_NCMBUTTONDBLCLK:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_MBUTTONDBLCLK:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->MiddleButtonDoubleClick(info);
+							}
+						}
+						break;
+					case WM_NCMOUSEMOVE:
+						if (!customFrameMode) break;
+						nonClient = true;
+					case WM_MOUSEMOVE:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							if(info.x!=mouseLastX || info.y!=mouseLastY)
+							{
+								if(!mouseHoving)
+								{
+									mouseHoving=true;
+									for(vint i=0;i<listeners.Count();i++)
+									{
+										listeners[i]->MouseEntered();
+									}
+									TrackMouse(true);
+								}
+								for(vint i=0;i<listeners.Count();i++)
+								{
+									listeners[i]->MouseMoving(info);
+								}
+							}
+						}
+						break;
+					// ************************************** wheel
+					case WM_MOUSEHWHEEL:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->HorizontalWheel(info);
+							}
+						}
+						break;
+					case WM_MOUSEWHEEL:
+						{
+							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->VerticalWheel(info);
+							}
+						}
+						break;
+					// ************************************** mouse state
+					case WM_NCMOUSELEAVE:
+						nonClient = true;
+					case WM_MOUSELEAVE:
+						if (customFrameMode == nonClient)
+						{
+							mouseLastX=-1;
+							mouseLastY=-1;
+							mouseHoving=false;
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->MouseLeaved();
+							}
+						}
+						break;
+					case WM_NCMOUSEHOVER:
+					case WM_MOUSEHOVER:
+						{
+							TrackMouse(true);
+						}
+						break;
+					// ************************************** key
+					case WM_KEYUP:
+						{
+							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							info.autoRepeatKeyDown = false;
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->KeyUp(info);
+							}
+						}
+						break;
+					case WM_KEYDOWN:
+						{
+							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->KeyDown(info);
+							}
+						}
+						break;
+					case WM_SYSKEYUP:
+						{
+							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							info.autoRepeatKeyDown = false;
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+							{
+								supressingAlt = false;
+								break;
+							}
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->SysKeyUp(info);
+							}
+						}
+						break;
+					case WM_SYSKEYDOWN:
+						{
+							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
+							{
+								break;
+							}
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->SysKeyDown(info);
+							}
+						}
+						break;
+					case WM_CHAR:
+						{
+							NativeWindowCharInfo info=ConvertChar(wParam);
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->Char(info);
+							}
+						}
+						break;
+					// ************************************** painting
+					case WM_PAINT:
+						{
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								listeners[i]->Paint();
+							}
+						}
+						break;
+					case WM_ERASEBKGND:
+						result = 0;
+						return true;
+					case WM_NCPAINT:
+					case WM_SYNCPAINT:
+						if(customFrameMode)
+						{
+							result=0;
+							return true;
+						}
+						break;
+					// ************************************** IME
+					case WM_IME_SETCONTEXT:
+						if(wParam==TRUE)
+						{
+							HIMC imc = ImmGetContext(handle);
+							ImmAssociateContext(hwnd, imc);
+							ImmReleaseContext(handle, imc);
+						}
+						break;
+					case WM_IME_STARTCOMPOSITION:
+						UpdateCompositionForContent();
+						break;
+					// ************************************** hit test
+					case WM_NCHITTEST:
+						{
+							POINTS location=MAKEPOINTS(lParam);
+							NativePoint windowLocation=GetBounds().LeftTop();
+							location.x-=(SHORT)windowLocation.x.value;
+							location.y-=(SHORT)windowLocation.y.value;
+							for(vint i=0;i<listeners.Count();i++)
+							{
+								switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
+								{
+								case INativeWindowListener::BorderNoSizing:
+									result=HTBORDER;
+									return true;
+								case INativeWindowListener::BorderLeft:
+									result=HTLEFT;
+									return true;
+								case INativeWindowListener::BorderRight:
+									result=HTRIGHT;
+									return true;
+								case INativeWindowListener::BorderTop:
+									result=HTTOP;
+									return true;
+								case INativeWindowListener::BorderBottom:
+									result=HTBOTTOM;
+									return true;
+								case INativeWindowListener::BorderLeftTop:
+									result=HTTOPLEFT;
+									return true;
+								case INativeWindowListener::BorderRightTop:
+									result=HTTOPRIGHT;
+									return true;
+								case INativeWindowListener::BorderLeftBottom:
+									result=HTBOTTOMLEFT;
+									return true;
+								case INativeWindowListener::BorderRightBottom:
+									result=HTBOTTOMRIGHT;
+									return true;
+								case INativeWindowListener::Title:
+									result=HTCAPTION;
+									return true;
+								case INativeWindowListener::ButtonMinimum:
+									result=HTMINBUTTON;
+									return true;
+								case INativeWindowListener::ButtonMaximum:
+									result=HTMAXBUTTON;
+									return true;
+								case INativeWindowListener::ButtonClose:
+									result=HTCLOSE;
+									return true;
+								case INativeWindowListener::Client:
+									result=HTCLIENT;
+									return true;
+								case INativeWindowListener::Icon:
+									result=HTSYSMENU;
+									return true;
+								}
+							}
+						}
+						break;
+					// ************************************** MISC
+					case WM_SETCURSOR:
+						{
+							DWORD hitTestResult=LOWORD(lParam);
+							if(hitTestResult==HTCLIENT)
+							{
+								HCURSOR cursorHandle=cursor->GetCursorHandle();
+								if(GetCursor()!=cursorHandle)
+								{
+									SetCursor(cursorHandle);
+								}
+								result=TRUE;
+								return true;
+							}
+						}
+						break;
+					case WM_NCCALCSIZE:
+						if((BOOL)wParam && customFrameMode)
+						{
+							result=0;
+							return true;
+						}
+						break;
+					case WM_NCACTIVATE:
+						if(customFrameMode)
+						{
+							if(wParam==TRUE)
+							{
+								result=FALSE;
+							}
+							else
+							{
+								result=TRUE;
+							}
+							return true;
+						}
+						break;
+					}
+
+					// handling custom frame
+					if (customFrameMode)
+					{
+						switch (uMsg)
+						{
+						case WM_NCLBUTTONDOWN:
+							switch (wParam)
+							{
+							case HTMINBUTTON:
+							case HTMAXBUTTON:
+							case HTCLOSE:
+								result = 0;
+								return true;
+							}
+							break;
+						case WM_LBUTTONUP:
+							{
+								POINTS location = MAKEPOINTS(lParam);
+								for(vint i=0;i<listeners.Count();i++)
+								{
+									switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
+									{
+									case INativeWindowListener::ButtonMinimum:
+										ShowMinimized();
+										return false;
+									case INativeWindowListener::ButtonMaximum:
+										if (GetSizeState() == INativeWindow::Maximized)
+										{
+											ShowRestored();
+										}
+										else
+										{
+											ShowMaximized();
+										}
+										return false;
+									case INativeWindowListener::ButtonClose:
+										Hide(true);
+										return false;
+									}
+								}
+							}
+							break;
+						}
+					}
+					return false;
+				}
+			protected:
+				HWND								handle;
+				WString								title;
+				WindowsCursor*						cursor = nullptr;
+				NativePoint							caretPoint;
+				WindowsForm*						parentWindow = nullptr;
+				List<WindowsForm*>					childWindows;
+				WindowMode							windowMode;
+				List<INativeWindowListener*>		listeners;
+				vint								mouseLastX = -1;
+				vint								mouseLastY = -1;
+				bool								mouseHoving = false;
+				Interface*							graphicsHandler = nullptr;
+				bool								customFrameMode = false;
+				bool								enabledActivate = true;
+				List<Ptr<INativeMessageHandler>>	messageHandlers;
+				bool								supressingAlt = false;
+				Ptr<bool>							flagDisposed = Ptr(new bool(false));
+				NativeMargin						customFramePadding;
+				Ptr<GuiImageData>					defaultIcon;
+				Ptr<GuiImageData>					replacementIcon;
+				HICON								replacementHIcon = NULL;
+				UINT								dpiX = 0;
+				UINT								dpiY = 0;
+
+				void UpdateDpiAwaredFields(bool refreshDpiXY)
+				{
+					if (refreshDpiXY)
+					{
+						DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
+					}
+					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, dpiX));
+					customFramePadding = NativeMargin(padding, padding, padding, padding);
+				}
+			public:
+				WindowsForm(HWND parent, WString className, HINSTANCE hInstance, INativeWindow::WindowMode _windowMode)
+					:windowMode(_windowMode)
+				{
+					{
+						DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
+						DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
+						handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
+					}
+					if (windowMode == INativeWindow::Normal)
+					{
+						// use WS_POPUP in CreateWindowEx, because CW_USERDEFAULT is interpreted as 0, unlike WS_OVERLAPPED
+						// if this is not a popup window, replace WS_POPUP with WS_OVERLAPPED
+						auto style = InternalGetStyle();
+						style = TurnOnStyle(style, WS_OVERLAPPED);
+						style = TurnOffStyle(style, WS_POPUP);
+						InternalSetStyle(style);
+					}
+					UpdateDpiAwaredFields(true);
+				}
+
+				~WindowsForm()
+				{
+					if (parentWindow)
+					{
+						parentWindow->childWindows.Remove(this);
+					}
+					for (vint i = childWindows.Count() - 1; i >= 0; i--)
+					{
+						childWindows[i]->SetParent(parentWindow);
+					}
+
+					*flagDisposed.Obj() = true;
+					List<INativeWindowListener*> copiedListeners;
+					CopyFrom(copiedListeners, listeners);
+					for (vint i = 0; i < copiedListeners.Count(); i++)
+					{
+						INativeWindowListener* listener = copiedListeners[i];
+						if (listeners.Contains(listener))
+						{
+							listener->Destroyed();
+						}
+					}
+					DestroyWindow(handle);
+				}
+
+				void InvokeDestroying()
+				{
+					for(vint i=0;i<listeners.Count();i++)
+					{
+						listeners[i]->Destroying();
+					}
+				}
+
+				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
+				{
+#define CHECK_DISPOSED if (*flag.Obj()) return skip
+					auto flag = flagDisposed;
+					bool skip = false;
+					{
+						for (auto handler : messageHandlers)
+						{
+							handler->BeforeHandle(hwnd, uMsg, wParam, lParam, skip);
+							CHECK_DISPOSED;
+						}
+						if (skip)
+						{
+							return true;
+						}
+					}
+					skip = HandleMessageInternal(hwnd, uMsg, wParam, lParam, result);
+					CHECK_DISPOSED;
+					if (GetWindowsFormFromHandle(hwnd))
+					{
+						for (auto handler : messageHandlers)
+						{
+							handler->AfterHandle(hwnd, uMsg, wParam, lParam, skip, result);
+							CHECK_DISPOSED;
+						}
+					}
+					return skip;
+#undef CHECK_DISPOSED
+				}
+
+				HWND GetWindowHandle()override
+				{
+					return handle;
+				}
+
+				Interface* GetGraphicsHandler()override
+				{
+					return graphicsHandler;
+				}
+
+				void SetGraphicsHandler(Interface* handler)override
+				{
+					graphicsHandler=handler;
+				}
+
+				bool InstallMessageHandler(Ptr<INativeMessageHandler> handler)override
+				{
+					if (messageHandlers.Contains(handler.Obj()))
+					{
+						return false;
+					}
+					messageHandlers.Add(handler);
+					return true;
+				}
+
+				bool UninstallMessageHandler(Ptr<INativeMessageHandler> handler)override
+				{
+					vint index = messageHandlers.IndexOf(handler.Obj());
+					if (index == -1)return false;
+					messageHandlers.RemoveAt(handler);
+					return true;
+				}
+
+				Point Convert(NativePoint value)override
+				{
+					return Point((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
+				}
+
+				NativePoint Convert(Point value)override
+				{
+					return NativePoint(value.x * dpiX / 96, value.y * dpiY / 96);
+				}
+
+				Size Convert(NativeSize value)override
+				{
+					return Size((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
+				}
+
+				NativeSize Convert(Size value)override
+				{
+					return NativeSize(value.x * dpiX / 96, value.y * dpiY / 96);
+				}
+
+				Margin Convert(NativeMargin value)override
+				{
+					return Margin(
+						(vint)value.left.value * 96 / dpiX,
+						(vint)value.top.value * 96 / dpiY,
+						(vint)value.right.value * 96 / dpiX,
+						(vint)value.bottom.value * 96 / dpiY
+					);
+				}
+
+				NativeMargin Convert(Margin value)override
+				{
+					return NativeMargin(
+						(vint)value.left * dpiX / 96,
+						(vint)value.top * dpiY / 96,
+						(vint)value.right * dpiX / 96,
+						(vint)value.bottom * dpiY / 96
+					);
+				}
+
+				NativeRect GetBounds()override
+				{
+					RECT rect;
+					GetWindowRect(handle, &rect);
+					return NativeRect(rect.left, rect.top, rect.right, rect.bottom);
+				}
+
+				void SetBounds(const NativeRect& bounds)override
+				{
+					NativeRect newBounds=bounds;
+					for(vint i=0;i<listeners.Count();i++)
+					{
+						listeners[i]->Moving(newBounds, true, false);
+					}
+					MoveWindow(handle, (int)newBounds.Left().value, (int)newBounds.Top().value, (int)newBounds.Width().value, (int)newBounds.Height().value, FALSE);
+				}
+
+				NativeSize GetClientSize()override
+				{
+					return GetClientBoundsInScreen().GetSize();
+				}
+
+				void SetClientSize(NativeSize size)override
+				{
+					if (customFrameMode)
+					{
+						RECT bounds;
+						GetWindowRect(handle, &bounds);
+						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), size));
+					}
+					else
+					{
+						RECT required = { 0,0,(int)size.x.value,(int)size.y.value };
+						RECT bounds;
+						GetWindowRect(handle, &bounds);
+						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
+						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right - required.left, required.bottom - required.top)));
+					}
+				}
+
+				NativeRect GetClientBoundsInScreen()override
+				{
+					if(customFrameMode)
+					{
+						return GetBounds();
+					}
+					else
+					{
+						RECT required={0,0,0,0};
+						RECT bounds;
+						GetWindowRect(handle, &bounds);
+						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
+						return NativeRect(
+							NativePoint(
+								(bounds.left-required.left),
+								(bounds.top-required.top)
+								),
+							NativeSize(
+								(bounds.right-bounds.left)-(required.right-required.left),
+								(bounds.bottom-bounds.top)-(required.bottom-required.top)
+								)
+							);
+					}
+				}
+
+				WString GetTitle()override
+				{
+					return title;
+				}
+
+				void SetTitle(WString _title)override
+				{
+					title=_title;
+					SetWindowText(handle, title.Buffer());
+				}
+
+				INativeCursor* GetWindowCursor()override
+				{
+					return cursor;
+				}
+
+				void SetWindowCursor(INativeCursor* _cursor)override
+				{
+					WindowsCursor* newCursor=dynamic_cast<WindowsCursor*>(_cursor);
+					if(newCursor && cursor!=newCursor)
+					{
+						cursor=newCursor;
+						if(mouseHoving && IsVisible())
+						{
+							SetCursor(cursor->GetCursorHandle());
+						}
+					}
+				}
+				
+				NativePoint GetCaretPoint()override
+				{
+					return caretPoint;
+				}
+
+				void SetCaretPoint(NativePoint point)override
+				{
+					caretPoint=point;
+					UpdateCompositionForContent();
+				}
+
+				INativeWindow* GetParent()override
+				{
+					return parentWindow;
+				}
+
+				void SetParent(INativeWindow* parent)override
+				{
+					if (parentWindow)
+					{
+						parentWindow->childWindows.Remove(this);
+					}
+
+					if ((parentWindow = dynamic_cast<WindowsForm*>(parent)))
+					{
+						parentWindow->childWindows.Add(this);
+						// ::SetParent(handle, parentWindow->handle);
+						SetWindowLongPtr(handle, GWLP_HWNDPARENT, (LONG_PTR)parentWindow->handle);
+					}
+					else
+					{
+						// ::SetParent(handle, NULL);
+						SetWindowLongPtr(handle, GWLP_HWNDPARENT, NULL);
+					}
+				}
+
+				WindowMode GetWindowMode()override
+				{
+					return windowMode;
+				}
+
+				void EnableCustomFrameMode()override
+				{
+					customFrameMode=true;
+				}
+
+				void DisableCustomFrameMode()override
+				{
+					customFrameMode=false;
+				}
+
+				bool IsCustomFrameModeEnabled()override
+				{
+					return customFrameMode;
+				}
+
+				NativeMargin GetCustomFramePadding()override
+				{
+					if (GetSizeBox() || GetTitleBar())
+					{
+						return customFramePadding;
+					}
+					else
+					{
+						return NativeMargin(0, 0, 0, 0);
+					}
+				}
+
+				Ptr<GuiImageData> GetIcon()override
+				{
+					if (replacementIcon && replacementIcon->GetImage())
+					{
+						return replacementIcon;
+					}
+					else
+					{
+						if (!defaultIcon)
+						{
+							auto icon = CreateWindowDefaultIcon(16);
+							if (icon == NULL)
+							{
+								icon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 16, 16, LR_SHARED);
+							}
+							if (icon != NULL)
+							{
+								defaultIcon = Ptr(new GuiImageData(CreateImageFromHICON(icon), 0));
+							}
+						}
+						return defaultIcon;
+					}
+				}
+
+				static double GetSizeScore(vint size)
+				{
+					if (size > 32)
+					{
+						return 32.0 / size;
+					}
+					else if (size < 32)
+					{
+						return size / 32.0 - 1;
+					}
+					else
+					{
+						return 1.0;
+					}
+				}
+
+				static vint GetBppFromFormat(const WICPixelFormatGUID& format)
+				{
+					if (format == GUID_WICPixelFormat1bppIndexed)	return 1;
+					if (format == GUID_WICPixelFormat2bppIndexed)	return 2;
+					if (format == GUID_WICPixelFormat4bppIndexed)	return 4;
+					if (format == GUID_WICPixelFormat8bppIndexed)	return 8;
+					if (format == GUID_WICPixelFormatBlackWhite)	return 1;
+					if (format == GUID_WICPixelFormat2bppGray)		return 2;
+					if (format == GUID_WICPixelFormat4bppGray)		return 4;
+					if (format == GUID_WICPixelFormat8bppGray)		return 8;
+					if (format == GUID_WICPixelFormat8bppAlpha)		return 8;
+					if (format == GUID_WICPixelFormat16bppBGR555)	return 16;
+					if (format == GUID_WICPixelFormat16bppBGR565)	return 16;
+					if (format == GUID_WICPixelFormat16bppBGRA5551)	return 16;
+					if (format == GUID_WICPixelFormat16bppGray)		return 16;
+					if (format == GUID_WICPixelFormat24bppBGR)		return 24;
+					if (format == GUID_WICPixelFormat24bppRGB)		return 24;
+					if (format == GUID_WICPixelFormat32bppBGR)		return 32;
+					if (format == GUID_WICPixelFormat32bppBGRA)		return 32;
+					if (format == GUID_WICPixelFormat32bppPBGRA)	return 32;
+					return -1;
+				}
+
+				void SetIcon(Ptr<GuiImageData> icon)override
+				{
+					replacementIcon = icon;
+					HICON newReplacementHIcon = NULL;
+					if (replacementIcon && replacementIcon->GetImage())
+					{
+						stream::MemoryStream memoryStream;
+
+						replacementIcon->GetImage()->SaveToStream(memoryStream, INativeImage::Icon);
+						if (memoryStream.Size() > 0)
+						{
+							newReplacementHIcon = CreateIconFromResource((PBYTE)memoryStream.GetInternalBuffer(), (DWORD)memoryStream.Size(), TRUE, 0x00030000);
+							if (newReplacementHIcon != NULL)
+							{
+								goto SKIP;
+							}
+						}
+
+						INativeImageFrame* selectedFrame = nullptr;
+						for (vint i = 0; i < replacementIcon->GetImage()->GetFrameCount(); i++)
+						{
+							auto frame = replacementIcon->GetImage()->GetFrame(i);
+							auto size = frame->GetSize();
+							if (size.x == size.y)
+							{
+								auto bitmap = GetWICBitmap(frame);
+								WICPixelFormatGUID format;
+								HRESULT hr = bitmap->GetPixelFormat(&format);
+								if (hr != S_OK) continue;
+
+								if (!selectedFrame)
+								{
+									selectedFrame = frame;
+								}
+								else
+								{
+									auto score = GetSizeScore(size.x);
+									auto scoreSelected = GetSizeScore(selectedFrame->GetSize().x);
+									if (score > scoreSelected)
+									{
+										selectedFrame = frame;
+									}
+									else if (score == scoreSelected)
+									{
+										WICPixelFormatGUID selectedFormat;
+										auto selectedBitmap = GetWICBitmap(selectedFrame);
+										hr = selectedBitmap->GetPixelFormat(&selectedFormat);
+
+										auto bpp = GetBppFromFormat(format);
+										auto bppSelected = GetBppFromFormat(selectedFormat);
+										if (bpp > bppSelected)
+										{
+											selectedFrame = frame;
+										}
+									}
+								}
+							}
+						}
+
+						if (selectedFrame)
+						{
+							bool succeeded = false;
+							WindowsBitmapImage newBitmap(replacementIcon->GetImage()->GetImageService(), GetWICBitmap(selectedFrame), replacementIcon->GetImage()->GetFormat());
+							newBitmap.SaveToStream(memoryStream, INativeImage::Bmp);
+							if (memoryStream.Size() > 0)
+							{
+								auto pBuffer = (char*)memoryStream.GetInternalBuffer();
+								tagBITMAPFILEHEADER bfh = *(tagBITMAPFILEHEADER*)pBuffer;
+								tagBITMAPINFOHEADER bih = *(tagBITMAPINFOHEADER*)(pBuffer + sizeof(tagBITMAPFILEHEADER));
+								RGBQUAD rgb = *(RGBQUAD*)(pBuffer + sizeof(tagBITMAPFILEHEADER) + sizeof(tagBITMAPINFOHEADER));
+
+								BITMAPINFO bi;
+								bi.bmiColors[0] = rgb;
+								bi.bmiHeader = bih;
+
+								char* pPixels = (pBuffer + bfh.bfOffBits);
+								char* ppvBits;
+								auto hBitmap = CreateDIBSection(NULL, &bi, DIB_RGB_COLORS, (void**)&ppvBits, NULL, 0);
+								if (hBitmap != NULL)
+								{
+									SetDIBits(NULL, hBitmap, 0, bih.biHeight, pPixels, &bi, DIB_RGB_COLORS);
+									auto himl = ImageList_Create(32, 32, ILC_COLOR32, 1, 1);
+									if (himl != NULL)
+									{
+										int addResult = ImageList_Add(himl, hBitmap, NULL);
+										newReplacementHIcon = ImageList_GetIcon(himl, 0, ILD_NORMAL);
+										ImageList_Destroy(himl);
+									}
+									DeleteObject(hBitmap);
+								}
+							}
+						}
+					}
+
+				SKIP:
+					{
+						HICON hAppIcon = newReplacementHIcon;
+						if (hAppIcon == NULL) hAppIcon = CreateWindowDefaultIcon();
+						if (hAppIcon == NULL) hAppIcon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
+						bool isVisible = IsVisible();
+						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)FALSE, NULL);
+						SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
+						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
+						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)TRUE, NULL);
+
+						if (this == GetCurrentController()->WindowService()->GetMainWindow())
+						{
+							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
+							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
+						}
+					}
+
+					if (replacementHIcon != NULL)
+					{
+						DestroyIcon(replacementHIcon);
+					}
+					replacementHIcon = newReplacementHIcon;
+				}
+
+				WindowSizeState GetSizeState()override
+				{
+					if(IsIconic(handle))
+					{
+						return INativeWindow::Minimized;
+					}
+					else if(IsZoomed(handle))
+					{
+						return INativeWindow::Maximized;
+					}
+					else
+					{
+						return INativeWindow::Restored;
+					}
+				}
+
+				void Show()override
+				{
+					ShowWindow(handle, SW_SHOWNORMAL);
+				}
+
+				void ShowDeactivated()override
+				{
+					ShowWindow(handle, SW_SHOWNOACTIVATE);
+					SetWindowPos(handle,HWND_TOP,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+				}
+
+				void ShowRestored()override
+				{
+					ShowWindow(handle, SW_RESTORE);
+				}
+
+				void ShowMaximized()override
+				{
+					ShowWindow(handle, SW_SHOWMAXIMIZED);
+				}
+
+				void ShowMinimized()override
+				{
+					ShowWindow(handle, SW_SHOWMINIMIZED);
+				}
+
+				void Hide(bool closeWindow)override
+				{
+					if (closeWindow)
+					{
+						PostMessage(handle, WM_CLOSE, NULL, NULL);
+					}
+					else
+					{
+						ShowWindow(handle, SW_HIDE);
+					}
+				}
+
+				bool IsVisible()override
+				{
+					return IsWindowVisible(handle)!=0;
+				}
+
+				void Enable()override
+				{
+					EnableWindow(handle, TRUE);
+				}
+
+				void Disable()override
+				{
+					EnableWindow(handle, FALSE);
+				}
+
+				bool IsEnabled()override
+				{
+					return IsWindowEnabled(handle)!=0;
+				}
+
+				void SetFocus()override
+				{
+					::SetFocus(handle);
+				}
+
+				bool IsFocused()override
+				{
+					return GetFocus()==handle;
+				}
+
+				void SetActivate()override
+				{
+					SetActiveWindow(handle);
+				}
+
+				bool IsActivated()override
+				{
+					return GetActiveWindow()==handle;
+				}
+
+				void ShowInTaskBar()override
+				{
+					SetExStyle(WS_EX_APPWINDOW, true);
+				}
+
+				void HideInTaskBar()override
+				{
+					SetExStyle(WS_EX_APPWINDOW, false);
+				}
+
+				bool IsAppearedInTaskBar()override
+				{
+					return GetExStyle(WS_EX_APPWINDOW);
+				}
+
+				void EnableActivate()override
+				{
+					enabledActivate = true;
+					SetExStyle(WS_EX_NOACTIVATE, false);
+				}
+
+				void DisableActivate()override
+				{
+					enabledActivate = false;
+					SetExStyle(WS_EX_NOACTIVATE, true);
+				}
+
+				bool IsEnabledActivate()override
+				{
+					return enabledActivate;
+				}
+
+				bool RequireCapture()override
+				{
+					SetCapture(handle);
+					return true;
+				}
+
+				bool ReleaseCapture()override
+				{
+					::ReleaseCapture();
+					return true;
+				}
+
+				bool IsCapturing()override
+				{
+					return GetCapture()==handle;
+				}
+
+				bool GetMaximizedBox()override
+				{
+					return GetStyle(WS_MAXIMIZEBOX);
+				}
+
+				void SetMaximizedBox(bool visible)override
+				{
+					SetStyle(WS_MAXIMIZEBOX, visible);
+				}
+
+				bool GetMinimizedBox()override
+				{
+					return GetStyle(WS_MINIMIZEBOX);
+				}
+
+				void SetMinimizedBox(bool visible)override
+				{
+					SetStyle(WS_MINIMIZEBOX, visible);
+				}
+
+				bool GetBorder()override
+				{
+					return GetStyle(WS_BORDER);
+				}
+
+				void SetBorder(bool visible)override
+				{
+					SetStyle(WS_BORDER, visible);
+				}
+
+				bool GetSizeBox()override
+				{
+					return GetStyle(WS_SIZEBOX);
+				}
+
+				void SetSizeBox(bool visible)override
+				{
+					SetStyle(WS_SIZEBOX, visible);
+				}
+
+				bool GetIconVisible()override
+				{
+					return GetStyle(WS_SYSMENU);
+				}
+
+				void SetIconVisible(bool visible)override
+				{
+					SetStyle(WS_SYSMENU, visible);
+				}
+
+				bool GetTitleBar()override
+				{
+					return GetStyle(WS_CAPTION);
+				}
+
+				void SetTitleBar(bool visible)override
+				{
+					SetStyle(WS_CAPTION, visible);
+				}
+
+				bool GetTopMost()override
+				{
+					return GetExStyle(WS_EX_TOPMOST);
+				}
+
+				void SetTopMost(bool topmost)override
+				{
+					SetWindowPos(handle, (topmost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+				}
+
+				void SupressAlt()override
+				{
+					if (!supressingAlt)
+					{
+						supressingAlt = true;
+						PostMessage(handle, WM_SYSKEYDOWN, VK_MENU, 0);
+						PostMessage(handle, WM_SYSKEYUP, VK_MENU, 0);
+					}
+				}
+
+				bool InstallListener(INativeWindowListener* listener)override
+				{
+					if(listeners.Contains(listener))
+					{
+						return false;
+					}
+					else
+					{
+						listeners.Add(listener);
+						return true;
+					}
+				}
+
+				bool UninstallListener(INativeWindowListener* listener)override
+				{
+					if(listeners.Contains(listener))
+					{
+						listeners.Remove(listener);
+						return true;
+					}
+					else
+					{
+						return false;
+					}
+				}
+
+				void RedrawContent()override
+				{
+					if(graphicsHandler)
+					{
+						SendMessage(this->handle, WM_PAINT, NULL, NULL);
+					}
+				}
+			};
+
+/***********************************************************************
+WindowsController
+***********************************************************************/
+
+			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
+			{
+			protected:
+				WinClass							windowClass;
+				WinClass							godClass;
+				HINSTANCE							hInstance;
+				HWND								godWindow;
+				Dictionary<HWND, WindowsForm*>		windows;
+				INativeWindow*						mainWindow;
+				HWND								mainWindowHandle;
+
+				WindowsCallbackService				callbackService;
+				WindowsResourceService				resourceService;
+				WindowsAsyncService					asyncService;
+				WindowsClipboardService				clipboardService;
+				WindowsImageService					imageService;
+				WindowsScreenService				screenService;
+				WindowsInputService					inputService;
+				WindowsDialogService				dialogService;
+
+			public:
+				WindowsController(HINSTANCE _hInstance)
+					:hInstance(_hInstance)
+					,windowClass(L"VczhWindow", false, false, WndProc, _hInstance)
+					,godClass(L"GodWindow", false, false, GodProc, _hInstance)
+					,mainWindow(0)
+					,mainWindowHandle(0)
+					,screenService(&GetHWNDFromNativeWindowHandle)
+					,dialogService(&GetHWNDFromNativeWindowHandle)
+				{
+					godWindow=CreateWindowEx(WS_EX_CONTROLPARENT, godClass.GetName().Buffer(), L"GodWindow", WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+					clipboardService.SetOwnerHandle(godWindow);
+					inputService.SetOwnerHandle(godWindow);
+				}
+
+				~WindowsController()
+				{
+					inputService.StopTimer();
+					clipboardService.SetOwnerHandle(NULL);
+					DestroyWindow(godWindow);
+				}
+
+				WindowsForm* GetWindowsFormFromHandle(HWND hwnd)
+				{
+					vint index = windows.Keys().IndexOf(hwnd);
+					if (index == -1)return 0;
+					return windows.Values()[index];
+				}
+
+				void GetAllCreatedWindows(collections::List<IWindowsForm*>& createdWindows, bool rootWindowOnly)
+				{
+					if (rootWindowOnly)
+					{
+						for (auto window : windows.Values())
+						{
+							if (window->GetWindowMode() == INativeWindow::Normal)
+							{
+								createdWindows.Add(window);
+							}
+						}
+					}
+					else
+					{
+						CopyFrom(createdWindows, windows.Values());
+					}
+				}
+
+				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
+				{
+					bool skipDefaultProcedure=false;
+					{
+						vint index = windows.Keys().IndexOf(hwnd);
+						if (index != -1)
+						{
+							WindowsForm* window = windows.Values().Get(index);
+							skipDefaultProcedure = window->HandleMessage(hwnd, uMsg, wParam, lParam, result);
+							switch (uMsg)
+							{
+							case WM_CLOSE:
+								if (!skipDefaultProcedure)
+								{
+									ShowWindow(window->GetWindowHandle(), SW_HIDE);
+									if (window != mainWindow)
+									{
+										skipDefaultProcedure = true;
+									}
+								}
+								break;
+							case WM_DESTROY:
+								DestroyNativeWindow(window);
+								break;
+							}
+						}
+					}
+					{
+						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
+						{
+							for (auto window : windows.Values())
+							{
+								if (window->IsVisible())
+								{
+									window->Hide(true);
+								}
+							}
+							List<WindowsForm*> normalWindows;
+							CopyFrom(
+								normalWindows,
+								From(windows.Values())
+									.Where([](WindowsForm* window)
+									{
+										return window->GetWindowMode() == INativeWindow::Normal;
+									})
+								);
+							for (auto window : normalWindows)
+							{
+								DestroyNativeWindow(window);
+							}
+							for (vint i = windows.Count() - 1; i >= 0; i--)
+							{
+								auto window = windows.Values()[i];
+								DestroyNativeWindow(window);
+							}
+							
+							PostQuitMessage(0);
+						}
+					}
+					return skipDefaultProcedure;
+				}
+
+				//=======================================================================
+
+				INativeWindow* CreateNativeWindow(INativeWindow::WindowMode windowMode)override
+				{
+					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
+					windows.Add(window->GetWindowHandle(), window);
+					callbackService.InvokeNativeWindowCreated(window);
+					window->SetWindowCursor(resourceService.GetDefaultSystemCursor());
+					return window;
+				}
+
+				void DestroyNativeWindow(INativeWindow* window)override
+				{
+					WindowsForm* windowsForm=dynamic_cast<WindowsForm*>(window);
+					windowsForm->InvokeDestroying();
+					if(windowsForm!=0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
+					{
+						callbackService.InvokeNativeWindowDestroyed(window);
+						windows.Remove(windowsForm->GetWindowHandle());
+						delete windowsForm;
+					}
+				}
+
+				INativeWindow* GetMainWindow()override
+				{
+					return mainWindow;
+				}
+
+				void Run(INativeWindow* window)override
+				{
+					mainWindow=window;
+					mainWindowHandle=GetWindowsForm(window)->GetWindowHandle();
+					mainWindow->Show();
+					MSG message;
+					while(GetMessage(&message, NULL, 0, 0))
+					{
+						TranslateMessage(&message);
+						DispatchMessage(&message);
+						asyncService.ExecuteAsyncTasks();
+					}
+				}
+
+				INativeWindow* GetWindow(NativePoint location)override
+				{
+					POINT p;
+					p.x=(int)location.x.value;
+					p.y=(int)location.y.value;
+					HWND handle=WindowFromPoint(p);
+					vint index=windows.Keys().IndexOf(handle);
+					if(index==-1)
+					{
+						return 0;
+					}
+					else
+					{
+						return windows.Values().Get(index);
+					}
+				}
+
+				//=======================================================================
+
+				INativeCallbackService* CallbackService()
+				{
+					return &callbackService;
+				}
+
+				INativeResourceService* ResourceService()
+				{
+					return &resourceService;
+				}
+				
+				INativeAsyncService* AsyncService()
+				{
+					return &asyncService;
+				}
+
+				INativeClipboardService* ClipboardService()
+				{
+					return &clipboardService;
+				}
+
+				INativeImageService* ImageService()
+				{
+					return &imageService;
+				}
+
+				INativeScreenService* ScreenService()
+				{
+					return &screenService;
+				}
+
+				INativeWindowService* WindowService()
+				{
+					return this;
+				}
+
+				INativeInputService* InputService()
+				{
+					return &inputService;
+				}
+
+				INativeDialogService* DialogService()
+				{
+					return &dialogService;
+				}
+
+				WString GetExecutablePath()
+				{
+					Array<wchar_t> buffer(65536);
+					GetModuleFileName(NULL, &buffer[0], (DWORD)buffer.Count());
+					return &buffer[0];
+				}
+
+				//=======================================================================
+
+				void InvokeGlobalTimer()
+				{
+					callbackService.InvokeGlobalTimer();
+				}
+
+				void InvokeClipboardUpdated()
+				{
+					callbackService.InvokeClipboardUpdated();
+				}
+			};
+
+/***********************************************************************
+Windows Procedure
+***********************************************************************/
+
+			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
+				if(controller)
+				{
+					LRESULT result=0;
+					if(controller->HandleMessage(hwnd, uMsg, wParam, lParam, result))
+					{
+						return result;
+					}
+				}
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			}
+
+			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
+				if(controller)
+				{
+					switch(uMsg)
+					{
+					case WM_TIMER:
+						controller->InvokeGlobalTimer();
+						break;
+					case WM_CLIPBOARDUPDATE:
+						controller->InvokeClipboardUpdated();
+						break;
+					}
+				}
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			}
+
+/***********************************************************************
+Windows Platform Native Controller
+***********************************************************************/
+
+			INativeController* CreateWindowsNativeController(HINSTANCE hInstance)
+			{
+				return new WindowsController(hInstance);
+			}
+
+			IWindowsForm* GetWindowsFormFromHandle(HWND hwnd)
+			{
+				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
+				if (controller)
+				{
+					return controller->GetWindowsFormFromHandle(hwnd);
+				}
+				return nullptr;
+			}
+
+			IWindowsForm* GetWindowsForm(INativeWindow* window)
+			{
+				return dynamic_cast<WindowsForm*>(window);
+			}
+
+			void GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly)
+			{
+				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
+				if (controller)
+				{
+					controller->GetAllCreatedWindows(windows, rootWindowOnly);
+				}
+			}
+
+			void DestroyWindowsNativeController(INativeController* controller)
+			{
+				delete controller;
+			}
+
+			void EnableCrossKernelCrashing()
+			{
+				/*
+				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
+					DWORD DisableUserModeCallbackFilter = 1
+
+				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\TestCppCodegen.exe"
+					DWORD DisableUserModeCallbackFilter = 1
+				*/
+				typedef BOOL (WINAPI *tGetPolicy)(LPDWORD lpFlags); 
+				typedef BOOL (WINAPI *tSetPolicy)(DWORD dwFlags); 
+				const DWORD EXCEPTION_SWALLOWING = 0x1;
+ 
+				HMODULE kernel32 = LoadLibrary(L"kernel32.dll"); 
+				tGetPolicy pGetPolicy = (tGetPolicy)GetProcAddress(kernel32, "GetProcessUserModeExceptionPolicy"); 
+				tSetPolicy pSetPolicy = (tSetPolicy)GetProcAddress(kernel32, "SetProcessUserModeExceptionPolicy"); 
+				if (pGetPolicy && pSetPolicy) 
+				{ 
+					DWORD dwFlags; 
+					if (pGetPolicy(&dwFlags)) 
+					{ 
+						// Turn off the filter 
+						pSetPolicy(dwFlags & ~EXCEPTION_SWALLOWING);
+					} 
+				} 
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\DIRECT2D\WINDIRECT2DAPPLICATION.CPP
+***********************************************************************/
+
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "d3d11.lib")
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace elements;
+
+		namespace windows
+		{
+			using namespace vl::collections;
+
+/***********************************************************************
+WindowListener
+***********************************************************************/
+
+			class Direct2DWindowsNativeWindowListener : public Object, public INativeWindowListener
+			{
+			protected:
+				ID2D1Factory*					d2dFactory;
+				INativeWindow*					window;
+				bool							rendering = false;
+				bool							movedWhileRendering = false;
+
+				virtual void					RebuildCanvas(NativeSize size) = 0;
+			public:
+				Direct2DWindowsNativeWindowListener(INativeWindow* _window, ID2D1Factory* _d2dFactory)
+					:window(_window)
+					,d2dFactory(_d2dFactory)
+				{
+				}
+
+				void Moved()override
+				{
+					if (rendering)
+					{
+						movedWhileRendering = true;
+					}
+					else
+					{
+						ResizeRenderTarget();
+					}
+				}
+
+				void ResizeRenderTarget()
+				{
+					RebuildCanvas(window->GetClientSize());
+				}
+
+				void StartRendering()
+				{
+					rendering = true;
+				}
+
+				void StopRendering()
+				{
+					rendering = false;
+				}
+
+				bool RetrieveAndResetMovedWhileRendering()
+				{
+					bool result = movedWhileRendering;
+					movedWhileRendering = false;
+					return result;
+				}
+
+				virtual ID2D1RenderTarget*		GetDirect2DRenderTarget() = 0;
+				virtual void					RecreateRenderTarget() = 0;
+				virtual bool					PresentRenderTarget() = 0;
+			};
+
+/***********************************************************************
+WindowListener 1.0
+***********************************************************************/
+
+			class Direct2DWindowsNativeWindowListener_1_0 : public Direct2DWindowsNativeWindowListener
+			{
+			protected:
+				ComPtr<ID2D1HwndRenderTarget>	d2dRenderTarget;
+				NativeSize						previousSize;
+
+				void RebuildCanvas(NativeSize size)override
+				{
+					if (size.x <= 1) size.x = 1;
+					if (size.y <= 1) size.y = 1;
+					if (!d2dRenderTarget)
+					{
+						ID2D1HwndRenderTarget* renderTarget = 0;
+						IWindowsForm* form = GetWindowsForm(window);
+						D2D1_RENDER_TARGET_PROPERTIES tp = D2D1::RenderTargetProperties();
+						{
+							UINT dpiX = 0;
+							UINT dpiY = 0;
+							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
+							tp.dpiX = (FLOAT)dpiX;
+							tp.dpiY = (FLOAT)dpiY;
+						}
+						HRESULT hr = d2dFactory->CreateHwndRenderTarget(
+							tp,
+							D2D1::HwndRenderTargetProperties(
+								form->GetWindowHandle(),
+								D2D1::SizeU((int)size.x.value, (int)size.y.value)
+							),
+							&renderTarget
+						);
+						if (!FAILED(hr))
+						{
+							d2dRenderTarget = renderTarget;
+							d2dRenderTarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+						}
+					}
+					else if (previousSize != size)
+					{
+						d2dRenderTarget->Resize(D2D1::SizeU((int)size.x.value, (int)size.y.value));
+					}
+					previousSize = size;
+				}
+			public:
+				Direct2DWindowsNativeWindowListener_1_0(INativeWindow* _window, ID2D1Factory* _d2dFactory)
+					:Direct2DWindowsNativeWindowListener(_window, _d2dFactory)
+				{
+				}
+
+				ID2D1RenderTarget* GetDirect2DRenderTarget()override
+				{
+					if(!d2dRenderTarget) Moved();
+					return d2dRenderTarget.Obj();
+				}
+
+				void RecreateRenderTarget()override
+				{
+					if (d2dRenderTarget)
+					{
+						d2dRenderTarget = nullptr;
+					}
+				}
+
+				bool PresentRenderTarget()override
+				{
+					return true;
+				}
+			};
+
+/***********************************************************************
+WindowListener 1.1
+***********************************************************************/
+
+			class Direct2DWindowsNativeWindowListener_1_1 : public Direct2DWindowsNativeWindowListener
+			{
+			protected:
+				ComPtr<ID2D1Factory1>			d2dFactory1;
+				ID3D11Device*					d3d11Device;
+				ComPtr<IDXGIDevice>				dxgiDevice;
+				ComPtr<IDXGISwapChain1>			dxgiSwapChain;
+				ComPtr<ID2D1DeviceContext>		d2dDeviceContext;
+				NativeSize						previousSize;
+
+				ComPtr<IDXGIDevice> GetDXGIDevice()
+				{
+					IDXGIDevice* device = nullptr;
+					HRESULT hr = d3d11Device->QueryInterface(&device);
+					if (!SUCCEEDED(hr)) return nullptr;
+					return device;
+				}
+
+				ComPtr<IDXGISwapChain1> CreateSwapChain(IDXGIDevice* dxgiDevice)
+				{
+					ComPtr<IDXGIAdapter> dxgiAdapter;
+					{
+						IDXGIAdapter* adapter = nullptr;
+						HRESULT hr = dxgiDevice->GetAdapter(&adapter);
+						if (!SUCCEEDED(hr)) return nullptr;
+						dxgiAdapter = adapter;
+					}
+
+					ComPtr<IDXGIFactory2> dxgiFactory;
+					{
+						IDXGIFactory2* factory = nullptr;
+						HRESULT hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&factory);
+						if (!SUCCEEDED(hr)) return nullptr;
+						dxgiFactory = factory;
+					}
+
+					IWindowsForm* form = GetWindowsForm(window);
+					ComPtr<IDXGISwapChain1> dxgiSwapChain;
+					{
+						DXGI_SWAP_CHAIN_DESC1 props = {};
+						props.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+						props.SampleDesc.Count = 1;
+						props.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+						props.BufferCount = 2;
+
+						IDXGISwapChain1* swapChain = nullptr;
+						HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(d3d11Device, form->GetWindowHandle(), &props, nullptr, nullptr, &swapChain);
+						if (!SUCCEEDED(hr)) return nullptr;
+						dxgiSwapChain = swapChain;
+					}
+
+					return dxgiSwapChain;
+				}
+
+				ComPtr<ID2D1DeviceContext> CreateDeviceContext(IDXGIDevice* dxgiDevice)
+				{
+					ComPtr<ID2D1Device> d2d1Device;
+					{
+						ID2D1Device* device = nullptr;
+						HRESULT hr = d2dFactory1->CreateDevice(dxgiDevice, &device);
+						if (!SUCCEEDED(hr)) return nullptr;
+						d2d1Device = device;
+					}
+
+					ComPtr<ID2D1DeviceContext> d2dDeviceContext;
+					{
+						ID2D1DeviceContext* deviceContext = nullptr;
+						HRESULT hr = d2d1Device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &deviceContext);
+						if (!SUCCEEDED(hr)) return nullptr;
+						d2dDeviceContext = deviceContext;
+					}
+
+					return d2dDeviceContext;
+				}
+
+				ComPtr<ID2D1Bitmap1> CreateBitmap(IDXGISwapChain1* swapChain, ID2D1DeviceContext* deviceContext)
+				{
+					ComPtr<IDXGISurface> dxgiSurface;
+					{
+						IDXGISurface* surface = nullptr;
+						HRESULT hr = swapChain->GetBuffer(0, __uuidof(IDXGISurface), (void**)&surface);
+						if (!SUCCEEDED(hr))return nullptr;
+						dxgiSurface = surface;
+					}
+
+					ComPtr<ID2D1Bitmap1> d2dBitmap;
+					{
+						auto props = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
+
+						ID2D1Bitmap1* bitmap = nullptr;
+						HRESULT hr = deviceContext->CreateBitmapFromDxgiSurface(dxgiSurface.Obj(), props, &bitmap);
+						if (!SUCCEEDED(hr)) return nullptr;
+						d2dBitmap = bitmap;
+					}
+
+					return d2dBitmap;
+				}
+
+				void RebuildCanvas(NativeSize size)override
+				{
+					if (size.x <= 1) size.x = 1;
+					if (size.y <= 1) size.y = 1;
+
+					if(!d2dDeviceContext)
+					{
+						if (!dxgiDevice)
+						{
+							dxgiDevice = GetDXGIDevice();
+						}
+
+						if (!dxgiSwapChain)
+						{
+							dxgiSwapChain = CreateSwapChain(dxgiDevice.Obj());
+						}
+
+						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
+						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
+						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
+						IWindowsForm* form = GetWindowsForm(window);
+						{
+							UINT dpiX = 0;
+							UINT dpiY = 0;
+							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
+							d2dDeviceContext->SetDpi((FLOAT)dpiX, (FLOAT)dpiY);
+						}
+					}
+					else if(previousSize!=size)
+					{
+						d2dDeviceContext->SetTarget(nullptr);
+						HRESULT hr = dxgiSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+						if (SUCCEEDED(hr))
+						{
+							auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
+							d2dDeviceContext->SetTarget(d2dBitmap.Obj());
+						}
+					}
+					previousSize=size;
+				}
+			public:
+				Direct2DWindowsNativeWindowListener_1_1(INativeWindow* _window, ComPtr<ID2D1Factory1> _d2dFactory1, ID3D11Device* _d3d11Device)
+					:Direct2DWindowsNativeWindowListener(_window, _d2dFactory1.Obj())
+					,d2dFactory1(_d2dFactory1)
+					,d3d11Device(_d3d11Device)
+				{
+				}
+
+				ID2D1RenderTarget* GetDirect2DRenderTarget()override
+				{
+					if(!d2dDeviceContext) Moved();
+					return d2dDeviceContext.Obj();
+				}
+
+				void RecreateRenderTarget()override
+				{
+					if (d2dDeviceContext)
+					{
+						d2dDeviceContext = nullptr;
+						dxgiSwapChain = nullptr;
+					}
+				}
+
+				bool PresentRenderTarget()override
+				{
+					if (d2dDeviceContext)
+					{
+						if (dxgiSwapChain)
+						{
+							DXGI_PRESENT_PARAMETERS parameters = {0};
+							HRESULT hr = dxgiSwapChain->Present1(1, 0, &parameters);
+							return hr == S_OK || hr == DXGI_STATUS_OCCLUDED;
+						}
+					}
+					return false;
+				}
+			};
+
+/***********************************************************************
+ControllerListener
+***********************************************************************/
+
+			class Direct2DWindowsNativeControllerListener : public Object, public INativeControllerListener
+			{
+			public:
+				Dictionary<INativeWindow*, Ptr<Direct2DWindowsNativeWindowListener>>		nativeWindowListeners;
+				ComPtr<ID2D1Factory>														d2dFactory;
+				ComPtr<IDWriteFactory>														dwrite;
+				ComPtr<ID3D11Device>														d3d11Device;
+
+				Direct2DWindowsNativeControllerListener()
+				{
+					{
+						D2D1_FACTORY_OPTIONS fo = {};
+						#ifdef _DEBUG
+						fo.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
+						#endif
+
+						ID2D1Factory* factory=0;
+						HRESULT hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, fo, &factory);
+						if(!FAILED(hr))
+						{
+							d2dFactory=factory;
+						}
+					}
+					{
+						IDWriteFactory* factory=0;
+						HRESULT hr=DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&factory));
+						if(!FAILED(hr))
+						{
+							dwrite=factory;
+						}
+					}
+				}
+
+				~Direct2DWindowsNativeControllerListener()
+				{
+					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
+					{
+						auto window = nativeWindowListeners.Keys()[i];
+						auto listener = nativeWindowListeners.Values()[i];
+						window->UninstallListener(listener.Obj());
+					}
+				}
+
+				ComPtr<ID3D11Device> CreateD3D11Device(D3D_DRIVER_TYPE driverType)
+				{
+					UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+					#ifdef _DEBUG
+					flags |= D3D11_CREATE_DEVICE_DEBUG;
+					#endif
+
+					D3D_FEATURE_LEVEL featureLevels[] =
+					{
+						D3D_FEATURE_LEVEL_11_1,
+						D3D_FEATURE_LEVEL_11_0,
+						D3D_FEATURE_LEVEL_10_1,
+						D3D_FEATURE_LEVEL_10_0,
+						D3D_FEATURE_LEVEL_9_3,
+						D3D_FEATURE_LEVEL_9_2,
+						D3D_FEATURE_LEVEL_9_1
+					};
+
+
+					ID3D11Device* device = nullptr;
+					HRESULT hr = D3D11CreateDevice(
+						nullptr,
+						driverType,
+						nullptr,
+						flags,
+						featureLevels,
+						sizeof(featureLevels) / sizeof(*featureLevels),
+						D3D11_SDK_VERSION,
+						&device,
+						nullptr,
+						nullptr);
+					if (SUCCEEDED(hr))
+					{
+						return device;
+					}
+					else if (device)
+					{
+						device->Release();
+					}
+					return nullptr;
+				}
+
+				void NativeWindowCreated(INativeWindow* window)
+				{
+					ComPtr<ID2D1Factory1> d2dfactory1;
+					{
+						ID2D1Factory1* factory = nullptr;
+						HRESULT hr = windows::GetDirect2DFactory()->QueryInterface(&factory);
+						if (SUCCEEDED(hr))
+						{
+							d2dfactory1 = factory;
+						}
+					}
+
+					Ptr<Direct2DWindowsNativeWindowListener> listener;
+					if (d2dfactory1)
+					{
+						if (!d3d11Device)
+						{
+							d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_HARDWARE);
+							if (!d3d11Device)
+							{
+								d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_WARP);
+							}
+						}
+#if _DEBUG
+						CHECK_ERROR(d3d11Device,
+							L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#"
+							L"Failed to create Direct3D 11 Device. "
+							L"If you are running in Debug mode on Windows 10, please ensure the optional feature [Graphics Tools] is correctly installed. "
+							L"This error will be skipped in Release mode and GacUI will fallback to use Direct2D 1.0, but you still need to check your Windows SDK Installation."
+							);
+#endif
+					}
+
+					if (d2dfactory1 && d3d11Device)
+					{
+						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj()));
+					}
+					else
+					{
+						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_0(window, d2dFactory.Obj()));
+					}
+					window->InstallListener(listener.Obj());
+					nativeWindowListeners.Add(window, listener);
+				}
+
+				void NativeWindowDestroying(INativeWindow* window)
+				{
+					Ptr<Direct2DWindowsNativeWindowListener> listener=nativeWindowListeners[window];
+					nativeWindowListeners.Remove(window);
+					window->UninstallListener(listener.Obj());
+				}
+			};
+
+			Direct2DWindowsNativeControllerListener* direct2DListener=0;
+
+			ID2D1Factory* GetDirect2DFactory()
+			{
+				return direct2DListener->d2dFactory.Obj();
+			}
+
+			IDWriteFactory* GetDirectWriteFactory()
+			{
+				return direct2DListener->dwrite.Obj();
+			}
+
+			ID3D11Device* GetD3D11Device()
+			{
+				return direct2DListener->d3d11Device.Obj();
+			}
+		}
+
+		namespace elements_windows_d2d
+		{
+/***********************************************************************
+OS Supporting
+***********************************************************************/
+
+			class WinDirect2DApplicationDirect2DObjectProvider : public IWindowsDirect2DObjectProvider
+			{
+			protected:
+
+				windows::Direct2DWindowsNativeWindowListener* GetNativeWindowListener(INativeWindow* window)
+				{
+					vint index = windows::direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
+					return index == -1
+						? nullptr
+						: windows::direct2DListener->nativeWindowListeners.Values().Get(index).Obj();
+				}
+
+			public:
+				void RecreateRenderTarget(INativeWindow* window)override
+				{
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						return listener->RecreateRenderTarget();
+					}
+				}
+
+				void ResizeRenderTarget(INativeWindow* window)override
+				{
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						return listener->ResizeRenderTarget();
+					}
+				}
+
+				ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)override
+				{
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						return listener->GetDirect2DRenderTarget();
+					}
+					return nullptr;
+				}
+
+				void StartRendering(INativeWindow* window)override
+				{
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						listener->StartRendering();
+						if (auto renderTarget = listener->GetDirect2DRenderTarget())
+						{
+							renderTarget->BeginDraw();
+							renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+						}
+					}
+				}
+
+				RenderTargetFailure StopRenderingAndPresent(INativeWindow* window)override
+				{
+					if (auto listener = GetNativeWindowListener(window))
+					{
+						listener->StopRendering();
+						bool moved = listener->RetrieveAndResetMovedWhileRendering();
+
+						if (auto renderTarget = listener->GetDirect2DRenderTarget())
+						{
+							HRESULT hr = renderTarget->EndDraw();
+							if (hr == S_OK)
+							{
+								if (moved)
+								{
+									return RenderTargetFailure::ResizeWhileRendering;
+								}
+								else if (listener->PresentRenderTarget())
+								{
+									return RenderTargetFailure::None;
+								}
+							}
+						}
+					}
+					return RenderTargetFailure::LostDevice;
+				}
+
+				ID2D1Factory* GetDirect2DFactory()override
+				{
+					return vl::presentation::windows::GetDirect2DFactory();
+				}
+
+				IDWriteFactory* GetDirectWriteFactory()override
+				{
+					return vl::presentation::windows::GetDirectWriteFactory();
+				}
+
+				IWindowsDirect2DRenderTarget* GetBindedRenderTarget(INativeWindow* window)override
+				{
+					auto windowsForm = vl::presentation::windows::GetWindowsForm(window);
+					auto graphicsHandler = windowsForm->GetGraphicsHandler();
+					return dynamic_cast<IWindowsDirect2DRenderTarget*>(graphicsHandler);
+				}
+
+				void SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget)override
+				{
+					vl::presentation::windows::GetWindowsForm(window)->SetGraphicsHandler(renderTarget);
+				}
+
+				IWICImagingFactory* GetWICImagingFactory()override
+				{
+					return vl::presentation::windows::GetWICImagingFactory();
+				}
+
+				IWICBitmap* GetWICBitmap(INativeImageFrame* frame)override
+				{
+					return vl::presentation::windows::GetWICBitmap(frame);
+				}
+			};
+		}
+	}
+}
+
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::windows;
+using namespace vl::presentation::elements_windows_d2d;
+
+int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)())
+{
+	EnableCrossKernelCrashing();
+	// create controller
+	INativeController* controller=CreateWindowsNativeController(hInstance);
+	SetCurrentController(controller);
+	{
+		// install listener
+		Direct2DWindowsNativeControllerListener listener;
+		controller->CallbackService()->InstallListener(&listener);
+		direct2DListener=&listener;
+		// main
+		RendererMain();
+		// uninstall listener
+		direct2DListener=0;
+		controller->CallbackService()->UninstallListener(&listener);
+	}
+	// destroy controller
+	DestroyWindowsNativeController(controller);
+	return 0;
+}
+
+int SetupWindowsDirect2DRenderer()
+{
+	InitDpiAwareness(true);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
+	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
+	SetWindowsDirect2DObjectProvider(&objectProvider);
+	return WinMainDirect2D(hInstance, &RendererMainDirect2D);
+}
+
+/***********************************************************************
+.\DIRECT2D\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSDIRECT2D.CPP
 ***********************************************************************/
 
 namespace vl
@@ -1276,7 +4080,7 @@ WindowsDirect2DLayoutProvider
 }
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSRENDERERSWINDOWSDIRECT2D.CPP
+.\DIRECT2D\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSDIRECT2D.CPP
 ***********************************************************************/
 #include <math.h>
 
@@ -2784,7 +5588,7 @@ GuiDirect2DElementRenderer
 }
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSDIRECT2D\GUIGRAPHICSWINDOWSDIRECT2D.CPP
+.\DIRECT2D\RENDERERS\GUIGRAPHICSWINDOWSDIRECT2D.CPP
 ***********************************************************************/
 
 namespace vl
@@ -3535,6 +6339,8 @@ NativeMain
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
 
+extern void GuiApplicationMain();
+
 void RendererMainDirect2D()
 {
 	elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
@@ -3562,7 +6368,2185 @@ void RendererMainDirect2D()
 }
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.CPP
+.\GDI\WINGDI.CPP
+***********************************************************************/
+
+#pragma comment(lib, "Msimg32.lib")
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+
+/*********************************************************************************************************
+WinRegion
+*********************************************************************************************************/
+
+		bool IsEqual(WinRegion::Ptr Region1, WinRegion::Ptr Region2)
+		{
+			return EqualRgn(Region1->GetHandle(), Region2->GetHandle())!=0;
+		}
+
+		WinRegion::WinRegion(vint Left, vint Top, vint Right, vint Bottom, bool Rectangle)
+		{
+			if(Rectangle)
+			{
+				FHandle=CreateRectRgn((int)Left, (int)Top, (int)Right, (int)Bottom);
+			}
+			else
+			{
+				FHandle=CreateEllipticRgn((int)Left, (int)Top, (int)Right, (int)Bottom);
+			}
+		}
+
+		WinRegion::WinRegion(RECT Rect, bool Rectangle)
+		{
+			if(Rectangle)
+			{
+				FHandle=CreateRectRgnIndirect(&Rect);
+			}
+			else
+			{
+				FHandle=CreateEllipticRgnIndirect(&Rect);
+			}
+		}
+
+		WinRegion::WinRegion(vint Left, vint Top, vint Right, vint Bottom, vint EllipseWidth, vint EllipseHeight)
+		{
+			FHandle=CreateRoundRectRgn((int)Left, (int)Top, (int)Right, (int)Bottom, (int)EllipseWidth, (int)EllipseHeight);
+		}
+
+		WinRegion::WinRegion(POINT* Points, vint Count, bool Alternate)
+		{
+			FHandle=CreatePolygonRgn(Points, (int)Count, Alternate?ALTERNATE:WINDING);
+		}
+
+		WinRegion::WinRegion(WinRegion::Ptr Region)
+		{
+			FHandle=CreateRectRgn(0, 0, 1, 1);
+			CombineRgn(FHandle, Region->GetHandle(), Region->GetHandle(), RGN_COPY);
+		}
+
+		WinRegion::WinRegion(WinRegion::Ptr Region1, WinRegion::Ptr Region2, vint CombineMode)
+		{
+			FHandle=CreateRectRgn(0, 0, 1, 1);
+			CombineRgn(FHandle, Region1->GetHandle(), Region2->GetHandle(), (int)CombineMode);
+		}
+
+		WinRegion::WinRegion(HRGN RegionHandle)
+		{
+			FHandle=RegionHandle;
+		}
+
+		WinRegion::~WinRegion()
+		{
+			DeleteObject(FHandle);
+		}
+
+		HRGN WinRegion::GetHandle()
+		{
+			return FHandle;
+		}
+
+		bool WinRegion::ContainPoint(POINT Point)
+		{
+			return PtInRegion(FHandle, Point.x, Point.y)!=0;
+		}
+
+		bool WinRegion::ContainRect(RECT Rect)
+		{
+			return RectInRegion(FHandle, &Rect)!=0;
+		}
+
+		RECT WinRegion::GetBoundRect()
+		{
+			RECT Rect={0, 0, 0, 0};
+			GetRgnBox(FHandle, &Rect);
+			return Rect;
+		}
+
+		void WinRegion::Move(vint OffsetX, vint OffsetY)
+		{
+			OffsetRgn(FHandle, (int)OffsetX, (int)OffsetY);
+		}
+
+/*********************************************************************************************************
+WinTransform
+*********************************************************************************************************/
+	
+		WinTransform::WinTransform(XFORM Transform)
+		{
+			FTransform=Transform;
+		}
+
+		WinTransform::WinTransform(const WinTransform& Transform)
+		{
+			FTransform=Transform.FTransform;
+		}
+
+		WinTransform& WinTransform::operator=(const WinTransform& Transform)
+		{
+			FTransform=Transform.FTransform;
+			return *this;
+		}
+
+		WinTransform WinTransform::operator*(const WinTransform& Transform)
+		{
+			XFORM Result;
+			CombineTransform(&Result, GetHandle(), Transform.GetHandle());
+			return Result;
+		}
+
+		const XFORM* WinTransform::GetHandle()const
+		{
+			return &FTransform;
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		WinTransform WinTransform::Translate(float OffsetX, float OffsetY)
+		{
+			XFORM Transform;
+			Transform.eM11=1.0f;
+			Transform.eM12=0.0f;
+			Transform.eM21=0.0f;
+			Transform.eM22=1.0f;
+			Transform.eDx=OffsetX;
+			Transform.eDy=OffsetY;
+			return Transform;
+		}
+
+		WinTransform WinTransform::Scale(float ScaleX, float ScaleY)
+		{
+			XFORM Transform;
+			Transform.eM11=ScaleX;
+			Transform.eM12=0.0f;
+			Transform.eM21=0.0f;
+			Transform.eM22=ScaleY;
+			Transform.eDx=0.0f;
+			Transform.eDy=0.0f;
+			return Transform;
+		}
+
+		WinTransform WinTransform::Rotate(float Angle)
+		{
+			XFORM Transform;
+			Transform.eM11=(FLOAT)cos(Angle);
+			Transform.eM12= (FLOAT)sin(Angle);
+			Transform.eM21= (FLOAT)-sin(Angle);
+			Transform.eM22= (FLOAT)cos(Angle);
+			Transform.eDx=0.0f;
+			Transform.eDy=0.0f;
+			return Transform;
+		}
+
+		WinTransform WinTransform::Rotate(float Cos, float Sin)
+		{
+			XFORM Transform;
+			Transform.eM11=Cos;
+			Transform.eM12=Sin;
+			Transform.eM21=-Sin;
+			Transform.eM22=Cos;
+			Transform.eDx=0.0f;
+			Transform.eDy=0.0f;
+			return Transform;
+		}
+
+		WinTransform WinTransform::ReflectX()
+		{
+			XFORM Transform;
+			Transform.eM11=1.0f;
+			Transform.eM12=0.0f;
+			Transform.eM21=0.0f;
+			Transform.eM22=-1.0f;
+			Transform.eDx=0.0f;
+			Transform.eDy=0.0f;
+			return Transform;
+		}
+
+		WinTransform WinTransform::ReflectY()
+		{
+			XFORM Transform;
+			Transform.eM11=-1.0f;
+			Transform.eM12=0.0f;
+			Transform.eM21=0.0f;
+			Transform.eM22=1.0f;
+			Transform.eDx=0.0f;
+			Transform.eDy=0.0f;
+			return Transform;
+		}
+
+		WinTransform WinTransform::Reflect(float VectorX, float VectorY)
+		{
+			float Len= (FLOAT)sqrt(VectorX*VectorX+VectorY*VectorY);
+			float Cos=VectorX/Len;
+			float Sin=VectorY/Len;
+
+			return Rotate(Cos, -Sin)*ReflectX()*Rotate(Cos, Sin);
+		}
+
+		WinTransform WinTransform::Reflect(float OriginX, float OriginY, float VectorX, float VectorY)
+		{
+			float Len= (FLOAT)sqrt(VectorX*VectorX+VectorY*VectorY);
+			float Cos=VectorX/Len;
+			float Sin=VectorY/Len;
+
+			return Translate(-OriginX, -OriginY)*Rotate(Cos, -Sin)*ReflectX()*Rotate(Cos, Sin)*Translate(OriginX, OriginY);
+		}
+
+		WinTransform WinTransform::AxisV(float Xx, float Xy, float Yx, float Yy)
+		{
+			XFORM Transform;
+			Transform.eM11=Xx;
+			Transform.eM12=Xy;
+			Transform.eM21=Yx;
+			Transform.eM22=Yy;
+			Transform.eDx=0.0f;
+			Transform.eDy=0.0f;
+			return Transform;
+		}
+
+		WinTransform WinTransform::AxisA(float AngleX, float LenX, float AngleY, float LenY)
+		{
+			XFORM Transform;
+			Transform.eM11=(FLOAT)cos(AngleX)*LenX;
+			Transform.eM12=(FLOAT)sin(AngleX)*LenX;
+			Transform.eM21=(FLOAT)cos(AngleY)*LenY;
+			Transform.eM22=(FLOAT)sin(AngleY)*LenY;
+			Transform.eDx=0.0f;
+			Transform.eDy=0.0f;
+			return Transform;
+		}
+
+/*********************************************************************************************************
+WinMetaFileBuilder
+*********************************************************************************************************/
+
+		void WinMetaFileBuilder::Create(vint Width, vint Height)
+		{
+			HDC hdcRef=GetDC(NULL);
+			vint iWidthMM = GetDeviceCaps(hdcRef, HORZSIZE); 
+			vint iHeightMM = GetDeviceCaps(hdcRef, VERTSIZE); 
+			vint iWidthPels = GetDeviceCaps(hdcRef, HORZRES); 
+			vint iHeightPels = GetDeviceCaps(hdcRef, VERTRES); 
+			ReleaseDC(NULL, hdcRef);
+
+			RECT Rect;
+			Rect.left=0;
+			Rect.top=0;
+			Rect.right = (int)((Width*iWidthMM*100)/iWidthPels);
+			Rect.bottom = (int)((Height*iHeightMM*100)/iHeightPels);
+
+			HDC Handle=CreateEnhMetaFile(NULL, NULL, &Rect, L"VczhLibrary++GDI\0Enhanced Meta File\0");
+			FDC->Initialize(Handle);
+
+			FWidth=Width;
+			FHeight=Height;
+		}
+
+		void WinMetaFileBuilder::Draw(HENHMETAFILE Handle)
+		{
+			RECT Rect;
+			Rect.left=0;
+			Rect.top=0;
+			Rect.right=(int)FWidth;
+			Rect.bottom=(int)FHeight;
+			PlayEnhMetaFile(FDC->GetHandle(), Handle, &Rect);
+		}
+
+		void WinMetaFileBuilder::Destroy()
+		{
+			DeleteEnhMetaFile(CloseEnhMetaFile(FDC->GetHandle()));
+		}
+
+		WinMetaFileBuilder::WinMetaFileBuilder(vint Width, vint Height)
+		{
+			FDC=new WinProxyDC();
+			Create(Width, Height);
+		}
+
+		WinMetaFileBuilder::~WinMetaFileBuilder()
+		{
+			Destroy();
+			delete FDC;
+		}
+
+		void WinMetaFileBuilder::LoadFrom(WinMetaFile* File)
+		{
+			Destroy();
+			Create(File->GetWidth(), File->GetHeight());
+			Draw(File->GetHandle());
+		}
+
+		void WinMetaFileBuilder::SaveTo(WinMetaFile* File)
+		{
+			HENHMETAFILE Handle=CloseEnhMetaFile(FDC->GetHandle());
+			if(File->FHandle)
+			{
+				DeleteEnhMetaFile(File->FHandle);
+			}
+			File->FHandle=Handle;
+			File->FWidth=FWidth;
+			File->FHeight=FHeight;
+			Create(FWidth, FHeight);
+			Draw(Handle);
+		}
+
+		void WinMetaFileBuilder::LoadFrom(WString FileName)
+		{
+			WinMetaFile File(FileName);
+			Destroy();
+			Create(File.GetWidth(), File.GetHeight());
+			Draw(File.GetHandle());
+		}
+
+		void WinMetaFileBuilder::SaveTo(WString FileName)
+		{
+			HENHMETAFILE Handle=CloseEnhMetaFile(FDC->GetHandle());
+			HENHMETAFILE NewHandle=CopyEnhMetaFile(Handle, FileName.Buffer());
+			DeleteEnhMetaFile(NewHandle);
+			Create(FWidth, FHeight);
+			Draw(Handle);
+			DeleteEnhMetaFile(Handle);
+		}
+
+		WinDC* WinMetaFileBuilder::GetWinDC()
+		{
+			return FDC;
+		}
+
+		vint WinMetaFileBuilder::GetWidth()
+		{
+			return FWidth;
+		}
+
+		vint WinMetaFileBuilder::GetHeight()
+		{
+			return FHeight;
+		}
+
+/*********************************************************************************************************
+WinMetaFile
+*********************************************************************************************************/
+
+		WinMetaFile::WinMetaFile(WString FileName)
+		{
+			FHandle=GetEnhMetaFile(FileName.Buffer());
+			ENHMETAHEADER Header;
+			GetEnhMetaFileHeader(FHandle, sizeof(Header), &Header);
+			FWidth=(Header.rclFrame.right-Header.rclFrame.left)*Header.szlDevice.cx/(Header.szlMillimeters.cx*100);
+			FHeight=(Header.rclFrame.bottom-Header.rclFrame.top)*Header.szlDevice.cy/(Header.szlMillimeters.cy*100);
+		}
+
+		WinMetaFile::WinMetaFile(WinMetaFileBuilder* Builder)
+		{
+			FHandle=NULL;
+			Builder->SaveTo(this);
+		}
+
+		WinMetaFile::~WinMetaFile()
+		{
+			DeleteEnhMetaFile(FHandle);
+		}
+
+		HENHMETAFILE WinMetaFile::GetHandle()
+		{
+			return FHandle;
+		}
+
+		vint WinMetaFile::GetWidth()
+		{
+			return FWidth;
+		}
+
+		vint WinMetaFile::GetHeight()
+		{
+			return FHeight;
+		}
+
+/*********************************************************************************************************
+WinBitmap
+*********************************************************************************************************/
+
+		vint WinBitmap::GetBitsFromBB(BitmapBits BB)
+		{
+			switch(BB)
+			{
+			case vbb32Bits:
+				return 32;
+			case vbb24Bits:
+				return 24;
+			default:
+				return 1;
+			}
+		}
+
+		vint WinBitmap::GetLineBytes(vint Width, BitmapBits BB)
+		{
+			vint Bits=GetBitsFromBB(BB);
+			vint LineBits=Width*Bits;
+			vint AlignBits=sizeof(DWORD)*8;
+			LineBits+=(AlignBits-LineBits%AlignBits)%AlignBits;
+			return LineBits/8;
+		}
+
+		void WinBitmap::FillBitmapInfoHeader(vint Width, vint Height, BitmapBits Bits, BITMAPINFOHEADER* Header)
+		{
+			Header->biSize=sizeof(BITMAPINFOHEADER);
+			Header->biWidth=(int)Width;
+			Header->biHeight=-(int)Height;
+			Header->biPlanes=1;
+			Header->biBitCount=(int)GetBitsFromBB(Bits);
+			Header->biCompression=BI_RGB;
+			Header->biSizeImage=0;
+			Header->biXPelsPerMeter=0;
+			Header->biYPelsPerMeter=0;
+			Header->biClrUsed=(Bits==vbb2Bits?2:0);
+			Header->biClrImportant=0;
+		}
+
+		HBITMAP WinBitmap::CreateDDB(vint Width, vint Height, BitmapBits Bits)
+		{
+			if(Bits==vbb2Bits)
+			{
+				return CreateBitmap((int)Width, (int)Height, 2, (int)GetBitsFromBB(Bits), NULL);
+			}
+			else
+			{
+				WinBitmap Bitmap(1, 1, Bits, true);
+				return CreateCompatibleBitmap(Bitmap.GetWinDC()->GetHandle(), (int)Width, (int)Height);
+			}
+		}
+
+		HBITMAP WinBitmap::CreateDIB(vint Width, vint Height, BitmapBits Bits, BYTE**& ScanLines)
+		{
+			BITMAPINFO* Info=(BITMAPINFO*)malloc(sizeof(BITMAPINFOHEADER)+2*sizeof(RGBQUAD));
+			FillBitmapInfoHeader(Width, Height, Bits, &Info->bmiHeader);
+			Info->bmiColors[0].rgbBlue=0;
+			Info->bmiColors[0].rgbGreen=0;
+			Info->bmiColors[0].rgbRed=0;
+			Info->bmiColors[0].rgbReserved=0;
+			Info->bmiColors[1].rgbBlue=255;
+			Info->bmiColors[1].rgbGreen=255;
+			Info->bmiColors[1].rgbRed=255;
+			Info->bmiColors[1].rgbReserved=255;
+
+			BYTE* FirstLine=0;
+			HBITMAP Handle=CreateDIBSection(FDC->GetHandle(), Info, DIB_RGB_COLORS, (void**)&FirstLine, NULL, 0);
+			ScanLines=new BYTE*[Height];
+			vint LineBytes=GetLineBytes(Width, Bits);
+			for(vint i=0;i<Height;i++)
+			{
+				ScanLines[i]=FirstLine+LineBytes*i;
+			}
+			free(Info);
+			return Handle;
+		}
+
+		void WinBitmap::Constructor(vint Width, vint Height, BitmapBits Bits, bool DIBSections)
+		{
+			FDC=new WinImageDC();
+			if(DIBSections)
+			{
+				FHandle=CreateDIB(Width, Height, Bits, FScanLines);
+			}
+			else
+			{
+				FHandle=CreateDDB(Width, Height, Bits);
+				FScanLines=0;
+			}
+			FWidth=Width;
+			FHeight=Height;
+			FBits=Bits;
+			FAlphaChannelBuilt=false;
+			HGDIOBJ Object=SelectObject(FDC->GetHandle(), FHandle);
+			if(Object)
+			{
+				DeleteObject(Object);
+			}
+		}
+	
+		WinBitmap::WinBitmap(vint Width, vint Height, BitmapBits Bits, bool DIBSections)
+		{
+			Constructor(Width, Height, Bits, DIBSections);
+		}
+
+		WinBitmap::WinBitmap(WString FileName, bool Use32Bits, bool DIBSections)
+		{
+			FBits=Use32Bits?vbb32Bits:vbb24Bits;
+		
+			HBITMAP	TempBmp=(HBITMAP)LoadImage(NULL, FileName.Buffer(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+			HDC		TempDC=CreateCompatibleDC(NULL);
+			BITMAP	TempRec;
+
+			GetObject(TempBmp, sizeof(BITMAP), &TempRec);
+			DeleteObject(SelectObject(TempDC, TempBmp));
+
+			Constructor(TempRec.bmWidth, TempRec.bmHeight, FBits, DIBSections);
+			BitBlt(FDC->GetHandle(), 0, 0, TempRec.bmWidth, TempRec.bmHeight, TempDC, 0, 0, SRCCOPY);
+
+			DeleteObject(TempDC);
+			DeleteObject(TempBmp);
+		}
+
+		WinBitmap::~WinBitmap()
+		{
+			if(FScanLines)
+			{
+				delete[] FScanLines;
+			}
+			if(FHandle)
+			{
+				DeleteObject(FHandle);
+			}
+			delete FDC;
+		}
+
+		void WinBitmap::SaveToStream(stream::IStream& Output, bool DIBV5ClipboardFormat)
+		{
+			if (FScanLines)
+			{
+				BITMAPFILEHEADER Header1;
+				BITMAPV5HEADER Header2;
+
+				if (!DIBV5ClipboardFormat)
+				{
+					Header1.bfType = 'M' * 256 + 'B';
+					Header1.bfSize = (int)(sizeof(Header1) + sizeof(Header2) + GetLineBytes()*FHeight);
+					Header1.bfReserved1 = 0;
+					Header1.bfReserved2 = 0;
+					Header1.bfOffBits = sizeof(Header2) + sizeof(Header1);
+					Output.Write(&Header1, sizeof(Header1));
+				}
+
+				{
+					memset(&Header2, 0, sizeof(Header2));
+					Header2.bV5Size = sizeof(Header2);
+					Header2.bV5Width = (int)FWidth;
+					Header2.bV5Height = -(int)FHeight;
+					Header2.bV5Planes = 1;
+					Header2.bV5BitCount = (int)GetBitsFromBB(FBits);
+					Header2.bV5Compression = BI_RGB;
+					Header2.bV5CSType = LCS_sRGB;
+					Header2.bV5Intent = LCS_GM_GRAPHICS;
+					Output.Write(&Header2, sizeof(Header2));
+				}
+
+				for (vint i = 0; i<FHeight; i++)
+				{
+					Output.Write(FScanLines[i], GetLineBytes());
+				}
+			}
+			else
+			{
+				WinBitmap Temp(FWidth, FHeight, FBits, true);
+				Temp.GetWinDC()->Copy(0, 0, FWidth, FHeight, FDC, 0, 0);
+				Temp.SaveToStream(Output, false);
+			}
+		}
+
+		void WinBitmap::SaveToFile(WString FileName)
+		{
+			stream::FileStream Output(FileName, stream::FileStream::WriteOnly);
+			SaveToStream(Output, false);
+		}
+
+		WinDC* WinBitmap::GetWinDC()
+		{
+			return FDC;
+		}
+
+		vint WinBitmap::GetWidth()
+		{
+			return FWidth;
+		}
+
+		vint WinBitmap::GetHeight()
+		{
+			return FHeight;
+		}
+
+		vint WinBitmap::GetLineBytes()
+		{
+			return GetLineBytes(FWidth, FBits);
+		}
+
+		BYTE** WinBitmap::GetScanLines()
+		{
+			return FScanLines;
+		}
+
+		HBITMAP WinBitmap::GetBitmap()
+		{
+			return FHandle;
+		}
+
+		WinBitmap::BitmapBits WinBitmap::GetBitmapBits()
+		{
+			return FBits;
+		}
+	
+		void WinBitmap::FillCompatibleHeader(BITMAPINFOHEADER* Header)
+		{
+			FillBitmapInfoHeader(FWidth, FHeight, FBits, Header);
+		}
+
+		bool WinBitmap::CanBuildAlphaChannel()
+		{
+			return FScanLines!=0 && FBits==vbb32Bits;
+		}
+
+		bool WinBitmap::IsAlphaChannelBuilt()
+		{
+			return FAlphaChannelBuilt;
+		}
+
+		void WinBitmap::BuildAlphaChannel(bool autoPremultiply)
+		{
+			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
+			{
+				FAlphaChannelBuilt=true;
+				if(autoPremultiply)
+				{
+					for(vint i=0;i<FHeight;i++)
+					{
+						BYTE* Colors=FScanLines[i];
+						vint j=FWidth;
+						while(j--)
+						{
+							BYTE Alpha=Colors[3];
+							Colors[0]=Colors[0]*Alpha/255;
+							Colors[1]=Colors[1]*Alpha/255;
+							Colors[2]=Colors[2]*Alpha/255;
+							Colors+=4;
+						}
+					}
+				}
+			}
+		}
+
+		void WinBitmap::GenerateTrans(COLORREF Color)
+		{
+			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
+			{
+				for(vint i=0;i<FHeight;i++)
+				{
+					COLORREF* Colors=(COLORREF*)FScanLines[i];
+					vint j=FWidth;
+					while(j--)
+					{
+						COLORREF Dest=*Colors & 0x00FFFFFF;
+						*Colors = Dest | (0xFF000000 * (Dest!=Color));
+						Colors++;
+					}
+				}
+			}
+		}
+
+		void WinBitmap::GenerateAlpha(BYTE Alpha)
+		{
+			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
+			{
+				for(vint i=0;i<FHeight;i++)
+				{
+					BYTE* Colors=FScanLines[i];
+					vint j=FWidth;
+					while(j--)
+					{
+						Colors[3]=Alpha;
+						Colors+=4;
+					}
+				}
+			}
+		}
+
+		void WinBitmap::GenerateTransAlpha(COLORREF Color, BYTE Alpha)
+		{
+			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
+			{
+				COLORREF A=Alpha<<24;
+				for(vint i=0;i<FHeight;i++)
+				{
+					COLORREF* Colors=(COLORREF*)FScanLines[i];
+					vint j=FWidth;
+					while(j--)
+					{
+						COLORREF Dest=*Colors & 0x00FFFFFF;
+						*Colors = Dest | (A * (Dest!=Color));
+						Colors++;
+					}
+				}
+			}
+		}
+
+		void WinBitmap::GenerateLuminance()
+		{
+			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
+			{
+				for(vint i=0;i<FHeight;i++)
+				{
+					COLORREF* Colors=(COLORREF*)FScanLines[i];
+					vint j=FWidth;
+					while(j--)
+					{
+						COLORREF Dest=*Colors & 0x00FFFFFF;
+						*Colors = Dest | ((GetRValue(Dest)*77 + GetGValue(Dest)*151 + GetBValue(Dest)*28) & 0x0000FF00)<<16;
+						Colors++;
+					}
+				}
+			}
+		}
+
+		void WinBitmap::GenerateGrayLevel()
+		{
+			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
+			{
+				for(vint i=0;i<FHeight;i++)
+				{
+					COLORREF* Colors=(COLORREF*)FScanLines[i];
+					vint j=FWidth;
+					while(j--)
+					{
+						COLORREF Dest=*Colors & 0x00FFFFFF;
+						*Colors = Dest | ((GetRValue(Dest)+GetGValue(Dest)+GetBValue(Dest))/3)<<24;
+						Colors++;
+					}
+				}
+			}
+		}
+
+		void WinBitmap::Generate(BYTE(*Function)(COLORREF))
+		{
+			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
+			{
+				for(vint i=0;i<FHeight;i++)
+				{
+					COLORREF* Colors=(COLORREF*)FScanLines[i];
+					vint j=FWidth;
+					while(j--)
+					{
+						COLORREF Dest= *Colors & 0x00FFFFFF;
+						*Colors = Dest | Function(Dest)<<24;
+						Colors++;
+					}
+				}
+			}
+		}
+			
+/*********************************************************************************************************
+WinBrush
+*********************************************************************************************************/
+
+		WinBrush::WinBrush()
+		{
+			FDIBMemory=0;
+			LOGBRUSH lb;
+			lb.lbColor=0;
+			lb.lbStyle=BS_NULL;
+			lb.lbHatch=0;
+			FHandle=CreateBrushIndirect(&lb);
+		}
+
+		WinBrush::WinBrush(COLORREF Color)
+		{
+			FDIBMemory=0;
+			FHandle=CreateSolidBrush(Color);
+		}
+
+		WinBrush::WinBrush(vint Hatch, COLORREF Color)
+		{
+			FDIBMemory=0;
+			FHandle=CreateHatchBrush((int)Hatch, Color);
+		}
+
+		WinBrush::WinBrush(WinBitmap::Ptr DIB)
+		{
+			WinBitmap Temp(DIB->GetWidth(), DIB->GetHeight(), WinBitmap::vbb24Bits, true);
+			Temp.GetWinDC()->Draw(0, 0, DIB);
+			vint HeaderSize=sizeof(BITMAPINFOHEADER);
+			FDIBMemory=new unsigned char[HeaderSize+Temp.GetHeight()*Temp.GetLineBytes()];
+			Temp.FillCompatibleHeader((BITMAPINFOHEADER*)FDIBMemory);
+			memcpy(FDIBMemory+HeaderSize, Temp.GetScanLines()[0], Temp.GetHeight()*Temp.GetLineBytes());
+
+			FHandle=CreateDIBPatternBrushPt(FDIBMemory, DIB_RGB_COLORS);
+			DWORD Error=GetLastError();
+		}
+
+		WinBrush::~WinBrush()
+		{
+			DeleteObject(FHandle);
+			if(FDIBMemory)
+			{
+				delete[] FDIBMemory;
+			}
+		}
+
+		HBRUSH WinBrush::GetHandle()
+		{
+			return FHandle;
+		}
+
+/*********************************************************************************************************
+WinPen
+*********************************************************************************************************/
+
+		WinPen::WinPen(vint Style, vint Width, COLORREF Color)
+		{
+			FDIBMemory=0;
+			FHandle=CreatePen((int)Style, (int)Width, (int)Color);
+		}
+
+		WinPen::WinPen(vint Style, vint EndCap, vint Join, vint Width, COLORREF Color, DWORD styleCount, const DWORD* styleArray)
+		{
+			FDIBMemory=0;
+			LOGBRUSH Brush;
+			Brush.lbColor=Color;
+			Brush.lbStyle=BS_SOLID;
+			Brush.lbHatch=0;
+			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, styleCount, styleArray);
+		}
+
+		WinPen::WinPen(vint Style, vint EndCap, vint Join, vint Hatch, vint Width, COLORREF Color)
+		{
+			FDIBMemory=0;
+			LOGBRUSH Brush;
+			Brush.lbColor=Color;
+			Brush.lbStyle=BS_HATCHED;
+			Brush.lbHatch=Hatch;
+			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, NULL, NULL);
+		}
+
+		WinPen::WinPen(WinBitmap::Ptr DIB, vint Style, vint EndCap, vint Join, vint Width)
+		{
+			WinBitmap Temp(DIB->GetWidth(), DIB->GetHeight(), WinBitmap::vbb24Bits, true);
+			Temp.GetWinDC()->Draw(0, 0, DIB);
+			vint HeaderSize=sizeof(BITMAPINFOHEADER);
+			FDIBMemory=new unsigned char[HeaderSize+Temp.GetHeight()*Temp.GetLineBytes()];
+			Temp.FillCompatibleHeader((BITMAPINFOHEADER*)FDIBMemory);
+			memcpy(FDIBMemory+HeaderSize, Temp.GetScanLines()[0], Temp.GetHeight()*Temp.GetLineBytes());
+		
+			LOGBRUSH Brush;
+			Brush.lbColor=RGB(0, 0, 0);
+			Brush.lbStyle=BS_DIBPATTERNPT;
+			Brush.lbHatch=(ULONG_PTR)FDIBMemory;
+			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, NULL, NULL);
+		}
+
+		WinPen::~WinPen()
+		{
+			DeleteObject(FHandle);
+			if(FDIBMemory)
+			{
+				delete[] FDIBMemory;
+			}
+		}
+
+		HPEN WinPen::GetHandle()
+		{
+			return FHandle;
+		}
+
+/*********************************************************************************************************
+WinFont
+*********************************************************************************************************/
+
+		WinFont::WinFont(WString Name, vint Height, vint Width, vint Escapement, vint Orientation, vint Weight, bool Italic, bool Underline, bool StrikeOut, bool Antialise)
+		{
+			FFontInfo.lfHeight=(int)Height;
+			FFontInfo.lfWidth=(int)Width;
+			FFontInfo.lfEscapement=(int)Escapement;
+			FFontInfo.lfOrientation=(int)Orientation;
+			FFontInfo.lfWeight=(int)Weight;
+			FFontInfo.lfItalic=Italic?TRUE:FALSE;
+			FFontInfo.lfUnderline=Underline?TRUE:FALSE;
+			FFontInfo.lfStrikeOut=StrikeOut?TRUE:FALSE;
+			FFontInfo.lfCharSet=DEFAULT_CHARSET;
+			FFontInfo.lfOutPrecision=OUT_DEFAULT_PRECIS;
+			FFontInfo.lfClipPrecision=CLIP_DEFAULT_PRECIS;
+			FFontInfo.lfQuality=Antialise?CLEARTYPE_QUALITY:NONANTIALIASED_QUALITY;
+			FFontInfo.lfPitchAndFamily=DEFAULT_PITCH | FF_DONTCARE;
+			wcsncpy_s(FFontInfo.lfFaceName, sizeof(FFontInfo.lfFaceName)/sizeof(*FFontInfo.lfFaceName), Name.Buffer(), LF_FACESIZE-1);
+			FHandle=CreateFontIndirect(&FFontInfo);
+		}
+
+		WinFont::WinFont(LOGFONT* FontInfo)
+		{
+			FFontInfo=*FontInfo;
+			FHandle=CreateFontIndirect(&FFontInfo);
+		}
+
+		WinFont::~WinFont()
+		{
+			DeleteObject(FHandle);
+		}
+
+		HFONT WinFont::GetHandle()
+		{
+			return FHandle;
+		}
+
+		LOGFONT* WinFont::GetInfo()
+		{
+			return &FFontInfo;
+		}
+
+/*********************************************************************************************************
+IWinResourceService
+*********************************************************************************************************/
+
+		WinBrush::Ptr CreateDefaultBrush()
+		{
+			return Ptr(new WinBrush(RGB(255, 255, 255)));
+		}
+
+		WinPen::Ptr CreateDefaultPen()
+		{
+			return Ptr(new WinPen(PS_SOLID, 0, RGB(0, 0, 0)));
+		}
+
+		WinFont::Ptr CreateDefaultFont()
+		{
+			NONCLIENTMETRICS NonClientMetrics;
+			NonClientMetrics.cbSize=sizeof(NONCLIENTMETRICS);
+			SystemParametersInfo(SPI_GETNONCLIENTMETRICS, NonClientMetrics.cbSize, &NonClientMetrics, 0);
+			if(!*NonClientMetrics.lfMessageFont.lfFaceName)
+			{
+				NonClientMetrics.cbSize=sizeof(NONCLIENTMETRICS)-sizeof(NonClientMetrics.iPaddedBorderWidth);
+				SystemParametersInfo(SPI_GETNONCLIENTMETRICS, NonClientMetrics.cbSize, &NonClientMetrics, 0);
+			}
+			return Ptr(new WinFont(&NonClientMetrics.lfMessageFont));
+		}
+
+		class DefaultResourceService : public Object, public IWinResourceService
+		{
+		public:
+			static IWinResourceService* _DefaultResourceService;
+
+			WinPen::Ptr GetDefaultPen()
+			{
+				return CreateDefaultPen();
+			}
+
+			WinBrush::Ptr GetDefaultBrush()
+			{
+				return CreateDefaultBrush();
+			}
+
+			WinFont::Ptr GetDefaultFont()
+			{
+				return CreateDefaultFont();
+			}
+		} _DRS;
+		IWinResourceService* DefaultResourceService::_DefaultResourceService=&_DRS;
+
+		IWinResourceService* GetDefaultResourceService()
+		{
+			return DefaultResourceService::_DefaultResourceService;
+		}
+
+		void SetDefaultResourceService(IWinResourceService* Service)
+		{
+			DefaultResourceService::_DefaultResourceService=Service;
+		}
+
+/*********************************************************************************************************
+WinDC
+*********************************************************************************************************/
+
+		void WinDC::Init()
+		{
+			FPen=GetDefaultResourceService()->GetDefaultPen();
+			FOldPen=(HPEN)SelectObject(FHandle, FPen->GetHandle());
+
+			FBrush=GetDefaultResourceService()->GetDefaultBrush();
+			FOldBrush=(HBRUSH)SelectObject(FHandle, FBrush->GetHandle());
+
+			FFont=GetDefaultResourceService()->GetDefaultFont();
+			FOldFont=(HFONT)SelectObject(FHandle, FFont->GetHandle());
+
+			SetGraphicsMode(FHandle, GM_ADVANCED);
+		}
+
+		WinDC::WinDC()
+		{
+			FHandle=0;
+			FOldPen=0;
+			FOldBrush=0;
+			FOldFont=0;
+		}
+
+		WinDC::~WinDC()
+		{
+			SelectObject(FHandle, FOldFont);
+			SelectObject(FHandle, FOldBrush);
+			SelectObject(FHandle, FOldPen);
+		}
+
+		HDC WinDC::GetHandle()
+		{
+			return FHandle;
+		}
+
+		WinPen::Ptr WinDC::GetPen()
+		{
+			return FPen;
+		}
+
+		WinBrush::Ptr WinDC::GetBrush()
+		{
+			return FBrush;
+		}
+
+		WinFont::Ptr WinDC::GetFont()
+		{
+			return FFont;
+		}
+
+		void WinDC::SetPen(WinPen::Ptr Pen)
+		{
+			SelectObject(FHandle, Pen->GetHandle());
+			FPen=Pen;
+		}
+
+		void WinDC::SetBrush(WinBrush::Ptr Brush)
+		{
+			SelectObject(FHandle, Brush->GetHandle());
+			FBrush=Brush;
+		}
+
+		void WinDC::SetFont(WinFont::Ptr Font)
+		{
+			SelectObject(FHandle, Font->GetHandle());
+			FFont=Font;
+		}
+
+		COLORREF WinDC::GetBackColor()
+		{
+			return GetBkColor(FHandle);
+		}
+
+		void WinDC::SetBackColor(COLORREF Color)
+		{
+			SetBkColor(FHandle, Color);
+		}
+
+		COLORREF WinDC::GetTextColor()
+		{
+			return ::GetTextColor(FHandle);
+		}
+
+		void WinDC::SetTextColor(COLORREF Color)
+		{
+			::SetTextColor(FHandle, Color);
+		}
+
+		bool WinDC::GetBackTransparent()
+		{
+			return GetBkMode(FHandle)==TRANSPARENT;
+		}
+
+		void WinDC::SetBackTransparent(bool Transparent)
+		{
+			SetBkMode(FHandle, Transparent?TRANSPARENT:OPAQUE);
+		}
+
+		POINT WinDC::GetBrushOrigin()
+		{
+			POINT Point;
+			GetBrushOrgEx(FHandle, &Point);
+			return Point;
+		}
+
+		void WinDC::SetBrushOrigin(POINT Point)
+		{
+			SetBrushOrgEx(FHandle, Point.x, Point.y, NULL);
+		}
+
+		int WinDC::SetRasterOperation(int rop2)
+		{
+			return SetROP2(FHandle, rop2);
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		void WinDC::DrawBuffer(vint X, vint Y, const wchar_t* Text, vint CharCount)
+		{
+			TextOut(FHandle, (int)X, (int)Y, Text, (int)CharCount);
+		}
+
+		void WinDC::DrawBuffer(vint X, vint Y, const wchar_t* Text, vint CharCount, vint TabWidth, vint TabOriginX)
+		{
+			int realTabWidth=(int)TabWidth;
+			TabbedTextOut(FHandle, (int)X, (int)Y, Text, (int)CharCount, 1, &realTabWidth, (int)TabOriginX);
+		}
+
+		void WinDC::DrawBuffer(RECT Rect, const wchar_t* Text, vint CharCount, UINT Format)
+		{
+			DrawText(FHandle, Text, (int)CharCount, &Rect, Format);
+		}
+
+		void WinDC::DrawString(vint X, vint Y, WString Text)
+		{
+			DrawBuffer(X, Y, Text.Buffer(), Text.Length());
+		}
+
+		void WinDC::DrawString(vint X, vint Y, WString Text, vint TabWidth, vint TabOriginX)
+		{
+			DrawBuffer(X, Y, Text.Buffer(), Text.Length(), TabWidth, TabOriginX);
+		}
+
+		void WinDC::DrawString(RECT Rect, WString Text, UINT Format)
+		{
+			DrawBuffer(Rect, Text.Buffer(), Text.Length(), Format);
+		}
+
+		SIZE WinDC::MeasureString(WString Text, vint TabSize)
+		{
+			return MeasureBuffer(Text.Buffer(), Text.Length(), TabSize);
+		}
+
+		SIZE WinDC::MeasureBuffer(const wchar_t* Text, vint CharCount, vint TabSize)
+		{
+			SIZE Size;
+			if(TabSize==-1)
+			{
+				GetTextExtentPoint32(FHandle, Text, (int)CharCount, &Size);
+			}
+			else
+			{
+				int realTabSize=(int)TabSize;
+				DWORD Result=GetTabbedTextExtent(FHandle, Text, (int)CharCount, 1, &realTabSize);
+				Size.cx=LOWORD(Result);
+				Size.cy=HIWORD(Result);
+			}
+			return Size;
+		}
+
+		SIZE WinDC::MeasureBuffer(const wchar_t* Text, vint TabSize)
+		{
+			return MeasureBuffer(Text, wcslen(Text), TabSize);
+		}
+
+		SIZE WinDC::MeasureWrapLineString(WString Text, vint MaxWidth)
+		{
+			return MeasureWrapLineBuffer(Text.Buffer(), Text.Length(), MaxWidth);
+		}
+
+		SIZE WinDC::MeasureWrapLineBuffer(const wchar_t* Text, vint CharCount, vint MaxWidth)
+		{
+			SIZE size = {0};
+			vint lineCount=0;
+			const wchar_t* reading=Text;
+			INT* dx=new INT[CharCount];
+			while(*reading)
+			{
+				INT fit=0;
+				GetTextExtentExPoint(FHandle, reading, (int)(CharCount-(reading-Text)), (int)MaxWidth, &fit, dx, &size);
+				reading+=fit;
+				lineCount++;
+			}
+			delete dx;
+			size.cx=0;
+			size.cy*=(int)lineCount;
+			return size;
+		}
+
+		SIZE WinDC::MeasureWrapLineBuffer(const wchar_t* Text, vint MaxWidth)
+		{
+			return MeasureWrapLineBuffer(Text, wcslen(Text), MaxWidth);
+		}
+
+		void WinDC::FillRegion(WinRegion::Ptr Region)
+		{
+			FillRgn(FHandle, Region->GetHandle(), FBrush->GetHandle());
+		}
+
+		void WinDC::FrameRegion(WinRegion::Ptr Region, vint BlockWidth, vint BlockHeight)
+		{
+			FrameRgn(FHandle, Region->GetHandle(), FBrush->GetHandle(), (int)BlockWidth, (int)BlockHeight);
+		}
+
+		void WinDC::MoveTo(vint X, vint Y)
+		{
+			::MoveToEx(FHandle, (int)X, (int)Y, NULL);
+		}
+
+		void WinDC::LineTo(vint X, vint Y)
+		{
+			::LineTo(FHandle, (int)X, (int)Y);
+		}
+
+		void WinDC::Rectangle(vint Left, vint Top, vint Right, vint Bottom)
+		{
+			::Rectangle(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom);
+		}
+
+		void WinDC::Rectangle(RECT Rect)
+		{
+			::Rectangle(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
+		}
+
+		void WinDC::FocusRectangle(vint Left, vint Top, vint Right, vint Bottom)
+		{
+			RECT Rect;
+			Rect.left=(int)Left;
+			Rect.top=(int)Top;
+			Rect.right=(int)Right;
+			Rect.bottom=(int)Bottom;
+			::DrawFocusRect(FHandle, &Rect);
+		}
+
+		void WinDC::FocusRectangle(RECT Rect)
+		{
+			::DrawFocusRect(FHandle, &Rect);
+		}
+
+		void WinDC::FillRect(vint Left, vint Top, vint Right, vint Bottom)
+		{
+			RECT Rect;
+			Rect.left=(int)Left;
+			Rect.top=(int)Top;
+			Rect.right=(int)Right;
+			Rect.bottom=(int)Bottom;
+			::FillRect(FHandle, &Rect, FBrush->GetHandle());
+		}
+
+		void WinDC::FillRect(RECT Rect)
+		{
+			::FillRect(FHandle, &Rect, FBrush->GetHandle());
+		}
+
+		void WinDC::Ellipse(vint Left, vint Top, vint Right, vint Bottom)
+		{
+			::Ellipse(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom);
+		}
+
+		void WinDC::Ellipse(RECT Rect)
+		{
+			::Ellipse(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
+		}
+
+		void WinDC::RoundRect(vint Left, vint Top, vint Right, vint Bottom, vint EllipseWidth, vint EllipseHeight)
+		{
+			::RoundRect(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)EllipseWidth, (int)EllipseHeight);
+		}
+
+		void WinDC::RoundRect(RECT Rect, vint EllipseWidth, vint EllipseHeight)
+		{
+			::RoundRect(FHandle, (int)Rect.left, (int)Rect.top, (int)Rect.right, (int)Rect.bottom, (int)EllipseWidth, (int)EllipseHeight);
+		}
+
+		void WinDC::PolyLine(const POINT* Points, vint Count)
+		{
+			::Polyline(FHandle, Points, (int)Count);
+		}
+
+		void WinDC::PolyLineTo(const POINT* Points, vint Count)
+		{
+			::PolylineTo(FHandle, Points, (int)Count);
+		}
+
+		void WinDC::PolyGon(const POINT* Points, vint Count)
+		{
+			::Polygon(FHandle, Points, (int)Count);
+		}
+
+		void WinDC::PolyBezier(const POINT* Points, vint Count)
+		{
+			::PolyBezier(FHandle, Points, (int)Count);
+		}
+
+		void WinDC::PolyBezierTo(const POINT* Points, vint Count)
+		{
+			::PolyBezierTo(FHandle, Points, (int)Count);
+		}
+
+		void WinDC::PolyDraw(const POINT* Points, const BYTE* Actions, vint PointCount)
+		{
+			::PolyDraw(FHandle, Points, Actions, (int)PointCount);
+		}
+
+		void WinDC::Arc(RECT Bound, POINT Start, POINT End)
+		{
+			::Arc(FHandle, Bound.left, Bound.top, Bound.right, Bound.bottom, Start.x, Start.y, End.x, End.y);
+		}
+
+		void WinDC::Arc(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
+		{
+			::Arc(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
+		}
+
+		void WinDC::ArcTo(RECT Bound, POINT Start, POINT End)
+		{
+			::ArcTo(FHandle, (int)Bound.left, (int)Bound.top, (int)Bound.right, (int)Bound.bottom, (int)Start.x, (int)Start.y, (int)End.x, (int)End.y);
+		}
+
+		void WinDC::ArcTo(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
+		{
+			::ArcTo(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
+		}
+
+		void WinDC::AngleArc(vint X, vint Y, vint Radius, float StartAngle, float SweepAngle)
+		{
+			::AngleArc(FHandle, (int)X, (int)Y, (int)Radius, StartAngle, SweepAngle);
+		}
+
+		void WinDC::AngleArc(vint X, vint Y, vint Radius, double StartAngle, double SweepAngle)
+		{
+			::AngleArc(FHandle, (int)X, (int)Y, (int)Radius, (float)StartAngle, (float)SweepAngle);
+		}
+
+		void WinDC::Chord(RECT Bound, POINT Start, POINT End)
+		{
+			::Chord(FHandle, (int)Bound.left, (int)Bound.top, (int)Bound.right, (int)Bound.bottom, (int)Start.x, (int)Start.y, (int)End.x, (int)End.y);
+		}
+
+		void WinDC::Chord(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
+		{
+			::Chord(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
+		}
+
+		void WinDC::Pie(RECT Bound, POINT Start, POINT End)
+		{
+			::Pie(FHandle, (int)Bound.left, (int)Bound.top, (int)Bound.right, (int)Bound.bottom, (int)Start.x, (int)Start.y, (int)End.x, (int)End.y);
+		}
+
+		void WinDC::Pie(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
+		{
+			::Pie(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
+		}
+
+		void WinDC::GradientRectH(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_RECT* Rectangles, vint RectangleCount)
+		{
+			GradientFill(FHandle, Vertices, (int)VerticesCount, Rectangles, (int)RectangleCount, GRADIENT_FILL_RECT_H);
+		}
+
+		void WinDC::GradientRectV(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_RECT* Rectangles, vint RectangleCount)
+		{
+			GradientFill(FHandle, Vertices, (int)VerticesCount, Rectangles, (int)RectangleCount, GRADIENT_FILL_RECT_V);
+		}
+
+		void WinDC::GradientTriangle(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_TRIANGLE* Triangles, vint TriangleCount)
+		{
+			GradientFill(FHandle, Vertices, (int)VerticesCount, Triangles, (int)TriangleCount, GRADIENT_FILL_TRIANGLE);
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		void WinDC::BeginPath()
+		{
+			::BeginPath(FHandle);
+		}
+
+		void WinDC::EndPath()
+		{
+			::EndPath(FHandle);
+		}
+
+		void WinDC::ClosePath()
+		{
+			::CloseFigure(FHandle);
+		}
+
+		void WinDC::WidenPath()
+		{
+			::WidenPath(FHandle);
+		}
+
+		void WinDC::DiscardPath()
+		{
+			::AbortPath(FHandle);
+		}
+
+		void WinDC::DrawPath()
+		{
+			::StrokePath(FHandle);
+		}
+
+		void WinDC::FillPath()
+		{
+			::FillPath(FHandle);
+		}
+
+		void WinDC::DrawAndFillPath()
+		{
+			::StrokeAndFillPath(FHandle);
+		}
+
+		WinRegion::Ptr WinDC::RegionFromPath()
+		{
+			return Ptr(new WinRegion(::PathToRegion(FHandle)));
+		}
+	
+		/*------------------------------------------------------------------------------*/
+
+		bool WinDC::PointInClip(POINT Point)
+		{
+			return PtVisible(FHandle, Point.x, Point.y)==TRUE;
+		}
+
+		bool WinDC::RectInClip(RECT Rect)
+		{
+			return RectVisible(FHandle, &Rect)==TRUE;
+		}
+
+		void WinDC::ClipPath(vint CombineMode)
+		{
+			SelectClipPath(FHandle, (int)CombineMode);
+		}
+
+		void WinDC::ClipRegion(WinRegion::Ptr Region)
+		{
+			SelectClipRgn(FHandle, Region->GetHandle());
+		}
+
+		void WinDC::RemoveClip()
+		{
+			SelectClipRgn(FHandle, NULL);
+		}
+
+		void WinDC::MoveClip(vint OffsetX, vint OffsetY)
+		{
+			OffsetClipRgn(FHandle, (int)OffsetX, (int)OffsetY);
+		}
+
+		void WinDC::CombineClip(WinRegion::Ptr Region, vint CombineMode)
+		{
+			ExtSelectClipRgn(FHandle, Region->GetHandle(), (int)CombineMode);
+		}
+
+		void WinDC::IntersetClipRect(RECT Rect)
+		{
+			::IntersectClipRect(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
+		}
+
+		void WinDC::ExcludeClipRect(RECT Rect)
+		{
+			::ExcludeClipRect(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
+		}
+
+		WinRegion::Ptr WinDC::GetClipRegion()
+		{
+			HRGN Handle=CreateRectRgn(0, 0, 1, 1);
+			GetClipRgn(FHandle, Handle);
+			return Ptr(new WinRegion(Handle));
+		}
+
+		RECT WinDC::GetClipBoundRect()
+		{
+			RECT Rect;
+			GetClipBox(FHandle, &Rect);
+			return Rect;
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		WinTransform WinDC::GetTransform()
+		{
+			XFORM Transform;
+			GetWorldTransform(FHandle, &Transform);
+			return Transform;
+		}
+
+		void WinDC::SetTransform(const WinTransform& Transform)
+		{
+			SetWorldTransform(FHandle, Transform.GetHandle());
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		void WinDC::Copy(vint dstX, vint dstY, vint dstW, vint dstH, WinDC* Source, vint srcX, vint srcY, DWORD DrawROP)
+		{
+			HDC SourceHandle=Source?Source->GetHandle():0;
+			BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, SourceHandle, (int)srcX, (int)srcY, (int)DrawROP);
+		}
+
+		void WinDC::Copy(RECT dstRect, WinDC* Source, POINT srcPos, DWORD DrawROP)
+		{
+			HDC SourceHandle=Source?Source->GetHandle():0;
+			BitBlt(FHandle, dstRect.left, dstRect.top, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, SourceHandle, srcPos.x, srcPos.y, DrawROP);
+		}
+
+		void WinDC::Copy(vint dstX, vint dstY, vint dstW, vint dstH, WinDC* Source, vint srcX, vint srcY , vint srcW, vint srcH, DWORD DrawROP)
+		{
+			HDC SourceHandle=Source?Source->GetHandle():0;
+			StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, SourceHandle, (int)srcX, (int)srcY, (int)srcW, (int)srcH, (int)DrawROP);
+		}
+
+		void WinDC::Copy(RECT dstRect, WinDC* Source, RECT srcRect, DWORD DrawROP)
+		{
+			HDC SourceHandle=Source?Source->GetHandle():0;
+			StretchBlt(	FHandle		, dstRect.left, dstRect.top, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 
+						SourceHandle, srcRect.left, srcRect.top, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, 
+						DrawROP);
+		}
+
+		void WinDC::Copy(POINT UpperLeft, POINT UpperRight, POINT LowerLeft, WinDC* Source, vint srcX, vint srcY, vint srcW, vint srcH)
+		{
+			POINT Pt[3];
+			Pt[0]=UpperLeft;
+			Pt[1]=UpperRight;
+			Pt[2]=LowerLeft;
+			PlgBlt(FHandle, Pt, Source->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, 0, 0, 0);
+		}
+
+		void WinDC::Copy(POINT UpperLeft, POINT UpperRight, POINT LowerLeft, WinDC*Source, RECT srcRect)
+		{
+			POINT Pt[3];
+			Pt[0]=UpperLeft;
+			Pt[1]=UpperRight;
+			Pt[2]=LowerLeft;
+			PlgBlt(FHandle, Pt, Source->GetHandle(), srcRect.left, srcRect.top, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, 0, 0, 0);
+		}
+
+		void WinDC::CopyTrans(vint dstX, vint dstY, vint dstW, vint dstH, WinDC* Source, vint srcX, vint srcY , vint srcW, vint srcH, COLORREF Color)
+		{
+			TransparentBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Source->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Color);
+		}
+
+		void WinDC::CopyTrans(RECT dstRect, WinDC* Source, RECT srcRect, COLORREF Color)
+		{
+			TransparentBlt(	FHandle				, dstRect.left, dstRect.top, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 
+							Source->GetHandle()	, srcRect.left, srcRect.top, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, 
+							Color);
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		void WinDC::Draw(vint dstX, vint dstY, WinMetaFile* MetaFile)
+		{
+			Draw(dstX, dstY, MetaFile->GetWidth(), MetaFile->GetHeight(), MetaFile);
+		}
+
+		void WinDC::Draw(POINT Pos, WinMetaFile* MetaFile)
+		{
+			Draw(Pos.x, Pos.y, MetaFile->GetWidth(), MetaFile->GetHeight(), MetaFile);
+		}
+
+		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinMetaFile* MetaFile)
+		{
+			RECT Rect;
+			Rect.left=(int)dstX;
+			Rect.top=(int)dstY;
+			Rect.right=(int)(dstX+dstW);
+			Rect.bottom=(int)(dstY+dstH);
+			Draw(Rect, MetaFile);
+		}
+
+		void WinDC::Draw(RECT Rect, WinMetaFile* MetaFile)
+		{
+			PlayEnhMetaFile(FHandle, MetaFile->GetHandle(), &Rect);
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		void WinDC::Draw(vint dstX, vint dstY, WinBitmap::Ptr Bitmap)
+		{
+			vint dstW=Bitmap->GetWidth();
+			vint dstH=Bitmap->GetHeight();
+			vint srcX=0;
+			vint srcY=0;
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
+			}
+			else
+			{
+				vint srcW=dstW;
+				vint srcH=dstH;
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		void WinDC::Draw(POINT Pos, WinBitmap::Ptr Bitmap)
+		{
+			vint dstX=Pos.x;
+			vint dstY=Pos.y;
+			vint dstW=Bitmap->GetWidth();
+			vint dstH=Bitmap->GetHeight();
+			vint srcX=0;
+			vint srcY=0;
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
+			}
+			else
+			{
+				vint srcW=dstW;
+				vint srcH=dstH;
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap)
+		{
+			vint srcX=0;
+			vint srcY=0;
+			vint srcW=Bitmap->GetWidth();
+			vint srcH=Bitmap->GetHeight();
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
+			}
+			else
+			{
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap)
+		{
+			vint dstX=Rect.left;
+			vint dstY=Rect.top;
+			vint dstW=Rect.right-Rect.left;
+			vint dstH=Rect.bottom-Rect.top;
+			vint srcX=0;
+			vint srcY=0;
+			vint srcW=Bitmap->GetWidth();
+			vint srcH=Bitmap->GetHeight();
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
+			}
+			else
+			{
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY)
+		{
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
+			}
+			else
+			{
+				vint srcW=dstW;
+				vint srcH=dstH;
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap, POINT Pos)
+		{
+			vint dstX=Rect.left;
+			vint dstY=Rect.top;
+			vint dstW=Rect.right-Rect.left;
+			vint dstH=Rect.bottom-Rect.top;
+			vint srcX=Pos.x;
+			vint srcY=Pos.y;
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
+			}
+			else
+			{
+				vint srcW=dstW;
+				vint srcH=dstH;
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY, vint srcW, vint srcH)
+		{
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
+			}
+			else
+			{
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		void WinDC::Draw(RECT dstRect, WinBitmap::Ptr Bitmap, RECT srcRect)
+		{
+			vint dstX=dstRect.left;
+			vint dstY=dstRect.top;
+			vint dstW=dstRect.right-dstRect.left;
+			vint dstH=dstRect.bottom-dstRect.top;
+			vint srcX=srcRect.left;
+			vint srcY=srcRect.top;
+			vint srcW=srcRect.right-srcRect.left;
+			vint srcH=srcRect.bottom-srcRect.top;
+			if(!Bitmap->IsAlphaChannelBuilt())
+			{
+				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
+			}
+			else
+			{
+				BLENDFUNCTION Blend;
+				Blend.BlendOp=AC_SRC_OVER;
+				Blend.BlendFlags=0;
+				Blend.SourceConstantAlpha=255;
+				Blend.AlphaFormat=AC_SRC_ALPHA;
+				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+			}
+		}
+
+		/*------------------------------------------------------------------------------*/
+
+		void WinDC::Draw(vint dstX, vint dstY, WinBitmap::Ptr Bitmap, unsigned char Alpha)
+		{
+			vint dstW=Bitmap->GetWidth();
+			vint dstH=Bitmap->GetHeight();
+			vint srcX=0;
+			vint srcY=0;
+			vint srcW=dstW;
+			vint srcH=dstH;
+
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+		void WinDC::Draw(POINT Pos, WinBitmap::Ptr Bitmap, unsigned char Alpha)
+		{
+			vint dstX=Pos.x;
+			vint dstY=Pos.y;
+			vint dstW=Bitmap->GetWidth();
+			vint dstH=Bitmap->GetHeight();
+			vint srcX=0;
+			vint srcY=0;
+			vint srcW=dstW;
+			vint srcH=dstH;
+
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, unsigned char Alpha)
+		{
+			vint srcX=0;
+			vint srcY=0;
+			vint srcW=Bitmap->GetWidth();
+			vint srcH=Bitmap->GetHeight();
+
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap, unsigned char Alpha)
+		{
+			vint dstX=Rect.left;
+			vint dstY=Rect.top;
+			vint dstW=Rect.right-Rect.left;
+			vint dstH=Rect.bottom-Rect.top;
+			vint srcX=0;
+			vint srcY=0;
+			vint srcW=Bitmap->GetWidth();
+			vint srcH=Bitmap->GetHeight();
+
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY, unsigned char Alpha)
+		{
+			vint srcW=dstW;
+			vint srcH=dstH;
+
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap, POINT Pos, unsigned char Alpha)
+		{
+			vint dstX=Rect.left;
+			vint dstY=Rect.top;
+			vint dstW=Rect.right-Rect.left;
+			vint dstH=Rect.bottom-Rect.top;
+			vint srcX=Pos.x;
+			vint srcY=Pos.y;
+			vint srcW=dstW;
+			vint srcH=dstH;
+
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY, vint srcW, vint srcH, unsigned char Alpha)
+		{
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+		void WinDC::Draw(RECT dstRect, WinBitmap::Ptr Bitmap, RECT srcRect, unsigned char Alpha)
+		{
+			vint dstX=dstRect.left;
+			vint dstY=dstRect.top;
+			vint dstW=dstRect.right-dstRect.left;
+			vint dstH=dstRect.bottom-dstRect.top;
+			vint srcX=srcRect.left;
+			vint srcY=srcRect.top;
+			vint srcW=srcRect.right-srcRect.left;
+			vint srcH=srcRect.bottom-srcRect.top;
+
+			BLENDFUNCTION Blend;
+			Blend.BlendOp=AC_SRC_OVER;
+			Blend.BlendFlags=0;
+			Blend.SourceConstantAlpha=Alpha;
+			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
+			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
+		}
+
+/*********************************************************************************************************
+WinControlDC
+*********************************************************************************************************/
+
+		WinControlDC::WinControlDC(HWND Handle)
+		{
+			FControlHandle=Handle;
+			FHandle=GetDC(FControlHandle);
+			Init();
+		}
+
+		WinControlDC::~WinControlDC()
+		{
+			ReleaseDC(FControlHandle, FHandle);
+		}
+
+/*********************************************************************************************************
+WinProxyDC
+*********************************************************************************************************/
+
+		WinProxyDC::WinProxyDC()
+		{
+			FHandle=NULL;
+		}
+
+		WinProxyDC::~WinProxyDC()
+		{
+		}
+
+		void WinProxyDC::Initialize(HDC Handle)
+		{
+			FHandle=Handle;
+			Init();
+		}
+
+/*********************************************************************************************************
+WinImageDC
+*********************************************************************************************************/
+
+		WinImageDC::WinImageDC()
+		{
+			FHandle=CreateCompatibleDC(NULL);
+			Init();
+		}
+
+		WinImageDC::~WinImageDC()
+		{
+			DeleteDC(FHandle);
+		}
+
+		}
+	}
+}
+
+
+/***********************************************************************
+.\GDI\WINGDIAPPLICATION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace windows
+		{
+			using namespace vl::collections;
+
+			class GdiWindowsNativeWindowListener : public Object, public INativeWindowListener
+			{
+			protected:
+				Ptr<WinBitmap>					buffer;
+				INativeWindow*					window;
+				bool							needPaintAfterResize = false;
+
+				vint DetermineBufferLength(vint minSize, vint minBound, vint maxBound, vint currentSize)
+				{
+					if(currentSize<minSize || currentSize>maxBound)
+					{
+						return minBound;
+					}
+					else
+					{
+						return currentSize;
+					}
+				}
+
+				NativeSize CalculateBufferSize()
+				{
+					NativeSize nativeWindowSize = window->GetClientSize();
+					Size windowSize(nativeWindowSize.x.value, nativeWindowSize.y.value);
+					Size minBounds(windowSize.x * 5 / 4, windowSize.y * 5 / 4);
+					Size maxBounds(windowSize.x * 3 / 2, windowSize.y * 3 / 2);
+					Size currentSize = buffer ? Size(buffer->GetWidth(), buffer->GetHeight()) : Size(0, 0);
+					vint newWidth = DetermineBufferLength(windowSize.x, minBounds.x, maxBounds.x, currentSize.x);
+					vint newHeight = DetermineBufferLength(windowSize.y, minBounds.y, maxBounds.y, currentSize.y);
+					return NativeSize(newWidth, newHeight);
+				}
+
+				void RebuildCanvas(NativeSize size)
+				{
+					if (size.x < 256)size.x = 256;
+					if (size.y < 256)size.y = 256;
+					if (buffer)
+					{
+						if (buffer->GetWidth() != size.x.value || buffer->GetHeight() != size.y.value)
+						{
+							buffer = 0;
+							needPaintAfterResize = true;
+						}
+					}
+					if (!buffer)
+					{
+						buffer = Ptr(new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true));
+						buffer->GetWinDC()->SetBackTransparent(true);
+					}
+				}
+			public:
+				GdiWindowsNativeWindowListener(INativeWindow* _window)
+					:window(_window)
+				{
+				}
+
+				void Moved()
+				{
+					RebuildCanvas(CalculateBufferSize());
+				}
+
+				void Paint()
+				{
+					// for the first Paint() call after Moved()
+					// trigger the global timer so that all GuiGraphicsHost with needToRender=true will call Render(false)
+					// so that to fill the buffer to prevent from seeing a black frame
+					// but it still leave some black color since the layout may needs more than 1 frame to finish
+					if (needPaintAfterResize)
+					{
+						needPaintAfterResize = false;
+						auto callbackService = GetCurrentController()->CallbackService();
+						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
+					}
+					IWindowsForm* form=GetWindowsForm(window);
+					WinControlDC controlDC(form->GetWindowHandle());
+					controlDC.Draw(0, 0, buffer);
+				}
+
+				WinDC* GetWinDC()
+				{
+					if(!buffer) Moved();
+					return buffer->GetWinDC();
+				}
+			};
+
+			class GdiWindowsNativeControllerListener : public Object, public INativeControllerListener
+			{
+			public:
+				Dictionary<INativeWindow*, Ptr<GdiWindowsNativeWindowListener>>		nativeWindowListeners;
+
+				~GdiWindowsNativeControllerListener()
+				{
+					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
+					{
+						auto window = nativeWindowListeners.Keys()[i];
+						auto listener = nativeWindowListeners.Values()[i];
+						window->UninstallListener(listener.Obj());
+					}
+				}
+
+				void NativeWindowCreated(INativeWindow* window)
+				{
+					auto listener=Ptr(new GdiWindowsNativeWindowListener(window));
+					window->InstallListener(listener.Obj());
+					nativeWindowListeners.Add(window, listener);
+				}
+
+				void NativeWindowDestroying(INativeWindow* window)
+				{
+					auto listener=nativeWindowListeners[window];
+					nativeWindowListeners.Remove(window);
+					window->UninstallListener(listener.Obj());
+				}
+			};
+
+			GdiWindowsNativeControllerListener* gdiListener=0;
+
+			WinDC* GetNativeWindowDC(INativeWindow* window)
+			{
+				vint index=gdiListener->nativeWindowListeners.Keys().IndexOf(window);
+				return index==-1?0:gdiListener->nativeWindowListeners.Values().Get(index)->GetWinDC();
+			}
+
+			HDC GetNativeWindowHDC(INativeWindow* window)
+			{
+				WinDC* dc=GetNativeWindowDC(window);
+				return dc?dc->GetHandle():NULL;
+			}
+		}
+
+		namespace elements_windows_gdi
+		{
+/***********************************************************************
+OS Supporting
+***********************************************************************/
+
+			class WinGDIApplicationGDIObjectProvider : public IWindowsGDIObjectProvider
+			{
+			protected:
+				IMLangFontLink2*				mLangFontLink;
+
+			public:
+				WinGDIApplicationGDIObjectProvider()
+					:mLangFontLink(0)
+				{
+					CoCreateInstance(CLSID_CMultiLanguage, NULL, CLSCTX_INPROC_SERVER, IID_IMLangFontLink2, (void**)&mLangFontLink);
+				}
+
+				~WinGDIApplicationGDIObjectProvider()
+				{
+					mLangFontLink->Release();
+				}
+
+				windows::WinDC* GetNativeWindowDC(INativeWindow* window)override
+				{
+					return vl::presentation::windows::GetNativeWindowDC(window);
+				}
+
+				IWindowsGDIRenderTarget* GetBindedRenderTarget(INativeWindow* window)override
+				{
+					return dynamic_cast<IWindowsGDIRenderTarget*>(vl::presentation::windows::GetWindowsForm(window)->GetGraphicsHandler());
+				}
+
+				void SetBindedRenderTarget(INativeWindow* window, IWindowsGDIRenderTarget* renderTarget)override
+				{
+					vl::presentation::windows::GetWindowsForm(window)->SetGraphicsHandler(renderTarget);
+				}
+
+				IWICImagingFactory* GetWICImagingFactory()override
+				{
+					return vl::presentation::windows::GetWICImagingFactory();
+				}
+
+				IWICBitmap* GetWICBitmap(INativeImageFrame* frame)override
+				{
+					return vl::presentation::windows::GetWICBitmap(frame);
+				}
+
+				IMLangFontLink2* GetMLangFontLink()override
+				{
+					return mLangFontLink;
+				}
+			};
+		}
+	}
+}
+
+using namespace vl;
+using namespace vl::presentation;
+using namespace vl::presentation::windows;
+using namespace vl::presentation::elements_windows_gdi;
+
+int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)())
+{
+	EnableCrossKernelCrashing();
+	// create controller
+	INativeController* controller=CreateWindowsNativeController(hInstance);
+	SetCurrentController(controller);
+	{
+		// install listener
+		GdiWindowsNativeControllerListener listener;
+		controller->CallbackService()->InstallListener(&listener);
+		gdiListener=&listener;
+		// main
+		RendererMain();
+		// uninstall listener
+		gdiListener=0;
+		controller->CallbackService()->UninstallListener(&listener);
+	}
+	// destroy controller
+	DestroyWindowsNativeController(controller);
+	return 0;
+}
+
+int SetupWindowsGDIRenderer()
+{
+	InitDpiAwareness(false);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
+	WinGDIApplicationGDIObjectProvider objectProvider;
+	SetWindowsGDIObjectProvider(&objectProvider);
+	return WinMainGDI(hInstance, &RendererMainGDI);
+}
+
+/***********************************************************************
+.\GDI\RENDERERS\GUIGRAPHICSLAYOUTPROVIDERWINDOWSGDI.CPP
 ***********************************************************************/
 
 namespace vl
@@ -3898,7 +8882,7 @@ WindowsGDILayoutProvider
 }
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSRENDERERSWINDOWSGDI.CPP
+.\GDI\RENDERERS\GUIGRAPHICSRENDERERSWINDOWSGDI.CPP
 ***********************************************************************/
 
 namespace vl
@@ -4980,7 +9964,7 @@ GuiGDIElementRenderer
 }
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSUNISCRIBE.CPP
+.\GDI\RENDERERS\GUIGRAPHICSUNISCRIBE.CPP
 ***********************************************************************/
 
 #pragma comment(lib, "usp10.lib")
@@ -7469,7 +12453,7 @@ UniscribeParagraph (Caret)
 }
 
 /***********************************************************************
-.\GRAPHICSELEMENT\WINDOWSGDI\GUIGRAPHICSWINDOWSGDI.CPP
+.\GDI\RENDERERS\GUIGRAPHICSWINDOWSGDI.CPP
 ***********************************************************************/
 
 namespace vl
@@ -7959,6 +12943,8 @@ NativeMain
 using namespace vl::presentation;
 using namespace vl::presentation::elements;
 
+extern void GuiApplicationMain();
+
 void RendererMainGDI()
 {
 	elements_windows_gdi::WindowsGDIResourceManager resourceManager;
@@ -7986,4989 +12972,7 @@ void RendererMainGDI()
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\WINNATIVEDPIAWARENESS.CPP
-***********************************************************************/
-
-#pragma comment(lib, "Shcore.lib")
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-#define USE_API(NAME, API) static auto proc_##API = (decltype(&API))(GetProcAddress(GetModuleHandle(L#NAME), #API))
-
-			void InitDpiAwareness(bool dpiAware)
-			{
-				USE_API(user32, SetProcessDpiAwarenessContext);
-				USE_API(shcore, SetProcessDpiAwareness);
-
-				if(proc_SetProcessDpiAwarenessContext)
-				{
-					proc_SetProcessDpiAwarenessContext(dpiAware ? DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2:  DPI_AWARENESS_CONTEXT_UNAWARE);
-					return;
-				}
-
-				if(proc_SetProcessDpiAwareness)
-				{
-					proc_SetProcessDpiAwareness(dpiAware ? PROCESS_PER_MONITOR_DPI_AWARE : PROCESS_DPI_UNAWARE);
-					return;
-				}
-			}
-
-			void DpiAwared_GetDpiForMonitor(HMONITOR monitor, UINT* x, UINT* y)
-			{
-				USE_API(shcore, GetDpiForMonitor);
-
-				if (proc_GetDpiForMonitor)
-				{
-					if (proc_GetDpiForMonitor(monitor, MDT_DEFAULT, x, y) == S_OK)
-					{
-						return;
-					}
-				}
-				*x = 96;
-				*y = 96;
-			}
-
-			void DpiAwared_GetDpiForWindow(HWND handle, UINT* x, UINT* y)
-			{
-				USE_API(user32, GetDpiForWindow);
-
-				if (proc_GetDpiForWindow)
-				{
-					*x = *y = proc_GetDpiForWindow(handle);
-				}
-				else
-				{
-					HMONITOR monitor = MonitorFromWindow(handle, MONITOR_DEFAULTTONULL);
-					if (monitor == NULL)
-					{
-						*x = *y = 96;
-					}
-					else
-					{
-						DpiAwared_GetDpiForMonitor(monitor, x, y);
-					}
-				}
-			}
-
-			void DpiAwared_AdjustWindowRect(LPRECT rect, HWND handle, UINT dpi)
-			{
-				USE_API(user32, AdjustWindowRectExForDpi);
-
-				if (proc_AdjustWindowRectExForDpi)
-				{
-					proc_AdjustWindowRectExForDpi(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE, (DWORD)GetWindowLongPtr(handle, GWL_EXSTYLE), dpi);
-				}
-				else
-				{
-					AdjustWindowRect(rect, (DWORD)GetWindowLongPtr(handle, GWL_STYLE), FALSE);
-				}
-			}
-
-			int DpiAwared_GetSystemMetrics(int index, UINT dpi)
-			{
-				USE_API(user32, GetSystemMetricsForDpi);
-
-				if (proc_GetSystemMetricsForDpi)
-				{
-					return proc_GetSystemMetricsForDpi(index, dpi);
-				}
-				else
-				{
-					return GetSystemMetrics(index);
-				}
-			}
-
-#undef USE_API
-		}
-	}
-}
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\WINNATIVEWINDOW.CPP
-***********************************************************************/
-#include <CommCtrl.h>
-
-#pragma comment(lib, "Imm32.lib")
-#pragma comment(lib, "Shlwapi.lib")
-#pragma comment(lib, "Comctl32.lib")
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			using namespace collections;
-
-			LPCWSTR defaultIconResourceName = nullptr;
-
-			HICON CreateWindowDefaultIcon(vint size = 0)
-			{
-				if (!defaultIconResourceName) return NULL;
-				return (HICON)LoadImage(GetModuleHandle(NULL), defaultIconResourceName, IMAGE_ICON, (int)size, (int)size, (size ? 0 : LR_DEFAULTSIZE) | LR_SHARED);
-			}
-
-			void SetWindowDefaultIcon(UINT resourceId)
-			{
-				CHECK_ERROR(defaultIconResourceName == nullptr, L"vl::presentation::windows::SetWindowDefaultIcon(UINT)#This function can only be called once.");
-				defaultIconResourceName = MAKEINTRESOURCE(resourceId);
-			}
-
-			HWND GetHWNDFromNativeWindowHandle(INativeWindow* window)
-			{
-				if(!window) return NULL;
-				IWindowsForm* form=GetWindowsForm(window);
-				if(!form) return NULL;
-				return form->GetWindowHandle();
-			}
-
-/***********************************************************************
-WindowsClass
-***********************************************************************/
-
-			class WinClass : public Object
-			{
-			protected:
-				WString									name;
-				WNDCLASSEX								windowClass;
-				ATOM									windowAtom;
-
-			public:
-				WinClass(WString _name, bool shadow, bool ownDC, WNDPROC procedure, HINSTANCE hInstance)
-				{
-					name=_name;
-					ZeroMemory(&windowClass, sizeof(windowClass));
-					windowClass.cbSize=sizeof(windowClass);
-					windowClass.style=CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | (shadow?CS_DROPSHADOW:0) | (ownDC?CS_OWNDC:0);
-					windowClass.lpfnWndProc=procedure;
-					windowClass.cbClsExtra=0;
-					windowClass.cbWndExtra=0;
-					windowClass.hInstance=hInstance;
-					if (defaultIconResourceName)
-					{
-						windowClass.hIcon = CreateWindowDefaultIcon();
-					}
-					windowClass.hCursor=NULL;//LoadCursor(NULL,IDC_ARROW);
-					windowClass.hbrBackground=GetSysColorBrush(COLOR_BTNFACE);
-					windowClass.lpszMenuName=NULL;
-					windowClass.lpszClassName=name.Buffer();
-					windowClass.hIconSm=NULL;
-					windowAtom=RegisterClassEx(&windowClass);
-				}
-
-				bool IsAvailable()
-				{
-					return windowAtom!=0;
-				}
-
-				WString GetName()
-				{
-					return name;
-				}
-
-				ATOM GetClassAtom()
-				{
-					return windowAtom;
-				}
-			};
-
-/***********************************************************************
-WindowsForm
-***********************************************************************/
-
-			class WindowsForm : public Object, public INativeWindow, public IWindowsForm
-			{
-			protected:
-				
-				LONG_PTR InternalGetExStyle()
-				{
-					return GetWindowLongPtr(handle, GWL_EXSTYLE);
-				}
-
-				void InternalSetExStyle(LONG_PTR exStyle)
-				{
-					LONG_PTR result = SetWindowLongPtr(handle, GWL_EXSTYLE, exStyle);
-					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-				}
-
-				LONG_PTR InternalGetStyle()
-				{
-					return GetWindowLongPtr(handle, GWL_STYLE);
-				}
-
-				void InternalSetStyle(LONG_PTR style)
-				{
-					SetWindowLongPtr(handle, GWL_STYLE, style);
-					SetWindowPos(handle, 0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-				}
-
-				LONG_PTR TurnOnStyle(LONG_PTR combination, LONG_PTR style)
-				{
-					return combination | style;
-				}
-
-				LONG_PTR TurnOffStyle(LONG_PTR combination, LONG_PTR style)
-				{
-					return combination & (~style);
-				}
-
-				bool GetExStyle(LONG_PTR exStyle)
-				{
-					return (InternalGetExStyle() & exStyle) != 0;
-				}
-
-				void SetExStyle(LONG_PTR exStyle, bool available)
-				{
-					if (available)
-					{
-						InternalSetExStyle(TurnOnStyle(InternalGetExStyle(), exStyle));
-					}
-					else
-					{
-						InternalSetExStyle(TurnOffStyle(InternalGetExStyle(), exStyle));
-					}
-				}
-
-				bool GetStyle(LONG_PTR style)
-				{
-					return (InternalGetStyle() & style) != 0;
-				}
-
-				void SetStyle(LONG_PTR style, bool available)
-				{
-					if (available)
-					{
-						InternalSetStyle(TurnOnStyle(InternalGetStyle(), style));
-					}
-					else
-					{
-						InternalSetStyle(TurnOffStyle(InternalGetStyle(), style));
-					}
-				}
-#pragma push_macro("_CONTROL")
-#if defined _CONTROL
-#undef _CONTROL
-#endif
-				NativeWindowMouseInfo ConvertMouse(WPARAM wParam, LPARAM lParam, bool wheelMessage, bool nonClient)
-				{
-					NativeWindowMouseInfo info;
-
-					info.nonClient = false;
-					if (nonClient)
-					{
-						switch (wParam)
-						{
-						case HTMINBUTTON:
-						case HTMAXBUTTON:
-						case HTCLOSE:
-							break;
-						default:
-							info.nonClient = true;
-							break;
-						}
-					}
-
-					if(wheelMessage)
-					{
-						info.wheel=GET_WHEEL_DELTA_WPARAM(wParam);
-						wParam=GET_KEYSTATE_WPARAM(wParam);
-					}
-					else
-					{
-						info.wheel=0;
-					}
-
-					if (nonClient)
-					{
-						info.ctrl = WinIsKeyPressing(VKEY::KEY_CONTROL);
-						info.shift = WinIsKeyPressing(VKEY::KEY_SHIFT);
-						info.left= WinIsKeyPressing(VKEY::KEY_LBUTTON);
-						info.middle= WinIsKeyPressing(VKEY::KEY_MBUTTON);
-						info.right = WinIsKeyPressing(VKEY::KEY_RBUTTON);
-						
-						POINTS point = MAKEPOINTS(lParam);
-						NativePoint offset = GetClientBoundsInScreen().LeftTop();
-						info.x = point.x - offset.x.value;
-						info.y = point.y - offset.y.value;
-					}
-					else
-					{
-						info.ctrl=((VKEY)wParam & VKEY::KEY_CONTROL)!=(VKEY)0;
-						info.shift=((VKEY)wParam & VKEY::KEY_SHIFT)!= (VKEY)0;
-						info.left=((VKEY)wParam & VKEY::KEY_LBUTTON)!= (VKEY)0;
-						info.middle=((VKEY)wParam & VKEY::KEY_MBUTTON)!= (VKEY)0;
-						info.right=((VKEY)wParam & VKEY::KEY_RBUTTON)!= (VKEY)0;
-
-						POINTS point = MAKEPOINTS(lParam);
-
-						if (wheelMessage)
-						{
-							NativePoint offset = GetClientBoundsInScreen().LeftTop();
-							info.x = point.x - offset.x.value;
-							info.y = point.y - offset.y.value;
-						}
-						else
-						{
-							info.x = point.x;
-							info.y = point.y;
-						}
-					}
-					return info;
-				}
-
-				NativeWindowKeyInfo ConvertKey(WPARAM wParam, LPARAM lParam)
-				{
-					NativeWindowKeyInfo info;
-					info.code=(VKEY)wParam;
-					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
-					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
-					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
-					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
-					info.autoRepeatKeyDown = (((vuint32_t)lParam) >> 30) % 2 == 1;
-					return info;
-				}
-
-				NativeWindowCharInfo ConvertChar(WPARAM wParam)
-				{
-					NativeWindowCharInfo info;
-					info.code=(wchar_t)wParam;
-					info.ctrl=WinIsKeyPressing(VKEY::KEY_CONTROL);
-					info.shift=WinIsKeyPressing(VKEY::KEY_SHIFT);
-					info.alt=WinIsKeyPressing(VKEY::KEY_MENU);
-					info.capslock=WinIsKeyToggled(VKEY::KEY_CAPITAL);
-					return info;
-				}
-#pragma pop_macro("_CONTROL")
-
-				void TrackMouse(bool enable)
-				{
-					TRACKMOUSEEVENT trackMouseEvent;
-					trackMouseEvent.cbSize=sizeof(trackMouseEvent);
-					trackMouseEvent.hwndTrack=handle;
-					trackMouseEvent.dwFlags=(enable?0:TME_CANCEL) | TME_HOVER | TME_LEAVE;
-					trackMouseEvent.dwHoverTime=HOVER_DEFAULT;
-					TrackMouseEvent(&trackMouseEvent);
-				}
-
-				void UpdateCompositionForContent()
-				{
-					HIMC imc = ImmGetContext(handle);
-					COMPOSITIONFORM cf;
-					cf.dwStyle = CFS_POINT;
-					cf.ptCurrentPos.x = (int)caretPoint.x.value;
-					cf.ptCurrentPos.y = (int)caretPoint.y.value;
-					ImmSetCompositionWindow(imc, &cf);
-					ImmReleaseContext(handle, imc);
-				}
-
-				bool supressClosePopups = false;
-
-				static void ClosePopupsOf(WindowsForm* owner, SortedList<WindowsForm*>& exceptions)
-				{
-					for (vint i = 0; i < owner->childWindows.Count(); i++)
-					{
-						auto popup = owner->childWindows[i];
-						if (popup->windowMode != Normal && popup->IsVisible())
-						{
-							if (!exceptions.Contains(popup))
-							{
-								popup->Hide(false);
-							}
-						}
-						ClosePopupsOf(popup, exceptions);
-					}
-				}
-
-				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
-				{
-					if (!supressClosePopups)
-					{
-						bool closePopups = false;
-						WindowsForm* activatedWindow = nullptr;
-						WindowsForm* rootWindow = nullptr;
-						SortedList<WindowsForm*> exceptions;
-
-						switch (uMsg)
-						{
-						case WM_ACTIVATEAPP:
-							if (wParam == FALSE)
-							{
-								closePopups = true;
-							}
-							break;
-						case WM_ACTIVATE:
-							switch (LOWORD(wParam))
-							{
-							case WA_ACTIVE:
-							case WA_CLICKACTIVE:
-								activatedWindow = this;
-								closePopups = true;
-								break;
-							}
-							break;
-						case WM_LBUTTONDOWN:
-						case WM_MBUTTONDOWN:
-						case WM_RBUTTONDOWN:
-						case WM_NCLBUTTONDOWN:
-						case WM_NCMBUTTONDOWN:
-						case WM_NCRBUTTONDOWN:
-							activatedWindow = this;
-							closePopups = true;
-							break;
-						}
-
-						if (activatedWindow)
-						{
-							rootWindow = activatedWindow;
-							exceptions.Add(rootWindow);
-							while (auto parentWindow = rootWindow->parentWindow)
-							{
-								rootWindow = parentWindow;
-								exceptions.Add(parentWindow);
-							}
-						}
-
-						if (closePopups)
-						{
-							List<IWindowsForm*> allRootWindows;
-							GetAllCreatedWindows(allRootWindows, true);
-
-							for (vint i = 0; i < allRootWindows.Count(); i++)
-							{
-								if (auto windowsForm = dynamic_cast<WindowsForm*>(allRootWindows[i]))
-								{
-									ClosePopupsOf(windowsForm, exceptions);
-								}
-							}
-						}
-					}
-
-					bool nonClient = false;
-
-					switch(uMsg)
-					{
-					// ************************************** moving and sizing
-					case WM_MOVING:case WM_SIZING:
-						{
-							LPRECT rawBounds=(LPRECT)lParam;
-							NativeRect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->Moving(bounds, false, (uMsg == WM_SIZING));
-							}
-							if(		rawBounds->left!=bounds.Left().value
-								||	rawBounds->top!=bounds.Top().value
-								||	rawBounds->right!=bounds.Right().value
-								||	rawBounds->bottom!=bounds.Bottom().value)
-							{
-								rawBounds->left=(int)bounds.Left().value;
-								rawBounds->top=(int)bounds.Top().value;
-								rawBounds->right=(int)bounds.Right().value;
-								rawBounds->bottom=(int)bounds.Bottom().value;
-								result=TRUE;
-							}
-						}
-						break;
-					case WM_MOVE:case WM_SIZE:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->Moved();
-							}
-						}
-						break;
-					case WM_DPICHANGED:
-						{
-							dpiX = LOWORD(wParam);
-							dpiY = HIWORD(wParam);
-							UpdateDpiAwaredFields(false);
-							auto newRect = (RECT*)lParam;
-							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
-							for (vint i = 0; i < listeners.Count(); i++)
-							{
-								listeners[i]->DpiChanged();
-							}
-						}
-						break;
-					// ************************************** state
-					case WM_ENABLE:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								if(wParam==TRUE)
-								{
-									listeners[i]->Enabled();
-								}
-								else
-								{
-									listeners[i]->Disabled();
-								}
-							}
-						}
-						break;
-					case WM_SETFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->GotFocus();
-							}
-						}
-						break;
-					case WM_KILLFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->LostFocus();
-							}
-						}
-						break;
-					case WM_MOUSEACTIVATE:
-						if (!enabledActivate)
-						{
-							result = MA_NOACTIVATE;
-							return true;
-						}
-						break;
-					case WM_ACTIVATE:
-						{
-							for (vint i = 0; i < listeners.Count(); i++)
-							{
-								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
-								{
-									listeners[i]->Activated();
-								}
-								else
-								{
-									listeners[i]->Deactivated();
-								}
-							}
-						}
-						break;
-					case WM_SHOWWINDOW:
-						if (lParam == 0)
-						{
-							if (wParam == TRUE)
-							{
-								for (vint i = 0; i < listeners.Count(); i++)
-								{
-									listeners[i]->Opened();
-								}
-							}
-							else
-							{
-								for (vint i = 0; i < listeners.Count(); i++)
-								{
-									listeners[i]->Closed();
-								}
-							}
-						}
-						break;
-					case WM_CLOSE:
-						{
-							bool cancel=false;
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->Closing(cancel);
-							}
-							return cancel;
-						}
-						break;
-					// ************************************** mouse
-					case WM_NCLBUTTONDOWN:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_LBUTTONDOWN:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->LeftButtonDown(info);
-							}
-						}
-						break;
-					case WM_NCLBUTTONUP:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_LBUTTONUP:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->LeftButtonUp(info);
-							}
-						}
-						break;
-					case WM_NCLBUTTONDBLCLK:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_LBUTTONDBLCLK:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->LeftButtonDoubleClick(info);
-							}
-						}
-						break;
-					case WM_NCRBUTTONDOWN:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_RBUTTONDOWN:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->RightButtonDown(info);
-							}
-						}
-						break;
-					case WM_NCRBUTTONUP:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_RBUTTONUP:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->RightButtonUp(info);
-							}
-						}
-						break;
-					case WM_NCRBUTTONDBLCLK:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_RBUTTONDBLCLK:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->RightButtonDoubleClick(info);
-							}
-						}
-						break;
-					case WM_NCMBUTTONDOWN:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_MBUTTONDOWN:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->MiddleButtonDown(info);
-							}
-						}
-						break;
-					case WM_NCMBUTTONUP:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_MBUTTONUP:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->MiddleButtonUp(info);
-							}
-						}
-						break;
-					case WM_NCMBUTTONDBLCLK:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_MBUTTONDBLCLK:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->MiddleButtonDoubleClick(info);
-							}
-						}
-						break;
-					case WM_NCMOUSEMOVE:
-						if (!customFrameMode) break;
-						nonClient = true;
-					case WM_MOUSEMOVE:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
-							if(info.x!=mouseLastX || info.y!=mouseLastY)
-							{
-								if(!mouseHoving)
-								{
-									mouseHoving=true;
-									for(vint i=0;i<listeners.Count();i++)
-									{
-										listeners[i]->MouseEntered();
-									}
-									TrackMouse(true);
-								}
-								for(vint i=0;i<listeners.Count();i++)
-								{
-									listeners[i]->MouseMoving(info);
-								}
-							}
-						}
-						break;
-					// ************************************** wheel
-					case WM_MOUSEHWHEEL:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->HorizontalWheel(info);
-							}
-						}
-						break;
-					case WM_MOUSEWHEEL:
-						{
-							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->VerticalWheel(info);
-							}
-						}
-						break;
-					// ************************************** mouse state
-					case WM_NCMOUSELEAVE:
-						nonClient = true;
-					case WM_MOUSELEAVE:
-						if (customFrameMode == nonClient)
-						{
-							mouseLastX=-1;
-							mouseLastY=-1;
-							mouseHoving=false;
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->MouseLeaved();
-							}
-						}
-						break;
-					case WM_NCMOUSEHOVER:
-					case WM_MOUSEHOVER:
-						{
-							TrackMouse(true);
-						}
-						break;
-					// ************************************** key
-					case WM_KEYUP:
-						{
-							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							info.autoRepeatKeyDown = false;
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->KeyUp(info);
-							}
-						}
-						break;
-					case WM_KEYDOWN:
-						{
-							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->KeyDown(info);
-							}
-						}
-						break;
-					case WM_SYSKEYUP:
-						{
-							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							info.autoRepeatKeyDown = false;
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
-							{
-								supressingAlt = false;
-								break;
-							}
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->SysKeyUp(info);
-							}
-						}
-						break;
-					case WM_SYSKEYDOWN:
-						{
-							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
-							if (supressingAlt && !info.ctrl && !info.shift && info.code == VKEY::KEY_MENU)
-							{
-								break;
-							}
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->SysKeyDown(info);
-							}
-						}
-						break;
-					case WM_CHAR:
-						{
-							NativeWindowCharInfo info=ConvertChar(wParam);
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->Char(info);
-							}
-						}
-						break;
-					// ************************************** painting
-					case WM_PAINT:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->Paint();
-							}
-						}
-						break;
-					case WM_ERASEBKGND:
-						result = 0;
-						return true;
-					case WM_NCPAINT:
-					case WM_SYNCPAINT:
-						if(customFrameMode)
-						{
-							result=0;
-							return true;
-						}
-						break;
-					// ************************************** IME
-					case WM_IME_SETCONTEXT:
-						if(wParam==TRUE)
-						{
-							HIMC imc = ImmGetContext(handle);
-							ImmAssociateContext(hwnd, imc);
-							ImmReleaseContext(handle, imc);
-						}
-						break;
-					case WM_IME_STARTCOMPOSITION:
-						UpdateCompositionForContent();
-						break;
-					// ************************************** hit test
-					case WM_NCHITTEST:
-						{
-							POINTS location=MAKEPOINTS(lParam);
-							NativePoint windowLocation=GetBounds().LeftTop();
-							location.x-=(SHORT)windowLocation.x.value;
-							location.y-=(SHORT)windowLocation.y.value;
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
-								{
-								case INativeWindowListener::BorderNoSizing:
-									result=HTBORDER;
-									return true;
-								case INativeWindowListener::BorderLeft:
-									result=HTLEFT;
-									return true;
-								case INativeWindowListener::BorderRight:
-									result=HTRIGHT;
-									return true;
-								case INativeWindowListener::BorderTop:
-									result=HTTOP;
-									return true;
-								case INativeWindowListener::BorderBottom:
-									result=HTBOTTOM;
-									return true;
-								case INativeWindowListener::BorderLeftTop:
-									result=HTTOPLEFT;
-									return true;
-								case INativeWindowListener::BorderRightTop:
-									result=HTTOPRIGHT;
-									return true;
-								case INativeWindowListener::BorderLeftBottom:
-									result=HTBOTTOMLEFT;
-									return true;
-								case INativeWindowListener::BorderRightBottom:
-									result=HTBOTTOMRIGHT;
-									return true;
-								case INativeWindowListener::Title:
-									result=HTCAPTION;
-									return true;
-								case INativeWindowListener::ButtonMinimum:
-									result=HTMINBUTTON;
-									return true;
-								case INativeWindowListener::ButtonMaximum:
-									result=HTMAXBUTTON;
-									return true;
-								case INativeWindowListener::ButtonClose:
-									result=HTCLOSE;
-									return true;
-								case INativeWindowListener::Client:
-									result=HTCLIENT;
-									return true;
-								case INativeWindowListener::Icon:
-									result=HTSYSMENU;
-									return true;
-								}
-							}
-						}
-						break;
-					// ************************************** MISC
-					case WM_SETCURSOR:
-						{
-							DWORD hitTestResult=LOWORD(lParam);
-							if(hitTestResult==HTCLIENT)
-							{
-								HCURSOR cursorHandle=cursor->GetCursorHandle();
-								if(GetCursor()!=cursorHandle)
-								{
-									SetCursor(cursorHandle);
-								}
-								result=TRUE;
-								return true;
-							}
-						}
-						break;
-					case WM_NCCALCSIZE:
-						if((BOOL)wParam && customFrameMode)
-						{
-							result=0;
-							return true;
-						}
-						break;
-					case WM_NCACTIVATE:
-						if(customFrameMode)
-						{
-							if(wParam==TRUE)
-							{
-								result=FALSE;
-							}
-							else
-							{
-								result=TRUE;
-							}
-							return true;
-						}
-						break;
-					}
-
-					// handling custom frame
-					if (customFrameMode)
-					{
-						switch (uMsg)
-						{
-						case WM_NCLBUTTONDOWN:
-							switch (wParam)
-							{
-							case HTMINBUTTON:
-							case HTMAXBUTTON:
-							case HTCLOSE:
-								result = 0;
-								return true;
-							}
-							break;
-						case WM_LBUTTONUP:
-							{
-								POINTS location = MAKEPOINTS(lParam);
-								for(vint i=0;i<listeners.Count();i++)
-								{
-									switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
-									{
-									case INativeWindowListener::ButtonMinimum:
-										ShowMinimized();
-										return false;
-									case INativeWindowListener::ButtonMaximum:
-										if (GetSizeState() == INativeWindow::Maximized)
-										{
-											ShowRestored();
-										}
-										else
-										{
-											ShowMaximized();
-										}
-										return false;
-									case INativeWindowListener::ButtonClose:
-										Hide(true);
-										return false;
-									}
-								}
-							}
-							break;
-						}
-					}
-					return false;
-				}
-			protected:
-				HWND								handle;
-				WString								title;
-				WindowsCursor*						cursor = nullptr;
-				NativePoint							caretPoint;
-				WindowsForm*						parentWindow = nullptr;
-				List<WindowsForm*>					childWindows;
-				WindowMode							windowMode;
-				List<INativeWindowListener*>		listeners;
-				vint								mouseLastX = -1;
-				vint								mouseLastY = -1;
-				bool								mouseHoving = false;
-				Interface*							graphicsHandler = nullptr;
-				bool								customFrameMode = false;
-				bool								enabledActivate = true;
-				List<Ptr<INativeMessageHandler>>	messageHandlers;
-				bool								supressingAlt = false;
-				Ptr<bool>							flagDisposed = Ptr(new bool(false));
-				NativeMargin						customFramePadding;
-				Ptr<GuiImageData>					defaultIcon;
-				Ptr<GuiImageData>					replacementIcon;
-				HICON								replacementHIcon = NULL;
-				UINT								dpiX = 0;
-				UINT								dpiY = 0;
-
-				void UpdateDpiAwaredFields(bool refreshDpiXY)
-				{
-					if (refreshDpiXY)
-					{
-						DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
-					}
-					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, dpiX));
-					customFramePadding = NativeMargin(padding, padding, padding, padding);
-				}
-			public:
-				WindowsForm(HWND parent, WString className, HINSTANCE hInstance, INativeWindow::WindowMode _windowMode)
-					:windowMode(_windowMode)
-				{
-					{
-						DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
-						DWORD style = WS_BORDER | WS_CAPTION | WS_SIZEBOX | WS_SYSMENU | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
-						handle = CreateWindowEx(exStyle, className.Buffer(), L"", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, NULL, hInstance, NULL);
-					}
-					if (windowMode == INativeWindow::Normal)
-					{
-						// use WS_POPUP in CreateWindowEx, because CW_USERDEFAULT is interpreted as 0, unlike WS_OVERLAPPED
-						// if this is not a popup window, replace WS_POPUP with WS_OVERLAPPED
-						auto style = InternalGetStyle();
-						style = TurnOnStyle(style, WS_OVERLAPPED);
-						style = TurnOffStyle(style, WS_POPUP);
-						InternalSetStyle(style);
-					}
-					UpdateDpiAwaredFields(true);
-				}
-
-				~WindowsForm()
-				{
-					if (parentWindow)
-					{
-						parentWindow->childWindows.Remove(this);
-					}
-					for (vint i = childWindows.Count() - 1; i >= 0; i--)
-					{
-						childWindows[i]->SetParent(parentWindow);
-					}
-
-					*flagDisposed.Obj() = true;
-					List<INativeWindowListener*> copiedListeners;
-					CopyFrom(copiedListeners, listeners);
-					for (vint i = 0; i < copiedListeners.Count(); i++)
-					{
-						INativeWindowListener* listener = copiedListeners[i];
-						if (listeners.Contains(listener))
-						{
-							listener->Destroyed();
-						}
-					}
-					DestroyWindow(handle);
-				}
-
-				void InvokeDestroying()
-				{
-					for(vint i=0;i<listeners.Count();i++)
-					{
-						listeners[i]->Destroying();
-					}
-				}
-
-				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
-				{
-#define CHECK_DISPOSED if (*flag.Obj()) return skip
-					auto flag = flagDisposed;
-					bool skip = false;
-					{
-						for (auto handler : messageHandlers)
-						{
-							handler->BeforeHandle(hwnd, uMsg, wParam, lParam, skip);
-							CHECK_DISPOSED;
-						}
-						if (skip)
-						{
-							return true;
-						}
-					}
-					skip = HandleMessageInternal(hwnd, uMsg, wParam, lParam, result);
-					CHECK_DISPOSED;
-					if (GetWindowsFormFromHandle(hwnd))
-					{
-						for (auto handler : messageHandlers)
-						{
-							handler->AfterHandle(hwnd, uMsg, wParam, lParam, skip, result);
-							CHECK_DISPOSED;
-						}
-					}
-					return skip;
-#undef CHECK_DISPOSED
-				}
-
-				HWND GetWindowHandle()override
-				{
-					return handle;
-				}
-
-				Interface* GetGraphicsHandler()override
-				{
-					return graphicsHandler;
-				}
-
-				void SetGraphicsHandler(Interface* handler)override
-				{
-					graphicsHandler=handler;
-				}
-
-				bool InstallMessageHandler(Ptr<INativeMessageHandler> handler)override
-				{
-					if (messageHandlers.Contains(handler.Obj()))
-					{
-						return false;
-					}
-					messageHandlers.Add(handler);
-					return true;
-				}
-
-				bool UninstallMessageHandler(Ptr<INativeMessageHandler> handler)override
-				{
-					vint index = messageHandlers.IndexOf(handler.Obj());
-					if (index == -1)return false;
-					messageHandlers.RemoveAt(handler);
-					return true;
-				}
-
-				Point Convert(NativePoint value)override
-				{
-					return Point((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
-				}
-
-				NativePoint Convert(Point value)override
-				{
-					return NativePoint(value.x * dpiX / 96, value.y * dpiY / 96);
-				}
-
-				Size Convert(NativeSize value)override
-				{
-					return Size((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);
-				}
-
-				NativeSize Convert(Size value)override
-				{
-					return NativeSize(value.x * dpiX / 96, value.y * dpiY / 96);
-				}
-
-				Margin Convert(NativeMargin value)override
-				{
-					return Margin(
-						(vint)value.left.value * 96 / dpiX,
-						(vint)value.top.value * 96 / dpiY,
-						(vint)value.right.value * 96 / dpiX,
-						(vint)value.bottom.value * 96 / dpiY
-					);
-				}
-
-				NativeMargin Convert(Margin value)override
-				{
-					return NativeMargin(
-						(vint)value.left * dpiX / 96,
-						(vint)value.top * dpiY / 96,
-						(vint)value.right * dpiX / 96,
-						(vint)value.bottom * dpiY / 96
-					);
-				}
-
-				NativeRect GetBounds()override
-				{
-					RECT rect;
-					GetWindowRect(handle, &rect);
-					return NativeRect(rect.left, rect.top, rect.right, rect.bottom);
-				}
-
-				void SetBounds(const NativeRect& bounds)override
-				{
-					NativeRect newBounds=bounds;
-					for(vint i=0;i<listeners.Count();i++)
-					{
-						listeners[i]->Moving(newBounds, true, false);
-					}
-					MoveWindow(handle, (int)newBounds.Left().value, (int)newBounds.Top().value, (int)newBounds.Width().value, (int)newBounds.Height().value, FALSE);
-				}
-
-				NativeSize GetClientSize()override
-				{
-					return GetClientBoundsInScreen().GetSize();
-				}
-
-				void SetClientSize(NativeSize size)override
-				{
-					if (customFrameMode)
-					{
-						RECT bounds;
-						GetWindowRect(handle, &bounds);
-						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), size));
-					}
-					else
-					{
-						RECT required = { 0,0,(int)size.x.value,(int)size.y.value };
-						RECT bounds;
-						GetWindowRect(handle, &bounds);
-						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
-						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right - required.left, required.bottom - required.top)));
-					}
-				}
-
-				NativeRect GetClientBoundsInScreen()override
-				{
-					if(customFrameMode)
-					{
-						return GetBounds();
-					}
-					else
-					{
-						RECT required={0,0,0,0};
-						RECT bounds;
-						GetWindowRect(handle, &bounds);
-						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
-						return NativeRect(
-							NativePoint(
-								(bounds.left-required.left),
-								(bounds.top-required.top)
-								),
-							NativeSize(
-								(bounds.right-bounds.left)-(required.right-required.left),
-								(bounds.bottom-bounds.top)-(required.bottom-required.top)
-								)
-							);
-					}
-				}
-
-				WString GetTitle()override
-				{
-					return title;
-				}
-
-				void SetTitle(WString _title)override
-				{
-					title=_title;
-					SetWindowText(handle, title.Buffer());
-				}
-
-				INativeCursor* GetWindowCursor()override
-				{
-					return cursor;
-				}
-
-				void SetWindowCursor(INativeCursor* _cursor)override
-				{
-					WindowsCursor* newCursor=dynamic_cast<WindowsCursor*>(_cursor);
-					if(newCursor && cursor!=newCursor)
-					{
-						cursor=newCursor;
-						if(mouseHoving && IsVisible())
-						{
-							SetCursor(cursor->GetCursorHandle());
-						}
-					}
-				}
-				
-				NativePoint GetCaretPoint()override
-				{
-					return caretPoint;
-				}
-
-				void SetCaretPoint(NativePoint point)override
-				{
-					caretPoint=point;
-					UpdateCompositionForContent();
-				}
-
-				INativeWindow* GetParent()override
-				{
-					return parentWindow;
-				}
-
-				void SetParent(INativeWindow* parent)override
-				{
-					if (parentWindow)
-					{
-						parentWindow->childWindows.Remove(this);
-					}
-
-					if ((parentWindow = dynamic_cast<WindowsForm*>(parent)))
-					{
-						parentWindow->childWindows.Add(this);
-						// ::SetParent(handle, parentWindow->handle);
-						SetWindowLongPtr(handle, GWLP_HWNDPARENT, (LONG_PTR)parentWindow->handle);
-					}
-					else
-					{
-						// ::SetParent(handle, NULL);
-						SetWindowLongPtr(handle, GWLP_HWNDPARENT, NULL);
-					}
-				}
-
-				WindowMode GetWindowMode()override
-				{
-					return windowMode;
-				}
-
-				void EnableCustomFrameMode()override
-				{
-					customFrameMode=true;
-				}
-
-				void DisableCustomFrameMode()override
-				{
-					customFrameMode=false;
-				}
-
-				bool IsCustomFrameModeEnabled()override
-				{
-					return customFrameMode;
-				}
-
-				NativeMargin GetCustomFramePadding()override
-				{
-					if (GetSizeBox() || GetTitleBar())
-					{
-						return customFramePadding;
-					}
-					else
-					{
-						return NativeMargin(0, 0, 0, 0);
-					}
-				}
-
-				Ptr<GuiImageData> GetIcon()override
-				{
-					if (replacementIcon && replacementIcon->GetImage())
-					{
-						return replacementIcon;
-					}
-					else
-					{
-						if (!defaultIcon)
-						{
-							auto icon = CreateWindowDefaultIcon(16);
-							if (icon == NULL)
-							{
-								icon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 16, 16, LR_SHARED);
-							}
-							if (icon != NULL)
-							{
-								defaultIcon = Ptr(new GuiImageData(CreateImageFromHICON(icon), 0));
-							}
-						}
-						return defaultIcon;
-					}
-				}
-
-				static double GetSizeScore(vint size)
-				{
-					if (size > 32)
-					{
-						return 32.0 / size;
-					}
-					else if (size < 32)
-					{
-						return size / 32.0 - 1;
-					}
-					else
-					{
-						return 1.0;
-					}
-				}
-
-				static vint GetBppFromFormat(const WICPixelFormatGUID& format)
-				{
-					if (format == GUID_WICPixelFormat1bppIndexed)	return 1;
-					if (format == GUID_WICPixelFormat2bppIndexed)	return 2;
-					if (format == GUID_WICPixelFormat4bppIndexed)	return 4;
-					if (format == GUID_WICPixelFormat8bppIndexed)	return 8;
-					if (format == GUID_WICPixelFormatBlackWhite)	return 1;
-					if (format == GUID_WICPixelFormat2bppGray)		return 2;
-					if (format == GUID_WICPixelFormat4bppGray)		return 4;
-					if (format == GUID_WICPixelFormat8bppGray)		return 8;
-					if (format == GUID_WICPixelFormat8bppAlpha)		return 8;
-					if (format == GUID_WICPixelFormat16bppBGR555)	return 16;
-					if (format == GUID_WICPixelFormat16bppBGR565)	return 16;
-					if (format == GUID_WICPixelFormat16bppBGRA5551)	return 16;
-					if (format == GUID_WICPixelFormat16bppGray)		return 16;
-					if (format == GUID_WICPixelFormat24bppBGR)		return 24;
-					if (format == GUID_WICPixelFormat24bppRGB)		return 24;
-					if (format == GUID_WICPixelFormat32bppBGR)		return 32;
-					if (format == GUID_WICPixelFormat32bppBGRA)		return 32;
-					if (format == GUID_WICPixelFormat32bppPBGRA)	return 32;
-					return -1;
-				}
-
-				void SetIcon(Ptr<GuiImageData> icon)override
-				{
-					replacementIcon = icon;
-					HICON newReplacementHIcon = NULL;
-					if (replacementIcon && replacementIcon->GetImage())
-					{
-						stream::MemoryStream memoryStream;
-
-						replacementIcon->GetImage()->SaveToStream(memoryStream, INativeImage::Icon);
-						if (memoryStream.Size() > 0)
-						{
-							newReplacementHIcon = CreateIconFromResource((PBYTE)memoryStream.GetInternalBuffer(), (DWORD)memoryStream.Size(), TRUE, 0x00030000);
-							if (newReplacementHIcon != NULL)
-							{
-								goto SKIP;
-							}
-						}
-
-						INativeImageFrame* selectedFrame = nullptr;
-						for (vint i = 0; i < replacementIcon->GetImage()->GetFrameCount(); i++)
-						{
-							auto frame = replacementIcon->GetImage()->GetFrame(i);
-							auto size = frame->GetSize();
-							if (size.x == size.y)
-							{
-								auto bitmap = GetWICBitmap(frame);
-								WICPixelFormatGUID format;
-								HRESULT hr = bitmap->GetPixelFormat(&format);
-								if (hr != S_OK) continue;
-
-								if (!selectedFrame)
-								{
-									selectedFrame = frame;
-								}
-								else
-								{
-									auto score = GetSizeScore(size.x);
-									auto scoreSelected = GetSizeScore(selectedFrame->GetSize().x);
-									if (score > scoreSelected)
-									{
-										selectedFrame = frame;
-									}
-									else if (score == scoreSelected)
-									{
-										WICPixelFormatGUID selectedFormat;
-										auto selectedBitmap = GetWICBitmap(selectedFrame);
-										hr = selectedBitmap->GetPixelFormat(&selectedFormat);
-
-										auto bpp = GetBppFromFormat(format);
-										auto bppSelected = GetBppFromFormat(selectedFormat);
-										if (bpp > bppSelected)
-										{
-											selectedFrame = frame;
-										}
-									}
-								}
-							}
-						}
-
-						if (selectedFrame)
-						{
-							bool succeeded = false;
-							WindowsBitmapImage newBitmap(replacementIcon->GetImage()->GetImageService(), GetWICBitmap(selectedFrame), replacementIcon->GetImage()->GetFormat());
-							newBitmap.SaveToStream(memoryStream, INativeImage::Bmp);
-							if (memoryStream.Size() > 0)
-							{
-								auto pBuffer = (char*)memoryStream.GetInternalBuffer();
-								tagBITMAPFILEHEADER bfh = *(tagBITMAPFILEHEADER*)pBuffer;
-								tagBITMAPINFOHEADER bih = *(tagBITMAPINFOHEADER*)(pBuffer + sizeof(tagBITMAPFILEHEADER));
-								RGBQUAD rgb = *(RGBQUAD*)(pBuffer + sizeof(tagBITMAPFILEHEADER) + sizeof(tagBITMAPINFOHEADER));
-
-								BITMAPINFO bi;
-								bi.bmiColors[0] = rgb;
-								bi.bmiHeader = bih;
-
-								char* pPixels = (pBuffer + bfh.bfOffBits);
-								char* ppvBits;
-								auto hBitmap = CreateDIBSection(NULL, &bi, DIB_RGB_COLORS, (void**)&ppvBits, NULL, 0);
-								if (hBitmap != NULL)
-								{
-									SetDIBits(NULL, hBitmap, 0, bih.biHeight, pPixels, &bi, DIB_RGB_COLORS);
-									auto himl = ImageList_Create(32, 32, ILC_COLOR32, 1, 1);
-									if (himl != NULL)
-									{
-										int addResult = ImageList_Add(himl, hBitmap, NULL);
-										newReplacementHIcon = ImageList_GetIcon(himl, 0, ILD_NORMAL);
-										ImageList_Destroy(himl);
-									}
-									DeleteObject(hBitmap);
-								}
-							}
-						}
-					}
-
-				SKIP:
-					{
-						HICON hAppIcon = newReplacementHIcon;
-						if (hAppIcon == NULL) hAppIcon = CreateWindowDefaultIcon();
-						if (hAppIcon == NULL) hAppIcon = (HICON)LoadImage(NULL, IDI_APPLICATION, IMAGE_ICON, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
-						bool isVisible = IsVisible();
-						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)FALSE, NULL);
-						SendMessage(handle, WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
-						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
-						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)TRUE, NULL);
-
-						if (this == GetCurrentController()->WindowService()->GetMainWindow())
-						{
-							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
-							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
-						}
-					}
-
-					if (replacementHIcon != NULL)
-					{
-						DestroyIcon(replacementHIcon);
-					}
-					replacementHIcon = newReplacementHIcon;
-				}
-
-				WindowSizeState GetSizeState()override
-				{
-					if(IsIconic(handle))
-					{
-						return INativeWindow::Minimized;
-					}
-					else if(IsZoomed(handle))
-					{
-						return INativeWindow::Maximized;
-					}
-					else
-					{
-						return INativeWindow::Restored;
-					}
-				}
-
-				void Show()override
-				{
-					ShowWindow(handle, SW_SHOWNORMAL);
-				}
-
-				void ShowDeactivated()override
-				{
-					ShowWindow(handle, SW_SHOWNOACTIVATE);
-					SetWindowPos(handle,HWND_TOP,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
-				}
-
-				void ShowRestored()override
-				{
-					ShowWindow(handle, SW_RESTORE);
-				}
-
-				void ShowMaximized()override
-				{
-					ShowWindow(handle, SW_SHOWMAXIMIZED);
-				}
-
-				void ShowMinimized()override
-				{
-					ShowWindow(handle, SW_SHOWMINIMIZED);
-				}
-
-				void Hide(bool closeWindow)override
-				{
-					if (closeWindow)
-					{
-						PostMessage(handle, WM_CLOSE, NULL, NULL);
-					}
-					else
-					{
-						ShowWindow(handle, SW_HIDE);
-					}
-				}
-
-				bool IsVisible()override
-				{
-					return IsWindowVisible(handle)!=0;
-				}
-
-				void Enable()override
-				{
-					EnableWindow(handle, TRUE);
-				}
-
-				void Disable()override
-				{
-					EnableWindow(handle, FALSE);
-				}
-
-				bool IsEnabled()override
-				{
-					return IsWindowEnabled(handle)!=0;
-				}
-
-				void SetFocus()override
-				{
-					::SetFocus(handle);
-				}
-
-				bool IsFocused()override
-				{
-					return GetFocus()==handle;
-				}
-
-				void SetActivate()override
-				{
-					SetActiveWindow(handle);
-				}
-
-				bool IsActivated()override
-				{
-					return GetActiveWindow()==handle;
-				}
-
-				void ShowInTaskBar()override
-				{
-					SetExStyle(WS_EX_APPWINDOW, true);
-				}
-
-				void HideInTaskBar()override
-				{
-					SetExStyle(WS_EX_APPWINDOW, false);
-				}
-
-				bool IsAppearedInTaskBar()override
-				{
-					return GetExStyle(WS_EX_APPWINDOW);
-				}
-
-				void EnableActivate()override
-				{
-					enabledActivate = true;
-					SetExStyle(WS_EX_NOACTIVATE, false);
-				}
-
-				void DisableActivate()override
-				{
-					enabledActivate = false;
-					SetExStyle(WS_EX_NOACTIVATE, true);
-				}
-
-				bool IsEnabledActivate()override
-				{
-					return enabledActivate;
-				}
-
-				bool RequireCapture()override
-				{
-					SetCapture(handle);
-					return true;
-				}
-
-				bool ReleaseCapture()override
-				{
-					::ReleaseCapture();
-					return true;
-				}
-
-				bool IsCapturing()override
-				{
-					return GetCapture()==handle;
-				}
-
-				bool GetMaximizedBox()override
-				{
-					return GetStyle(WS_MAXIMIZEBOX);
-				}
-
-				void SetMaximizedBox(bool visible)override
-				{
-					SetStyle(WS_MAXIMIZEBOX, visible);
-				}
-
-				bool GetMinimizedBox()override
-				{
-					return GetStyle(WS_MINIMIZEBOX);
-				}
-
-				void SetMinimizedBox(bool visible)override
-				{
-					SetStyle(WS_MINIMIZEBOX, visible);
-				}
-
-				bool GetBorder()override
-				{
-					return GetStyle(WS_BORDER);
-				}
-
-				void SetBorder(bool visible)override
-				{
-					SetStyle(WS_BORDER, visible);
-				}
-
-				bool GetSizeBox()override
-				{
-					return GetStyle(WS_SIZEBOX);
-				}
-
-				void SetSizeBox(bool visible)override
-				{
-					SetStyle(WS_SIZEBOX, visible);
-				}
-
-				bool GetIconVisible()override
-				{
-					return GetStyle(WS_SYSMENU);
-				}
-
-				void SetIconVisible(bool visible)override
-				{
-					SetStyle(WS_SYSMENU, visible);
-				}
-
-				bool GetTitleBar()override
-				{
-					return GetStyle(WS_CAPTION);
-				}
-
-				void SetTitleBar(bool visible)override
-				{
-					SetStyle(WS_CAPTION, visible);
-				}
-
-				bool GetTopMost()override
-				{
-					return GetExStyle(WS_EX_TOPMOST);
-				}
-
-				void SetTopMost(bool topmost)override
-				{
-					SetWindowPos(handle, (topmost ? HWND_TOPMOST : HWND_NOTOPMOST), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-				}
-
-				void SupressAlt()override
-				{
-					if (!supressingAlt)
-					{
-						supressingAlt = true;
-						PostMessage(handle, WM_SYSKEYDOWN, VK_MENU, 0);
-						PostMessage(handle, WM_SYSKEYUP, VK_MENU, 0);
-					}
-				}
-
-				bool InstallListener(INativeWindowListener* listener)override
-				{
-					if(listeners.Contains(listener))
-					{
-						return false;
-					}
-					else
-					{
-						listeners.Add(listener);
-						return true;
-					}
-				}
-
-				bool UninstallListener(INativeWindowListener* listener)override
-				{
-					if(listeners.Contains(listener))
-					{
-						listeners.Remove(listener);
-						return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
-
-				void RedrawContent()override
-				{
-					if(graphicsHandler)
-					{
-						SendMessage(this->handle, WM_PAINT, NULL, NULL);
-					}
-				}
-			};
-
-/***********************************************************************
-WindowsController
-***********************************************************************/
-
-			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-			class WindowsController : public Object, public virtual INativeController, public virtual INativeWindowService
-			{
-			protected:
-				WinClass							windowClass;
-				WinClass							godClass;
-				HINSTANCE							hInstance;
-				HWND								godWindow;
-				Dictionary<HWND, WindowsForm*>		windows;
-				INativeWindow*						mainWindow;
-				HWND								mainWindowHandle;
-
-				WindowsCallbackService				callbackService;
-				WindowsResourceService				resourceService;
-				WindowsAsyncService					asyncService;
-				WindowsClipboardService				clipboardService;
-				WindowsImageService					imageService;
-				WindowsScreenService				screenService;
-				WindowsInputService					inputService;
-				WindowsDialogService				dialogService;
-
-			public:
-				WindowsController(HINSTANCE _hInstance)
-					:hInstance(_hInstance)
-					,windowClass(L"VczhWindow", false, false, WndProc, _hInstance)
-					,godClass(L"GodWindow", false, false, GodProc, _hInstance)
-					,mainWindow(0)
-					,mainWindowHandle(0)
-					,screenService(&GetHWNDFromNativeWindowHandle)
-					,dialogService(&GetHWNDFromNativeWindowHandle)
-				{
-					godWindow=CreateWindowEx(WS_EX_CONTROLPARENT, godClass.GetName().Buffer(), L"GodWindow", WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, NULL, NULL, hInstance, NULL);
-					clipboardService.SetOwnerHandle(godWindow);
-					inputService.SetOwnerHandle(godWindow);
-				}
-
-				~WindowsController()
-				{
-					inputService.StopTimer();
-					clipboardService.SetOwnerHandle(NULL);
-					DestroyWindow(godWindow);
-				}
-
-				WindowsForm* GetWindowsFormFromHandle(HWND hwnd)
-				{
-					vint index = windows.Keys().IndexOf(hwnd);
-					if (index == -1)return 0;
-					return windows.Values()[index];
-				}
-
-				void GetAllCreatedWindows(collections::List<IWindowsForm*>& createdWindows, bool rootWindowOnly)
-				{
-					if (rootWindowOnly)
-					{
-						for (auto window : windows.Values())
-						{
-							if (window->GetWindowMode() == INativeWindow::Normal)
-							{
-								createdWindows.Add(window);
-							}
-						}
-					}
-					else
-					{
-						CopyFrom(createdWindows, windows.Values());
-					}
-				}
-
-				bool HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
-				{
-					bool skipDefaultProcedure=false;
-					{
-						vint index = windows.Keys().IndexOf(hwnd);
-						if (index != -1)
-						{
-							WindowsForm* window = windows.Values().Get(index);
-							skipDefaultProcedure = window->HandleMessage(hwnd, uMsg, wParam, lParam, result);
-							switch (uMsg)
-							{
-							case WM_CLOSE:
-								if (!skipDefaultProcedure)
-								{
-									ShowWindow(window->GetWindowHandle(), SW_HIDE);
-									if (window != mainWindow)
-									{
-										skipDefaultProcedure = true;
-									}
-								}
-								break;
-							case WM_DESTROY:
-								DestroyNativeWindow(window);
-								break;
-							}
-						}
-					}
-					{
-						if (hwnd == mainWindowHandle && uMsg == WM_DESTROY)
-						{
-							for (auto window : windows.Values())
-							{
-								if (window->IsVisible())
-								{
-									window->Hide(true);
-								}
-							}
-							List<WindowsForm*> normalWindows;
-							CopyFrom(
-								normalWindows,
-								From(windows.Values())
-									.Where([](WindowsForm* window)
-									{
-										return window->GetWindowMode() == INativeWindow::Normal;
-									})
-								);
-							for (auto window : normalWindows)
-							{
-								DestroyNativeWindow(window);
-							}
-							for (vint i = windows.Count() - 1; i >= 0; i--)
-							{
-								auto window = windows.Values()[i];
-								DestroyNativeWindow(window);
-							}
-							
-							PostQuitMessage(0);
-						}
-					}
-					return skipDefaultProcedure;
-				}
-
-				//=======================================================================
-
-				INativeWindow* CreateNativeWindow(INativeWindow::WindowMode windowMode)override
-				{
-					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
-					windows.Add(window->GetWindowHandle(), window);
-					callbackService.InvokeNativeWindowCreated(window);
-					window->SetWindowCursor(resourceService.GetDefaultSystemCursor());
-					return window;
-				}
-
-				void DestroyNativeWindow(INativeWindow* window)override
-				{
-					WindowsForm* windowsForm=dynamic_cast<WindowsForm*>(window);
-					windowsForm->InvokeDestroying();
-					if(windowsForm!=0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
-					{
-						callbackService.InvokeNativeWindowDestroyed(window);
-						windows.Remove(windowsForm->GetWindowHandle());
-						delete windowsForm;
-					}
-				}
-
-				INativeWindow* GetMainWindow()override
-				{
-					return mainWindow;
-				}
-
-				void Run(INativeWindow* window)override
-				{
-					mainWindow=window;
-					mainWindowHandle=GetWindowsForm(window)->GetWindowHandle();
-					mainWindow->Show();
-					MSG message;
-					while(GetMessage(&message, NULL, 0, 0))
-					{
-						TranslateMessage(&message);
-						DispatchMessage(&message);
-						asyncService.ExecuteAsyncTasks();
-					}
-				}
-
-				INativeWindow* GetWindow(NativePoint location)override
-				{
-					POINT p;
-					p.x=(int)location.x.value;
-					p.y=(int)location.y.value;
-					HWND handle=WindowFromPoint(p);
-					vint index=windows.Keys().IndexOf(handle);
-					if(index==-1)
-					{
-						return 0;
-					}
-					else
-					{
-						return windows.Values().Get(index);
-					}
-				}
-
-				//=======================================================================
-
-				INativeCallbackService* CallbackService()
-				{
-					return &callbackService;
-				}
-
-				INativeResourceService* ResourceService()
-				{
-					return &resourceService;
-				}
-				
-				INativeAsyncService* AsyncService()
-				{
-					return &asyncService;
-				}
-
-				INativeClipboardService* ClipboardService()
-				{
-					return &clipboardService;
-				}
-
-				INativeImageService* ImageService()
-				{
-					return &imageService;
-				}
-
-				INativeScreenService* ScreenService()
-				{
-					return &screenService;
-				}
-
-				INativeWindowService* WindowService()
-				{
-					return this;
-				}
-
-				INativeInputService* InputService()
-				{
-					return &inputService;
-				}
-
-				INativeDialogService* DialogService()
-				{
-					return &dialogService;
-				}
-
-				WString GetExecutablePath()
-				{
-					Array<wchar_t> buffer(65536);
-					GetModuleFileName(NULL, &buffer[0], (DWORD)buffer.Count());
-					return &buffer[0];
-				}
-
-				//=======================================================================
-
-				void InvokeGlobalTimer()
-				{
-					callbackService.InvokeGlobalTimer();
-				}
-
-				void InvokeClipboardUpdated()
-				{
-					callbackService.InvokeClipboardUpdated();
-				}
-			};
-
-/***********************************************************************
-Windows Procedure
-***********************************************************************/
-
-			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
-				{
-					LRESULT result=0;
-					if(controller->HandleMessage(hwnd, uMsg, wParam, lParam, result))
-					{
-						return result;
-					}
-				}
-				return DefWindowProc(hwnd, uMsg, wParam, lParam);
-			}
-
-			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
-				{
-					switch(uMsg)
-					{
-					case WM_TIMER:
-						controller->InvokeGlobalTimer();
-						break;
-					case WM_CLIPBOARDUPDATE:
-						controller->InvokeClipboardUpdated();
-						break;
-					}
-				}
-				return DefWindowProc(hwnd, uMsg, wParam, lParam);
-			}
-
-/***********************************************************************
-Windows Platform Native Controller
-***********************************************************************/
-
-			INativeController* CreateWindowsNativeController(HINSTANCE hInstance)
-			{
-				return new WindowsController(hInstance);
-			}
-
-			IWindowsForm* GetWindowsFormFromHandle(HWND hwnd)
-			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
-				{
-					return controller->GetWindowsFormFromHandle(hwnd);
-				}
-				return nullptr;
-			}
-
-			IWindowsForm* GetWindowsForm(INativeWindow* window)
-			{
-				return dynamic_cast<WindowsForm*>(window);
-			}
-
-			void GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly)
-			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
-				{
-					controller->GetAllCreatedWindows(windows, rootWindowOnly);
-				}
-			}
-
-			void DestroyWindowsNativeController(INativeController* controller)
-			{
-				delete controller;
-			}
-
-			void EnableCrossKernelCrashing()
-			{
-				/*
-				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
-					DWORD DisableUserModeCallbackFilter = 1
-
-				"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\TestCppCodegen.exe"
-					DWORD DisableUserModeCallbackFilter = 1
-				*/
-				typedef BOOL (WINAPI *tGetPolicy)(LPDWORD lpFlags); 
-				typedef BOOL (WINAPI *tSetPolicy)(DWORD dwFlags); 
-				const DWORD EXCEPTION_SWALLOWING = 0x1;
- 
-				HMODULE kernel32 = LoadLibrary(L"kernel32.dll"); 
-				tGetPolicy pGetPolicy = (tGetPolicy)GetProcAddress(kernel32, "GetProcessUserModeExceptionPolicy"); 
-				tSetPolicy pSetPolicy = (tSetPolicy)GetProcAddress(kernel32, "SetProcessUserModeExceptionPolicy"); 
-				if (pGetPolicy && pSetPolicy) 
-				{ 
-					DWORD dwFlags; 
-					if (pGetPolicy(&dwFlags)) 
-					{ 
-						// Turn off the filter 
-						pSetPolicy(dwFlags & ~EXCEPTION_SWALLOWING);
-					} 
-				} 
-			}
-		}
-	}
-}
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\DIRECT2D\WINDIRECT2DAPPLICATION.CPP
-***********************************************************************/
-
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib, "dxguid.lib")
-#pragma comment(lib, "dwrite.lib")
-#pragma comment(lib, "d3d11.lib")
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace elements;
-
-		namespace windows
-		{
-			using namespace vl::collections;
-
-/***********************************************************************
-WindowListener
-***********************************************************************/
-
-			class Direct2DWindowsNativeWindowListener : public Object, public INativeWindowListener
-			{
-			protected:
-				ID2D1Factory*					d2dFactory;
-				INativeWindow*					window;
-				bool							rendering = false;
-				bool							movedWhileRendering = false;
-
-				virtual void					RebuildCanvas(NativeSize size) = 0;
-			public:
-				Direct2DWindowsNativeWindowListener(INativeWindow* _window, ID2D1Factory* _d2dFactory)
-					:window(_window)
-					,d2dFactory(_d2dFactory)
-				{
-				}
-
-				void Moved()override
-				{
-					if (rendering)
-					{
-						movedWhileRendering = true;
-					}
-					else
-					{
-						ResizeRenderTarget();
-					}
-				}
-
-				void ResizeRenderTarget()
-				{
-					RebuildCanvas(window->GetClientSize());
-				}
-
-				void StartRendering()
-				{
-					rendering = true;
-				}
-
-				void StopRendering()
-				{
-					rendering = false;
-				}
-
-				bool RetrieveAndResetMovedWhileRendering()
-				{
-					bool result = movedWhileRendering;
-					movedWhileRendering = false;
-					return result;
-				}
-
-				virtual ID2D1RenderTarget*		GetDirect2DRenderTarget() = 0;
-				virtual void					RecreateRenderTarget() = 0;
-				virtual bool					PresentRenderTarget() = 0;
-			};
-
-/***********************************************************************
-WindowListener 1.0
-***********************************************************************/
-
-			class Direct2DWindowsNativeWindowListener_1_0 : public Direct2DWindowsNativeWindowListener
-			{
-			protected:
-				ComPtr<ID2D1HwndRenderTarget>	d2dRenderTarget;
-				NativeSize						previousSize;
-
-				void RebuildCanvas(NativeSize size)override
-				{
-					if (size.x <= 1) size.x = 1;
-					if (size.y <= 1) size.y = 1;
-					if (!d2dRenderTarget)
-					{
-						ID2D1HwndRenderTarget* renderTarget = 0;
-						IWindowsForm* form = GetWindowsForm(window);
-						D2D1_RENDER_TARGET_PROPERTIES tp = D2D1::RenderTargetProperties();
-						{
-							UINT dpiX = 0;
-							UINT dpiY = 0;
-							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
-							tp.dpiX = (FLOAT)dpiX;
-							tp.dpiY = (FLOAT)dpiY;
-						}
-						HRESULT hr = d2dFactory->CreateHwndRenderTarget(
-							tp,
-							D2D1::HwndRenderTargetProperties(
-								form->GetWindowHandle(),
-								D2D1::SizeU((int)size.x.value, (int)size.y.value)
-							),
-							&renderTarget
-						);
-						if (!FAILED(hr))
-						{
-							d2dRenderTarget = renderTarget;
-							d2dRenderTarget->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
-						}
-					}
-					else if (previousSize != size)
-					{
-						d2dRenderTarget->Resize(D2D1::SizeU((int)size.x.value, (int)size.y.value));
-					}
-					previousSize = size;
-				}
-			public:
-				Direct2DWindowsNativeWindowListener_1_0(INativeWindow* _window, ID2D1Factory* _d2dFactory)
-					:Direct2DWindowsNativeWindowListener(_window, _d2dFactory)
-				{
-				}
-
-				ID2D1RenderTarget* GetDirect2DRenderTarget()override
-				{
-					if(!d2dRenderTarget) Moved();
-					return d2dRenderTarget.Obj();
-				}
-
-				void RecreateRenderTarget()override
-				{
-					if (d2dRenderTarget)
-					{
-						d2dRenderTarget = nullptr;
-					}
-				}
-
-				bool PresentRenderTarget()override
-				{
-					return true;
-				}
-			};
-
-/***********************************************************************
-WindowListener 1.1
-***********************************************************************/
-
-			class Direct2DWindowsNativeWindowListener_1_1 : public Direct2DWindowsNativeWindowListener
-			{
-			protected:
-				ComPtr<ID2D1Factory1>			d2dFactory1;
-				ID3D11Device*					d3d11Device;
-				ComPtr<IDXGIDevice>				dxgiDevice;
-				ComPtr<IDXGISwapChain1>			dxgiSwapChain;
-				ComPtr<ID2D1DeviceContext>		d2dDeviceContext;
-				NativeSize						previousSize;
-
-				ComPtr<IDXGIDevice> GetDXGIDevice()
-				{
-					IDXGIDevice* device = nullptr;
-					HRESULT hr = d3d11Device->QueryInterface(&device);
-					if (!SUCCEEDED(hr)) return nullptr;
-					return device;
-				}
-
-				ComPtr<IDXGISwapChain1> CreateSwapChain(IDXGIDevice* dxgiDevice)
-				{
-					ComPtr<IDXGIAdapter> dxgiAdapter;
-					{
-						IDXGIAdapter* adapter = nullptr;
-						HRESULT hr = dxgiDevice->GetAdapter(&adapter);
-						if (!SUCCEEDED(hr)) return nullptr;
-						dxgiAdapter = adapter;
-					}
-
-					ComPtr<IDXGIFactory2> dxgiFactory;
-					{
-						IDXGIFactory2* factory = nullptr;
-						HRESULT hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&factory);
-						if (!SUCCEEDED(hr)) return nullptr;
-						dxgiFactory = factory;
-					}
-
-					IWindowsForm* form = GetWindowsForm(window);
-					ComPtr<IDXGISwapChain1> dxgiSwapChain;
-					{
-						DXGI_SWAP_CHAIN_DESC1 props = {};
-						props.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-						props.SampleDesc.Count = 1;
-						props.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-						props.BufferCount = 2;
-
-						IDXGISwapChain1* swapChain = nullptr;
-						HRESULT hr = dxgiFactory->CreateSwapChainForHwnd(d3d11Device, form->GetWindowHandle(), &props, nullptr, nullptr, &swapChain);
-						if (!SUCCEEDED(hr)) return nullptr;
-						dxgiSwapChain = swapChain;
-					}
-
-					return dxgiSwapChain;
-				}
-
-				ComPtr<ID2D1DeviceContext> CreateDeviceContext(IDXGIDevice* dxgiDevice)
-				{
-					ComPtr<ID2D1Device> d2d1Device;
-					{
-						ID2D1Device* device = nullptr;
-						HRESULT hr = d2dFactory1->CreateDevice(dxgiDevice, &device);
-						if (!SUCCEEDED(hr)) return nullptr;
-						d2d1Device = device;
-					}
-
-					ComPtr<ID2D1DeviceContext> d2dDeviceContext;
-					{
-						ID2D1DeviceContext* deviceContext = nullptr;
-						HRESULT hr = d2d1Device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &deviceContext);
-						if (!SUCCEEDED(hr)) return nullptr;
-						d2dDeviceContext = deviceContext;
-					}
-
-					return d2dDeviceContext;
-				}
-
-				ComPtr<ID2D1Bitmap1> CreateBitmap(IDXGISwapChain1* swapChain, ID2D1DeviceContext* deviceContext)
-				{
-					ComPtr<IDXGISurface> dxgiSurface;
-					{
-						IDXGISurface* surface = nullptr;
-						HRESULT hr = swapChain->GetBuffer(0, __uuidof(IDXGISurface), (void**)&surface);
-						if (!SUCCEEDED(hr))return nullptr;
-						dxgiSurface = surface;
-					}
-
-					ComPtr<ID2D1Bitmap1> d2dBitmap;
-					{
-						auto props = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW, D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE));
-
-						ID2D1Bitmap1* bitmap = nullptr;
-						HRESULT hr = deviceContext->CreateBitmapFromDxgiSurface(dxgiSurface.Obj(), props, &bitmap);
-						if (!SUCCEEDED(hr)) return nullptr;
-						d2dBitmap = bitmap;
-					}
-
-					return d2dBitmap;
-				}
-
-				void RebuildCanvas(NativeSize size)override
-				{
-					if (size.x <= 1) size.x = 1;
-					if (size.y <= 1) size.y = 1;
-
-					if(!d2dDeviceContext)
-					{
-						if (!dxgiDevice)
-						{
-							dxgiDevice = GetDXGIDevice();
-						}
-
-						if (!dxgiSwapChain)
-						{
-							dxgiSwapChain = CreateSwapChain(dxgiDevice.Obj());
-						}
-
-						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
-						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
-						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
-						IWindowsForm* form = GetWindowsForm(window);
-						{
-							UINT dpiX = 0;
-							UINT dpiY = 0;
-							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
-							d2dDeviceContext->SetDpi((FLOAT)dpiX, (FLOAT)dpiY);
-						}
-					}
-					else if(previousSize!=size)
-					{
-						d2dDeviceContext->SetTarget(nullptr);
-						HRESULT hr = dxgiSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-						if (SUCCEEDED(hr))
-						{
-							auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
-							d2dDeviceContext->SetTarget(d2dBitmap.Obj());
-						}
-					}
-					previousSize=size;
-				}
-			public:
-				Direct2DWindowsNativeWindowListener_1_1(INativeWindow* _window, ComPtr<ID2D1Factory1> _d2dFactory1, ID3D11Device* _d3d11Device)
-					:Direct2DWindowsNativeWindowListener(_window, _d2dFactory1.Obj())
-					,d2dFactory1(_d2dFactory1)
-					,d3d11Device(_d3d11Device)
-				{
-				}
-
-				ID2D1RenderTarget* GetDirect2DRenderTarget()override
-				{
-					if(!d2dDeviceContext) Moved();
-					return d2dDeviceContext.Obj();
-				}
-
-				void RecreateRenderTarget()override
-				{
-					if (d2dDeviceContext)
-					{
-						d2dDeviceContext = nullptr;
-						dxgiSwapChain = nullptr;
-					}
-				}
-
-				bool PresentRenderTarget()override
-				{
-					if (d2dDeviceContext)
-					{
-						if (dxgiSwapChain)
-						{
-							DXGI_PRESENT_PARAMETERS parameters = {0};
-							HRESULT hr = dxgiSwapChain->Present1(1, 0, &parameters);
-							return hr == S_OK || hr == DXGI_STATUS_OCCLUDED;
-						}
-					}
-					return false;
-				}
-			};
-
-/***********************************************************************
-ControllerListener
-***********************************************************************/
-
-			class Direct2DWindowsNativeControllerListener : public Object, public INativeControllerListener
-			{
-			public:
-				Dictionary<INativeWindow*, Ptr<Direct2DWindowsNativeWindowListener>>		nativeWindowListeners;
-				ComPtr<ID2D1Factory>														d2dFactory;
-				ComPtr<IDWriteFactory>														dwrite;
-				ComPtr<ID3D11Device>														d3d11Device;
-
-				Direct2DWindowsNativeControllerListener()
-				{
-					{
-						D2D1_FACTORY_OPTIONS fo = {};
-						#ifdef _DEBUG
-						fo.debugLevel = D2D1_DEBUG_LEVEL_INFORMATION;
-						#endif
-
-						ID2D1Factory* factory=0;
-						HRESULT hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, fo, &factory);
-						if(!FAILED(hr))
-						{
-							d2dFactory=factory;
-						}
-					}
-					{
-						IDWriteFactory* factory=0;
-						HRESULT hr=DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&factory));
-						if(!FAILED(hr))
-						{
-							dwrite=factory;
-						}
-					}
-				}
-
-				~Direct2DWindowsNativeControllerListener()
-				{
-					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
-					{
-						auto window = nativeWindowListeners.Keys()[i];
-						auto listener = nativeWindowListeners.Values()[i];
-						window->UninstallListener(listener.Obj());
-					}
-				}
-
-				ComPtr<ID3D11Device> CreateD3D11Device(D3D_DRIVER_TYPE driverType)
-				{
-					UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-					#ifdef _DEBUG
-					flags |= D3D11_CREATE_DEVICE_DEBUG;
-					#endif
-
-					D3D_FEATURE_LEVEL featureLevels[] =
-					{
-						D3D_FEATURE_LEVEL_11_1,
-						D3D_FEATURE_LEVEL_11_0,
-						D3D_FEATURE_LEVEL_10_1,
-						D3D_FEATURE_LEVEL_10_0,
-						D3D_FEATURE_LEVEL_9_3,
-						D3D_FEATURE_LEVEL_9_2,
-						D3D_FEATURE_LEVEL_9_1
-					};
-
-
-					ID3D11Device* device = nullptr;
-					HRESULT hr = D3D11CreateDevice(
-						nullptr,
-						driverType,
-						nullptr,
-						flags,
-						featureLevels,
-						sizeof(featureLevels) / sizeof(*featureLevels),
-						D3D11_SDK_VERSION,
-						&device,
-						nullptr,
-						nullptr);
-					if (SUCCEEDED(hr))
-					{
-						return device;
-					}
-					else if (device)
-					{
-						device->Release();
-					}
-					return nullptr;
-				}
-
-				void NativeWindowCreated(INativeWindow* window)
-				{
-					ComPtr<ID2D1Factory1> d2dfactory1;
-					{
-						ID2D1Factory1* factory = nullptr;
-						HRESULT hr = windows::GetDirect2DFactory()->QueryInterface(&factory);
-						if (SUCCEEDED(hr))
-						{
-							d2dfactory1 = factory;
-						}
-					}
-
-					Ptr<Direct2DWindowsNativeWindowListener> listener;
-					if (d2dfactory1)
-					{
-						if (!d3d11Device)
-						{
-							d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_HARDWARE);
-							if (!d3d11Device)
-							{
-								d3d11Device = CreateD3D11Device(D3D_DRIVER_TYPE_WARP);
-							}
-						}
-#if _DEBUG
-						CHECK_ERROR(d3d11Device,
-							L"Direct2DWindowsNativeControllerListener::NativeWindowCreated(INativeWindow*)#"
-							L"Failed to create Direct3D 11 Device. "
-							L"If you are running in Debug mode on Windows 10, please ensure the optional feature [Graphics Tools] is correctly installed. "
-							L"This error will be skipped in Release mode and GacUI will fallback to use Direct2D 1.0, but you still need to check your Windows SDK Installation."
-							);
-#endif
-					}
-
-					if (d2dfactory1 && d3d11Device)
-					{
-						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_1(window, d2dfactory1, d3d11Device.Obj()));
-					}
-					else
-					{
-						listener = Ptr(new Direct2DWindowsNativeWindowListener_1_0(window, d2dFactory.Obj()));
-					}
-					window->InstallListener(listener.Obj());
-					nativeWindowListeners.Add(window, listener);
-				}
-
-				void NativeWindowDestroying(INativeWindow* window)
-				{
-					Ptr<Direct2DWindowsNativeWindowListener> listener=nativeWindowListeners[window];
-					nativeWindowListeners.Remove(window);
-					window->UninstallListener(listener.Obj());
-				}
-			};
-
-			Direct2DWindowsNativeControllerListener* direct2DListener=0;
-
-			ID2D1Factory* GetDirect2DFactory()
-			{
-				return direct2DListener->d2dFactory.Obj();
-			}
-
-			IDWriteFactory* GetDirectWriteFactory()
-			{
-				return direct2DListener->dwrite.Obj();
-			}
-
-			ID3D11Device* GetD3D11Device()
-			{
-				return direct2DListener->d3d11Device.Obj();
-			}
-		}
-
-		namespace elements_windows_d2d
-		{
-/***********************************************************************
-OS Supporting
-***********************************************************************/
-
-			class WinDirect2DApplicationDirect2DObjectProvider : public IWindowsDirect2DObjectProvider
-			{
-			protected:
-
-				windows::Direct2DWindowsNativeWindowListener* GetNativeWindowListener(INativeWindow* window)
-				{
-					vint index = windows::direct2DListener->nativeWindowListeners.Keys().IndexOf(window);
-					return index == -1
-						? nullptr
-						: windows::direct2DListener->nativeWindowListeners.Values().Get(index).Obj();
-				}
-
-			public:
-				void RecreateRenderTarget(INativeWindow* window)override
-				{
-					if (auto listener = GetNativeWindowListener(window))
-					{
-						return listener->RecreateRenderTarget();
-					}
-				}
-
-				void ResizeRenderTarget(INativeWindow* window)override
-				{
-					if (auto listener = GetNativeWindowListener(window))
-					{
-						return listener->ResizeRenderTarget();
-					}
-				}
-
-				ID2D1RenderTarget* GetNativeWindowDirect2DRenderTarget(INativeWindow* window)override
-				{
-					if (auto listener = GetNativeWindowListener(window))
-					{
-						return listener->GetDirect2DRenderTarget();
-					}
-					return nullptr;
-				}
-
-				void StartRendering(INativeWindow* window)override
-				{
-					if (auto listener = GetNativeWindowListener(window))
-					{
-						listener->StartRendering();
-						if (auto renderTarget = listener->GetDirect2DRenderTarget())
-						{
-							renderTarget->BeginDraw();
-							renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-						}
-					}
-				}
-
-				RenderTargetFailure StopRenderingAndPresent(INativeWindow* window)override
-				{
-					if (auto listener = GetNativeWindowListener(window))
-					{
-						listener->StopRendering();
-						bool moved = listener->RetrieveAndResetMovedWhileRendering();
-
-						if (auto renderTarget = listener->GetDirect2DRenderTarget())
-						{
-							HRESULT hr = renderTarget->EndDraw();
-							if (hr == S_OK)
-							{
-								if (moved)
-								{
-									return RenderTargetFailure::ResizeWhileRendering;
-								}
-								else if (listener->PresentRenderTarget())
-								{
-									return RenderTargetFailure::None;
-								}
-							}
-						}
-					}
-					return RenderTargetFailure::LostDevice;
-				}
-
-				ID2D1Factory* GetDirect2DFactory()override
-				{
-					return vl::presentation::windows::GetDirect2DFactory();
-				}
-
-				IDWriteFactory* GetDirectWriteFactory()override
-				{
-					return vl::presentation::windows::GetDirectWriteFactory();
-				}
-
-				IWindowsDirect2DRenderTarget* GetBindedRenderTarget(INativeWindow* window)override
-				{
-					auto windowsForm = vl::presentation::windows::GetWindowsForm(window);
-					auto graphicsHandler = windowsForm->GetGraphicsHandler();
-					return dynamic_cast<IWindowsDirect2DRenderTarget*>(graphicsHandler);
-				}
-
-				void SetBindedRenderTarget(INativeWindow* window, IWindowsDirect2DRenderTarget* renderTarget)override
-				{
-					vl::presentation::windows::GetWindowsForm(window)->SetGraphicsHandler(renderTarget);
-				}
-
-				IWICImagingFactory* GetWICImagingFactory()override
-				{
-					return vl::presentation::windows::GetWICImagingFactory();
-				}
-
-				IWICBitmap* GetWICBitmap(INativeImageFrame* frame)override
-				{
-					return vl::presentation::windows::GetWICBitmap(frame);
-				}
-			};
-		}
-	}
-}
-
-using namespace vl;
-using namespace vl::presentation;
-using namespace vl::presentation::windows;
-using namespace vl::presentation::elements_windows_d2d;
-
-int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)())
-{
-	EnableCrossKernelCrashing();
-	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
-	SetCurrentController(controller);
-	{
-		// install listener
-		Direct2DWindowsNativeControllerListener listener;
-		controller->CallbackService()->InstallListener(&listener);
-		direct2DListener=&listener;
-		// main
-		RendererMain();
-		// uninstall listener
-		direct2DListener=0;
-		controller->CallbackService()->UninstallListener(&listener);
-	}
-	// destroy controller
-	DestroyWindowsNativeController(controller);
-	return 0;
-}
-
-int SetupWindowsDirect2DRenderer()
-{
-	InitDpiAwareness(true);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
-	SetWindowsDirect2DObjectProvider(&objectProvider);
-	return WinMainDirect2D(hInstance, &RendererMainDirect2D);
-}
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\GDI\WINGDI.CPP
-***********************************************************************/
-
-#pragma comment(lib, "Msimg32.lib")
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-
-/*********************************************************************************************************
-WinRegion
-*********************************************************************************************************/
-
-		bool IsEqual(WinRegion::Ptr Region1, WinRegion::Ptr Region2)
-		{
-			return EqualRgn(Region1->GetHandle(), Region2->GetHandle())!=0;
-		}
-
-		WinRegion::WinRegion(vint Left, vint Top, vint Right, vint Bottom, bool Rectangle)
-		{
-			if(Rectangle)
-			{
-				FHandle=CreateRectRgn((int)Left, (int)Top, (int)Right, (int)Bottom);
-			}
-			else
-			{
-				FHandle=CreateEllipticRgn((int)Left, (int)Top, (int)Right, (int)Bottom);
-			}
-		}
-
-		WinRegion::WinRegion(RECT Rect, bool Rectangle)
-		{
-			if(Rectangle)
-			{
-				FHandle=CreateRectRgnIndirect(&Rect);
-			}
-			else
-			{
-				FHandle=CreateEllipticRgnIndirect(&Rect);
-			}
-		}
-
-		WinRegion::WinRegion(vint Left, vint Top, vint Right, vint Bottom, vint EllipseWidth, vint EllipseHeight)
-		{
-			FHandle=CreateRoundRectRgn((int)Left, (int)Top, (int)Right, (int)Bottom, (int)EllipseWidth, (int)EllipseHeight);
-		}
-
-		WinRegion::WinRegion(POINT* Points, vint Count, bool Alternate)
-		{
-			FHandle=CreatePolygonRgn(Points, (int)Count, Alternate?ALTERNATE:WINDING);
-		}
-
-		WinRegion::WinRegion(WinRegion::Ptr Region)
-		{
-			FHandle=CreateRectRgn(0, 0, 1, 1);
-			CombineRgn(FHandle, Region->GetHandle(), Region->GetHandle(), RGN_COPY);
-		}
-
-		WinRegion::WinRegion(WinRegion::Ptr Region1, WinRegion::Ptr Region2, vint CombineMode)
-		{
-			FHandle=CreateRectRgn(0, 0, 1, 1);
-			CombineRgn(FHandle, Region1->GetHandle(), Region2->GetHandle(), (int)CombineMode);
-		}
-
-		WinRegion::WinRegion(HRGN RegionHandle)
-		{
-			FHandle=RegionHandle;
-		}
-
-		WinRegion::~WinRegion()
-		{
-			DeleteObject(FHandle);
-		}
-
-		HRGN WinRegion::GetHandle()
-		{
-			return FHandle;
-		}
-
-		bool WinRegion::ContainPoint(POINT Point)
-		{
-			return PtInRegion(FHandle, Point.x, Point.y)!=0;
-		}
-
-		bool WinRegion::ContainRect(RECT Rect)
-		{
-			return RectInRegion(FHandle, &Rect)!=0;
-		}
-
-		RECT WinRegion::GetBoundRect()
-		{
-			RECT Rect={0, 0, 0, 0};
-			GetRgnBox(FHandle, &Rect);
-			return Rect;
-		}
-
-		void WinRegion::Move(vint OffsetX, vint OffsetY)
-		{
-			OffsetRgn(FHandle, (int)OffsetX, (int)OffsetY);
-		}
-
-/*********************************************************************************************************
-WinTransform
-*********************************************************************************************************/
-	
-		WinTransform::WinTransform(XFORM Transform)
-		{
-			FTransform=Transform;
-		}
-
-		WinTransform::WinTransform(const WinTransform& Transform)
-		{
-			FTransform=Transform.FTransform;
-		}
-
-		WinTransform& WinTransform::operator=(const WinTransform& Transform)
-		{
-			FTransform=Transform.FTransform;
-			return *this;
-		}
-
-		WinTransform WinTransform::operator*(const WinTransform& Transform)
-		{
-			XFORM Result;
-			CombineTransform(&Result, GetHandle(), Transform.GetHandle());
-			return Result;
-		}
-
-		const XFORM* WinTransform::GetHandle()const
-		{
-			return &FTransform;
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		WinTransform WinTransform::Translate(float OffsetX, float OffsetY)
-		{
-			XFORM Transform;
-			Transform.eM11=1.0f;
-			Transform.eM12=0.0f;
-			Transform.eM21=0.0f;
-			Transform.eM22=1.0f;
-			Transform.eDx=OffsetX;
-			Transform.eDy=OffsetY;
-			return Transform;
-		}
-
-		WinTransform WinTransform::Scale(float ScaleX, float ScaleY)
-		{
-			XFORM Transform;
-			Transform.eM11=ScaleX;
-			Transform.eM12=0.0f;
-			Transform.eM21=0.0f;
-			Transform.eM22=ScaleY;
-			Transform.eDx=0.0f;
-			Transform.eDy=0.0f;
-			return Transform;
-		}
-
-		WinTransform WinTransform::Rotate(float Angle)
-		{
-			XFORM Transform;
-			Transform.eM11=(FLOAT)cos(Angle);
-			Transform.eM12= (FLOAT)sin(Angle);
-			Transform.eM21= (FLOAT)-sin(Angle);
-			Transform.eM22= (FLOAT)cos(Angle);
-			Transform.eDx=0.0f;
-			Transform.eDy=0.0f;
-			return Transform;
-		}
-
-		WinTransform WinTransform::Rotate(float Cos, float Sin)
-		{
-			XFORM Transform;
-			Transform.eM11=Cos;
-			Transform.eM12=Sin;
-			Transform.eM21=-Sin;
-			Transform.eM22=Cos;
-			Transform.eDx=0.0f;
-			Transform.eDy=0.0f;
-			return Transform;
-		}
-
-		WinTransform WinTransform::ReflectX()
-		{
-			XFORM Transform;
-			Transform.eM11=1.0f;
-			Transform.eM12=0.0f;
-			Transform.eM21=0.0f;
-			Transform.eM22=-1.0f;
-			Transform.eDx=0.0f;
-			Transform.eDy=0.0f;
-			return Transform;
-		}
-
-		WinTransform WinTransform::ReflectY()
-		{
-			XFORM Transform;
-			Transform.eM11=-1.0f;
-			Transform.eM12=0.0f;
-			Transform.eM21=0.0f;
-			Transform.eM22=1.0f;
-			Transform.eDx=0.0f;
-			Transform.eDy=0.0f;
-			return Transform;
-		}
-
-		WinTransform WinTransform::Reflect(float VectorX, float VectorY)
-		{
-			float Len= (FLOAT)sqrt(VectorX*VectorX+VectorY*VectorY);
-			float Cos=VectorX/Len;
-			float Sin=VectorY/Len;
-
-			return Rotate(Cos, -Sin)*ReflectX()*Rotate(Cos, Sin);
-		}
-
-		WinTransform WinTransform::Reflect(float OriginX, float OriginY, float VectorX, float VectorY)
-		{
-			float Len= (FLOAT)sqrt(VectorX*VectorX+VectorY*VectorY);
-			float Cos=VectorX/Len;
-			float Sin=VectorY/Len;
-
-			return Translate(-OriginX, -OriginY)*Rotate(Cos, -Sin)*ReflectX()*Rotate(Cos, Sin)*Translate(OriginX, OriginY);
-		}
-
-		WinTransform WinTransform::AxisV(float Xx, float Xy, float Yx, float Yy)
-		{
-			XFORM Transform;
-			Transform.eM11=Xx;
-			Transform.eM12=Xy;
-			Transform.eM21=Yx;
-			Transform.eM22=Yy;
-			Transform.eDx=0.0f;
-			Transform.eDy=0.0f;
-			return Transform;
-		}
-
-		WinTransform WinTransform::AxisA(float AngleX, float LenX, float AngleY, float LenY)
-		{
-			XFORM Transform;
-			Transform.eM11=(FLOAT)cos(AngleX)*LenX;
-			Transform.eM12=(FLOAT)sin(AngleX)*LenX;
-			Transform.eM21=(FLOAT)cos(AngleY)*LenY;
-			Transform.eM22=(FLOAT)sin(AngleY)*LenY;
-			Transform.eDx=0.0f;
-			Transform.eDy=0.0f;
-			return Transform;
-		}
-
-/*********************************************************************************************************
-WinMetaFileBuilder
-*********************************************************************************************************/
-
-		void WinMetaFileBuilder::Create(vint Width, vint Height)
-		{
-			HDC hdcRef=GetDC(NULL);
-			vint iWidthMM = GetDeviceCaps(hdcRef, HORZSIZE); 
-			vint iHeightMM = GetDeviceCaps(hdcRef, VERTSIZE); 
-			vint iWidthPels = GetDeviceCaps(hdcRef, HORZRES); 
-			vint iHeightPels = GetDeviceCaps(hdcRef, VERTRES); 
-			ReleaseDC(NULL, hdcRef);
-
-			RECT Rect;
-			Rect.left=0;
-			Rect.top=0;
-			Rect.right = (int)((Width*iWidthMM*100)/iWidthPels);
-			Rect.bottom = (int)((Height*iHeightMM*100)/iHeightPels);
-
-			HDC Handle=CreateEnhMetaFile(NULL, NULL, &Rect, L"VczhLibrary++GDI\0Enhanced Meta File\0");
-			FDC->Initialize(Handle);
-
-			FWidth=Width;
-			FHeight=Height;
-		}
-
-		void WinMetaFileBuilder::Draw(HENHMETAFILE Handle)
-		{
-			RECT Rect;
-			Rect.left=0;
-			Rect.top=0;
-			Rect.right=(int)FWidth;
-			Rect.bottom=(int)FHeight;
-			PlayEnhMetaFile(FDC->GetHandle(), Handle, &Rect);
-		}
-
-		void WinMetaFileBuilder::Destroy()
-		{
-			DeleteEnhMetaFile(CloseEnhMetaFile(FDC->GetHandle()));
-		}
-
-		WinMetaFileBuilder::WinMetaFileBuilder(vint Width, vint Height)
-		{
-			FDC=new WinProxyDC();
-			Create(Width, Height);
-		}
-
-		WinMetaFileBuilder::~WinMetaFileBuilder()
-		{
-			Destroy();
-			delete FDC;
-		}
-
-		void WinMetaFileBuilder::LoadFrom(WinMetaFile* File)
-		{
-			Destroy();
-			Create(File->GetWidth(), File->GetHeight());
-			Draw(File->GetHandle());
-		}
-
-		void WinMetaFileBuilder::SaveTo(WinMetaFile* File)
-		{
-			HENHMETAFILE Handle=CloseEnhMetaFile(FDC->GetHandle());
-			if(File->FHandle)
-			{
-				DeleteEnhMetaFile(File->FHandle);
-			}
-			File->FHandle=Handle;
-			File->FWidth=FWidth;
-			File->FHeight=FHeight;
-			Create(FWidth, FHeight);
-			Draw(Handle);
-		}
-
-		void WinMetaFileBuilder::LoadFrom(WString FileName)
-		{
-			WinMetaFile File(FileName);
-			Destroy();
-			Create(File.GetWidth(), File.GetHeight());
-			Draw(File.GetHandle());
-		}
-
-		void WinMetaFileBuilder::SaveTo(WString FileName)
-		{
-			HENHMETAFILE Handle=CloseEnhMetaFile(FDC->GetHandle());
-			HENHMETAFILE NewHandle=CopyEnhMetaFile(Handle, FileName.Buffer());
-			DeleteEnhMetaFile(NewHandle);
-			Create(FWidth, FHeight);
-			Draw(Handle);
-			DeleteEnhMetaFile(Handle);
-		}
-
-		WinDC* WinMetaFileBuilder::GetWinDC()
-		{
-			return FDC;
-		}
-
-		vint WinMetaFileBuilder::GetWidth()
-		{
-			return FWidth;
-		}
-
-		vint WinMetaFileBuilder::GetHeight()
-		{
-			return FHeight;
-		}
-
-/*********************************************************************************************************
-WinMetaFile
-*********************************************************************************************************/
-
-		WinMetaFile::WinMetaFile(WString FileName)
-		{
-			FHandle=GetEnhMetaFile(FileName.Buffer());
-			ENHMETAHEADER Header;
-			GetEnhMetaFileHeader(FHandle, sizeof(Header), &Header);
-			FWidth=(Header.rclFrame.right-Header.rclFrame.left)*Header.szlDevice.cx/(Header.szlMillimeters.cx*100);
-			FHeight=(Header.rclFrame.bottom-Header.rclFrame.top)*Header.szlDevice.cy/(Header.szlMillimeters.cy*100);
-		}
-
-		WinMetaFile::WinMetaFile(WinMetaFileBuilder* Builder)
-		{
-			FHandle=NULL;
-			Builder->SaveTo(this);
-		}
-
-		WinMetaFile::~WinMetaFile()
-		{
-			DeleteEnhMetaFile(FHandle);
-		}
-
-		HENHMETAFILE WinMetaFile::GetHandle()
-		{
-			return FHandle;
-		}
-
-		vint WinMetaFile::GetWidth()
-		{
-			return FWidth;
-		}
-
-		vint WinMetaFile::GetHeight()
-		{
-			return FHeight;
-		}
-
-/*********************************************************************************************************
-WinBitmap
-*********************************************************************************************************/
-
-		vint WinBitmap::GetBitsFromBB(BitmapBits BB)
-		{
-			switch(BB)
-			{
-			case vbb32Bits:
-				return 32;
-			case vbb24Bits:
-				return 24;
-			default:
-				return 1;
-			}
-		}
-
-		vint WinBitmap::GetLineBytes(vint Width, BitmapBits BB)
-		{
-			vint Bits=GetBitsFromBB(BB);
-			vint LineBits=Width*Bits;
-			vint AlignBits=sizeof(DWORD)*8;
-			LineBits+=(AlignBits-LineBits%AlignBits)%AlignBits;
-			return LineBits/8;
-		}
-
-		void WinBitmap::FillBitmapInfoHeader(vint Width, vint Height, BitmapBits Bits, BITMAPINFOHEADER* Header)
-		{
-			Header->biSize=sizeof(BITMAPINFOHEADER);
-			Header->biWidth=(int)Width;
-			Header->biHeight=-(int)Height;
-			Header->biPlanes=1;
-			Header->biBitCount=(int)GetBitsFromBB(Bits);
-			Header->biCompression=BI_RGB;
-			Header->biSizeImage=0;
-			Header->biXPelsPerMeter=0;
-			Header->biYPelsPerMeter=0;
-			Header->biClrUsed=(Bits==vbb2Bits?2:0);
-			Header->biClrImportant=0;
-		}
-
-		HBITMAP WinBitmap::CreateDDB(vint Width, vint Height, BitmapBits Bits)
-		{
-			if(Bits==vbb2Bits)
-			{
-				return CreateBitmap((int)Width, (int)Height, 2, (int)GetBitsFromBB(Bits), NULL);
-			}
-			else
-			{
-				WinBitmap Bitmap(1, 1, Bits, true);
-				return CreateCompatibleBitmap(Bitmap.GetWinDC()->GetHandle(), (int)Width, (int)Height);
-			}
-		}
-
-		HBITMAP WinBitmap::CreateDIB(vint Width, vint Height, BitmapBits Bits, BYTE**& ScanLines)
-		{
-			BITMAPINFO* Info=(BITMAPINFO*)malloc(sizeof(BITMAPINFOHEADER)+2*sizeof(RGBQUAD));
-			FillBitmapInfoHeader(Width, Height, Bits, &Info->bmiHeader);
-			Info->bmiColors[0].rgbBlue=0;
-			Info->bmiColors[0].rgbGreen=0;
-			Info->bmiColors[0].rgbRed=0;
-			Info->bmiColors[0].rgbReserved=0;
-			Info->bmiColors[1].rgbBlue=255;
-			Info->bmiColors[1].rgbGreen=255;
-			Info->bmiColors[1].rgbRed=255;
-			Info->bmiColors[1].rgbReserved=255;
-
-			BYTE* FirstLine=0;
-			HBITMAP Handle=CreateDIBSection(FDC->GetHandle(), Info, DIB_RGB_COLORS, (void**)&FirstLine, NULL, 0);
-			ScanLines=new BYTE*[Height];
-			vint LineBytes=GetLineBytes(Width, Bits);
-			for(vint i=0;i<Height;i++)
-			{
-				ScanLines[i]=FirstLine+LineBytes*i;
-			}
-			free(Info);
-			return Handle;
-		}
-
-		void WinBitmap::Constructor(vint Width, vint Height, BitmapBits Bits, bool DIBSections)
-		{
-			FDC=new WinImageDC();
-			if(DIBSections)
-			{
-				FHandle=CreateDIB(Width, Height, Bits, FScanLines);
-			}
-			else
-			{
-				FHandle=CreateDDB(Width, Height, Bits);
-				FScanLines=0;
-			}
-			FWidth=Width;
-			FHeight=Height;
-			FBits=Bits;
-			FAlphaChannelBuilt=false;
-			HGDIOBJ Object=SelectObject(FDC->GetHandle(), FHandle);
-			if(Object)
-			{
-				DeleteObject(Object);
-			}
-		}
-	
-		WinBitmap::WinBitmap(vint Width, vint Height, BitmapBits Bits, bool DIBSections)
-		{
-			Constructor(Width, Height, Bits, DIBSections);
-		}
-
-		WinBitmap::WinBitmap(WString FileName, bool Use32Bits, bool DIBSections)
-		{
-			FBits=Use32Bits?vbb32Bits:vbb24Bits;
-		
-			HBITMAP	TempBmp=(HBITMAP)LoadImage(NULL, FileName.Buffer(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-			HDC		TempDC=CreateCompatibleDC(NULL);
-			BITMAP	TempRec;
-
-			GetObject(TempBmp, sizeof(BITMAP), &TempRec);
-			DeleteObject(SelectObject(TempDC, TempBmp));
-
-			Constructor(TempRec.bmWidth, TempRec.bmHeight, FBits, DIBSections);
-			BitBlt(FDC->GetHandle(), 0, 0, TempRec.bmWidth, TempRec.bmHeight, TempDC, 0, 0, SRCCOPY);
-
-			DeleteObject(TempDC);
-			DeleteObject(TempBmp);
-		}
-
-		WinBitmap::~WinBitmap()
-		{
-			if(FScanLines)
-			{
-				delete[] FScanLines;
-			}
-			if(FHandle)
-			{
-				DeleteObject(FHandle);
-			}
-			delete FDC;
-		}
-
-		void WinBitmap::SaveToStream(stream::IStream& Output, bool DIBV5ClipboardFormat)
-		{
-			if (FScanLines)
-			{
-				BITMAPFILEHEADER Header1;
-				BITMAPV5HEADER Header2;
-
-				if (!DIBV5ClipboardFormat)
-				{
-					Header1.bfType = 'M' * 256 + 'B';
-					Header1.bfSize = (int)(sizeof(Header1) + sizeof(Header2) + GetLineBytes()*FHeight);
-					Header1.bfReserved1 = 0;
-					Header1.bfReserved2 = 0;
-					Header1.bfOffBits = sizeof(Header2) + sizeof(Header1);
-					Output.Write(&Header1, sizeof(Header1));
-				}
-
-				{
-					memset(&Header2, 0, sizeof(Header2));
-					Header2.bV5Size = sizeof(Header2);
-					Header2.bV5Width = (int)FWidth;
-					Header2.bV5Height = -(int)FHeight;
-					Header2.bV5Planes = 1;
-					Header2.bV5BitCount = (int)GetBitsFromBB(FBits);
-					Header2.bV5Compression = BI_RGB;
-					Header2.bV5CSType = LCS_sRGB;
-					Header2.bV5Intent = LCS_GM_GRAPHICS;
-					Output.Write(&Header2, sizeof(Header2));
-				}
-
-				for (vint i = 0; i<FHeight; i++)
-				{
-					Output.Write(FScanLines[i], GetLineBytes());
-				}
-			}
-			else
-			{
-				WinBitmap Temp(FWidth, FHeight, FBits, true);
-				Temp.GetWinDC()->Copy(0, 0, FWidth, FHeight, FDC, 0, 0);
-				Temp.SaveToStream(Output, false);
-			}
-		}
-
-		void WinBitmap::SaveToFile(WString FileName)
-		{
-			stream::FileStream Output(FileName, stream::FileStream::WriteOnly);
-			SaveToStream(Output, false);
-		}
-
-		WinDC* WinBitmap::GetWinDC()
-		{
-			return FDC;
-		}
-
-		vint WinBitmap::GetWidth()
-		{
-			return FWidth;
-		}
-
-		vint WinBitmap::GetHeight()
-		{
-			return FHeight;
-		}
-
-		vint WinBitmap::GetLineBytes()
-		{
-			return GetLineBytes(FWidth, FBits);
-		}
-
-		BYTE** WinBitmap::GetScanLines()
-		{
-			return FScanLines;
-		}
-
-		HBITMAP WinBitmap::GetBitmap()
-		{
-			return FHandle;
-		}
-
-		WinBitmap::BitmapBits WinBitmap::GetBitmapBits()
-		{
-			return FBits;
-		}
-	
-		void WinBitmap::FillCompatibleHeader(BITMAPINFOHEADER* Header)
-		{
-			FillBitmapInfoHeader(FWidth, FHeight, FBits, Header);
-		}
-
-		bool WinBitmap::CanBuildAlphaChannel()
-		{
-			return FScanLines!=0 && FBits==vbb32Bits;
-		}
-
-		bool WinBitmap::IsAlphaChannelBuilt()
-		{
-			return FAlphaChannelBuilt;
-		}
-
-		void WinBitmap::BuildAlphaChannel(bool autoPremultiply)
-		{
-			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
-			{
-				FAlphaChannelBuilt=true;
-				if(autoPremultiply)
-				{
-					for(vint i=0;i<FHeight;i++)
-					{
-						BYTE* Colors=FScanLines[i];
-						vint j=FWidth;
-						while(j--)
-						{
-							BYTE Alpha=Colors[3];
-							Colors[0]=Colors[0]*Alpha/255;
-							Colors[1]=Colors[1]*Alpha/255;
-							Colors[2]=Colors[2]*Alpha/255;
-							Colors+=4;
-						}
-					}
-				}
-			}
-		}
-
-		void WinBitmap::GenerateTrans(COLORREF Color)
-		{
-			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
-			{
-				for(vint i=0;i<FHeight;i++)
-				{
-					COLORREF* Colors=(COLORREF*)FScanLines[i];
-					vint j=FWidth;
-					while(j--)
-					{
-						COLORREF Dest=*Colors & 0x00FFFFFF;
-						*Colors = Dest | (0xFF000000 * (Dest!=Color));
-						Colors++;
-					}
-				}
-			}
-		}
-
-		void WinBitmap::GenerateAlpha(BYTE Alpha)
-		{
-			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
-			{
-				for(vint i=0;i<FHeight;i++)
-				{
-					BYTE* Colors=FScanLines[i];
-					vint j=FWidth;
-					while(j--)
-					{
-						Colors[3]=Alpha;
-						Colors+=4;
-					}
-				}
-			}
-		}
-
-		void WinBitmap::GenerateTransAlpha(COLORREF Color, BYTE Alpha)
-		{
-			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
-			{
-				COLORREF A=Alpha<<24;
-				for(vint i=0;i<FHeight;i++)
-				{
-					COLORREF* Colors=(COLORREF*)FScanLines[i];
-					vint j=FWidth;
-					while(j--)
-					{
-						COLORREF Dest=*Colors & 0x00FFFFFF;
-						*Colors = Dest | (A * (Dest!=Color));
-						Colors++;
-					}
-				}
-			}
-		}
-
-		void WinBitmap::GenerateLuminance()
-		{
-			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
-			{
-				for(vint i=0;i<FHeight;i++)
-				{
-					COLORREF* Colors=(COLORREF*)FScanLines[i];
-					vint j=FWidth;
-					while(j--)
-					{
-						COLORREF Dest=*Colors & 0x00FFFFFF;
-						*Colors = Dest | ((GetRValue(Dest)*77 + GetGValue(Dest)*151 + GetBValue(Dest)*28) & 0x0000FF00)<<16;
-						Colors++;
-					}
-				}
-			}
-		}
-
-		void WinBitmap::GenerateGrayLevel()
-		{
-			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
-			{
-				for(vint i=0;i<FHeight;i++)
-				{
-					COLORREF* Colors=(COLORREF*)FScanLines[i];
-					vint j=FWidth;
-					while(j--)
-					{
-						COLORREF Dest=*Colors & 0x00FFFFFF;
-						*Colors = Dest | ((GetRValue(Dest)+GetGValue(Dest)+GetBValue(Dest))/3)<<24;
-						Colors++;
-					}
-				}
-			}
-		}
-
-		void WinBitmap::Generate(BYTE(*Function)(COLORREF))
-		{
-			if(CanBuildAlphaChannel() && !FAlphaChannelBuilt)
-			{
-				for(vint i=0;i<FHeight;i++)
-				{
-					COLORREF* Colors=(COLORREF*)FScanLines[i];
-					vint j=FWidth;
-					while(j--)
-					{
-						COLORREF Dest= *Colors & 0x00FFFFFF;
-						*Colors = Dest | Function(Dest)<<24;
-						Colors++;
-					}
-				}
-			}
-		}
-			
-/*********************************************************************************************************
-WinBrush
-*********************************************************************************************************/
-
-		WinBrush::WinBrush()
-		{
-			FDIBMemory=0;
-			LOGBRUSH lb;
-			lb.lbColor=0;
-			lb.lbStyle=BS_NULL;
-			lb.lbHatch=0;
-			FHandle=CreateBrushIndirect(&lb);
-		}
-
-		WinBrush::WinBrush(COLORREF Color)
-		{
-			FDIBMemory=0;
-			FHandle=CreateSolidBrush(Color);
-		}
-
-		WinBrush::WinBrush(vint Hatch, COLORREF Color)
-		{
-			FDIBMemory=0;
-			FHandle=CreateHatchBrush((int)Hatch, Color);
-		}
-
-		WinBrush::WinBrush(WinBitmap::Ptr DIB)
-		{
-			WinBitmap Temp(DIB->GetWidth(), DIB->GetHeight(), WinBitmap::vbb24Bits, true);
-			Temp.GetWinDC()->Draw(0, 0, DIB);
-			vint HeaderSize=sizeof(BITMAPINFOHEADER);
-			FDIBMemory=new unsigned char[HeaderSize+Temp.GetHeight()*Temp.GetLineBytes()];
-			Temp.FillCompatibleHeader((BITMAPINFOHEADER*)FDIBMemory);
-			memcpy(FDIBMemory+HeaderSize, Temp.GetScanLines()[0], Temp.GetHeight()*Temp.GetLineBytes());
-
-			FHandle=CreateDIBPatternBrushPt(FDIBMemory, DIB_RGB_COLORS);
-			DWORD Error=GetLastError();
-		}
-
-		WinBrush::~WinBrush()
-		{
-			DeleteObject(FHandle);
-			if(FDIBMemory)
-			{
-				delete[] FDIBMemory;
-			}
-		}
-
-		HBRUSH WinBrush::GetHandle()
-		{
-			return FHandle;
-		}
-
-/*********************************************************************************************************
-WinPen
-*********************************************************************************************************/
-
-		WinPen::WinPen(vint Style, vint Width, COLORREF Color)
-		{
-			FDIBMemory=0;
-			FHandle=CreatePen((int)Style, (int)Width, (int)Color);
-		}
-
-		WinPen::WinPen(vint Style, vint EndCap, vint Join, vint Width, COLORREF Color, DWORD styleCount, const DWORD* styleArray)
-		{
-			FDIBMemory=0;
-			LOGBRUSH Brush;
-			Brush.lbColor=Color;
-			Brush.lbStyle=BS_SOLID;
-			Brush.lbHatch=0;
-			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, styleCount, styleArray);
-		}
-
-		WinPen::WinPen(vint Style, vint EndCap, vint Join, vint Hatch, vint Width, COLORREF Color)
-		{
-			FDIBMemory=0;
-			LOGBRUSH Brush;
-			Brush.lbColor=Color;
-			Brush.lbStyle=BS_HATCHED;
-			Brush.lbHatch=Hatch;
-			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, NULL, NULL);
-		}
-
-		WinPen::WinPen(WinBitmap::Ptr DIB, vint Style, vint EndCap, vint Join, vint Width)
-		{
-			WinBitmap Temp(DIB->GetWidth(), DIB->GetHeight(), WinBitmap::vbb24Bits, true);
-			Temp.GetWinDC()->Draw(0, 0, DIB);
-			vint HeaderSize=sizeof(BITMAPINFOHEADER);
-			FDIBMemory=new unsigned char[HeaderSize+Temp.GetHeight()*Temp.GetLineBytes()];
-			Temp.FillCompatibleHeader((BITMAPINFOHEADER*)FDIBMemory);
-			memcpy(FDIBMemory+HeaderSize, Temp.GetScanLines()[0], Temp.GetHeight()*Temp.GetLineBytes());
-		
-			LOGBRUSH Brush;
-			Brush.lbColor=RGB(0, 0, 0);
-			Brush.lbStyle=BS_DIBPATTERNPT;
-			Brush.lbHatch=(ULONG_PTR)FDIBMemory;
-			FHandle=ExtCreatePen((int)(PS_GEOMETRIC|Style|EndCap|Join), (int)Width, &Brush, NULL, NULL);
-		}
-
-		WinPen::~WinPen()
-		{
-			DeleteObject(FHandle);
-			if(FDIBMemory)
-			{
-				delete[] FDIBMemory;
-			}
-		}
-
-		HPEN WinPen::GetHandle()
-		{
-			return FHandle;
-		}
-
-/*********************************************************************************************************
-WinFont
-*********************************************************************************************************/
-
-		WinFont::WinFont(WString Name, vint Height, vint Width, vint Escapement, vint Orientation, vint Weight, bool Italic, bool Underline, bool StrikeOut, bool Antialise)
-		{
-			FFontInfo.lfHeight=(int)Height;
-			FFontInfo.lfWidth=(int)Width;
-			FFontInfo.lfEscapement=(int)Escapement;
-			FFontInfo.lfOrientation=(int)Orientation;
-			FFontInfo.lfWeight=(int)Weight;
-			FFontInfo.lfItalic=Italic?TRUE:FALSE;
-			FFontInfo.lfUnderline=Underline?TRUE:FALSE;
-			FFontInfo.lfStrikeOut=StrikeOut?TRUE:FALSE;
-			FFontInfo.lfCharSet=DEFAULT_CHARSET;
-			FFontInfo.lfOutPrecision=OUT_DEFAULT_PRECIS;
-			FFontInfo.lfClipPrecision=CLIP_DEFAULT_PRECIS;
-			FFontInfo.lfQuality=Antialise?CLEARTYPE_QUALITY:NONANTIALIASED_QUALITY;
-			FFontInfo.lfPitchAndFamily=DEFAULT_PITCH | FF_DONTCARE;
-			wcsncpy_s(FFontInfo.lfFaceName, sizeof(FFontInfo.lfFaceName)/sizeof(*FFontInfo.lfFaceName), Name.Buffer(), LF_FACESIZE-1);
-			FHandle=CreateFontIndirect(&FFontInfo);
-		}
-
-		WinFont::WinFont(LOGFONT* FontInfo)
-		{
-			FFontInfo=*FontInfo;
-			FHandle=CreateFontIndirect(&FFontInfo);
-		}
-
-		WinFont::~WinFont()
-		{
-			DeleteObject(FHandle);
-		}
-
-		HFONT WinFont::GetHandle()
-		{
-			return FHandle;
-		}
-
-		LOGFONT* WinFont::GetInfo()
-		{
-			return &FFontInfo;
-		}
-
-/*********************************************************************************************************
-IWinResourceService
-*********************************************************************************************************/
-
-		WinBrush::Ptr CreateDefaultBrush()
-		{
-			return Ptr(new WinBrush(RGB(255, 255, 255)));
-		}
-
-		WinPen::Ptr CreateDefaultPen()
-		{
-			return Ptr(new WinPen(PS_SOLID, 0, RGB(0, 0, 0)));
-		}
-
-		WinFont::Ptr CreateDefaultFont()
-		{
-			NONCLIENTMETRICS NonClientMetrics;
-			NonClientMetrics.cbSize=sizeof(NONCLIENTMETRICS);
-			SystemParametersInfo(SPI_GETNONCLIENTMETRICS, NonClientMetrics.cbSize, &NonClientMetrics, 0);
-			if(!*NonClientMetrics.lfMessageFont.lfFaceName)
-			{
-				NonClientMetrics.cbSize=sizeof(NONCLIENTMETRICS)-sizeof(NonClientMetrics.iPaddedBorderWidth);
-				SystemParametersInfo(SPI_GETNONCLIENTMETRICS, NonClientMetrics.cbSize, &NonClientMetrics, 0);
-			}
-			return Ptr(new WinFont(&NonClientMetrics.lfMessageFont));
-		}
-
-		class DefaultResourceService : public Object, public IWinResourceService
-		{
-		public:
-			static IWinResourceService* _DefaultResourceService;
-
-			WinPen::Ptr GetDefaultPen()
-			{
-				return CreateDefaultPen();
-			}
-
-			WinBrush::Ptr GetDefaultBrush()
-			{
-				return CreateDefaultBrush();
-			}
-
-			WinFont::Ptr GetDefaultFont()
-			{
-				return CreateDefaultFont();
-			}
-		} _DRS;
-		IWinResourceService* DefaultResourceService::_DefaultResourceService=&_DRS;
-
-		IWinResourceService* GetDefaultResourceService()
-		{
-			return DefaultResourceService::_DefaultResourceService;
-		}
-
-		void SetDefaultResourceService(IWinResourceService* Service)
-		{
-			DefaultResourceService::_DefaultResourceService=Service;
-		}
-
-/*********************************************************************************************************
-WinDC
-*********************************************************************************************************/
-
-		void WinDC::Init()
-		{
-			FPen=GetDefaultResourceService()->GetDefaultPen();
-			FOldPen=(HPEN)SelectObject(FHandle, FPen->GetHandle());
-
-			FBrush=GetDefaultResourceService()->GetDefaultBrush();
-			FOldBrush=(HBRUSH)SelectObject(FHandle, FBrush->GetHandle());
-
-			FFont=GetDefaultResourceService()->GetDefaultFont();
-			FOldFont=(HFONT)SelectObject(FHandle, FFont->GetHandle());
-
-			SetGraphicsMode(FHandle, GM_ADVANCED);
-		}
-
-		WinDC::WinDC()
-		{
-			FHandle=0;
-			FOldPen=0;
-			FOldBrush=0;
-			FOldFont=0;
-		}
-
-		WinDC::~WinDC()
-		{
-			SelectObject(FHandle, FOldFont);
-			SelectObject(FHandle, FOldBrush);
-			SelectObject(FHandle, FOldPen);
-		}
-
-		HDC WinDC::GetHandle()
-		{
-			return FHandle;
-		}
-
-		WinPen::Ptr WinDC::GetPen()
-		{
-			return FPen;
-		}
-
-		WinBrush::Ptr WinDC::GetBrush()
-		{
-			return FBrush;
-		}
-
-		WinFont::Ptr WinDC::GetFont()
-		{
-			return FFont;
-		}
-
-		void WinDC::SetPen(WinPen::Ptr Pen)
-		{
-			SelectObject(FHandle, Pen->GetHandle());
-			FPen=Pen;
-		}
-
-		void WinDC::SetBrush(WinBrush::Ptr Brush)
-		{
-			SelectObject(FHandle, Brush->GetHandle());
-			FBrush=Brush;
-		}
-
-		void WinDC::SetFont(WinFont::Ptr Font)
-		{
-			SelectObject(FHandle, Font->GetHandle());
-			FFont=Font;
-		}
-
-		COLORREF WinDC::GetBackColor()
-		{
-			return GetBkColor(FHandle);
-		}
-
-		void WinDC::SetBackColor(COLORREF Color)
-		{
-			SetBkColor(FHandle, Color);
-		}
-
-		COLORREF WinDC::GetTextColor()
-		{
-			return ::GetTextColor(FHandle);
-		}
-
-		void WinDC::SetTextColor(COLORREF Color)
-		{
-			::SetTextColor(FHandle, Color);
-		}
-
-		bool WinDC::GetBackTransparent()
-		{
-			return GetBkMode(FHandle)==TRANSPARENT;
-		}
-
-		void WinDC::SetBackTransparent(bool Transparent)
-		{
-			SetBkMode(FHandle, Transparent?TRANSPARENT:OPAQUE);
-		}
-
-		POINT WinDC::GetBrushOrigin()
-		{
-			POINT Point;
-			GetBrushOrgEx(FHandle, &Point);
-			return Point;
-		}
-
-		void WinDC::SetBrushOrigin(POINT Point)
-		{
-			SetBrushOrgEx(FHandle, Point.x, Point.y, NULL);
-		}
-
-		int WinDC::SetRasterOperation(int rop2)
-		{
-			return SetROP2(FHandle, rop2);
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		void WinDC::DrawBuffer(vint X, vint Y, const wchar_t* Text, vint CharCount)
-		{
-			TextOut(FHandle, (int)X, (int)Y, Text, (int)CharCount);
-		}
-
-		void WinDC::DrawBuffer(vint X, vint Y, const wchar_t* Text, vint CharCount, vint TabWidth, vint TabOriginX)
-		{
-			int realTabWidth=(int)TabWidth;
-			TabbedTextOut(FHandle, (int)X, (int)Y, Text, (int)CharCount, 1, &realTabWidth, (int)TabOriginX);
-		}
-
-		void WinDC::DrawBuffer(RECT Rect, const wchar_t* Text, vint CharCount, UINT Format)
-		{
-			DrawText(FHandle, Text, (int)CharCount, &Rect, Format);
-		}
-
-		void WinDC::DrawString(vint X, vint Y, WString Text)
-		{
-			DrawBuffer(X, Y, Text.Buffer(), Text.Length());
-		}
-
-		void WinDC::DrawString(vint X, vint Y, WString Text, vint TabWidth, vint TabOriginX)
-		{
-			DrawBuffer(X, Y, Text.Buffer(), Text.Length(), TabWidth, TabOriginX);
-		}
-
-		void WinDC::DrawString(RECT Rect, WString Text, UINT Format)
-		{
-			DrawBuffer(Rect, Text.Buffer(), Text.Length(), Format);
-		}
-
-		SIZE WinDC::MeasureString(WString Text, vint TabSize)
-		{
-			return MeasureBuffer(Text.Buffer(), Text.Length(), TabSize);
-		}
-
-		SIZE WinDC::MeasureBuffer(const wchar_t* Text, vint CharCount, vint TabSize)
-		{
-			SIZE Size;
-			if(TabSize==-1)
-			{
-				GetTextExtentPoint32(FHandle, Text, (int)CharCount, &Size);
-			}
-			else
-			{
-				int realTabSize=(int)TabSize;
-				DWORD Result=GetTabbedTextExtent(FHandle, Text, (int)CharCount, 1, &realTabSize);
-				Size.cx=LOWORD(Result);
-				Size.cy=HIWORD(Result);
-			}
-			return Size;
-		}
-
-		SIZE WinDC::MeasureBuffer(const wchar_t* Text, vint TabSize)
-		{
-			return MeasureBuffer(Text, wcslen(Text), TabSize);
-		}
-
-		SIZE WinDC::MeasureWrapLineString(WString Text, vint MaxWidth)
-		{
-			return MeasureWrapLineBuffer(Text.Buffer(), Text.Length(), MaxWidth);
-		}
-
-		SIZE WinDC::MeasureWrapLineBuffer(const wchar_t* Text, vint CharCount, vint MaxWidth)
-		{
-			SIZE size = {0};
-			vint lineCount=0;
-			const wchar_t* reading=Text;
-			INT* dx=new INT[CharCount];
-			while(*reading)
-			{
-				INT fit=0;
-				GetTextExtentExPoint(FHandle, reading, (int)(CharCount-(reading-Text)), (int)MaxWidth, &fit, dx, &size);
-				reading+=fit;
-				lineCount++;
-			}
-			delete dx;
-			size.cx=0;
-			size.cy*=(int)lineCount;
-			return size;
-		}
-
-		SIZE WinDC::MeasureWrapLineBuffer(const wchar_t* Text, vint MaxWidth)
-		{
-			return MeasureWrapLineBuffer(Text, wcslen(Text), MaxWidth);
-		}
-
-		void WinDC::FillRegion(WinRegion::Ptr Region)
-		{
-			FillRgn(FHandle, Region->GetHandle(), FBrush->GetHandle());
-		}
-
-		void WinDC::FrameRegion(WinRegion::Ptr Region, vint BlockWidth, vint BlockHeight)
-		{
-			FrameRgn(FHandle, Region->GetHandle(), FBrush->GetHandle(), (int)BlockWidth, (int)BlockHeight);
-		}
-
-		void WinDC::MoveTo(vint X, vint Y)
-		{
-			::MoveToEx(FHandle, (int)X, (int)Y, NULL);
-		}
-
-		void WinDC::LineTo(vint X, vint Y)
-		{
-			::LineTo(FHandle, (int)X, (int)Y);
-		}
-
-		void WinDC::Rectangle(vint Left, vint Top, vint Right, vint Bottom)
-		{
-			::Rectangle(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom);
-		}
-
-		void WinDC::Rectangle(RECT Rect)
-		{
-			::Rectangle(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
-		}
-
-		void WinDC::FocusRectangle(vint Left, vint Top, vint Right, vint Bottom)
-		{
-			RECT Rect;
-			Rect.left=(int)Left;
-			Rect.top=(int)Top;
-			Rect.right=(int)Right;
-			Rect.bottom=(int)Bottom;
-			::DrawFocusRect(FHandle, &Rect);
-		}
-
-		void WinDC::FocusRectangle(RECT Rect)
-		{
-			::DrawFocusRect(FHandle, &Rect);
-		}
-
-		void WinDC::FillRect(vint Left, vint Top, vint Right, vint Bottom)
-		{
-			RECT Rect;
-			Rect.left=(int)Left;
-			Rect.top=(int)Top;
-			Rect.right=(int)Right;
-			Rect.bottom=(int)Bottom;
-			::FillRect(FHandle, &Rect, FBrush->GetHandle());
-		}
-
-		void WinDC::FillRect(RECT Rect)
-		{
-			::FillRect(FHandle, &Rect, FBrush->GetHandle());
-		}
-
-		void WinDC::Ellipse(vint Left, vint Top, vint Right, vint Bottom)
-		{
-			::Ellipse(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom);
-		}
-
-		void WinDC::Ellipse(RECT Rect)
-		{
-			::Ellipse(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
-		}
-
-		void WinDC::RoundRect(vint Left, vint Top, vint Right, vint Bottom, vint EllipseWidth, vint EllipseHeight)
-		{
-			::RoundRect(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)EllipseWidth, (int)EllipseHeight);
-		}
-
-		void WinDC::RoundRect(RECT Rect, vint EllipseWidth, vint EllipseHeight)
-		{
-			::RoundRect(FHandle, (int)Rect.left, (int)Rect.top, (int)Rect.right, (int)Rect.bottom, (int)EllipseWidth, (int)EllipseHeight);
-		}
-
-		void WinDC::PolyLine(const POINT* Points, vint Count)
-		{
-			::Polyline(FHandle, Points, (int)Count);
-		}
-
-		void WinDC::PolyLineTo(const POINT* Points, vint Count)
-		{
-			::PolylineTo(FHandle, Points, (int)Count);
-		}
-
-		void WinDC::PolyGon(const POINT* Points, vint Count)
-		{
-			::Polygon(FHandle, Points, (int)Count);
-		}
-
-		void WinDC::PolyBezier(const POINT* Points, vint Count)
-		{
-			::PolyBezier(FHandle, Points, (int)Count);
-		}
-
-		void WinDC::PolyBezierTo(const POINT* Points, vint Count)
-		{
-			::PolyBezierTo(FHandle, Points, (int)Count);
-		}
-
-		void WinDC::PolyDraw(const POINT* Points, const BYTE* Actions, vint PointCount)
-		{
-			::PolyDraw(FHandle, Points, Actions, (int)PointCount);
-		}
-
-		void WinDC::Arc(RECT Bound, POINT Start, POINT End)
-		{
-			::Arc(FHandle, Bound.left, Bound.top, Bound.right, Bound.bottom, Start.x, Start.y, End.x, End.y);
-		}
-
-		void WinDC::Arc(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
-		{
-			::Arc(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
-		}
-
-		void WinDC::ArcTo(RECT Bound, POINT Start, POINT End)
-		{
-			::ArcTo(FHandle, (int)Bound.left, (int)Bound.top, (int)Bound.right, (int)Bound.bottom, (int)Start.x, (int)Start.y, (int)End.x, (int)End.y);
-		}
-
-		void WinDC::ArcTo(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
-		{
-			::ArcTo(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
-		}
-
-		void WinDC::AngleArc(vint X, vint Y, vint Radius, float StartAngle, float SweepAngle)
-		{
-			::AngleArc(FHandle, (int)X, (int)Y, (int)Radius, StartAngle, SweepAngle);
-		}
-
-		void WinDC::AngleArc(vint X, vint Y, vint Radius, double StartAngle, double SweepAngle)
-		{
-			::AngleArc(FHandle, (int)X, (int)Y, (int)Radius, (float)StartAngle, (float)SweepAngle);
-		}
-
-		void WinDC::Chord(RECT Bound, POINT Start, POINT End)
-		{
-			::Chord(FHandle, (int)Bound.left, (int)Bound.top, (int)Bound.right, (int)Bound.bottom, (int)Start.x, (int)Start.y, (int)End.x, (int)End.y);
-		}
-
-		void WinDC::Chord(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
-		{
-			::Chord(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
-		}
-
-		void WinDC::Pie(RECT Bound, POINT Start, POINT End)
-		{
-			::Pie(FHandle, (int)Bound.left, (int)Bound.top, (int)Bound.right, (int)Bound.bottom, (int)Start.x, (int)Start.y, (int)End.x, (int)End.y);
-		}
-
-		void WinDC::Pie(vint Left, vint Top, vint Right, vint Bottom, vint StartX, vint StartY, vint EndX, vint EndY)
-		{
-			::Pie(FHandle, (int)Left, (int)Top, (int)Right, (int)Bottom, (int)StartX, (int)StartY, (int)EndX, (int)EndY);
-		}
-
-		void WinDC::GradientRectH(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_RECT* Rectangles, vint RectangleCount)
-		{
-			GradientFill(FHandle, Vertices, (int)VerticesCount, Rectangles, (int)RectangleCount, GRADIENT_FILL_RECT_H);
-		}
-
-		void WinDC::GradientRectV(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_RECT* Rectangles, vint RectangleCount)
-		{
-			GradientFill(FHandle, Vertices, (int)VerticesCount, Rectangles, (int)RectangleCount, GRADIENT_FILL_RECT_V);
-		}
-
-		void WinDC::GradientTriangle(TRIVERTEX* Vertices, vint VerticesCount, GRADIENT_TRIANGLE* Triangles, vint TriangleCount)
-		{
-			GradientFill(FHandle, Vertices, (int)VerticesCount, Triangles, (int)TriangleCount, GRADIENT_FILL_TRIANGLE);
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		void WinDC::BeginPath()
-		{
-			::BeginPath(FHandle);
-		}
-
-		void WinDC::EndPath()
-		{
-			::EndPath(FHandle);
-		}
-
-		void WinDC::ClosePath()
-		{
-			::CloseFigure(FHandle);
-		}
-
-		void WinDC::WidenPath()
-		{
-			::WidenPath(FHandle);
-		}
-
-		void WinDC::DiscardPath()
-		{
-			::AbortPath(FHandle);
-		}
-
-		void WinDC::DrawPath()
-		{
-			::StrokePath(FHandle);
-		}
-
-		void WinDC::FillPath()
-		{
-			::FillPath(FHandle);
-		}
-
-		void WinDC::DrawAndFillPath()
-		{
-			::StrokeAndFillPath(FHandle);
-		}
-
-		WinRegion::Ptr WinDC::RegionFromPath()
-		{
-			return Ptr(new WinRegion(::PathToRegion(FHandle)));
-		}
-	
-		/*------------------------------------------------------------------------------*/
-
-		bool WinDC::PointInClip(POINT Point)
-		{
-			return PtVisible(FHandle, Point.x, Point.y)==TRUE;
-		}
-
-		bool WinDC::RectInClip(RECT Rect)
-		{
-			return RectVisible(FHandle, &Rect)==TRUE;
-		}
-
-		void WinDC::ClipPath(vint CombineMode)
-		{
-			SelectClipPath(FHandle, (int)CombineMode);
-		}
-
-		void WinDC::ClipRegion(WinRegion::Ptr Region)
-		{
-			SelectClipRgn(FHandle, Region->GetHandle());
-		}
-
-		void WinDC::RemoveClip()
-		{
-			SelectClipRgn(FHandle, NULL);
-		}
-
-		void WinDC::MoveClip(vint OffsetX, vint OffsetY)
-		{
-			OffsetClipRgn(FHandle, (int)OffsetX, (int)OffsetY);
-		}
-
-		void WinDC::CombineClip(WinRegion::Ptr Region, vint CombineMode)
-		{
-			ExtSelectClipRgn(FHandle, Region->GetHandle(), (int)CombineMode);
-		}
-
-		void WinDC::IntersetClipRect(RECT Rect)
-		{
-			::IntersectClipRect(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
-		}
-
-		void WinDC::ExcludeClipRect(RECT Rect)
-		{
-			::ExcludeClipRect(FHandle, Rect.left, Rect.top, Rect.right, Rect.bottom);
-		}
-
-		WinRegion::Ptr WinDC::GetClipRegion()
-		{
-			HRGN Handle=CreateRectRgn(0, 0, 1, 1);
-			GetClipRgn(FHandle, Handle);
-			return Ptr(new WinRegion(Handle));
-		}
-
-		RECT WinDC::GetClipBoundRect()
-		{
-			RECT Rect;
-			GetClipBox(FHandle, &Rect);
-			return Rect;
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		WinTransform WinDC::GetTransform()
-		{
-			XFORM Transform;
-			GetWorldTransform(FHandle, &Transform);
-			return Transform;
-		}
-
-		void WinDC::SetTransform(const WinTransform& Transform)
-		{
-			SetWorldTransform(FHandle, Transform.GetHandle());
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		void WinDC::Copy(vint dstX, vint dstY, vint dstW, vint dstH, WinDC* Source, vint srcX, vint srcY, DWORD DrawROP)
-		{
-			HDC SourceHandle=Source?Source->GetHandle():0;
-			BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, SourceHandle, (int)srcX, (int)srcY, (int)DrawROP);
-		}
-
-		void WinDC::Copy(RECT dstRect, WinDC* Source, POINT srcPos, DWORD DrawROP)
-		{
-			HDC SourceHandle=Source?Source->GetHandle():0;
-			BitBlt(FHandle, dstRect.left, dstRect.top, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, SourceHandle, srcPos.x, srcPos.y, DrawROP);
-		}
-
-		void WinDC::Copy(vint dstX, vint dstY, vint dstW, vint dstH, WinDC* Source, vint srcX, vint srcY , vint srcW, vint srcH, DWORD DrawROP)
-		{
-			HDC SourceHandle=Source?Source->GetHandle():0;
-			StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, SourceHandle, (int)srcX, (int)srcY, (int)srcW, (int)srcH, (int)DrawROP);
-		}
-
-		void WinDC::Copy(RECT dstRect, WinDC* Source, RECT srcRect, DWORD DrawROP)
-		{
-			HDC SourceHandle=Source?Source->GetHandle():0;
-			StretchBlt(	FHandle		, dstRect.left, dstRect.top, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 
-						SourceHandle, srcRect.left, srcRect.top, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, 
-						DrawROP);
-		}
-
-		void WinDC::Copy(POINT UpperLeft, POINT UpperRight, POINT LowerLeft, WinDC* Source, vint srcX, vint srcY, vint srcW, vint srcH)
-		{
-			POINT Pt[3];
-			Pt[0]=UpperLeft;
-			Pt[1]=UpperRight;
-			Pt[2]=LowerLeft;
-			PlgBlt(FHandle, Pt, Source->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, 0, 0, 0);
-		}
-
-		void WinDC::Copy(POINT UpperLeft, POINT UpperRight, POINT LowerLeft, WinDC*Source, RECT srcRect)
-		{
-			POINT Pt[3];
-			Pt[0]=UpperLeft;
-			Pt[1]=UpperRight;
-			Pt[2]=LowerLeft;
-			PlgBlt(FHandle, Pt, Source->GetHandle(), srcRect.left, srcRect.top, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, 0, 0, 0);
-		}
-
-		void WinDC::CopyTrans(vint dstX, vint dstY, vint dstW, vint dstH, WinDC* Source, vint srcX, vint srcY , vint srcW, vint srcH, COLORREF Color)
-		{
-			TransparentBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Source->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Color);
-		}
-
-		void WinDC::CopyTrans(RECT dstRect, WinDC* Source, RECT srcRect, COLORREF Color)
-		{
-			TransparentBlt(	FHandle				, dstRect.left, dstRect.top, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 
-							Source->GetHandle()	, srcRect.left, srcRect.top, srcRect.right-srcRect.left, srcRect.bottom-srcRect.top, 
-							Color);
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		void WinDC::Draw(vint dstX, vint dstY, WinMetaFile* MetaFile)
-		{
-			Draw(dstX, dstY, MetaFile->GetWidth(), MetaFile->GetHeight(), MetaFile);
-		}
-
-		void WinDC::Draw(POINT Pos, WinMetaFile* MetaFile)
-		{
-			Draw(Pos.x, Pos.y, MetaFile->GetWidth(), MetaFile->GetHeight(), MetaFile);
-		}
-
-		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinMetaFile* MetaFile)
-		{
-			RECT Rect;
-			Rect.left=(int)dstX;
-			Rect.top=(int)dstY;
-			Rect.right=(int)(dstX+dstW);
-			Rect.bottom=(int)(dstY+dstH);
-			Draw(Rect, MetaFile);
-		}
-
-		void WinDC::Draw(RECT Rect, WinMetaFile* MetaFile)
-		{
-			PlayEnhMetaFile(FHandle, MetaFile->GetHandle(), &Rect);
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		void WinDC::Draw(vint dstX, vint dstY, WinBitmap::Ptr Bitmap)
-		{
-			vint dstW=Bitmap->GetWidth();
-			vint dstH=Bitmap->GetHeight();
-			vint srcX=0;
-			vint srcY=0;
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
-			}
-			else
-			{
-				vint srcW=dstW;
-				vint srcH=dstH;
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		void WinDC::Draw(POINT Pos, WinBitmap::Ptr Bitmap)
-		{
-			vint dstX=Pos.x;
-			vint dstY=Pos.y;
-			vint dstW=Bitmap->GetWidth();
-			vint dstH=Bitmap->GetHeight();
-			vint srcX=0;
-			vint srcY=0;
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
-			}
-			else
-			{
-				vint srcW=dstW;
-				vint srcH=dstH;
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap)
-		{
-			vint srcX=0;
-			vint srcY=0;
-			vint srcW=Bitmap->GetWidth();
-			vint srcH=Bitmap->GetHeight();
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
-			}
-			else
-			{
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap)
-		{
-			vint dstX=Rect.left;
-			vint dstY=Rect.top;
-			vint dstW=Rect.right-Rect.left;
-			vint dstH=Rect.bottom-Rect.top;
-			vint srcX=0;
-			vint srcY=0;
-			vint srcW=Bitmap->GetWidth();
-			vint srcH=Bitmap->GetHeight();
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
-			}
-			else
-			{
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY)
-		{
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
-			}
-			else
-			{
-				vint srcW=dstW;
-				vint srcH=dstH;
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap, POINT Pos)
-		{
-			vint dstX=Rect.left;
-			vint dstY=Rect.top;
-			vint dstW=Rect.right-Rect.left;
-			vint dstH=Rect.bottom-Rect.top;
-			vint srcX=Pos.x;
-			vint srcY=Pos.y;
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				BitBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, SRCCOPY);
-			}
-			else
-			{
-				vint srcW=dstW;
-				vint srcH=dstH;
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY, vint srcW, vint srcH)
-		{
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
-			}
-			else
-			{
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		void WinDC::Draw(RECT dstRect, WinBitmap::Ptr Bitmap, RECT srcRect)
-		{
-			vint dstX=dstRect.left;
-			vint dstY=dstRect.top;
-			vint dstW=dstRect.right-dstRect.left;
-			vint dstH=dstRect.bottom-dstRect.top;
-			vint srcX=srcRect.left;
-			vint srcY=srcRect.top;
-			vint srcW=srcRect.right-srcRect.left;
-			vint srcH=srcRect.bottom-srcRect.top;
-			if(!Bitmap->IsAlphaChannelBuilt())
-			{
-				StretchBlt(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, SRCCOPY);
-			}
-			else
-			{
-				BLENDFUNCTION Blend;
-				Blend.BlendOp=AC_SRC_OVER;
-				Blend.BlendFlags=0;
-				Blend.SourceConstantAlpha=255;
-				Blend.AlphaFormat=AC_SRC_ALPHA;
-				AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-			}
-		}
-
-		/*------------------------------------------------------------------------------*/
-
-		void WinDC::Draw(vint dstX, vint dstY, WinBitmap::Ptr Bitmap, unsigned char Alpha)
-		{
-			vint dstW=Bitmap->GetWidth();
-			vint dstH=Bitmap->GetHeight();
-			vint srcX=0;
-			vint srcY=0;
-			vint srcW=dstW;
-			vint srcH=dstH;
-
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-		void WinDC::Draw(POINT Pos, WinBitmap::Ptr Bitmap, unsigned char Alpha)
-		{
-			vint dstX=Pos.x;
-			vint dstY=Pos.y;
-			vint dstW=Bitmap->GetWidth();
-			vint dstH=Bitmap->GetHeight();
-			vint srcX=0;
-			vint srcY=0;
-			vint srcW=dstW;
-			vint srcH=dstH;
-
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, unsigned char Alpha)
-		{
-			vint srcX=0;
-			vint srcY=0;
-			vint srcW=Bitmap->GetWidth();
-			vint srcH=Bitmap->GetHeight();
-
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap, unsigned char Alpha)
-		{
-			vint dstX=Rect.left;
-			vint dstY=Rect.top;
-			vint dstW=Rect.right-Rect.left;
-			vint dstH=Rect.bottom-Rect.top;
-			vint srcX=0;
-			vint srcY=0;
-			vint srcW=Bitmap->GetWidth();
-			vint srcH=Bitmap->GetHeight();
-
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY, unsigned char Alpha)
-		{
-			vint srcW=dstW;
-			vint srcH=dstH;
-
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-		void WinDC::Draw(RECT Rect, WinBitmap::Ptr Bitmap, POINT Pos, unsigned char Alpha)
-		{
-			vint dstX=Rect.left;
-			vint dstY=Rect.top;
-			vint dstW=Rect.right-Rect.left;
-			vint dstH=Rect.bottom-Rect.top;
-			vint srcX=Pos.x;
-			vint srcY=Pos.y;
-			vint srcW=dstW;
-			vint srcH=dstH;
-
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-		void WinDC::Draw(vint dstX, vint dstY, vint dstW, vint dstH, WinBitmap::Ptr Bitmap, vint srcX, vint srcY, vint srcW, vint srcH, unsigned char Alpha)
-		{
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-		void WinDC::Draw(RECT dstRect, WinBitmap::Ptr Bitmap, RECT srcRect, unsigned char Alpha)
-		{
-			vint dstX=dstRect.left;
-			vint dstY=dstRect.top;
-			vint dstW=dstRect.right-dstRect.left;
-			vint dstH=dstRect.bottom-dstRect.top;
-			vint srcX=srcRect.left;
-			vint srcY=srcRect.top;
-			vint srcW=srcRect.right-srcRect.left;
-			vint srcH=srcRect.bottom-srcRect.top;
-
-			BLENDFUNCTION Blend;
-			Blend.BlendOp=AC_SRC_OVER;
-			Blend.BlendFlags=0;
-			Blend.SourceConstantAlpha=Alpha;
-			Blend.AlphaFormat=Bitmap->IsAlphaChannelBuilt()?AC_SRC_ALPHA:0;
-			AlphaBlend(FHandle, (int)dstX, (int)dstY, (int)dstW, (int)dstH, Bitmap->GetWinDC()->GetHandle(), (int)srcX, (int)srcY, (int)srcW, (int)srcH, Blend);
-		}
-
-/*********************************************************************************************************
-WinControlDC
-*********************************************************************************************************/
-
-		WinControlDC::WinControlDC(HWND Handle)
-		{
-			FControlHandle=Handle;
-			FHandle=GetDC(FControlHandle);
-			Init();
-		}
-
-		WinControlDC::~WinControlDC()
-		{
-			ReleaseDC(FControlHandle, FHandle);
-		}
-
-/*********************************************************************************************************
-WinProxyDC
-*********************************************************************************************************/
-
-		WinProxyDC::WinProxyDC()
-		{
-			FHandle=NULL;
-		}
-
-		WinProxyDC::~WinProxyDC()
-		{
-		}
-
-		void WinProxyDC::Initialize(HDC Handle)
-		{
-			FHandle=Handle;
-			Init();
-		}
-
-/*********************************************************************************************************
-WinImageDC
-*********************************************************************************************************/
-
-		WinImageDC::WinImageDC()
-		{
-			FHandle=CreateCompatibleDC(NULL);
-			Init();
-		}
-
-		WinImageDC::~WinImageDC()
-		{
-			DeleteDC(FHandle);
-		}
-
-		}
-	}
-}
-
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\GDI\WINGDIAPPLICATION.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			using namespace vl::collections;
-
-			class GdiWindowsNativeWindowListener : public Object, public INativeWindowListener
-			{
-			protected:
-				Ptr<WinBitmap>					buffer;
-				INativeWindow*					window;
-				bool							needPaintAfterResize = false;
-
-				vint DetermineBufferLength(vint minSize, vint minBound, vint maxBound, vint currentSize)
-				{
-					if(currentSize<minSize || currentSize>maxBound)
-					{
-						return minBound;
-					}
-					else
-					{
-						return currentSize;
-					}
-				}
-
-				NativeSize CalculateBufferSize()
-				{
-					NativeSize nativeWindowSize = window->GetClientSize();
-					Size windowSize(nativeWindowSize.x.value, nativeWindowSize.y.value);
-					Size minBounds(windowSize.x * 5 / 4, windowSize.y * 5 / 4);
-					Size maxBounds(windowSize.x * 3 / 2, windowSize.y * 3 / 2);
-					Size currentSize = buffer ? Size(buffer->GetWidth(), buffer->GetHeight()) : Size(0, 0);
-					vint newWidth = DetermineBufferLength(windowSize.x, minBounds.x, maxBounds.x, currentSize.x);
-					vint newHeight = DetermineBufferLength(windowSize.y, minBounds.y, maxBounds.y, currentSize.y);
-					return NativeSize(newWidth, newHeight);
-				}
-
-				void RebuildCanvas(NativeSize size)
-				{
-					if (size.x < 256)size.x = 256;
-					if (size.y < 256)size.y = 256;
-					if (buffer)
-					{
-						if (buffer->GetWidth() != size.x.value || buffer->GetHeight() != size.y.value)
-						{
-							buffer = 0;
-							needPaintAfterResize = true;
-						}
-					}
-					if (!buffer)
-					{
-						buffer = Ptr(new WinBitmap(size.x.value, size.y.value, WinBitmap::vbb32Bits, true));
-						buffer->GetWinDC()->SetBackTransparent(true);
-					}
-				}
-			public:
-				GdiWindowsNativeWindowListener(INativeWindow* _window)
-					:window(_window)
-				{
-				}
-
-				void Moved()
-				{
-					RebuildCanvas(CalculateBufferSize());
-				}
-
-				void Paint()
-				{
-					// for the first Paint() call after Moved()
-					// trigger the global timer so that all GuiGraphicsHost with needToRender=true will call Render(false)
-					// so that to fill the buffer to prevent from seeing a black frame
-					// but it still leave some black color since the layout may needs more than 1 frame to finish
-					if (needPaintAfterResize)
-					{
-						needPaintAfterResize = false;
-						auto callbackService = GetCurrentController()->CallbackService();
-						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
-					}
-					IWindowsForm* form=GetWindowsForm(window);
-					WinControlDC controlDC(form->GetWindowHandle());
-					controlDC.Draw(0, 0, buffer);
-				}
-
-				WinDC* GetWinDC()
-				{
-					if(!buffer) Moved();
-					return buffer->GetWinDC();
-				}
-			};
-
-			class GdiWindowsNativeControllerListener : public Object, public INativeControllerListener
-			{
-			public:
-				Dictionary<INativeWindow*, Ptr<GdiWindowsNativeWindowListener>>		nativeWindowListeners;
-
-				~GdiWindowsNativeControllerListener()
-				{
-					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
-					{
-						auto window = nativeWindowListeners.Keys()[i];
-						auto listener = nativeWindowListeners.Values()[i];
-						window->UninstallListener(listener.Obj());
-					}
-				}
-
-				void NativeWindowCreated(INativeWindow* window)
-				{
-					auto listener=Ptr(new GdiWindowsNativeWindowListener(window));
-					window->InstallListener(listener.Obj());
-					nativeWindowListeners.Add(window, listener);
-				}
-
-				void NativeWindowDestroying(INativeWindow* window)
-				{
-					auto listener=nativeWindowListeners[window];
-					nativeWindowListeners.Remove(window);
-					window->UninstallListener(listener.Obj());
-				}
-			};
-
-			GdiWindowsNativeControllerListener* gdiListener=0;
-
-			WinDC* GetNativeWindowDC(INativeWindow* window)
-			{
-				vint index=gdiListener->nativeWindowListeners.Keys().IndexOf(window);
-				return index==-1?0:gdiListener->nativeWindowListeners.Values().Get(index)->GetWinDC();
-			}
-
-			HDC GetNativeWindowHDC(INativeWindow* window)
-			{
-				WinDC* dc=GetNativeWindowDC(window);
-				return dc?dc->GetHandle():NULL;
-			}
-		}
-
-		namespace elements_windows_gdi
-		{
-/***********************************************************************
-OS Supporting
-***********************************************************************/
-
-			class WinGDIApplicationGDIObjectProvider : public IWindowsGDIObjectProvider
-			{
-			protected:
-				IMLangFontLink2*				mLangFontLink;
-
-			public:
-				WinGDIApplicationGDIObjectProvider()
-					:mLangFontLink(0)
-				{
-					CoCreateInstance(CLSID_CMultiLanguage, NULL, CLSCTX_INPROC_SERVER, IID_IMLangFontLink2, (void**)&mLangFontLink);
-				}
-
-				~WinGDIApplicationGDIObjectProvider()
-				{
-					mLangFontLink->Release();
-				}
-
-				windows::WinDC* GetNativeWindowDC(INativeWindow* window)override
-				{
-					return vl::presentation::windows::GetNativeWindowDC(window);
-				}
-
-				IWindowsGDIRenderTarget* GetBindedRenderTarget(INativeWindow* window)override
-				{
-					return dynamic_cast<IWindowsGDIRenderTarget*>(vl::presentation::windows::GetWindowsForm(window)->GetGraphicsHandler());
-				}
-
-				void SetBindedRenderTarget(INativeWindow* window, IWindowsGDIRenderTarget* renderTarget)override
-				{
-					vl::presentation::windows::GetWindowsForm(window)->SetGraphicsHandler(renderTarget);
-				}
-
-				IWICImagingFactory* GetWICImagingFactory()override
-				{
-					return vl::presentation::windows::GetWICImagingFactory();
-				}
-
-				IWICBitmap* GetWICBitmap(INativeImageFrame* frame)override
-				{
-					return vl::presentation::windows::GetWICBitmap(frame);
-				}
-
-				IMLangFontLink2* GetMLangFontLink()override
-				{
-					return mLangFontLink;
-				}
-			};
-		}
-	}
-}
-
-using namespace vl;
-using namespace vl::presentation;
-using namespace vl::presentation::windows;
-using namespace vl::presentation::elements_windows_gdi;
-
-int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)())
-{
-	EnableCrossKernelCrashing();
-	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
-	SetCurrentController(controller);
-	{
-		// install listener
-		GdiWindowsNativeControllerListener listener;
-		controller->CallbackService()->InstallListener(&listener);
-		gdiListener=&listener;
-		// main
-		RendererMain();
-		// uninstall listener
-		gdiListener=0;
-		controller->CallbackService()->UninstallListener(&listener);
-	}
-	// destroy controller
-	DestroyWindowsNativeController(controller);
-	return 0;
-}
-
-int SetupWindowsGDIRenderer()
-{
-	InitDpiAwareness(false);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinGDIApplicationGDIObjectProvider objectProvider;
-	SetWindowsGDIObjectProvider(&objectProvider);
-	return WinMainGDI(hInstance, &RendererMainGDI);
-}
-
-/***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSASYNCSERVICE.CPP
+.\SERVICESIMPL\WINDOWSASYNCSERVICE.CPP
 ***********************************************************************/
 
 namespace vl
@@ -13176,7 +13180,7 @@ WindowsAsyncService
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCALLBACKSERVICE.CPP
+.\SERVICESIMPL\WINDOWSCALLBACKSERVICE.CPP
 ***********************************************************************/
 
 namespace vl
@@ -13256,7 +13260,7 @@ WindowsCallbackService
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.CPP
+.\SERVICESIMPL\WINDOWSCLIPBOARDSERVICE.CPP
 ***********************************************************************/
 
 namespace vl
@@ -13540,7 +13544,7 @@ WindowsClipboardService
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSDIALOGSERVICE.CPP
+.\SERVICESIMPL\WINDOWSDIALOGSERVICE.CPP
 ***********************************************************************/
 #include <Vfw.h>
 
@@ -13817,7 +13821,7 @@ WindowsDialogService
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSIMAGESERVICE.CPP
+.\SERVICESIMPL\WINDOWSIMAGESERVICE.CPP
 ***********************************************************************/
 #include <Shlwapi.h>
 
@@ -14494,7 +14498,7 @@ Helper Functions
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSINPUTSERVICE.CPP
+.\SERVICESIMPL\WINDOWSINPUTSERVICE.CPP
 ***********************************************************************/
 
 namespace vl
@@ -14629,7 +14633,7 @@ WindowsInputService
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSRESOURCESERVICE.CPP
+.\SERVICESIMPL\WINDOWSRESOURCESERVICE.CPP
 ***********************************************************************/
 
 namespace vl
@@ -14776,7 +14780,7 @@ WindowsResourceService
 }
 
 /***********************************************************************
-.\NATIVEWINDOW\WINDOWS\SERVICESIMPL\WINDOWSSCREENSERVICE.CPP
+.\SERVICESIMPL\WINDOWSSCREENSERVICE.CPP
 ***********************************************************************/
 
 namespace vl

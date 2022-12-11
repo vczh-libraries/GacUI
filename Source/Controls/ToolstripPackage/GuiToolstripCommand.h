@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_GUITOOLSTRIPCOMMAND
 #define VCZH_PRESENTATION_CONTROLS_GUITOOLSTRIPCOMMAND
 
-#include "../GuiBasicControls.h"
+#include "../../Application/Controls/GuiBasicControls.h"
 
 namespace vl
 {

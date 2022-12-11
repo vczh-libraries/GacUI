@@ -9,15 +9,14 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_CONTROLS_INCLUDEALL
 #define VCZH_PRESENTATION_CONTROLS_INCLUDEALL
 
-#include "GuiBasicControls.h"
-#include "GuiLabelControls.h"
+#include "../Application/Controls/GuiBasicControls.h"
+#include "../Application/Controls/GuiApplication.h"
+#include "../Application/Controls/GuiLabelControls.h"
+#include "../Application/Controls/GuiWindowControls.h"
 #include "GuiButtonControls.h"
 #include "GuiContainerControls.h"
 #include "GuiDateTimeControls.h"
-#include "GuiLabelControls.h"
 #include "GuiScrollControls.h"
-#include "GuiWindowControls.h"
-#include "GuiApplication.h"
 #include "GuiDialogs.h"
 
 #include "ListControlPackage/GuiListControls.h"

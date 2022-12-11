@@ -1,6 +1,6 @@
 #include "GuiInstanceLoader.h"
 #include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
-#include "../Controls/GuiApplication.h"
+#include "../Application/Controls/GuiApplication.h"
 #include "../Resources/GuiParserManager.h"
 #include "InstanceQuery/Generated/GuiInstanceQueryParser.h"
 

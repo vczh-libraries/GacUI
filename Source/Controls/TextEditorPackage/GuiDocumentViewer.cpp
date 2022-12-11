@@ -1,5 +1,5 @@
 #include "GuiDocumentViewer.h"
-#include "../../GraphicsHost/GuiGraphicsHost.h"
+#include "../../Application/GraphicsHost/GuiGraphicsHost.h"
 
 namespace vl
 {

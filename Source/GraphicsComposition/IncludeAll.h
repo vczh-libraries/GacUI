@@ -9,8 +9,8 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_COMPOSITION_INCLUDEALL
 #define VCZH_PRESENTATION_COMPOSITION_INCLUDEALL
 
-#include "GuiGraphicsCompositionBase.h"
-#include "GuiGraphicsBasicComposition.h"
+#include "../Application/GraphicsCompositions/GuiGraphicsCompositionBase.h"
+#include "../Application/GraphicsCompositions/GuiGraphicsBasicComposition.h"
 #include "GuiGraphicsTableComposition.h"
 #include "GuiGraphicsStackComposition.h"
 #include "GuiGraphicsFlowComposition.h"

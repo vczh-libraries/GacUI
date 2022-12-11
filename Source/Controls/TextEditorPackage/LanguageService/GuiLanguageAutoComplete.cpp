@@ -1,5 +1,4 @@
 #include "GuiLanguageAutoComplete.h"
-#include "../../GuiApplication.h"
 
 namespace vl
 {

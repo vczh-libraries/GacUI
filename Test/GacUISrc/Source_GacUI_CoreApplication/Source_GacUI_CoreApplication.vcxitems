@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{e2f1d033-808d-4d82-8fbc-ebce0f1cc11c}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiThemeManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Tab.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiApplication.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiBasicControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiThemeManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Tab.cpp" />
+  </ItemGroup>
+</Project>

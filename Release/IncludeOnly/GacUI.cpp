@@ -88,6 +88,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Resources\GuiDocument_Load.cpp"
 #include "..\..\Source\Resources\GuiDocument_Save.cpp"
 #include "..\..\Source\Resources\GuiParserManager.cpp"
+#include "..\..\Source\Resources\GuiPluginManager.cpp"
 #include "..\..\Source\Resources\GuiResource.cpp"
 #include "..\..\Source\Resources\GuiResourceManager.cpp"
 #include "..\..\Source\Resources\GuiResourceTypeResolvers.cpp"
