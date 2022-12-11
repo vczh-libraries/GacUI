@@ -1,0 +1,3 @@
+i1 # .\Resource.FailedInstance.Ctor5.xml
+(6, 11): F2: Symbol "Wrong" does not exist in the current scope.
+(11, 11): F2: Symbol "Wrong" does not exist in the current scope.

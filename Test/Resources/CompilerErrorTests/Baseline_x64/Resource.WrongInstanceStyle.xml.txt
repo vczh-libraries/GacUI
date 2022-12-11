@@ -1,0 +1,6 @@
+InstanceStyle1 # .\Resource.WrongInstanceStyle.xml
+(3, 5): The root element of instance styles should be "Styles".
+InstanceStyle2 # .\Resource.WrongInstanceStyle.xml
+(7, 7): Unknown element in <Styles>: "Unknown".
+(8, 7): Missing attribute "ref.Path" in <Style>.
+(9, 25): Parser stops at incorrect input: ".".

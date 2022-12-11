@@ -43,12 +43,12 @@ WString GetTestBaselinePath()
 {
 #if defined VCZH_MSVC
 #ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests\\x64";
+	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests\\Baseline_x64";
 #else
-	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\x86";
+	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\Baseline_x86";
 #endif
 #elif defined VCZH_GCC
-	return L"../Resources/CompilerErrorTests/x64";
+	return L"../Resources/CompilerErrorTests/Baseline_x64";
 #endif
 }
 

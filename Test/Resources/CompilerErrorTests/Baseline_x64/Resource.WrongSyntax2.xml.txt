@@ -1,0 +1,33 @@
+ # .\Resource.WrongSyntax.xml
+(1, 2): Parser stops at incorrect input: ">".
+ # .\Resource.WrongSyntax2.xml
+(10, 3): Duplicated resource folder name "Instances".
+(11, 3): A resource folder should have a name.
+(13, 3): Unknown resource type "Unknown".
+(27, 5): Script should be contained in a CDATA section.
+Instances # .\Resource.WrongSyntax2.xml
+(8, 5): Duplicated resource item name "Text".
+Instances/Instance # .\Resource.WrongSyntax.xml
+(1, 2): Parser stops at incorrect input: ">".
+Instances/InstanceStyle # .\Resource.WrongSyntax.xml
+(1, 2): Parser stops at incorrect input: ">".
+Instances/Script # .\Resource.WrongSyntax.xml
+(1, 2): Parser stops at incorrect input: ">".
+NotExistsCollection # .\Resource.WrongSyntax2.xml
+(15, 5): Failed to load file ".\Resource.NotExists.xml".
+NotExistsCollection/Image # .\Resource.NotExists.xml
+(-2, -2): Failed to load file ".\Resource.NotExists.xml".
+NotExistsCollection/Image2 # .\Resource.WrongSyntax2.xml
+(-2, -2): Image should load from file.
+NotExistsCollection/Instance # .\Resource.NotExists.xml
+(-2, -2): Failed to load file ".\Resource.NotExists.xml".
+NotExistsCollection/InstanceStyle # .\Resource.NotExists.xml
+(-2, -2): Failed to load file ".\Resource.NotExists.xml".
+NotExistsCollection/Script # .\Resource.NotExists.xml
+(-2, -2): Failed to load file ".\Resource.NotExists.xml".
+NotExistsCollection/Text # .\Resource.NotExists.xml
+(-2, -2): Failed to load file ".\Resource.NotExists.xml".
+NotExistsCollection/Xml # .\Resource.NotExists.xml
+(-2, -2): Failed to load file ".\Resource.NotExists.xml".
+Xml # .\Resource.WrongSyntax.xml
+(1, 2): Parser stops at incorrect input: ">".
