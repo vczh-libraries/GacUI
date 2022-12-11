@@ -1,6 +1,5 @@
 #include "GuiBasicControls.h"
 #include "GuiApplication.h"
-#include "Templates/GuiThemeStyleFactory.h"
 #include "../GraphicsHost/GuiGraphicsHost.h"
 
 namespace vl
