@@ -9,12 +9,18 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_TAB
 #define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_TAB
 
-#include "../../GraphicsComposition/IncludeForward.h"
+#include "../GraphicsCompositions/GuiGraphicsEventReceiver.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		namespace controls
+		{
+			class GuiControl;
+			class GuiControlHost;
+		}
+
 		namespace compositions
 		{
 

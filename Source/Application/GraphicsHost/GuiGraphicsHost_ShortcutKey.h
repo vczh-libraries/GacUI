@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
 #define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
 
-#include "../../GraphicsComposition/IncludeForward.h"
+#include "../GraphicsCompositions/GuiGraphicsEventReceiver.h"
 
 namespace vl
 {

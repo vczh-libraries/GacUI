@@ -1,6 +1,5 @@
 #include "GuiGraphicsHost.h"
 #include "../Controls/GuiWindowControls.h"
-#include "../Controls/Templates/GuiThemeStyleFactory.h"
 
 namespace vl
 {
@@ -11,7 +10,6 @@ namespace vl
 			using namespace collections;
 			using namespace controls;
 			using namespace elements;
-			using namespace theme;
 
 /***********************************************************************
 GuiGraphicsTimerManager
