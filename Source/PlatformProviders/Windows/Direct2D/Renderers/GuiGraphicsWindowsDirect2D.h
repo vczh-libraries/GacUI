@@ -11,7 +11,7 @@ Interfaces:
 
 #include "..\..\..\..\GraphicsElement\GuiGraphicsTextElement.h"
 #include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
-#include "..\..\..\..\GraphicsComposition\GuiGraphicsEventReceiver.h"
+#include "..\..\..\..\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h"
 #include <d2d1_1.h>
 #include <dwrite_1.h>
 #include <d2d1effects.h>

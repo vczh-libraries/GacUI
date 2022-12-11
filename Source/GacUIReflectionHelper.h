@@ -12,7 +12,7 @@ GacUI Reflection Helper
 #include "GraphicsElement/GuiGraphicsTextElement.h"
 #include "GraphicsElement/GuiGraphicsDocumentElement.h"
 #include "GraphicsComposition/IncludeAll.h"
-#include "GraphicsHost/GuiGraphicsHost.h"
+#include "Application/GraphicsHost/GuiGraphicsHost.h"
 #include "Controls/IncludeAll.h"
 #include "Controls/Templates/GuiAnimation.h"
 #include "Controls/Templates/GuiCommonTemplates.h"

@@ -11,7 +11,7 @@ Interfaces:
 
 #include "..\..\..\..\GraphicsElement\GuiGraphicsTextElement.h"
 #include "..\..\..\..\GraphicsElement\GuiGraphicsDocumentElement.h"
-#include "..\..\..\..\GraphicsComposition\GuiGraphicsEventReceiver.h"
+#include "..\..\..\..\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h"
 #include "..\WinGDI.h"
 #include <wincodec.h>
 #include <MLang.h>
