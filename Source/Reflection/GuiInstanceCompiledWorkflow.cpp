@@ -1,5 +1,5 @@
 #include "GuiInstanceCompiledWorkflow.h"
-#include "../Controls/GuiApplication.h"
+#include "../Application/Controls/GuiApplication.h"
 
 namespace vl
 {
