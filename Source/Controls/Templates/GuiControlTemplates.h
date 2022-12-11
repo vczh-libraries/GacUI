@@ -30,51 +30,6 @@ namespace vl
 		namespace templates
 		{
 
-#define GUI_TEMPLATE_PROPERTY_DECL(CLASS, TYPE, NAME, VALUE)\
-			private:\
-				TYPE NAME##_ = VALUE;\
-			public:\
-				TYPE Get##NAME();\
-				void Set##NAME(TYPE const& value);\
-				compositions::GuiNotifyEvent NAME##Changed;\
-
-#define GUI_TEMPLATE_PROPERTY_IMPL(CLASS, TYPE, NAME, VALUE)\
-			TYPE CLASS::Get##NAME()\
-			{\
-				return NAME##_;\
-			}\
-			void CLASS::Set##NAME(TYPE const& value)\
-			{\
-				if (NAME##_ != value)\
-				{\
-					NAME##_ = value;\
-					NAME##Changed.Execute(compositions::GuiEventArgs(this));\
-				}\
-			}\
-
-#define GUI_TEMPLATE_PROPERTY_EVENT_INIT(CLASS, TYPE, NAME, VALUE)\
-			NAME##Changed.SetAssociatedComposition(this);
-
-#define GUI_TEMPLATE_CLASS_DECL(CLASS, BASE)\
-			class CLASS : public BASE, public AggregatableDescription<CLASS>\
-			{\
-			public:\
-				CLASS();\
-				~CLASS();\
-				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)\
-			};\
-
-#define GUI_TEMPLATE_CLASS_IMPL(CLASS, BASE)\
-			CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)\
-			CLASS::CLASS()\
-			{\
-				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)\
-			}\
-			CLASS::~CLASS()\
-			{\
-				FinalizeAggregation();\
-			}\
-
 #define GUI_CONTROL_TEMPLATE_DECL(F)\
 			F(GuiControlTemplate,				GuiTemplate)				\
 			F(GuiLabelTemplate,					GuiControlTemplate)			\
@@ -113,30 +68,6 @@ namespace vl
 			F(GuiGridCellTemplate,				GuiControlTemplate)			\
 			F(GuiGridVisualizerTemplate,		GuiGridCellTemplate)		\
 			F(GuiGridEditorTemplate,			GuiGridCellTemplate)		\
-
-/***********************************************************************
-GuiTemplate
-***********************************************************************/
-
-			/// <summary>Represents a user customizable template.</summary>
-			class GuiTemplate : public compositions::GuiBoundsComposition, public controls::GuiInstanceRootObject, public Description<GuiTemplate>
-			{
-			protected:
-				controls::GuiControlHost*		GetControlHostForInstance()override;
-				void							OnParentLineChanged()override;
-			public:
-				/// <summary>Create a template.</summary>
-				GuiTemplate();
-				~GuiTemplate();
-				
-#define GuiTemplate_PROPERTIES(F)\
-				F(GuiTemplate,	FontProperties,		Font,				{}	)\
-				F(GuiTemplate,	description::Value,	Context,			{}	)\
-				F(GuiTemplate,	WString,			Text,				{}	)\
-				F(GuiTemplate,	bool,				VisuallyEnabled,	true)\
-
-				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
 
 /***********************************************************************
 GuiListItemTemplate

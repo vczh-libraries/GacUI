@@ -1,4 +1,4 @@
-#include "../GraphicsHost/GuiGraphicsHost.h"
+#include "GuiGraphicsBasicComposition.h"
 
 namespace vl
 {
@@ -7,7 +7,6 @@ namespace vl
 		namespace compositions
 		{
 			using namespace collections;
-			using namespace controls;
 			using namespace elements;
 
 /***********************************************************************

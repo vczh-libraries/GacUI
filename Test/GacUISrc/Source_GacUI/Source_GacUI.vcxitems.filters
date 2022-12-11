@@ -39,9 +39,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDialogs.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiLabelControls.cpp">
-      <Filter>Controls</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.cpp">
       <Filter>Controls</Filter>
     </ClCompile>
@@ -141,9 +138,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp">
       <Filter>GraphicsComposition</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.cpp">
-      <Filter>GraphicsComposition</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp">
       <Filter>GraphicsComposition</Filter>
     </ClCompile>
@@ -178,9 +172,6 @@
       <Filter>Controls</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiDialogs.h">
-      <Filter>Controls</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiLabelControls.h">
       <Filter>Controls</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiScrollControls.h">
@@ -292,9 +283,6 @@
       <Filter>Controls\ToolstripPackage</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.h">
-      <Filter>GraphicsComposition</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsBasicComposition.h">
       <Filter>GraphicsComposition</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.h">
