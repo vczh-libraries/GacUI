@@ -4,6 +4,7 @@ Developer: Zihan Chen(vczh)
 GacUI::Hosted Window
 
 Interfaces:
+  IGuiGraphicsResourceManager
 
 ***********************************************************************/
 
@@ -16,13 +17,34 @@ namespace vl
 {
 	namespace presentation
 	{
-/***********************************************************************
-GuiHostedGraphicsRenderer
-***********************************************************************/
+		class GuiHostedController;
+
+		namespace elements
+		{
 
 /***********************************************************************
-IGuiGraphicsResourceManager
+GuiHostedGraphicsResourceManager
 ***********************************************************************/
+
+			class GuiHostedGraphicsResourceManager : public Object, public virtual IGuiGraphicsResourceManager
+			{
+			protected:
+				GuiHostedController*				hostedController = nullptr;
+				IGuiGraphicsResourceManager*		nativeManager = nullptr;
+
+			public:
+				GuiHostedGraphicsResourceManager(GuiHostedController* _hostedController, IGuiGraphicsResourceManager* _nativeManager);
+				~GuiHostedGraphicsResourceManager();
+
+				vint								RegisterElementType(const WString& elementTypeName) override;
+				void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) override;
+				IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType) override;
+				IGuiGraphicsRenderTarget*			GetRenderTarget(INativeWindow* window) override;
+				void								RecreateRenderTarget(INativeWindow* window) override;
+				void								ResizeRenderTarget(INativeWindow* window) override;
+				IGuiGraphicsLayoutProvider*			GetLayoutProvider() override;
+			};
+		}
 	}
 }
 

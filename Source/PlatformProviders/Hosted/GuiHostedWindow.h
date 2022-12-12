@@ -42,6 +42,7 @@ GuiHostedWindow
 			// =============================================================
 
 			bool							IsActivelyRefreshing() override;
+			NativePoint						GetRenderingOffset() override;
 			Point							Convert(NativePoint value) override;
 			NativePoint						Convert(Point value) override;
 			Size							Convert(NativeSize value) override;

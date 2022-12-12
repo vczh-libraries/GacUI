@@ -1079,6 +1079,11 @@ WindowsForm
 					return true;
 				}
 
+				NativePoint GetRenderingOffset()override
+				{
+					return { 0,0 };
+				}
+
 				Point Convert(NativePoint value)override
 				{
 					return Point((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);

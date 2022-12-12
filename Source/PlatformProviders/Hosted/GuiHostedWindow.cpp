@@ -24,6 +24,11 @@ GuiHostedWindow
 			return false;
 		}
 
+		NativePoint GuiHostedWindow::GetRenderingOffset()
+		{
+			CHECK_FAIL(L"Not implemented!");
+		}
+
 		Point GuiHostedWindow::Convert(NativePoint value)
 		{
 			return controller->nativeWindow->Convert(value);

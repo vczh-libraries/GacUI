@@ -55,10 +55,16 @@ INativeWindow
 		public:
 			/// <summary>
 			/// Test if the window needs to actively refreshing itself.
-			/// It should return true if there it has an exclusive OS native window.
+			/// It should return true if it has an exclusive OS native window.
 			/// </summary>
 			/// <returns>Returns true if the window needs to actively refreshing itself.</returns>
 			virtual bool				IsActivelyRefreshing() = 0;
+			/// <summary>
+			/// Get the rendering offset to the render target.
+			/// It should return (0,0) if it has an exclusive OS native window.
+			/// </summary>
+			/// <returns>Returns the rendering offset to the render target.</returns>
+			virtual NativePoint			GetRenderingOffset() = 0;
 
 			/// <summary>
 			/// Convert point from native coordinate to GUI coordinate.
