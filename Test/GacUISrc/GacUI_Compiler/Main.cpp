@@ -79,16 +79,16 @@ void GuiMain()
 #define DARKSKIN_PATH					L"App/DarkSkin/Resource.xml"
 #define FULLCONTROLTEST_PATH			L"App/FullControlTest/Resource.xml"
 
-#if defined VCZH_MSVC
-#define DARKSKIN_BINARY_FOLDER			L"../GacUISrc/Generated_DarkSkin/Resource/"
-#define DARKSKIN_SOURCE_FOLDER			L"../GacUISrc/Generated_DarkSkin/Source/"
-#define FULLCONTROLTEST_BINARY_FOLDER	L"../GacUISrc/Generated_FullControlTest/Resource/"
-#define FULLCONTROLTEST_SOURCE_FOLDER	L"../GacUISrc/Generated_FullControlTest/Source/"
-#elif defined VCZH_GCC
-#define DARKSKIN_BINARY_FOLDER			L"../GacUISrc/Generated_DarkSkin/Resource_Linux64/"
-#define DARKSKIN_SOURCE_FOLDER			L"../GacUISrc/Generated_DarkSkin/Source_Linux64/"
-#define FULLCONTROLTEST_BINARY_FOLDER	L"../GacUISrc/Generated_FullControlTest/Resource_Linux64/"
-#define FULLCONTROLTEST_SOURCE_FOLDER	L"../GacUISrc/Generated_FullControlTest/Source_Linux64/"
+#ifdef VCZH_64
+#define DARKSKIN_BINARY_FOLDER			L"../GacUISrc/Generated_DarkSkin/Resource_x64/"
+#define DARKSKIN_SOURCE_FOLDER			L"../GacUISrc/Generated_DarkSkin/Source_x64/"
+#define FULLCONTROLTEST_BINARY_FOLDER	L"../GacUISrc/Generated_FullControlTest/Resource_x64/"
+#define FULLCONTROLTEST_SOURCE_FOLDER	L"../GacUISrc/Generated_FullControlTest/Source_x64/"
+#else
+#define DARKSKIN_BINARY_FOLDER			L"../GacUISrc/Generated_DarkSkin/Resource_x86/"
+#define DARKSKIN_SOURCE_FOLDER			L"../GacUISrc/Generated_DarkSkin/Source_x86/"
+#define FULLCONTROLTEST_BINARY_FOLDER	L"../GacUISrc/Generated_FullControlTest/Resource_x86/"
+#define FULLCONTROLTEST_SOURCE_FOLDER	L"../GacUISrc/Generated_FullControlTest/Source_x86/"
 #endif
 
 	List<WString> dependencies;
