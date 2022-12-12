@@ -1,5 +1,5 @@
 #include "WinDirect2DApplication.h"
-#include "..\..\Hosted\GuiHostedWindow.h"
+#include "..\..\Hosted\GuiHostedController.h"
 #include "Renderers\GuiGraphicsWindowsDirect2D.h"
 #include <ShellScalingApi.h>
 

@@ -1,5 +1,5 @@
 #include "WinGDIApplication.h"
-#include "..\..\Hosted\GuiHostedWindow.h"
+#include "..\..\Hosted\GuiHostedController.h"
 #include "Renderers\GuiGraphicsWindowsGDI.h"
 #include <ShellScalingApi.h>
 #include "..\ServicesImpl\WindowsCallbackService.h"

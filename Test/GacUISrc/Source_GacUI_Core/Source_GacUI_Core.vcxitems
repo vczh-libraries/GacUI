@@ -22,6 +22,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard.h" />
@@ -37,6 +39,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsResourceManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocumentClipboard_Document.cpp" />

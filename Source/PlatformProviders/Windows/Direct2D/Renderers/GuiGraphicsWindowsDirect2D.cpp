@@ -211,8 +211,8 @@ CachedResourceAllocator
 				class Direct2DCharMeasurer : public text::CharMeasurer
 				{
 				protected:
-					ComPtr<IDWriteTextFormat>		font;
-					vint								size;
+					ComPtr<IDWriteTextFormat>	font;
+					vint						size;
 
 					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{

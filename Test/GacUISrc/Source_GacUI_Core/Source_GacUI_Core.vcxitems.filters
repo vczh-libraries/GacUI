@@ -114,6 +114,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.cpp">
       <Filter>PlatformProviders\Hosted</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.cpp">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.cpp">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -160,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.h">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.h">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.h">
       <Filter>PlatformProviders\Hosted</Filter>
     </ClInclude>
   </ItemGroup>
