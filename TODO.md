@@ -3,7 +3,6 @@
 ## Progressing
 
 - `GuiHostedController`, `GuiHostedMonitor`, `GuiHostedWindow` and `GuiHostedMainWindow`.
-  - Stop using `GetCurrentController()` in `Source_GacUI_Windows`.
   - User offers an ordinary `INativeController` and `INativeWindow` implementation.
   - `GuiHostedController` and `GuiHostedWindow` use the above implementation to implement the `hosted single window` mode.
     - `GuiHostedController` reuses all services provided from the underlying native `INativeController` except windows and monitors.
@@ -18,6 +17,8 @@
     - A window manager that treats `GuiHostedMainWindow` as the desktop and `GuiHostedWindow` as windows.
     - DPI still changes in runtime.
   - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
+
+- Stop using `GetCurrentController()` in `Source_GacUI_Windows`.
 
 ## OS Provider Features
 

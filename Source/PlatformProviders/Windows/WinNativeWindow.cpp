@@ -910,6 +910,7 @@ WindowsForm
 				WindowsForm*						parentWindow = nullptr;
 				List<WindowsForm*>					childWindows;
 				WindowMode							windowMode;
+				bool								isMainWindow = false;
 				List<INativeWindowListener*>		listeners;
 				vint								mouseLastX = -1;
 				vint								mouseLastY = -1;
@@ -938,7 +939,7 @@ WindowsForm
 				}
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance, INativeWindow::WindowMode _windowMode)
-					:windowMode(_windowMode)
+					: windowMode(_windowMode)
 				{
 					{
 						DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
@@ -980,6 +981,11 @@ WindowsForm
 						}
 					}
 					DestroyWindow(handle);
+				}
+
+				void SetIsMainWindow()
+				{
+					isMainWindow = true;
 				}
 
 				void InvokeDestroying()
@@ -1423,7 +1429,7 @@ WindowsForm
 						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
 						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)TRUE, NULL);
 
-						if (this == GetCurrentController()->WindowService()->GetMainWindow())
+						if (isMainWindow)
 						{
 							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
 							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
@@ -1710,8 +1716,8 @@ WindowsController
 				HINSTANCE							hInstance;
 				HWND								godWindow;
 				Dictionary<HWND, WindowsForm*>		windows;
-				INativeWindow*						mainWindow;
-				HWND								mainWindowHandle;
+				WindowsForm*						mainWindow = nullptr;
+				HWND								mainWindowHandle = 0;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
@@ -1727,8 +1733,6 @@ WindowsController
 					:hInstance(_hInstance)
 					,windowClass(L"VczhWindow", false, false, WndProc, _hInstance)
 					,godClass(L"GodWindow", false, false, GodProc, _hInstance)
-					,mainWindow(0)
-					,mainWindowHandle(0)
 					,screenService(&GetHWNDFromNativeWindowHandle)
 					,dialogService(&GetHWNDFromNativeWindowHandle)
 				{
@@ -1835,7 +1839,7 @@ WindowsController
 
 				INativeWindow* CreateNativeWindow(INativeWindow::WindowMode windowMode)override
 				{
-					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
+					WindowsForm* window = new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
 					windows.Add(window->GetWindowHandle(), window);
 					callbackService.InvokeNativeWindowCreated(window);
 					window->SetWindowCursor(resourceService.GetDefaultSystemCursor());
@@ -1844,12 +1848,16 @@ WindowsController
 
 				void DestroyNativeWindow(INativeWindow* window)override
 				{
-					WindowsForm* windowsForm=dynamic_cast<WindowsForm*>(window);
+					auto windowsForm = dynamic_cast<WindowsForm*>(window);
 					windowsForm->InvokeDestroying();
-					if(windowsForm!=0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
+					if (windowsForm != 0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
 					{
 						callbackService.InvokeNativeWindowDestroyed(window);
 						windows.Remove(windowsForm->GetWindowHandle());
+						if (mainWindow == windowsForm)
+						{
+							mainWindow = nullptr;
+						}
 						delete windowsForm;
 					}
 				}
@@ -1861,8 +1869,9 @@ WindowsController
 
 				void Run(INativeWindow* window)override
 				{
-					mainWindow=window;
-					mainWindowHandle=GetWindowsForm(window)->GetWindowHandle();
+					mainWindow = dynamic_cast<WindowsForm*>(GetWindowsForm(window));
+					mainWindowHandle = mainWindow->GetWindowHandle();
+					mainWindow->SetIsMainWindow();
 					mainWindow->Show();
 					MSG message;
 					while(GetMessage(&message, NULL, 0, 0))
