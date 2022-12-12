@@ -119,9 +119,11 @@ GuiHostedController
 			: public Object
 			, protected INativeWindowListener
 			, public INativeController
-			, public INativeScreenService
-			, public INativeScreen
-			, public INativeWindowService
+			, protected INativeAsyncService
+			, protected INativeDialogService
+			, protected INativeScreenService
+			, protected INativeScreen
+			, protected INativeWindowService
 		{
 			friend class GuiHostedWindow;
 		protected:
@@ -188,6 +190,26 @@ GuiHostedController
 			
 			INativeScreenService*			ScreenService() override;
 			INativeWindowService*			WindowService() override;
+
+			// =============================================================
+			// INativeAsyncService
+			// =============================================================
+
+			bool							IsInMainThread(INativeWindow* window) override;
+			void							InvokeAsync(const Func<void()>& proc) override;
+			void							InvokeInMainThread(INativeWindow* window, const Func<void()>& proc) override;
+			bool							InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecute(const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds) override;
+
+			// =============================================================
+			// INativeDialogService
+			// =============================================================
+
+			MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal) override;
+			bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors) override;
+			bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist) override;
+			bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options) override;
 
 			// =============================================================
 			// INativeScreenService

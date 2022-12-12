@@ -537,7 +537,7 @@ GuiHostedController::INativeController
 
 		INativeAsyncService* GuiHostedController::AsyncService()
 		{
-			return nativeController->AsyncService();
+			return this;
 		}
 
 		INativeClipboardService* GuiHostedController::ClipboardService()
@@ -557,7 +557,7 @@ GuiHostedController::INativeController
 
 		INativeDialogService* GuiHostedController::DialogService()
 		{
-			return nativeController->DialogService();
+			return this;
 		}
 
 		WString GuiHostedController::GetExecutablePath()
@@ -573,6 +573,71 @@ GuiHostedController::INativeController
 		INativeWindowService* GuiHostedController::WindowService()
 		{
 			return this;
+		}
+
+/***********************************************************************
+GuiHostedController::INativeAsyncService
+***********************************************************************/
+
+		bool GuiHostedController::IsInMainThread(INativeWindow* window)
+		{
+			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::IsInMainThread(INativeWindow*)#The underlying native window has not been created.");
+			return nativeController->AsyncService()->IsInMainThread(nativeWindow);
+		}
+
+		void GuiHostedController::InvokeAsync(const Func<void()>& proc)
+		{
+			return nativeController->AsyncService()->InvokeAsync(proc);
+		}
+
+		void GuiHostedController::InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)
+		{
+			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::InvokeInMainThread(INativeWindow*, ...)#The underlying native window has not been created.");
+			return nativeController->AsyncService()->InvokeInMainThread(nativeWindow, proc);
+		}
+
+		bool GuiHostedController::InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)
+		{
+			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::InvokeInMainThreadAndWait(INativeWindow*, ...)#The underlying native window has not been created.");
+			return nativeController->AsyncService()->InvokeInMainThreadAndWait(nativeWindow, proc, milliseconds);
+		}
+
+		Ptr<INativeDelay> GuiHostedController::DelayExecute(const Func<void()>& proc, vint milliseconds)
+		{
+			return nativeController->AsyncService()->DelayExecute(proc, milliseconds);
+		}
+
+		Ptr<INativeDelay> GuiHostedController::DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)
+		{
+			return nativeController->AsyncService()->DelayExecuteInMainThread(proc, milliseconds);
+		}
+
+/***********************************************************************
+GuiHostedController::INativeDialogService
+***********************************************************************/
+
+		INativeDialogService::MessageBoxButtonsOutput GuiHostedController::ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)
+		{
+			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowMessageBox(INativeWindow*, ...)#The underlying native window has not been created.");
+			return nativeController->DialogService()->ShowMessageBox(nativeWindow, text, title, buttons, defaultButton, icon, modal);
+		}
+
+		bool GuiHostedController::ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)
+		{
+			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowColorDialog(INativeWindow*, ...)#The underlying native window has not been created.");
+			return nativeController->DialogService()->ShowColorDialog(nativeWindow, selection, selected, customColorOptions, customColors);
+		}
+
+		bool GuiHostedController::ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)
+		{
+			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowFontDialog(INativeWindow*, ...)#The underlying native window has not been created.");
+			return nativeController->DialogService()->ShowFontDialog(nativeWindow, selectionFont, selectionColor, selected, showEffect, forceFontExist);
+		}
+
+		bool GuiHostedController::ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)
+		{
+			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowFileDialog(INativeWindow*, ...)#The underlying native window has not been created.");
+			return nativeController->DialogService()->ShowFileDialog(nativeWindow, selectionFileNames, selectionFilterIndex, dialogType, title, initialFileName, initialDirectory, defaultExtension, filter, options);
 		}
 
 /***********************************************************************

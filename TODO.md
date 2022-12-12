@@ -5,8 +5,6 @@
 - `GuiHostedController`, `GuiHostedMonitor` and `GuiHostedWindow`.
   - User offers an ordinary `INativeController` and `INativeWindow` implementation.
   - `GuiHostedController` and `GuiHostedWindow` use the above implementation to implement the `hosted single window` mode.
-    - `GuiHostedController` reuses all services provided from the underlying native `INativeController` except windows and monitors.
-      - Dialogs are optional.
     - The only `GuiHostedWindow` passed to `IWindowService::Run` is the main window.
       - It is special that it could partially control and react to the underlying native `INativeWindow`.
       - It always fill the full `GuiHostedMonitor`.
