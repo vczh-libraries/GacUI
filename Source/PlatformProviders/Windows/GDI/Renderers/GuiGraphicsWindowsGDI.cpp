@@ -514,6 +514,7 @@ void RendererMainGDI()
 	elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
 
 	GuiApplicationMain();
-	elements_windows_gdi::SetWindowsGDIResourceManager(0);
-	SetGuiGraphicsResourceManager(0);
+	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
+	elements_windows_gdi::SetWindowsGDIResourceManager(nullptr);
+	SetGuiGraphicsResourceManager(nullptr);
 }

@@ -777,6 +777,7 @@ void RendererMainDirect2D()
 	elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
 
 	GuiApplicationMain();
-	elements_windows_d2d::SetWindowsDirect2DResourceManager(0);
-	SetGuiGraphicsResourceManager(0);
+	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
+	elements_windows_d2d::SetWindowsDirect2DResourceManager(nullptr);
+	SetGuiGraphicsResourceManager(nullptr);
 }

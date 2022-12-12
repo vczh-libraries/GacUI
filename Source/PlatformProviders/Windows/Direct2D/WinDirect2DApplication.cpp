@@ -630,13 +630,13 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 	{
 		// install listener
 		Direct2DWindowsNativeControllerListener listener;
-		controller->CallbackService()->InstallListener(&listener);
+		GetWindowsNativeController()->CallbackService()->InstallListener(&listener);
 		direct2DListener = &listener;
 		// main
 		RendererMainDirect2D();
 		// uninstall listener
 		direct2DListener = nullptr;
-		controller->CallbackService()->UninstallListener(&listener);
+		GetWindowsNativeController()->CallbackService()->UninstallListener(&listener);
 	}
 	// destroy controller
 	if (hosted) delete controller;
