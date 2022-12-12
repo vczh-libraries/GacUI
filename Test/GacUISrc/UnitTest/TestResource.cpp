@@ -36,7 +36,20 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 	{
 		TEST_ASSERT(output.Count() > i);
 		TEST_ASSERT(baseline.Count() > i);
+#if defined VCZH_MSVC
 		TEST_ASSERT(output[i] == baseline[i]);
+#elif defined VCZH_GCC
+		auto posRes = INVLOC.FindFirst(output[i], L"Resource.", Locale::Normalization::None);
+		if (posRes.key == -1)
+		{
+			TEST_ASSERT(output[i] == baseline[i]);
+		}
+		else
+		{
+			auto fixedOutput = output[i].Remove(posRes.key, posRes.value).Insert(posRes.key, L".\\Resource.");
+			TEST_ASSERT(output[i] == baseline[i] || fixedOutput == baseline[i]);
+		}
+#endif
 	}
 }
 
