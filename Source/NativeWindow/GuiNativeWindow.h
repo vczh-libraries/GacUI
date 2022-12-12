@@ -54,6 +54,13 @@ INativeWindow
 		{
 		public:
 			/// <summary>
+			/// Test if the window needs to actively refreshing itself.
+			/// It should return true if there it has an exclusive OS native window.
+			/// </summary>
+			/// <returns>Returns true if the window needs to actively refreshing itself.</returns>
+			virtual bool				IsActivelyRefreshing() = 0;
+
+			/// <summary>
 			/// Convert point from native coordinate to GUI coordinate.
 			/// </summary>
 			/// <returns>The converted result.</returns>
@@ -730,6 +737,18 @@ INativeWindow
 			/// </summary>
 			/// <param name="info">Detailed information to this message.</param>
 			virtual void				Char(const NativeWindowCharInfo& info);
+
+			/// <summary>
+			/// Called to test if the window needs to be updated, only when <see cref="INativeWindow::IsActivelyRefreshing"/> returns false.
+			/// </summary>
+			/// <returns>Returns true if the window needs to be updated.</returns>
+			virtual bool				NeedRefresh();
+			/// <summary>
+			/// Called to refresh the window, only when <see cref="INativeWindow::IsActivelyRefreshing"/> returns false.
+			/// </summary>
+			/// <returns>Returns true if the window needs to be updated.</returns>
+			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
+			virtual void				ForceRefresh(bool cleanBeforeRender);
 		};
 
 /***********************************************************************

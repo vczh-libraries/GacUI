@@ -19,6 +19,11 @@ GuiHostedWindow
 		{
 		}
 
+		bool GuiHostedWindow::IsActivelyRefreshing()
+		{
+			return false;
+		}
+
 		Point GuiHostedWindow::Convert(NativePoint value)
 		{
 			return controller->nativeWindow->Convert(value);

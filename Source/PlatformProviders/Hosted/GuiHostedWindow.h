@@ -41,6 +41,7 @@ GuiHostedWindow
 			// INativeWindowListener
 			// =============================================================
 
+			bool							IsActivelyRefreshing() override;
 			Point							Convert(NativePoint value) override;
 			NativePoint						Convert(Point value) override;
 			Size							Convert(NativeSize value) override;

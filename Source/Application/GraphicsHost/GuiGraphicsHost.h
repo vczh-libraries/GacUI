@@ -139,6 +139,9 @@ Host
 				void									SysKeyUp(const NativeWindowKeyInfo& info)override;
 				void									Char(const NativeWindowCharInfo& info)override;
 
+				bool									NeedRefresh()override;
+				void									ForceRefresh(bool cleanBeforeRender)override;
+
 				void									GlobalTimer()override;
 			public:
 				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
@@ -155,7 +158,8 @@ Host
 				GuiGraphicsComposition*					GetMainComposition();
 				/// <summary>Render the main composition and all content to the associated window.</summary>
 				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				void									Render(bool forceUpdate);
+				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
+				void									Render(bool forceUpdate, bool cleanBeforeRender);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
 				/// <summary>Invoke a specified function after rendering.</summary>

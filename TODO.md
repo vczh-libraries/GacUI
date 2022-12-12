@@ -17,13 +17,7 @@
   - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
 
 - Refine GuiGraphicsHost rendering mechanism
-  - Add new INativeWindow members with default implementation
-    - GetRenderOffset returns 0,0, in hosted mode it is the offset to the main window
-    - IsActivelyRefreshing returns true
-      - In GuiGraphicsHost, it renders in GlobalTimer only when this is true
-  - Add new INativeWindowListener members, called when not actively refreshing
-    - BeforeHostedRendering, each window returns if itself needs to be refreshed
-    - HostedRendering, do the rendering (bool forceUpdate, bool cleanBeforeRender)
+    - Add GetRenderOffset in render target
 
 ## OS Provider Features
 

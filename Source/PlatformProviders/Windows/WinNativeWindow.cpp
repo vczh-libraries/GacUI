@@ -1074,6 +1074,11 @@ WindowsForm
 					return true;
 				}
 
+				bool IsActivelyRefreshing()override
+				{
+					return true;
+				}
+
 				Point Convert(NativePoint value)override
 				{
 					return Point((vint)value.x.value * 96 / dpiX, (vint)value.y.value * 96 / dpiY);

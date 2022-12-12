@@ -541,21 +541,34 @@ GuiGraphicsHost
 				}
 			}
 
+			bool GuiGraphicsHost::NeedRefresh()
+			{
+				return needRender;
+			}
+
+			void GuiGraphicsHost::ForceRefresh(bool cleanBeforeRender)
+			{
+				Render(true, cleanBeforeRender);
+			}
+
 			void GuiGraphicsHost::GlobalTimer()
 			{
 				timerManager.Play();
 
-				DateTime now=DateTime::UtcTime();
-				if(now.totalMilliseconds-lastCaretTime>=CaretInterval)
+				DateTime now = DateTime::UtcTime();
+				if (now.totalMilliseconds - lastCaretTime >= CaretInterval)
 				{
-					lastCaretTime=now.totalMilliseconds;
-					if(focusedComposition && focusedComposition->HasEventReceiver())
+					lastCaretTime = now.totalMilliseconds;
+					if (focusedComposition && focusedComposition->HasEventReceiver())
 					{
 						focusedComposition->GetEventReceiver()->caretNotify.Execute(GuiEventArgs(focusedComposition));
 					}
 				}
-				
-				Render(false);
+
+				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsActivelyRefreshing())
+				{
+					Render(false, true);
+				}
 			}
 
 			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
@@ -620,7 +633,7 @@ GuiGraphicsHost
 				return windowComposition;
 			}
 
-			void GuiGraphicsHost::Render(bool forceUpdate)
+			void GuiGraphicsHost::Render(bool forceUpdate, bool cleanBeforeRender)
 			{
 				if (!forceUpdate && !needRender)
 				{
