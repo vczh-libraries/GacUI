@@ -1970,13 +1970,14 @@ WindowsController
 Windows Procedure
 ***********************************************************************/
 
+			WindowsController* windowsController = nullptr;
+
 			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
+				if (windowsController)
 				{
-					LRESULT result=0;
-					if(controller->HandleMessage(hwnd, uMsg, wParam, lParam, result))
+					LRESULT result = 0;
+					if (windowsController->HandleMessage(hwnd, uMsg, wParam, lParam, result))
 					{
 						return result;
 					}
@@ -1986,16 +1987,15 @@ Windows Procedure
 
 			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
+				if (windowsController)
 				{
-					switch(uMsg)
+					switch (uMsg)
 					{
 					case WM_TIMER:
-						controller->InvokeGlobalTimer();
+						windowsController->InvokeGlobalTimer();
 						break;
 					case WM_CLIPBOARDUPDATE:
-						controller->InvokeClipboardUpdated();
+						windowsController->InvokeClipboardUpdated();
 						break;
 					}
 				}
@@ -2006,17 +2006,22 @@ Windows Procedure
 Windows Platform Native Controller
 ***********************************************************************/
 
-			INativeController* CreateWindowsNativeController(HINSTANCE hInstance)
+			void StartWindowsNativeController(HINSTANCE hInstance)
 			{
-				return new WindowsController(hInstance);
+				CHECK_ERROR(!windowsController, L"vl::presentation::windows::StartWindowsNativeController(HINSTANCE)#The Windows native controller has been started.");
+				windowsController = new WindowsController(hInstance);
+			}
+
+			INativeController* GetWindowsNativeController()
+			{
+				return windowsController;
 			}
 
 			IWindowsForm* GetWindowsFormFromHandle(HWND hwnd)
 			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
+				if (windowsController)
 				{
-					return controller->GetWindowsFormFromHandle(hwnd);
+					return windowsController->GetWindowsFormFromHandle(hwnd);
 				}
 				return nullptr;
 			}
@@ -2028,16 +2033,17 @@ Windows Platform Native Controller
 
 			void GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly)
 			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
+				if (windowsController)
 				{
-					controller->GetAllCreatedWindows(windows, rootWindowOnly);
+					windowsController->GetAllCreatedWindows(windows, rootWindowOnly);
 				}
 			}
 
-			void DestroyWindowsNativeController(INativeController* controller)
+			void StopWindowsNativeController()
 			{
-				delete controller;
+				CHECK_ERROR(windowsController, L"vl::presentation::windows::StopWindowsNativeController()#The Windows native controller has been stopped.");
+				delete windowsController;
+				windowsController = nullptr;
 			}
 
 			void EnableCrossKernelCrashing()

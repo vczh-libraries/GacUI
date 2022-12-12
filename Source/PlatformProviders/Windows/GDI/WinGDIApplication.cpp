@@ -213,8 +213,9 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 
 	EnableCrossKernelCrashing();
 	// create controller
-	auto nativeController = CreateWindowsNativeController(hInstance);
-	auto controller = hosted ? new GuiHostedController(nativeController) : nativeController;
+	StartWindowsNativeController(hInstance);
+	auto controller = GetWindowsNativeController();
+	if (hosted) controller = new GuiHostedController(controller);
 	SetCurrentController(controller);
 	{
 		// install listener
@@ -229,7 +230,7 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 	}
 	// destroy controller
 	if (hosted) delete controller;
-	DestroyWindowsNativeController(nativeController);
+	StopWindowsNativeController();
 	return 0;
 }
 

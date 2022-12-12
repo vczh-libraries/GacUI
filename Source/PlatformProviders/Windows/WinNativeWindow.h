@@ -41,11 +41,12 @@ Windows Platform Native Controller
 			};
 
 			extern void										SetWindowDefaultIcon(UINT resourceId);
-			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
+			extern void										StartWindowsNativeController(HINSTANCE hInstance);
+			extern INativeController*						GetWindowsNativeController();
 			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
 			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
 			extern void										GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly);
-			extern void										DestroyWindowsNativeController(INativeController* controller);
+			extern void										StopWindowsNativeController();
 			extern void										EnableCrossKernelCrashing();
 		}
 	}
