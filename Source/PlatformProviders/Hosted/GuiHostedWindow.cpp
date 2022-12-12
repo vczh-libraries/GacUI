@@ -522,12 +522,32 @@ GuiHostedController::INativeWindowListener
 		}
 
 /***********************************************************************
+GuiHostedController::INativeControllerListener
+***********************************************************************/
+
+		void GuiHostedController::GlobalTimer()
+		{
+			for (auto listener : listeners)
+			{
+				listener->GlobalTimer();
+			}
+		}
+
+		void GuiHostedController::ClipboardUpdated()
+		{
+			for (auto listener : listeners)
+			{
+				listener->ClipboardUpdated();
+			}
+		}
+
+/***********************************************************************
 GuiHostedController::INativeController
 ***********************************************************************/
 
 		INativeCallbackService* GuiHostedController::CallbackService()
 		{
-			return nativeController->CallbackService();
+			return this;
 		}
 
 		INativeResourceService* GuiHostedController::ResourceService()
@@ -573,6 +593,36 @@ GuiHostedController::INativeController
 		INativeWindowService* GuiHostedController::WindowService()
 		{
 			return this;
+		}
+
+/***********************************************************************
+GuiHostedController::INativeCallbackService
+***********************************************************************/
+
+		bool GuiHostedController::InstallListener(INativeControllerListener* listener)
+		{
+			if (listeners.Contains(listener))
+			{
+				return false;
+			}
+			else
+			{
+				listeners.Add(listener);
+				return true;
+			}
+		}
+
+		bool GuiHostedController::UninstallListener(INativeControllerListener* listener)
+		{
+			if (listeners.Contains(listener))
+			{
+				listeners.Remove(listener);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 /***********************************************************************
@@ -712,6 +762,10 @@ GuiHostedController::INativeWindowService
 		{
 			auto hostedWindow = Ptr(new GuiHostedWindow(this, windowMode));
 			createdWindows.Add(hostedWindow);
+			for (auto listener : listeners)
+			{
+				listener->NativeWindowCreated(hostedWindow.Obj());
+			}
 			return hostedWindow.Obj();
 		}
 
@@ -721,6 +775,10 @@ GuiHostedController::INativeWindowService
 			CHECK_ERROR(!hostedWindow, L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#The window is not created by GuiHostedController.");
 			vint index = createdWindows.IndexOf(hostedWindow);
 			CHECK_ERROR(index != -1, L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#The window has been destroyed.");
+			for (auto listener : listeners)
+			{
+				listener->NativeWindowDestroying(hostedWindow);
+			}
 			createdWindows.RemoveAt(index);
 		}
 
@@ -736,6 +794,10 @@ GuiHostedController::INativeWindowService
 
 		void GuiHostedController::Run(INativeWindow* window)
 		{
+			// TODO:
+			//   Handle GetGuiGraphicsResourceManager()->GetRenderTarget(nativeWindow)
+			//     Maybe GuiGraphicsHost's render mechanism need to be changed
+
 			CHECK_ERROR(!mainWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#This function has been called.");
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
 			CHECK_ERROR(!hostedWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#The window is not created by GuiHostedController.");
@@ -800,11 +862,13 @@ GuiHostedController
 		GuiHostedController::GuiHostedController(INativeController* _nativeController)
 			: nativeController(_nativeController)
 		{
+			nativeController->CallbackService()->InstallListener(this);
 		}
 
 		GuiHostedController::~GuiHostedController()
 		{
 			EnsureNativeWindowDestroyed();
+			nativeController->CallbackService()->UninstallListener(this);
 		}
 	}
 }

@@ -118,7 +118,9 @@ GuiHostedController
 		class GuiHostedController
 			: public Object
 			, protected INativeWindowListener
+			, protected INativeControllerListener
 			, public INativeController
+			, protected INativeCallbackService
 			, protected INativeAsyncService
 			, protected INativeDialogService
 			, protected INativeScreenService
@@ -128,6 +130,8 @@ GuiHostedController
 			friend class GuiHostedWindow;
 		protected:
 			INativeController*								nativeController = nullptr;
+			collections::List<INativeControllerListener*>	listeners;
+
 			INativeWindow*									nativeWindow = nullptr;
 			bool											nativeWindowDestroyed = false;
 			GuiHostedWindow*								mainWindow = nullptr;
@@ -137,43 +141,50 @@ GuiHostedController
 			// INativeWindowListener
 			// =============================================================
 
-			HitTestResult					HitTest(NativePoint location);
-			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder);
-			void							Moved();
-			void							DpiChanged();
-			void							Enabled();
-			void							Disabled();
-			void							GotFocus();
-			void							LostFocus();
-			void							Activated();
-			void							Deactivated();
-			void							Opened();
-			void							Closing(bool& cancel);
-			void							Closed();
-			void							Paint();
-			void							Destroying();
-			void							Destroyed();
+			HitTestResult					HitTest(NativePoint location) override;
+			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
+			void							Moved() override;
+			void							DpiChanged() override;
+			void							Enabled() override;
+			void							Disabled() override;
+			void							GotFocus() override;
+			void							LostFocus() override;
+			void							Activated() override;
+			void							Deactivated() override;
+			void							Opened() override;
+			void							Closing(bool& cancel) override;
+			void							Closed() override;
+			void							Paint() override;
+			void							Destroying() override;
+			void							Destroyed() override;
 
-			void							LeftButtonDown(const NativeWindowMouseInfo& info);
-			void							LeftButtonUp(const NativeWindowMouseInfo& info);
-			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info);
-			void							RightButtonDown(const NativeWindowMouseInfo& info);
-			void							RightButtonUp(const NativeWindowMouseInfo& info);
-			void							RightButtonDoubleClick(const NativeWindowMouseInfo& info);
-			void							MiddleButtonDown(const NativeWindowMouseInfo& info);
-			void							MiddleButtonUp(const NativeWindowMouseInfo& info);
-			void							MiddleButtonDoubleClick(const NativeWindowMouseInfo& info);
-			void							HorizontalWheel(const NativeWindowMouseInfo& info);
-			void							VerticalWheel(const NativeWindowMouseInfo& info);
-			void							MouseMoving(const NativeWindowMouseInfo& info);
-			void							MouseEntered();
-			void							MouseLeaved();
+			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
+			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
+			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							RightButtonDown(const NativeWindowMouseInfo& info) override;
+			void							RightButtonUp(const NativeWindowMouseInfo& info) override;
+			void							RightButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonDown(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonUp(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							HorizontalWheel(const NativeWindowMouseInfo& info) override;
+			void							VerticalWheel(const NativeWindowMouseInfo& info) override;
+			void							MouseMoving(const NativeWindowMouseInfo& info) override;
+			void							MouseEntered() override;
+			void							MouseLeaved() override;
 
-			void							KeyDown(const NativeWindowKeyInfo& info);
-			void							KeyUp(const NativeWindowKeyInfo& info);
-			void							SysKeyDown(const NativeWindowKeyInfo& info);
-			void							SysKeyUp(const NativeWindowKeyInfo& info);
-			void							Char(const NativeWindowCharInfo& info);
+			void							KeyDown(const NativeWindowKeyInfo& info) override;
+			void							KeyUp(const NativeWindowKeyInfo& info) override;
+			void							SysKeyDown(const NativeWindowKeyInfo& info) override;
+			void							SysKeyUp(const NativeWindowKeyInfo& info) override;
+			void							Char(const NativeWindowCharInfo& info) override;
+
+			// =============================================================
+			// INativeControllerListener
+			// =============================================================
+
+			void							GlobalTimer() override;
+			void							ClipboardUpdated() override;
 
 			// =============================================================
 			// INativeController
@@ -190,6 +201,13 @@ GuiHostedController
 			
 			INativeScreenService*			ScreenService() override;
 			INativeWindowService*			WindowService() override;
+
+			// =============================================================
+			// INativeCallbackService
+			// =============================================================
+
+			bool							InstallListener(INativeControllerListener* listener) override;
+			bool							UninstallListener(INativeControllerListener* listener) override;
 
 			// =============================================================
 			// INativeAsyncService
