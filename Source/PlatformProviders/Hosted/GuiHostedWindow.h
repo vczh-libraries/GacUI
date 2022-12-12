@@ -27,6 +27,7 @@ GuiHostedWindow
 			: public Object
 			, public INativeWindow
 		{
+			friend class GuiHostedController;
 		protected:
 			GuiHostedController*							controller = nullptr;
 			INativeWindow::WindowMode						windowMode = INativeWindow::WindowMode::Normal;
