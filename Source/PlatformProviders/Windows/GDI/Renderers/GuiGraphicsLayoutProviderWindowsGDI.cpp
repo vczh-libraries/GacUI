@@ -1,6 +1,7 @@
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
 #include "GuiGraphicsWindowsGDI.h"
 #include "GuiGraphicsUniscribe.h"
+#include "..\..\WinNativeWindow.h"
 #include <math.h>
 
 namespace vl
@@ -71,7 +72,7 @@ WindowsGDIParagraph
 					paragraph->paragraphText=text;
 
 					auto fragment=Ptr(new UniscribeFragment(_text));
-					fragment->fontStyle=GetCurrentController()->ResourceService()->GetDefaultFont();
+					fragment->fontStyle=GetWindowsNativeController()->ResourceService()->GetDefaultFont();
 					paragraph->documentFragments.Add(fragment);
 				}
 

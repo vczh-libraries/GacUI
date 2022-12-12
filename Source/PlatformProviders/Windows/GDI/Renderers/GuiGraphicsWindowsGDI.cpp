@@ -1,6 +1,7 @@
 #include "GuiGraphicsWindowsGDI.h"
 #include "GuiGraphicsRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
+#include "..\..\WinNativeWindow.h"
 
 namespace vl
 {
@@ -496,7 +497,7 @@ void RendererMainGDI()
 	elements_windows_gdi::WindowsGDIResourceManager resourceManager;
 	SetGuiGraphicsResourceManager(&resourceManager);
 	elements_windows_gdi::SetWindowsGDIResourceManager(&resourceManager);
-	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
+	windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
 
 	elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_gdi::GuiSolidBorderElementRenderer::Register();

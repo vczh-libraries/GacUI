@@ -29,7 +29,7 @@ void GuiMain()
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
-	int result = SetupWindowsDirect2DRenderer();
+	int result = SetupHostedWindowsGDIRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif

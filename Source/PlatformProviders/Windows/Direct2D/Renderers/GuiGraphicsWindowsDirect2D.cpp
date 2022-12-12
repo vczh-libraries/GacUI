@@ -2,6 +2,7 @@
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
 #include "..\..\ServicesImpl\WindowsImageService.h"
+#include "..\..\WinNativeWindow.h"
 #include <math.h>
 
 namespace vl
@@ -579,7 +580,7 @@ WindowsDirect2DRenderTarget
 									"\x00\x00\x2F\x49\x44\x41\x54\x28\x53\x75\xC8\xB1\x0D\x00\x30\x0C\x02\x41\xEF\xBF\x34\xB1\x68\xA2\x47\xF8\x9B\x13"
 									"\x8C\xB6\xD9\x2E\x5D\x9E\x10\xA3\xE8\xF2\x84\x18\x45\x97\x27\xC4\x28\xBA\x3C\xBF\xD2\x03\xC2\xD7\x7F\x81\x23\x94"
 									"\x3E\x1F\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
-								auto effectImage = GetCurrentController()->ImageService()->CreateImageFromMemory((void*)EffectBuffer, (vint)(sizeof(EffectBuffer) - 1));
+								auto effectImage = GetWindowsNativeController()->ImageService()->CreateImageFromMemory((void*)EffectBuffer, (vint)(sizeof(EffectBuffer) - 1));
 								IWICBitmap* wicEffectBitmap = effectImage ? GetWICBitmap(effectImage->GetFrame(0)) : nullptr;
 								if (wicEffectBitmap)
 								{
@@ -759,7 +760,7 @@ void RendererMainDirect2D()
 	elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
 	SetGuiGraphicsResourceManager(&resourceManager);
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
-	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
+	windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
 
 	elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
 	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();

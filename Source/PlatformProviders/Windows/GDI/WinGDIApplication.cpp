@@ -81,7 +81,7 @@ namespace vl
 					if (needPaintAfterResize)
 					{
 						needPaintAfterResize = false;
-						auto callbackService = GetCurrentController()->CallbackService();
+						auto callbackService = GetWindowsNativeController()->CallbackService();
 						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
 					}
 					IWindowsForm* form=GetWindowsForm(window);
