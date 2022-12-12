@@ -37,7 +37,7 @@ WString GetTestResourcePath()
 	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests";
 #endif
 #elif defined VCZH_GCC
-	return L"../Resources/CompilerErrorTests";
+	return L"../../Resources/CompilerErrorTests";
 #endif
 }
 
@@ -50,7 +50,7 @@ WString GetTestBaselinePath()
 	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\Baseline_x86";
 #endif
 #elif defined VCZH_GCC
-	return L"../Resources/CompilerErrorTests/Baseline_x64";
+	return L"../../Resources/CompilerErrorTests/Baseline_x64";
 #endif
 }
 
@@ -63,7 +63,7 @@ WString GetTestOutputPath()
 	return GetExePath() + L"..\\..\\Output\\x86";
 #endif
 #elif defined VCZH_GCC
-	return L"../Output/";
+	return L"../../Output/";
 #endif
 }
 

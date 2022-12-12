@@ -16,6 +16,6 @@ CPP_REMOVES=(
     "../../../Import/VlppOS.Windows.cpp"
     )
 TARGETS=("${CPP_TARGET}")
-CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../../Source -DVCZH_DEBUG_METAONLY_REFLECTION"
+CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../../Source"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>
