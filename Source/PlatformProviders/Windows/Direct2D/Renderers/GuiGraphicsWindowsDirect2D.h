@@ -144,6 +144,6 @@ OS Supporting
 	}
 }
 
-extern void RendererMainDirect2D();
+extern void RendererMainDirect2D(bool hosted);
 
 #endif

@@ -115,6 +115,6 @@ OS Supporting
 	}
 }
 
-extern void RendererMainGDI();
+extern void RendererMainGDI(bool hosted);
 
 #endif

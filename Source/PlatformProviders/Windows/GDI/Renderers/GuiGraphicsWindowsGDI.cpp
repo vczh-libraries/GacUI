@@ -492,7 +492,7 @@ using namespace vl::presentation::elements;
 
 extern void GuiApplicationMain();
 
-void RendererMainGDI()
+void RendererMainGDI(bool hosted)
 {
 	elements_windows_gdi::WindowsGDIResourceManager resourceManager;
 	SetGuiGraphicsResourceManager(&resourceManager);

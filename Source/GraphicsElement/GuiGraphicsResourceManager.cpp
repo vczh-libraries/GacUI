@@ -45,14 +45,14 @@ GuiGraphicsResourceManager
 				return rendererFactories.Count() > elementType ? rendererFactories[elementType].Obj() : nullptr;
 			}
 
-			GuiGraphicsResourceManager* guiGraphicsResourceManager=0;
+			IGuiGraphicsResourceManager* guiGraphicsResourceManager = nullptr;
 
-			GuiGraphicsResourceManager* GetGuiGraphicsResourceManager()
+			IGuiGraphicsResourceManager* GetGuiGraphicsResourceManager()
 			{
 				return guiGraphicsResourceManager;
 			}
 
-			void SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager)
+			void SetGuiGraphicsResourceManager(IGuiGraphicsResourceManager* resourceManager)
 			{
 				guiGraphicsResourceManager=resourceManager;
 			}

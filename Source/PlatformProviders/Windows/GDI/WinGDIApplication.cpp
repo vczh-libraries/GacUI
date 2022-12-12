@@ -223,7 +223,7 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 		GetWindowsNativeController()->CallbackService()->InstallListener(&listener);
 		gdiListener = &listener;
 		// main
-		RendererMainGDI();
+		RendererMainGDI(hosted);
 		// uninstall listener
 		gdiListener = nullptr;
 		GetWindowsNativeController()->CallbackService()->UninstallListener(&listener);

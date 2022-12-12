@@ -755,7 +755,7 @@ using namespace vl::presentation::elements;
 
 extern void GuiApplicationMain();
 
-void RendererMainDirect2D()
+void RendererMainDirect2D(bool hosted)
 {
 	elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
 	SetGuiGraphicsResourceManager(&resourceManager);

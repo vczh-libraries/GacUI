@@ -633,7 +633,7 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 		GetWindowsNativeController()->CallbackService()->InstallListener(&listener);
 		direct2DListener = &listener;
 		// main
-		RendererMainDirect2D();
+		RendererMainDirect2D(hosted);
 		// uninstall listener
 		direct2DListener = nullptr;
 		GetWindowsNativeController()->CallbackService()->UninstallListener(&listener);
