@@ -1,0 +1,16 @@
+i1 # .\Resource.FailedInstance.Ctor1.xml
+(3, 5): Precompile: Instance "Unknown" should have the class name specified in the ref.Class attribute.
+(3, 15): Invalid path in attribute "ref.Styles": "Wrong Path".
+(4, 7): Precompile: Failed to find type "Unknown".
+i2 # .\Resource.FailedInstance.Ctor1.xml
+(9, 38): Failed to find the style referred in attribute "ref.Styles": "res://NotExists".
+(10, 51): Parser stops at incorrect input: "[".
+(13, 11): Parser stops at incorrect input: "Syntax".
+(18, 18): Parser stops at incorrect input: "Error".
+(23, 18): Parser stops at incorrect input: "Error".
+i3 # .\Resource.FailedInstance.Ctor1.xml
+(32, 7): Precompile: Failed to find type "_".
+i4 # .\Resource.FailedInstance.Ctor1.xml
+(38, 46): Precompile: Class "NotExists" of localized strings "S1" cannot be found.
+(39, 7): Precompile: Only one <ref.LocalizedStrings> can be the default one.
+(39, 46): Precompile: Class "presentation::controls::GuiSinglelineTextBox" of localized strings "S2" is not a correct localized strings class.

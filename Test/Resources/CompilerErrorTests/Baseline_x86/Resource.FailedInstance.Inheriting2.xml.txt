@@ -1,0 +1,2 @@
+i2 # .\Resource.FailedInstance.Inheriting2.xml
+(23, 32): F2: Symbol "wrong" does not exist in the current scope.

@@ -1,0 +1,12 @@
+i1 # .\Resource.FailedInstance.Ctor2.xml
+(4, 15): Precompile: Property "NotExists" of type "MainWindow" is not supported.
+(5, 36): Precompile: Property "NotExists" of type "presentation::compositions::GuiBoundsComposition" is not supported.
+(6, 9): Precompile: Property "NotExists2" of type "MainWindow" is not supported.
+(7, 9): Precompile: Property "Text" of type "MainWindow" does not support the "-set" binding.
+(8, 9): Precompile: Event "NotExists" cannot be found in type "MainWindow".
+(9, 9): Precompile: Failed to find type "Unknown".
+(13, 16): Precompile: Property "NotExists" of type "presentation::controls::list::ListViewColumn" is not supported.
+(17, 16): Precompile: Property "NotExists" of type "system::Int64" is not supported.
+(21, 16): Precompile: Property "NotExists" of type "presentation::controls::list::ListViewItem" is not supported.
+(23, 20): Precompile: Property "NotExists" of type "system::String" is not supported.
+(29, 9): Precompile: Unable to resolve type "_" since the current property accepts multiple types.

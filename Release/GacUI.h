@@ -3169,7 +3169,7 @@ Native Window Controller
 #endif
 
 /***********************************************************************
-.\GRAPHICSCOMPOSITION\GUIGRAPHICSEVENTRECEIVER.H
+.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSEVENTRECEIVER.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -3747,7 +3747,7 @@ Workflow to C++ Codegen Helpers
 #endif
 
 /***********************************************************************
-.\GRAPHICSCOMPOSITION\GUIGRAPHICSCOMPOSITIONBASE.H
+.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSCOMPOSITIONBASE.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -4031,6 +4031,19 @@ Basic Construction
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetPreferredBounds()override;
 			};
+			
+			/// <summary>
+			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
+			/// </summary>
+			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
+			{
+			public:
+				GuiWindowComposition();
+				~GuiWindowComposition();
+
+				Rect								GetBounds()override;
+				void								SetMargin(Margin value)override;
+			};
 
 /***********************************************************************
 Helper Functions
@@ -4058,7 +4071,7 @@ Helper Functions
 #endif
 
 /***********************************************************************
-.\GRAPHICSCOMPOSITION\GUIGRAPHICSBASICCOMPOSITION.H
+.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSBASICCOMPOSITION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -4082,19 +4095,6 @@ namespace vl
 /***********************************************************************
 Basic Compositions
 ***********************************************************************/
-			
-			/// <summary>
-			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
-			/// </summary>
-			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
-			{
-			public:
-				GuiWindowComposition();
-				~GuiWindowComposition();
-
-				Rect								GetBounds()override;
-				void								SetMargin(Margin value)override;
-			};
 
 			/// <summary>
 			/// Represents a composition that is free to change the expected bounds.
@@ -4133,6 +4133,551 @@ Basic Compositions
 				/// <summary>Test is the composition aligned to its parent.</summary>
 				/// <returns>Returns true if the composition is aligned to its parent.</returns>
 				bool								IsAlignedToParent();
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_ALT.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Graphics Composition Host
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_ALT
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_ALT
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiControl;
+			class GuiControlHost;
+		}
+
+		namespace compositions
+		{
+
+/***********************************************************************
+Alt-Combined Shortcut Key Interfaces
+***********************************************************************/
+
+			class IGuiAltActionHost;
+			
+			/// <summary>IGuiAltAction is the handler when an alt-combined shortcut key is activated.</summary>
+			class IGuiAltAction : public virtual IDescriptable
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const				Identifier;
+
+				static bool								IsLegalAlt(const WString& alt);
+
+				virtual const WString&					GetAlt() = 0;
+				virtual bool							IsAltEnabled() = 0;
+				virtual bool							IsAltAvailable() = 0;
+				virtual GuiGraphicsComposition*			GetAltComposition() = 0;
+				virtual IGuiAltActionHost*				GetActivatingAltHost() = 0;
+				virtual void							OnActiveAlt() = 0;
+			};
+			
+			/// <summary>IGuiAltActionContainer enumerates multiple <see cref="IGuiAltAction"/>.</summary>
+			class IGuiAltActionContainer : public virtual IDescriptable
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const				Identifier;
+
+				virtual vint							GetAltActionCount() = 0;
+				virtual IGuiAltAction*					GetAltAction(vint index) = 0;
+			};
+			
+			/// <summary>IGuiAltActionHost is an alt-combined shortcut key host. A host can also be entered or leaved, with multiple sub actions enabled or disabled.</summary>
+			class IGuiAltActionHost : public virtual IDescriptable
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const				Identifier;
+
+				static void								CollectAltActionsFromControl(controls::GuiControl* control, bool includeThisControl, collections::Group<WString, IGuiAltAction*>& actions);
+				
+				virtual GuiGraphicsComposition*			GetAltComposition() = 0;
+				virtual IGuiAltActionHost*				GetPreviousAltHost() = 0;
+				virtual void							OnActivatedAltHost(IGuiAltActionHost* previousHost) = 0;
+				virtual void							OnDeactivatedAltHost() = 0;
+				virtual void							CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions) = 0;
+			};
+
+			/// <summary>Default implementation for <see cref="IGuiAltActionHost"/></summary>
+			class GuiAltActionHostBase : public virtual IGuiAltActionHost
+			{
+			private:
+				GuiGraphicsComposition*					composition = nullptr;
+				controls::GuiControl*					control = nullptr;
+				bool									includeControl = true;
+				IGuiAltActionHost*						previousHost = nullptr;
+
+			protected:
+				void									SetAltComposition(GuiGraphicsComposition* _composition);
+				void									SetAltControl(controls::GuiControl* _control, bool _includeControl);
+
+			public:
+				GuiGraphicsComposition*					GetAltComposition()override;
+				IGuiAltActionHost*						GetPreviousAltHost()override;
+				void									OnActivatedAltHost(IGuiAltActionHost* _previousHost)override;
+				void									OnDeactivatedAltHost()override;
+				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
+			};
+
+/***********************************************************************
+Alt-Combined Shortcut Key Interfaces Helpers
+***********************************************************************/
+
+			class GuiAltActionManager : public Object
+			{
+				typedef collections::Dictionary<WString, IGuiAltAction*>					AltActionMap;
+				typedef collections::Dictionary<WString, controls::GuiControl*>				AltControlMap;
+			protected:
+				controls::GuiControlHost*				controlHost = nullptr;
+				IGuiAltActionHost*						currentAltHost = nullptr;
+				AltActionMap							currentActiveAltActions;
+				AltControlMap							currentActiveAltTitles;
+				WString									currentAltPrefix;
+				VKEY									supressAltKey = VKEY::KEY_UNKNOWN;
+
+				void									EnterAltHost(IGuiAltActionHost* host);
+				void									LeaveAltHost();
+				bool									EnterAltKey(wchar_t key);
+				void									LeaveAltKey();
+				void									CreateAltTitles(const collections::Group<WString, IGuiAltAction*>& actions);
+				vint									FilterTitles();
+				void									ClearAltHost();
+			public:
+				GuiAltActionManager(controls::GuiControlHost* _controlHost);
+				~GuiAltActionManager();
+
+				void									CloseAltHost();
+				bool									KeyDown(const NativeWindowKeyInfo& info);
+				bool									KeyUp(const NativeWindowKeyInfo& info);
+				bool									SysKeyDown(const NativeWindowKeyInfo& info);
+				bool									SysKeyUp(const NativeWindowKeyInfo& info);
+				bool									Char(const NativeWindowCharInfo& info);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_SHORTCUTKEY.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Graphics Composition Host
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+
+/***********************************************************************
+Shortcut Key Manager
+***********************************************************************/
+
+			class IGuiShortcutKeyManager;
+
+			/// <summary>Shortcut key item.</summary>
+			class IGuiShortcutKeyItem : public virtual IDescriptable, public Description<IGuiShortcutKeyItem>
+			{
+			public:
+				/// <summary>Shortcut key executed event.</summary>
+				GuiNotifyEvent							Executed;
+
+				/// <summary>Get the associated <see cref="IGuiShortcutKeyManager"/> object.</summary>
+				/// <returns>The associated shortcut key manager.</returns>
+				virtual IGuiShortcutKeyManager*			GetManager()=0;
+				/// <summary>Get the name represents the shortcut key combination for this item.</summary>
+				/// <returns>The name represents the shortcut key combination for this item.</returns>
+				virtual WString							GetName()=0;
+			};
+			
+			/// <summary>Shortcut key manager item.</summary>
+			class IGuiShortcutKeyManager : public virtual IDescriptable, public Description<IGuiShortcutKeyManager>
+			{
+			public:
+				/// <summary>Get the number of shortcut key items that already attached to the manager.</summary>
+				/// <returns>T number of shortcut key items that already attached to the manager.</returns>
+				virtual vint							GetItemCount()=0;
+				/// <summary>Get the <see cref="IGuiShortcutKeyItem"/> associated with the index.</summary>
+				/// <returns>The shortcut key item.</returns>
+				/// <param name="index">The index.</param>
+				virtual IGuiShortcutKeyItem*			GetItem(vint index)=0;
+				/// <summary>Execute shortcut key items using a key event info.</summary>
+				/// <returns>Returns true if at least one shortcut key item is executed.</returns>
+				/// <param name="info">The key event info.</param>
+				virtual bool							Execute(const NativeWindowKeyInfo& info)=0;
+			};
+
+/***********************************************************************
+Shortcut Key Manager Helpers
+***********************************************************************/
+
+			class GuiShortcutKeyManager;
+
+			class GuiShortcutKeyItem : public Object, public IGuiShortcutKeyItem
+			{
+			protected:
+				GuiShortcutKeyManager*			shortcutKeyManager;
+				bool							ctrl;
+				bool							shift;
+				bool							alt;
+				VKEY							key;
+
+				void							AttachManager(GuiShortcutKeyManager* manager);
+				void							DetachManager(GuiShortcutKeyManager* manager);
+			public:
+				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key);
+				~GuiShortcutKeyItem();
+
+				IGuiShortcutKeyManager*			GetManager()override;
+				WString							GetName()override;
+				bool							CanActivate(const NativeWindowKeyInfo& info);
+				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
+			};
+
+			/// <summary>A default implementation for <see cref="IGuiShortcutKeyManager"/>.</summary>
+			class GuiShortcutKeyManager : public Object, public IGuiShortcutKeyManager, public Description<GuiShortcutKeyManager>
+			{
+				typedef collections::List<Ptr<GuiShortcutKeyItem>>		ShortcutKeyItemList;
+			protected:
+				ShortcutKeyItemList				shortcutKeyItems;
+
+			public:
+				/// <summary>Create the shortcut key manager.</summary>
+				GuiShortcutKeyManager();
+				~GuiShortcutKeyManager();
+
+				vint							GetItemCount()override;
+				IGuiShortcutKeyItem*			GetItem(vint index)override;
+				bool							Execute(const NativeWindowKeyInfo& info)override;
+
+				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function returns the item that is created before.</summary>
+				/// <returns>The created shortcut key item.</returns>
+				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
+				/// <param name="shift">Set to true if the SHIFT key is required.</param>
+				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="key">The non-control key.</param>
+				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key);
+				/// <summary>Destroy a shortcut key item using a key combination</summary>
+				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
+				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
+				/// <param name="shift">Set to true if the SHIFT key is required.</param>
+				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="key">The non-control key.</param>
+				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key);
+				/// <summary>Get a shortcut key item using a key combination. If the item for the key combination does not exist, this function returns null.</summary>
+				/// <returns>The shortcut key item.</returns>
+				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
+				/// <param name="shift">Set to true if the SHIFT key is required.</param>
+				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="key">The non-control key.</param>
+				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST_TAB.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Graphics Composition Host
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_TAB
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_TAB
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiControl;
+			class GuiControlHost;
+		}
+
+		namespace compositions
+		{
+
+/***********************************************************************
+Tab-Combined Shortcut Key Interfaces
+***********************************************************************/
+			
+			/// <summary>IGuiTabAction is the handler when an tab-combined shortcut key is activated.</summary>
+			class IGuiTabAction : public virtual IDescriptable
+			{
+			public:
+				/// <summary>The identifier for this service.</summary>
+				static const wchar_t* const				Identifier;
+
+				virtual bool							GetAcceptTabInput() = 0;
+				virtual vint							GetTabPriority() = 0;
+				virtual bool							IsTabEnabled() = 0;
+				virtual bool							IsTabAvailable() = 0;
+			};
+
+/***********************************************************************
+Tab-Combined Shortcut Key Interfaces Helpers
+***********************************************************************/
+
+			class GuiTabActionManager : public Object
+			{
+				using ControlList = collections::List<controls::GuiControl*>;
+			protected:
+				controls::GuiControlHost*				controlHost = nullptr;
+				ControlList								controlsInOrder;
+				bool									available = true;
+				bool									supressTabOnce = false;
+
+				void									BuildControlList();
+				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl, vint offset);
+			public:
+				GuiTabActionManager(controls::GuiControlHost* _controlHost);
+				~GuiTabActionManager();
+
+				void									InvalidateTabOrderCache();
+				bool									KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition);
+				bool									Char(const NativeWindowCharInfo& info);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\APPLICATION\GRAPHICSHOST\GUIGRAPHICSHOST.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Graphics Composition Host
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
+#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiWindow;
+		}
+
+		namespace compositions
+		{
+
+/***********************************************************************
+Animation
+***********************************************************************/
+
+			/// <summary>
+			/// Represents a timer callback object.
+			/// </summary>
+			class IGuiGraphicsTimerCallback : public virtual IDescriptable, public Description<IGuiGraphicsTimerCallback>
+			{
+			public:
+				/// <summary>Called periodically.</summary>
+				/// <returns>Returns false to indicate that this callback need to be removed.</returns>
+				virtual bool					Play() = 0;
+			};
+
+			/// <summary>
+			/// Timer callback manager.
+			/// </summary>
+			class GuiGraphicsTimerManager : public Object, public Description<GuiGraphicsTimerManager>
+			{
+				typedef collections::List<Ptr<IGuiGraphicsTimerCallback>>		CallbackList;
+			protected:
+				CallbackList					callbacks;
+
+			public:
+				GuiGraphicsTimerManager();
+				~GuiGraphicsTimerManager();
+
+				/// <summary>Add a new callback.</summary>
+				/// <param name="callback">The new callback to add.</param>
+				void							AddCallback(Ptr<IGuiGraphicsTimerCallback> callback);
+				/// <summary>Called periodically.</summary>
+				void							Play();
+			};
+
+/***********************************************************************
+Host
+***********************************************************************/
+
+			/// <summary>
+			/// GuiGraphicsHost hosts an <see cref="GuiWindowComposition"/> in an <see cref="INativeWindow"/>. The composition will fill the whole window.
+			/// </summary>
+			class GuiGraphicsHost : public Object, private INativeWindowListener, private INativeControllerListener, public Description<GuiGraphicsHost>
+			{
+				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
+				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
+				typedef collections::Pair<DescriptableObject*, vint>						ProcKey;
+				typedef collections::List<Func<void()>>										ProcList;
+				typedef collections::Dictionary<ProcKey, Func<void()>>						ProcMap;
+			public:
+				static const vuint64_t					CaretInterval = 500;
+
+			protected:
+				HostRecord								hostRecord;
+				bool									supressPaint = false;
+				bool									needRender = true;
+				ProcList								afterRenderProcs;
+				ProcMap									afterRenderKeyedProcs;
+
+				GuiAltActionManager*					altActionManager = nullptr;
+				GuiTabActionManager*					tabActionManager = nullptr;
+				IGuiShortcutKeyManager*					shortcutKeyManager = nullptr;
+
+				controls::GuiControlHost*				controlHost = nullptr;
+				GuiWindowComposition*					windowComposition = nullptr;
+				GuiGraphicsComposition*					focusedComposition = nullptr;
+				NativeSize								previousClientSize;
+				Size									minSize;
+				Point									caretPoint;
+				vuint64_t								lastCaretTime = 0;
+
+				GuiGraphicsTimerManager					timerManager;
+				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
+				CompositionList							mouseEnterCompositions;
+				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
+
+				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
+				void									MouseCapture(const NativeWindowMouseInfo& info);
+				void									MouseUncapture(const NativeWindowMouseInfo& info);
+				void									OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									RecreateRenderTarget();
+				
+			private:
+				INativeWindowListener::HitTestResult	HitTest(NativePoint location)override;
+				void									Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)override;
+				void									Moved()override;
+				void									DpiChanged()override;
+				void									Paint()override;
+
+				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;
+				void									LeftButtonUp(const NativeWindowMouseInfo& info)override;
+				void									LeftButtonDoubleClick(const NativeWindowMouseInfo& info)override;
+				void									RightButtonDown(const NativeWindowMouseInfo& info)override;
+				void									RightButtonUp(const NativeWindowMouseInfo& info)override;
+				void									RightButtonDoubleClick(const NativeWindowMouseInfo& info)override;
+				void									MiddleButtonDown(const NativeWindowMouseInfo& info)override;
+				void									MiddleButtonUp(const NativeWindowMouseInfo& info)override;
+				void									MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)override;
+				void									HorizontalWheel(const NativeWindowMouseInfo& info)override;
+				void									VerticalWheel(const NativeWindowMouseInfo& info)override;
+				void									MouseMoving(const NativeWindowMouseInfo& info)override;
+				void									MouseEntered()override;
+				void									MouseLeaved()override;
+
+				void									KeyDown(const NativeWindowKeyInfo& info)override;
+				void									KeyUp(const NativeWindowKeyInfo& info)override;
+				void									SysKeyDown(const NativeWindowKeyInfo& info)override;
+				void									SysKeyUp(const NativeWindowKeyInfo& info)override;
+				void									Char(const NativeWindowCharInfo& info)override;
+
+				void									GlobalTimer()override;
+			public:
+				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
+				~GuiGraphicsHost();
+
+				/// <summary>Get the associated window.</summary>
+				/// <returns>The associated window.</returns>
+				INativeWindow*							GetNativeWindow();
+				/// <summary>Associate a window. A <see cref="GuiWindowComposition"/> will fill and appear in the window.</summary>
+				/// <param name="_nativeWindow">The window to associated.</param>
+				void									SetNativeWindow(INativeWindow* _nativeWindow);
+				/// <summary>Get the main <see cref="GuiWindowComposition"/>. If a window is associated, everything that put into the main composition will be shown in the window.</summary>
+				/// <returns>The main compositoin.</returns>
+				GuiGraphicsComposition*					GetMainComposition();
+				/// <summary>Render the main composition and all content to the associated window.</summary>
+				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
+				void									Render(bool forceUpdate);
+				/// <summary>Request a rendering</summary>
+				void									RequestRender();
+				/// <summary>Invoke a specified function after rendering.</summary>
+				/// <param name="proc">The specified function.</param>
+				/// <param name="key">A key to cancel a previous binded key if not null.</param>
+				void									InvokeAfterRendering(const Func<void()>& proc, ProcKey key = { nullptr,-1 });
+
+				/// <summary>Invalidte the internal tab order control list. Next time when TAB is pressed it will be rebuilt.</summary>
+				void									InvalidateTabOrderCache();
+				/// <summary>Get the <see cref="IGuiShortcutKeyManager"/> attached with this graphics host.</summary>
+				/// <returns>The shortcut key manager.</returns>
+				IGuiShortcutKeyManager*					GetShortcutKeyManager();
+				/// <summary>Attach or detach the <see cref="IGuiShortcutKeyManager"/> associated with this graphics host. When this graphics host is disposing, the associated shortcut key manager will be deleted if exists.</summary>
+				/// <param name="value">The shortcut key manager. Set to null to detach the previous shortcut key manager from this graphics host.</param>
+				void									SetShortcutKeyManager(IGuiShortcutKeyManager* value);
+
+				/// <summary>Set the focus composition. A focused composition will receive keyboard messages.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="composition">The composition to set focus. This composition should be or in the main composition.</param>
+				bool									SetFocus(GuiGraphicsComposition* composition);
+				/// <summary>Get the focus composition. A focused composition will receive keyboard messages.</summary>
+				/// <returns>The focus composition.</returns>
+				GuiGraphicsComposition*					GetFocusedComposition();
+				/// <summary>Get the caret point. A caret point is the position to place the edit box of the activated input method editor.</summary>
+				/// <returns>The caret point.</returns>
+				Point									GetCaretPoint();
+				/// <summary>Set the caret point. A caret point is the position to place the edit box of the activated input method editor.</summary>
+				/// <param name="value">The caret point.</param>
+				/// <param name="referenceComposition">The point space. If this argument is null, the "value" argument will use the point space of the client area in the main composition.</param>
+				void									SetCaretPoint(Point value, GuiGraphicsComposition* referenceComposition=0);
+
+				/// <summary>Get the timer manager.</summary>
+				/// <returns>The timer manager.</returns>
+				GuiGraphicsTimerManager*				GetTimerManager();
+				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
+				/// <param name="composition">The composition to disconnect</param>
+				void									DisconnectComposition(GuiGraphicsComposition* composition);
 			};
 		}
 	}
@@ -5781,539 +6326,6 @@ Helpers
 #endif
 
 /***********************************************************************
-.\GRAPHICSHOST\GUIGRAPHICSHOST_ALT.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Graphics Composition Host
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_ALT
-#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_ALT
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-
-/***********************************************************************
-Alt-Combined Shortcut Key Interfaces
-***********************************************************************/
-
-			class IGuiAltActionHost;
-			
-			/// <summary>IGuiAltAction is the handler when an alt-combined shortcut key is activated.</summary>
-			class IGuiAltAction : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				static bool								IsLegalAlt(const WString& alt);
-
-				virtual const WString&					GetAlt() = 0;
-				virtual bool							IsAltEnabled() = 0;
-				virtual bool							IsAltAvailable() = 0;
-				virtual GuiGraphicsComposition*			GetAltComposition() = 0;
-				virtual IGuiAltActionHost*				GetActivatingAltHost() = 0;
-				virtual void							OnActiveAlt() = 0;
-			};
-			
-			/// <summary>IGuiAltActionContainer enumerates multiple <see cref="IGuiAltAction"/>.</summary>
-			class IGuiAltActionContainer : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				virtual vint							GetAltActionCount() = 0;
-				virtual IGuiAltAction*					GetAltAction(vint index) = 0;
-			};
-			
-			/// <summary>IGuiAltActionHost is an alt-combined shortcut key host. A host can also be entered or leaved, with multiple sub actions enabled or disabled.</summary>
-			class IGuiAltActionHost : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				static void								CollectAltActionsFromControl(controls::GuiControl* control, bool includeThisControl, collections::Group<WString, IGuiAltAction*>& actions);
-				
-				virtual GuiGraphicsComposition*			GetAltComposition() = 0;
-				virtual IGuiAltActionHost*				GetPreviousAltHost() = 0;
-				virtual void							OnActivatedAltHost(IGuiAltActionHost* previousHost) = 0;
-				virtual void							OnDeactivatedAltHost() = 0;
-				virtual void							CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions) = 0;
-			};
-
-			/// <summary>Default implementation for <see cref="IGuiAltActionHost"/></summary>
-			class GuiAltActionHostBase : public virtual IGuiAltActionHost
-			{
-			private:
-				GuiGraphicsComposition*					composition = nullptr;
-				controls::GuiControl*					control = nullptr;
-				bool									includeControl = true;
-				IGuiAltActionHost*						previousHost = nullptr;
-
-			protected:
-				void									SetAltComposition(GuiGraphicsComposition* _composition);
-				void									SetAltControl(controls::GuiControl* _control, bool _includeControl);
-
-			public:
-				GuiGraphicsComposition*					GetAltComposition()override;
-				IGuiAltActionHost*						GetPreviousAltHost()override;
-				void									OnActivatedAltHost(IGuiAltActionHost* _previousHost)override;
-				void									OnDeactivatedAltHost()override;
-				void									CollectAltActions(collections::Group<WString, IGuiAltAction*>& actions)override;
-			};
-
-/***********************************************************************
-Alt-Combined Shortcut Key Interfaces Helpers
-***********************************************************************/
-
-			class GuiAltActionManager : public Object
-			{
-				typedef collections::Dictionary<WString, IGuiAltAction*>					AltActionMap;
-				typedef collections::Dictionary<WString, controls::GuiControl*>				AltControlMap;
-			protected:
-				controls::GuiControlHost*				controlHost = nullptr;
-				IGuiAltActionHost*						currentAltHost = nullptr;
-				AltActionMap							currentActiveAltActions;
-				AltControlMap							currentActiveAltTitles;
-				WString									currentAltPrefix;
-				VKEY									supressAltKey = VKEY::KEY_UNKNOWN;
-
-				void									EnterAltHost(IGuiAltActionHost* host);
-				void									LeaveAltHost();
-				bool									EnterAltKey(wchar_t key);
-				void									LeaveAltKey();
-				void									CreateAltTitles(const collections::Group<WString, IGuiAltAction*>& actions);
-				vint									FilterTitles();
-				void									ClearAltHost();
-			public:
-				GuiAltActionManager(controls::GuiControlHost* _controlHost);
-				~GuiAltActionManager();
-
-				void									CloseAltHost();
-				bool									KeyDown(const NativeWindowKeyInfo& info);
-				bool									KeyUp(const NativeWindowKeyInfo& info);
-				bool									SysKeyDown(const NativeWindowKeyInfo& info);
-				bool									SysKeyUp(const NativeWindowKeyInfo& info);
-				bool									Char(const NativeWindowCharInfo& info);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSHOST\GUIGRAPHICSHOST_SHORTCUTKEY.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Graphics Composition Host
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
-#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_SHORTCUTKEY
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-
-/***********************************************************************
-Shortcut Key Manager
-***********************************************************************/
-
-			class IGuiShortcutKeyManager;
-
-			/// <summary>Shortcut key item.</summary>
-			class IGuiShortcutKeyItem : public virtual IDescriptable, public Description<IGuiShortcutKeyItem>
-			{
-			public:
-				/// <summary>Shortcut key executed event.</summary>
-				GuiNotifyEvent							Executed;
-
-				/// <summary>Get the associated <see cref="IGuiShortcutKeyManager"/> object.</summary>
-				/// <returns>The associated shortcut key manager.</returns>
-				virtual IGuiShortcutKeyManager*			GetManager()=0;
-				/// <summary>Get the name represents the shortcut key combination for this item.</summary>
-				/// <returns>The name represents the shortcut key combination for this item.</returns>
-				virtual WString							GetName()=0;
-			};
-			
-			/// <summary>Shortcut key manager item.</summary>
-			class IGuiShortcutKeyManager : public virtual IDescriptable, public Description<IGuiShortcutKeyManager>
-			{
-			public:
-				/// <summary>Get the number of shortcut key items that already attached to the manager.</summary>
-				/// <returns>T number of shortcut key items that already attached to the manager.</returns>
-				virtual vint							GetItemCount()=0;
-				/// <summary>Get the <see cref="IGuiShortcutKeyItem"/> associated with the index.</summary>
-				/// <returns>The shortcut key item.</returns>
-				/// <param name="index">The index.</param>
-				virtual IGuiShortcutKeyItem*			GetItem(vint index)=0;
-				/// <summary>Execute shortcut key items using a key event info.</summary>
-				/// <returns>Returns true if at least one shortcut key item is executed.</returns>
-				/// <param name="info">The key event info.</param>
-				virtual bool							Execute(const NativeWindowKeyInfo& info)=0;
-			};
-
-/***********************************************************************
-Shortcut Key Manager Helpers
-***********************************************************************/
-
-			class GuiShortcutKeyManager;
-
-			class GuiShortcutKeyItem : public Object, public IGuiShortcutKeyItem
-			{
-			protected:
-				GuiShortcutKeyManager*			shortcutKeyManager;
-				bool							ctrl;
-				bool							shift;
-				bool							alt;
-				VKEY							key;
-
-				void							AttachManager(GuiShortcutKeyManager* manager);
-				void							DetachManager(GuiShortcutKeyManager* manager);
-			public:
-				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key);
-				~GuiShortcutKeyItem();
-
-				IGuiShortcutKeyManager*			GetManager()override;
-				WString							GetName()override;
-				bool							CanActivate(const NativeWindowKeyInfo& info);
-				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
-			};
-
-			/// <summary>A default implementation for <see cref="IGuiShortcutKeyManager"/>.</summary>
-			class GuiShortcutKeyManager : public Object, public IGuiShortcutKeyManager, public Description<GuiShortcutKeyManager>
-			{
-				typedef collections::List<Ptr<GuiShortcutKeyItem>>		ShortcutKeyItemList;
-			protected:
-				ShortcutKeyItemList				shortcutKeyItems;
-
-			public:
-				/// <summary>Create the shortcut key manager.</summary>
-				GuiShortcutKeyManager();
-				~GuiShortcutKeyManager();
-
-				vint							GetItemCount()override;
-				IGuiShortcutKeyItem*			GetItem(vint index)override;
-				bool							Execute(const NativeWindowKeyInfo& info)override;
-
-				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function returns the item that is created before.</summary>
-				/// <returns>The created shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key);
-				/// <summary>Destroy a shortcut key item using a key combination</summary>
-				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key);
-				/// <summary>Get a shortcut key item using a key combination. If the item for the key combination does not exist, this function returns null.</summary>
-				/// <returns>The shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSHOST\GUIGRAPHICSHOST_TAB.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Graphics Composition Host
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_TAB
-#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST_TAB
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-
-/***********************************************************************
-Tab-Combined Shortcut Key Interfaces
-***********************************************************************/
-			
-			/// <summary>IGuiTabAction is the handler when an tab-combined shortcut key is activated.</summary>
-			class IGuiTabAction : public virtual IDescriptable
-			{
-			public:
-				/// <summary>The identifier for this service.</summary>
-				static const wchar_t* const				Identifier;
-
-				virtual bool							GetAcceptTabInput() = 0;
-				virtual vint							GetTabPriority() = 0;
-				virtual bool							IsTabEnabled() = 0;
-				virtual bool							IsTabAvailable() = 0;
-			};
-
-/***********************************************************************
-Tab-Combined Shortcut Key Interfaces Helpers
-***********************************************************************/
-
-			class GuiTabActionManager : public Object
-			{
-				using ControlList = collections::List<controls::GuiControl*>;
-			protected:
-				controls::GuiControlHost*				controlHost = nullptr;
-				ControlList								controlsInOrder;
-				bool									available = true;
-				bool									supressTabOnce = false;
-
-				void									BuildControlList();
-				controls::GuiControl*					GetNextFocusControl(controls::GuiControl* focusedControl, vint offset);
-			public:
-				GuiTabActionManager(controls::GuiControlHost* _controlHost);
-				~GuiTabActionManager();
-
-				void									InvalidateTabOrderCache();
-				bool									KeyDown(const NativeWindowKeyInfo& info, GuiGraphicsComposition* focusedComposition);
-				bool									Char(const NativeWindowCharInfo& info);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\GRAPHICSHOST\GUIGRAPHICSHOST.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Graphics Composition Host
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
-#define VCZH_PRESENTATION_HOST_GUIGRAPHICSHOST
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			class GuiWindow;
-		}
-
-		namespace compositions
-		{
-
-/***********************************************************************
-Animation
-***********************************************************************/
-
-			/// <summary>
-			/// Represents a timer callback object.
-			/// </summary>
-			class IGuiGraphicsTimerCallback : public virtual IDescriptable, public Description<IGuiGraphicsTimerCallback>
-			{
-			public:
-				/// <summary>Called periodically.</summary>
-				/// <returns>Returns false to indicate that this callback need to be removed.</returns>
-				virtual bool					Play() = 0;
-			};
-
-			/// <summary>
-			/// Timer callback manager.
-			/// </summary>
-			class GuiGraphicsTimerManager : public Object, public Description<GuiGraphicsTimerManager>
-			{
-				typedef collections::List<Ptr<IGuiGraphicsTimerCallback>>		CallbackList;
-			protected:
-				CallbackList					callbacks;
-
-			public:
-				GuiGraphicsTimerManager();
-				~GuiGraphicsTimerManager();
-
-				/// <summary>Add a new callback.</summary>
-				/// <param name="callback">The new callback to add.</param>
-				void							AddCallback(Ptr<IGuiGraphicsTimerCallback> callback);
-				/// <summary>Called periodically.</summary>
-				void							Play();
-			};
-
-/***********************************************************************
-Host
-***********************************************************************/
-
-			/// <summary>
-			/// GuiGraphicsHost hosts an <see cref="GuiWindowComposition"/> in an <see cref="INativeWindow"/>. The composition will fill the whole window.
-			/// </summary>
-			class GuiGraphicsHost : public Object, private INativeWindowListener, private INativeControllerListener, public Description<GuiGraphicsHost>
-			{
-				typedef collections::List<GuiGraphicsComposition*>							CompositionList;
-				typedef GuiGraphicsComposition::GraphicsHostRecord							HostRecord;
-				typedef collections::Pair<DescriptableObject*, vint>						ProcKey;
-				typedef collections::List<Func<void()>>										ProcList;
-				typedef collections::Dictionary<ProcKey, Func<void()>>						ProcMap;
-			public:
-				static const vuint64_t					CaretInterval = 500;
-
-			protected:
-				HostRecord								hostRecord;
-				bool									supressPaint = false;
-				bool									needRender = true;
-				ProcList								afterRenderProcs;
-				ProcMap									afterRenderKeyedProcs;
-
-				GuiAltActionManager*					altActionManager = nullptr;
-				GuiTabActionManager*					tabActionManager = nullptr;
-				IGuiShortcutKeyManager*					shortcutKeyManager = nullptr;
-
-				controls::GuiControlHost*				controlHost = nullptr;
-				GuiWindowComposition*					windowComposition = nullptr;
-				GuiGraphicsComposition*					focusedComposition = nullptr;
-				NativeSize								previousClientSize;
-				Size									minSize;
-				Point									caretPoint;
-				vuint64_t								lastCaretTime = 0;
-
-				GuiGraphicsTimerManager					timerManager;
-				GuiGraphicsComposition*					mouseCaptureComposition = nullptr;
-				CompositionList							mouseEnterCompositions;
-				void									RefreshRelatedHostRecord(INativeWindow* nativeWindow);
-
-				void									DisconnectCompositionInternal(GuiGraphicsComposition* composition);
-				void									MouseCapture(const NativeWindowMouseInfo& info);
-				void									MouseUncapture(const NativeWindowMouseInfo& info);
-				void									OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
-				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
-				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
-				void									OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
-				void									RecreateRenderTarget();
-				
-			private:
-				INativeWindowListener::HitTestResult	HitTest(NativePoint location)override;
-				void									Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)override;
-				void									Moved()override;
-				void									DpiChanged()override;
-				void									Paint()override;
-
-				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;
-				void									LeftButtonUp(const NativeWindowMouseInfo& info)override;
-				void									LeftButtonDoubleClick(const NativeWindowMouseInfo& info)override;
-				void									RightButtonDown(const NativeWindowMouseInfo& info)override;
-				void									RightButtonUp(const NativeWindowMouseInfo& info)override;
-				void									RightButtonDoubleClick(const NativeWindowMouseInfo& info)override;
-				void									MiddleButtonDown(const NativeWindowMouseInfo& info)override;
-				void									MiddleButtonUp(const NativeWindowMouseInfo& info)override;
-				void									MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)override;
-				void									HorizontalWheel(const NativeWindowMouseInfo& info)override;
-				void									VerticalWheel(const NativeWindowMouseInfo& info)override;
-				void									MouseMoving(const NativeWindowMouseInfo& info)override;
-				void									MouseEntered()override;
-				void									MouseLeaved()override;
-
-				void									KeyDown(const NativeWindowKeyInfo& info)override;
-				void									KeyUp(const NativeWindowKeyInfo& info)override;
-				void									SysKeyDown(const NativeWindowKeyInfo& info)override;
-				void									SysKeyUp(const NativeWindowKeyInfo& info)override;
-				void									Char(const NativeWindowCharInfo& info)override;
-
-				void									GlobalTimer()override;
-			public:
-				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
-				~GuiGraphicsHost();
-
-				/// <summary>Get the associated window.</summary>
-				/// <returns>The associated window.</returns>
-				INativeWindow*							GetNativeWindow();
-				/// <summary>Associate a window. A <see cref="GuiWindowComposition"/> will fill and appear in the window.</summary>
-				/// <param name="_nativeWindow">The window to associated.</param>
-				void									SetNativeWindow(INativeWindow* _nativeWindow);
-				/// <summary>Get the main <see cref="GuiWindowComposition"/>. If a window is associated, everything that put into the main composition will be shown in the window.</summary>
-				/// <returns>The main compositoin.</returns>
-				GuiGraphicsComposition*					GetMainComposition();
-				/// <summary>Render the main composition and all content to the associated window.</summary>
-				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				void									Render(bool forceUpdate);
-				/// <summary>Request a rendering</summary>
-				void									RequestRender();
-				/// <summary>Invoke a specified function after rendering.</summary>
-				/// <param name="proc">The specified function.</param>
-				/// <param name="key">A key to cancel a previous binded key if not null.</param>
-				void									InvokeAfterRendering(const Func<void()>& proc, ProcKey key = { nullptr,-1 });
-
-				/// <summary>Invalidte the internal tab order control list. Next time when TAB is pressed it will be rebuilt.</summary>
-				void									InvalidateTabOrderCache();
-				/// <summary>Get the <see cref="IGuiShortcutKeyManager"/> attached with this graphics host.</summary>
-				/// <returns>The shortcut key manager.</returns>
-				IGuiShortcutKeyManager*					GetShortcutKeyManager();
-				/// <summary>Attach or detach the <see cref="IGuiShortcutKeyManager"/> associated with this graphics host. When this graphics host is disposing, the associated shortcut key manager will be deleted if exists.</summary>
-				/// <param name="value">The shortcut key manager. Set to null to detach the previous shortcut key manager from this graphics host.</param>
-				void									SetShortcutKeyManager(IGuiShortcutKeyManager* value);
-
-				/// <summary>Set the focus composition. A focused composition will receive keyboard messages.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="composition">The composition to set focus. This composition should be or in the main composition.</param>
-				bool									SetFocus(GuiGraphicsComposition* composition);
-				/// <summary>Get the focus composition. A focused composition will receive keyboard messages.</summary>
-				/// <returns>The focus composition.</returns>
-				GuiGraphicsComposition*					GetFocusedComposition();
-				/// <summary>Get the caret point. A caret point is the position to place the edit box of the activated input method editor.</summary>
-				/// <returns>The caret point.</returns>
-				Point									GetCaretPoint();
-				/// <summary>Set the caret point. A caret point is the position to place the edit box of the activated input method editor.</summary>
-				/// <param name="value">The caret point.</param>
-				/// <param name="referenceComposition">The point space. If this argument is null, the "value" argument will use the point space of the client area in the main composition.</param>
-				void									SetCaretPoint(Point value, GuiGraphicsComposition* referenceComposition=0);
-
-				/// <summary>Get the timer manager.</summary>
-				/// <returns>The timer manager.</returns>
-				GuiGraphicsTimerManager*				GetTimerManager();
-				/// <summary>Notify that a composition is going to disconnect from this graphics host. Generally this happens when a composition's parent line changes.</summary>
-				/// <param name="composition">The composition to disconnect</param>
-				void									DisconnectComposition(GuiGraphicsComposition* composition);
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\RESOURCES\GUIPLUGINMANAGER.H
 ***********************************************************************/
 /***********************************************************************
@@ -7192,7 +7204,7 @@ Resource Resolver Manager
 #endif
 
 /***********************************************************************
-.\CONTROLS\TEMPLATES\GUICONTROLSHARED.H
+.\APPLICATION\CONTROLS\GUIINSTANCEROOTOBJECT.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -7202,130 +7214,27 @@ GacUI::Template System
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLSHARED
-#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUICONTROLSHARED
+#ifndef VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUIINSTANCEROOTOBJECT
+#define VCZH_PRESENTATION_CONTROLS_TEMPLATES_GUIINSTANCEROOTOBJECT
 
 
 namespace vl
 {
 	namespace presentation
 	{
+		namespace templates
+		{
+			class GuiTemplate;
+		}
+
 		namespace controls
 		{
 			class GuiControlHost;
 			class GuiCustomControl;
 
-			/// <summary>The visual state for button.</summary>
-			enum class ButtonState
-			{
-				/// <summary>Normal state.</summary>
-				Normal,
-				/// <summary>Active state (when the cursor is hovering on a button).</summary>
-				Active,
-				/// <summary>Pressed state (when the buttin is being pressed).</summary>
-				Pressed,
-			};
-
-			/// <summary>Represents the sorting state of list view items related to this column.</summary>
-			enum class ColumnSortingState
-			{
-				/// <summary>Not sorted.</summary>
-				NotSorted,
-				/// <summary>Ascending.</summary>
-				Ascending,
-				/// <summary>Descending.</summary>
-				Descending,
-			};
-
-			/// <summary>Represents the order of tab pages.</summary>
-			enum class TabPageOrder
-			{
-				/// <summary>Unknown.</summary>
-				Unknown,
-				/// <summary>Left to right.</summary>
-				LeftToRight,
-				/// <summary>Right to left.</summary>
-				RightToLeft,
-				/// <summary>Top to bottom.</summary>
-				TopToBottom,
-				/// <summary>Bottom to top.</summary>
-				BottomToTop,
-			};
-
-			/// <summary>A command executor for the combo box to change the control state.</summary>
-			class ITextBoxCommandExecutor : public virtual IDescriptable, public Description<ITextBoxCommandExecutor>
-			{
-			public:
-				/// <summary>Override the text content in the control.</summary>
-				/// <param name="value">The new text content.</param>
-				virtual void						UnsafeSetText(const WString& value) = 0;
-			};
-
-			/// <summary>A command executor for the style controller to change the control state.</summary>
-			class IScrollCommandExecutor : public virtual IDescriptable, public Description<IScrollCommandExecutor>
-			{
-			public:
-				/// <summary>Do small decrement.</summary>
-				virtual void						SmallDecrease() = 0;
-				/// <summary>Do small increment.</summary>
-				virtual void						SmallIncrease() = 0;
-				/// <summary>Do big decrement.</summary>
-				virtual void						BigDecrease() = 0;
-				/// <summary>Do big increment.</summary>
-				virtual void						BigIncrease() = 0;
-
-				/// <summary>Change to total size of the scroll.</summary>
-				/// <param name="value">The total size.</param>
-				virtual void						SetTotalSize(vint value) = 0;
-				/// <summary>Change to page size of the scroll.</summary>
-				/// <param name="value">The page size.</param>
-				virtual void						SetPageSize(vint value) = 0;
-				/// <summary>Change to position of the scroll.</summary>
-				/// <param name="value">The position.</param>
-				virtual void						SetPosition(vint value) = 0;
-			};
-
-			/// <summary>A command executor for the style controller to change the control state.</summary>
-			class ITabCommandExecutor : public virtual IDescriptable, public Description<ITabCommandExecutor>
-			{
-			public:
-				/// <summary>Select a tab page.</summary>
-				/// <param name="index">The specified position for the tab page.</param>
-				/// <param name="setFocus">Set to true to set focus to the tab control.</param>
-				virtual void						ShowTab(vint index, bool setFocus) = 0;
-			};
-
-			/// <summary>A command executor for the style controller to change the control state.</summary>
-			class IDatePickerCommandExecutor : public virtual IDescriptable, public Description<IDatePickerCommandExecutor>
-			{
-			public:
-				/// <summary>Called when the date has been changed.</summary>
-				virtual void						NotifyDateChanged() = 0;
-				/// <summary>Called when navigated to a date.</summary>
-				virtual void						NotifyDateNavigated() = 0;
-				/// <summary>Called when selected a date.</summary>
-				virtual void						NotifyDateSelected() = 0;
-			};
-
-			/// <summary>A command executor for the style controller to change the control state.</summary>
-			class IRibbonGroupCommandExecutor : public virtual IDescriptable, public Description<IRibbonGroupCommandExecutor>
-			{
-			public:
-				/// <summary>Called when the expand button is clicked.</summary>
-				virtual void						NotifyExpandButtonClicked() = 0;
-			};
-
-			/// <summary>A command executor for the style controller to change the control state.</summary>
-			class IRibbonGalleryCommandExecutor : public virtual IDescriptable, public Description<IRibbonGalleryCommandExecutor>
-			{
-			public:
-				/// <summary>Called when the scroll up button is clicked.</summary>
-				virtual void						NotifyScrollUp() = 0;
-				/// <summary>Called when the scroll down button is clicked.</summary>
-				virtual void						NotifyScrollDown() = 0;
-				/// <summary>Called when the dropdown button is clicked.</summary>
-				virtual void						NotifyDropdown() = 0;
-			};
+/***********************************************************************
+Component
+***********************************************************************/
 
 			class GuiInstanceRootObject;
 
@@ -7463,6 +7372,1725 @@ Root Object
 #endif
 
 /***********************************************************************
+.\APPLICATION\CONTROLS\GUITHEMEMANAGER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control Styles::Common Style Helpers
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUITHEMEMANAGER
+#define VCZH_PRESENTATION_CONTROLS_GUITHEMEMANAGER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace templates
+		{
+
+/***********************************************************************
+Theme Builders
+***********************************************************************/
+
+#define GUI_TEMPLATE_PROPERTY_DECL(CLASS, TYPE, NAME, VALUE)\
+			private:\
+				TYPE NAME##_ = VALUE;\
+			public:\
+				TYPE Get##NAME();\
+				void Set##NAME(TYPE const& value);\
+				compositions::GuiNotifyEvent NAME##Changed;\
+
+#define GUI_TEMPLATE_PROPERTY_IMPL(CLASS, TYPE, NAME, VALUE)\
+			TYPE CLASS::Get##NAME()\
+			{\
+				return NAME##_;\
+			}\
+			void CLASS::Set##NAME(TYPE const& value)\
+			{\
+				if (NAME##_ != value)\
+				{\
+					NAME##_ = value;\
+					NAME##Changed.Execute(compositions::GuiEventArgs(this));\
+				}\
+			}\
+
+#define GUI_TEMPLATE_PROPERTY_EVENT_INIT(CLASS, TYPE, NAME, VALUE)\
+			NAME##Changed.SetAssociatedComposition(this);
+
+#define GUI_TEMPLATE_CLASS_DECL(CLASS, BASE)\
+			class CLASS : public BASE, public AggregatableDescription<CLASS>\
+			{\
+			public:\
+				CLASS();\
+				~CLASS();\
+				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)\
+			};\
+
+#define GUI_TEMPLATE_CLASS_IMPL(CLASS, BASE)\
+			CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)\
+			CLASS::CLASS()\
+			{\
+				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)\
+			}\
+			CLASS::~CLASS()\
+			{\
+				FinalizeAggregation();\
+			}\
+
+/***********************************************************************
+GuiTemplate
+***********************************************************************/
+
+			/// <summary>Represents a user customizable template.</summary>
+			class GuiTemplate : public compositions::GuiBoundsComposition, public controls::GuiInstanceRootObject, public Description<GuiTemplate>
+			{
+			protected:
+				controls::GuiControlHost*		GetControlHostForInstance()override;
+				void							OnParentLineChanged()override;
+			public:
+				/// <summary>Create a template.</summary>
+				GuiTemplate();
+				~GuiTemplate();
+				
+#define GuiTemplate_PROPERTIES(F)\
+				F(GuiTemplate,	FontProperties,		Font,				{}	)\
+				F(GuiTemplate,	description::Value,	Context,			{}	)\
+				F(GuiTemplate,	WString,			Text,				{}	)\
+				F(GuiTemplate,	bool,				VisuallyEnabled,	true)\
+
+				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
+			};
+
+/***********************************************************************
+Core Themes
+***********************************************************************/
+
+#define GUI_CORE_CONTROL_TEMPLATE_DECL(F)\
+			F(GuiControlTemplate,				GuiTemplate)				\
+			F(GuiLabelTemplate,					GuiControlTemplate)			\
+			F(GuiWindowTemplate,				GuiControlTemplate)			\
+
+			enum class BoolOption
+			{
+				AlwaysTrue,
+				AlwaysFalse,
+				Customizable,
+			};
+
+#define GuiControlTemplate_PROPERTIES(F)\
+				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
+				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
+				F(GuiControlTemplate, bool, Focused, false)\
+
+#define GuiLabelTemplate_PROPERTIES(F)\
+				F(GuiLabelTemplate, Color, DefaultTextColor, {})\
+				F(GuiLabelTemplate, Color, TextColor, {})\
+
+#define GuiWindowTemplate_PROPERTIES(F)\
+				F(GuiWindowTemplate, BoolOption, MaximizedBoxOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, MinimizedBoxOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, BorderOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, SizeBoxOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, IconVisibleOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, BoolOption, TitleBarOption, BoolOption::Customizable)\
+				F(GuiWindowTemplate, bool, MaximizedBox, true)\
+				F(GuiWindowTemplate, bool, MinimizedBox, true)\
+				F(GuiWindowTemplate, bool, Border, true)\
+				F(GuiWindowTemplate, bool, SizeBox, true)\
+				F(GuiWindowTemplate, bool, IconVisible, true)\
+				F(GuiWindowTemplate, bool, TitleBar, true)\
+				F(GuiWindowTemplate, bool, Maximized, false)\
+				F(GuiWindowTemplate, bool, Activated, false)\
+				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\
+				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
+				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\
+				F(GuiWindowTemplate, Margin, CustomFramePadding, {})\
+				F(GuiWindowTemplate, Ptr<GuiImageData>, Icon, {})\
+
+/***********************************************************************
+Template Declarations
+***********************************************************************/
+
+			GUI_CORE_CONTROL_TEMPLATE_DECL(GUI_TEMPLATE_CLASS_DECL)
+		}
+
+/***********************************************************************
+Theme Names
+***********************************************************************/
+
+		namespace theme
+		{
+
+#define GUI_CONTROL_TEMPLATE_TYPES(F) \
+			F(WindowTemplate,				Window)						\
+			F(ControlTemplate,				CustomControl)				\
+			F(WindowTemplate,				Tooltip)					\
+			F(LabelTemplate,				Label)						\
+			F(LabelTemplate,				ShortcutKey)				\
+			F(ScrollViewTemplate,			ScrollView)					\
+			F(ControlTemplate,				GroupBox)					\
+			F(TabTemplate,					Tab)						\
+			F(ComboBoxTemplate,				ComboBox)					\
+			F(MultilineTextBoxTemplate,		MultilineTextBox)			\
+			F(SinglelineTextBoxTemplate,	SinglelineTextBox)			\
+			F(DocumentViewerTemplate,		DocumentViewer)				\
+			F(DocumentLabelTemplate,		DocumentLabel)				\
+			F(DocumentLabelTemplate,		DocumentTextBox)			\
+			F(ListViewTemplate,				ListView)					\
+			F(TreeViewTemplate,				TreeView)					\
+			F(TextListTemplate,				TextList)					\
+			F(SelectableButtonTemplate,		ListItemBackground)			\
+			F(SelectableButtonTemplate,		TreeItemExpander)			\
+			F(SelectableButtonTemplate,		CheckTextListItem)			\
+			F(SelectableButtonTemplate,		RadioTextListItem)			\
+			F(MenuTemplate,					Menu)						\
+			F(ControlTemplate,				MenuBar)					\
+			F(ControlTemplate,				MenuSplitter)				\
+			F(ToolstripButtonTemplate,		MenuBarButton)				\
+			F(ToolstripButtonTemplate,		MenuItemButton)				\
+			F(ControlTemplate,				ToolstripToolBar)			\
+			F(ToolstripButtonTemplate,		ToolstripButton)			\
+			F(ToolstripButtonTemplate,		ToolstripDropdownButton)	\
+			F(ToolstripButtonTemplate,		ToolstripSplitButton)		\
+			F(ControlTemplate,				ToolstripSplitter)			\
+			F(RibbonTabTemplate,			RibbonTab)					\
+			F(RibbonGroupTemplate,			RibbonGroup)				\
+			F(RibbonIconLabelTemplate,		RibbonIconLabel)			\
+			F(RibbonIconLabelTemplate,		RibbonSmallIconLabel)		\
+			F(RibbonButtonsTemplate,		RibbonButtons)				\
+			F(RibbonToolstripsTemplate,		RibbonToolstrips)			\
+			F(RibbonGalleryTemplate,		RibbonGallery)				\
+			F(RibbonToolstripMenuTemplate,	RibbonToolstripMenu)		\
+			F(RibbonGalleryListTemplate,	RibbonGalleryList)			\
+			F(TextListTemplate,				RibbonGalleryItemList)		\
+			F(ToolstripButtonTemplate,		RibbonSmallButton)			\
+			F(ToolstripButtonTemplate,		RibbonSmallDropdownButton)	\
+			F(ToolstripButtonTemplate,		RibbonSmallSplitButton)		\
+			F(ToolstripButtonTemplate,		RibbonLargeButton)			\
+			F(ToolstripButtonTemplate,		RibbonLargeDropdownButton)	\
+			F(ToolstripButtonTemplate,		RibbonLargeSplitButton)		\
+			F(ControlTemplate,				RibbonSplitter)				\
+			F(ControlTemplate,				RibbonToolstripHeader)		\
+			F(ButtonTemplate,				Button)						\
+			F(SelectableButtonTemplate,		CheckBox)					\
+			F(SelectableButtonTemplate,		RadioButton)				\
+			F(DatePickerTemplate,			DatePicker)					\
+			F(DateComboBoxTemplate,			DateComboBox)				\
+			F(ScrollTemplate,				HScroll)					\
+			F(ScrollTemplate,				VScroll)					\
+			F(ScrollTemplate,				HTracker)					\
+			F(ScrollTemplate,				VTracker)					\
+			F(ScrollTemplate,				ProgressBar)				\
+
+			enum class ThemeName
+			{
+				Unknown,
+#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
+				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
+#undef GUI_DEFINE_THEME_NAME
+			};
+
+			/// <summary>Theme interface. A theme creates appropriate style controllers or style providers for default controls. Call [M:vl.presentation.theme.GetCurrentTheme] to access this interface.</summary>
+			class ITheme : public virtual IDescriptable, public Description<ITheme>
+			{
+			public:
+				virtual TemplateProperty<templates::GuiControlTemplate>				CreateStyle(ThemeName themeName) = 0;
+			};
+
+			/// <summary>Get the current theme style factory object. Call <see cref="RegisterTheme"/> or <see cref="UnregisterTheme"/> to change the default theme.</summary>
+			/// <returns>The current theme style factory object.</returns>
+			extern ITheme*						GetCurrentTheme();
+			extern void							InitializeTheme();
+			extern void							FinalizeTheme();
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\APPLICATION\CONTROLS\GUIBASICCONTROLS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIBASICCONTROLS
+#define VCZH_PRESENTATION_CONTROLS_GUIBASICCONTROLS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace theme
+		{
+			enum class ThemeName;
+		}
+
+		namespace controls
+		{
+			template<typename T, typename=void>
+			struct QueryServiceHelper;
+
+			template<typename T>
+			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::Identifier), const wchar_t* const>>>
+			{
+				static WString GetIdentifier()
+				{
+					return WString::Unmanaged(T::Identifier);
+				}
+			};
+
+			template<typename T>
+			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::GetIdentifier()), WString>>>
+			{
+				static WString GetIdentifier()
+				{
+					return MoveValue<WString>(T::GetIdentifier());
+				}
+			};
+
+/***********************************************************************
+Basic Construction
+***********************************************************************/
+
+			/// <summary>
+			/// A helper object to test if a control has been deleted or not.
+			/// </summary>
+			class GuiDisposedFlag : public Object, public Description<GuiDisposedFlag>
+			{
+				friend class GuiControl;
+			protected:
+				GuiControl*								owner = nullptr;
+				bool									disposed = false;
+
+				void									SetDisposed();
+			public:
+				GuiDisposedFlag(GuiControl* _owner);
+				~GuiDisposedFlag();
+
+				bool									IsDisposed();
+			};
+
+			/// <summary>
+			/// The base class of all controls.
+			/// When the control is destroyed, it automatically destroys sub controls, and the bounds composition from the style controller.
+			/// If you want to manually destroy a control, you should first remove it from its parent.
+			/// The only way to remove a control from a parent control, is to remove the bounds composition from its parent composition. The same to inserting a control.
+			/// </summary>
+			class GuiControl
+				: public Object
+				, protected compositions::IGuiAltAction
+				, protected compositions::IGuiTabAction
+				, public Description<GuiControl>
+			{
+				friend class compositions::GuiGraphicsComposition;
+
+			protected:
+				using ControlList = collections::List<GuiControl*>;
+				using ControlServiceMap = collections::Dictionary<WString, Ptr<IDescriptable>>;
+				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
+				using IGuiGraphicsEventHandler = compositions::IGuiGraphicsEventHandler;
+
+			private:
+				theme::ThemeName						controlThemeName;
+				ControlTemplatePropertyType				controlTemplate;
+				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
+				Ptr<GuiDisposedFlag>					disposedFlag;
+
+			public:
+				Ptr<GuiDisposedFlag>					GetDisposedFlag();
+
+			protected:
+				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
+				compositions::GuiBoundsComposition*		containerComposition = nullptr;
+				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
+				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
+
+				bool									isFocused = false;
+				Ptr<IGuiGraphicsEventHandler>			gotFocusHandler;
+				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
+
+				bool									acceptTabInput = false;
+				vint									tabPriority = -1;
+				bool									isEnabled = true;
+				bool									isVisuallyEnabled = true;
+				bool									isVisible = true;
+				WString									alt;
+				WString									text;
+				Nullable<FontProperties>				font;
+				FontProperties							displayFont;
+				description::Value						context;
+				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
+				ControlServiceMap						controlServices;
+
+				GuiControl*								parent = nullptr;
+				ControlList								children;
+				description::Value						tag;
+				GuiControl*								tooltipControl = nullptr;
+				vint									tooltipWidth = 0;
+
+				virtual void							BeforeControlTemplateUninstalled();
+				virtual void							AfterControlTemplateInstalled(bool initialize);
+				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
+				virtual void							EnsureControlTemplateExists();
+				virtual void							RebuildControlTemplate();
+				virtual void							OnChildInserted(GuiControl* control);
+				virtual void							OnChildRemoved(GuiControl* control);
+				virtual void							OnParentChanged(GuiControl* oldParent, GuiControl* newParent);
+				virtual void							OnParentLineChanged();
+				virtual void							OnServiceAdded();
+				virtual void							OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget);
+				virtual void							OnBeforeReleaseGraphicsHost();
+				virtual void							UpdateVisuallyEnabled();
+				virtual void							UpdateDisplayFont();
+				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
+
+				bool									IsControlVisibleAndEnabled();
+				bool									IsAltEnabled()override;
+				bool									IsAltAvailable()override;
+				compositions::GuiGraphicsComposition*	GetAltComposition()override;
+				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;
+				void									OnActiveAlt()override;
+				bool									IsTabEnabled()override;
+				bool									IsTabAvailable()override;
+
+				static bool								SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
+
+			public:
+				using ControlTemplateType = templates::GuiControlTemplate;
+
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiControl(theme::ThemeName themeName);
+				~GuiControl();
+
+				/// <summary>Theme name changed event. This event raises when the theme name is changed.</summary>
+				compositions::GuiNotifyEvent			ControlThemeNameChanged;
+				/// <summary>Control template changed event. This event raises when the control template is changed.</summary>
+				compositions::GuiNotifyEvent			ControlTemplateChanged;
+				/// <summary>Control signal trigerred. This raises be raised because of multiple reason specified in the argument.</summary>
+				compositions::GuiControlSignalEvent		ControlSignalTrigerred;
+				/// <summary>Visible event. This event raises when the visibility state of the control is changed.</summary>
+				compositions::GuiNotifyEvent			VisibleChanged;
+				/// <summary>Enabled event. This event raises when the enabling state of the control is changed.</summary>
+				compositions::GuiNotifyEvent			EnabledChanged;
+				/// <summary>Focused event. This event raises when the focusing state of the control is changed.</summary>
+				compositions::GuiNotifyEvent			FocusedChanged;
+				/// <summary>
+				/// Enabled event. This event raises when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
+				/// A control is rendered as disabled, not only when the control itself is disabled, but also when the parent control is rendered as disabled.
+				/// </summary>
+				compositions::GuiNotifyEvent			VisuallyEnabledChanged;
+				/// <summary>Alt changed event. This event raises when the associated Alt-combined shortcut key of the control is changed.</summary>
+				compositions::GuiNotifyEvent			AltChanged;
+				/// <summary>Text changed event. This event raises when the text of the control is changed.</summary>
+				compositions::GuiNotifyEvent			TextChanged;
+				/// <summary>Font changed event. This event raises when the font of the control is changed.</summary>
+				compositions::GuiNotifyEvent			FontChanged;
+				/// <summary>Display font changed event. This event raises when the display font of the control is changed.</summary>
+				compositions::GuiNotifyEvent			DisplayFontChanged;
+				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
+				compositions::GuiNotifyEvent			ContextChanged;
+
+				void									InvokeOrDelayIfRendering(Func<void()> proc);
+
+				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
+				/// <returns>The created argument.</returns>
+				compositions::GuiEventArgs				GetNotifyEventArguments();
+				/// <summary>Get the associated theme name.</summary>
+				/// <returns>The theme name.</returns>
+				theme::ThemeName						GetControlThemeName();
+				/// <summary>Set the associated control theme name.</summary>
+				/// <param name="value">The theme name.</param>
+				void									SetControlThemeName(theme::ThemeName value);
+				/// <summary>Get the associated control template.</summary>
+				/// <returns>The control template.</returns>
+				ControlTemplatePropertyType				GetControlTemplate();
+				/// <summary>Set the associated control template.</summary>
+				/// <param name="value">The control template.</param>
+				void									SetControlTemplate(const ControlTemplatePropertyType& value);
+				/// <summary>Set the associated control theme name and template and the same time.</summary>
+				/// <param name="themeNameValue">The theme name.</param>
+				/// <param name="controlTemplateValue">The control template.</param>
+				void									SetControlThemeNameAndTemplate(theme::ThemeName themeNameValue, const ControlTemplatePropertyType& controlTemplateValue);
+				/// <summary>Get the associated style controller.</summary>
+				/// <returns>The associated style controller.</returns>
+				templates::GuiControlTemplate*			GetControlTemplateObject();
+				/// <summary>Get the bounds composition for the control.</summary>
+				/// <returns>The bounds composition.</returns>
+				compositions::GuiBoundsComposition*		GetBoundsComposition();
+				/// <summary>Get the container composition for the control.</summary>
+				/// <returns>The container composition.</returns>
+				compositions::GuiGraphicsComposition*	GetContainerComposition();
+				/// <summary>Get the focusable composition for the control. A focusable composition is the composition to be focused when the control is focused.</summary>
+				/// <returns>The focusable composition.</returns>
+				compositions::GuiGraphicsComposition*	GetFocusableComposition();
+				/// <summary>Get the parent control.</summary>
+				/// <returns>The parent control.</returns>
+				GuiControl*								GetParent();
+				/// <summary>Get the number of child controls.</summary>
+				/// <returns>The number of child controls.</returns>
+				vint									GetChildrenCount();
+				/// <summary>Get the child control using a specified index.</summary>
+				/// <returns>The child control.</returns>
+				/// <param name="index">The specified index.</param>
+				GuiControl*								GetChild(vint index);
+				/// <summary>Put another control in the container composition of this control.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="control">The control to put in this control.</param>
+				bool									AddChild(GuiControl* control);
+				/// <summary>Test if a control owned by this control.</summary>
+				/// <returns>Returns true if the control is owned by this control.</returns>
+				/// <param name="control">The control to test.</param>
+				bool									HasChild(GuiControl* control);
+				
+				/// <summary>Get the <see cref="GuiControlHost"/> that contains this control.</summary>
+				/// <returns>The <see cref="GuiControlHost"/> that contains this control.</returns>
+				virtual GuiControlHost*					GetRelatedControlHost();
+				/// <summary>Test if this control is rendered as enabled.</summary>
+				/// <returns>Returns true if this control is rendered as enabled.</returns>
+				virtual bool							GetVisuallyEnabled();
+				/// <summary>Test if this control is focused.</summary>
+				/// <returns>Returns true if this control is focused.</returns>
+				virtual bool							GetFocused();
+				/// <summary>Test if this control accepts tab character input.</summary>
+				/// <returns>Returns true if this control accepts tab character input.</returns>
+				virtual bool							GetAcceptTabInput()override;
+				/// <summary>Set if this control accepts tab character input.</summary>
+				/// <param name="value">Set to true to make this control accept tab character input.</param>
+				void									SetAcceptTabInput(bool value);
+				/// <summary>Get the tab priority associated with this control.</summary>
+				/// <returns>Returns he tab priority associated with this control.</returns>
+				virtual vint							GetTabPriority()override;
+				/// <summary>Associate a tab priority with this control.</summary>
+				/// <param name="value">The tab priority to associate. TAB key will go through controls in the order of priority: 0, 1, 2, ..., -1. All negative numbers will be converted to -1. The priority of containers affects all children if it is not -1.</param>
+				void									SetTabPriority(vint value);
+				/// <summary>Test if this control is enabled.</summary>
+				/// <returns>Returns true if this control is enabled.</returns>
+				virtual bool							GetEnabled();
+				/// <summary>Make the control enabled or disabled.</summary>
+				/// <param name="value">Set to true to make the control enabled.</param>
+				virtual void							SetEnabled(bool value);
+				/// <summary>Test if this visible or invisible.</summary>
+				/// <returns>Returns true if this control is visible.</returns>
+				virtual bool							GetVisible();
+				/// <summary>Make the control visible or invisible.</summary>
+				/// <param name="value">Set to true to make the visible enabled.</param>
+				virtual void							SetVisible(bool value);
+				/// <summary>Get the Alt-combined shortcut key associated with this control.</summary>
+				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
+				virtual const WString&					GetAlt()override;
+				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="value">The Alt-combined shortcut key to associate. The key should contain only upper-case letters or digits.</param>
+				virtual bool							SetAlt(const WString& value);
+				/// <summary>Make the control as the parent of multiple Alt-combined shortcut key activatable controls.</summary>
+				/// <param name="host">The alt action host object.</param>
+				void									SetActivatingAltHost(compositions::IGuiAltActionHost* host);
+				/// <summary>Get the text to display on the control.</summary>
+				/// <returns>The text to display on the control.</returns>
+				virtual const WString&					GetText();
+				/// <summary>Set the text to display on the control.</summary>
+				/// <param name="value">The text to display on the control.</param>
+				virtual void							SetText(const WString& value);
+				/// <summary>Get the font of this control.</summary>
+				/// <returns>The font of this control.</returns>
+				virtual const Nullable<FontProperties>&	GetFont();
+				/// <summary>Set the font of this control.</summary>
+				/// <param name="value">The font of this control.</param>
+				virtual void							SetFont(const Nullable<FontProperties>& value);
+				/// <summary>Get the font to render the text. If the font of this control is null, then the display font is either the parent control's display font, or the system's default font when there is no parent control.</summary>
+				/// <returns>The font to render the text.</returns>
+				virtual const FontProperties&			GetDisplayFont();
+				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
+				/// <returns>The context of this context.</returns>
+				virtual description::Value				GetContext();
+				/// <summary>Set the context of this control.</summary>
+				/// <param name="value">The context of this control.</param>
+				virtual void							SetContext(const description::Value& value);
+				/// <summary>Focus this control.</summary>
+				virtual void							SetFocus();
+
+				/// <summary>Get the tag object of the control.</summary>
+				/// <returns>The tag object of the control.</returns>
+				description::Value						GetTag();
+				/// <summary>Set the tag object of the control.</summary>
+				/// <param name="value">The tag object of the control.</param>
+				void									SetTag(const description::Value& value);
+				/// <summary>Get the tooltip control of the control.</summary>
+				/// <returns>The tooltip control of the control.</returns>
+				GuiControl*								GetTooltipControl();
+				/// <summary>Set the tooltip control of the control. The tooltip control will be released when this control is released. If you set a new tooltip control to replace the old one, the old one will not be owned by this control anymore, therefore user should release the old tooltip control manually.</summary>
+				/// <returns>The old tooltip control.</returns>
+				/// <param name="value">The tooltip control of the control.</param>
+				GuiControl*								SetTooltipControl(GuiControl* value);
+				/// <summary>Get the tooltip width of the control.</summary>
+				/// <returns>The tooltip width of the control.</returns>
+				vint									GetTooltipWidth();
+				/// <summary>Set the tooltip width of the control.</summary>
+				/// <param name="value">The tooltip width of the control.</param>
+				void									SetTooltipWidth(vint value);
+				/// <summary>Display the tooltip.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="location">The relative location to specify the left-top position of the tooltip.</param>
+				bool									DisplayTooltip(Point location);
+				/// <summary>Close the tooltip that owned by this control.</summary>
+				void									CloseTooltip();
+
+				/// <summary>Query a service using an identifier. If you want to get a service of type IXXX, use IXXX::Identifier as the identifier.</summary>
+				/// <returns>The requested service. If the control doesn't support this service, it will be null.</returns>
+				/// <param name="identifier">The identifier.</param>
+				virtual IDescriptable*					QueryService(const WString& identifier);
+
+				template<typename T>
+				T* QueryTypedService()
+				{
+					return dynamic_cast<T*>(QueryService(QueryServiceHelper<T>::GetIdentifier()));
+				}
+
+				templates::GuiControlTemplate* TypedControlTemplateObject(bool ensureExists)
+				{
+					if (ensureExists)
+					{
+						EnsureControlTemplateExists();
+					}
+					return controlTemplateObject;
+				}
+
+				/// <summary>Add a service to this control dynamically. The added service cannot override existing services.</summary>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService`1"/> will not work on this service.</param>
+				/// <param name="value">The service.</param>
+				bool									AddService(const WString& identifier, Ptr<IDescriptable> value);
+			};
+
+			/// <summary>Represnets a user customizable control.</summary>
+			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public AggregatableDescription<GuiCustomControl>
+			{
+			protected:
+				controls::GuiControlHost*				GetControlHostForInstance()override;
+				void									OnParentLineChanged()override;
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiCustomControl(theme::ThemeName themeName);
+				~GuiCustomControl();
+			};
+
+			template<typename T>
+			class GuiObjectComponent : public GuiComponent
+			{
+			public:
+				Ptr<T>				object;
+
+				GuiObjectComponent()
+				{
+				}
+
+				GuiObjectComponent(Ptr<T> _object)
+					:object(_object)
+				{
+				}
+			};
+
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE) controlTemplateObject ## UNIQUE
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(UNIQUE) GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE)
+#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(__LINE__)
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, NAME) \
+			public: \
+				using ControlTemplateType = templates::Gui##TEMPLATE; \
+			private: \
+				templates::Gui##TEMPLATE* NAME = nullptr; \
+				void BeforeControlTemplateUninstalled_(); \
+				void AfterControlTemplateInstalled_(bool initialize); \
+			protected: \
+				void BeforeControlTemplateUninstalled()override \
+				{\
+					BeforeControlTemplateUninstalled_(); \
+					BASE_TYPE::BeforeControlTemplateUninstalled(); \
+				}\
+				void AfterControlTemplateInstalled(bool initialize)override \
+				{\
+					BASE_TYPE::AfterControlTemplateInstalled(initialize); \
+					AfterControlTemplateInstalled_(initialize); \
+				}\
+				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override \
+				{ \
+					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value); \
+					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
+					NAME = ct; \
+					BASE_TYPE::CheckAndStoreControlTemplate(value); \
+				} \
+			public: \
+				templates::Gui##TEMPLATE* TypedControlTemplateObject(bool ensureExists) \
+				{ \
+					if (ensureExists) \
+					{ \
+						EnsureControlTemplateExists(); \
+					} \
+					return NAME; \
+				} \
+			private: \
+
+#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE, BASE_TYPE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
+
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\APPLICATION\CONTROLS\GUILABELCONTROLS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUILABELCONTROLS
+#define VCZH_PRESENTATION_CONTROLS_GUILABELCONTROLS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+Label
+***********************************************************************/
+
+			/// <summary>A control to display a text.</summary>
+			class GuiLabel : public GuiControl, public Description<GuiLabel>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate, GuiControl)
+			protected:
+				Color									textColor;
+				bool									textColorConsisted = true;
+
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiLabel(theme::ThemeName themeName);
+				~GuiLabel();
+
+				/// <summary>Get the text color.</summary>
+				/// <returns>The text color.</returns>
+				Color									GetTextColor();
+				/// <summary>Set the text color.</summary>
+				/// <param name="value">The text color.</param>
+				void									SetTextColor(Color value);
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\APPLICATION\CONTROLS\GUIWINDOWCONTROLS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIWINDOWCONTROLS
+#define VCZH_PRESENTATION_CONTROLS_GUIWINDOWCONTROLS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			class IGuiShortcutKeyManager;
+			class GuiGraphicsTimerManager;
+		}
+
+		namespace controls
+		{
+
+/***********************************************************************
+Control Host
+***********************************************************************/
+
+			/// <summary>
+			/// Represents a control that host by a <see cref="INativeWindow"/>.
+			/// </summary>
+			class GuiControlHost : public GuiControl, public GuiInstanceRootObject, protected INativeWindowListener, public Description<GuiControlHost>
+			{
+				friend class compositions::GuiGraphicsHost;
+			protected:
+				compositions::GuiGraphicsHost*					host;
+				INativeWindow::WindowMode						windowMode = INativeWindow::Normal;
+
+				virtual void									OnNativeWindowChanged();
+				virtual void									OnVisualStatusChanged();
+			protected:
+				static const vint								TooltipDelayOpenTime = 500;
+				static const vint								TooltipDelayCloseTime = 500;
+				static const vint								TooltipDelayLifeTime = 5000;
+
+				Ptr<INativeDelay>								tooltipOpenDelay;
+				Ptr<INativeDelay>								tooltipCloseDelay;
+				Point											tooltipLocation;
+
+				bool											calledDestroyed = false;
+				bool											deleteWhenDestroyed = false;
+
+				controls::GuiControlHost*						GetControlHostForInstance()override;
+				GuiControl*										GetTooltipOwner(Point location);
+				void											MoveIntoTooltipControl(GuiControl* tooltipControl, Point location);
+				void											MouseMoving(const NativeWindowMouseInfo& info)override;
+				void											MouseLeaved()override;
+				void											Moved()override;
+				void											Enabled()override;
+				void											Disabled()override;
+				void											GotFocus()override;
+				void											LostFocus()override;
+				void											Activated()override;
+				void											Deactivated()override;
+				void											Opened()override;
+				void											Closing(bool& cancel)override;
+				void											Closed()override;
+				void											Destroying()override;
+
+				virtual void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize);
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiControlHost(theme::ThemeName themeName, INativeWindow::WindowMode mode);
+				~GuiControlHost();
+				
+				/// <summary>Window got focus event.</summary>
+				compositions::GuiNotifyEvent					WindowGotFocus;
+				/// <summary>Window lost focus event.</summary>
+				compositions::GuiNotifyEvent					WindowLostFocus;
+				/// <summary>Window activated event.</summary>
+				compositions::GuiNotifyEvent					WindowActivated;
+				/// <summary>Window deactivated event.</summary>
+				compositions::GuiNotifyEvent					WindowDeactivated;
+				/// <summary>Window opened event.</summary>
+				compositions::GuiNotifyEvent					WindowOpened;
+				/// <summary>Window closing event.</summary>
+				compositions::GuiRequestEvent					WindowClosing;
+				/// <summary>Window closed event.</summary>
+				compositions::GuiNotifyEvent					WindowClosed;
+				/// <summary>Window destroying event.</summary>
+				compositions::GuiNotifyEvent					WindowDestroying;
+
+				/// <summary>Delete this control host after processing all events.</summary>
+				void											DeleteAfterProcessingAllEvents();
+
+				/// <summary>Get the internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</summary>
+				/// <returns>The internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</returns>
+				compositions::GuiGraphicsHost*					GetGraphicsHost();
+				/// <summary>Get the main composition to host the window content.</summary>
+				/// <returns>The main composition to host the window content.</returns>
+				compositions::GuiGraphicsComposition*			GetMainComposition();
+				/// <summary>Get the internal <see cref="INativeWindow"/> object to host the content.</summary>
+				/// <returns>The the internal <see cref="INativeWindow"/> object to host the content.</returns>
+				INativeWindow*									GetNativeWindow();
+				/// <summary>Set the internal <see cref="INativeWindow"/> object to host the content.</summary>
+				/// <param name="window">The the internal <see cref="INativeWindow"/> object to host the content.</param>
+				void											SetNativeWindow(INativeWindow* window);
+				/// <summary>Force to calculate layout and size immediately</summary>
+				void											ForceCalculateSizeImmediately();
+				
+				/// <summary>Test is the window enabled.</summary>
+				/// <returns>Returns true if the window is enabled.</returns>
+				bool											GetEnabled()override;
+				/// <summary>Enable or disable the window.</summary>
+				/// <param name="value">Set to true to enable the window.</param>
+				void											SetEnabled(bool value)override;
+				/// <summary>Test is the window focused.</summary>
+				/// <returns>Returns true if the window is focused.</returns>
+				bool											GetFocused()override;
+				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
+				void											SetFocused();
+				/// <summary>Test is the window activated.</summary>
+				/// <returns>Returns true if the window is activated.</returns>
+				bool											GetActivated();
+				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
+				void											SetActivated();
+				/// <summary>Test is the window icon shown in the task bar.</summary>
+				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
+				bool											GetShowInTaskBar();
+				/// <summary>Show or hide the window icon in the task bar.</summary>
+				/// <param name="value">Set to true to show the window icon in the task bar.</param>
+				void											SetShowInTaskBar(bool value);
+				/// <summary>Test is the window allowed to be activated.</summary>
+				/// <returns>Returns true if the window is allowed to be activated.</returns>
+				bool											GetEnabledActivate();
+				/// <summary>
+				/// Allow or forbid the window to be activated.
+				/// Clicking a window with activation disabled doesn't bring activation and focus.
+				/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivated"/>.
+				/// </summary>
+				/// <param name="value">Set to true to allow the window to be activated.</param>
+				void											SetEnabledActivate(bool value);
+				/// <summary>
+				/// Test is the window always on top of the desktop.
+				/// </summary>
+				/// <returns>Returns true if the window is always on top of the desktop.</returns>
+				bool											GetTopMost();
+				/// <summary>
+				/// Make the window always or never on top of the desktop.
+				/// </summary>
+				/// <param name="topmost">True to make the window always  on top of the desktop.</param>
+				void											SetTopMost(bool topmost);
+
+				/// <summary>Get the <see cref="compositions::IGuiShortcutKeyManager"/> attached with this control host.</summary>
+				/// <returns>The shortcut key manager.</returns>
+				compositions::IGuiShortcutKeyManager*			GetShortcutKeyManager();
+				/// <summary>Attach or detach the <see cref="compositions::IGuiShortcutKeyManager"/> associated with this control host. When this control host is disposing, the associated shortcut key manager will be deleted if exists.</summary>
+				/// <param name="value">The shortcut key manager. Set to null to detach the previous shortcut key manager from this control host.</param>
+				void											SetShortcutKeyManager(compositions::IGuiShortcutKeyManager* value);
+				/// <summary>Get the timer manager.</summary>
+				/// <returns>The timer manager.</returns>
+				compositions::GuiGraphicsTimerManager*			GetTimerManager();
+
+				/// <summary>Get the client size of the window.</summary>
+				/// <returns>The client size of the window.</returns>
+				Size											GetClientSize();
+				/// <summary>Set the client size of the window.</summary>
+				/// <param name="value">The client size of the window.</param>
+				void											SetClientSize(Size value);
+				/// <summary>Get the location of the window in screen space.</summary>
+				/// <returns>The location of the window.</returns>
+				NativePoint										GetLocation();
+				/// <summary>Set the location of the window in screen space.</summary>
+				/// <param name="value">The location of the window.</param>
+				void											SetLocation(NativePoint value);
+				/// <summary>Set the location in screen space and the client size of the window.</summary>
+				/// <param name="location">The location of the window.</param>
+				/// <param name="size">The client size of the window.</param>
+				void											SetBounds(NativePoint location, Size size);
+
+				GuiControlHost*									GetRelatedControlHost()override;
+				const WString&									GetText()override;
+				void											SetText(const WString& value)override;
+
+				/// <summary>Get the screen that contains the window.</summary>
+				/// <returns>The screen that contains the window.</returns>
+				INativeScreen*									GetRelatedScreen();
+				/// <summary>
+				/// Show the window.
+				/// If the window disabled activation, this function enables it again.
+				/// </summary>
+				void											Show();
+				/// <summary>
+				/// Show the window without activation.
+				/// </summary>
+				void											ShowDeactivated();
+				/// <summary>
+				/// Restore the window.
+				/// </summary>
+				void											ShowRestored();
+				/// <summary>
+				/// Maximize the window.
+				/// </summary>
+				void											ShowMaximized();
+				/// <summary>
+				/// Minimize the window.
+				/// </summary>
+				void											ShowMinimized();
+				/// <summary>
+				/// Hide the window.
+				/// </summary>
+				void											Hide();
+				/// <summary>
+				/// Close the window and destroy the internal <see cref="INativeWindow"/> object.
+				/// </summary>
+				void											Close();
+				/// <summary>Test is the window opened.</summary>
+				/// <returns>Returns true if the window is opened.</returns>
+				bool											GetOpening();
+			};
+
+/***********************************************************************
+Window
+***********************************************************************/
+
+			/// <summary>
+			/// Represents a normal window.
+			/// </summary>
+			class GuiWindow : public GuiControlHost, protected compositions::GuiAltActionHostBase, public AggregatableDescription<GuiWindow>
+			{
+				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
+				friend class GuiApplication;
+			protected:
+				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
+				bool									hasMaximizedBox = true;
+				bool									hasMinimizedBox = true;
+				bool									hasBorder = true;
+				bool									hasSizeBox = true;
+				bool									isIconVisible = true;
+				bool									hasTitleBar = true;
+				Ptr<GuiImageData>						icon;
+				
+				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
+				void									SyncNativeWindowProperties();
+				void									Moved()override;
+				void									DpiChanged()override;
+				void									OnNativeWindowChanged()override;
+				void									OnVisualStatusChanged()override;
+				
+				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode);
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiWindow(theme::ThemeName themeName);
+				~GuiWindow();
+
+				IDescriptable*							QueryService(const WString& identifier)override;
+
+				/// <summary>Clipboard updated event.</summary>
+				compositions::GuiNotifyEvent			ClipboardUpdated;
+
+				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
+				void									MoveToScreenCenter();
+				/// <summary>Move the window to the center of the specified screen.</summary>
+				/// <param name="screen">The screen.</param>
+				void									MoveToScreenCenter(INativeScreen* screen);
+				
+				/// <summary>
+				/// Test is the maximize box visible.
+				/// </summary>
+				/// <returns>Returns true if the maximize box is visible.</returns>
+				bool									GetMaximizedBox();
+				/// <summary>
+				/// Make the maximize box visible or invisible.
+				/// </summary>
+				/// <param name="visible">True to make the maximize box visible.</param>
+				void									SetMaximizedBox(bool visible);
+				/// <summary>
+				/// Test is the minimize box visible.
+				/// </summary>
+				/// <returns>Returns true if the minimize box is visible.</returns>
+				bool									GetMinimizedBox();
+				/// <summary>
+				/// Make the minimize box visible or invisible.
+				/// </summary>
+				/// <param name="visible">True to make the minimize box visible.</param>
+				void									SetMinimizedBox(bool visible);
+				/// <summary>
+				/// Test is the border visible.
+				/// </summary>
+				/// <returns>Returns true if the border is visible.</returns>
+				bool									GetBorder();
+				/// <summary>
+				/// Make the border visible or invisible.
+				/// </summary>
+				/// <param name="visible">True to make the border visible.</param>
+				void									SetBorder(bool visible);
+				/// <summary>
+				/// Test is the size box visible.
+				/// </summary>
+				/// <returns>Returns true if the size box is visible.</returns>
+				bool									GetSizeBox();
+				/// <summary>
+				/// Make the size box visible or invisible.
+				/// </summary>
+				/// <param name="visible">True to make the size box visible.</param>
+				void									SetSizeBox(bool visible);
+				/// <summary>
+				/// Test is the icon visible.
+				/// </summary>
+				/// <returns>Returns true if the icon is visible.</returns>
+				bool									GetIconVisible();
+				/// <summary>
+				/// Make the icon visible or invisible.
+				/// </summary>
+				/// <param name="visible">True to make the icon visible.</param>
+				void									SetIconVisible(bool visible);
+				/// <summary>
+				/// Get the icon which replaces the default one.
+				/// </summary>
+				/// <returns>Returns the icon that replaces the default one.</returns>
+				Ptr<GuiImageData>						GetIcon();
+				/// <summary>
+				/// Set the icon that replaces the default one.
+				/// </summary>
+				/// <param name="value">The icon that replaces the default one.</param>
+				void									SetIcon(Ptr<GuiImageData> value);
+				/// <summary>
+				/// Test is the title bar visible.
+				/// </summary>
+				/// <returns>Returns true if the title bar is visible.</returns>
+				bool									GetTitleBar();
+				/// <summary>
+				/// Make the title bar visible or invisible.
+				/// </summary>
+				/// <param name="visible">True to make the title bar visible.</param>
+				void									SetTitleBar(bool visible);
+				/// <summary>
+				/// Show a model window, get a callback when the window is closed.
+				/// </summary>
+				/// <param name="owner">The window to disable as a parent window.</param>
+				/// <param name="callback">The callback to call after the window is closed.</param>
+				void									ShowModal(GuiWindow* owner, const Func<void()>& callback);
+				/// <summary>
+				/// Show a model window, get a callback when the window is closed, and then delete itself.
+				/// </summary>
+				/// <param name="owner">The window to disable as a parent window.</param>
+				/// <param name="callback">The callback to call after the window is closed.</param>
+				void									ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback);
+				/// <summary>
+				/// Show a model window as an async operation, which ends when the window is closed.
+				/// </summary>
+				/// <returns>Returns true if the size box is visible.</returns>
+				/// <param name="owner">The window to disable as a parent window.</param>
+				Ptr<reflection::description::IAsync>	ShowModalAsync(GuiWindow* owner);
+			};
+			
+			/// <summary>
+			/// Represents a popup window. When the mouse click on other window or the desktop, the popup window will be closed automatically.
+			/// </summary>
+			class GuiPopup : public GuiWindow, public Description<GuiPopup>
+			{
+			protected:
+				union PopupInfo
+				{
+					struct _s1 { NativePoint location; INativeScreen* screen; };
+					struct _s2 { GuiControl* control; INativeWindow* controlWindow; Rect bounds; bool preferredTopBottomSide; };
+					struct _s3 { GuiControl* control; INativeWindow* controlWindow; Point location; };
+					struct _s4 { GuiControl* control; INativeWindow* controlWindow; bool preferredTopBottomSide; };
+
+					_s1 _1;
+					_s2 _2;
+					_s3 _3;
+					_s4 _4;
+
+					PopupInfo() {}
+				};
+			protected:
+				vint									popupType = -1;
+				PopupInfo								popupInfo;
+
+				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
+				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+
+				static bool								IsClippedByScreen(NativeSize size, NativePoint location, INativeScreen* screen);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, NativePoint location, INativeScreen* screen);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Point location);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
+				static NativePoint						CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo);
+
+				void									ShowPopupInternal();
+
+				/// <summary>Create a control with a specified default theme and a window mode.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="mode">The window mode.</param>
+				GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode);
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiPopup(theme::ThemeName themeName);
+				~GuiPopup();
+
+				/// <summary>Test will the whole popup window be in the screen if the popup's left-top position is set to a specified value.</summary>
+				/// <returns>Returns true if the whole popup window will be in the screen.</returns>
+				/// <param name="location">The specified left-top position.</param>
+				bool									IsClippedByScreen(Point location);
+				/// <summary>Show the popup window with the left-top position set to a specified value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
+				/// <param name="location">The specified left-top position.</param>
+				/// <param name="screen">The expected screen. If you don't want to specify any screen, don't set this parameter.</param>
+				void									ShowPopup(NativePoint location, INativeScreen* screen = 0);
+				/// <summary>Show the popup window with the bounds set to a specified control-relative value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
+				/// <param name="control">The control that owns this popup temporary. And the location is relative to this control.</param>
+				/// <param name="bounds">The specified bounds.</param>
+				/// <param name="preferredTopBottomSide">Set to true if the popup window is expected to be opened at the top or bottom side of that bounds.</param>
+				void									ShowPopup(GuiControl* control, Rect bounds, bool preferredTopBottomSide);
+				/// <summary>Show the popup window with the left-top position set to a specified control-relative value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
+				/// <param name="control">The control that owns this popup temporary. And the location is relative to this control.</param>
+				/// <param name="location">The specified left-top position.</param>
+				void									ShowPopup(GuiControl* control, Point location);
+				/// <summary>Show the popup window aligned with a specified control. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
+				/// <param name="control">The control that owns this popup temporary.</param>
+				/// <param name="preferredTopBottomSide">Set to true if the popup window is expected to be opened at the top or bottom side of that control.</param>
+				void									ShowPopup(GuiControl* control, bool preferredTopBottomSide);
+			};
+
+			/// <summary>Represents a tooltip window.</summary>
+			class GuiTooltip : public GuiPopup, private INativeControllerListener, public Description<GuiTooltip>
+			{
+			protected:
+				GuiControl*								temporaryContentControl = nullptr;
+
+				void									GlobalTimer()override;
+				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+			public:
+				/// <summary>Create a control with a specified default theme.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				GuiTooltip(theme::ThemeName themeName);
+				~GuiTooltip();
+
+				/// <summary>Get the preferred content width.</summary>
+				/// <returns>The preferred content width.</returns>
+				vint									GetPreferredContentWidth();
+				/// <summary>Set the preferred content width.</summary>
+				/// <param name="value">The preferred content width.</param>
+				void									SetPreferredContentWidth(vint value);
+
+				/// <summary>Get the temporary content control.</summary>
+				/// <returns>The temporary content control.</returns>
+				GuiControl*								GetTemporaryContentControl();
+				/// <summary>Set the temporary content control.</summary>
+				/// <param name="control">The temporary content control.</param>
+				void									SetTemporaryContentControl(GuiControl* control);
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\APPLICATION\CONTROLS\GUIAPPLICATION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Application Framework
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIAPPLICATION
+#define VCZH_PRESENTATION_CONTROLS_GUIAPPLICATION
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+
+/***********************************************************************
+Application
+***********************************************************************/
+
+			/// <summary>Represents an GacUI application, for window management and asynchronized operation supporting. Use [M:vl.presentation.controls.GetApplication] to access the instance of this class.</summary>
+			class GuiApplication : public Object, private INativeControllerListener, public Description<GuiApplication>
+			{
+				friend void GuiApplicationInitialize();
+				friend class GuiWindow;
+				friend class GuiPopup;
+				friend class Ptr<GuiApplication>;
+			private:
+				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
+				void											ClipboardUpdated()override;
+			protected:
+				Locale											locale;
+				GuiWindow*										mainWindow = nullptr;
+				GuiWindow*										sharedTooltipOwnerWindow = nullptr;
+				GuiControl*										sharedTooltipOwner = nullptr;
+				GuiTooltip*										sharedTooltipControl = nullptr;
+				bool											sharedTooltipHovering = false;
+				bool											sharedTooltipClosing = false;
+				collections::List<GuiWindow*>					windows;
+				collections::SortedList<GuiPopup*>				openingPopups;
+
+				GuiApplication();
+				~GuiApplication();
+
+				INativeWindow*									GetThreadContextNativeWindow(GuiControlHost* controlHost);
+				void											RegisterWindow(GuiWindow* window);
+				void											UnregisterWindow(GuiWindow* window);
+				void											RegisterPopupOpened(GuiPopup* popup);
+				void											RegisterPopupClosed(GuiPopup* popup);
+				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+			public:
+				/// <summary>Locale changed event.</summary>
+				Event<void()>									LocaleChanged;
+
+				/// <summary>Returns the selected locale for all windows.</summary>
+				/// <returns>The selected locale.</returns>
+				Locale											GetLocale();
+				/// <summary>Set the locale for all windows.</summary>
+				/// <param name="value">The selected locale.</param>
+				void											SetLocale(Locale value);
+
+				/// <summary>Run a <see cref="GuiWindow"/> as the main window and show it. This function can only be called once in the entry point. When the main window is closed or hiden, the Run function will finished, and the application should prepare for finalization.</summary>
+				/// <param name="_mainWindow">The main window.</param>
+				void											Run(GuiWindow* _mainWindow);
+				/// <summary>Get the main window.</summary>
+				/// <returns>The main window.</returns>
+				GuiWindow*										GetMainWindow();
+				/// <summary>Get all created <see cref="GuiWindow"/> instances. This contains normal windows, popup windows, menus, or other types of windows that inherits from <see cref="GuiWindow"/>.</summary>
+				/// <returns>All created <see cref="GuiWindow"/> instances.</returns>
+				const collections::List<GuiWindow*>&			GetWindows();
+				/// <summary>Get the <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</summary>
+				/// <returns>The <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</returns>
+				/// <param name="location">The mouse cursor.</param>
+				GuiWindow*										GetWindow(NativePoint location);
+				/// <summary>Show a tooltip.</summary>
+				/// <param name="owner">The control that owns this tooltip temporary.</param>
+				/// <param name="tooltip">The control as the tooltip content. This control is not owned by the tooltip. User should manually release this control if no longer needed (usually when the application exit).</param>
+				/// <param name="preferredContentWidth">The preferred content width for this tooltip.</param>
+				/// <param name="location">The relative location to specify the left-top position of the tooltip.</param>
+				void											ShowTooltip(GuiControl* owner, GuiControl* tooltip, vint preferredContentWidth, Point location);
+				/// <summary>Close the tooltip</summary>
+				void											CloseTooltip();
+				/// <summary>Get the tooltip owner. When the tooltip closed, it returns null.</summary>
+				/// <returns>The tooltip owner.</returns>
+				GuiControl*										GetTooltipOwner();
+				/// <summary>Get the file path of the current executable.</summary>
+				/// <returns>The file path of the current executable.</returns>
+				WString											GetExecutablePath();
+				/// <summary>Get the folder of the current executable.</summary>
+				/// <returns>The folder of the current executable.</returns>
+				WString											GetExecutableFolder();
+
+				/// <summary>Test is the current thread the main thread for GUI.</summary>
+				/// <returns>Returns true if the current thread is the main thread for GUI.</returns>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
+				bool											IsInMainThread(GuiControlHost* controlHost);
+				/// <summary>Invoke a specified function asynchronously.</summary>
+				/// <param name="proc">The specified function.</param>
+				void											InvokeAsync(const Func<void()>& proc);
+				/// <summary>Invoke a specified function in the main thread.</summary>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
+				/// <param name="proc">The specified function.</param>
+				void											InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc);
+				/// <summary>Invoke a specified function in the main thread and wait for the function to complete or timeout.</summary>
+				/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
+				/// <param name="proc">The specified function.</param>
+				/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
+				bool											InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds=-1);
+				/// <summary>Delay execute a specified function with an specified argument asynchronisly.</summary>
+				/// <returns>The Delay execution controller for this task.</returns>
+				/// <param name="proc">The specified function.</param>
+				/// <param name="milliseconds">Time to delay.</param>
+				Ptr<INativeDelay>								DelayExecute(const Func<void()>& proc, vint milliseconds);
+				/// <summary>Delay execute a specified function with an specified argument in the main thread.</summary>
+				/// <returns>The Delay execution controller for this task.</returns>
+				/// <param name="proc">The specified function.</param>
+				/// <param name="milliseconds">Time to delay.</param>
+				Ptr<INativeDelay>								DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds);
+				/// <summary>Run the specified function in the main thread. If the caller is in the main thread, then run the specified function directly.</summary>
+				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
+				/// <param name="proc">The specified function.</param>
+				void											RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc);
+
+				template<typename T>
+				T RunGuiValue(GuiControlHost* controlHost, const Func<T()>& proc)
+				{
+					T result;
+					RunGuiTask(controlHost, [&result, &proc]()
+					{
+						result=proc();
+					});
+					return result;
+				}
+
+				template<typename T>
+				void InvokeLambdaInMainThread(GuiControlHost* controlHost, const T& proc)
+				{
+					InvokeInMainThread(controlHost, Func<void()>(proc));
+				}
+				
+				template<typename T>
+				bool InvokeLambdaInMainThreadAndWait(GuiControlHost* controlHost, const T& proc, vint milliseconds=-1)
+				{
+					return InvokeInMainThreadAndWait(controlHost, Func<void()>(proc), milliseconds);
+				}
+			};
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+			/// <summary>Get the global <see cref="GuiApplication"/> object.</summary>
+			/// <returns>The global <see cref="GuiApplication"/> object.</returns>
+			extern GuiApplication*								GetApplication();
+		}
+	}
+}
+
+extern void GuiApplicationMain();
+
+#define GUI_VALUE(x) vl::presentation::controls::GetApplication()->RunGuiValue(LAMBDA([&](){return (x);}))
+#define GUI_RUN(x) vl::presentation::controls::GetApplication()->RunGuiTask([=](){x})
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\GUIDIALOGS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUIDIALOGS
+#define VCZH_PRESENTATION_CONTROLS_GUIDIALOGS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			class GuiWindow;
+
+/***********************************************************************
+Dialogs
+***********************************************************************/
+
+			/// <summary>Base class for dialogs.</summary>
+			class GuiDialogBase abstract : public GuiComponent, public Description<GuiDialogBase>
+			{
+			protected:
+				GuiInstanceRootObject*								rootObject = nullptr;
+
+				GuiWindow*											GetHostWindow();
+			public:
+				GuiDialogBase();
+				~GuiDialogBase();
+
+				void												Attach(GuiInstanceRootObject* _rootObject);
+				void												Detach(GuiInstanceRootObject* _rootObject);
+			};
+			
+			/// <summary>Message dialog.</summary>
+			class GuiMessageDialog : public GuiDialogBase, public Description<GuiMessageDialog>
+			{
+			protected:
+				INativeDialogService::MessageBoxButtonsInput		input = INativeDialogService::DisplayOK;
+				INativeDialogService::MessageBoxDefaultButton		defaultButton = INativeDialogService::DefaultFirst;
+				INativeDialogService::MessageBoxIcons				icon = INativeDialogService::IconNone;
+				INativeDialogService::MessageBoxModalOptions		modalOption = INativeDialogService::ModalWindow;
+				WString												text;
+				WString												title;
+
+			public:
+				/// <summary>Create a message dialog.</summary>
+				GuiMessageDialog();
+				~GuiMessageDialog();
+
+				/// <summary>Get the button combination that appear on the dialog.</summary>
+				/// <returns>The button combination.</returns>
+				INativeDialogService::MessageBoxButtonsInput		GetInput();
+				/// <summary>Set the button combination that appear on the dialog.</summary>
+				/// <param name="value">The button combination.</param>
+				void												SetInput(INativeDialogService::MessageBoxButtonsInput value);
+				
+				/// <summary>Get the default button for the selected button combination.</summary>
+				/// <returns>The default button.</returns>
+				INativeDialogService::MessageBoxDefaultButton		GetDefaultButton();
+				/// <summary>Set the default button for the selected button combination.</summary>
+				/// <param name="value">The default button.</param>
+				void												SetDefaultButton(INativeDialogService::MessageBoxDefaultButton value);
+
+				/// <summary>Get the icon that appears on the dialog.</summary>
+				/// <returns>The icon.</returns>
+				INativeDialogService::MessageBoxIcons				GetIcon();
+				/// <summary>Set the icon that appears on the dialog.</summary>
+				/// <param name="value">The icon.</param>
+				void												SetIcon(INativeDialogService::MessageBoxIcons value);
+
+				/// <summary>Get the way that how this dialog disable windows of the current process.</summary>
+				/// <returns>The way that how this dialog disable windows of the current process.</returns>
+				INativeDialogService::MessageBoxModalOptions		GetModalOption();
+				/// <summary>Set the way that how this dialog disable windows of the current process.</summary>
+				/// <param name="value">The way that how this dialog disable windows of the current process.</param>
+				void												SetModalOption(INativeDialogService::MessageBoxModalOptions value);
+
+				/// <summary>Get the text for the dialog.</summary>
+				/// <returns>The text.</returns>
+				const WString&										GetText();
+				/// <summary>Set the text for the dialog.</summary>
+				/// <param name="value">The text.</param>
+				void												SetText(const WString& value);
+
+				/// <summary>Get the title for the dialog.</summary>
+				/// <returns>The title.</returns>
+				const WString&										GetTitle();
+				/// <summary>Set the title for the dialog. If the title is empty, the dialog will use the title of the window that host this dialog.</summary>
+				/// <param name="value">The title.</param>
+				void												SetTitle(const WString& value);
+				
+				/// <summary>Show the dialog.</summary>
+				/// <returns>Returns the clicked button.</returns>
+				INativeDialogService::MessageBoxButtonsOutput		ShowDialog();
+			};
+			
+			/// <summary>Color dialog.</summary>
+			class GuiColorDialog : public GuiDialogBase, public Description<GuiColorDialog>
+			{
+			protected:
+				bool												enabledCustomColor = true;
+				bool												openedCustomColor = false;
+				Color												selectedColor;
+				bool												showSelection = true;
+				collections::List<Color>							customColors;
+
+			public:
+				/// <summary>Create a color dialog.</summary>
+				GuiColorDialog();
+				~GuiColorDialog();
+
+				/// <summary>Selected color changed event.</summary>
+				compositions::GuiNotifyEvent						SelectedColorChanged;
+				
+				/// <summary>Get if the custom color panel is enabled for the dialog.</summary>
+				/// <returns>Returns true if the color panel is enabled for the dialog.</returns>
+				bool												GetEnabledCustomColor();
+				/// <summary>Set if custom color panel is enabled for the dialog.</summary>
+				/// <param name="value">Set to true to enable the custom color panel for the dialog.</param>
+				void												SetEnabledCustomColor(bool value);
+				
+				/// <summary>Get if the custom color panel is opened by default when it is enabled.</summary>
+				/// <returns>Returns true if the custom color panel is opened by default.</returns>
+				bool												GetOpenedCustomColor();
+				/// <summary>Set if the custom color panel is opened by default when it is enabled.</summary>
+				/// <param name="value">Set to true to open custom color panel by default if it is enabled.</param>
+				void												SetOpenedCustomColor(bool value);
+				
+				/// <summary>Get the selected color.</summary>
+				/// <returns>The selected color.</returns>
+				Color												GetSelectedColor();
+				/// <summary>Set the selected color.</summary>
+				/// <param name="value">The selected color.</param>
+				void												SetSelectedColor(Color value);
+				
+				/// <summary>Get the list to access 16 selected custom colors on the palette. Colors in the list is guaranteed to have exactly 16 items after the dialog is closed.</summary>
+				/// <returns>The list to access custom colors on the palette.</returns>
+				collections::List<Color>&							GetCustomColors();
+				
+				/// <summary>Show the dialog.</summary>
+				/// <returns>Returns true if the "OK" button is clicked.</returns>
+				bool												ShowDialog();
+			};
+			
+			/// <summary>Font dialog.</summary>
+			class GuiFontDialog : public GuiDialogBase, public Description<GuiFontDialog>
+			{
+			protected:
+				FontProperties										selectedFont;
+				Color												selectedColor;
+				bool												showSelection = true;
+				bool												showEffect = true;
+				bool												forceFontExist = true;
+
+			public:
+				/// <summary>Create a font dialog.</summary>
+				GuiFontDialog();
+				~GuiFontDialog();
+
+				/// <summary>Selected font changed event.</summary>
+				compositions::GuiNotifyEvent						SelectedFontChanged;
+				/// <summary>Selected color changed event.</summary>
+				compositions::GuiNotifyEvent						SelectedColorChanged;
+				
+				/// <summary>Get the selected font.</summary>
+				/// <returns>The selected font.</returns>
+				const FontProperties&								GetSelectedFont();
+				/// <summary>Set the selected font.</summary>
+				/// <param name="value">The selected font.</param>
+				void												SetSelectedFont(const FontProperties& value);
+				
+				/// <summary>Get the selected color.</summary>
+				/// <returns>The selected color.</returns>
+				Color												GetSelectedColor();
+				/// <summary>Set the selected color.</summary>
+				/// <param name="value">The selected color.</param>
+				void												SetSelectedColor(Color value);
+				
+				/// <summary>Get if the selected font is already selected on the dialog when it is opened.</summary>
+				/// <returns>Returns true if the selected font is already selected on the dialog when it is opened.</returns>
+				bool												GetShowSelection();
+				/// <summary>Set if the selected font is already selected on the dialog when it is opened.</summary>
+				/// <param name="value">Set to true to select the selected font when the dialog is opened.</param>
+				void												SetShowSelection(bool value);
+				
+				/// <summary>Get if the font preview is enabled.</summary>
+				/// <returns>Returns true if the font preview is enabled.</returns>
+				bool												GetShowEffect();
+				/// <summary>Set if the font preview is enabled.</summary>
+				/// <param name="value">Set to true to enable the font preview.</param>
+				void												SetShowEffect(bool value);
+				
+				/// <summary>Get if the dialog only accepts an existing font.</summary>
+				/// <returns>Returns true if the dialog only accepts an existing font.</returns>
+				bool												GetForceFontExist();
+				/// <summary>Set if the dialog only accepts an existing font.</summary>
+				/// <param name="value">Set to true to let the dialog only accept an existing font.</param>
+				void												SetForceFontExist(bool value);
+				
+				/// <summary>Show the dialog.</summary>
+				/// <returns>Returns true if the "OK" button is clicked.</returns>
+				bool												ShowDialog();
+			};
+			
+			/// <summary>Base class for file dialogs.</summary>
+			class GuiFileDialogBase abstract : public GuiDialogBase, public Description<GuiFileDialogBase>
+			{
+			protected:
+				WString												filter = L"All Files (*.*)|*.*";
+				vint												filterIndex = 0;
+				bool												enabledPreview = false;
+				WString												title;
+				WString												fileName;
+				WString												directory;
+				WString												defaultExtension;
+				INativeDialogService::FileDialogOptions				options;
+
+			public:
+				GuiFileDialogBase();
+				~GuiFileDialogBase();
+
+				/// <summary>File name changed event.</summary>
+				compositions::GuiNotifyEvent						FileNameChanged;
+				/// <summary>Filter index changed event.</summary>
+				compositions::GuiNotifyEvent						FilterIndexChanged;
+				
+				/// <summary>Get the filter.</summary>
+				/// <returns>The filter.</returns>
+				const WString&										GetFilter();
+				/// <summary>Set the filter. The filter is formed by pairs of filter name and wildcard concatenated by "|", like "Text Files (*.txt)|*.txt|All Files (*.*)|*.*".</summary>
+				/// <param name="value">The filter.</param>
+				void												SetFilter(const WString& value);
+				
+				/// <summary>Get the filter index.</summary>
+				/// <returns>The filter index.</returns>
+				vint												GetFilterIndex();
+				/// <summary>Set the filter index.</summary>
+				/// <param name="value">The filter index.</param>
+				void												SetFilterIndex(vint value);
+				
+				/// <summary>Get if the file preview is enabled.</summary>
+				/// <returns>Returns true if the file preview is enabled.</returns>
+				bool												GetEnabledPreview();
+				/// <summary>Set if the file preview is enabled.</summary>
+				/// <param name="value">Set to true to enable the file preview.</param>
+				void												SetEnabledPreview(bool value);
+				
+				/// <summary>Get the title.</summary>
+				/// <returns>The title.</returns>
+				WString												GetTitle();
+				/// <summary>Set the title.</summary>
+				/// <param name="value">The title.</param>
+				void												SetTitle(const WString& value);
+				
+				/// <summary>Get the selected file name.</summary>
+				/// <returns>The selected file name.</returns>
+				WString												GetFileName();
+				/// <summary>Set the selected file name.</summary>
+				/// <param name="value">The selected file name.</param>
+				void												SetFileName(const WString& value);
+				
+				/// <summary>Get the default folder.</summary>
+				/// <returns>The default folder.</returns>
+				WString												GetDirectory();
+				/// <summary>Set the default folder.</summary>
+				/// <param name="value">The default folder.</param>
+				void												SetDirectory(const WString& value);
+				
+				/// <summary>Get the default file extension.</summary>
+				/// <returns>The default file extension.</returns>
+				WString												GetDefaultExtension();
+				/// <summary>Set the default file extension like "txt". If the user does not specify a file extension, the default file extension will be appended using "." after the file name.</summary>
+				/// <param name="value">The default file extension.</param>
+				void												SetDefaultExtension(const WString& value);
+				
+				/// <summary>Get the dialog options.</summary>
+				/// <returns>The dialog options.</returns>
+				INativeDialogService::FileDialogOptions				GetOptions();
+				/// <summary>Set the dialog options.</summary>
+				/// <param name="value">The dialog options.</param>
+				void												SetOptions(INativeDialogService::FileDialogOptions value);
+			};
+			
+			/// <summary>Open file dialog.</summary>
+			class GuiOpenFileDialog : public GuiFileDialogBase, public Description<GuiOpenFileDialog>
+			{
+			protected:
+				collections::List<WString>							fileNames;
+
+			public:
+				/// <summary>Create a open file dialog.</summary>
+				GuiOpenFileDialog();
+				~GuiOpenFileDialog();
+				
+				/// <summary>Get the list to access multiple selected file names.</summary>
+				/// <returns>The list to access multiple selected file names.</returns>
+				collections::List<WString>&							GetFileNames();
+				
+				/// <summary>Show the dialog.</summary>
+				/// <returns>Returns true if the "Open" button is clicked.</returns>
+				bool												ShowDialog();
+			};
+			
+			/// <summary>Save file dialog.</summary>
+			class GuiSaveFileDialog : public GuiFileDialogBase, public Description<GuiSaveFileDialog>
+			{
+			public:
+				/// <summary>Create a save file dialog.</summary>
+				GuiSaveFileDialog();
+				~GuiSaveFileDialog();
+
+				/// <summary>Show the dialog.</summary>
+				/// <returns>Returns true if the "Save" button is clicked.</returns>
+				bool												ShowDialog();
+			};
+		}
+	}
+}
+
+#endif
+
+
+/***********************************************************************
 .\CONTROLS\TEMPLATES\GUIANIMATION.H
 ***********************************************************************/
 /***********************************************************************
@@ -7502,6 +9130,128 @@ namespace vl
 				static void					WaitForGroupAndPause(IImpl* impl, vint groupId);
 				static void					ReturnAndExit(IImpl* impl);
 				static Ptr<IGuiAnimation>	Create(const Creator& creator);
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPCOMMAND.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Control System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_CONTROLS_GUITOOLSTRIPCOMMAND
+#define VCZH_PRESENTATION_CONTROLS_GUITOOLSTRIPCOMMAND
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			class IGuiShortcutKeyItem;
+		}
+
+		namespace controls
+		{
+			/// <summary>A command for toolstrip controls.</summary>
+			class GuiToolstripCommand : public GuiComponent, public Description<GuiToolstripCommand>
+			{
+			public:
+				class ShortcutBuilder : public Object
+				{
+				public:
+					WString									text;
+					bool									ctrl;
+					bool									shift;
+					bool									alt;
+					VKEY									key;
+				};
+			protected:
+				Ptr<GuiImageData>							image;
+				Ptr<GuiImageData>							largeImage;
+				WString										text;
+				compositions::IGuiShortcutKeyItem*			shortcutKeyItem = nullptr;
+				bool										enabled = true;
+				bool										selected = false;
+				Ptr<compositions::IGuiGraphicsEventHandler>	shortcutKeyItemExecutedHandler;
+				Ptr<ShortcutBuilder>						shortcutBuilder;
+
+				GuiInstanceRootObject*						attachedRootObject = nullptr;
+				Ptr<compositions::IGuiGraphicsEventHandler>	renderTargetChangedHandler;
+				GuiControlHost*								shortcutOwner = nullptr;
+
+				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										InvokeDescriptionChanged();
+				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder);
+				void										BuildShortcut(const WString& builderText);
+				void										UpdateShortcutOwner();
+			public:
+				/// <summary>Create the command.</summary>
+				GuiToolstripCommand();
+				~GuiToolstripCommand();
+
+				void										Attach(GuiInstanceRootObject* rootObject)override;
+				void										Detach(GuiInstanceRootObject* rootObject)override;
+
+				/// <summary>Executed event.</summary>
+				compositions::GuiNotifyEvent				Executed;
+
+				/// <summary>Description changed event, raised when any description property is modified.</summary>
+				compositions::GuiNotifyEvent				DescriptionChanged;
+
+				/// <summary>Get the large image for this command.</summary>
+				/// <returns>The large image for this command.</returns>
+				Ptr<GuiImageData>							GetLargeImage();
+				/// <summary>Set the large image for this command.</summary>
+				/// <param name="value">The large image for this command.</param>
+				void										SetLargeImage(Ptr<GuiImageData> value);
+				/// <summary>Get the image for this command.</summary>
+				/// <returns>The image for this command.</returns>
+				Ptr<GuiImageData>							GetImage();
+				/// <summary>Set the image for this command.</summary>
+				/// <param name="value">The image for this command.</param>
+				void										SetImage(Ptr<GuiImageData> value);
+				/// <summary>Get the text for this command.</summary>
+				/// <returns>The text for this command.</returns>
+				const WString&								GetText();
+				/// <summary>Set the text for this command.</summary>
+				/// <param name="value">The text for this command.</param>
+				void										SetText(const WString& value);
+				/// <summary>Get the shortcut key item for this command.</summary>
+				/// <returns>The shortcut key item for this command.</returns>
+				compositions::IGuiShortcutKeyItem*			GetShortcut();
+				/// <summary>Set the shortcut key item for this command.</summary>
+				/// <param name="value">The shortcut key item for this command.</param>
+				void										SetShortcut(compositions::IGuiShortcutKeyItem* value);
+				/// <summary>Get the shortcut builder for this command.</summary>
+				/// <returns>The shortcut builder for this command.</returns>
+				WString										GetShortcutBuilder();
+				/// <summary>Set the shortcut builder for this command. When the command is attached to a window as a component without a shortcut, the command will try to convert the shortcut builder to a shortcut key item.</summary>
+				/// <param name="value">The shortcut builder for this command.</param>
+				void										SetShortcutBuilder(const WString& value);
+				/// <summary>Get the enablility for this command.</summary>
+				/// <returns>The enablility for this command.</returns>
+				bool										GetEnabled();
+				/// <summary>Set the enablility for this command.</summary>
+				/// <param name="value">The enablility for this command.</param>
+				void										SetEnabled(bool value);
+				/// <summary>Get the selection for this command.</summary>
+				/// <returns>The selection for this command.</returns>
+				bool										GetSelected();
+				/// <summary>Set the selection for this command.</summary>
+				/// <param name="value">The selection for this command.</param>
+				void										SetSelected(bool value);
 			};
 		}
 	}
@@ -9536,60 +11286,134 @@ namespace vl
 			class GuiScroll;
 		}
 
+		namespace controls
+		{
+			class GuiControlHost;
+			class GuiCustomControl;
+
+			/// <summary>The visual state for button.</summary>
+			enum class ButtonState
+			{
+				/// <summary>Normal state.</summary>
+				Normal,
+				/// <summary>Active state (when the cursor is hovering on a button).</summary>
+				Active,
+				/// <summary>Pressed state (when the buttin is being pressed).</summary>
+				Pressed,
+			};
+
+			/// <summary>Represents the sorting state of list view items related to this column.</summary>
+			enum class ColumnSortingState
+			{
+				/// <summary>Not sorted.</summary>
+				NotSorted,
+				/// <summary>Ascending.</summary>
+				Ascending,
+				/// <summary>Descending.</summary>
+				Descending,
+			};
+
+			/// <summary>Represents the order of tab pages.</summary>
+			enum class TabPageOrder
+			{
+				/// <summary>Unknown.</summary>
+				Unknown,
+				/// <summary>Left to right.</summary>
+				LeftToRight,
+				/// <summary>Right to left.</summary>
+				RightToLeft,
+				/// <summary>Top to bottom.</summary>
+				TopToBottom,
+				/// <summary>Bottom to top.</summary>
+				BottomToTop,
+			};
+
+			/// <summary>A command executor for the combo box to change the control state.</summary>
+			class ITextBoxCommandExecutor : public virtual IDescriptable, public Description<ITextBoxCommandExecutor>
+			{
+			public:
+				/// <summary>Override the text content in the control.</summary>
+				/// <param name="value">The new text content.</param>
+				virtual void						UnsafeSetText(const WString& value) = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IScrollCommandExecutor : public virtual IDescriptable, public Description<IScrollCommandExecutor>
+			{
+			public:
+				/// <summary>Do small decrement.</summary>
+				virtual void						SmallDecrease() = 0;
+				/// <summary>Do small increment.</summary>
+				virtual void						SmallIncrease() = 0;
+				/// <summary>Do big decrement.</summary>
+				virtual void						BigDecrease() = 0;
+				/// <summary>Do big increment.</summary>
+				virtual void						BigIncrease() = 0;
+
+				/// <summary>Change to total size of the scroll.</summary>
+				/// <param name="value">The total size.</param>
+				virtual void						SetTotalSize(vint value) = 0;
+				/// <summary>Change to page size of the scroll.</summary>
+				/// <param name="value">The page size.</param>
+				virtual void						SetPageSize(vint value) = 0;
+				/// <summary>Change to position of the scroll.</summary>
+				/// <param name="value">The position.</param>
+				virtual void						SetPosition(vint value) = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class ITabCommandExecutor : public virtual IDescriptable, public Description<ITabCommandExecutor>
+			{
+			public:
+				/// <summary>Select a tab page.</summary>
+				/// <param name="index">The specified position for the tab page.</param>
+				/// <param name="setFocus">Set to true to set focus to the tab control.</param>
+				virtual void						ShowTab(vint index, bool setFocus) = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IDatePickerCommandExecutor : public virtual IDescriptable, public Description<IDatePickerCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the date has been changed.</summary>
+				virtual void						NotifyDateChanged() = 0;
+				/// <summary>Called when navigated to a date.</summary>
+				virtual void						NotifyDateNavigated() = 0;
+				/// <summary>Called when selected a date.</summary>
+				virtual void						NotifyDateSelected() = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IRibbonGroupCommandExecutor : public virtual IDescriptable, public Description<IRibbonGroupCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the expand button is clicked.</summary>
+				virtual void						NotifyExpandButtonClicked() = 0;
+			};
+
+			/// <summary>A command executor for the style controller to change the control state.</summary>
+			class IRibbonGalleryCommandExecutor : public virtual IDescriptable, public Description<IRibbonGalleryCommandExecutor>
+			{
+			public:
+				/// <summary>Called when the scroll up button is clicked.</summary>
+				virtual void						NotifyScrollUp() = 0;
+				/// <summary>Called when the scroll down button is clicked.</summary>
+				virtual void						NotifyScrollDown() = 0;
+				/// <summary>Called when the dropdown button is clicked.</summary>
+				virtual void						NotifyDropdown() = 0;
+			};
+		}
+
+/***********************************************************************
+Templates
+***********************************************************************/
+
 		namespace templates
 		{
 
-#define GUI_TEMPLATE_PROPERTY_DECL(CLASS, TYPE, NAME, VALUE)\
-			private:\
-				TYPE NAME##_ = VALUE;\
-			public:\
-				TYPE Get##NAME();\
-				void Set##NAME(TYPE const& value);\
-				compositions::GuiNotifyEvent NAME##Changed;\
-
-#define GUI_TEMPLATE_PROPERTY_IMPL(CLASS, TYPE, NAME, VALUE)\
-			TYPE CLASS::Get##NAME()\
-			{\
-				return NAME##_;\
-			}\
-			void CLASS::Set##NAME(TYPE const& value)\
-			{\
-				if (NAME##_ != value)\
-				{\
-					NAME##_ = value;\
-					NAME##Changed.Execute(compositions::GuiEventArgs(this));\
-				}\
-			}\
-
-#define GUI_TEMPLATE_PROPERTY_EVENT_INIT(CLASS, TYPE, NAME, VALUE)\
-			NAME##Changed.SetAssociatedComposition(this);
-
-#define GUI_TEMPLATE_CLASS_DECL(CLASS, BASE)\
-			class CLASS : public BASE, public AggregatableDescription<CLASS>\
-			{\
-			public:\
-				CLASS();\
-				~CLASS();\
-				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)\
-			};\
-
-#define GUI_TEMPLATE_CLASS_IMPL(CLASS, BASE)\
-			CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_IMPL)\
-			CLASS::CLASS()\
-			{\
-				CLASS ## _PROPERTIES(GUI_TEMPLATE_PROPERTY_EVENT_INIT)\
-			}\
-			CLASS::~CLASS()\
-			{\
-				FinalizeAggregation();\
-			}\
-
 #define GUI_CONTROL_TEMPLATE_DECL(F)\
-			F(GuiControlTemplate,				GuiTemplate)				\
-			F(GuiLabelTemplate,					GuiControlTemplate)			\
 			F(GuiSinglelineTextBoxTemplate,		GuiControlTemplate)			\
 			F(GuiDocumentLabelTemplate,			GuiControlTemplate)			\
-			F(GuiWindowTemplate,				GuiControlTemplate)			\
 			F(GuiMenuTemplate,					GuiWindowTemplate)			\
 			F(GuiButtonTemplate,				GuiControlTemplate)			\
 			F(GuiSelectableButtonTemplate,		GuiButtonTemplate)			\
@@ -9624,30 +11448,6 @@ namespace vl
 			F(GuiGridEditorTemplate,			GuiGridCellTemplate)		\
 
 /***********************************************************************
-GuiTemplate
-***********************************************************************/
-
-			/// <summary>Represents a user customizable template.</summary>
-			class GuiTemplate : public compositions::GuiBoundsComposition, public controls::GuiInstanceRootObject, public Description<GuiTemplate>
-			{
-			protected:
-				controls::GuiControlHost*		GetControlHostForInstance()override;
-				void							OnParentLineChanged()override;
-			public:
-				/// <summary>Create a template.</summary>
-				GuiTemplate();
-				~GuiTemplate();
-				
-#define GuiTemplate_PROPERTIES(F)\
-				F(GuiTemplate,	FontProperties,		Font,				{}	)\
-				F(GuiTemplate,	description::Value,	Context,			{}	)\
-				F(GuiTemplate,	WString,			Text,				{}	)\
-				F(GuiTemplate,	bool,				VisuallyEnabled,	true)\
-
-				GuiTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-			};
-
-/***********************************************************************
 GuiListItemTemplate
 ***********************************************************************/
 
@@ -9676,22 +11476,6 @@ GuiListItemTemplate
 Control Template
 ***********************************************************************/
 
-			enum class BoolOption
-			{
-				AlwaysTrue,
-				AlwaysFalse,
-				Customizable,
-			};
-
-#define GuiControlTemplate_PROPERTIES(F)\
-				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
-				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
-				F(GuiControlTemplate, bool, Focused, false)\
-
-#define GuiLabelTemplate_PROPERTIES(F)\
-				F(GuiLabelTemplate, Color, DefaultTextColor, {})\
-				F(GuiLabelTemplate, Color, TextColor, {})\
-
 #define GuiSinglelineTextBoxTemplate_PROPERTIES(F)\
 				F(GuiSinglelineTextBoxTemplate, elements::text::ColorEntry, TextColor, {})\
 				F(GuiSinglelineTextBoxTemplate, Color, CaretColor, {})\
@@ -9699,27 +11483,6 @@ Control Template
 #define GuiDocumentLabelTemplate_PROPERTIES(F)\
 				F(GuiDocumentLabelTemplate, Ptr<DocumentModel>, BaselineDocument, {})\
 				F(GuiDocumentLabelTemplate, Color, CaretColor, {})\
-
-#define GuiWindowTemplate_PROPERTIES(F)\
-				F(GuiWindowTemplate, BoolOption, MaximizedBoxOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, MinimizedBoxOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, BorderOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, SizeBoxOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, IconVisibleOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, BoolOption, TitleBarOption, BoolOption::Customizable)\
-				F(GuiWindowTemplate, bool, MaximizedBox, true)\
-				F(GuiWindowTemplate, bool, MinimizedBox, true)\
-				F(GuiWindowTemplate, bool, Border, true)\
-				F(GuiWindowTemplate, bool, SizeBox, true)\
-				F(GuiWindowTemplate, bool, IconVisible, true)\
-				F(GuiWindowTemplate, bool, TitleBar, true)\
-				F(GuiWindowTemplate, bool, Maximized, false)\
-				F(GuiWindowTemplate, bool, Activated, false)\
-				F(GuiWindowTemplate, TemplateProperty<GuiWindowTemplate>, TooltipTemplate, {})\
-				F(GuiWindowTemplate, TemplateProperty<GuiLabelTemplate>, ShortcutKeyTemplate, {})\
-				F(GuiWindowTemplate, bool, CustomFrameEnabled, true)\
-				F(GuiWindowTemplate, Margin, CustomFramePadding, {})\
-				F(GuiWindowTemplate, Ptr<GuiImageData>, Icon, {})\
 
 #define GuiMenuTemplate_PROPERTIES(F)
 
@@ -9889,448 +11652,6 @@ Template Declarations
 #endif
 
 /***********************************************************************
-.\CONTROLS\GUIBASICCONTROLS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUIBASICCONTROLS
-#define VCZH_PRESENTATION_CONTROLS_GUIBASICCONTROLS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace theme
-		{
-			enum class ThemeName;
-		}
-
-		namespace controls
-		{
-			template<typename T, typename=void>
-			struct QueryServiceHelper;
-
-			template<typename T>
-			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::Identifier), const wchar_t* const>>>
-			{
-				static WString GetIdentifier()
-				{
-					return WString::Unmanaged(T::Identifier);
-				}
-			};
-
-			template<typename T>
-			struct QueryServiceHelper<T, std::enable_if_t<std::is_convertible_v<decltype(T::GetIdentifier()), WString>>>
-			{
-				static WString GetIdentifier()
-				{
-					return MoveValue<WString>(T::GetIdentifier());
-				}
-			};
-
-/***********************************************************************
-Basic Construction
-***********************************************************************/
-
-			/// <summary>
-			/// A helper object to test if a control has been deleted or not.
-			/// </summary>
-			class GuiDisposedFlag : public Object, public Description<GuiDisposedFlag>
-			{
-				friend class GuiControl;
-			protected:
-				GuiControl*								owner = nullptr;
-				bool									disposed = false;
-
-				void									SetDisposed();
-			public:
-				GuiDisposedFlag(GuiControl* _owner);
-				~GuiDisposedFlag();
-
-				bool									IsDisposed();
-			};
-
-			/// <summary>
-			/// The base class of all controls.
-			/// When the control is destroyed, it automatically destroys sub controls, and the bounds composition from the style controller.
-			/// If you want to manually destroy a control, you should first remove it from its parent.
-			/// The only way to remove a control from a parent control, is to remove the bounds composition from its parent composition. The same to inserting a control.
-			/// </summary>
-			class GuiControl
-				: public Object
-				, protected compositions::IGuiAltAction
-				, protected compositions::IGuiTabAction
-				, public Description<GuiControl>
-			{
-				friend class compositions::GuiGraphicsComposition;
-
-			protected:
-				using ControlList = collections::List<GuiControl*>;
-				using ControlServiceMap = collections::Dictionary<WString, Ptr<IDescriptable>>;
-				using ControlTemplatePropertyType = TemplateProperty<templates::GuiControlTemplate>;
-				using IGuiGraphicsEventHandler = compositions::IGuiGraphicsEventHandler;
-
-			private:
-				theme::ThemeName						controlThemeName;
-				ControlTemplatePropertyType				controlTemplate;
-				templates::GuiControlTemplate*			controlTemplateObject = nullptr;
-				Ptr<GuiDisposedFlag>					disposedFlag;
-
-			public:
-				Ptr<GuiDisposedFlag>					GetDisposedFlag();
-
-			protected:
-				compositions::GuiBoundsComposition*		boundsComposition = nullptr;
-				compositions::GuiBoundsComposition*		containerComposition = nullptr;
-				compositions::GuiGraphicsComposition*	focusableComposition = nullptr;
-				compositions::GuiGraphicsEventReceiver*	eventReceiver = nullptr;
-
-				bool									isFocused = false;
-				Ptr<IGuiGraphicsEventHandler>			gotFocusHandler;
-				Ptr<IGuiGraphicsEventHandler>			lostFocusHandler;
-
-				bool									acceptTabInput = false;
-				vint									tabPriority = -1;
-				bool									isEnabled = true;
-				bool									isVisuallyEnabled = true;
-				bool									isVisible = true;
-				WString									alt;
-				WString									text;
-				Nullable<FontProperties>				font;
-				FontProperties							displayFont;
-				description::Value						context;
-				compositions::IGuiAltActionHost*		activatingAltHost = nullptr;
-				ControlServiceMap						controlServices;
-
-				GuiControl*								parent = nullptr;
-				ControlList								children;
-				description::Value						tag;
-				GuiControl*								tooltipControl = nullptr;
-				vint									tooltipWidth = 0;
-
-				virtual void							BeforeControlTemplateUninstalled();
-				virtual void							AfterControlTemplateInstalled(bool initialize);
-				virtual void							CheckAndStoreControlTemplate(templates::GuiControlTemplate* value);
-				virtual void							EnsureControlTemplateExists();
-				virtual void							RebuildControlTemplate();
-				virtual void							OnChildInserted(GuiControl* control);
-				virtual void							OnChildRemoved(GuiControl* control);
-				virtual void							OnParentChanged(GuiControl* oldParent, GuiControl* newParent);
-				virtual void							OnParentLineChanged();
-				virtual void							OnServiceAdded();
-				virtual void							OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget);
-				virtual void							OnBeforeReleaseGraphicsHost();
-				virtual void							UpdateVisuallyEnabled();
-				virtual void							UpdateDisplayFont();
-				void									OnGotFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									OnLostFocus(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									SetFocusableComposition(compositions::GuiGraphicsComposition* value);
-
-				bool									IsControlVisibleAndEnabled();
-				bool									IsAltEnabled()override;
-				bool									IsAltAvailable()override;
-				compositions::GuiGraphicsComposition*	GetAltComposition()override;
-				compositions::IGuiAltActionHost*		GetActivatingAltHost()override;
-				void									OnActiveAlt()override;
-				bool									IsTabEnabled()override;
-				bool									IsTabAvailable()override;
-
-				static bool								SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
-
-			public:
-				using ControlTemplateType = templates::GuiControlTemplate;
-
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiControl(theme::ThemeName themeName);
-				~GuiControl();
-
-				/// <summary>Theme name changed event. This event raises when the theme name is changed.</summary>
-				compositions::GuiNotifyEvent			ControlThemeNameChanged;
-				/// <summary>Control template changed event. This event raises when the control template is changed.</summary>
-				compositions::GuiNotifyEvent			ControlTemplateChanged;
-				/// <summary>Control signal trigerred. This raises be raised because of multiple reason specified in the argument.</summary>
-				compositions::GuiControlSignalEvent		ControlSignalTrigerred;
-				/// <summary>Visible event. This event raises when the visibility state of the control is changed.</summary>
-				compositions::GuiNotifyEvent			VisibleChanged;
-				/// <summary>Enabled event. This event raises when the enabling state of the control is changed.</summary>
-				compositions::GuiNotifyEvent			EnabledChanged;
-				/// <summary>Focused event. This event raises when the focusing state of the control is changed.</summary>
-				compositions::GuiNotifyEvent			FocusedChanged;
-				/// <summary>
-				/// Enabled event. This event raises when the visually enabling state of the control is changed. A visually enabling is combined by the enabling state and the parent's visually enabling state.
-				/// A control is rendered as disabled, not only when the control itself is disabled, but also when the parent control is rendered as disabled.
-				/// </summary>
-				compositions::GuiNotifyEvent			VisuallyEnabledChanged;
-				/// <summary>Alt changed event. This event raises when the associated Alt-combined shortcut key of the control is changed.</summary>
-				compositions::GuiNotifyEvent			AltChanged;
-				/// <summary>Text changed event. This event raises when the text of the control is changed.</summary>
-				compositions::GuiNotifyEvent			TextChanged;
-				/// <summary>Font changed event. This event raises when the font of the control is changed.</summary>
-				compositions::GuiNotifyEvent			FontChanged;
-				/// <summary>Display font changed event. This event raises when the display font of the control is changed.</summary>
-				compositions::GuiNotifyEvent			DisplayFontChanged;
-				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
-				compositions::GuiNotifyEvent			ContextChanged;
-
-				void									InvokeOrDelayIfRendering(Func<void()> proc);
-
-				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
-				/// <returns>The created argument.</returns>
-				compositions::GuiEventArgs				GetNotifyEventArguments();
-				/// <summary>Get the associated theme name.</summary>
-				/// <returns>The theme name.</returns>
-				theme::ThemeName						GetControlThemeName();
-				/// <summary>Set the associated control theme name.</summary>
-				/// <param name="value">The theme name.</param>
-				void									SetControlThemeName(theme::ThemeName value);
-				/// <summary>Get the associated control template.</summary>
-				/// <returns>The control template.</returns>
-				ControlTemplatePropertyType				GetControlTemplate();
-				/// <summary>Set the associated control template.</summary>
-				/// <param name="value">The control template.</param>
-				void									SetControlTemplate(const ControlTemplatePropertyType& value);
-				/// <summary>Set the associated control theme name and template and the same time.</summary>
-				/// <param name="themeNameValue">The theme name.</param>
-				/// <param name="controlTemplateValue">The control template.</param>
-				void									SetControlThemeNameAndTemplate(theme::ThemeName themeNameValue, const ControlTemplatePropertyType& controlTemplateValue);
-				/// <summary>Get the associated style controller.</summary>
-				/// <returns>The associated style controller.</returns>
-				templates::GuiControlTemplate*			GetControlTemplateObject();
-				/// <summary>Get the bounds composition for the control.</summary>
-				/// <returns>The bounds composition.</returns>
-				compositions::GuiBoundsComposition*		GetBoundsComposition();
-				/// <summary>Get the container composition for the control.</summary>
-				/// <returns>The container composition.</returns>
-				compositions::GuiGraphicsComposition*	GetContainerComposition();
-				/// <summary>Get the focusable composition for the control. A focusable composition is the composition to be focused when the control is focused.</summary>
-				/// <returns>The focusable composition.</returns>
-				compositions::GuiGraphicsComposition*	GetFocusableComposition();
-				/// <summary>Get the parent control.</summary>
-				/// <returns>The parent control.</returns>
-				GuiControl*								GetParent();
-				/// <summary>Get the number of child controls.</summary>
-				/// <returns>The number of child controls.</returns>
-				vint									GetChildrenCount();
-				/// <summary>Get the child control using a specified index.</summary>
-				/// <returns>The child control.</returns>
-				/// <param name="index">The specified index.</param>
-				GuiControl*								GetChild(vint index);
-				/// <summary>Put another control in the container composition of this control.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="control">The control to put in this control.</param>
-				bool									AddChild(GuiControl* control);
-				/// <summary>Test if a control owned by this control.</summary>
-				/// <returns>Returns true if the control is owned by this control.</returns>
-				/// <param name="control">The control to test.</param>
-				bool									HasChild(GuiControl* control);
-				
-				/// <summary>Get the <see cref="GuiControlHost"/> that contains this control.</summary>
-				/// <returns>The <see cref="GuiControlHost"/> that contains this control.</returns>
-				virtual GuiControlHost*					GetRelatedControlHost();
-				/// <summary>Test if this control is rendered as enabled.</summary>
-				/// <returns>Returns true if this control is rendered as enabled.</returns>
-				virtual bool							GetVisuallyEnabled();
-				/// <summary>Test if this control is focused.</summary>
-				/// <returns>Returns true if this control is focused.</returns>
-				virtual bool							GetFocused();
-				/// <summary>Test if this control accepts tab character input.</summary>
-				/// <returns>Returns true if this control accepts tab character input.</returns>
-				virtual bool							GetAcceptTabInput()override;
-				/// <summary>Set if this control accepts tab character input.</summary>
-				/// <param name="value">Set to true to make this control accept tab character input.</param>
-				void									SetAcceptTabInput(bool value);
-				/// <summary>Get the tab priority associated with this control.</summary>
-				/// <returns>Returns he tab priority associated with this control.</returns>
-				virtual vint							GetTabPriority()override;
-				/// <summary>Associate a tab priority with this control.</summary>
-				/// <param name="value">The tab priority to associate. TAB key will go through controls in the order of priority: 0, 1, 2, ..., -1. All negative numbers will be converted to -1. The priority of containers affects all children if it is not -1.</param>
-				void									SetTabPriority(vint value);
-				/// <summary>Test if this control is enabled.</summary>
-				/// <returns>Returns true if this control is enabled.</returns>
-				virtual bool							GetEnabled();
-				/// <summary>Make the control enabled or disabled.</summary>
-				/// <param name="value">Set to true to make the control enabled.</param>
-				virtual void							SetEnabled(bool value);
-				/// <summary>Test if this visible or invisible.</summary>
-				/// <returns>Returns true if this control is visible.</returns>
-				virtual bool							GetVisible();
-				/// <summary>Make the control visible or invisible.</summary>
-				/// <param name="value">Set to true to make the visible enabled.</param>
-				virtual void							SetVisible(bool value);
-				/// <summary>Get the Alt-combined shortcut key associated with this control.</summary>
-				/// <returns>The Alt-combined shortcut key associated with this control.</returns>
-				virtual const WString&					GetAlt()override;
-				/// <summary>Associate a Alt-combined shortcut key with this control.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="value">The Alt-combined shortcut key to associate. The key should contain only upper-case letters or digits.</param>
-				virtual bool							SetAlt(const WString& value);
-				/// <summary>Make the control as the parent of multiple Alt-combined shortcut key activatable controls.</summary>
-				/// <param name="host">The alt action host object.</param>
-				void									SetActivatingAltHost(compositions::IGuiAltActionHost* host);
-				/// <summary>Get the text to display on the control.</summary>
-				/// <returns>The text to display on the control.</returns>
-				virtual const WString&					GetText();
-				/// <summary>Set the text to display on the control.</summary>
-				/// <param name="value">The text to display on the control.</param>
-				virtual void							SetText(const WString& value);
-				/// <summary>Get the font of this control.</summary>
-				/// <returns>The font of this control.</returns>
-				virtual const Nullable<FontProperties>&	GetFont();
-				/// <summary>Set the font of this control.</summary>
-				/// <param name="value">The font of this control.</param>
-				virtual void							SetFont(const Nullable<FontProperties>& value);
-				/// <summary>Get the font to render the text. If the font of this control is null, then the display font is either the parent control's display font, or the system's default font when there is no parent control.</summary>
-				/// <returns>The font to render the text.</returns>
-				virtual const FontProperties&			GetDisplayFont();
-				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
-				/// <returns>The context of this context.</returns>
-				virtual description::Value				GetContext();
-				/// <summary>Set the context of this control.</summary>
-				/// <param name="value">The context of this control.</param>
-				virtual void							SetContext(const description::Value& value);
-				/// <summary>Focus this control.</summary>
-				virtual void							SetFocus();
-
-				/// <summary>Get the tag object of the control.</summary>
-				/// <returns>The tag object of the control.</returns>
-				description::Value						GetTag();
-				/// <summary>Set the tag object of the control.</summary>
-				/// <param name="value">The tag object of the control.</param>
-				void									SetTag(const description::Value& value);
-				/// <summary>Get the tooltip control of the control.</summary>
-				/// <returns>The tooltip control of the control.</returns>
-				GuiControl*								GetTooltipControl();
-				/// <summary>Set the tooltip control of the control. The tooltip control will be released when this control is released. If you set a new tooltip control to replace the old one, the old one will not be owned by this control anymore, therefore user should release the old tooltip control manually.</summary>
-				/// <returns>The old tooltip control.</returns>
-				/// <param name="value">The tooltip control of the control.</param>
-				GuiControl*								SetTooltipControl(GuiControl* value);
-				/// <summary>Get the tooltip width of the control.</summary>
-				/// <returns>The tooltip width of the control.</returns>
-				vint									GetTooltipWidth();
-				/// <summary>Set the tooltip width of the control.</summary>
-				/// <param name="value">The tooltip width of the control.</param>
-				void									SetTooltipWidth(vint value);
-				/// <summary>Display the tooltip.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="location">The relative location to specify the left-top position of the tooltip.</param>
-				bool									DisplayTooltip(Point location);
-				/// <summary>Close the tooltip that owned by this control.</summary>
-				void									CloseTooltip();
-
-				/// <summary>Query a service using an identifier. If you want to get a service of type IXXX, use IXXX::Identifier as the identifier.</summary>
-				/// <returns>The requested service. If the control doesn't support this service, it will be null.</returns>
-				/// <param name="identifier">The identifier.</param>
-				virtual IDescriptable*					QueryService(const WString& identifier);
-
-				template<typename T>
-				T* QueryTypedService()
-				{
-					return dynamic_cast<T*>(QueryService(QueryServiceHelper<T>::GetIdentifier()));
-				}
-
-				templates::GuiControlTemplate* TypedControlTemplateObject(bool ensureExists)
-				{
-					if (ensureExists)
-					{
-						EnsureControlTemplateExists();
-					}
-					return controlTemplateObject;
-				}
-
-				/// <summary>Add a service to this control dynamically. The added service cannot override existing services.</summary>
-				/// <returns>Returns true if this operation succeeded.</returns>
-				/// <param name="identifier">The identifier. You are suggested to fill this parameter using the value from the interface's GetIdentifier function, or <see cref="QueryTypedService`1"/> will not work on this service.</param>
-				/// <param name="value">The service.</param>
-				bool									AddService(const WString& identifier, Ptr<IDescriptable> value);
-			};
-
-			/// <summary>Represnets a user customizable control.</summary>
-			class GuiCustomControl : public GuiControl, public GuiInstanceRootObject, public AggregatableDescription<GuiCustomControl>
-			{
-			protected:
-				controls::GuiControlHost*				GetControlHostForInstance()override;
-				void									OnParentLineChanged()override;
-			public:
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiCustomControl(theme::ThemeName themeName);
-				~GuiCustomControl();
-			};
-
-			template<typename T>
-			class GuiObjectComponent : public GuiComponent
-			{
-			public:
-				Ptr<T>				object;
-
-				GuiObjectComponent()
-				{
-				}
-
-				GuiObjectComponent(Ptr<T> _object)
-					:object(_object)
-				{
-				}
-			};
-
-#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE) controlTemplateObject ## UNIQUE
-#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(UNIQUE) GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_3(UNIQUE)
-#define GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME_2(__LINE__)
-
-#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, NAME) \
-			public: \
-				using ControlTemplateType = templates::Gui##TEMPLATE; \
-			private: \
-				templates::Gui##TEMPLATE* NAME = nullptr; \
-				void BeforeControlTemplateUninstalled_(); \
-				void AfterControlTemplateInstalled_(bool initialize); \
-			protected: \
-				void BeforeControlTemplateUninstalled()override \
-				{\
-					BeforeControlTemplateUninstalled_(); \
-					BASE_TYPE::BeforeControlTemplateUninstalled(); \
-				}\
-				void AfterControlTemplateInstalled(bool initialize)override \
-				{\
-					BASE_TYPE::AfterControlTemplateInstalled(initialize); \
-					AfterControlTemplateInstalled_(initialize); \
-				}\
-				void CheckAndStoreControlTemplate(templates::GuiControlTemplate* value)override \
-				{ \
-					auto ct = dynamic_cast<templates::Gui##TEMPLATE*>(value); \
-					CHECK_ERROR(ct, L"The assigned control template is not vl::presentation::templates::Gui" L ## # TEMPLATE L"."); \
-					NAME = ct; \
-					BASE_TYPE::CheckAndStoreControlTemplate(value); \
-				} \
-			public: \
-				templates::Gui##TEMPLATE* TypedControlTemplateObject(bool ensureExists) \
-				{ \
-					if (ensureExists) \
-					{ \
-						EnsureControlTemplateExists(); \
-					} \
-					return NAME; \
-				} \
-			private: \
-
-#define GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(TEMPLATE, BASE_TYPE) GUI_SPECIFY_CONTROL_TEMPLATE_TYPE_2(TEMPLATE, BASE_TYPE, GUI_GENERATE_CONTROL_TEMPLATE_OBJECT_NAME)
-
-		}
-	}
-}
-
-#endif
-
-
-/***********************************************************************
 .\CONTROLS\GUIBUTTONCONTROLS.H
 ***********************************************************************/
 /***********************************************************************
@@ -10492,391 +11813,6 @@ Buttons
 				/// <summary>Set the selected state.</summary>
 				/// <param name="value">The selected state.</param>
 				virtual void							SetSelected(bool value);
-			};
-		}
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\CONTROLS\GUIDIALOGS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUIDIALOGS
-#define VCZH_PRESENTATION_CONTROLS_GUIDIALOGS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-			class GuiWindow;
-
-/***********************************************************************
-Dialogs
-***********************************************************************/
-
-			/// <summary>Base class for dialogs.</summary>
-			class GuiDialogBase abstract : public GuiComponent, public Description<GuiDialogBase>
-			{
-			protected:
-				GuiInstanceRootObject*								rootObject = nullptr;
-
-				GuiWindow*											GetHostWindow();
-			public:
-				GuiDialogBase();
-				~GuiDialogBase();
-
-				void												Attach(GuiInstanceRootObject* _rootObject);
-				void												Detach(GuiInstanceRootObject* _rootObject);
-			};
-			
-			/// <summary>Message dialog.</summary>
-			class GuiMessageDialog : public GuiDialogBase, public Description<GuiMessageDialog>
-			{
-			protected:
-				INativeDialogService::MessageBoxButtonsInput		input = INativeDialogService::DisplayOK;
-				INativeDialogService::MessageBoxDefaultButton		defaultButton = INativeDialogService::DefaultFirst;
-				INativeDialogService::MessageBoxIcons				icon = INativeDialogService::IconNone;
-				INativeDialogService::MessageBoxModalOptions		modalOption = INativeDialogService::ModalWindow;
-				WString												text;
-				WString												title;
-
-			public:
-				/// <summary>Create a message dialog.</summary>
-				GuiMessageDialog();
-				~GuiMessageDialog();
-
-				/// <summary>Get the button combination that appear on the dialog.</summary>
-				/// <returns>The button combination.</returns>
-				INativeDialogService::MessageBoxButtonsInput		GetInput();
-				/// <summary>Set the button combination that appear on the dialog.</summary>
-				/// <param name="value">The button combination.</param>
-				void												SetInput(INativeDialogService::MessageBoxButtonsInput value);
-				
-				/// <summary>Get the default button for the selected button combination.</summary>
-				/// <returns>The default button.</returns>
-				INativeDialogService::MessageBoxDefaultButton		GetDefaultButton();
-				/// <summary>Set the default button for the selected button combination.</summary>
-				/// <param name="value">The default button.</param>
-				void												SetDefaultButton(INativeDialogService::MessageBoxDefaultButton value);
-
-				/// <summary>Get the icon that appears on the dialog.</summary>
-				/// <returns>The icon.</returns>
-				INativeDialogService::MessageBoxIcons				GetIcon();
-				/// <summary>Set the icon that appears on the dialog.</summary>
-				/// <param name="value">The icon.</param>
-				void												SetIcon(INativeDialogService::MessageBoxIcons value);
-
-				/// <summary>Get the way that how this dialog disable windows of the current process.</summary>
-				/// <returns>The way that how this dialog disable windows of the current process.</returns>
-				INativeDialogService::MessageBoxModalOptions		GetModalOption();
-				/// <summary>Set the way that how this dialog disable windows of the current process.</summary>
-				/// <param name="value">The way that how this dialog disable windows of the current process.</param>
-				void												SetModalOption(INativeDialogService::MessageBoxModalOptions value);
-
-				/// <summary>Get the text for the dialog.</summary>
-				/// <returns>The text.</returns>
-				const WString&										GetText();
-				/// <summary>Set the text for the dialog.</summary>
-				/// <param name="value">The text.</param>
-				void												SetText(const WString& value);
-
-				/// <summary>Get the title for the dialog.</summary>
-				/// <returns>The title.</returns>
-				const WString&										GetTitle();
-				/// <summary>Set the title for the dialog. If the title is empty, the dialog will use the title of the window that host this dialog.</summary>
-				/// <param name="value">The title.</param>
-				void												SetTitle(const WString& value);
-				
-				/// <summary>Show the dialog.</summary>
-				/// <returns>Returns the clicked button.</returns>
-				INativeDialogService::MessageBoxButtonsOutput		ShowDialog();
-			};
-			
-			/// <summary>Color dialog.</summary>
-			class GuiColorDialog : public GuiDialogBase, public Description<GuiColorDialog>
-			{
-			protected:
-				bool												enabledCustomColor = true;
-				bool												openedCustomColor = false;
-				Color												selectedColor;
-				bool												showSelection = true;
-				collections::List<Color>							customColors;
-
-			public:
-				/// <summary>Create a color dialog.</summary>
-				GuiColorDialog();
-				~GuiColorDialog();
-
-				/// <summary>Selected color changed event.</summary>
-				compositions::GuiNotifyEvent						SelectedColorChanged;
-				
-				/// <summary>Get if the custom color panel is enabled for the dialog.</summary>
-				/// <returns>Returns true if the color panel is enabled for the dialog.</returns>
-				bool												GetEnabledCustomColor();
-				/// <summary>Set if custom color panel is enabled for the dialog.</summary>
-				/// <param name="value">Set to true to enable the custom color panel for the dialog.</param>
-				void												SetEnabledCustomColor(bool value);
-				
-				/// <summary>Get if the custom color panel is opened by default when it is enabled.</summary>
-				/// <returns>Returns true if the custom color panel is opened by default.</returns>
-				bool												GetOpenedCustomColor();
-				/// <summary>Set if the custom color panel is opened by default when it is enabled.</summary>
-				/// <param name="value">Set to true to open custom color panel by default if it is enabled.</param>
-				void												SetOpenedCustomColor(bool value);
-				
-				/// <summary>Get the selected color.</summary>
-				/// <returns>The selected color.</returns>
-				Color												GetSelectedColor();
-				/// <summary>Set the selected color.</summary>
-				/// <param name="value">The selected color.</param>
-				void												SetSelectedColor(Color value);
-				
-				/// <summary>Get the list to access 16 selected custom colors on the palette. Colors in the list is guaranteed to have exactly 16 items after the dialog is closed.</summary>
-				/// <returns>The list to access custom colors on the palette.</returns>
-				collections::List<Color>&							GetCustomColors();
-				
-				/// <summary>Show the dialog.</summary>
-				/// <returns>Returns true if the "OK" button is clicked.</returns>
-				bool												ShowDialog();
-			};
-			
-			/// <summary>Font dialog.</summary>
-			class GuiFontDialog : public GuiDialogBase, public Description<GuiFontDialog>
-			{
-			protected:
-				FontProperties										selectedFont;
-				Color												selectedColor;
-				bool												showSelection = true;
-				bool												showEffect = true;
-				bool												forceFontExist = true;
-
-			public:
-				/// <summary>Create a font dialog.</summary>
-				GuiFontDialog();
-				~GuiFontDialog();
-
-				/// <summary>Selected font changed event.</summary>
-				compositions::GuiNotifyEvent						SelectedFontChanged;
-				/// <summary>Selected color changed event.</summary>
-				compositions::GuiNotifyEvent						SelectedColorChanged;
-				
-				/// <summary>Get the selected font.</summary>
-				/// <returns>The selected font.</returns>
-				const FontProperties&								GetSelectedFont();
-				/// <summary>Set the selected font.</summary>
-				/// <param name="value">The selected font.</param>
-				void												SetSelectedFont(const FontProperties& value);
-				
-				/// <summary>Get the selected color.</summary>
-				/// <returns>The selected color.</returns>
-				Color												GetSelectedColor();
-				/// <summary>Set the selected color.</summary>
-				/// <param name="value">The selected color.</param>
-				void												SetSelectedColor(Color value);
-				
-				/// <summary>Get if the selected font is already selected on the dialog when it is opened.</summary>
-				/// <returns>Returns true if the selected font is already selected on the dialog when it is opened.</returns>
-				bool												GetShowSelection();
-				/// <summary>Set if the selected font is already selected on the dialog when it is opened.</summary>
-				/// <param name="value">Set to true to select the selected font when the dialog is opened.</param>
-				void												SetShowSelection(bool value);
-				
-				/// <summary>Get if the font preview is enabled.</summary>
-				/// <returns>Returns true if the font preview is enabled.</returns>
-				bool												GetShowEffect();
-				/// <summary>Set if the font preview is enabled.</summary>
-				/// <param name="value">Set to true to enable the font preview.</param>
-				void												SetShowEffect(bool value);
-				
-				/// <summary>Get if the dialog only accepts an existing font.</summary>
-				/// <returns>Returns true if the dialog only accepts an existing font.</returns>
-				bool												GetForceFontExist();
-				/// <summary>Set if the dialog only accepts an existing font.</summary>
-				/// <param name="value">Set to true to let the dialog only accept an existing font.</param>
-				void												SetForceFontExist(bool value);
-				
-				/// <summary>Show the dialog.</summary>
-				/// <returns>Returns true if the "OK" button is clicked.</returns>
-				bool												ShowDialog();
-			};
-			
-			/// <summary>Base class for file dialogs.</summary>
-			class GuiFileDialogBase abstract : public GuiDialogBase, public Description<GuiFileDialogBase>
-			{
-			protected:
-				WString												filter = L"All Files (*.*)|*.*";
-				vint												filterIndex = 0;
-				bool												enabledPreview = false;
-				WString												title;
-				WString												fileName;
-				WString												directory;
-				WString												defaultExtension;
-				INativeDialogService::FileDialogOptions				options;
-
-			public:
-				GuiFileDialogBase();
-				~GuiFileDialogBase();
-
-				/// <summary>File name changed event.</summary>
-				compositions::GuiNotifyEvent						FileNameChanged;
-				/// <summary>Filter index changed event.</summary>
-				compositions::GuiNotifyEvent						FilterIndexChanged;
-				
-				/// <summary>Get the filter.</summary>
-				/// <returns>The filter.</returns>
-				const WString&										GetFilter();
-				/// <summary>Set the filter. The filter is formed by pairs of filter name and wildcard concatenated by "|", like "Text Files (*.txt)|*.txt|All Files (*.*)|*.*".</summary>
-				/// <param name="value">The filter.</param>
-				void												SetFilter(const WString& value);
-				
-				/// <summary>Get the filter index.</summary>
-				/// <returns>The filter index.</returns>
-				vint												GetFilterIndex();
-				/// <summary>Set the filter index.</summary>
-				/// <param name="value">The filter index.</param>
-				void												SetFilterIndex(vint value);
-				
-				/// <summary>Get if the file preview is enabled.</summary>
-				/// <returns>Returns true if the file preview is enabled.</returns>
-				bool												GetEnabledPreview();
-				/// <summary>Set if the file preview is enabled.</summary>
-				/// <param name="value">Set to true to enable the file preview.</param>
-				void												SetEnabledPreview(bool value);
-				
-				/// <summary>Get the title.</summary>
-				/// <returns>The title.</returns>
-				WString												GetTitle();
-				/// <summary>Set the title.</summary>
-				/// <param name="value">The title.</param>
-				void												SetTitle(const WString& value);
-				
-				/// <summary>Get the selected file name.</summary>
-				/// <returns>The selected file name.</returns>
-				WString												GetFileName();
-				/// <summary>Set the selected file name.</summary>
-				/// <param name="value">The selected file name.</param>
-				void												SetFileName(const WString& value);
-				
-				/// <summary>Get the default folder.</summary>
-				/// <returns>The default folder.</returns>
-				WString												GetDirectory();
-				/// <summary>Set the default folder.</summary>
-				/// <param name="value">The default folder.</param>
-				void												SetDirectory(const WString& value);
-				
-				/// <summary>Get the default file extension.</summary>
-				/// <returns>The default file extension.</returns>
-				WString												GetDefaultExtension();
-				/// <summary>Set the default file extension like "txt". If the user does not specify a file extension, the default file extension will be appended using "." after the file name.</summary>
-				/// <param name="value">The default file extension.</param>
-				void												SetDefaultExtension(const WString& value);
-				
-				/// <summary>Get the dialog options.</summary>
-				/// <returns>The dialog options.</returns>
-				INativeDialogService::FileDialogOptions				GetOptions();
-				/// <summary>Set the dialog options.</summary>
-				/// <param name="value">The dialog options.</param>
-				void												SetOptions(INativeDialogService::FileDialogOptions value);
-			};
-			
-			/// <summary>Open file dialog.</summary>
-			class GuiOpenFileDialog : public GuiFileDialogBase, public Description<GuiOpenFileDialog>
-			{
-			protected:
-				collections::List<WString>							fileNames;
-
-			public:
-				/// <summary>Create a open file dialog.</summary>
-				GuiOpenFileDialog();
-				~GuiOpenFileDialog();
-				
-				/// <summary>Get the list to access multiple selected file names.</summary>
-				/// <returns>The list to access multiple selected file names.</returns>
-				collections::List<WString>&							GetFileNames();
-				
-				/// <summary>Show the dialog.</summary>
-				/// <returns>Returns true if the "Open" button is clicked.</returns>
-				bool												ShowDialog();
-			};
-			
-			/// <summary>Save file dialog.</summary>
-			class GuiSaveFileDialog : public GuiFileDialogBase, public Description<GuiSaveFileDialog>
-			{
-			public:
-				/// <summary>Create a save file dialog.</summary>
-				GuiSaveFileDialog();
-				~GuiSaveFileDialog();
-
-				/// <summary>Show the dialog.</summary>
-				/// <returns>Returns true if the "Save" button is clicked.</returns>
-				bool												ShowDialog();
-			};
-		}
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\CONTROLS\GUILABELCONTROLS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUILABELCONTROLS
-#define VCZH_PRESENTATION_CONTROLS_GUILABELCONTROLS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-Label
-***********************************************************************/
-
-			/// <summary>A control to display a text.</summary>
-			class GuiLabel : public GuiControl, public Description<GuiLabel>
-			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(LabelTemplate, GuiControl)
-			protected:
-				Color									textColor;
-				bool									textColorConsisted = true;
-
-			public:
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiLabel(theme::ThemeName themeName);
-				~GuiLabel();
-
-				/// <summary>Get the text color.</summary>
-				/// <returns>The text color.</returns>
-				Color									GetTextColor();
-				/// <summary>Set the text color.</summary>
-				/// <param name="value">The text color.</param>
-				void									SetTextColor(Color value);
 			};
 		}
 	}
@@ -11239,656 +12175,6 @@ Scroll View
 
 #endif
 
-
-/***********************************************************************
-.\CONTROLS\GUIWINDOWCONTROLS.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUIWINDOWCONTROLS
-#define VCZH_PRESENTATION_CONTROLS_GUIWINDOWCONTROLS
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-			class IGuiShortcutKeyManager;
-			class GuiGraphicsTimerManager;
-		}
-
-		namespace controls
-		{
-
-/***********************************************************************
-Control Host
-***********************************************************************/
-
-			/// <summary>
-			/// Represents a control that host by a <see cref="INativeWindow"/>.
-			/// </summary>
-			class GuiControlHost : public GuiControl, public GuiInstanceRootObject, protected INativeWindowListener, public Description<GuiControlHost>
-			{
-				friend class compositions::GuiGraphicsHost;
-			protected:
-				compositions::GuiGraphicsHost*					host;
-				INativeWindow::WindowMode						windowMode = INativeWindow::Normal;
-
-				virtual void									OnNativeWindowChanged();
-				virtual void									OnVisualStatusChanged();
-			protected:
-				static const vint								TooltipDelayOpenTime = 500;
-				static const vint								TooltipDelayCloseTime = 500;
-				static const vint								TooltipDelayLifeTime = 5000;
-
-				Ptr<INativeDelay>								tooltipOpenDelay;
-				Ptr<INativeDelay>								tooltipCloseDelay;
-				Point											tooltipLocation;
-
-				bool											calledDestroyed = false;
-				bool											deleteWhenDestroyed = false;
-
-				controls::GuiControlHost*						GetControlHostForInstance()override;
-				GuiControl*										GetTooltipOwner(Point location);
-				void											MoveIntoTooltipControl(GuiControl* tooltipControl, Point location);
-				void											MouseMoving(const NativeWindowMouseInfo& info)override;
-				void											MouseLeaved()override;
-				void											Moved()override;
-				void											Enabled()override;
-				void											Disabled()override;
-				void											GotFocus()override;
-				void											LostFocus()override;
-				void											Activated()override;
-				void											Deactivated()override;
-				void											Opened()override;
-				void											Closing(bool& cancel)override;
-				void											Closed()override;
-				void											Destroying()override;
-
-				virtual void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize);
-			public:
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="mode">The window mode.</param>
-				GuiControlHost(theme::ThemeName themeName, INativeWindow::WindowMode mode);
-				~GuiControlHost();
-				
-				/// <summary>Window got focus event.</summary>
-				compositions::GuiNotifyEvent					WindowGotFocus;
-				/// <summary>Window lost focus event.</summary>
-				compositions::GuiNotifyEvent					WindowLostFocus;
-				/// <summary>Window activated event.</summary>
-				compositions::GuiNotifyEvent					WindowActivated;
-				/// <summary>Window deactivated event.</summary>
-				compositions::GuiNotifyEvent					WindowDeactivated;
-				/// <summary>Window opened event.</summary>
-				compositions::GuiNotifyEvent					WindowOpened;
-				/// <summary>Window closing event.</summary>
-				compositions::GuiRequestEvent					WindowClosing;
-				/// <summary>Window closed event.</summary>
-				compositions::GuiNotifyEvent					WindowClosed;
-				/// <summary>Window destroying event.</summary>
-				compositions::GuiNotifyEvent					WindowDestroying;
-
-				/// <summary>Delete this control host after processing all events.</summary>
-				void											DeleteAfterProcessingAllEvents();
-
-				/// <summary>Get the internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</summary>
-				/// <returns>The internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</returns>
-				compositions::GuiGraphicsHost*					GetGraphicsHost();
-				/// <summary>Get the main composition to host the window content.</summary>
-				/// <returns>The main composition to host the window content.</returns>
-				compositions::GuiGraphicsComposition*			GetMainComposition();
-				/// <summary>Get the internal <see cref="INativeWindow"/> object to host the content.</summary>
-				/// <returns>The the internal <see cref="INativeWindow"/> object to host the content.</returns>
-				INativeWindow*									GetNativeWindow();
-				/// <summary>Set the internal <see cref="INativeWindow"/> object to host the content.</summary>
-				/// <param name="window">The the internal <see cref="INativeWindow"/> object to host the content.</param>
-				void											SetNativeWindow(INativeWindow* window);
-				/// <summary>Force to calculate layout and size immediately</summary>
-				void											ForceCalculateSizeImmediately();
-				
-				/// <summary>Test is the window enabled.</summary>
-				/// <returns>Returns true if the window is enabled.</returns>
-				bool											GetEnabled()override;
-				/// <summary>Enable or disable the window.</summary>
-				/// <param name="value">Set to true to enable the window.</param>
-				void											SetEnabled(bool value)override;
-				/// <summary>Test is the window focused.</summary>
-				/// <returns>Returns true if the window is focused.</returns>
-				bool											GetFocused()override;
-				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
-				void											SetFocused();
-				/// <summary>Test is the window activated.</summary>
-				/// <returns>Returns true if the window is activated.</returns>
-				bool											GetActivated();
-				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
-				void											SetActivated();
-				/// <summary>Test is the window icon shown in the task bar.</summary>
-				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
-				bool											GetShowInTaskBar();
-				/// <summary>Show or hide the window icon in the task bar.</summary>
-				/// <param name="value">Set to true to show the window icon in the task bar.</param>
-				void											SetShowInTaskBar(bool value);
-				/// <summary>Test is the window allowed to be activated.</summary>
-				/// <returns>Returns true if the window is allowed to be activated.</returns>
-				bool											GetEnabledActivate();
-				/// <summary>
-				/// Allow or forbid the window to be activated.
-				/// Clicking a window with activation disabled doesn't bring activation and focus.
-				/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivated"/>.
-				/// </summary>
-				/// <param name="value">Set to true to allow the window to be activated.</param>
-				void											SetEnabledActivate(bool value);
-				/// <summary>
-				/// Test is the window always on top of the desktop.
-				/// </summary>
-				/// <returns>Returns true if the window is always on top of the desktop.</returns>
-				bool											GetTopMost();
-				/// <summary>
-				/// Make the window always or never on top of the desktop.
-				/// </summary>
-				/// <param name="topmost">True to make the window always  on top of the desktop.</param>
-				void											SetTopMost(bool topmost);
-
-				/// <summary>Get the <see cref="compositions::IGuiShortcutKeyManager"/> attached with this control host.</summary>
-				/// <returns>The shortcut key manager.</returns>
-				compositions::IGuiShortcutKeyManager*			GetShortcutKeyManager();
-				/// <summary>Attach or detach the <see cref="compositions::IGuiShortcutKeyManager"/> associated with this control host. When this control host is disposing, the associated shortcut key manager will be deleted if exists.</summary>
-				/// <param name="value">The shortcut key manager. Set to null to detach the previous shortcut key manager from this control host.</param>
-				void											SetShortcutKeyManager(compositions::IGuiShortcutKeyManager* value);
-				/// <summary>Get the timer manager.</summary>
-				/// <returns>The timer manager.</returns>
-				compositions::GuiGraphicsTimerManager*			GetTimerManager();
-
-				/// <summary>Get the client size of the window.</summary>
-				/// <returns>The client size of the window.</returns>
-				Size											GetClientSize();
-				/// <summary>Set the client size of the window.</summary>
-				/// <param name="value">The client size of the window.</param>
-				void											SetClientSize(Size value);
-				/// <summary>Get the location of the window in screen space.</summary>
-				/// <returns>The location of the window.</returns>
-				NativePoint										GetLocation();
-				/// <summary>Set the location of the window in screen space.</summary>
-				/// <param name="value">The location of the window.</param>
-				void											SetLocation(NativePoint value);
-				/// <summary>Set the location in screen space and the client size of the window.</summary>
-				/// <param name="location">The location of the window.</param>
-				/// <param name="size">The client size of the window.</param>
-				void											SetBounds(NativePoint location, Size size);
-
-				GuiControlHost*									GetRelatedControlHost()override;
-				const WString&									GetText()override;
-				void											SetText(const WString& value)override;
-
-				/// <summary>Get the screen that contains the window.</summary>
-				/// <returns>The screen that contains the window.</returns>
-				INativeScreen*									GetRelatedScreen();
-				/// <summary>
-				/// Show the window.
-				/// If the window disabled activation, this function enables it again.
-				/// </summary>
-				void											Show();
-				/// <summary>
-				/// Show the window without activation.
-				/// </summary>
-				void											ShowDeactivated();
-				/// <summary>
-				/// Restore the window.
-				/// </summary>
-				void											ShowRestored();
-				/// <summary>
-				/// Maximize the window.
-				/// </summary>
-				void											ShowMaximized();
-				/// <summary>
-				/// Minimize the window.
-				/// </summary>
-				void											ShowMinimized();
-				/// <summary>
-				/// Hide the window.
-				/// </summary>
-				void											Hide();
-				/// <summary>
-				/// Close the window and destroy the internal <see cref="INativeWindow"/> object.
-				/// </summary>
-				void											Close();
-				/// <summary>Test is the window opened.</summary>
-				/// <returns>Returns true if the window is opened.</returns>
-				bool											GetOpening();
-			};
-
-/***********************************************************************
-Window
-***********************************************************************/
-
-			/// <summary>
-			/// Represents a normal window.
-			/// </summary>
-			class GuiWindow : public GuiControlHost, protected compositions::GuiAltActionHostBase, public AggregatableDescription<GuiWindow>
-			{
-				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
-				friend class GuiApplication;
-			protected:
-				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
-				bool									hasMaximizedBox = true;
-				bool									hasMinimizedBox = true;
-				bool									hasBorder = true;
-				bool									hasSizeBox = true;
-				bool									isIconVisible = true;
-				bool									hasTitleBar = true;
-				Ptr<GuiImageData>						icon;
-				
-				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
-				void									SyncNativeWindowProperties();
-				void									Moved()override;
-				void									DpiChanged()override;
-				void									OnNativeWindowChanged()override;
-				void									OnVisualStatusChanged()override;
-				
-				void									OnWindowActivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									OnWindowDeactivated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-
-				/// <summary>Create a control with a specified default theme and a window mode.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="mode">The window mode.</param>
-				GuiWindow(theme::ThemeName themeName, INativeWindow::WindowMode mode);
-			public:
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiWindow(theme::ThemeName themeName);
-				~GuiWindow();
-
-				IDescriptable*							QueryService(const WString& identifier)override;
-
-				/// <summary>Clipboard updated event.</summary>
-				compositions::GuiNotifyEvent			ClipboardUpdated;
-
-				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
-				void									MoveToScreenCenter();
-				/// <summary>Move the window to the center of the specified screen.</summary>
-				/// <param name="screen">The screen.</param>
-				void									MoveToScreenCenter(INativeScreen* screen);
-				
-				/// <summary>
-				/// Test is the maximize box visible.
-				/// </summary>
-				/// <returns>Returns true if the maximize box is visible.</returns>
-				bool									GetMaximizedBox();
-				/// <summary>
-				/// Make the maximize box visible or invisible.
-				/// </summary>
-				/// <param name="visible">True to make the maximize box visible.</param>
-				void									SetMaximizedBox(bool visible);
-				/// <summary>
-				/// Test is the minimize box visible.
-				/// </summary>
-				/// <returns>Returns true if the minimize box is visible.</returns>
-				bool									GetMinimizedBox();
-				/// <summary>
-				/// Make the minimize box visible or invisible.
-				/// </summary>
-				/// <param name="visible">True to make the minimize box visible.</param>
-				void									SetMinimizedBox(bool visible);
-				/// <summary>
-				/// Test is the border visible.
-				/// </summary>
-				/// <returns>Returns true if the border is visible.</returns>
-				bool									GetBorder();
-				/// <summary>
-				/// Make the border visible or invisible.
-				/// </summary>
-				/// <param name="visible">True to make the border visible.</param>
-				void									SetBorder(bool visible);
-				/// <summary>
-				/// Test is the size box visible.
-				/// </summary>
-				/// <returns>Returns true if the size box is visible.</returns>
-				bool									GetSizeBox();
-				/// <summary>
-				/// Make the size box visible or invisible.
-				/// </summary>
-				/// <param name="visible">True to make the size box visible.</param>
-				void									SetSizeBox(bool visible);
-				/// <summary>
-				/// Test is the icon visible.
-				/// </summary>
-				/// <returns>Returns true if the icon is visible.</returns>
-				bool									GetIconVisible();
-				/// <summary>
-				/// Make the icon visible or invisible.
-				/// </summary>
-				/// <param name="visible">True to make the icon visible.</param>
-				void									SetIconVisible(bool visible);
-				/// <summary>
-				/// Get the icon which replaces the default one.
-				/// </summary>
-				/// <returns>Returns the icon that replaces the default one.</returns>
-				Ptr<GuiImageData>						GetIcon();
-				/// <summary>
-				/// Set the icon that replaces the default one.
-				/// </summary>
-				/// <param name="value">The icon that replaces the default one.</param>
-				void									SetIcon(Ptr<GuiImageData> value);
-				/// <summary>
-				/// Test is the title bar visible.
-				/// </summary>
-				/// <returns>Returns true if the title bar is visible.</returns>
-				bool									GetTitleBar();
-				/// <summary>
-				/// Make the title bar visible or invisible.
-				/// </summary>
-				/// <param name="visible">True to make the title bar visible.</param>
-				void									SetTitleBar(bool visible);
-				/// <summary>
-				/// Show a model window, get a callback when the window is closed.
-				/// </summary>
-				/// <param name="owner">The window to disable as a parent window.</param>
-				/// <param name="callback">The callback to call after the window is closed.</param>
-				void									ShowModal(GuiWindow* owner, const Func<void()>& callback);
-				/// <summary>
-				/// Show a model window, get a callback when the window is closed, and then delete itself.
-				/// </summary>
-				/// <param name="owner">The window to disable as a parent window.</param>
-				/// <param name="callback">The callback to call after the window is closed.</param>
-				void									ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback);
-				/// <summary>
-				/// Show a model window as an async operation, which ends when the window is closed.
-				/// </summary>
-				/// <returns>Returns true if the size box is visible.</returns>
-				/// <param name="owner">The window to disable as a parent window.</param>
-				Ptr<reflection::description::IAsync>	ShowModalAsync(GuiWindow* owner);
-			};
-			
-			/// <summary>
-			/// Represents a popup window. When the mouse click on other window or the desktop, the popup window will be closed automatically.
-			/// </summary>
-			class GuiPopup : public GuiWindow, public Description<GuiPopup>
-			{
-			protected:
-				union PopupInfo
-				{
-					struct _s1 { NativePoint location; INativeScreen* screen; };
-					struct _s2 { GuiControl* control; INativeWindow* controlWindow; Rect bounds; bool preferredTopBottomSide; };
-					struct _s3 { GuiControl* control; INativeWindow* controlWindow; Point location; };
-					struct _s4 { GuiControl* control; INativeWindow* controlWindow; bool preferredTopBottomSide; };
-
-					_s1 _1;
-					_s2 _2;
-					_s3 _3;
-					_s4 _4;
-
-					PopupInfo() {}
-				};
-			protected:
-				vint									popupType = -1;
-				PopupInfo								popupInfo;
-
-				void									UpdateClientSizeAfterRendering(Size preferredSize, Size clientSize)override;
-				void									PopupOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									PopupClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
-
-				static bool								IsClippedByScreen(NativeSize size, NativePoint location, INativeScreen* screen);
-				static NativePoint						CalculatePopupPosition(NativeSize windowSize, NativePoint location, INativeScreen* screen);
-				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Rect bounds, bool preferredTopBottomSide);
-				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, Point location);
-				static NativePoint						CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide);
-				static NativePoint						CalculatePopupPosition(NativeSize windowSize, vint popupType, const PopupInfo& popupInfo);
-
-				void									ShowPopupInternal();
-
-				/// <summary>Create a control with a specified default theme and a window mode.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="mode">The window mode.</param>
-				GuiPopup(theme::ThemeName themeName, INativeWindow::WindowMode mode);
-			public:
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiPopup(theme::ThemeName themeName);
-				~GuiPopup();
-
-				/// <summary>Test will the whole popup window be in the screen if the popup's left-top position is set to a specified value.</summary>
-				/// <returns>Returns true if the whole popup window will be in the screen.</returns>
-				/// <param name="location">The specified left-top position.</param>
-				bool									IsClippedByScreen(Point location);
-				/// <summary>Show the popup window with the left-top position set to a specified value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
-				/// <param name="location">The specified left-top position.</param>
-				/// <param name="screen">The expected screen. If you don't want to specify any screen, don't set this parameter.</param>
-				void									ShowPopup(NativePoint location, INativeScreen* screen = 0);
-				/// <summary>Show the popup window with the bounds set to a specified control-relative value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
-				/// <param name="control">The control that owns this popup temporary. And the location is relative to this control.</param>
-				/// <param name="bounds">The specified bounds.</param>
-				/// <param name="preferredTopBottomSide">Set to true if the popup window is expected to be opened at the top or bottom side of that bounds.</param>
-				void									ShowPopup(GuiControl* control, Rect bounds, bool preferredTopBottomSide);
-				/// <summary>Show the popup window with the left-top position set to a specified control-relative value. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
-				/// <param name="control">The control that owns this popup temporary. And the location is relative to this control.</param>
-				/// <param name="location">The specified left-top position.</param>
-				void									ShowPopup(GuiControl* control, Point location);
-				/// <summary>Show the popup window aligned with a specified control. The position of the popup window will be adjusted to make it totally inside the screen if possible.</summary>
-				/// <param name="control">The control that owns this popup temporary.</param>
-				/// <param name="preferredTopBottomSide">Set to true if the popup window is expected to be opened at the top or bottom side of that control.</param>
-				void									ShowPopup(GuiControl* control, bool preferredTopBottomSide);
-			};
-
-			/// <summary>Represents a tooltip window.</summary>
-			class GuiTooltip : public GuiPopup, private INativeControllerListener, public Description<GuiTooltip>
-			{
-			protected:
-				GuiControl*								temporaryContentControl = nullptr;
-
-				void									GlobalTimer()override;
-				void									TooltipOpened(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void									TooltipClosed(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-
-			public:
-				/// <summary>Create a control with a specified default theme.</summary>
-				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				GuiTooltip(theme::ThemeName themeName);
-				~GuiTooltip();
-
-				/// <summary>Get the preferred content width.</summary>
-				/// <returns>The preferred content width.</returns>
-				vint									GetPreferredContentWidth();
-				/// <summary>Set the preferred content width.</summary>
-				/// <param name="value">The preferred content width.</param>
-				void									SetPreferredContentWidth(vint value);
-
-				/// <summary>Get the temporary content control.</summary>
-				/// <returns>The temporary content control.</returns>
-				GuiControl*								GetTemporaryContentControl();
-				/// <summary>Set the temporary content control.</summary>
-				/// <param name="control">The temporary content control.</param>
-				void									SetTemporaryContentControl(GuiControl* control);
-			};
-		}
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\CONTROLS\GUIAPPLICATION.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Application Framework
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUIAPPLICATION
-#define VCZH_PRESENTATION_CONTROLS_GUIAPPLICATION
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace controls
-		{
-
-/***********************************************************************
-Application
-***********************************************************************/
-
-			/// <summary>Represents an GacUI application, for window management and asynchronized operation supporting. Use [M:vl.presentation.controls.GetApplication] to access the instance of this class.</summary>
-			class GuiApplication : public Object, private INativeControllerListener, public Description<GuiApplication>
-			{
-				friend void GuiApplicationInitialize();
-				friend class GuiWindow;
-				friend class GuiPopup;
-				friend class Ptr<GuiApplication>;
-			private:
-				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
-				void											ClipboardUpdated()override;
-			protected:
-				Locale											locale;
-				GuiWindow*										mainWindow = nullptr;
-				GuiWindow*										sharedTooltipOwnerWindow = nullptr;
-				GuiControl*										sharedTooltipOwner = nullptr;
-				GuiTooltip*										sharedTooltipControl = nullptr;
-				bool											sharedTooltipHovering = false;
-				bool											sharedTooltipClosing = false;
-				collections::List<GuiWindow*>					windows;
-				collections::SortedList<GuiPopup*>				openingPopups;
-
-				GuiApplication();
-				~GuiApplication();
-
-				INativeWindow*									GetThreadContextNativeWindow(GuiControlHost* controlHost);
-				void											RegisterWindow(GuiWindow* window);
-				void											UnregisterWindow(GuiWindow* window);
-				void											RegisterPopupOpened(GuiPopup* popup);
-				void											RegisterPopupClosed(GuiPopup* popup);
-				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void											TooltipMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-			public:
-				/// <summary>Locale changed event.</summary>
-				Event<void()>									LocaleChanged;
-
-				/// <summary>Returns the selected locale for all windows.</summary>
-				/// <returns>The selected locale.</returns>
-				Locale											GetLocale();
-				/// <summary>Set the locale for all windows.</summary>
-				/// <param name="value">The selected locale.</param>
-				void											SetLocale(Locale value);
-
-				/// <summary>Run a <see cref="GuiWindow"/> as the main window and show it. This function can only be called once in the entry point. When the main window is closed or hiden, the Run function will finished, and the application should prepare for finalization.</summary>
-				/// <param name="_mainWindow">The main window.</param>
-				void											Run(GuiWindow* _mainWindow);
-				/// <summary>Get the main window.</summary>
-				/// <returns>The main window.</returns>
-				GuiWindow*										GetMainWindow();
-				/// <summary>Get all created <see cref="GuiWindow"/> instances. This contains normal windows, popup windows, menus, or other types of windows that inherits from <see cref="GuiWindow"/>.</summary>
-				/// <returns>All created <see cref="GuiWindow"/> instances.</returns>
-				const collections::List<GuiWindow*>&			GetWindows();
-				/// <summary>Get the <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</summary>
-				/// <returns>The <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</returns>
-				/// <param name="location">The mouse cursor.</param>
-				GuiWindow*										GetWindow(NativePoint location);
-				/// <summary>Show a tooltip.</summary>
-				/// <param name="owner">The control that owns this tooltip temporary.</param>
-				/// <param name="tooltip">The control as the tooltip content. This control is not owned by the tooltip. User should manually release this control if no longer needed (usually when the application exit).</param>
-				/// <param name="preferredContentWidth">The preferred content width for this tooltip.</param>
-				/// <param name="location">The relative location to specify the left-top position of the tooltip.</param>
-				void											ShowTooltip(GuiControl* owner, GuiControl* tooltip, vint preferredContentWidth, Point location);
-				/// <summary>Close the tooltip</summary>
-				void											CloseTooltip();
-				/// <summary>Get the tooltip owner. When the tooltip closed, it returns null.</summary>
-				/// <returns>The tooltip owner.</returns>
-				GuiControl*										GetTooltipOwner();
-				/// <summary>Get the file path of the current executable.</summary>
-				/// <returns>The file path of the current executable.</returns>
-				WString											GetExecutablePath();
-				/// <summary>Get the folder of the current executable.</summary>
-				/// <returns>The folder of the current executable.</returns>
-				WString											GetExecutableFolder();
-
-				/// <summary>Test is the current thread the main thread for GUI.</summary>
-				/// <returns>Returns true if the current thread is the main thread for GUI.</returns>
-				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
-				bool											IsInMainThread(GuiControlHost* controlHost);
-				/// <summary>Invoke a specified function asynchronously.</summary>
-				/// <param name="proc">The specified function.</param>
-				void											InvokeAsync(const Func<void()>& proc);
-				/// <summary>Invoke a specified function in the main thread.</summary>
-				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
-				/// <param name="proc">The specified function.</param>
-				void											InvokeInMainThread(GuiControlHost* controlHost, const Func<void()>& proc);
-				/// <summary>Invoke a specified function in the main thread and wait for the function to complete or timeout.</summary>
-				/// <returns>Return true if the function complete. Return false if the function has not completed during a specified period of time.</returns>
-				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
-				/// <param name="proc">The specified function.</param>
-				/// <param name="milliseconds">The specified period of time to wait. Set to -1 (default value) to wait forever until the function completed.</param>
-				bool											InvokeInMainThreadAndWait(GuiControlHost* controlHost, const Func<void()>& proc, vint milliseconds=-1);
-				/// <summary>Delay execute a specified function with an specified argument asynchronisly.</summary>
-				/// <returns>The Delay execution controller for this task.</returns>
-				/// <param name="proc">The specified function.</param>
-				/// <param name="milliseconds">Time to delay.</param>
-				Ptr<INativeDelay>								DelayExecute(const Func<void()>& proc, vint milliseconds);
-				/// <summary>Delay execute a specified function with an specified argument in the main thread.</summary>
-				/// <returns>The Delay execution controller for this task.</returns>
-				/// <param name="proc">The specified function.</param>
-				/// <param name="milliseconds">Time to delay.</param>
-				Ptr<INativeDelay>								DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds);
-				/// <summary>Run the specified function in the main thread. If the caller is in the main thread, then run the specified function directly.</summary>
-				/// <param name="controlHost">A control host to access the corressponding main thread.</param>
-				/// <param name="proc">The specified function.</param>
-				void											RunGuiTask(GuiControlHost* controlHost, const Func<void()>& proc);
-
-				template<typename T>
-				T RunGuiValue(GuiControlHost* controlHost, const Func<T()>& proc)
-				{
-					T result;
-					RunGuiTask(controlHost, [&result, &proc]()
-					{
-						result=proc();
-					});
-					return result;
-				}
-
-				template<typename T>
-				void InvokeLambdaInMainThread(GuiControlHost* controlHost, const T& proc)
-				{
-					InvokeInMainThread(controlHost, Func<void()>(proc));
-				}
-				
-				template<typename T>
-				bool InvokeLambdaInMainThreadAndWait(GuiControlHost* controlHost, const T& proc, vint milliseconds=-1)
-				{
-					return InvokeInMainThreadAndWait(controlHost, Func<void()>(proc), milliseconds);
-				}
-			};
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-			/// <summary>Get the global <see cref="GuiApplication"/> object.</summary>
-			/// <returns>The global <see cref="GuiApplication"/> object.</returns>
-			extern GuiApplication*								GetApplication();
-		}
-	}
-}
-
-extern void GuiApplicationMain();
-
-#define GUI_VALUE(x) vl::presentation::controls::GetApplication()->RunGuiValue(LAMBDA([&](){return (x);}))
-#define GUI_RUN(x) vl::presentation::controls::GetApplication()->RunGuiTask([=](){x})
-
-#endif
 
 /***********************************************************************
 .\CONTROLS\INCLUDEFORWARD.H
@@ -13613,82 +13899,6 @@ namespace vl
 	{
 		namespace theme
 		{
-#define GUI_CONTROL_TEMPLATE_TYPES(F) \
-			F(WindowTemplate,				Window)						\
-			F(ControlTemplate,				CustomControl)				\
-			F(WindowTemplate,				Tooltip)					\
-			F(LabelTemplate,				Label)						\
-			F(LabelTemplate,				ShortcutKey)				\
-			F(ScrollViewTemplate,			ScrollView)					\
-			F(ControlTemplate,				GroupBox)					\
-			F(TabTemplate,					Tab)						\
-			F(ComboBoxTemplate,				ComboBox)					\
-			F(MultilineTextBoxTemplate,		MultilineTextBox)			\
-			F(SinglelineTextBoxTemplate,	SinglelineTextBox)			\
-			F(DocumentViewerTemplate,		DocumentViewer)				\
-			F(DocumentLabelTemplate,		DocumentLabel)				\
-			F(DocumentLabelTemplate,		DocumentTextBox)			\
-			F(ListViewTemplate,				ListView)					\
-			F(TreeViewTemplate,				TreeView)					\
-			F(TextListTemplate,				TextList)					\
-			F(SelectableButtonTemplate,		ListItemBackground)			\
-			F(SelectableButtonTemplate,		TreeItemExpander)			\
-			F(SelectableButtonTemplate,		CheckTextListItem)			\
-			F(SelectableButtonTemplate,		RadioTextListItem)			\
-			F(MenuTemplate,					Menu)						\
-			F(ControlTemplate,				MenuBar)					\
-			F(ControlTemplate,				MenuSplitter)				\
-			F(ToolstripButtonTemplate,		MenuBarButton)				\
-			F(ToolstripButtonTemplate,		MenuItemButton)				\
-			F(ControlTemplate,				ToolstripToolBar)			\
-			F(ToolstripButtonTemplate,		ToolstripButton)			\
-			F(ToolstripButtonTemplate,		ToolstripDropdownButton)	\
-			F(ToolstripButtonTemplate,		ToolstripSplitButton)		\
-			F(ControlTemplate,				ToolstripSplitter)			\
-			F(RibbonTabTemplate,			RibbonTab)					\
-			F(RibbonGroupTemplate,			RibbonGroup)				\
-			F(RibbonIconLabelTemplate,		RibbonIconLabel)			\
-			F(RibbonIconLabelTemplate,		RibbonSmallIconLabel)		\
-			F(RibbonButtonsTemplate,		RibbonButtons)				\
-			F(RibbonToolstripsTemplate,		RibbonToolstrips)			\
-			F(RibbonGalleryTemplate,		RibbonGallery)				\
-			F(RibbonToolstripMenuTemplate,	RibbonToolstripMenu)		\
-			F(RibbonGalleryListTemplate,	RibbonGalleryList)			\
-			F(TextListTemplate,				RibbonGalleryItemList)		\
-			F(ToolstripButtonTemplate,		RibbonSmallButton)			\
-			F(ToolstripButtonTemplate,		RibbonSmallDropdownButton)	\
-			F(ToolstripButtonTemplate,		RibbonSmallSplitButton)		\
-			F(ToolstripButtonTemplate,		RibbonLargeButton)			\
-			F(ToolstripButtonTemplate,		RibbonLargeDropdownButton)	\
-			F(ToolstripButtonTemplate,		RibbonLargeSplitButton)		\
-			F(ControlTemplate,				RibbonSplitter)				\
-			F(ControlTemplate,				RibbonToolstripHeader)		\
-			F(ButtonTemplate,				Button)						\
-			F(SelectableButtonTemplate,		CheckBox)					\
-			F(SelectableButtonTemplate,		RadioButton)				\
-			F(DatePickerTemplate,			DatePicker)					\
-			F(DateComboBoxTemplate,			DateComboBox)				\
-			F(ScrollTemplate,				HScroll)					\
-			F(ScrollTemplate,				VScroll)					\
-			F(ScrollTemplate,				HTracker)					\
-			F(ScrollTemplate,				VTracker)					\
-			F(ScrollTemplate,				ProgressBar)				\
-
-			enum class ThemeName
-			{
-				Unknown,
-#define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
-				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
-#undef GUI_DEFINE_THEME_NAME
-			};
-
-			/// <summary>Theme interface. A theme creates appropriate style controllers or style providers for default controls. Call [M:vl.presentation.theme.GetCurrentTheme] to access this interface.</summary>
-			class ITheme : public virtual IDescriptable, public Description<ITheme>
-			{
-			public:
-				virtual TemplateProperty<templates::GuiControlTemplate>				CreateStyle(ThemeName themeName) = 0;
-			};
-
 			class Theme;
 
 			/// <summary>Partial control template collections. [F:vl.presentation.theme.GetCurrentTheme] will returns an object, which walks through multiple registered [T:vl.presentation.theme.ThemeTemplates] to create a correct template object for a control.</summary>
@@ -13710,11 +13920,6 @@ namespace vl
 #undef GUI_DEFINE_ITEM_PROPERTY
 			};
 
-			/// <summary>Get the current theme style factory object. Call <see cref="RegisterTheme"/> or <see cref="UnregisterTheme"/> to change the default theme.</summary>
-			/// <returns>The current theme style factory object.</returns>
-			extern ITheme*						GetCurrentTheme();
-			extern void							InitializeTheme();
-			extern void							FinalizeTheme();
 			/// <summary>Register a control template collection object.</summary>
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="theme">The control template collection object.</param>
@@ -18382,128 +18587,6 @@ GalleryItemArranger
 
 #endif
 
-
-/***********************************************************************
-.\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPCOMMAND.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Control System
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_CONTROLS_GUITOOLSTRIPCOMMAND
-#define VCZH_PRESENTATION_CONTROLS_GUITOOLSTRIPCOMMAND
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace compositions
-		{
-			class IGuiShortcutKeyItem;
-		}
-
-		namespace controls
-		{
-			/// <summary>A command for toolstrip controls.</summary>
-			class GuiToolstripCommand : public GuiComponent, public Description<GuiToolstripCommand>
-			{
-			public:
-				class ShortcutBuilder : public Object
-				{
-				public:
-					WString									text;
-					bool									ctrl;
-					bool									shift;
-					bool									alt;
-					VKEY									key;
-				};
-			protected:
-				Ptr<GuiImageData>							image;
-				Ptr<GuiImageData>							largeImage;
-				WString										text;
-				compositions::IGuiShortcutKeyItem*			shortcutKeyItem = nullptr;
-				bool										enabled = true;
-				bool										selected = false;
-				Ptr<compositions::IGuiGraphicsEventHandler>	shortcutKeyItemExecutedHandler;
-				Ptr<ShortcutBuilder>						shortcutBuilder;
-
-				GuiInstanceRootObject*						attachedRootObject = nullptr;
-				Ptr<compositions::IGuiGraphicsEventHandler>	renderTargetChangedHandler;
-				GuiControlHost*								shortcutOwner = nullptr;
-
-				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										InvokeDescriptionChanged();
-				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder);
-				void										BuildShortcut(const WString& builderText);
-				void										UpdateShortcutOwner();
-			public:
-				/// <summary>Create the command.</summary>
-				GuiToolstripCommand();
-				~GuiToolstripCommand();
-
-				void										Attach(GuiInstanceRootObject* rootObject)override;
-				void										Detach(GuiInstanceRootObject* rootObject)override;
-
-				/// <summary>Executed event.</summary>
-				compositions::GuiNotifyEvent				Executed;
-
-				/// <summary>Description changed event, raised when any description property is modified.</summary>
-				compositions::GuiNotifyEvent				DescriptionChanged;
-
-				/// <summary>Get the large image for this command.</summary>
-				/// <returns>The large image for this command.</returns>
-				Ptr<GuiImageData>							GetLargeImage();
-				/// <summary>Set the large image for this command.</summary>
-				/// <param name="value">The large image for this command.</param>
-				void										SetLargeImage(Ptr<GuiImageData> value);
-				/// <summary>Get the image for this command.</summary>
-				/// <returns>The image for this command.</returns>
-				Ptr<GuiImageData>							GetImage();
-				/// <summary>Set the image for this command.</summary>
-				/// <param name="value">The image for this command.</param>
-				void										SetImage(Ptr<GuiImageData> value);
-				/// <summary>Get the text for this command.</summary>
-				/// <returns>The text for this command.</returns>
-				const WString&								GetText();
-				/// <summary>Set the text for this command.</summary>
-				/// <param name="value">The text for this command.</param>
-				void										SetText(const WString& value);
-				/// <summary>Get the shortcut key item for this command.</summary>
-				/// <returns>The shortcut key item for this command.</returns>
-				compositions::IGuiShortcutKeyItem*			GetShortcut();
-				/// <summary>Set the shortcut key item for this command.</summary>
-				/// <param name="value">The shortcut key item for this command.</param>
-				void										SetShortcut(compositions::IGuiShortcutKeyItem* value);
-				/// <summary>Get the shortcut builder for this command.</summary>
-				/// <returns>The shortcut builder for this command.</returns>
-				WString										GetShortcutBuilder();
-				/// <summary>Set the shortcut builder for this command. When the command is attached to a window as a component without a shortcut, the command will try to convert the shortcut builder to a shortcut key item.</summary>
-				/// <param name="value">The shortcut builder for this command.</param>
-				void										SetShortcutBuilder(const WString& value);
-				/// <summary>Get the enablility for this command.</summary>
-				/// <returns>The enablility for this command.</returns>
-				bool										GetEnabled();
-				/// <summary>Set the enablility for this command.</summary>
-				/// <param name="value">The enablility for this command.</param>
-				void										SetEnabled(bool value);
-				/// <summary>Get the selection for this command.</summary>
-				/// <returns>The selection for this command.</returns>
-				bool										GetSelected();
-				/// <summary>Set the selection for this command.</summary>
-				/// <param name="value">The selection for this command.</param>
-				void										SetSelected(bool value);
-			};
-		}
-	}
-}
-
-#endif
 
 /***********************************************************************
 .\CONTROLS\TOOLSTRIPPACKAGE\GUITOOLSTRIPMENU.H

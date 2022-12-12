@@ -1,0 +1,43 @@
+<Resource>
+  <LocalizedStrings name="s1">
+    <LocalizedStrings ref.Class="demo::s1" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="X" Text="Y"/>
+      </Strings>
+      <Strings Locales="zh-CN">
+        <String Name="Y" Text="X"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+
+  <LocalizedStrings name="s2">
+    <LocalizedStrings ref.Class="demo::s2" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="A" Text="$("/>
+        <String Name="B" Text="$()"/>
+        <String Name="C" Text="$(abc)"/>
+        <String Name="D" Text="$(0+)"/>
+        <String Name="E" Text="$(0:)"/>
+        <String Name="F" Text="$(0:X)"/>
+        <String Name="G" Text="$(0)$(2)"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+
+  <LocalizedStrings name="s3">
+    <LocalizedStrings ref.Class="demo::s3" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="A" Text="$(0:ShortDate) $(1:Number)"/>
+      </Strings>
+      <Strings Locales="zh-CN">
+        <String Name="A" Text="$(1:ShortDate) $(0:Number)"/>
+      </Strings>
+      <Strings Locales="ja-JP">
+        <String Name="A" Text="$(0:LongTime) $(1:Currency)"/>
+      </Strings>
+      <Strings Locales="ar-SA">
+        <String Name="A" Text=""/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+</Resource>

@@ -1,0 +1,6 @@
+i1 # .\Resource.FailedInstance.Ctor2_r.xml
+    Original: Styles # .\Resource.FailedInstance.Ctor2_s.xml
+(3, 5): Precompile: Property "NotExists" of type "MainWindow" is not supported.
+(4, 5): Precompile: Property "Text" of type "MainWindow" does not support the "-set" binding.
+(5, 5): Precompile: Event "NotExists" cannot be found in type "MainWindow".
+(6, 5): Precompile: Failed to find type "Unknown".

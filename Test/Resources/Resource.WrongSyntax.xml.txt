@@ -1,2 +1,0 @@
- # .\Resource.WrongSyntax.xml
-(1, 2): Parser stops at incorrect input: ">".

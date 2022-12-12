@@ -7,8 +7,8 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
     )
 CPP_ADDS=(
-    "../../GacUISrc/Generated_DarkSkin/Source_Linux64/*.cpp"
-    "../../GacUISrc/Generated_FullControlTest/Source_Linux64/*.cpp"
+    "../../GacUISrc/Generated_DarkSkin/Source_x64/*.cpp"
+    "../../GacUISrc/Generated_FullControlTest/Source_x64/*.cpp"
     "../Main.cpp"
     )
 CPP_REMOVES=(
@@ -16,6 +16,6 @@ CPP_REMOVES=(
     "../../../Import/VlppOS.Windows.cpp"
     )
 TARGETS=("${CPP_TARGET}")
-CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_Linux64 -I ../../GacUISrc/Generated_FullControlTest/Source_Linux64 -DVCZH_DEBUG_NO_REFLECTION"
+CPP_COMPILE_OPTIONS="-I ../../../Import -I ../../GacUISrc/Generated_DarkSkin/Source_x64 -I ../../GacUISrc/Generated_FullControlTest/Source_x64 -DVCZH_DEBUG_NO_REFLECTION"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>

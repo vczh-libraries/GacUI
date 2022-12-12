@@ -1,0 +1,2 @@
+i2 # .\Resource.FailedInstance.Inheriting1.xml
+(23, 7): Precompile: Missing required property "ViewModel" of type "demo::T2" for its base type "demo::T1".

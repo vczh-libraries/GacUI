@@ -1,0 +1,2 @@
+SharedScript # .\Resource.FailedScript.Workflow.xml
+(9, 11): C6: Return statement cannot have a value inside void functions, constructors, destructors or $coroutine expressions.

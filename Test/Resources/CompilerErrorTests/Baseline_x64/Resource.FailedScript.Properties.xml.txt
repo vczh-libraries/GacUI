@@ -1,0 +1,13 @@
+i1 # .\Resource.FailedScript.Properties.xml
+(4, 29): A10: Expression of type "system::Boolean" cannot implicitly convert to "system::Int64".
+(4, 36): A10: Expression of type "system::Boolean" cannot implicitly convert to "system::Int64".
+(5, 52): A10: Expression "{}" cannot implicitly convert to "system::String".
+(6, 56): A16: Binary operator cannot apply on expression of type "system::Boolean".
+(7, 52): A16: Binary operator cannot apply on expression of type "system::String".
+(13, 17): F2: Symbol "Wrong" does not exist in the current scope.
+(19, 41): F2: Symbol "What" does not exist in the current scope.
+(19, 64): F2: Symbol "Wrong" does not exist in the current scope.
+(20, 29): A9: Expression referencing to symbol "item" failed to resolve its type.
+(20, 29): A9: Expression referencing to symbol "item" failed to resolve its type.
+(23, 32): F1: Member "Second" does not exist in "system::Object".
+(23, 32): F1: Member "Second" does not exist in "system::Object".

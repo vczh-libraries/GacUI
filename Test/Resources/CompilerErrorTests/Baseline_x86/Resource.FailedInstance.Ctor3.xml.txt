@@ -1,0 +1,21 @@
+i1 # .\Resource.FailedInstance.Ctor3.xml
+(4, 44): Precompile: Cannot find type "SinglelineTextBox".
+(6, 7): Precompile: Referece name "self" conflict with an existing named object.
+(6, 39): Precompile: Property "Border" of type "MainWindow" does not accept a value of text "Not A Bool" because it is not in a correct format of the serializable type "system::Boolean".
+(6, 67): Precompile: Property "TooltipControl" of type "MainWindow" does not accept a value of text "Not Serializable" because its type "presentation::controls::GuiControl" is not serializable.
+(8, 9): Precompile: Referece name "self" conflict with an existing named object.
+(11, 11): Precompile: Property "ListControl" of type "presentation::controls::GuiComboBox" cannot be assigned using binding "-bind". Because it is a non-bindable constructor argument.
+(15, 23): Precompile: Property "Text" of type "presentation::controls::tree::TreeNode" cannot be assigned using binding "-bind". Because it is a constructor argument, and this binding does not apply to any constructor argument.
+(19, 11): Precompile: Property "Text" of type "presentation::controls::GuiBindableDataGrid" cannot be assigned using an unexisting binding "-NotExists".
+(20, 11): Precompile: Binder "bind" requires the text value of property "Font".
+(25, 16): The appropriate IGuiInstanceEventBinder of binding "-NotExists" cannot be found.
+(26, 11): Precompile: When you assign to property "Columns" of type "presentation::compositions::GuiTableComposition", the following missing properties are required: "Rows".
+(27, 13): Precompile: Reference name "notAReferenceType" cannot be added to a non-reference instance of type "presentation::compositions::GuiCellOption".
+(27, 13): Precompile: Type "presentation::compositions::GuiCellOption" cannot be used to create an instance.
+(28, 30): Unrecognized token: "!".
+(32, 9): Precompile: Missing required constructor argument "ListControl" of type "presentation::controls::GuiComboBox".
+(34, 9): Precompile: Property "" of type "MainWindow" does not accept a value of type "system::String" because it only accepts value of the following types: "presentation::controls::GuiControl*", "presentation::compositions::GuiGraphicsComposition*", "presentation::controls::GuiComponent*".
+(37, 11): Precompile: When you assign to property "Columns" of type "presentation::compositions::GuiTableComposition", the following missing properties are required: "Rows".
+(38, 13): Precompile: Reference name "notAReferenceType" cannot be added to a non-reference instance of type "presentation::compositions::GuiCellOption".
+(38, 13): Precompile: Type "presentation::compositions::GuiCellOption" cannot be used to create an instance.
+(39, 21): Unrecognized token: "!".

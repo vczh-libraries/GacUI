@@ -1,0 +1,2 @@
+i1 # .\Resource.FailedInstance.Ctor4.xml
+(13, 17): Precompile: Binder "bind" requires property "Site" to physically appear in type "presentation::compositions::GuiCellComposition".

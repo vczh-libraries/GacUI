@@ -1,0 +1,31 @@
+<Resource>
+  <LocalizedStrings name="s1">
+    <X>
+    </X>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s2">
+    <LocalizedStrings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+
+  <LocalizedStrings name="s3">
+    <LocalizedStrings DefaultLocale="en-US" ref.Class="demo::s3">
+      <X>
+      </X>
+    </LocalizedStrings>
+  </LocalizedStrings>
+
+  <LocalizedStrings name="s4">
+    <LocalizedStrings DefaultLocale="en-US" ref.Class="demo::s4">
+      <Strings/>
+      <Strings Locales="en-US;zh-CN"/>
+      <Strings Locales="en-US;ja-JP">
+        <X/>
+        <String/>
+        <String Name="X" Text="Y"/>
+        <String Name="X" Text="Y"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+</Resource>

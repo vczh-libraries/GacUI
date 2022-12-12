@@ -1,0 +1,15 @@
+s1 # .\Resource.FailedScript.Strings2.xml
+(7, 8): Precompile: Missing strings for locale "zh-CN": X.
+(7, 8): Precompile: Unnecessary strings for locale "zh-CN": Y.
+s2 # .\Resource.FailedScript.Strings2.xml
+(16, 32): Precompile: Does not find matched close bracket.
+(17, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(18, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(19, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(20, 34): Precompile: Unexpected character, the correct format is $(index) or $(index:function).
+(21, 34): Precompile: Unknown formatting function name "X".
+(22, 32): Precompile: Missing parameter "1".
+s3 # .\Resource.FailedScript.Strings2.xml
+(32, 8): Parameter "0" in String "A" in locales "en-US" and "zh-CN" are in different types "system::DateTime" and "system::String".
+(32, 8): Parameter "1" in String "A" in locales "en-US" and "zh-CN" are in different types "system::String" and "system::DateTime".
+(38, 8): String "A" in locales "en-US" and "ar-SA" have different numbers of parameters.

@@ -78,19 +78,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source\;$(ProjectDir)..\Generated_FullControlTest\Source\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x86\;$(ProjectDir)..\Generated_FullControlTest\Source_x86\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source\;$(ProjectDir)..\Generated_FullControlTest\Source\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x86\;$(ProjectDir)..\Generated_FullControlTest\Source_x86\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source\;$(ProjectDir)..\Generated_FullControlTest\Source\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x64\;$(ProjectDir)..\Generated_FullControlTest\Source_x64\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source\;$(ProjectDir)..\Generated_FullControlTest\Source\;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\..\..\Import;$(ProjectDir)..\Generated_DarkSkin\Source_x64\;$(ProjectDir)..\Generated_FullControlTest\Source_x64\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

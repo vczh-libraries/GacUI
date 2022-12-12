@@ -1,0 +1,26 @@
+<Resource>
+  <Script name="s1">
+    <Workflow>
+      <![CDATA[
+        module viewmodel;
+        
+        interface IViewModel
+        {
+        }
+      ]]>
+    </Workflow>
+  </Script>
+
+  <Instance name="i1">
+    <Instance ref.Class="demo::T1" xmlns:demo="demo::*">
+      <ref.Parameter Name="ViewModel" Class="IViewModel"/>
+      <Window/>
+    </Instance>
+  </Instance>
+
+  <Instance name="i2">
+    <Instance ref.Class="demo::T2" xmlns:demo="demo::*">
+      <demo:T1/>
+    </Instance>
+  </Instance>
+</Resource>

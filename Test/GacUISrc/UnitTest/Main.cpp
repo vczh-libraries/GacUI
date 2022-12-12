@@ -1,5 +1,7 @@
 #include "../../../Source/GacUI.h"
+#if defined VCZH_MSVC
 #include <Windows.h>
+#endif
 
 using namespace vl;
 
@@ -30,12 +32,25 @@ WString GetTestResourcePath()
 {
 #if defined VCZH_MSVC
 #ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Resources\\";
+	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests";
 #else
-	return GetExePath() + L"..\\..\\Resources\\";
+	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests";
 #endif
 #elif defined VCZH_GCC
-	return L"../Resources/";
+	return L"../../Resources/CompilerErrorTests";
+#endif
+}
+
+WString GetTestBaselinePath()
+{
+#if defined VCZH_MSVC
+#ifdef _WIN64
+	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests\\Baseline_x64";
+#else
+	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\Baseline_x86";
+#endif
+#elif defined VCZH_GCC
+	return L"../../Resources/CompilerErrorTests/Baseline_x64";
 #endif
 }
 
@@ -43,18 +58,22 @@ WString GetTestOutputPath()
 {
 #if defined VCZH_MSVC
 #ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\..\\Output\\x64";
 #else
-	return GetExePath() + L"..\\..\\Output\\";
+	return GetExePath() + L"..\\..\\Output\\x86";
 #endif
 #elif defined VCZH_GCC
-	return L"../Output/";
+	return L"../../Output/";
 #endif
 }
 
 int UT_result = 0;
 int UT_argc = 0;
+#if defined VCZH_MSVC
 wchar_t** UT_argv = nullptr;
+#elif defined VCZH_GCC
+char** UT_argv = nullptr;
+#endif
 
 #if defined VCZH_MSVC
 TEST_FILE
@@ -74,15 +93,22 @@ void GuiMain()
 
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
-#elif defined VCZH_GCC
-int main()
-#endif
 {
 	UT_argc = argc;
 	UT_argv = argv;
 	SetupWindowsDirect2DRenderer();
-#if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
+#if defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
 	return UT_result;
 }
+#elif defined VCZH_GCC
+extern int SetupGacGenNativeController();
+int main(int argc, char* argv[])
+{
+	UT_argc = argc;
+	UT_argv = argv;
+	SetupGacGenNativeController();
+	return UT_result;
+}
+#endif

@@ -1,0 +1,8 @@
+<Resource>
+  <InstanceStyle name="Styles" content="File">Resource.FailedInstance.Ctor2_s.xml</InstanceStyle>
+  <Instance name="i1">
+    <Instance ref.Class="MainWindow" ref.Styles="res://Styles">
+      <Window/>
+    </Instance>
+  </Instance>
+</Resource>

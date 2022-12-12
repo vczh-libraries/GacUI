@@ -7,12 +7,13 @@ using namespace vl::filesystem;
 using namespace vl::presentation;
 
 extern WString GetTestResourcePath();
+extern WString GetTestBaselinePath();
 extern WString GetTestOutputPath();
 
 void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 {
 	auto outputPath = FilePath(GetTestOutputPath()) / (resourceName + L".txt");
-	auto baselinePath = FilePath(GetTestResourcePath()) / (resourceName + L".txt");
+	auto baselinePath = FilePath(GetTestBaselinePath()) / (resourceName + L".txt");
 
 	List<WString> output;
 	GuiResourceError::SortAndLog(errors, output, GetTestResourcePath());
@@ -35,7 +36,20 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 	{
 		TEST_ASSERT(output.Count() > i);
 		TEST_ASSERT(baseline.Count() > i);
+#if defined VCZH_MSVC
 		TEST_ASSERT(output[i] == baseline[i]);
+#elif defined VCZH_GCC
+		auto posRes = INVLOC.FindFirst(output[i], L"Resource.", Locale::Normalization::None);
+		if (posRes.key == -1)
+		{
+			TEST_ASSERT(output[i] == baseline[i]);
+		}
+		else
+		{
+			auto fixedOutput = output[i].Remove(posRes.key, posRes.value).Insert(posRes.key, L".\\Resource.");
+			TEST_ASSERT(output[i] == baseline[i] || fixedOutput == baseline[i]);
+		}
+#endif
 	}
 }
 
@@ -49,7 +63,7 @@ void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 		}\
 	}while(0)\
 
-Ptr<GuiResource> LoadResource(const WString& resourceName, bool requireErrors)
+Ptr<GuiResource> LoadResource(const WString& resourceName)
 {
 	Ptr<GuiResource> resource;
 	TEST_CASE(L"Compare compiler output for: " + resourceName)
@@ -61,11 +75,7 @@ Ptr<GuiResource> LoadResource(const WString& resourceName, bool requireErrors)
 		PRINT_ERROR;
 		resource->Precompile(nullptr, errors);
 		PRINT_ERROR;
-		TEST_ASSERT(!requireErrors);
-
-		auto outputPath = FilePath(GetTestOutputPath()) / (resourceName + L".bin");
-		FileStream stream(outputPath.GetFullPath(), FileStream::WriteOnly);
-		resource->SavePrecompiledBinary(stream);
+		TEST_ASSERT(false);
 	});
 	return resource;
 }
@@ -74,25 +84,25 @@ Ptr<GuiResource> LoadResource(const WString& resourceName, bool requireErrors)
 
 TEST_FILE
 {
-	LoadResource(L"Resource.NotExists.xml", true);
-	LoadResource(L"Resource.WrongSyntax.xml", true);
-	LoadResource(L"Resource.WrongSyntax2.xml", true);
-	LoadResource(L"Resource.WrongDoc.xml", true);
-	LoadResource(L"Resource.WrongInstanceStyle.xml", true);
-	LoadResource(L"Resource.WrongInstance.xml", true);
-	LoadResource(L"Resource.FailedInstance.Ctor1.xml", true);
-	LoadResource(L"Resource.FailedInstance.Ctor2.xml", true);
-	LoadResource(L"Resource.FailedInstance.Ctor2_r.xml", true);
-	LoadResource(L"Resource.FailedInstance.Ctor3.xml", true);
-	LoadResource(L"Resource.FailedInstance.Ctor4.xml", true);
-	LoadResource(L"Resource.FailedInstance.Ctor5.xml", true);
-	LoadResource(L"Resource.FailedInstance.Control.xml", true);
-	LoadResource(L"Resource.FailedInstance.Inheriting1.xml", true);
-	LoadResource(L"Resource.FailedInstance.Inheriting2.xml", true);
-	LoadResource(L"Resource.FailedScript.Workflow.xml", true);
-	LoadResource(L"Resource.FailedScript.Properties.xml", true);
-	LoadResource(L"Resource.FailedScript.Animations.xml", true);
-	LoadResource(L"Resource.FailedScript.Animations2.xml", true);
-	LoadResource(L"Resource.FailedScript.Strings.xml", true);
-	LoadResource(L"Resource.FailedScript.Strings2.xml", true);
+	LoadResource(L"Resource.NotExists.xml");
+	LoadResource(L"Resource.WrongSyntax.xml");
+	LoadResource(L"Resource.WrongSyntax2.xml");
+	LoadResource(L"Resource.WrongDoc.xml");
+	LoadResource(L"Resource.WrongInstanceStyle.xml");
+	LoadResource(L"Resource.WrongInstance.xml");
+	LoadResource(L"Resource.FailedInstance.Ctor1.xml");
+	LoadResource(L"Resource.FailedInstance.Ctor2.xml");
+	LoadResource(L"Resource.FailedInstance.Ctor2_r.xml");
+	LoadResource(L"Resource.FailedInstance.Ctor3.xml");
+	LoadResource(L"Resource.FailedInstance.Ctor4.xml");
+	LoadResource(L"Resource.FailedInstance.Ctor5.xml");
+	LoadResource(L"Resource.FailedInstance.Control.xml");
+	LoadResource(L"Resource.FailedInstance.Inheriting1.xml");
+	LoadResource(L"Resource.FailedInstance.Inheriting2.xml");
+	LoadResource(L"Resource.FailedScript.Workflow.xml");
+	LoadResource(L"Resource.FailedScript.Properties.xml");
+	LoadResource(L"Resource.FailedScript.Animations.xml");
+	LoadResource(L"Resource.FailedScript.Animations2.xml");
+	LoadResource(L"Resource.FailedScript.Strings.xml");
+	LoadResource(L"Resource.FailedScript.Strings2.xml");
 }

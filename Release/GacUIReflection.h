@@ -321,6 +321,7 @@ Type List (Templates)
 			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiCommonDatePickerLook)\
 			F(presentation::templates::GuiCommonScrollViewLook)\
+			GUI_CORE_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\
 			GUI_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\
 			GUI_ITEM_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\
 			F(presentation::controls::list::MainColumnVisualizerTemplate)\

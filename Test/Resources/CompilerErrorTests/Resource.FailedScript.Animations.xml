@@ -1,0 +1,26 @@
+<Resource>
+  <Animation name="a1">
+    <UnknownAnimation/>
+  </Animation>
+
+  <Animation name="a2">
+    <Gradient/>
+  </Animation>
+
+  <Animation name="a3">
+    <Gradient ref.Class="a" Type="b">
+      <Targets/>
+    </Gradient>
+  </Animation>
+
+  <Animation name="a4">
+    <Gradient ref.Class="a" Type="b">
+      <Interpolation>[$1]</Interpolation>
+      <Targets>
+        <Target name="a">
+          <Interpolation>[$1]</Interpolation>
+        </Target>
+      </Targets>
+    </Gradient>
+  </Animation>
+</Resource>

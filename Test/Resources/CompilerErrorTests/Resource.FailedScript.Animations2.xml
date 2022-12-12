@@ -1,0 +1,71 @@
+<Resource>
+  <Script>
+    <Workflow>
+      <![CDATA[
+        module Test;
+        
+        struct e
+        {
+        }
+        
+        struct s1
+        {
+          e1 : e;
+          e2 : e;
+        }
+        
+        struct s2
+        {
+          s : string;
+        }
+        
+        struct s3
+        {
+          i : int;
+        }
+        
+        class c1
+        {
+          var p1 : s3 = {i:0};
+          prop p2 : s3 = {i:0} {const}
+          prop p3 : s3 = {i:0} {not observe}
+
+          prop p4 : s1 = {} {}
+          prop p5 : string = "" {}
+          prop p6 : s2 = {s:""} {}
+          prop p7 : c1^ = null {}
+        }
+      ]]>
+    </Workflow>
+  </Script>
+  
+  <Animation name="a1">
+    <Gradient ref.Class="a1" Type="int">
+      <Targets>
+        <Target Name="Unexisting"/>
+      </Targets>
+    </Gradient>
+  </Animation>
+
+  <Animation name="a2">
+    <Gradient ref.Class="a2" Type="s1">
+      <Targets>
+        <Target Name="Unexisting"/>
+      </Targets>
+    </Gradient>
+  </Animation>
+
+  <Animation name="a3">
+    <Gradient ref.Class="a3" Type="c1">
+      <Targets>
+        <Target Name="p1"/>
+        <Target Name="p2"/>
+        <Target Name="p3"/>
+        <Target Name="p4"/>
+        <Target Name="p5"/>
+        <Target Name="p6"/>
+        <Target Name="p7"/>
+      </Targets>
+    </Gradient>
+  </Animation>
+</Resource>
