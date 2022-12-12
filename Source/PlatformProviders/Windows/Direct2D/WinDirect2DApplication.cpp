@@ -1,4 +1,5 @@
 #include "WinDirect2DApplication.h"
+#include "..\..\Hosted\GuiHostedWindow.h"
 #include "Renderers\GuiGraphicsWindowsDirect2D.h"
 #include <ShellScalingApi.h>
 
@@ -470,7 +471,7 @@ ControllerListener
 				}
 			};
 
-			Direct2DWindowsNativeControllerListener* direct2DListener=0;
+			Direct2DWindowsNativeControllerListener* direct2DListener = nullptr;
 
 			ID2D1Factory* GetDirect2DFactory()
 			{
@@ -612,34 +613,42 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_d2d;
 
-int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)())
+int SetupWindowsDirect2DRendererInternal(bool hosted)
 {
+	InitDpiAwareness(true);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
+	SetWindowsDirect2DObjectProvider(&objectProvider);
+	
 	EnableCrossKernelCrashing();
 	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
+	auto nativeController = CreateWindowsNativeController(hInstance);
+	auto controller = hosted ? new GuiHostedController(nativeController) : nativeController;
 	SetCurrentController(controller);
 	{
 		// install listener
 		Direct2DWindowsNativeControllerListener listener;
 		controller->CallbackService()->InstallListener(&listener);
-		direct2DListener=&listener;
+		direct2DListener = &listener;
 		// main
-		RendererMain();
+		RendererMainDirect2D();
 		// uninstall listener
-		direct2DListener=0;
+		direct2DListener = nullptr;
 		controller->CallbackService()->UninstallListener(&listener);
 	}
 	// destroy controller
-	DestroyWindowsNativeController(controller);
+	if (hosted) delete controller;
+	DestroyWindowsNativeController(nativeController);
 	return 0;
 }
 
 int SetupWindowsDirect2DRenderer()
 {
-	InitDpiAwareness(true);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
-	SetWindowsDirect2DObjectProvider(&objectProvider);
-	return WinMainDirect2D(hInstance, &RendererMainDirect2D);
+	return SetupWindowsDirect2DRendererInternal(false);
+}
+
+int SetupHostedWindowsDirect2DRenderer()
+{
+	return SetupWindowsDirect2DRendererInternal(true);
 }

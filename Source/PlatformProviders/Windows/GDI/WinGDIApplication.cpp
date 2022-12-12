@@ -1,4 +1,5 @@
 #include "WinGDIApplication.h"
+#include "..\..\Hosted\GuiHostedWindow.h"
 #include "Renderers\GuiGraphicsWindowsGDI.h"
 #include <ShellScalingApi.h>
 #include "..\ServicesImpl\WindowsCallbackService.h"
@@ -125,7 +126,7 @@ namespace vl
 				}
 			};
 
-			GdiWindowsNativeControllerListener* gdiListener=0;
+			GdiWindowsNativeControllerListener* gdiListener = nullptr;
 
 			WinDC* GetNativeWindowDC(INativeWindow* window)
 			{
@@ -202,34 +203,42 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_gdi;
 
-int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)())
+int SetupWindowsGDIRendererInternal(bool hosted)
 {
+	InitDpiAwareness(false);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+	WinGDIApplicationGDIObjectProvider objectProvider;
+	SetWindowsGDIObjectProvider(&objectProvider);
+
 	EnableCrossKernelCrashing();
 	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
+	auto nativeController = CreateWindowsNativeController(hInstance);
+	auto controller = hosted ? new GuiHostedController(nativeController) : nativeController;
 	SetCurrentController(controller);
 	{
 		// install listener
 		GdiWindowsNativeControllerListener listener;
 		controller->CallbackService()->InstallListener(&listener);
-		gdiListener=&listener;
+		gdiListener = &listener;
 		// main
-		RendererMain();
+		RendererMainGDI();
 		// uninstall listener
-		gdiListener=0;
+		gdiListener = nullptr;
 		controller->CallbackService()->UninstallListener(&listener);
 	}
 	// destroy controller
-	DestroyWindowsNativeController(controller);
+	if (hosted) delete controller;
+	DestroyWindowsNativeController(nativeController);
 	return 0;
 }
 
 int SetupWindowsGDIRenderer()
 {
-	InitDpiAwareness(false);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinGDIApplicationGDIObjectProvider objectProvider;
-	SetWindowsGDIObjectProvider(&objectProvider);
-	return WinMainGDI(hInstance, &RendererMainGDI);
+	return SetupWindowsGDIRendererInternal(false);
+}
+
+int SetupHostedWindowsGDIRenderer()
+{
+	return SetupWindowsGDIRendererInternal(true);
 }
