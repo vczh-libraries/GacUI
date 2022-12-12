@@ -157,6 +157,7 @@ public:
 	Ptr<INativeImage> CreateImageFromFile(const WString& path) override
 	{
 		FileStream imageStream(path, FileStream::ReadOnly);
+		if (!imageStream.IsAvailable()) return nullptr;
 		return Ptr(new NativeImage(this, imageStream));
 	}
 
