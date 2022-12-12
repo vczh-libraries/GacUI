@@ -24,6 +24,7 @@
   - Add new INativeWindowListener members, called when not actively refreshing
     - BeforeHostedRendering, each window returns if itself needs to be refreshed
     - HostedRendering, do the rendering (bool forceUpdate, bool cleanBeforeRender)
+  - Fix `WinNativeWindow.cpp` the way to call HitTest, to ensure only one non-NoDecision return value could be made
 
 ## OS Provider Features
 
