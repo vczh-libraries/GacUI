@@ -301,6 +301,24 @@ WindowsForm
 					}
 				}
 
+				INativeWindowListener::HitTestResult PerformHitTest(NativePoint location)
+				{
+					auto hitTestResult = INativeWindowListener::NoDecision;
+					for (vint i = 0; i < listeners.Count(); i++)
+					{
+						auto singleResult = listeners[i]->HitTest(location);
+						CHECK_ERROR(
+							hitTestResult == INativeWindowListener::NoDecision || singleResult == INativeWindowListener::NoDecision,
+							L"vl::presentation::windows::WindowsForm::PerformHitTest(NativePoint)#Incompatible INativeWindowListener::HitTest() callback results occured."
+						);
+						if (singleResult != INativeWindowListener::NoDecision)
+						{
+							hitTestResult = singleResult;
+						}
+					}
+					return hitTestResult;
+				}
+
 				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
 					if (!supressClosePopups)
@@ -760,60 +778,57 @@ WindowsForm
 					// ************************************** hit test
 					case WM_NCHITTEST:
 						{
-							POINTS location=MAKEPOINTS(lParam);
-							NativePoint windowLocation=GetBounds().LeftTop();
-							location.x-=(SHORT)windowLocation.x.value;
-							location.y-=(SHORT)windowLocation.y.value;
-							for(vint i=0;i<listeners.Count();i++)
+							POINTS location = MAKEPOINTS(lParam);
+							NativePoint windowLocation = GetBounds().LeftTop();
+							location.x -= (SHORT)windowLocation.x.value;
+							location.y -= (SHORT)windowLocation.y.value;
+							switch (PerformHitTest({ location.x,location.y }))
 							{
-								switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
-								{
-								case INativeWindowListener::BorderNoSizing:
-									result=HTBORDER;
-									return true;
-								case INativeWindowListener::BorderLeft:
-									result=HTLEFT;
-									return true;
-								case INativeWindowListener::BorderRight:
-									result=HTRIGHT;
-									return true;
-								case INativeWindowListener::BorderTop:
-									result=HTTOP;
-									return true;
-								case INativeWindowListener::BorderBottom:
-									result=HTBOTTOM;
-									return true;
-								case INativeWindowListener::BorderLeftTop:
-									result=HTTOPLEFT;
-									return true;
-								case INativeWindowListener::BorderRightTop:
-									result=HTTOPRIGHT;
-									return true;
-								case INativeWindowListener::BorderLeftBottom:
-									result=HTBOTTOMLEFT;
-									return true;
-								case INativeWindowListener::BorderRightBottom:
-									result=HTBOTTOMRIGHT;
-									return true;
-								case INativeWindowListener::Title:
-									result=HTCAPTION;
-									return true;
-								case INativeWindowListener::ButtonMinimum:
-									result=HTMINBUTTON;
-									return true;
-								case INativeWindowListener::ButtonMaximum:
-									result=HTMAXBUTTON;
-									return true;
-								case INativeWindowListener::ButtonClose:
-									result=HTCLOSE;
-									return true;
-								case INativeWindowListener::Client:
-									result=HTCLIENT;
-									return true;
-								case INativeWindowListener::Icon:
-									result=HTSYSMENU;
-									return true;
-								}
+							case INativeWindowListener::BorderNoSizing:
+								result = HTBORDER;
+								return true;
+							case INativeWindowListener::BorderLeft:
+								result = HTLEFT;
+								return true;
+							case INativeWindowListener::BorderRight:
+								result = HTRIGHT;
+								return true;
+							case INativeWindowListener::BorderTop:
+								result = HTTOP;
+								return true;
+							case INativeWindowListener::BorderBottom:
+								result = HTBOTTOM;
+								return true;
+							case INativeWindowListener::BorderLeftTop:
+								result = HTTOPLEFT;
+								return true;
+							case INativeWindowListener::BorderRightTop:
+								result = HTTOPRIGHT;
+								return true;
+							case INativeWindowListener::BorderLeftBottom:
+								result = HTBOTTOMLEFT;
+								return true;
+							case INativeWindowListener::BorderRightBottom:
+								result = HTBOTTOMRIGHT;
+								return true;
+							case INativeWindowListener::Title:
+								result = HTCAPTION;
+								return true;
+							case INativeWindowListener::ButtonMinimum:
+								result = HTMINBUTTON;
+								return true;
+							case INativeWindowListener::ButtonMaximum:
+								result = HTMAXBUTTON;
+								return true;
+							case INativeWindowListener::ButtonClose:
+								result = HTCLOSE;
+								return true;
+							case INativeWindowListener::Client:
+								result = HTCLIENT;
+								return true;
+							case INativeWindowListener::Icon:
+								result = HTSYSMENU;
+								return true;
 							}
 						}
 						break;
@@ -874,9 +889,9 @@ WindowsForm
 						case WM_LBUTTONUP:
 							{
 								POINTS location = MAKEPOINTS(lParam);
-								for(vint i=0;i<listeners.Count();i++)
+								for (vint i = 0; i < listeners.Count(); i++)
 								{
-									switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
+									switch (PerformHitTest({ location.x,location.y }))
 									{
 									case INativeWindowListener::ButtonMinimum:
 										ShowMinimized();
