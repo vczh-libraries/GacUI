@@ -21,32 +21,32 @@ GuiHostedWindow
 
 		Point GuiHostedWindow::Convert(NativePoint value)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->nativeWindow->Convert(value);
 		}
 
 		NativePoint GuiHostedWindow::Convert(Point value)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->nativeWindow->Convert(value);
 		}
 
 		Size GuiHostedWindow::Convert(NativeSize value)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->nativeWindow->Convert(value);
 		}
 
 		NativeSize GuiHostedWindow::Convert(Size value)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->nativeWindow->Convert(value);
 		}
 
 		Margin GuiHostedWindow::Convert(NativeMargin value)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->nativeWindow->Convert(value);
 		}
 
 		NativeMargin GuiHostedWindow::Convert(Margin value)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->nativeWindow->Convert(value);
 		}
 
 		NativeRect GuiHostedWindow::GetBounds()
@@ -740,6 +740,33 @@ GuiHostedController::INativeWindowService
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
 			CHECK_ERROR(!hostedWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#The window is not created by GuiHostedController.");
 			mainWindow = hostedWindow;
+
+			// TODO:
+			//   sync window properties to nativeWindow
+			//   check main window properties
+			//     no parent
+			//   check non-main window properties
+			//     CustomFrameMode should be true to render the frame using templates
+			//     for normal windows, parent should be either null or the main window
+			//       if it is null, it is treated to be the main window
+			//     for other windows, parent should be non-null
+			//     ensure parent is partial ordered in realtime
+			//   sync non-main window window-management properties
+			//     changing activated or focused etc before calling Run() are ignored
+
+			if (auto screen = nativeController->ScreenService()->GetScreen(nativeWindow))
+			{
+				auto screenBounds = screen->GetClientBounds();
+				auto windowSize = nativeWindow->GetBounds().GetSize();
+				nativeWindow->SetBounds({
+					{
+						screenBounds.Left() + (screenBounds.Width() - windowSize.x) / 2,
+						screenBounds.Top() + (screenBounds.Height() - windowSize.y) / 2
+					},
+					windowSize
+					});
+			}
+
 			nativeController->WindowService()->Run(nativeWindow);
 			mainWindow = nullptr;
 			EnsureNativeWindowDestroyed();
