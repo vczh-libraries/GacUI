@@ -2,19 +2,19 @@
 
 ## Progressing
 
-- `GuiHostedController`, `GuiHostedMonitor`, `GuiHostedWindow` and `GuiHostedMainWindow`.
+- `GuiHostedController`, `GuiHostedMonitor` and `GuiHostedWindow`.
   - User offers an ordinary `INativeController` and `INativeWindow` implementation.
   - `GuiHostedController` and `GuiHostedWindow` use the above implementation to implement the `hosted single window` mode.
     - `GuiHostedController` reuses all services provided from the underlying native `INativeController` except windows and monitors.
       - Dialogs are optional.
-    - The first created `INativeWindow` from `GuiHostedController` is `GuiHostedMainWindow`.
+    - The only `GuiHostedWindow` passed to `IWindowService::Run` is the main window.
       - It is special that it could partially control and react to the underlying native `INativeWindow`.
       - It always fill the full `GuiHostedMonitor`.
-      - When the underlying native `INativeWindow` become inactived, `GuiHostedMainWindow` and all `GuiHostedWindow` are inactivated.
-      - When `GuiHostedMainWindow` is disabled, it doesn't affect the underlying native `INativeWindow`.
+      - When the underlying native `INativeWindow` become inactived, main window and all `GuiHostedWindow` are inactivated.
+      - When main window is disabled, it doesn't affect the underlying native `INativeWindow`.
       - ... (the window manager handles all the details)
     - `GuiHostedWindow` is free to move.
-    - A window manager that treats `GuiHostedMainWindow` as the desktop and `GuiHostedWindow` as windows.
+    - A window manager that treats main window as the desktop and other `GuiHostedWindow` as windows.
     - DPI still changes in runtime.
   - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
 
