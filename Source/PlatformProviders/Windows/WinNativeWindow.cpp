@@ -1079,7 +1079,7 @@ WindowsForm
 					return true;
 				}
 
-				NativePoint GetRenderingOffset()override
+				NativeSize GetRenderingOffset()override
 				{
 					return { 0,0 };
 				}

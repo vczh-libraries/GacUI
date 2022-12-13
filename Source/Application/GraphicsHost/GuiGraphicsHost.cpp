@@ -546,9 +546,11 @@ GuiGraphicsHost
 				return needRender;
 			}
 
-			void GuiGraphicsHost::ForceRefresh(bool cleanBeforeRender)
+			void GuiGraphicsHost::ForceRefresh(bool cleanBeforeRender, bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
 			{
-				Render(true, cleanBeforeRender);
+				auto result = Render(true, cleanBeforeRender, handleFailure);
+				failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
+				failureByLostDevice |= result == RenderTargetFailure::LostDevice;
 			}
 
 			void GuiGraphicsHost::GlobalTimer()
@@ -567,7 +569,7 @@ GuiGraphicsHost
 
 				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsActivelyRefreshing())
 				{
-					Render(false, true);
+					Render(false, true, true);
 				}
 			}
 
@@ -633,32 +635,35 @@ GuiGraphicsHost
 				return windowComposition;
 			}
 
-			void GuiGraphicsHost::Render(bool forceUpdate, bool cleanBeforeRender)
+			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool cleanBeforeRender, bool handleFailure)
 			{
+				RenderTargetFailure result = RenderTargetFailure::None;
 				if (!forceUpdate && !needRender)
 				{
-					return;
+					return result;
 				}
 				needRender = false;
 
 				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
 					supressPaint = true;
-					hostRecord.renderTarget->StartRendering();
-					windowComposition->Render(Size());
-					auto result = hostRecord.renderTarget->StopRendering();
+					hostRecord.renderTarget->StartRendering(cleanBeforeRender);
+					windowComposition->Render(hostRecord.nativeWindow->Convert(hostRecord.nativeWindow->GetRenderingOffset()));
+					result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
 					supressPaint = false;
 
 					switch (result)
 					{
 					case RenderTargetFailure::ResizeWhileRendering:
+						if (handleFailure)
 						{
 							GetGuiGraphicsResourceManager()->ResizeRenderTarget(hostRecord.nativeWindow);
 							needRender = true;
 						}
 						break;
 					case RenderTargetFailure::LostDevice:
+						if (handleFailure)
 						{
 							RecreateRenderTarget();
 							needRender = true;
@@ -698,6 +703,8 @@ GuiGraphicsHost
 						}
 					}
 				}
+
+				return result;
 			}
 
 			void GuiGraphicsHost::RequestRender()

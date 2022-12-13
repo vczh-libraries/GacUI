@@ -64,7 +64,7 @@ INativeWindow
 			/// It should return (0,0) if it has an exclusive OS native window.
 			/// </summary>
 			/// <returns>Returns the rendering offset to the render target.</returns>
-			virtual NativePoint			GetRenderingOffset() = 0;
+			virtual NativeSize			GetRenderingOffset() = 0;
 
 			/// <summary>
 			/// Convert point from native coordinate to GUI coordinate.
@@ -754,7 +754,7 @@ INativeWindow
 			/// </summary>
 			/// <returns>Returns true if the window needs to be updated.</returns>
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
-			virtual void				ForceRefresh(bool cleanBeforeRender);
+			virtual void				ForceRefresh(bool cleanBeforeRender, bool handleFailure, bool& failureByResized, bool& failureByLostDevice);
 		};
 
 /***********************************************************************

@@ -155,7 +155,7 @@ INativeWindowListener
 			return false;
 		}
 
-		void INativeWindowListener::ForceRefresh(bool cleanBeforeRender)
+		void INativeWindowListener::ForceRefresh(bool cleanBeforeRender, bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
 		{
 		}
 

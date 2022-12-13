@@ -140,7 +140,7 @@ Host
 				void									Char(const NativeWindowCharInfo& info)override;
 
 				bool									NeedRefresh()override;
-				void									ForceRefresh(bool cleanBeforeRender)override;
+				void									ForceRefresh(bool cleanBeforeRender, bool handleFailure, bool& failureByResized, bool& failureByLostDevice)override;
 
 				void									GlobalTimer()override;
 			public:
@@ -159,7 +159,7 @@ Host
 				/// <summary>Render the main composition and all content to the associated window.</summary>
 				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
 				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				void									Render(bool forceUpdate, bool cleanBeforeRender);
+				elements::RenderTargetFailure			Render(bool forceUpdate, bool cleanBeforeRender, bool handleFailure);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
 				/// <summary>Invoke a specified function after rendering.</summary>

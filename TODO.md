@@ -16,10 +16,6 @@
     - DPI still changes in runtime.
   - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
 
-- Refine GuiGraphicsHost rendering mechanism
-  - Take care about `INativeWindow::GetRenderingOffset`
-  - Take care about `IGuiGraphicsResourceManager::RecreateRenderTarget` and `IGuiGraphicsResourceManager::ResizeRenderTarget`
-
 ## OS Provider Features
 
 - Drag and Drop framework.

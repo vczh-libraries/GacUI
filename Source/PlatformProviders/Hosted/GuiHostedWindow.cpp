@@ -24,7 +24,7 @@ GuiHostedWindow
 			return false;
 		}
 
-		NativePoint GuiHostedWindow::GetRenderingOffset()
+		NativeSize GuiHostedWindow::GetRenderingOffset()
 		{
 			CHECK_FAIL(L"Not implemented!");
 		}
