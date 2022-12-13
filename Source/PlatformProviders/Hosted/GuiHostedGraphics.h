@@ -28,6 +28,7 @@ GuiHostedGraphicsResourceManager
 
 			class GuiHostedGraphicsResourceManager : public Object, public virtual IGuiGraphicsResourceManager
 			{
+				friend class GuiHostedController;
 			protected:
 				GuiHostedController*				hostedController = nullptr;
 				IGuiGraphicsResourceManager*		nativeManager = nullptr;

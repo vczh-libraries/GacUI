@@ -39,6 +39,7 @@ GuiHostedController
 			friend class elements::GuiHostedGraphicsResourceManager;
 		protected:
 			INativeController*								nativeController = nullptr;
+			elements::GuiHostedGraphicsResourceManager*		hostedResourceManager = nullptr;
 			collections::List<INativeControllerListener*>	listeners;
 
 			INativeWindow*									nativeWindow = nullptr;

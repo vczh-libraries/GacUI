@@ -160,6 +160,15 @@ GuiHostedController::INativeControllerListener
 			{
 				listener->GlobalTimer();
 			}
+
+			if (hostedResourceManager)
+			{
+				// TODO: call all visible INativeWindowListener::NeedRefresh
+				auto renderTarget = hostedResourceManager->nativeManager->GetRenderTarget(nativeWindow);
+				renderTarget->StartHostedRendering();
+				// TODO: call all visible INativeWindowListener::ForceRefresh
+				renderTarget->StopRendering();
+			}
 		}
 
 		void GuiHostedController::ClipboardUpdated()
@@ -423,10 +432,6 @@ GuiHostedController::INativeWindowService
 
 		void GuiHostedController::Run(INativeWindow* window)
 		{
-			// TODO:
-			//   Handle GetGuiGraphicsResourceManager()->GetRenderTarget(nativeWindow)
-			//     Maybe GuiGraphicsHost's render mechanism need to be changed
-
 			CHECK_ERROR(!mainWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#This function has been called.");
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
 			CHECK_ERROR(!hostedWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#The window is not created by GuiHostedController.");

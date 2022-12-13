@@ -15,10 +15,16 @@ GuiHostedGraphicsResourceManager
 				: hostedController(_hostedController)
 				, nativeManager(_nativeManager)
 			{
+				CHECK_ERROR(
+					!hostedController->hostedResourceManager,
+					L"vl::presentation::elements::GuiHostedGraphicsResourceManager::GuiHostedGraphicsResourceManager(GuiHostedController*, IGuiGraphicsResourceManager*)#"
+					L"GuiHostedGraphicsResourceManager has been created for the same GuiHostedController");
+				hostedController->hostedResourceManager = this;
 			}
 
 			GuiHostedGraphicsResourceManager::~GuiHostedGraphicsResourceManager()
 			{
+				hostedController->hostedResourceManager = nullptr;
 			}
 
 			vint GuiHostedGraphicsResourceManager::RegisterElementType(const WString& elementTypeName)
