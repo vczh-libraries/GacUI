@@ -66,6 +66,16 @@ WindowsGDIRenderTarget
 					return dc?dc:GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
+				void StartHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
+				void StopHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
 				void StartRendering()override
 				{
 					dc=GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);

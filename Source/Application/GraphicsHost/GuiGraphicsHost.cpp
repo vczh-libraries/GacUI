@@ -546,9 +546,9 @@ GuiGraphicsHost
 				return needRender;
 			}
 
-			void GuiGraphicsHost::ForceRefresh(bool cleanBeforeRender, bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+			void GuiGraphicsHost::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
 			{
-				auto result = Render(true, cleanBeforeRender, handleFailure);
+				auto result = Render(true, handleFailure);
 				failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
 				failureByLostDevice |= result == RenderTargetFailure::LostDevice;
 			}
@@ -569,7 +569,7 @@ GuiGraphicsHost
 
 				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsActivelyRefreshing())
 				{
-					Render(false, true, true);
+					Render(false, true);
 				}
 			}
 
@@ -635,7 +635,7 @@ GuiGraphicsHost
 				return windowComposition;
 			}
 
-			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool cleanBeforeRender, bool handleFailure)
+			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool handleFailure)
 			{
 				RenderTargetFailure result = RenderTargetFailure::None;
 				if (!forceUpdate && !needRender)
@@ -647,7 +647,7 @@ GuiGraphicsHost
 				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
 					supressPaint = true;
-					hostRecord.renderTarget->StartRendering(cleanBeforeRender);
+					hostRecord.renderTarget->StartRendering();
 					windowComposition->Render(hostRecord.nativeWindow->Convert(hostRecord.nativeWindow->GetRenderingOffset()));
 					result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();

@@ -15,6 +15,10 @@
     - A window manager that treats main window as the desktop and other `GuiHostedWindow` as windows.
     - DPI still changes in runtime.
   - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
+  - Rendering in `GlobalTimer`
+    - Call `StartHostedRendering` and `StopHostedRendering` in `GlobalTimer`
+    - Call `INativeWindowListener::ForceRefreshing` of all windows in order
+    - Handle failures
 
 ## OS Provider Features
 

@@ -754,7 +754,7 @@ INativeWindow
 			/// </summary>
 			/// <returns>Returns true if the window needs to be updated.</returns>
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
-			virtual void				ForceRefresh(bool cleanBeforeRender, bool handleFailure, bool& failureByResized, bool& failureByLostDevice);
+			virtual void				ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice);
 		};
 
 /***********************************************************************

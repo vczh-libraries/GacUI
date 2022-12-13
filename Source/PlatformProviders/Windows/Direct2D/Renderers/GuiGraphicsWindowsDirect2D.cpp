@@ -485,6 +485,16 @@ WindowsDirect2DRenderTarget
 					}
 				}
 
+				void StartHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
+				void StopHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
 				void StartRendering()override
 				{
 					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
