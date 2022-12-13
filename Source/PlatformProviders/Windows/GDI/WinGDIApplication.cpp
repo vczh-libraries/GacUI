@@ -210,26 +210,30 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
 	WinGDIApplicationGDIObjectProvider objectProvider;
 	SetWindowsGDIObjectProvider(&objectProvider);
-
 	EnableCrossKernelCrashing();
+
 	// create controller
+	GuiHostedController* hostedController = nullptr;
 	StartWindowsNativeController(hInstance);
-	auto controller = GetWindowsNativeController();
-	if (hosted) controller = new GuiHostedController(controller);
-	SetCurrentController(controller);
+	auto nativeController = GetWindowsNativeController();
+	if (hosted) hostedController = new GuiHostedController(nativeController);
+	SetCurrentController(hostedController ? hostedController : nativeController);
+
 	{
 		// install listener
 		GdiWindowsNativeControllerListener listener;
-		GetWindowsNativeController()->CallbackService()->InstallListener(&listener);
+		nativeController->CallbackService()->InstallListener(&listener);
 		gdiListener = &listener;
 		// main
-		RendererMainGDI(hosted);
+		RendererMainGDI(hostedController);
 		// uninstall listener
 		gdiListener = nullptr;
-		GetWindowsNativeController()->CallbackService()->UninstallListener(&listener);
+		nativeController->CallbackService()->UninstallListener(&listener);
 	}
+
 	// destroy controller
-	if (hosted) delete controller;
+	SetCurrentController(nullptr);
+	if (hostedController) delete hostedController;
 	StopWindowsNativeController();
 	return 0;
 }

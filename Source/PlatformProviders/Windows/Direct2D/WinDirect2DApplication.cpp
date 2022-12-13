@@ -620,26 +620,30 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
 	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
 	SetWindowsDirect2DObjectProvider(&objectProvider);
-	
 	EnableCrossKernelCrashing();
+
 	// create controller
+	GuiHostedController* hostedController = nullptr;
 	StartWindowsNativeController(hInstance);
-	auto controller = GetWindowsNativeController();
-	if (hosted) controller = new GuiHostedController(controller);
-	SetCurrentController(controller);
+	auto nativeController = GetWindowsNativeController();
+	if (hosted) hostedController = new GuiHostedController(nativeController);
+	SetCurrentController(hostedController ? hostedController : nativeController);
+
 	{
 		// install listener
 		Direct2DWindowsNativeControllerListener listener;
-		GetWindowsNativeController()->CallbackService()->InstallListener(&listener);
+		nativeController->CallbackService()->InstallListener(&listener);
 		direct2DListener = &listener;
 		// main
-		RendererMainDirect2D(hosted);
+		RendererMainDirect2D(hostedController);
 		// uninstall listener
 		direct2DListener = nullptr;
-		GetWindowsNativeController()->CallbackService()->UninstallListener(&listener);
+		nativeController->CallbackService()->UninstallListener(&listener);
 	}
+
 	// destroy controller
-	if (hosted) delete controller;
+	SetCurrentController(nullptr);
+	if (hostedController) delete hostedController;
 	StopWindowsNativeController();
 	return 0;
 }

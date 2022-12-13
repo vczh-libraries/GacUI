@@ -20,6 +20,8 @@ namespace vl
 {
 	namespace presentation
 	{
+		class GuiHostedController;
+
 		namespace elements
 		{
 			
@@ -115,6 +117,6 @@ OS Supporting
 	}
 }
 
-extern void RendererMainGDI(bool hosted);
+extern void RendererMainGDI(vl::presentation::GuiHostedController* hostedController);
 
 #endif

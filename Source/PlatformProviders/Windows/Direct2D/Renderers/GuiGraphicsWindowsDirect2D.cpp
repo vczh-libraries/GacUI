@@ -3,6 +3,7 @@
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
 #include "..\..\ServicesImpl\WindowsImageService.h"
 #include "..\..\WinNativeWindow.h"
+#include "..\..\..\Hosted\GuiHostedGraphics.h"
 #include <math.h>
 
 namespace vl
@@ -755,29 +756,39 @@ using namespace vl::presentation::elements;
 
 extern void GuiApplicationMain();
 
-void RendererMainDirect2D(bool hosted)
+void RendererMainDirect2D(GuiHostedController* hostedController)
 {
 	elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
-	SetGuiGraphicsResourceManager(&resourceManager);
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
 	windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
 
-	elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
-	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
-	elements_windows_d2d::Gui3DBorderElementRenderer::Register();
-	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
-	elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
-	elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
-	elements_windows_d2d::GuiImageFrameElementRenderer::Register();
-	elements_windows_d2d::GuiPolygonElementRenderer::Register();
-	elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
-	elements_windows_d2d::GuiDirect2DElementRenderer::Register();
-	elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+	auto hostedResourceManager = hostedController ? new GuiHostedGraphicsResourceManager(hostedController, &resourceManager) : nullptr;
+	SetGuiGraphicsResourceManager(
+		hostedResourceManager
+		? hostedResourceManager
+		: static_cast<IGuiGraphicsResourceManager*>(&resourceManager)
+		);
 
-	GuiApplicationMain();
+	{
+		elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
+		elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
+		elements_windows_d2d::Gui3DBorderElementRenderer::Register();
+		elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
+		elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
+		elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
+		elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
+		elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
+		elements_windows_d2d::GuiImageFrameElementRenderer::Register();
+		elements_windows_d2d::GuiPolygonElementRenderer::Register();
+		elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
+		elements_windows_d2d::GuiDirect2DElementRenderer::Register();
+		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+		GuiApplicationMain();
+	}
+
+	SetGuiGraphicsResourceManager(nullptr);
+	if (hostedResourceManager) delete hostedResourceManager;
+
 	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(nullptr);
-	SetGuiGraphicsResourceManager(nullptr);
 }
