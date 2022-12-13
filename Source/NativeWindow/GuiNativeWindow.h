@@ -1680,6 +1680,29 @@ Native Window Controller
 		/// </summary>
 		/// <param name="controller">The global native system service controller.</param>
 		extern void							SetCurrentController(INativeController* controller);
+
+		/// <summary>
+		/// A helper function calling multiple <see cref="INativeWindowListener::HitTest"/>.
+		/// </summary>
+		/// <returns>The hit test result.</returns>
+		template<typename T>
+		INativeWindowListener::HitTestResult PerformHitTest(collections::LazyList<T> listeners, NativePoint location)
+		{
+			auto hitTestResult = INativeWindowListener::NoDecision;
+			for (auto listener : listeners)
+			{
+				auto singleResult = listener->HitTest(location);
+				CHECK_ERROR(
+					hitTestResult == INativeWindowListener::NoDecision || singleResult == INativeWindowListener::NoDecision,
+					L"vl::presentation::PerformHitTest(LazyList<T>, NativePoint)#Incompatible INativeWindowListener::HitTest() callback results occured."
+					);
+				if (singleResult != INativeWindowListener::NoDecision)
+				{
+					hitTestResult = singleResult;
+				}
+			}
+			return hitTestResult;
+		}
 	}
 }
 

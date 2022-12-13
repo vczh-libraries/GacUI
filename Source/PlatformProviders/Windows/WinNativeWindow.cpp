@@ -301,24 +301,6 @@ WindowsForm
 					}
 				}
 
-				INativeWindowListener::HitTestResult PerformHitTest(NativePoint location)
-				{
-					auto hitTestResult = INativeWindowListener::NoDecision;
-					for (vint i = 0; i < listeners.Count(); i++)
-					{
-						auto singleResult = listeners[i]->HitTest(location);
-						CHECK_ERROR(
-							hitTestResult == INativeWindowListener::NoDecision || singleResult == INativeWindowListener::NoDecision,
-							L"vl::presentation::windows::WindowsForm::PerformHitTest(NativePoint)#Incompatible INativeWindowListener::HitTest() callback results occured."
-						);
-						if (singleResult != INativeWindowListener::NoDecision)
-						{
-							hitTestResult = singleResult;
-						}
-					}
-					return hitTestResult;
-				}
-
 				bool HandleMessageInternal(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result)
 				{
 					if (!supressClosePopups)
@@ -782,7 +764,7 @@ WindowsForm
 							NativePoint windowLocation = GetBounds().LeftTop();
 							location.x -= (SHORT)windowLocation.x.value;
 							location.y -= (SHORT)windowLocation.y.value;
-							switch (PerformHitTest({ location.x,location.y }))
+							switch (PerformHitTest(From(listeners), { location.x,location.y }))
 							{
 							case INativeWindowListener::BorderNoSizing:
 								result = HTBORDER;
@@ -891,7 +873,7 @@ WindowsForm
 								POINTS location = MAKEPOINTS(lParam);
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
-									switch (PerformHitTest({ location.x,location.y }))
+									switch (PerformHitTest(From(listeners), { location.x,location.y }))
 									{
 									case INativeWindowListener::ButtonMinimum:
 										ShowMinimized();
