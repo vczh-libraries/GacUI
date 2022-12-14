@@ -75,7 +75,11 @@ namespace hosted_window_manager_tests
 	WString GetTestBaselinePath()
 	{
 	#if defined VCZH_MSVC
+	#ifdef _WIN64
 		return GetExePath() + L"..\\..\\..\\Resources\\HostedWindowManagerTests";
+	#else
+		return GetExePath() + L"..\\..\\Resources\\HostedWindowManagerTests";
+	#endif
 	#elif defined VCZH_GCC
 		return L"../../Resources/HostedWindowManagerTests";
 	#endif
@@ -84,7 +88,11 @@ namespace hosted_window_manager_tests
 	WString GetTestOutputPath()
 	{
 	#if defined VCZH_MSVC
+	#ifdef _WIN64
 		return GetExePath() + L"..\\..\\..\\Output\\HostedWindowManagerTests";
+	#else
+		return GetExePath() + L"..\\..\\Output\\HostedWindowManagerTests";
+	#endif
 	#elif defined VCZH_GCC
 		return L"../../Output/HostedWindowManagerTests";
 	#endif
