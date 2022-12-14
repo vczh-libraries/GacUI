@@ -80,6 +80,8 @@ Window
 				void Activate()
 				{
 					if (!windowManager->mainWindow) return;
+					if (!visible) return;
+					if (!enabled) return;
 					if (windowManager->activeWindow != this)
 					{
 						if (windowManager->activeWindow)
@@ -89,6 +91,9 @@ Window
 						windowManager->activeWindow = this;
 						active = true;
 					}
+					renderedAsActive = true;
+					// TODO: change renderedAsActive of other windows
+					// TODO: bring the window to front
 				}
 
 				void Inactive()
@@ -129,6 +134,7 @@ WindowManager
 					CHECK_ERROR(!registeredWindows.Keys().Contains(window->id), ERROR_MESSAGE_PREFIX L"The window has a duplicated key with an existing window.");
 					window->windowManager = this;
 					registeredWindows.Add(window->id, window);
+					ordinaryWindowsInOrder.Insert(0, window);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -142,6 +148,8 @@ WindowManager
 						window->Inactive();
 					}
 					window->windowManager = nullptr;
+					topMostedWindowsInOrder.Remove(window);
+					ordinaryWindowsInOrder.Remove(window);
 					registeredWindows.Remove(window->id);
 #undef ERROR_MESSAGE_PREFIX
 				}
@@ -151,6 +159,7 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::Start(Window<T>*)#"
 					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has started.");
 					mainWindow = window;
+					// TODO: ensure parent window correctness
 #undef ERROR_MESSAGE_PREFIX
 				}
 

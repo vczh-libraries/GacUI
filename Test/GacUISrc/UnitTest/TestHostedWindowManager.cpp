@@ -48,7 +48,6 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 		for (auto [lines, snapshot] : snapshots)
 		{
 			writer.WriteLine(snapshot);
-			writer.WriteLine(L"");
 		}
 		writer.WriteLine(L"END");
 #else
@@ -104,7 +103,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 						writer.WriteChar(window->id);
 					}
 				}
-				writer.WriteChar(L']');
+				writer.WriteLine(WString::Unmanaged(L"]"));
 			}
 		});
 		snapshots.Add({ h,snapshot });
@@ -122,7 +121,6 @@ TEST_FILE
 {
 	WM_TEST_CASE(L"Start and stop")
 	{
-		return;
 		Window mainWindow(L'A', true);
 		wm.RegisterWindow(&mainWindow);
 		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
