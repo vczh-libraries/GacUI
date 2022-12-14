@@ -50,6 +50,11 @@ Window
 					CHECK_FAIL(L"Not Implemented.");
 				}
 
+				void SetBounds(const NativeRect& value)
+				{
+					bounds = value;
+				}
+
 				void SetVisible(bool value)
 				{
 					CHECK_FAIL(L"Not Implemented.");
@@ -82,7 +87,6 @@ WindowManager
 				collections::List<Window<T>*>				topMostedWindowsInOrder;
 				collections::List<Window<T>*>				ordinaryWindowsInOrder;
 
-				NativeSize									desktopSize;
 				Window<T>*									mainWindow = nullptr;
 				Window<T>*									activeWindow = nullptr;
 
