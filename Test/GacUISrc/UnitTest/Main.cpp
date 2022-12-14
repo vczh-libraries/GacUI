@@ -28,43 +28,67 @@ WString GetExePath()
 }
 #endif
 
-WString GetTestResourcePath()
+namespace compiler_error_tests
 {
-#if defined VCZH_MSVC
-#ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests";
-#else
-	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests";
-#endif
-#elif defined VCZH_GCC
-	return L"../../Resources/CompilerErrorTests";
-#endif
+	WString GetTestResourcePath()
+	{
+	#if defined VCZH_MSVC
+	#ifdef _WIN64
+		return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests";
+	#else
+		return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests";
+	#endif
+	#elif defined VCZH_GCC
+		return L"../../Resources/CompilerErrorTests";
+	#endif
+	}
+	
+	WString GetTestBaselinePath()
+	{
+	#if defined VCZH_MSVC
+	#ifdef _WIN64
+		return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests\\Baseline_x64";
+	#else
+		return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\Baseline_x86";
+	#endif
+	#elif defined VCZH_GCC
+		return L"../../Resources/CompilerErrorTests/Baseline_x64";
+	#endif
+	}
+	
+	WString GetTestOutputPath()
+	{
+	#if defined VCZH_MSVC
+	#ifdef _WIN64
+		return GetExePath() + L"..\\..\\..\\Output\\CompilerErrorTests\\x64";
+	#else
+		return GetExePath() + L"..\\..\\Output\\CompilerErrorTests\\x86";
+	#endif
+	#elif defined VCZH_GCC
+		return L"../../Output/CompilerErrorTests";
+	#endif
+	}
 }
 
-WString GetTestBaselinePath()
+namespace hosted_window_manager_tests
 {
-#if defined VCZH_MSVC
-#ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Resources\\CompilerErrorTests\\Baseline_x64";
-#else
-	return GetExePath() + L"..\\..\\Resources\\CompilerErrorTests\\Baseline_x86";
-#endif
-#elif defined VCZH_GCC
-	return L"../../Resources/CompilerErrorTests/Baseline_x64";
-#endif
-}
-
-WString GetTestOutputPath()
-{
-#if defined VCZH_MSVC
-#ifdef _WIN64
-	return GetExePath() + L"..\\..\\..\\Output\\x64";
-#else
-	return GetExePath() + L"..\\..\\Output\\x86";
-#endif
-#elif defined VCZH_GCC
-	return L"../../Output/";
-#endif
+	WString GetTestBaselinePath()
+	{
+	#if defined VCZH_MSVC
+		return GetExePath() + L"..\\..\\..\\Resources\\HostedWindowManagerTests";
+	#elif defined VCZH_GCC
+		return L"../../Resources/HostedWindowManagerTests";
+	#endif
+	}
+	
+	WString GetTestOutputPath()
+	{
+	#if defined VCZH_MSVC
+		return GetExePath() + L"..\\..\\..\\Output\\HostedWindowManagerTests";
+	#elif defined VCZH_GCC
+		return L"../../Output/HostedWindowManagerTests";
+	#endif
+	}
 }
 
 int UT_result = 0;
@@ -78,10 +102,19 @@ char** UT_argv = nullptr;
 #if defined VCZH_MSVC
 TEST_FILE
 {
-	Folder folder(GetTestOutputPath());
-	if (!folder.Exists())
 	{
-		TEST_CASE_ASSERT(folder.Create(false) == true);
+		Folder folder(compiler_error_tests::GetTestOutputPath());
+		if (!folder.Exists())
+		{
+			TEST_CASE_ASSERT(folder.Create(true) == true);
+		}
+	}
+	{
+		Folder folder(hosted_window_manager_tests::GetTestOutputPath());
+		if (!folder.Exists())
+		{
+			TEST_CASE_ASSERT(folder.Create(true) == true);
+		}
 	}
 }
 #endif
