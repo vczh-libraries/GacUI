@@ -12,6 +12,7 @@ Interfaces:
 #define VCZH_PRESENTATION_GUIHOSTEDWINDOW
 
 #include "../../NativeWindow/GuiNativeWindow.h"
+#include "GuiHostedWindowManager.h"
 
 namespace vl
 {

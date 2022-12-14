@@ -174,5 +174,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.h">
       <Filter>PlatformProviders\Hosted</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindowManager.h">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
