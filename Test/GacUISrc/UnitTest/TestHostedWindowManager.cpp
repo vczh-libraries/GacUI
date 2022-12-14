@@ -38,7 +38,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 #pragma warning(disable: 4297)
 	~WindowManager()
 	{
-		CHECK_ERROR(!mainWindow, L"Stop() has not been called.");
+		TEST_ASSERT(!mainWindow);
 		auto snapshotPath = FilePath(GetTestBaselinePath()) / (unitTestTitle + L".txt");
 #ifdef UPDATE_SNAPSHOT
 		FileStream fileStream(snapshotPath.GetFullPath(), FileStream::WriteOnly);
@@ -110,7 +110,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	}
 };
 
-#define WM_TEST_CASE(NAME) { WindowManager wm(NAME); TEST_CASE(NAME)
+#define WM_TEST_CASE(NAME) TEST_CASE(NAME){ WindowManager wm(NAME); 
 
 NativeRect Bounds(vint x, vint y, vint w, vint h)
 {
@@ -131,5 +131,5 @@ TEST_FILE
 		wm.TakeSnapshot();
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
-	});}
+	}});
 }
