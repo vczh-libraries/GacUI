@@ -24,16 +24,21 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	List<Pair<vint, WString>>	snapshots;
 
 	WindowManager(const wchar_t* _unitTestTitle)
-		:unitTestTitle(WString::Unmanaged(_unitTestTitle))
 	{
+		unitTestTitle = GenerateToStream([&](StreamWriter& writer)
+		{
+			while (auto c = *_unitTestTitle++)
+			{
+				writer.WriteChar(c == L' ' ? L'_' : c);
+			}
+		});
 	}
 
 #pragma warning(push)
 #pragma warning(disable: 4297)
 	~WindowManager()
 	{
-		TEST_ASSERT(!mainWindow);
-		return;
+		CHECK_ERROR(!mainWindow, L"Stop() has not been called.");
 		auto snapshotPath = FilePath(GetTestBaselinePath()) / (unitTestTitle + L".txt");
 #ifdef UPDATE_SNAPSHOT
 		FileStream fileStream(snapshotPath.GetFullPath(), FileStream::WriteOnly);
