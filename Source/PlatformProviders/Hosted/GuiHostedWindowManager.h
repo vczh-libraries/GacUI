@@ -74,6 +74,12 @@ Window
 				{
 					CHECK_FAIL(L"Not Implemented.");
 				}
+
+				void Show()
+				{
+					SetVisible(true);
+					Activate();
+				}
 			};
 
 /***********************************************************************
@@ -126,7 +132,7 @@ WindowManager
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				Window<T>* FindWindow(NativePoint position)
+				Window<T>* HitTest(NativePoint position)
 				{
 					for (auto window : topMostedWindowsInOrder)
 					{
