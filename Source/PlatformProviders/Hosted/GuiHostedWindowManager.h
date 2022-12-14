@@ -50,6 +50,13 @@ Window
 					CHECK_FAIL(L"Not Implemented.");
 				}
 
+				Window<T>* GetParent()
+				{
+					return !parent && normal && this != windowManager->mainWindow
+						? windowManager->mainWindow
+						: parent;
+				}
+
 				void SetBounds(const NativeRect& value)
 				{
 					bounds = value;
@@ -57,7 +64,7 @@ Window
 
 				void SetVisible(bool value)
 				{
-					CHECK_FAIL(L"Not Implemented.");
+					visible = value;
 				}
 
 				void SetTopMost(bool value)
@@ -72,7 +79,26 @@ Window
 
 				void Activate()
 				{
-					CHECK_FAIL(L"Not Implemented.");
+					if (!windowManager->mainWindow) return;
+					if (windowManager->activeWindow != this)
+					{
+						if (windowManager->activeWindow)
+						{
+							windowManager->activeWindow->active = false;
+						}
+						windowManager->activeWindow = this;
+						active = true;
+					}
+				}
+
+				void Inactive()
+				{
+					if (!windowManager->mainWindow) return;
+					active = false;
+					if (windowManager->activeWindow == this)
+					{
+						windowManager->activeWindow = nullptr;
+					}
 				}
 
 				void Show()
@@ -111,6 +137,10 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::UnregisterWindow(Window<T>*)#"
 					CHECK_ERROR(window->windowManager == this, ERROR_MESSAGE_PREFIX L"The window has not been registered.");
 					CHECK_ERROR(window != mainWindow, ERROR_MESSAGE_PREFIX L"The main window cannot be unregistered before stopping the window manager.");
+					if (activeWindow == window)
+					{
+						window->Inactive();
+					}
 					window->windowManager = nullptr;
 					registeredWindows.Remove(window->id);
 #undef ERROR_MESSAGE_PREFIX
