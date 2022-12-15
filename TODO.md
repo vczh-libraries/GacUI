@@ -78,7 +78,8 @@
 ## Porting to New Platforms
 
 - SyncTree architecture that streams layout/element changes per `GuiControlHost`.
-  - or called remoting whatever
+- ViewModel architecture that streams object changes.
+  - Requires all pointers are shared.
 - Port GacUI to other platforms:
   - Windows
     - Command-line/Powershell in Windows (hosted)
