@@ -410,10 +410,9 @@ GuiControl
 				}
 			}
 
-			void GuiControl::InvokeOrDelayIfRendering(Func<void()> proc)
+			void GuiControl::TryDelayExecuteIfNotDeleted(Func<void()> proc)
 			{
-				auto controlHost = GetRelatedControlHost();
-				if (controlHost && boundsComposition->IsRendering())
+				if (auto controlHost = GetRelatedControlHost())
 				{
 					auto flag = GetDisposedFlag();
 					GetApplication()->InvokeInMainThread(controlHost, [=]()

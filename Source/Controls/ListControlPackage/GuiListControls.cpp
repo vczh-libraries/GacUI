@@ -36,10 +36,7 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				listControl->InvokeOrDelayIfRendering([=]()
-				{
-					listControl->CalculateView();
-				});
+				listControl->CalculateView();
 			}
 
 			GuiListControl::ItemCallback::ItemCallback(GuiListControl* _listControl)

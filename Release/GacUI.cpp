@@ -942,10 +942,9 @@ GuiControl
 				}
 			}
 
-			void GuiControl::InvokeOrDelayIfRendering(Func<void()> proc)
+			void GuiControl::TryDelayExecuteIfNotDeleted(Func<void()> proc)
 			{
-				auto controlHost = GetRelatedControlHost();
-				if (controlHost && boundsComposition->IsRendering())
+				if (auto controlHost = GetRelatedControlHost())
 				{
 					auto flag = GetDisposedFlag();
 					GetApplication()->InvokeInMainThread(controlHost, [=]()
@@ -6142,10 +6141,7 @@ GuiScrollView
 
 			void GuiScrollView::OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				InvokeOrDelayIfRendering([=]()
-				{
-					CalculateView();
-				});
+				CalculateView();
 			}
 
 			void GuiScrollView::OnHorizontalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -6275,58 +6271,61 @@ GuiScrollView
 
 			void GuiScrollView::CalculateView()
 			{
-				auto ct = TypedControlTemplateObject(true);
-				auto hScroll = ct->GetHorizontalScroll();
-				auto vScroll = ct->GetVerticalScroll();
-
-				if (!supressScrolling)
+				TryDelayExecuteIfNotDeleted([=]()
 				{
-					Size fullSize = QueryFullSize();
-					while (true)
+					auto ct = TypedControlTemplateObject(true);
+					auto hScroll = ct->GetHorizontalScroll();
+					auto vScroll = ct->GetVerticalScroll();
+
+					if (!supressScrolling)
 					{
-						bool flagA = false;
-						bool flagB = false;
-
-						flagA = AdjustView(fullSize);
-						bool bothInvisible = (hScroll ? !hScroll->GetVisible() : true) && (vScroll ? !vScroll->GetVisible() : true);
-
-						if (!bothInvisible)
+						Size fullSize = QueryFullSize();
+						while (true)
 						{
-							flagB = AdjustView(fullSize);
-							bothInvisible = (hScroll ? !hScroll->GetVisible() : true) && (vScroll ? !vScroll->GetVisible() : true);
-						}
+							bool flagA = false;
+							bool flagB = false;
 
-						supressScrolling = true;
-						CallUpdateView();
-						supressScrolling = false;
+							flagA = AdjustView(fullSize);
+							bool bothInvisible = (hScroll ? !hScroll->GetVisible() : true) && (vScroll ? !vScroll->GetVisible() : true);
 
-						Size newSize = QueryFullSize();
-						if (fullSize == newSize)
-						{
-							vint smallMove = GetSmallMove();
-							Size bigMove = GetBigMove();
-							if (hScroll)
+							if (!bothInvisible)
 							{
-								hScroll->SetSmallMove(smallMove);
-								hScroll->SetBigMove(bigMove.x);
-							}
-							if (vScroll)
-							{
-								vScroll->SetSmallMove(smallMove);
-								vScroll->SetBigMove(bigMove.y);
+								flagB = AdjustView(fullSize);
+								bothInvisible = (hScroll ? !hScroll->GetVisible() : true) && (vScroll ? !vScroll->GetVisible() : true);
 							}
 
-							if (bothInvisible || !flagA && !flagB)
+							supressScrolling = true;
+							CallUpdateView();
+							supressScrolling = false;
+
+							Size newSize = QueryFullSize();
+							if (fullSize == newSize)
 							{
-								break;
+								vint smallMove = GetSmallMove();
+								Size bigMove = GetBigMove();
+								if (hScroll)
+								{
+									hScroll->SetSmallMove(smallMove);
+									hScroll->SetBigMove(bigMove.x);
+								}
+								if (vScroll)
+								{
+									vScroll->SetSmallMove(smallMove);
+									vScroll->SetBigMove(bigMove.y);
+								}
+
+								if (bothInvisible || !flagA && !flagB)
+								{
+									break;
+								}
 							}
-						}
-						else
-						{
-							fullSize = newSize;
+							else
+							{
+								fullSize = newSize;
+							}
 						}
 					}
-				}
+				});
 			}
 
 			Size GuiScrollView::GetViewSize()
@@ -12201,10 +12200,7 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				listControl->InvokeOrDelayIfRendering([=]()
-				{
-					listControl->CalculateView();
-				});
+				listControl->CalculateView();
 			}
 
 			GuiListControl::ItemCallback::ItemCallback(GuiListControl* _listControl)
@@ -28446,10 +28442,9 @@ GuiResponsiveContainerComposition
 
 			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
-				auto control = GetRelatedControl();
-				if (control)
+				if (auto control = GetRelatedControl())
 				{
-					control->InvokeOrDelayIfRendering([=]()
+					control->TryDelayExecuteIfNotDeleted([=]()
 					{
 						AdjustLevel();
 					});

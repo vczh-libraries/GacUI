@@ -837,10 +837,9 @@ GuiResponsiveContainerComposition
 
 			void GuiResponsiveContainerComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
-				auto control = GetRelatedControl();
-				if (control)
+				if (auto control = GetRelatedControl())
 				{
-					control->InvokeOrDelayIfRendering([=]()
+					control->TryDelayExecuteIfNotDeleted([=]()
 					{
 						AdjustLevel();
 					});

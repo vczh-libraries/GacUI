@@ -7805,7 +7805,7 @@ Basic Construction
 				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
 				compositions::GuiNotifyEvent			ContextChanged;
 
-				void									InvokeOrDelayIfRendering(Func<void()> proc);
+				void									TryDelayExecuteIfNotDeleted(Func<void()> proc);
 
 				/// <summary>A function to create the argument for notify events that raised by itself.</summary>
 				/// <returns>The created argument.</returns>
