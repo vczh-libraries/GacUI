@@ -59,9 +59,14 @@ Window
 
 				void UpdateWindowOrder()
 				{
+					if (windowManager->ordinaryWindowsInOrder.Remove(this) || windowManager->topMostedWindowsInOrder.Remove(this))
+					{
+						windowManager->needRefresh = true;
+					}
+
 					if (visible)
 					{
-						if (topMost)
+						if (IsEventuallyTopMost())
 						{
 							windowManager->topMostedWindowsInOrder.Insert(0, this);
 						}
@@ -71,6 +76,18 @@ Window
 						}
 						windowManager->needRefresh = true;
 					}
+				}
+
+				bool IsEventuallyTopMost()
+				{
+					bool result = topMost;
+					auto current = parent;
+					while (current)
+					{
+						result |= current->topMost;
+						current = current->parent;
+					}
+					return result;
 				}
 
 				void SetParent(Window<T>* value)
@@ -102,6 +119,7 @@ Window
 					{
 						parent->children.Add(this);
 					}
+					UpdateWindowOrder();
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -140,6 +158,7 @@ Window
 
 				void Activate()
 				{
+					if (active) return;
 					if (!windowManager->mainWindow) return;
 					if (!visible) return;
 					if (!enabled) return;
@@ -225,8 +244,8 @@ WindowManager
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::Start(Window<T>*)#"
 					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has started.");
+					CHECK_ERROR(!window->parent, ERROR_MESSAGE_PREFIX L"A main window should not have a parent window.");
 					mainWindow = window;
-					// TODO: ensure parent window correctness
 #undef ERROR_MESSAGE_PREFIX
 				}
 

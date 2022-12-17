@@ -72,6 +72,54 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	}
 #pragma warning(pop)
 
+	void CheckWindowStatus()
+	{
+		for (auto window : registeredWindows.Values())
+		{
+			TEST_ASSERT(window->active == (window == activeWindow));
+			TEST_ASSERT(!window->active || window->enabled);
+			TEST_ASSERT(!window->active || window->renderedAsActive);
+
+			bool topMost = window->IsEventuallyTopMost();
+			if (window->visible && topMost)
+			{
+				TEST_ASSERT(topMostedWindowsInOrder.Contains(window));
+				auto current = window->parent;
+				while (current && !current->visible)
+				{
+					current = current->parent;
+				}
+				if (current && current->IsEventuallyTopMost())
+				{
+					TEST_ASSERT(topMostedWindowsInOrder.IndexOf(window) < topMostedWindowsInOrder.IndexOf(current));
+				}
+			}
+			else
+			{
+				TEST_ASSERT(!topMostedWindowsInOrder.Contains(window));
+			}
+
+			if (window->visible && !topMost)
+			{
+				TEST_ASSERT(ordinaryWindowsInOrder.Contains(window));
+				auto current = window->parent;
+				while (current && !current->visible)
+				{
+					current = current->parent;
+				}
+				if (current)
+				{
+					TEST_ASSERT(!current->IsEventuallyTopMost());
+					TEST_ASSERT(ordinaryWindowsInOrder.IndexOf(window) < ordinaryWindowsInOrder.IndexOf(current));
+				}
+			}
+			else
+			{
+				TEST_ASSERT(!ordinaryWindowsInOrder.Contains(window));
+			}
+		}
+	}
+
 	void TakeSnapshot()
 	{
 		vint w = 0;
