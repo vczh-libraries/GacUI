@@ -92,7 +92,7 @@ Window
 					while (current)
 					{
 						result |= current->topMost;
-						current = current->parent;
+						current = current->GetParent();
 					}
 					return result;
 				}
@@ -114,7 +114,7 @@ Window
 					while (current)
 					{
 						CHECK_ERROR(current != this, ERROR_MESSAGE_PREFIX L"Parent window should not be cyclic.");
-						current = current->parent;
+						current = current->GetParent();
 					}
 
 					if (parent)
@@ -169,17 +169,82 @@ Window
 					if (!windowManager->mainWindow) return;
 					if (!visible) return;
 					if (!enabled) return;
-					if (windowManager->activeWindow != this)
+
+					auto previous = windowManager->activeWindow;
+					if (previous != this)
 					{
-						if (windowManager->activeWindow)
+						if (previous)
 						{
-							windowManager->activeWindow->active = false;
+							previous->active = false;
 						}
 						windowManager->activeWindow = this;
 						active = true;
 					}
-					renderedAsActive = true;
-					// TODO: change renderedAsActive of other windows
+
+					vint previousCount = 0;
+					vint thisCount = 0;
+					Window<T>* commonParent = nullptr;
+					{
+						auto current = previous;
+						while (current)
+						{
+							previousCount++;
+							current = current->GetParent();
+						}
+					}
+					{
+						auto current = this;
+						while (current)
+						{
+							thisCount++;
+							current = current->GetParent();
+						}
+					}
+					{
+						auto previousStep = previous;
+						auto thisStep = this;
+						if (previousCount < thisCount)
+						{
+							while (thisCount-- != previousCount)
+							{
+								thisStep = thisStep->GetParent();
+							}
+						}
+						else if (previousCount > thisCount)
+						{
+							while (previousCount-- != thisCount)
+							{
+								previousStep = previousStep->GetParent();
+							}
+						}
+
+						while (previousStep && thisStep && previousStep != thisStep)
+						{
+							previousStep = previousStep->GetParent();
+							thisStep = thisStep->GetParent();
+						}
+						commonParent = thisStep;
+					}
+					{
+						auto current = previous;
+						while (current != commonParent)
+						{
+							current->renderedAsActive = false;
+							current = current->GetParent();
+						}
+					}
+					{
+						auto current = this;
+						while (current != commonParent)
+						{
+							if (current->enabled)
+							{
+								current->renderedAsActive = true;
+							}
+							current = current->GetParent();
+						}
+					}
+
 					// TODO: bring the window to front
 				}
 

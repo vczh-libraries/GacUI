@@ -73,9 +73,23 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 
 	void CheckWindowStatus()
 	{
+		SortedList<Window*> activeWindows;
+		{
+			auto current = activeWindow;
+			while (current)
+			{
+				if (current->enabled)
+				{
+					activeWindows.Add(current);
+				}
+				current = current->GetParent();
+			}
+		}
+
 		for (auto window : registeredWindows.Values())
 		{
 			TEST_ASSERT(window->active == (window == activeWindow));
+			TEST_ASSERT(window->renderedAsActive == activeWindows.Contains(window));
 			TEST_ASSERT(!window->active || window->enabled);
 			TEST_ASSERT(!window->active || window->renderedAsActive);
 
@@ -92,12 +106,12 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			if (window->visible && topMost)
 			{
 				TEST_ASSERT(topMostedWindowsInOrder.Contains(window));
-				auto current = window->parent;
+				auto current = window;
 				while (current && !current->visible)
 				{
-					current = current->parent;
+					current = current->GetParent();
 				}
-				if (current && current->IsEventuallyTopMost())
+				if (current && current != window && current->IsEventuallyTopMost())
 				{
 					TEST_ASSERT(topMostedWindowsInOrder.IndexOf(window) < topMostedWindowsInOrder.IndexOf(current));
 				}
@@ -110,12 +124,12 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			if (window->visible && !topMost)
 			{
 				TEST_ASSERT(ordinaryWindowsInOrder.Contains(window));
-				auto current = window->parent;
+				auto current = window;
 				while (current && !current->visible)
 				{
-					current = current->parent;
+					current = current->GetParent();
 				}
-				if (current)
+				if (current && current != window)
 				{
 					TEST_ASSERT(!current->IsEventuallyTopMost());
 					TEST_ASSERT(ordinaryWindowsInOrder.IndexOf(window) < ordinaryWindowsInOrder.IndexOf(current));
@@ -179,11 +193,13 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	do{									\
 		TEST_ASSERT(wm.needRefresh);	\
 		wm.needRefresh = false;			\
+		wm.CheckWindowStatus();			\
 		wm.TakeSnapshot();				\
 	}while(false)						\
 
 #define DONT_TAKE_SNAPSHOT				\
 	TEST_ASSERT(!wm.needRefresh);		\
+	wm.CheckWindowStatus();				\
 
 NativeRect Bounds(vint x, vint y, vint w, vint h)
 {
@@ -219,7 +235,7 @@ TEST_FILE
 		Window windowB(L'C', true);
 		wm.RegisterWindow(&windowB);
 
-		mainWindow.SetBounds(Bounds(0, 0, 7, 5));
+		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
 		windowA.SetBounds(Bounds(1, 1, 4, 3));
 		windowB.SetBounds(Bounds(2, 2, 4, 3));
 
@@ -233,13 +249,13 @@ TEST_FILE
 		TAKE_SNAPSHOT;
 
 		mainWindow.Activate();
-		DONT_TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT;
 
 		windowB.Activate();
 		TAKE_SNAPSHOT;
 
 		mainWindow.Activate();
-		DONT_TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT;
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
