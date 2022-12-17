@@ -309,7 +309,31 @@ TEST_FILE
 	{
 	}});
 
+	WM_TEST_CASE(L"Hiding windows")
+	{
+	}});
+
 	WM_TEST_CASE(L"Closing windows")
+	{
+	}});
+
+	WM_TEST_CASE(L"Activing many windows with topmost")
+	{
+	}});
+
+	WM_TEST_CASE(L"Deactivating many windows with topmost")
+	{
+	}});
+
+	WM_TEST_CASE(L"Disabling windows with topmost")
+	{
+	}});
+
+	WM_TEST_CASE(L"Hiding windows with topmost")
+	{
+	}});
+
+	WM_TEST_CASE(L"Closing windows with topmost")
 	{
 	}});
 
