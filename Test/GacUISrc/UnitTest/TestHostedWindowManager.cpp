@@ -338,4 +338,5 @@ TEST_FILE
 	}});
 
 	// TODO: Assert events sent from window manager
+	// TODO: non-normal windows
 }
