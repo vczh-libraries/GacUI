@@ -80,6 +80,15 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			TEST_ASSERT(!window->active || window->enabled);
 			TEST_ASSERT(!window->active || window->renderedAsActive);
 
+			if (window->normal && !window->parent && window != mainWindow)
+			{
+				TEST_ASSERT(window->GetParent() == mainWindow);
+			}
+			else
+			{
+				TEST_ASSERT(window->GetParent() == window->parent);
+			}
+
 			bool topMost = window->IsEventuallyTopMost();
 			if (window->visible && topMost)
 			{
@@ -142,6 +151,10 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 					{
 						writer.WriteChar(L' ');
 					}
+					else if (!window->enabled)
+					{
+						writer.WriteChar((x + y) % 2 == 0 ? '~' : window->id + (L'a' - L'A'));
+					}
 					else if (!window->renderedAsActive)
 					{
 						writer.WriteChar(window->id + (L'a' - L'A'));
@@ -170,6 +183,9 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 		wm.TakeSnapshot();				\
 	}while(false)						\
 
+#define DONT_TAKE_SNAPSHOT				\
+	TEST_ASSERT(!wm.needRefresh);		\
+
 NativeRect Bounds(vint x, vint y, vint w, vint h)
 {
 	return { { {x},{y} },{ {w},{h} } };
@@ -185,9 +201,41 @@ TEST_FILE
 
 		wm.Start(&mainWindow);
 		mainWindow.Show();
-
 		TAKE_SNAPSHOT;
-		wm.TakeSnapshot();
+
+		wm.Stop();
+		wm.UnregisterWindow(&mainWindow);
+	}});
+
+	WM_TEST_CASE(L"Activing windows")
+	{
+		Window mainWindow(L'A', true);
+		Window windowA(L'B', true);
+		Window windowB(L'C', true);
+
+		wm.RegisterWindow(&mainWindow);
+		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
+		windowA.SetBounds(Bounds(1, 1, 4, 2));
+		windowB.SetBounds(Bounds(2, 2, 4, 2));
+
+		wm.Start(&mainWindow);
+		mainWindow.Show();
+		windowA.Show();
+		windowB.Show();
+		TAKE_SNAPSHOT;
+
+		windowA.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		DONT_TAKE_SNAPSHOT;
+
+		windowB.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		DONT_TAKE_SNAPSHOT;
+
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
 	}});
