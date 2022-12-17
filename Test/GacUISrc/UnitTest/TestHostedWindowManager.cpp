@@ -296,4 +296,22 @@ TEST_FILE
 		wm.UnregisterWindow(&windowB);
 		wm.EnsureCleanedUp();
 	}});
+
+	WM_TEST_CASE(L"Activing many windows")
+	{
+	}});
+
+	WM_TEST_CASE(L"Deactivating many windows")
+	{
+	}});
+
+	WM_TEST_CASE(L"Disabling windows")
+	{
+	}});
+
+	WM_TEST_CASE(L"Closing windows")
+	{
+	}});
+
+	// TODO: Assert events sent from window manager
 }
