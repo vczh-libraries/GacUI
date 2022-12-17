@@ -70,7 +70,8 @@ Window
 					}
 				}
 
-				void CollectVisibleSubTree(collections::SortedList<Window<T>*>& windows, bool inTopMostLevel)
+				template<typename TWindows>
+				void CollectVisibleSubTree(TWindows& windows, bool inTopMostLevel)
 				{
 					windows.Add(this);
 					for (auto child : children)
@@ -178,25 +179,43 @@ Window
 				void BringToFront()
 				{
 					bool eventuallyTopMost = IsEventuallyTopMost();
-					collections::SortedList<Window<T>*> windows;
-					CollectVisibleSubTree(windows, eventuallyTopMost);
-
 					auto&& orderedWindows = eventuallyTopMost ? windowManager->topMostedWindowsInOrder : windowManager->ordinaryWindowsInOrder;
-					collections::List<Window<T>*> selected, remainings;
-					for (auto window : orderedWindows)
-					{
-						if (windows.Contains(window))
-						{
-							selected.Add(window);
-						}
-						else
-						{
-							remainings.Add(window);
-						}
-					}
 
-					collections::CopyFrom(orderedWindows, selected);
-					collections::CopyFrom(orderedWindows, remainings);
+					if (orderedWindows.Contains(this))
+					{
+						collections::SortedList<Window<T>*> windows;
+						CollectVisibleSubTree(windows, eventuallyTopMost);
+
+						collections::List<Window<T>*> selected, remainings;
+						for (auto window : orderedWindows)
+						{
+							if (windows.Contains(window))
+							{
+								selected.Add(window);
+							}
+							else
+							{
+								remainings.Add(window);
+							}
+						}
+
+						collections::CopyFrom(orderedWindows, selected);
+						collections::CopyFrom(orderedWindows, remainings, true);
+					}
+					else
+					{
+						collections::List<Window<T>*> windows, remainings;
+						CollectVisibleSubTree(windows, eventuallyTopMost);
+
+						CopyFrom(remainings, orderedWindows);
+						orderedWindows.Clear();
+						for (vint i = windows.Count() - 1; i >= 0; i--)
+						{
+							orderedWindows.Add(windows[i]);
+						}
+						CopyFrom(orderedWindows, remainings, true);
+						windowManager->needRefresh = true;
+					}
 				}
 
 				void Activate()
