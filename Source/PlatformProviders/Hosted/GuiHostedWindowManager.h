@@ -70,6 +70,18 @@ Window
 					}
 				}
 
+				void CollectVisibleSubTree(collections::SortedList<Window<T>*>& windows, bool inTopMostLevel)
+				{
+					windows.Add(this);
+					for (auto child : children)
+					{
+						if (child->visible && (inTopMostLevel || !child->topMost))
+						{
+							child->CollectVisibleSubTree(windows, inTopMostLevel);
+						}
+					}
+				}
+
 			public:
 				Window(T _id, bool _normal) :id(_id), normal(_normal)
 				{
@@ -163,6 +175,30 @@ Window
 					CHECK_FAIL(L"Not Implemented.");
 				}
 
+				void BringToFront()
+				{
+					bool eventuallyTopMost = IsEventuallyTopMost();
+					collections::SortedList<Window<T>*> windows;
+					CollectVisibleSubTree(windows, eventuallyTopMost);
+
+					auto&& orderedWindows = eventuallyTopMost ? windowManager->topMostedWindowsInOrder : windowManager->ordinaryWindowsInOrder;
+					collections::List<Window<T>*> selected, remainings;
+					for (auto window : orderedWindows)
+					{
+						if (windows.Contains(window))
+						{
+							selected.Add(window);
+						}
+						else
+						{
+							remainings.Add(window);
+						}
+					}
+
+					collections::CopyFrom(orderedWindows, selected);
+					collections::CopyFrom(orderedWindows, remainings);
+				}
+
 				void Activate()
 				{
 					if (active) return;
@@ -245,7 +281,7 @@ Window
 						}
 					}
 
-					// TODO: bring the window to front
+					BringToFront();
 				}
 
 				void Inactive()
