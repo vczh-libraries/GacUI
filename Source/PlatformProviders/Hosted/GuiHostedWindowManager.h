@@ -30,9 +30,13 @@ Window
 			template<typename T>
 			struct Window
 			{
+				friend struct WindowManager<T>;
+			protected:
+				WindowManager<T>*							windowManager = nullptr;
+
+			public:
 				const T										id = {};
 				const bool									normal = false;
-				WindowManager<T>*							windowManager = nullptr;
 				Window<T>*									parent = nullptr;
 				collections::List<Window<T>*>				children;
 
@@ -43,19 +47,7 @@ Window
 				bool										active = false;
 				bool										renderedAsActive = false;
 
-				Window(T _id, bool _normal) :id(_id), normal(_normal)
-				{
-				}
-
-				~Window()
-				{
-					for (auto child : children)
-					{
-						child->parent = nullptr;
-					}
-					children.Clear();
-					SetParent(nullptr);
-				}
+			protected:
 
 				void UpdateWindowOrder()
 				{
@@ -76,6 +68,21 @@ Window
 						}
 						windowManager->needRefresh = true;
 					}
+				}
+
+			public:
+				Window(T _id, bool _normal) :id(_id), normal(_normal)
+				{
+				}
+
+				~Window()
+				{
+					for (auto child : children)
+					{
+						child->parent = nullptr;
+					}
+					children.Clear();
+					SetParent(nullptr);
 				}
 
 				bool IsEventuallyTopMost()
