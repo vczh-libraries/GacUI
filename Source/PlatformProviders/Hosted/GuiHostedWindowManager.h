@@ -215,20 +215,6 @@ WindowManager
 				Window<T>*									activeWindow = nullptr;
 				bool										needRefresh = false;
 
-				WindowManager()
-				{
-				}
-
-#pragma warning(push)
-#pragma warning(disable: 4297)
-				~WindowManager()
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::RegisterWindow(Window<T>*)#"
-					CHECK_ERROR(registeredWindows.Count() == 0, ERROR_MESSAGE_PREFIX L"All windows must be unregistered before deleting the window manager.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-#pragma warning(pop)
-
 				void RegisterWindow(Window<T>* window)
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::RegisterWindow(Window<T>*)#"
@@ -274,6 +260,14 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::Stop(Window<T>*)#"
 					CHECK_ERROR(mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has stopped.");
 					mainWindow = nullptr;
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void EnsureCleanedUp()
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::EnsureCleanedUp()#"
+					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"Stop() should be called before deleting the window manager.");
+					CHECK_ERROR(registeredWindows.Count() == 0, ERROR_MESSAGE_PREFIX L"All windows must be unregistered before deleting the window manager.");
 #undef ERROR_MESSAGE_PREFIX
 				}
 

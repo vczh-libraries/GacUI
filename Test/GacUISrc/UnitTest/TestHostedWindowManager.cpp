@@ -38,7 +38,6 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 #pragma warning(disable: 4297)
 	~WindowManager()
 	{
-		TEST_ASSERT(!mainWindow);
 		auto snapshotPath = FilePath(GetTestBaselinePath()) / (unitTestTitle + L".txt");
 #ifdef UPDATE_SNAPSHOT
 		FileStream fileStream(snapshotPath.GetFullPath(), FileStream::WriteOnly);
@@ -206,6 +205,7 @@ TEST_FILE
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
+		wm.EnsureCleanedUp();
 	}});
 
 	WM_TEST_CASE(L"Activing windows")
@@ -219,9 +219,9 @@ TEST_FILE
 		Window windowB(L'C', true);
 		wm.RegisterWindow(&windowB);
 
-		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
-		windowA.SetBounds(Bounds(1, 1, 4, 2));
-		windowB.SetBounds(Bounds(2, 2, 4, 2));
+		mainWindow.SetBounds(Bounds(0, 0, 7, 5));
+		windowA.SetBounds(Bounds(1, 1, 4, 3));
+		windowB.SetBounds(Bounds(2, 2, 4, 3));
 
 		wm.Start(&mainWindow);
 		mainWindow.Show();
@@ -245,5 +245,6 @@ TEST_FILE
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
+		wm.EnsureCleanedUp();
 	}});
 }
