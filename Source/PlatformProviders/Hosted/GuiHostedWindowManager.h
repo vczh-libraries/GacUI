@@ -208,6 +208,20 @@ WindowManager
 				Window<T>*									activeWindow = nullptr;
 				bool										needRefresh = false;
 
+				WindowManager()
+				{
+				}
+
+#pragma warning(push)
+#pragma warning(disable: 4297)
+				~WindowManager()
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::RegisterWindow(Window<T>*)#"
+					CHECK_ERROR(registeredWindows.Count() == 0, ERROR_MESSAGE_PREFIX L"All windows must be unregistered before deleting the window manager.");
+#undef ERROR_MESSAGE_PREFIX
+				}
+#pragma warning(pop)
+
 				void RegisterWindow(Window<T>* window)
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::RegisterWindow(Window<T>*)#"
@@ -217,7 +231,6 @@ WindowManager
 
 					window->windowManager = this;
 					registeredWindows.Add(window->id, window);
-
 #undef ERROR_MESSAGE_PREFIX
 				}
 

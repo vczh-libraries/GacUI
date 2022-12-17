@@ -197,6 +197,7 @@ TEST_FILE
 	{
 		Window mainWindow(L'A', true);
 		wm.RegisterWindow(&mainWindow);
+
 		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
 
 		wm.Start(&mainWindow);
@@ -210,10 +211,14 @@ TEST_FILE
 	WM_TEST_CASE(L"Activing windows")
 	{
 		Window mainWindow(L'A', true);
-		Window windowA(L'B', true);
-		Window windowB(L'C', true);
-
 		wm.RegisterWindow(&mainWindow);
+
+		Window windowA(L'B', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'C', true);
+		wm.RegisterWindow(&windowB);
+
 		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
 		windowA.SetBounds(Bounds(1, 1, 4, 2));
 		windowB.SetBounds(Bounds(2, 2, 4, 2));
@@ -238,5 +243,7 @@ TEST_FILE
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowA);
+		wm.UnregisterWindow(&windowB);
 	}});
 }
