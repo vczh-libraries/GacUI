@@ -117,8 +117,8 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 
 #define TAKE_SNAPSHOT					\
 	do{									\
-		TEST_ASSERT(wm.orderChanged);	\
-		wm.orderChanged = false;		\
+		TEST_ASSERT(wm.needRefresh);	\
+		wm.needRefresh = false;			\
 		wm.TakeSnapshot();				\
 	}while(false)						\
 

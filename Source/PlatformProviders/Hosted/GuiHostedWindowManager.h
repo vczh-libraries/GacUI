@@ -57,6 +57,22 @@ Window
 					SetParent(nullptr);
 				}
 
+				void UpdateWindowOrder()
+				{
+					if (visible)
+					{
+						if (topMost)
+						{
+							windowManager->topMostedWindowsInOrder.Insert(0, this);
+						}
+						else
+						{
+							windowManager->ordinaryWindowsInOrder.Insert(0, this);
+						}
+						windowManager->needRefresh = true;
+					}
+				}
+
 				void SetParent(Window<T>* value)
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetParent(Window<T>*)#"
@@ -98,21 +114,27 @@ Window
 
 				void SetBounds(const NativeRect& value)
 				{
+					if (bounds == value) return;
 					bounds = value;
 				}
 
 				void SetVisible(bool value)
 				{
+					if (visible == value) return;
 					visible = value;
+					UpdateWindowOrder();
 				}
 
 				void SetTopMost(bool value)
 				{
-					CHECK_FAIL(L"Not Implemented.");
+					if (topMost == value) return;
+					topMost = value;
+					UpdateWindowOrder();
 				}
 
 				void SetEnabled(bool value)
 				{
+					if (enabled == value) return;
 					CHECK_FAIL(L"Not Implemented.");
 				}
 
@@ -165,17 +187,18 @@ WindowManager
 
 				Window<T>*									mainWindow = nullptr;
 				Window<T>*									activeWindow = nullptr;
-				bool										orderChanged = false;
+				bool										needRefresh = false;
 
 				void RegisterWindow(Window<T>* window)
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::RegisterWindow(Window<T>*)#"
 					CHECK_ERROR(!window->windowManager, ERROR_MESSAGE_PREFIX L"The window has been registered.");
 					CHECK_ERROR(!registeredWindows.Keys().Contains(window->id), ERROR_MESSAGE_PREFIX L"The window has a duplicated key with an existing window.");
+					CHECK_ERROR(!window->visible, ERROR_MESSAGE_PREFIX L"RegisterWindow must be called right after a window is created.");
+
 					window->windowManager = this;
 					registeredWindows.Add(window->id, window);
-					ordinaryWindowsInOrder.Insert(0, window);
-					orderChanged = true;
+
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -184,15 +207,17 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::UnregisterWindow(Window<T>*)#"
 					CHECK_ERROR(window->windowManager == this, ERROR_MESSAGE_PREFIX L"The window has not been registered.");
 					CHECK_ERROR(window != mainWindow, ERROR_MESSAGE_PREFIX L"The main window cannot be unregistered before stopping the window manager.");
+
 					if (activeWindow == window)
 					{
 						window->Inactive();
 					}
+					registeredWindows.Remove(window->id);
 					window->windowManager = nullptr;
+
 					topMostedWindowsInOrder.Remove(window);
 					ordinaryWindowsInOrder.Remove(window);
-					registeredWindows.Remove(window->id);
-					orderChanged = true;
+					needRefresh = true;
 #undef ERROR_MESSAGE_PREFIX
 				}
 
