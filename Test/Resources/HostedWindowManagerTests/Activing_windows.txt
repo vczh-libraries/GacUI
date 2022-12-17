@@ -13,24 +13,24 @@
 [AAAAAAA]
 
 [AAAAAAA]
-[AAAAAAA]
-[AAAAAAA]
-[AAAAAAA]
-[AAAAAAA]
-[AAAAAAA]
-
-[AAAAAAA]
-[AAAAAAA]
-[AACCCCA]
-[AACCCCA]
-[AACCCCA]
+[AbbbbAA]
+[AbbbbcA]
+[AbbbbcA]
+[AAccccA]
 [AAAAAAA]
 
 [AAAAAAA]
+[AbbbbAA]
+[AbCCCCA]
+[AbCCCCA]
+[AACCCCA]
 [AAAAAAA]
+
 [AAAAAAA]
-[AAAAAAA]
-[AAAAAAA]
+[AbbbbAA]
+[AbccccA]
+[AbccccA]
+[AAccccA]
 [AAAAAAA]
 
 END

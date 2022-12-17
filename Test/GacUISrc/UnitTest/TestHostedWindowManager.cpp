@@ -82,7 +82,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 				{
 					activeWindows.Add(current);
 				}
-				current = current->GetParent();
+				current = current->parent;
 			}
 		}
 
@@ -92,15 +92,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			TEST_ASSERT(window->renderedAsActive == activeWindows.Contains(window));
 			TEST_ASSERT(!window->active || window->enabled);
 			TEST_ASSERT(!window->active || window->renderedAsActive);
-
-			if (window->normal && !window->parent && window != mainWindow)
-			{
-				TEST_ASSERT(window->GetParent() == mainWindow);
-			}
-			else
-			{
-				TEST_ASSERT(window->GetParent() == window->parent);
-			}
+			TEST_ASSERT((window->parent != nullptr) == (window != mainWindow));
 
 			bool topMost = window->IsEventuallyTopMost();
 			if (window->visible && topMost)
@@ -109,7 +101,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 				auto current = window;
 				while (current && !current->visible)
 				{
-					current = current->GetParent();
+					current = current->parent;
 				}
 				if (current && current != window && current->IsEventuallyTopMost())
 				{
@@ -127,7 +119,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 				auto current = window;
 				while (current && !current->visible)
 				{
-					current = current->GetParent();
+					current = current->parent;
 				}
 				if (current && current != window)
 				{
@@ -240,6 +232,8 @@ TEST_FILE
 		windowB.SetBounds(Bounds(2, 2, 4, 3));
 
 		wm.Start(&mainWindow);
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &mainWindow);
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();

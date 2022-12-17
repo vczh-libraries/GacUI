@@ -51,6 +51,8 @@ Window
 
 				void UpdateWindowOrder()
 				{
+					if (!windowManager) return;
+
 					if (windowManager->ordinaryWindowsInOrder.Remove(this) || windowManager->topMostedWindowsInOrder.Remove(this))
 					{
 						windowManager->needRefresh = true;
@@ -105,7 +107,7 @@ Window
 					while (current)
 					{
 						result |= current->topMost;
-						current = current->GetParent();
+						current = current->parent;
 					}
 					return result;
 				}
@@ -115,7 +117,7 @@ Window
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetParent(Window<T>*)#"
 					if (parent == value) return;
 					CHECK_ERROR(
-						windowManager->mainWindow != this || !value,
+						!windowManager || windowManager->mainWindow != this || !value,
 						ERROR_MESSAGE_PREFIX L"A main window should not have a parent window."
 						);
 					CHECK_ERROR(
@@ -123,11 +125,19 @@ Window
 						ERROR_MESSAGE_PREFIX L"Window's parent window should not be a popup menu."
 						);
 
+					if (windowManager)
+					{
+						if (normal && !value)
+						{
+							value = windowManager->mainWindow;
+						}
+					}
+
 					auto current = value;
 					while (current)
 					{
 						CHECK_ERROR(current != this, ERROR_MESSAGE_PREFIX L"Parent window should not be cyclic.");
-						current = current->GetParent();
+						current = current->parent;
 					}
 
 					if (parent)
@@ -141,13 +151,6 @@ Window
 					}
 					UpdateWindowOrder();
 #undef ERROR_MESSAGE_PREFIX
-				}
-
-				Window<T>* GetParent()
-				{
-					return !parent && normal && this != windowManager->mainWindow
-						? windowManager->mainWindow
-						: parent;
 				}
 
 				void SetBounds(const NativeRect& value)
@@ -248,7 +251,7 @@ Window
 						while (current)
 						{
 							previousCount++;
-							current = current->GetParent();
+							current = current->parent;
 						}
 					}
 					{
@@ -256,7 +259,7 @@ Window
 						while (current)
 						{
 							thisCount++;
-							current = current->GetParent();
+							current = current->parent;
 						}
 					}
 					{
@@ -266,21 +269,21 @@ Window
 						{
 							while (thisCount-- != previousCount)
 							{
-								thisStep = thisStep->GetParent();
+								thisStep = thisStep->parent;
 							}
 						}
 						else if (previousCount > thisCount)
 						{
 							while (previousCount-- != thisCount)
 							{
-								previousStep = previousStep->GetParent();
+								previousStep = previousStep->parent;
 							}
 						}
 
 						while (previousStep && thisStep && previousStep != thisStep)
 						{
-							previousStep = previousStep->GetParent();
-							thisStep = thisStep->GetParent();
+							previousStep = previousStep->parent;
+							thisStep = thisStep->parent;
 						}
 						commonParent = thisStep;
 					}
@@ -289,7 +292,7 @@ Window
 						while (current != commonParent)
 						{
 							current->renderedAsActive = false;
-							current = current->GetParent();
+							current = current->parent;
 						}
 					}
 					{
@@ -300,8 +303,13 @@ Window
 							{
 								current->renderedAsActive = true;
 							}
-							current = current->GetParent();
+							current = current->parent;
 						}
+					}
+
+					if (commonParent != previous || commonParent != this)
+					{
+						windowManager->needRefresh = true;
 					}
 
 					BringToFront();
@@ -376,6 +384,15 @@ WindowManager
 					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has started.");
 					CHECK_ERROR(!window->parent, ERROR_MESSAGE_PREFIX L"A main window should not have a parent window.");
 					mainWindow = window;
+
+					for (auto normalWindow : registeredWindows.Values())
+					{
+						if (normalWindow->normal && !normalWindow->parent && normalWindow != mainWindow)
+						{
+							normalWindow->parent = mainWindow;
+							mainWindow->children.Add(normalWindow);
+						}
+					}
 #undef ERROR_MESSAGE_PREFIX
 				}
 
