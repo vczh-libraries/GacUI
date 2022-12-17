@@ -318,10 +318,19 @@ Window
 				void Inactive()
 				{
 					if (!windowManager->mainWindow) return;
+					if (!active) return;
 					active = false;
+					renderedAsActive = false;
 					if (windowManager->activeWindow == this)
 					{
-						windowManager->activeWindow = nullptr;
+						auto current = parent;
+						while (current && !current->enabled)
+						{
+							current = current->parent;
+						}
+						if (current) current->active = true;
+						windowManager->activeWindow = current;
+						windowManager->needRefresh = true;
 					}
 				}
 
