@@ -1,0 +1,8 @@
+﻿[AAAAAAA]
+[AbbbbAA]
+[AbCCCCA]
+[AbCCCCA]
+[AACCCCA]
+[AAAAAAA]
+
+END

@@ -257,4 +257,43 @@ TEST_FILE
 		wm.UnregisterWindow(&windowB);
 		wm.EnsureCleanedUp();
 	}});
+
+	WM_TEST_CASE(L"Deactivating windows")
+	{
+		Window mainWindow(L'A', true);
+		wm.RegisterWindow(&mainWindow);
+
+		Window windowA(L'B', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'C', true);
+		wm.RegisterWindow(&windowB);
+
+		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
+		windowA.SetBounds(Bounds(1, 1, 4, 3));
+		windowB.SetBounds(Bounds(2, 2, 4, 3));
+
+		wm.Start(&mainWindow);
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &mainWindow);
+		mainWindow.Show();
+		windowA.Show();
+		windowB.Show();
+		TAKE_SNAPSHOT;
+
+		windowA.Inactive();
+		DONT_TAKE_SNAPSHOT;
+
+		mainWindow.Inactive();
+		DONT_TAKE_SNAPSHOT
+
+		windowB.Inactive();
+		TAKE_SNAPSHOT;
+
+		wm.Stop();
+		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowA);
+		wm.UnregisterWindow(&windowB);
+		wm.EnsureCleanedUp();
+	}});
 }

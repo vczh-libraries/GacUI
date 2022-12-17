@@ -94,7 +94,7 @@ Window
 				{
 					for (auto child : children)
 					{
-						child->parent = nullptr;
+						child->SetParent(parent);
 					}
 					children.Clear();
 					SetParent(nullptr);
