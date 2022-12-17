@@ -43,11 +43,50 @@ Window
 				bool										active = false;
 				bool										renderedAsActive = false;
 
-				Window(T _id, bool _normal) :id(_id), normal(_normal) {}
+				Window(T _id, bool _normal) :id(_id), normal(_normal)
+				{
+				}
+
+				~Window()
+				{
+					for (auto child : children)
+					{
+						child->parent = nullptr;
+					}
+					children.Clear();
+					SetParent(nullptr);
+				}
 
 				void SetParent(Window<T>* value)
 				{
-					CHECK_FAIL(L"Not Implemented.");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetParent(Window<T>*)#"
+					if (parent == value) return;
+					CHECK_ERROR(
+						windowManager->mainWindow != this || !value,
+						ERROR_MESSAGE_PREFIX L"A main window should not have a parent window."
+						);
+					CHECK_ERROR(
+						!normal || ! value || value->normal,
+						ERROR_MESSAGE_PREFIX L"Window's parent window should not be a popup menu."
+						);
+
+					auto current = value;
+					while (current)
+					{
+						CHECK_ERROR(current != this, ERROR_MESSAGE_PREFIX L"Parent window should not be cyclic.");
+						current = current->parent;
+					}
+
+					if (parent)
+					{
+						parent->children.Remove(this);
+					}
+					parent = value;
+					if (parent)
+					{
+						parent->children.Add(this);
+					}
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				Window<T>* GetParent()
@@ -126,6 +165,7 @@ WindowManager
 
 				Window<T>*									mainWindow = nullptr;
 				Window<T>*									activeWindow = nullptr;
+				bool										orderChanged = false;
 
 				void RegisterWindow(Window<T>* window)
 				{
@@ -135,6 +175,7 @@ WindowManager
 					window->windowManager = this;
 					registeredWindows.Add(window->id, window);
 					ordinaryWindowsInOrder.Insert(0, window);
+					orderChanged = true;
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -151,6 +192,7 @@ WindowManager
 					topMostedWindowsInOrder.Remove(window);
 					ordinaryWindowsInOrder.Remove(window);
 					registeredWindows.Remove(window->id);
+					orderChanged = true;
 #undef ERROR_MESSAGE_PREFIX
 				}
 

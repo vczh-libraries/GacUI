@@ -110,7 +110,17 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	}
 };
 
-#define WM_TEST_CASE(NAME) TEST_CASE(NAME){ WindowManager wm(NAME); 
+#define WM_TEST_CASE(NAME)				\
+	TEST_CASE(NAME)						\
+	{									\
+		WindowManager wm(NAME);			\
+
+#define TAKE_SNAPSHOT					\
+	do{									\
+		TEST_ASSERT(wm.orderChanged);	\
+		wm.orderChanged = false;		\
+		wm.TakeSnapshot();				\
+	}while(false)						\
 
 NativeRect Bounds(vint x, vint y, vint w, vint h)
 {
@@ -128,6 +138,7 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		mainWindow.Show();
 
+		TAKE_SNAPSHOT;
 		wm.TakeSnapshot();
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
