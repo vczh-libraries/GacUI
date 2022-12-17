@@ -199,8 +199,12 @@ Window
 							}
 						}
 
-						collections::CopyFrom(orderedWindows, selected);
-						collections::CopyFrom(orderedWindows, remainings, true);
+						if (collections::CompareEnumerable(selected, From(orderedWindows).Take(selected.Count())) != 0)
+						{
+							collections::CopyFrom(orderedWindows, selected);
+							collections::CopyFrom(orderedWindows, remainings, true);
+							windowManager->needRefresh = true;
+						}
 					}
 					else
 					{
