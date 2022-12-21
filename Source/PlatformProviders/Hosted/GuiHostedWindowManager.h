@@ -62,6 +62,85 @@ Window
 					}
 				}
 
+				void EnsureChildrenMovedInFrontOfThis()
+				{
+				}
+
+				bool EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline)
+				{
+					vint maxOrder = windowsInOrder.Count() - 1;
+					if (baseline)
+					{
+						maxOrder = windowsInOrder.IndexOf(baseline);
+					}
+					vint order = windowsInOrder.IndexOf(this);
+
+					if (order == -1)
+					{
+						windowsInOrder.Insert(maxOrder, this);
+						EnsureChildrenMovedInFrontOfThis();
+						return true;
+					}
+					else if (order > maxOrder)
+					{
+						windowsInOrder.RemoveAt(order);
+						windowsInOrder.Insert(maxOrder, this);
+						EnsureChildrenMovedInFrontOfThis();
+						return true;
+					}
+
+					return false;
+				}
+
+				void FixWindowInOrder()
+				{
+					if (!visible)
+					{
+						if (windowManager->ordinaryWindowsInOrder.Remove(this) || windowManager->topMostedWindowsInOrder.Remove(this))
+						{
+							windowManager->needRefresh = true;
+						}
+					}
+					else
+					{
+						auto visibleParent = parent;
+						while (visibleParent && !visibleParent->visible)
+						{
+							visibleParent = visibleParent->parent;
+						}
+
+						if (IsEventuallyTopMost())
+						{
+							if (windowManager->ordinaryWindowsInOrder.Remove(this))
+							{
+								windowManager->needRefresh = true;
+							}
+
+							if (visibleParent && !visibleParent->IsEventuallyTopMost())
+							{
+								visibleParent = nullptr;
+							}
+
+							if (EnsureMovedInFrontOf(windowManager->topMostedWindowsInOrder, visibleParent))
+							{
+								windowManager->needRefresh = true;
+							}
+						}
+						else
+						{
+							if (windowManager->topMostedWindowsInOrder.Remove(this))
+							{
+								windowManager->needRefresh;
+							}
+
+							if (EnsureMovedInFrontOf(windowManager->ordinaryWindowsInOrder, visibleParent))
+							{
+								windowManager->needRefresh = true;
+							}
+						}
+					}
+				}
+
 			public:
 				Window(T _id, bool _normal) :id(_id), normal(_normal)
 				{
