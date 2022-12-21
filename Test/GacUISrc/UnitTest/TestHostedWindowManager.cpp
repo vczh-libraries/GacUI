@@ -471,22 +471,31 @@ TEST_FILE
 		Window windowB(L'B', true);
 		wm.RegisterWindow(&windowB);
 
-		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
+		Window windowC(L'C', true);
+		wm.RegisterWindow(&windowC);
+
+		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
 		windowA.SetBounds(Bounds(1, 1, 4, 3));
 		windowB.SetBounds(Bounds(2, 2, 4, 3));
+		windowC.SetBounds(Bounds(3, 3, 4, 3));
+
+		windowC.SetParent(&windowB);
 
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
+		TEST_ASSERT(windowC.parent == &windowB);
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
+		windowC.Show();
 		TAKE_SNAPSHOT_INITIAL();
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
+		wm.UnregisterWindow(&windowC);
 		wm.EnsureCleanedUp();
 	}});
 
