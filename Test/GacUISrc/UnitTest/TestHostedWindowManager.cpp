@@ -181,17 +181,21 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	{									\
 		WindowManager wm(NAME);			\
 
-#define TAKE_SNAPSHOT					\
+#define TAKE_SNAPSHOT(...)				\
 	do{									\
+		__VA_ARGS__;					\
 		TEST_ASSERT(wm.needRefresh);	\
 		wm.needRefresh = false;			\
 		wm.CheckWindowStatus();			\
 		wm.TakeSnapshot();				\
 	}while(false)						\
 
-#define DONT_TAKE_SNAPSHOT				\
-	TEST_ASSERT(!wm.needRefresh);		\
-	wm.CheckWindowStatus();				\
+#define DONT_TAKE_SNAPSHOT(...)			\
+	do {								\
+		__VA_ARGS__;					\
+		TEST_ASSERT(!wm.needRefresh);	\
+		wm.CheckWindowStatus();			\
+	}while(false)						\
 
 NativeRect Bounds(vint x, vint y, vint w, vint h)
 {
@@ -209,7 +213,7 @@ TEST_FILE
 
 		wm.Start(&mainWindow);
 		mainWindow.Show();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT();
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -237,19 +241,12 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT();
 
-		windowA.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
-
-		windowB.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -279,19 +276,12 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT();
 
-		windowA.Inactivate();
-		DONT_TAKE_SNAPSHOT;
-
-		mainWindow.Inactivate();
-		DONT_TAKE_SNAPSHOT
-
-		windowB.Inactivate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Inactivate();
-		TAKE_SNAPSHOT;
+		DONT_TAKE_SNAPSHOT(windowA.Inactivate());
+		DONT_TAKE_SNAPSHOT(mainWindow.Inactivate());
+		TAKE_SNAPSHOT(windowB.Inactivate());
+		TAKE_SNAPSHOT(mainWindow.Inactivate());
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -351,31 +341,16 @@ TEST_FILE
 		windowI.Show();
 		windowJ.Show();
 		windowK.Show();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT();
 
-		windowA.Activate();
-		TAKE_SNAPSHOT;
-
-		windowB.Activate();
-		TAKE_SNAPSHOT;
-
-		windowC.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
-
-		windowI.Activate();
-		TAKE_SNAPSHOT;
-
-		windowJ.Activate();
-		TAKE_SNAPSHOT;
-
-		windowK.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
+		TAKE_SNAPSHOT(windowI.Activate());
+		TAKE_SNAPSHOT(windowJ.Activate());
+		TAKE_SNAPSHOT(windowK.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -439,37 +414,18 @@ TEST_FILE
 		windowI.Show();
 		windowJ.Show();
 		windowK.Show();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT();
 
-		windowK.Inactivate();
-		TAKE_SNAPSHOT;
-
-		windowI.Inactivate();
-		TAKE_SNAPSHOT;
-
-		windowJ.Activate();
-		TAKE_SNAPSHOT;
-
-		windowJ.Inactivate();
-		TAKE_SNAPSHOT;
-
-		windowI.Inactivate();
-		TAKE_SNAPSHOT;
-
-		windowC.Activate();
-		TAKE_SNAPSHOT;
-
-		windowC.Inactivate();
-		TAKE_SNAPSHOT;
-
-		windowB.Inactivate();
-		TAKE_SNAPSHOT;
-
-		windowA.Inactivate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Inactivate();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT(windowK.Inactivate());
+		TAKE_SNAPSHOT(windowI.Inactivate());
+		TAKE_SNAPSHOT(windowJ.Activate());
+		TAKE_SNAPSHOT(windowJ.Inactivate());
+		TAKE_SNAPSHOT(windowI.Inactivate());
+		TAKE_SNAPSHOT(windowC.Activate());
+		TAKE_SNAPSHOT(windowC.Inactivate());
+		TAKE_SNAPSHOT(windowB.Inactivate());
+		TAKE_SNAPSHOT(windowA.Inactivate());
+		TAKE_SNAPSHOT(mainWindow.Inactivate());
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -515,7 +471,7 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT();
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -545,37 +501,18 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT();
 
-		windowA.SetTopMost(true);
-		TAKE_SNAPSHOT;
-
-		windowA.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
-
-		windowB.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
-
-		windowA.SetTopMost(false);
-		TAKE_SNAPSHOT;
-
-		windowA.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
-
-		windowB.Activate();
-		TAKE_SNAPSHOT;
-
-		mainWindow.Activate();
-		TAKE_SNAPSHOT;
+		TAKE_SNAPSHOT(windowA.SetTopMost(true));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
+		TAKE_SNAPSHOT(windowA.SetTopMost(false));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(mainWindow.Activate());
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
