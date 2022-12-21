@@ -12,4 +12,11 @@
 [XXbbbbX]
 [XXXXXXX]
 
+[xxxxxxx]
+[xaaaaxx]
+[xabbbbx]
+[xabbbbx]
+[xxbbbbx]
+[xxxxxxx]
+
 END
