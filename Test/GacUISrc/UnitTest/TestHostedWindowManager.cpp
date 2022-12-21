@@ -299,6 +299,66 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Activing many windows")
 	{
+		Window mainWindow(L'X', true);
+		wm.RegisterWindow(&mainWindow);
+
+		Window windowA(L'A', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'B', true);
+		wm.RegisterWindow(&windowB);
+
+		Window windowC(L'C', true);
+		wm.RegisterWindow(&windowC);
+
+		Window windowI(L'I', true);
+		wm.RegisterWindow(&windowI);
+
+		Window windowJ(L'J', true);
+		wm.RegisterWindow(&windowJ);
+
+		Window windowK(L'K', true);
+		wm.RegisterWindow(&windowK);
+
+		mainWindow.SetBounds(Bounds(0, 0, 12, 10));
+		windowA.SetBounds(Bounds(1, 3, 6, 4));
+		windowB.SetBounds(Bounds(2, 4, 6, 4));
+		windowC.SetBounds(Bounds(3, 5, 6, 4));
+		windowI.SetBounds(Bounds(3, 1, 6, 4));
+		windowJ.SetBounds(Bounds(4, 2, 6, 4));
+		windowK.SetBounds(Bounds(5, 3, 6, 4));
+
+		windowB.SetParent(&windowA);
+		windowC.SetParent(&windowB);
+		windowI.SetParent(&mainWindow);
+		windowJ.SetParent(&windowI);
+		windowK.SetParent(&windowI);
+
+		wm.Start(&mainWindow);
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &windowA);
+		TEST_ASSERT(windowC.parent == &windowB);
+		TEST_ASSERT(windowI.parent == &mainWindow);
+		TEST_ASSERT(windowJ.parent == &windowI);
+		TEST_ASSERT(windowK.parent == &windowI);
+		mainWindow.Show();
+		windowA.Show();
+		windowB.Show();
+		windowC.Show();
+		windowI.Show();
+		windowJ.Show();
+		windowK.Show();
+		TAKE_SNAPSHOT;
+
+		wm.Stop();
+		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowA);
+		wm.UnregisterWindow(&windowB);
+		wm.UnregisterWindow(&windowC);
+		wm.UnregisterWindow(&windowI);
+		wm.UnregisterWindow(&windowJ);
+		wm.UnregisterWindow(&windowK);
+		wm.EnsureCleanedUp();
 	}});
 
 	WM_TEST_CASE(L"Deactivating many windows")
