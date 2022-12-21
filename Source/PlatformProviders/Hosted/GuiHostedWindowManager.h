@@ -50,14 +50,14 @@ Window
 			protected:
 
 				template<typename TWindows>
-				void CollectVisibleSubTree(TWindows& windows, bool inTopMostLevel)
+				void CollectVisibleSubTreeInSamePriority(TWindows& windows, bool inTopMostLevel)
 				{
 					windows.Add(this);
 					for (auto child : children)
 					{
 						if (child->visible && (inTopMostLevel || !child->topMost))
 						{
-							child->CollectVisibleSubTree(windows, inTopMostLevel);
+							child->CollectVisibleSubTreeInSamePriority(windows, inTopMostLevel);
 						}
 					}
 				}
@@ -68,12 +68,21 @@ Window
 
 				bool EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline)
 				{
-					vint maxOrder = windowsInOrder.Count() - 1;
+					vint maxOrder = -1;
+					vint order = windowsInOrder.IndexOf(this);
+
 					if (baseline)
 					{
 						maxOrder = windowsInOrder.IndexOf(baseline);
 					}
-					vint order = windowsInOrder.IndexOf(this);
+					else if (order == -1)
+					{
+						maxOrder = windowsInOrder.Count();
+					}
+					else
+					{
+						maxOrder = windowsInOrder.Count() - 1;
+					}
 
 					if (order == -1)
 					{
@@ -148,12 +157,15 @@ Window
 
 				~Window()
 				{
-					for (auto child : children)
+					if (windowManager)
 					{
-						child->SetParent(parent);
+						for (auto child : children)
+						{
+							child->SetParent(parent);
+						}
+						children.Clear();
+						SetParent(nullptr);
 					}
-					children.Clear();
-					SetParent(nullptr);
 				}
 
 				bool IsEventuallyTopMost()
@@ -168,7 +180,7 @@ Window
 					return result;
 				}
 
-#define ENSURE_WINDOW_MANAGER CHECK_ERROR(!windowManager, ERROR_MESSAGE_PREFIX L"This operation can only be called between window manager's RegisterWindow and Stop.")
+#define ENSURE_WINDOW_MANAGER CHECK_ERROR(windowManager, ERROR_MESSAGE_PREFIX L"This operation can only be called between window manager's RegisterWindow and Stop.")
 
 				void SetParent(Window<T>* value)
 				{
@@ -217,6 +229,7 @@ Window
 
 					if (bounds == value) return;
 					bounds = value;
+					windowManager->needRefresh = true;
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -263,7 +276,7 @@ Window
 					if (orderedWindows.Contains(this))
 					{
 						collections::SortedList<Window<T>*> windows;
-						CollectVisibleSubTree(windows, eventuallyTopMost);
+						CollectVisibleSubTreeInSamePriority(windows, eventuallyTopMost);
 
 						collections::List<Window<T>*> selected, remainings;
 						for (auto window : orderedWindows)
@@ -288,7 +301,7 @@ Window
 					else
 					{
 						collections::List<Window<T>*> windows, remainings;
-						CollectVisibleSubTree(windows, eventuallyTopMost);
+						CollectVisibleSubTreeInSamePriority(windows, eventuallyTopMost);
 
 						CopyFrom(remainings, orderedWindows);
 						orderedWindows.Clear();
@@ -496,6 +509,15 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::Stop(Window<T>*)#"
 					CHECK_ERROR(mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has stopped.");
 					mainWindow = nullptr;
+					activeWindow = nullptr;
+					ordinaryWindowsInOrder.Clear();
+					topMostedWindowsInOrder.Clear();
+
+					for (auto window : registeredWindows.Values())
+					{
+						window->parent = nullptr;
+						window->children.Clear();
+					}
 #undef ERROR_MESSAGE_PREFIX
 				}
 
