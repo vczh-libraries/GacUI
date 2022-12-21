@@ -62,11 +62,28 @@ Window
 					}
 				}
 
-				void EnsureChildrenMovedInFrontOfThis(bool isEventuallyTopMost)
+				void EnsureChildrenMovedInFrontOfThis(bool eventuallyTopMost)
 				{
+					auto&& orderedWindows = eventuallyTopMost ? windowManager->topMostedWindowsInOrder : windowManager->ordinaryWindowsInOrder;
+					vint order = orderedWindows.IndexOf(this);
+
+					for (auto child : children)
+					{
+						if (child->visible)
+						{
+							vint childOrder = orderedWindows.IndexOf(child);
+							if (childOrder == -1 || childOrder > order)
+							{
+								windowManager->ordinaryWindowsInOrder.Remove(child);
+								windowManager->topMostedWindowsInOrder.Remove(child);
+								orderedWindows.Insert(order, child);
+								child->EnsureChildrenMovedInFrontOfThis(eventuallyTopMost || child->topMost);
+							}
+						}
+					}
 				}
 
-				bool EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline, bool wasEventuallyTopMost, bool isEventuallyTopMost)
+				bool EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline, bool wasEventuallyTopMost, bool eventuallyTopMost)
 				{
 					vint maxOrder = -1;
 					vint order = windowsInOrder.IndexOf(this);
@@ -91,14 +108,14 @@ Window
 					if (order == -1)
 					{
 						windowsInOrder.Insert(maxOrder, this);
-						EnsureChildrenMovedInFrontOfThis(isEventuallyTopMost);
+						EnsureChildrenMovedInFrontOfThis(eventuallyTopMost);
 						return true;
 					}
 					else if (order > maxOrder)
 					{
 						windowsInOrder.RemoveAt(order);
 						windowsInOrder.Insert(maxOrder, this);
-						EnsureChildrenMovedInFrontOfThis(isEventuallyTopMost);
+						EnsureChildrenMovedInFrontOfThis(eventuallyTopMost);
 						return true;
 					}
 
