@@ -49,29 +49,6 @@ Window
 
 			protected:
 
-				void UpdateWindowOrder()
-				{
-					if (!windowManager) return;
-
-					if (windowManager->ordinaryWindowsInOrder.Remove(this) || windowManager->topMostedWindowsInOrder.Remove(this))
-					{
-						windowManager->needRefresh = true;
-					}
-
-					if (visible)
-					{
-						if (IsEventuallyTopMost())
-						{
-							windowManager->topMostedWindowsInOrder.Insert(0, this);
-						}
-						else
-						{
-							windowManager->ordinaryWindowsInOrder.Insert(0, this);
-						}
-						windowManager->needRefresh = true;
-					}
-				}
-
 				template<typename TWindows>
 				void CollectVisibleSubTree(TWindows& windows, bool inTopMostLevel)
 				{
@@ -112,9 +89,13 @@ Window
 					return result;
 				}
 
+#define ENSURE_WINDOW_MANAGER CHECK_ERROR(!windowManager, ERROR_MESSAGE_PREFIX L"This operation can only be called between window manager's RegisterWindow and Stop.")
+
 				void SetParent(Window<T>* value)
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetParent(Window<T>*)#"
+					ENSURE_WINDOW_MANAGER;
+
 					if (parent == value) return;
 					CHECK_ERROR(
 						!windowManager || windowManager->mainWindow != this || !value,
@@ -125,12 +106,9 @@ Window
 						ERROR_MESSAGE_PREFIX L"Window's parent window should not be a popup menu."
 						);
 
-					if (windowManager)
+					if (normal && !value)
 					{
-						if (normal && !value)
-						{
-							value = windowManager->mainWindow;
-						}
+						value = windowManager->mainWindow;
 					}
 
 					auto current = value;
@@ -149,38 +127,57 @@ Window
 					{
 						parent->children.Add(this);
 					}
-					UpdateWindowOrder();
+					FixWindowInOrder();
 #undef ERROR_MESSAGE_PREFIX
 				}
 
 				void SetBounds(const NativeRect& value)
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetBounds(const NativeRect&)#"
+					ENSURE_WINDOW_MANAGER;
+
 					if (bounds == value) return;
 					bounds = value;
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				void SetVisible(bool value)
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetVisible(bool)#"
+					ENSURE_WINDOW_MANAGER;
+
 					if (visible == value) return;
 					visible = value;
-					UpdateWindowOrder();
+					FixWindowInOrder();
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				void SetTopMost(bool value)
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetTopMost(bool)#"
+					ENSURE_WINDOW_MANAGER;
+
 					if (topMost == value) return;
 					topMost = value;
-					UpdateWindowOrder();
+					FixWindowInOrder();
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				void SetEnabled(bool value)
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetEnabled(bool)#"
+					ENSURE_WINDOW_MANAGER;
+
 					if (enabled == value) return;
 					CHECK_FAIL(L"Not Implemented.");
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				void BringToFront()
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::BringToFront()#"
+					ENSURE_WINDOW_MANAGER;
+
 					bool eventuallyTopMost = IsEventuallyTopMost();
 					auto&& orderedWindows = eventuallyTopMost ? windowManager->topMostedWindowsInOrder : windowManager->ordinaryWindowsInOrder;
 
@@ -223,10 +220,14 @@ Window
 						CopyFrom(orderedWindows, remainings, true);
 						windowManager->needRefresh = true;
 					}
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				void Activate()
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::Activate()#"
+					ENSURE_WINDOW_MANAGER;
+
 					if (active) return;
 					if (!windowManager->mainWindow) return;
 					if (!visible) return;
@@ -313,10 +314,14 @@ Window
 					}
 
 					BringToFront();
+#undef ERROR_MESSAGE_PREFIX
 				}
 
-				void Inactive()
+				void Inactivate()
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::Inactivate()#"
+					ENSURE_WINDOW_MANAGER;
+
 					if (!windowManager->mainWindow) return;
 					if (!active) return;
 					active = false;
@@ -332,6 +337,7 @@ Window
 						windowManager->activeWindow = current;
 						windowManager->needRefresh = true;
 					}
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				void Show()
@@ -339,6 +345,7 @@ Window
 					SetVisible(true);
 					Activate();
 				}
+#undef ENSURE_WINDOW_MANAGER
 			};
 
 /***********************************************************************
@@ -376,7 +383,7 @@ WindowManager
 
 					if (activeWindow == window)
 					{
-						window->Inactive();
+						window->Inactivate();
 					}
 					registeredWindows.Remove(window->id);
 					window->windowManager = nullptr;

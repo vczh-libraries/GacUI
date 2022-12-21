@@ -281,16 +281,16 @@ TEST_FILE
 		windowB.Show();
 		TAKE_SNAPSHOT;
 
-		windowA.Inactive();
+		windowA.Inactivate();
 		DONT_TAKE_SNAPSHOT;
 
-		mainWindow.Inactive();
+		mainWindow.Inactivate();
 		DONT_TAKE_SNAPSHOT
 
-		windowB.Inactive();
+		windowB.Inactivate();
 		TAKE_SNAPSHOT;
 
-		mainWindow.Inactive();
+		mainWindow.Inactivate();
 		TAKE_SNAPSHOT;
 
 		wm.Stop();
@@ -441,34 +441,34 @@ TEST_FILE
 		windowK.Show();
 		TAKE_SNAPSHOT;
 
-		windowK.Inactive();
+		windowK.Inactivate();
 		TAKE_SNAPSHOT;
 
-		windowI.Inactive();
+		windowI.Inactivate();
 		TAKE_SNAPSHOT;
 
 		windowJ.Activate();
 		TAKE_SNAPSHOT;
 
-		windowJ.Inactive();
+		windowJ.Inactivate();
 		TAKE_SNAPSHOT;
 
-		windowI.Inactive();
+		windowI.Inactivate();
 		TAKE_SNAPSHOT;
 
 		windowC.Activate();
 		TAKE_SNAPSHOT;
 
-		windowC.Inactive();
+		windowC.Inactivate();
 		TAKE_SNAPSHOT;
 
-		windowB.Inactive();
+		windowB.Inactivate();
 		TAKE_SNAPSHOT;
 
-		windowA.Inactive();
+		windowA.Inactivate();
 		TAKE_SNAPSHOT;
 
-		mainWindow.Inactive();
+		mainWindow.Inactivate();
 		TAKE_SNAPSHOT;
 
 		wm.Stop();
