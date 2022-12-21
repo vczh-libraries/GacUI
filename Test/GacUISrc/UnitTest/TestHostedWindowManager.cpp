@@ -350,6 +350,30 @@ TEST_FILE
 		windowK.Show();
 		TAKE_SNAPSHOT;
 
+		windowA.Activate();
+		TAKE_SNAPSHOT;
+
+		windowB.Activate();
+		TAKE_SNAPSHOT;
+
+		windowC.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		TAKE_SNAPSHOT;
+
+		windowI.Activate();
+		TAKE_SNAPSHOT;
+
+		windowJ.Activate();
+		TAKE_SNAPSHOT;
+
+		windowK.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		TAKE_SNAPSHOT;
+
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
