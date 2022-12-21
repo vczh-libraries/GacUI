@@ -66,12 +66,16 @@ Window
 				{
 				}
 
-				bool EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline)
+				bool EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline, bool wasEventuallyTopMost)
 				{
 					vint maxOrder = -1;
 					vint order = windowsInOrder.IndexOf(this);
 
-					if (baseline)
+					if (wasEventuallyTopMost && order == -1)
+					{
+						maxOrder = 0;
+					}
+					else if (baseline)
 					{
 						maxOrder = windowsInOrder.IndexOf(baseline);
 					}
@@ -101,7 +105,7 @@ Window
 					return false;
 				}
 
-				void FixWindowInOrder()
+				void FixWindowInOrder(bool wasEventuallyTopMost)
 				{
 					if (!visible)
 					{
@@ -130,7 +134,7 @@ Window
 								visibleParent = nullptr;
 							}
 
-							if (EnsureMovedInFrontOf(windowManager->topMostedWindowsInOrder, visibleParent))
+							if (EnsureMovedInFrontOf(windowManager->topMostedWindowsInOrder, visibleParent, wasEventuallyTopMost))
 							{
 								windowManager->needRefresh = true;
 							}
@@ -139,10 +143,10 @@ Window
 						{
 							if (windowManager->topMostedWindowsInOrder.Remove(this))
 							{
-								windowManager->needRefresh;
+								windowManager->needRefresh = true;
 							}
 
-							if (EnsureMovedInFrontOf(windowManager->ordinaryWindowsInOrder, visibleParent))
+							if (EnsureMovedInFrontOf(windowManager->ordinaryWindowsInOrder, visibleParent, wasEventuallyTopMost))
 							{
 								windowManager->needRefresh = true;
 							}
@@ -218,7 +222,7 @@ Window
 					{
 						parent->children.Add(this);
 					}
-					FixWindowInOrder();
+					FixWindowInOrder(IsEventuallyTopMost());
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -240,7 +244,7 @@ Window
 
 					if (visible == value) return;
 					visible = value;
-					FixWindowInOrder();
+					FixWindowInOrder(false);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -250,8 +254,9 @@ Window
 					ENSURE_WINDOW_MANAGER;
 
 					if (topMost == value) return;
+					bool wasEventuallyTopMost = IsEventuallyTopMost();
 					topMost = value;
-					FixWindowInOrder();
+					FixWindowInOrder(wasEventuallyTopMost);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
