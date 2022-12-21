@@ -494,6 +494,14 @@ TEST_FILE
 	{
 	}});
 
+	WM_TEST_CASE(L"Activing windows with topmost")
+	{
+	}});
+
+	WM_TEST_CASE(L"Deactivating windows with topmost")
+	{
+	}});
+
 	WM_TEST_CASE(L"Activing many windows with topmost")
 	{
 	}});
