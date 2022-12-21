@@ -520,8 +520,10 @@ TEST_FILE
 		TAKE_SNAPSHOT(mainWindow.Activate());
 		TAKE_SNAPSHOT(windowA.SetTopMost(false));
 		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.SetTopMost(true));
+		TAKE_SNAPSHOT(windowB.SetTopMost(false));
 		TAKE_SNAPSHOT(mainWindow.Activate());
-		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowA.Activate());
 		TAKE_SNAPSHOT(mainWindow.Activate());
 
 		wm.Stop();
