@@ -258,6 +258,7 @@ Window
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetVisible(bool)#"
 					ENSURE_WINDOW_MANAGER;
+					CHECK_ERROR(value, L"Not Implemented.");
 
 					if (visible == value) return;
 					visible = value;
@@ -281,9 +282,9 @@ Window
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetEnabled(bool)#"
 					ENSURE_WINDOW_MANAGER;
+					CHECK_ERROR(value, L"Not Implemented.");
 
 					if (enabled == value) return;
-					CHECK_FAIL(L"Not Implemented.");
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -494,6 +495,7 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::UnregisterWindow(Window<T>*)#"
 					CHECK_ERROR(window->windowManager == this, ERROR_MESSAGE_PREFIX L"The window has not been registered.");
 					CHECK_ERROR(window != mainWindow, ERROR_MESSAGE_PREFIX L"The main window cannot be unregistered before stopping the window manager.");
+					CHECK_ERROR(!mainWindow, L"Not Implemented.");
 
 					if (activeWindow == window)
 					{
