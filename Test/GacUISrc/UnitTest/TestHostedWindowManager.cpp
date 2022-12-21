@@ -491,6 +491,36 @@ TEST_FILE
 		windowC.Show();
 		TAKE_SNAPSHOT_INITIAL();
 
+		TAKE_SNAPSHOT(windowA.SetTopMost(true));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+
+		TAKE_SNAPSHOT(windowB.SetTopMost(true));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+
+		DONT_TAKE_SNAPSHOT(windowC.SetTopMost(true));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+
+		TAKE_SNAPSHOT(windowA.SetTopMost(false));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+
+		TAKE_SNAPSHOT(windowB.SetTopMost(false));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+
+		TAKE_SNAPSHOT(windowC.SetTopMost(false));
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);

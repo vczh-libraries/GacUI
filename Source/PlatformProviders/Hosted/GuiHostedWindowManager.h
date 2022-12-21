@@ -69,7 +69,7 @@ Window
 
 					for (auto child : children)
 					{
-						if (child->visible)
+						if (child->visible && (eventuallyTopMost || !child->topMost))
 						{
 							vint childOrder = orderedWindows.IndexOf(child);
 							if (childOrder == -1 || childOrder > order)
