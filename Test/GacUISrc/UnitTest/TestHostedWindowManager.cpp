@@ -496,6 +496,62 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Activing windows with topmost")
 	{
+		Window mainWindow(L'X', true);
+		wm.RegisterWindow(&mainWindow);
+
+		Window windowA(L'A', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'B', true);
+		wm.RegisterWindow(&windowB);
+
+		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
+		windowA.SetBounds(Bounds(1, 1, 4, 3));
+		windowB.SetBounds(Bounds(2, 2, 4, 3));
+
+		wm.Start(&mainWindow);
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &mainWindow);
+		mainWindow.Show();
+		windowA.Show();
+		windowB.Show();
+		TAKE_SNAPSHOT;
+
+		windowA.SetTopMost(true);
+		TAKE_SNAPSHOT;
+
+		windowA.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		TAKE_SNAPSHOT;
+
+		windowB.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		TAKE_SNAPSHOT;
+
+		windowA.SetTopMost(false);
+		TAKE_SNAPSHOT;
+
+		windowA.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		TAKE_SNAPSHOT;
+
+		windowB.Activate();
+		TAKE_SNAPSHOT;
+
+		mainWindow.Activate();
+		TAKE_SNAPSHOT;
+
+		wm.Stop();
+		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowA);
+		wm.UnregisterWindow(&windowB);
+		wm.EnsureCleanedUp();
 	}});
 
 	WM_TEST_CASE(L"Deactivating windows with topmost")
