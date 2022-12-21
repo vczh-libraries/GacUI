@@ -1,4 +1,5 @@
-﻿[XXXXXXXXXXXX]
+﻿<Initial>
+[XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
 [XaaIjKKKKKKX]
@@ -9,6 +10,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowK.Inactivate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
@@ -20,6 +22,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowI.Inactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -31,6 +34,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowJ.Activate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIJJJJJJXX]
@@ -42,6 +46,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowJ.Inactivate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
@@ -53,6 +58,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowI.Inactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -64,6 +70,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowC.Activate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -75,6 +82,7 @@
 [XXXCCCCCCXXX]
 [XXXXXXXXXXXX]
 
+windowC.Inactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -86,6 +94,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowB.Inactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -97,6 +106,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowA.Inactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -108,6 +118,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+mainWindow.Inactivate()
 [xxxxxxxxxxxx]
 [xxxiiiiiixxx]
 [xxxijjjjjjxx]

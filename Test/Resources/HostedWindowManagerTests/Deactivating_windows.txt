@@ -1,10 +1,16 @@
-﻿[XXXXXXX]
+﻿<Initial>
+[XXXXXXX]
 [XaaaaXX]
 [XaBBBBX]
 [XaBBBBX]
 [XXBBBBX]
 [XXXXXXX]
 
+windowA.Inactivate()
+
+mainWindow.Inactivate()
+
+windowB.Inactivate()
 [XXXXXXX]
 [XaaaaXX]
 [XabbbbX]
@@ -12,6 +18,7 @@
 [XXbbbbX]
 [XXXXXXX]
 
+mainWindow.Inactivate()
 [xxxxxxx]
 [xaaaaxx]
 [xabbbbx]

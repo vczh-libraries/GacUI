@@ -134,7 +134,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 		}
 	}
 
-	void TakeSnapshot()
+	void TakeSnapshot(const wchar_t* title)
 	{
 		vint w = 0;
 		vint h = 0;
@@ -146,6 +146,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 
 		WString snapshot = GenerateToStream([=](StreamWriter& writer)
 		{
+			writer.WriteLine(title);
 			for (vint y = 0; y < h; y++)
 			{
 				writer.WriteChar(L'[');
@@ -172,30 +173,39 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 				writer.WriteLine(WString::Unmanaged(L"]"));
 			}
 		});
-		snapshots.Add({ h,snapshot });
+		snapshots.Add({ h + 1,snapshot });
+	}
+
+	void DontTakeSnapshot(const wchar_t* title)
+	{
+		snapshots.Add({ 1,WString::Unmanaged(title) + WString::Unmanaged(L"\r\n") });
 	}
 };
 
-#define WM_TEST_CASE(NAME)				\
-	TEST_CASE(NAME)						\
-	{									\
-		WindowManager wm(NAME);			\
+#define WM_TEST_CASE(NAME)							\
+	TEST_CASE(NAME)									\
+	{												\
+		WindowManager wm(NAME);						\
 
-#define TAKE_SNAPSHOT(...)				\
-	do{									\
-		__VA_ARGS__;					\
-		TEST_ASSERT(wm.needRefresh);	\
-		wm.needRefresh = false;			\
-		wm.CheckWindowStatus();			\
-		wm.TakeSnapshot();				\
-	}while(false)						\
+#define TAKE_SNAPSHOT_INTERNAL(COMMAND, TITLE)		\
+	do{												\
+		COMMAND;									\
+		TEST_ASSERT(wm.needRefresh);				\
+		wm.needRefresh = false;						\
+		wm.CheckWindowStatus();						\
+		wm.TakeSnapshot(TITLE);						\
+	}while(false)									\
 
-#define DONT_TAKE_SNAPSHOT(...)			\
-	do {								\
-		__VA_ARGS__;					\
-		TEST_ASSERT(!wm.needRefresh);	\
-		wm.CheckWindowStatus();			\
-	}while(false)						\
+#define TAKE_SNAPSHOT(COMMAND) TAKE_SNAPSHOT_INTERNAL(COMMAND, L ## #COMMAND)
+#define TAKE_SNAPSHOT_INITIAL() TAKE_SNAPSHOT_INTERNAL((void)nullptr, L"<Initial>")
+
+#define DONT_TAKE_SNAPSHOT(...)						\
+	do {											\
+		__VA_ARGS__;								\
+		TEST_ASSERT(!wm.needRefresh);				\
+		wm.CheckWindowStatus();						\
+		wm.DontTakeSnapshot(L ## #__VA_ARGS__);		\
+	}while(false)									\
 
 NativeRect Bounds(vint x, vint y, vint w, vint h)
 {
@@ -213,7 +223,7 @@ TEST_FILE
 
 		wm.Start(&mainWindow);
 		mainWindow.Show();
-		TAKE_SNAPSHOT();
+		TAKE_SNAPSHOT_INITIAL();
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -241,7 +251,7 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT();
+		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.Activate());
 		TAKE_SNAPSHOT(mainWindow.Activate());
@@ -276,7 +286,7 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT();
+		TAKE_SNAPSHOT_INITIAL();
 
 		DONT_TAKE_SNAPSHOT(windowA.Inactivate());
 		DONT_TAKE_SNAPSHOT(mainWindow.Inactivate());
@@ -341,7 +351,7 @@ TEST_FILE
 		windowI.Show();
 		windowJ.Show();
 		windowK.Show();
-		TAKE_SNAPSHOT();
+		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.Activate());
 		TAKE_SNAPSHOT(windowB.Activate());
@@ -414,7 +424,7 @@ TEST_FILE
 		windowI.Show();
 		windowJ.Show();
 		windowK.Show();
-		TAKE_SNAPSHOT();
+		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowK.Inactivate());
 		TAKE_SNAPSHOT(windowI.Inactivate());
@@ -471,7 +481,7 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT();
+		TAKE_SNAPSHOT_INITIAL();
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -501,7 +511,7 @@ TEST_FILE
 		mainWindow.Show();
 		windowA.Show();
 		windowB.Show();
-		TAKE_SNAPSHOT();
+		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
 		TAKE_SNAPSHOT(windowA.Activate());

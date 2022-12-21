@@ -1,4 +1,5 @@
-﻿[XXXXXXXXXXXX]
+﻿<Initial>
+[XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
 [XaaIjKKKKKKX]
@@ -9,6 +10,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowA.Activate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -20,6 +22,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowB.Activate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -31,6 +34,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowC.Activate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -42,6 +46,7 @@
 [XXXCCCCCCXXX]
 [XXXXXXXXXXXX]
 
+mainWindow.Activate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -53,6 +58,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowI.Activate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
@@ -64,6 +70,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowJ.Activate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIJJJJJJXX]
@@ -75,6 +82,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+windowK.Activate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
@@ -86,6 +94,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
+mainWindow.Activate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
