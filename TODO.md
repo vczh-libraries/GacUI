@@ -1,5 +1,11 @@
 # TODO
 
+## Known Issues
+- In Windows platform, Activate should mean "render ad activated", Focus should mean "Activated"
+  - Delete "SetActivated" and fix the other three functions
+  - SetFocus/GetFocus is not correct API
+- Call SetForegroundWindow before ShowWindow in Show (need to verify)
+
 ## Progressing
 
 - `GuiHostedController`, `GuiHostedMonitor`, `GuiHostedWindow` and `GuiHostedMainWindow`.
