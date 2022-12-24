@@ -52,10 +52,13 @@ Window
 				template<typename TWindows>
 				void CollectVisibleSubTreeInSamePriority(TWindows& windows, bool inTopMostLevel)
 				{
-					windows.Add(this);
+					if (visible)
+					{
+						windows.Add(this);
+					}
 					for (auto child : children)
 					{
-						if (child->visible && (inTopMostLevel || !child->topMost))
+						if (inTopMostLevel || !child->topMost)
 						{
 							child->CollectVisibleSubTreeInSamePriority(windows, inTopMostLevel);
 						}
@@ -69,16 +72,19 @@ Window
 
 					for (auto child : children)
 					{
-						if (child->visible && (eventuallyTopMost || !child->topMost))
+						if (eventuallyTopMost || !child->topMost)
 						{
-							vint childOrder = orderedWindows.IndexOf(child);
-							if (childOrder == -1 || childOrder > order)
+							if (child->visible)
 							{
-								windowManager->ordinaryWindowsInOrder.Remove(child);
-								windowManager->topMostedWindowsInOrder.Remove(child);
-								orderedWindows.Insert(order, child);
-								child->EnsureChildrenMovedInFrontOfThis(eventuallyTopMost || child->topMost);
+								vint childOrder = orderedWindows.IndexOf(child);
+								if (childOrder == -1 || childOrder > order)
+								{
+									windowManager->ordinaryWindowsInOrder.Remove(child);
+									windowManager->topMostedWindowsInOrder.Remove(child);
+									orderedWindows.Insert(order, child);
+								}
 							}
+							child->EnsureChildrenMovedInFrontOfThis(eventuallyTopMost || child->topMost);
 						}
 					}
 				}
