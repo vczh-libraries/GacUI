@@ -73,36 +73,35 @@
 - GIF player.
 - video player.
 
-## GacStudio
-
 ## Porting to New Platforms
 
-- SyncTree architecture that streams layout/element changes per `GuiControlHost`.
+- SyncTree architecture that streams layout/element changes, requiring Hosted for the first version.
 - ViewModel architecture that streams object changes.
   - Requires all pointers are shared.
 - Port GacUI to other platforms:
+  - Unit Test
+    - Simplified CLI (Hosted)
   - Windows
-    - Command-line/Powershell in Windows (hosted)
-    - GDI (hosted mode)
-    - Direct2d (hosted mode)
-    - UWP (hosted mode + sync tree, optional)
+    - Command-line/Powershell in Windows (Hosted)
+    - GDI (Hosted or SyncTree)
+    - Direct2d (Hosted or SyncTree)
+    - UWP (Hosted and SyncTree)
   - Linux
-    - Ncurses on Ubuntu (hosted)
+    - Ncurses on Ubuntu (Hosted)
     - gGac repo: complete development process for release
   - macOS
     - iGac repo: complete development process for release
-  - Web Assembly (hosted mode + sync tree)
+  - Web Assembly (Hosted + SyncTree)
     - Canvas?
     - DOM?
 
 ## Binders for other Programming Languages
 
-- Xml still generates C++ files with optional files.
-  - User need to compile C++ code by themselves into a DLL.
-  - User need to specify all involved (including the default) themes.
-  - Generated DLL functions are for implementing view model or SyncTree.
-  - ViewModel metadata in JSON are also provided.
-  - Resources are required to be generated in C++ files since the DLL won't provide interfaces for loading external resources.
+- User need to specify which ViewModel interfaces are involved in streaming
+  - Metadata are offered so that users could write their own codegen
+  - Default implementation for all interfaces are generated
+    - For client side (this should be compiled with GacUI together)
+    - For server side (user could implement them in other languages by themselves)
 - Applications written in other language can:
   - Implement view model.
   - Render the UI via SyncTree.
@@ -110,12 +109,18 @@
   - JavaScript / TypeScript through Web assembly
   - .NET (core?)
   - Python
-- Other options:
-  - UI becomes an EXE, the view model implementation is communicated via pipe or socket.
 
-## Optional
+## Streaming Tutorials
 
-### GacUI Resource Compiler
+- A GacUI D2D process connecting to a server process for streaming ViewModel
+  - ViewModel implements in C++ and C#
+- A GacUI SyncTree process connecting to a server process for streaming graphics
+  - GDI+ implements in C#
+  - D2D implements in C++
+
+## GacStudio
+
+## GacUI Resource Compiler
 
 - Remove all loader implementation, enabling custom control types from developers.
   - Try not to include `GacUI.cpp` if `VCZH_DEBUG_METAONLY_REFLECTION` is on.
@@ -129,7 +134,7 @@
   -  Cache workflow assembly per resource in file.
   -  Codegen c++ from multiple workflow assembly.
 
-### MISC
+## MISC
 
 - Use collection interfaces on function signatures.
   - Only if `Vlpp` decides to add collection interfaces.
