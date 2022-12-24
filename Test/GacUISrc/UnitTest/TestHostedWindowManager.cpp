@@ -458,6 +458,55 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Closing windows")
 	{
+		Window mainWindow(L'X', true);
+		wm.RegisterWindow(&mainWindow);
+
+		Window windowA(L'A', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'B', true);
+		wm.RegisterWindow(&windowB);
+
+		Window windowC(L'C', true);
+		wm.RegisterWindow(&windowC);
+
+		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
+		windowA.SetBounds(Bounds(1, 1, 4, 3));
+		windowB.SetBounds(Bounds(2, 2, 4, 3));
+		windowC.SetBounds(Bounds(3, 3, 4, 3));
+
+		windowC.SetParent(&windowB);
+
+		wm.Start(&mainWindow);
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &mainWindow);
+		TEST_ASSERT(windowC.parent == &windowB);
+		mainWindow.Show();
+		windowA.Show();
+		windowB.Show();
+		windowC.Show();
+		TAKE_SNAPSHOT_INITIAL();
+
+		TAKE_SNAPSHOT(windowC.SetVisible(false));
+		TAKE_SNAPSHOT(windowB.SetVisible(false));
+		TAKE_SNAPSHOT(windowA.SetVisible(false));
+		TAKE_SNAPSHOT(windowC.SetVisible(true));
+		TAKE_SNAPSHOT(windowB.SetVisible(true));
+		TAKE_SNAPSHOT(windowA.SetVisible(true));
+
+		TAKE_SNAPSHOT(windowA.SetVisible(false));
+		TAKE_SNAPSHOT(windowA.SetVisible(true));
+		TAKE_SNAPSHOT(windowC.SetVisible(false));
+		TAKE_SNAPSHOT(windowC.SetVisible(true));
+		TAKE_SNAPSHOT(windowB.SetVisible(false));
+		TAKE_SNAPSHOT(windowB.SetVisible(true));
+
+		wm.Stop();
+		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowA);
+		wm.UnregisterWindow(&windowB);
+		wm.UnregisterWindow(&windowC);
+		wm.EnsureCleanedUp();
 	}});
 
 	WM_TEST_CASE(L"Changing topmost of windows")

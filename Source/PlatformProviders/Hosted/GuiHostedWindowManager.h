@@ -258,11 +258,11 @@ Window
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetVisible(bool)#"
 					ENSURE_WINDOW_MANAGER;
-					CHECK_ERROR(value, L"Not Implemented.");
 
 					if (visible == value) return;
 					visible = value;
 					FixWindowInOrder(false);
+					if (!value) Inactivate();
 #undef ERROR_MESSAGE_PREFIX
 				}
 
