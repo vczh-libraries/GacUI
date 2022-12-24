@@ -99,9 +99,9 @@
 
 - User need to specify which ViewModel interfaces are involved in streaming
   - Metadata are offered so that users could write their own codegen
-  - Default implementation for all interfaces are generated
-    - For client side (this should be compiled with GacUI together)
-    - For server side (user could implement them in other languages by themselves)
+  - Client side implementation for interfaces. These objects are given to the UI, they send out commands and waiting for receiving real view model data
+  - ViewModel streaming implementation for server side. You give them all implementations of interfaces, it handles commands and send back real view model data
+    - Users could use metadata to implement it in other languages other than C++
 - Applications written in other language can:
   - Implement view model.
   - Render the UI via SyncTree.
