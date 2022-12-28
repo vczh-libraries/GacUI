@@ -102,6 +102,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			else if (window->IsEventuallyTopMost())
 			{
 				TEST_ASSERT(topMostedWindowsInOrder.Contains(window));
+				TEST_ASSERT(!ordinaryWindowsInOrder.Contains(window));
 				auto current = window;
 				while (current && !current->visible)
 				{
@@ -114,6 +115,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			}
 			else
 			{
+				TEST_ASSERT(!topMostedWindowsInOrder.Contains(window));
 				TEST_ASSERT(ordinaryWindowsInOrder.Contains(window));
 				auto current = window;
 				while (current && !current->visible)
@@ -1016,7 +1018,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.SetVisible(false));
 		DONT_TAKE_SNAPSHOT(windowC.Activate());
 		TAKE_SNAPSHOT(windowB.SetVisible(true));
-		TAKE_SNAPSHOT(windowC.Activate());
+		DONT_TAKE_SNAPSHOT(windowC.Activate());
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);

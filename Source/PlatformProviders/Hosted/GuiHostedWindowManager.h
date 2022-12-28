@@ -197,11 +197,11 @@ Window
 
 				bool IsEventuallyTopMost()
 				{
-					bool result = topMost;
+					bool result = visible && topMost;
 					auto current = parent;
 					while (current && !result)
 					{
-						result |= current->topMost;
+						result |= current->visible && current->topMost;
 						current = current->parent;
 					}
 					return result;
@@ -272,14 +272,10 @@ Window
 					bool parentEventuallyTopMost = parent ? parent->IsEventuallyTopMost() : false;
 					visible = value;
 
-					if (visible)
-					{
-						FixWindowInOrder(parentEventuallyTopMost, parentEventuallyTopMost || topMost);
-					}
-					else
-					{
-						FixWindowInOrder(parentEventuallyTopMost || topMost, parentEventuallyTopMost);
-					}
+					FixWindowInOrder(
+						parentEventuallyTopMost || (!visible && topMost),
+						parentEventuallyTopMost || (visible && topMost)
+						);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -290,9 +286,9 @@ Window
 
 					if (topMost == value) return;
 					bool parentEventuallyTopMost = parent ? parent->IsEventuallyTopMost() : false;
-					bool wasEventuallyTopMost = parentEventuallyTopMost || topMost;
+					bool wasEventuallyTopMost = parentEventuallyTopMost || (visible && topMost);
 					topMost = value;
-					bool isEventuallyTopMost = parentEventuallyTopMost || topMost;
+					bool isEventuallyTopMost = parentEventuallyTopMost || (visible && topMost);
 					FixWindowInOrder(wasEventuallyTopMost, isEventuallyTopMost);
 #undef ERROR_MESSAGE_PREFIX
 				}
