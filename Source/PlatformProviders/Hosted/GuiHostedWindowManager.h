@@ -128,7 +128,7 @@ Window
 					return false;
 				}
 
-				void FixWindowInOrder(bool wasEventuallyTopMost)
+				void FixWindowInOrder(bool wasEventuallyTopMost, bool isEventuallyTopMost)
 				{
 					if (!visible)
 					{
@@ -145,7 +145,7 @@ Window
 							visibleParent = visibleParent->parent;
 						}
 
-						if (IsEventuallyTopMost())
+						if (isEventuallyTopMost)
 						{
 							if (windowManager->ordinaryWindowsInOrder.Remove(this))
 							{
@@ -199,7 +199,7 @@ Window
 				{
 					bool result = topMost;
 					auto current = parent;
-					while (current)
+					while (current && !result)
 					{
 						result |= current->topMost;
 						current = current->parent;
@@ -245,7 +245,8 @@ Window
 					{
 						parent->children.Add(this);
 					}
-					FixWindowInOrder(IsEventuallyTopMost());
+					bool isEventuallyTopMost = IsEventuallyTopMost();
+					FixWindowInOrder(isEventuallyTopMost, isEventuallyTopMost);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -266,9 +267,19 @@ Window
 					ENSURE_WINDOW_MANAGER;
 
 					if (visible == value) return;
-					visible = value;
-					FixWindowInOrder(false);
 					if (!value) Deactivate();
+
+					bool parentEventuallyTopMost = parent ? parent->IsEventuallyTopMost() : false;
+					visible = value;
+
+					if (visible)
+					{
+						FixWindowInOrder(parentEventuallyTopMost, parentEventuallyTopMost || topMost);
+					}
+					else
+					{
+						FixWindowInOrder(parentEventuallyTopMost || topMost, parentEventuallyTopMost);
+					}
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -278,9 +289,11 @@ Window
 					ENSURE_WINDOW_MANAGER;
 
 					if (topMost == value) return;
-					bool wasEventuallyTopMost = IsEventuallyTopMost();
+					bool parentEventuallyTopMost = parent ? parent->IsEventuallyTopMost() : false;
+					bool wasEventuallyTopMost = parentEventuallyTopMost || topMost;
 					topMost = value;
-					FixWindowInOrder(wasEventuallyTopMost);
+					bool isEventuallyTopMost = parentEventuallyTopMost || topMost;
+					FixWindowInOrder(wasEventuallyTopMost, isEventuallyTopMost);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
