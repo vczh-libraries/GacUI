@@ -10,7 +10,7 @@
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
-windowK.Inactivate()
+windowK.Deactivate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
@@ -22,7 +22,7 @@ windowK.Inactivate()
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
-windowI.Inactivate()
+windowI.Deactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -46,7 +46,7 @@ windowJ.Activate()
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
-windowJ.Inactivate()
+windowJ.Deactivate()
 [XXXXXXXXXXXX]
 [XXXIIIIIIXXX]
 [XXXIjjjjjjXX]
@@ -58,7 +58,7 @@ windowJ.Inactivate()
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
-windowI.Inactivate()
+windowI.Deactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -82,7 +82,7 @@ windowC.Activate()
 [XXXCCCCCCXXX]
 [XXXXXXXXXXXX]
 
-windowC.Inactivate()
+windowC.Deactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -94,7 +94,7 @@ windowC.Inactivate()
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
-windowB.Inactivate()
+windowB.Deactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -106,7 +106,7 @@ windowB.Inactivate()
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
-windowA.Inactivate()
+windowA.Deactivate()
 [XXXXXXXXXXXX]
 [XXXiiiiiiXXX]
 [XXXijjjjjjXX]
@@ -118,7 +118,7 @@ windowA.Inactivate()
 [XXXccccccXXX]
 [XXXXXXXXXXXX]
 
-mainWindow.Inactivate()
+mainWindow.Deactivate()
 [xxxxxxxxxxxx]
 [xxxiiiiiixxx]
 [xxxijjjjjjxx]

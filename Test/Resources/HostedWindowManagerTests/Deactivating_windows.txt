@@ -6,11 +6,11 @@
 [XXBBBBX]
 [XXXXXXX]
 
-windowA.Inactivate()
+windowA.Deactivate()
 
-mainWindow.Inactivate()
+mainWindow.Deactivate()
 
-windowB.Inactivate()
+windowB.Deactivate()
 [XXXXXXX]
 [XaaaaXX]
 [XabbbbX]
@@ -18,7 +18,7 @@ windowB.Inactivate()
 [XXbbbbX]
 [XXXXXXX]
 
-mainWindow.Inactivate()
+mainWindow.Deactivate()
 [xxxxxxx]
 [xaaaaxx]
 [xabbbbx]

@@ -268,7 +268,7 @@ Window
 					if (visible == value) return;
 					visible = value;
 					FixWindowInOrder(false);
-					if (!value) Inactivate();
+					if (!value) Deactivate();
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -438,9 +438,9 @@ Window
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				void Inactivate()
+				void Deactivate()
 				{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::Inactivate()#"
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::Deactivate()#"
 					ENSURE_WINDOW_MANAGER;
 
 					if (!windowManager->mainWindow) return;
@@ -505,7 +505,7 @@ WindowManager
 
 					if (activeWindow == window)
 					{
-						window->Inactivate();
+						window->Deactivate();
 					}
 					registeredWindows.Remove(window->id);
 					window->windowManager = nullptr;
