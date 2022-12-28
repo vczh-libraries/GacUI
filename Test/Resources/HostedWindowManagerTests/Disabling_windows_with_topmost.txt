@@ -66,19 +66,35 @@ windowA.Deactivate()
 [~x~b~b~]
 [x~x~x~x]
 
+windowA.SetTopMost(false)
+[~x~x~x~]
+[xaaaa~x]
+[~aaaab~]
+[xaaaa~x]
+[~x~b~b~]
+[x~x~x~x]
+
+windowB.SetTopMost(true)
+[~x~x~x~]
+[xaaaa~x]
+[~a~b~b~]
+[xab~b~x]
+[~x~b~b~]
+[x~x~x~x]
+
 windowA.Activate()
 [~x~x~x~]
 [xAAAA~x]
-[~AAAAb~]
-[xAAAA~x]
+[~A~b~b~]
+[xAb~b~x]
 [~x~b~b~]
 [x~x~x~x]
 
 mainWindow.SetEnabled(true)
 [XXXXXXX]
 [XAAAAXX]
-[XAAAAbX]
-[XAAAA~X]
+[XA~b~bX]
+[XAb~b~X]
 [XX~b~bX]
 [XXXXXXX]
 
@@ -91,8 +107,8 @@ windowB.Activate()
 windowA.Deactivate()
 [XXXXXXX]
 [XaaaaXX]
-[XaaaabX]
-[Xaaaa~X]
+[Xa~b~bX]
+[Xab~b~X]
 [XX~b~bX]
 [XXXXXXX]
 
