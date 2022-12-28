@@ -1018,7 +1018,9 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.SetVisible(false));
 		DONT_TAKE_SNAPSHOT(windowC.Activate());
 		TAKE_SNAPSHOT(windowB.SetVisible(true));
-		DONT_TAKE_SNAPSHOT(windowC.Activate());
+		TAKE_SNAPSHOT(windowC.Activate());
+		TAKE_SNAPSHOT(windowC.Deactivate());
+		TAKE_SNAPSHOT(windowB.BringToFront());
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);

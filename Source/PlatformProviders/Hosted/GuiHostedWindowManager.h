@@ -374,7 +374,11 @@ Window
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::Activate()#"
 					ENSURE_WINDOW_MANAGER;
 
-					if (active) return;
+					if (active)
+					{
+						BringToFront();
+						return;
+					}
 					if (!windowManager->mainWindow) return;
 					if (!visible) return;
 					if (!enabled) return;

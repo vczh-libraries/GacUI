@@ -163,5 +163,30 @@ windowB.SetVisible(true)
 [XXXXXXXX]
 
 windowC.Activate()
+[XXXXXXXX]
+[XaaaaXXX]
+[XaaaaBXX]
+[XaaCCCCX]
+[XXBCCCCX]
+[XXXCCCCX]
+[XXXXXXXX]
+
+windowC.Deactivate()
+[XXXXXXXX]
+[XaaaaXXX]
+[XaaaaBXX]
+[XaaccccX]
+[XXBccccX]
+[XXXccccX]
+[XXXXXXXX]
+
+windowB.BringToFront()
+[XXXXXXXX]
+[XaaaaXXX]
+[XaBBBBXX]
+[XaBccccX]
+[XXBccccX]
+[XXXccccX]
+[XXXXXXXX]
 
 END
