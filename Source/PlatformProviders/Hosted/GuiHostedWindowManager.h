@@ -49,6 +49,16 @@ Window
 
 			protected:
 
+				Window<T>* GetVisibleParent()
+				{
+					auto visibleParent = parent;
+					while (visibleParent && !visibleParent->visible)
+					{
+						visibleParent = visibleParent->parent;
+					}
+					return visibleParent;
+				}
+
 				template<typename TWindows>
 				void CollectVisibleSubTreeInSamePriority(TWindows& windows, bool inTopMostLevel)
 				{
@@ -65,10 +75,12 @@ Window
 					}
 				}
 
-				void EnsureChildrenMovedInFrontOfThis(bool eventuallyTopMost)
+				void EnsureChildrenMovedInFrontOf(bool eventuallyTopMost, Window<T>* baseline)
 				{
 					auto&& orderedWindows = eventuallyTopMost ? windowManager->topMostedWindowsInOrder : windowManager->ordinaryWindowsInOrder;
-					vint order = orderedWindows.IndexOf(this);
+					vint order = -1;
+					if (baseline) order = orderedWindows.IndexOf(baseline);
+					if (order == -1) order = orderedWindows.Count();
 
 					for (auto child : children)
 					{
@@ -84,12 +96,12 @@ Window
 									orderedWindows.Insert(order, child);
 								}
 							}
-							child->EnsureChildrenMovedInFrontOfThis(eventuallyTopMost || child->topMost);
+							child->EnsureChildrenMovedInFrontOf(eventuallyTopMost || child->topMost, (child->visible ? child : baseline));
 						}
 					}
 				}
 
-				bool EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline, bool wasEventuallyTopMost, bool eventuallyTopMost)
+				void EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline, bool wasEventuallyTopMost, bool eventuallyTopMost)
 				{
 					vint maxOrder = -1;
 					vint order = windowsInOrder.IndexOf(this);
@@ -114,18 +126,14 @@ Window
 					if (order == -1)
 					{
 						windowsInOrder.Insert(maxOrder, this);
-						EnsureChildrenMovedInFrontOfThis(eventuallyTopMost);
-						return true;
+						windowManager->needRefresh = true;
 					}
 					else if (order > maxOrder)
 					{
 						windowsInOrder.RemoveAt(order);
 						windowsInOrder.Insert(maxOrder, this);
-						EnsureChildrenMovedInFrontOfThis(eventuallyTopMost);
-						return true;
+						windowManager->needRefresh = true;
 					}
-
-					return false;
 				}
 
 				void FixWindowInOrder(bool wasEventuallyTopMost, bool isEventuallyTopMost)
@@ -137,13 +145,11 @@ Window
 							windowManager->needRefresh = true;
 						}
 					}
-					else
+
+					auto visibleParent = GetVisibleParent();
+
+					if (visible)
 					{
-						auto visibleParent = parent;
-						while (visibleParent && !visibleParent->visible)
-						{
-							visibleParent = visibleParent->parent;
-						}
 
 						if (isEventuallyTopMost)
 						{
@@ -156,11 +162,7 @@ Window
 							{
 								visibleParent = nullptr;
 							}
-
-							if (EnsureMovedInFrontOf(windowManager->topMostedWindowsInOrder, visibleParent, wasEventuallyTopMost, true))
-							{
-								windowManager->needRefresh = true;
-							}
+							EnsureMovedInFrontOf(windowManager->topMostedWindowsInOrder, visibleParent, wasEventuallyTopMost, true);
 						}
 						else
 						{
@@ -168,13 +170,11 @@ Window
 							{
 								windowManager->needRefresh = true;
 							}
-
-							if (EnsureMovedInFrontOf(windowManager->ordinaryWindowsInOrder, visibleParent, wasEventuallyTopMost, false))
-							{
-								windowManager->needRefresh = true;
-							}
+							EnsureMovedInFrontOf(windowManager->ordinaryWindowsInOrder, visibleParent, wasEventuallyTopMost, false);
 						}
 					}
+
+					EnsureChildrenMovedInFrontOf(isEventuallyTopMost, (visible ? this : visibleParent));
 				}
 
 			public:

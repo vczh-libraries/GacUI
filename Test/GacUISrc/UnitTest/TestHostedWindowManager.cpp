@@ -94,8 +94,12 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			TEST_ASSERT(!window->active || window->renderedAsActive);
 			TEST_ASSERT((window->parent != nullptr) == (window != mainWindow));
 
-			bool topMost = window->IsEventuallyTopMost();
-			if (window->visible && topMost)
+			if (!window->visible)
+			{
+				TEST_ASSERT(!topMostedWindowsInOrder.Contains(window));
+				TEST_ASSERT(!ordinaryWindowsInOrder.Contains(window));
+			}
+			else if (window->IsEventuallyTopMost())
 			{
 				TEST_ASSERT(topMostedWindowsInOrder.Contains(window));
 				auto current = window;
@@ -110,11 +114,6 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			}
 			else
 			{
-				TEST_ASSERT(!topMostedWindowsInOrder.Contains(window));
-			}
-
-			if (window->visible && !topMost)
-			{
 				TEST_ASSERT(ordinaryWindowsInOrder.Contains(window));
 				auto current = window;
 				while (current && !current->visible)
@@ -126,10 +125,6 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 					TEST_ASSERT(!current->IsEventuallyTopMost());
 					TEST_ASSERT(ordinaryWindowsInOrder.IndexOf(window) < ordinaryWindowsInOrder.IndexOf(current));
 				}
-			}
-			else
-			{
-				TEST_ASSERT(!ordinaryWindowsInOrder.Contains(window));
 			}
 		}
 	}
