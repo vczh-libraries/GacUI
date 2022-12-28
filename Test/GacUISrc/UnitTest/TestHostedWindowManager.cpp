@@ -14,7 +14,7 @@ namespace hosted_window_manager_tests
 }
 using namespace hosted_window_manager_tests;
 
-#define UPDATE_SNAPSHOT
+//#define UPDATE_SNAPSHOT
 
 using Window = hosted_window_manager::Window<wchar_t>;
 
