@@ -497,10 +497,6 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Hiding windows")
 	{
-	}});
-
-	WM_TEST_CASE(L"Closing windows")
-	{
 		Window mainWindow(L'X', true);
 		wm.RegisterWindow(&mainWindow);
 
@@ -550,6 +546,10 @@ TEST_FILE
 		wm.UnregisterWindow(&windowB);
 		wm.UnregisterWindow(&windowC);
 		wm.EnsureCleanedUp();
+	}});
+
+	WM_TEST_CASE(L"Closing windows")
+	{
 	}});
 
 	WM_TEST_CASE(L"Changing topmost of windows")
@@ -926,10 +926,6 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Hiding windows with topmost")
 	{
-	}});
-
-	WM_TEST_CASE(L"Closing windows with topmost")
-	{
 		Window mainWindow(L'X', true);
 		wm.RegisterWindow(&mainWindow);
 
@@ -981,6 +977,10 @@ TEST_FILE
 		wm.UnregisterWindow(&windowB);
 		wm.UnregisterWindow(&windowC);
 		wm.EnsureCleanedUp();
+	}});
+
+	WM_TEST_CASE(L"Closing windows with topmost")
+	{
 	}});
 
 	// TODO: Assert events sent from window manager
