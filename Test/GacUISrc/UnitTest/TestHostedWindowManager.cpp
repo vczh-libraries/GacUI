@@ -94,6 +94,11 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			TEST_ASSERT(!window->active || window->renderedAsActive);
 			TEST_ASSERT((window->parent != nullptr) == (window != mainWindow));
 
+			for (auto child : window->children)
+			{
+				TEST_ASSERT(child->parent == window);
+			}
+
 			if (!window->visible)
 			{
 				TEST_ASSERT(!topMostedWindowsInOrder.Contains(window));
@@ -129,6 +134,11 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 				}
 			}
 		}
+
+		TEST_ASSERT(
+			topMostedWindowsInOrder.Count() + ordinaryWindowsInOrder.Count() ==
+			From(registeredWindows.Values()).Where([](auto window) { return window->visible; }).Count()
+			);
 	}
 
 	void TakeSnapshot(const wchar_t* title)
@@ -547,6 +557,46 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Closing windows")
 	{
+		Window mainWindow(L'X', true);
+		wm.RegisterWindow(&mainWindow);
+
+		Window windowA(L'A', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'B', true);
+		wm.RegisterWindow(&windowB);
+
+		Window windowC(L'C', true);
+		wm.RegisterWindow(&windowC);
+
+		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
+		windowA.SetBounds(Bounds(1, 1, 4, 3));
+		windowB.SetBounds(Bounds(2, 2, 4, 3));
+		windowC.SetBounds(Bounds(3, 3, 4, 3));
+
+		windowB.SetParent(&windowA);
+		windowC.SetParent(&windowA);
+
+		wm.Start(&mainWindow);
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &windowA);
+		TEST_ASSERT(windowC.parent == &windowA);
+		mainWindow.Show();
+		windowA.Show();
+		windowB.Show();
+		windowC.Show();
+		TAKE_SNAPSHOT_INITIAL();
+
+		TAKE_SNAPSHOT(wm.UnregisterWindow(&windowA));
+		TEST_ASSERT(windowA.parent == nullptr);
+		TEST_ASSERT(windowA.children.Count() == 0);
+		TEST_ASSERT(!wm.registeredWindows.Keys().Contains(windowA.id));
+
+		wm.Stop();
+		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowB);
+		wm.UnregisterWindow(&windowC);
+		wm.EnsureCleanedUp();
 	}});
 
 	WM_TEST_CASE(L"Changing topmost of windows")

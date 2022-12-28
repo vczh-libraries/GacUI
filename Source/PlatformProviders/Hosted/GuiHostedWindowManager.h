@@ -184,15 +184,6 @@ Window
 
 				~Window()
 				{
-					if (windowManager)
-					{
-						for (auto child : children)
-						{
-							child->SetParent(parent);
-						}
-						children.Clear();
-						SetParent(nullptr);
-					}
 				}
 
 				bool IsEventuallyTopMost()
@@ -533,14 +524,21 @@ WindowManager
 					if (mainWindow)
 					{
 						window->SetVisible(false);
+
+						auto parent = window->parent;
+						for (auto child : window->children)
+						{
+							child->parent = parent;
+						}
+
+						CopyFrom(parent->children, window->children, true);
+						parent->children.Remove(window);
+						window->parent = nullptr;
+						window->children.Clear();
 					}
 
 					registeredWindows.Remove(window->id);
 					window->windowManager = nullptr;
-
-					topMostedWindowsInOrder.Remove(window);
-					ordinaryWindowsInOrder.Remove(window);
-					needRefresh = true;
 #undef ERROR_MESSAGE_PREFIX
 				}
 
