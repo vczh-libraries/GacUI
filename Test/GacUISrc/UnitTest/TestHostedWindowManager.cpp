@@ -922,6 +922,49 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Disabling windows with topmost")
 	{
+		Window mainWindow(L'X', true);
+		wm.RegisterWindow(&mainWindow);
+
+		Window windowA(L'A', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'B', true);
+		wm.RegisterWindow(&windowB);
+
+		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
+		windowA.SetBounds(Bounds(1, 1, 4, 3));
+		windowB.SetBounds(Bounds(2, 2, 4, 3));
+
+		wm.Start(&mainWindow);
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &mainWindow);
+		mainWindow.Show();
+		windowA.Show();
+		windowB.Show();
+		TAKE_SNAPSHOT_INITIAL();
+
+		TAKE_SNAPSHOT(windowA.SetEnabled(false));
+		TAKE_SNAPSHOT(windowB.SetEnabled(false));
+		TAKE_SNAPSHOT(mainWindow.SetEnabled(false));
+
+		TAKE_SNAPSHOT(windowA.SetEnabled(true));
+		DONT_TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowA.Activate());
+		DONT_TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowA.Deactivate());
+
+		TAKE_SNAPSHOT(windowA.Activate());
+		TAKE_SNAPSHOT(mainWindow.SetEnabled(true));
+		DONT_TAKE_SNAPSHOT(windowB.Activate());
+		DONT_TAKE_SNAPSHOT(windowA.Activate());
+		DONT_TAKE_SNAPSHOT(windowB.Activate());
+		TAKE_SNAPSHOT(windowA.Deactivate());
+
+		wm.Stop();
+		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowA);
+		wm.UnregisterWindow(&windowB);
+		wm.EnsureCleanedUp();
 	}});
 
 	WM_TEST_CASE(L"Hiding windows with topmost")
