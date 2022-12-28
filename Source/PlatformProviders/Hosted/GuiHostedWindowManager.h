@@ -517,12 +517,11 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::UnregisterWindow(Window<T>*)#"
 					CHECK_ERROR(window->windowManager == this, ERROR_MESSAGE_PREFIX L"The window has not been registered.");
 					CHECK_ERROR(window != mainWindow, ERROR_MESSAGE_PREFIX L"The main window cannot be unregistered before stopping the window manager.");
-					CHECK_ERROR(!mainWindow, L"Not Implemented.");
-
-					if (activeWindow == window)
+					if (mainWindow)
 					{
-						window->Deactivate();
+						window->SetVisible(false);
 					}
+
 					registeredWindows.Remove(window->id);
 					window->windowManager = nullptr;
 
