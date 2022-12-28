@@ -177,6 +177,24 @@ Window
 					EnsureChildrenMovedInFrontOf(isEventuallyTopMost, (visible ? this : visibleParent));
 				}
 
+				void FixRenderedAsActive()
+				{
+					if (enabled && visible)
+					{
+						auto current = windowManager->activeWindow;
+						while (current && current != this)
+						{
+							current = current->parent;
+						}
+						if (current == this) renderedAsActive = true;
+					}
+					else
+					{
+						if (active) Deactivate();
+						if (renderedAsActive) renderedAsActive = false;
+					}
+				}
+
 			public:
 				Window(T _id, bool _normal) :id(_id), normal(_normal)
 				{
@@ -258,10 +276,10 @@ Window
 					ENSURE_WINDOW_MANAGER;
 
 					if (visible == value) return;
-					if (!value) Deactivate();
 
 					bool parentEventuallyTopMost = parent ? parent->IsEventuallyTopMost() : false;
 					visible = value;
+					FixRenderedAsActive();
 
 					FixWindowInOrder(
 						parentEventuallyTopMost || (!visible && topMost),
@@ -291,22 +309,9 @@ Window
 
 					if (enabled == value) return;
 					enabled = value;
-					windowManager->needRefresh = true;
+					FixRenderedAsActive();
 
-					if (enabled)
-					{
-						auto current = windowManager->activeWindow;
-						while (current && current != this)
-						{
-							current = current->parent;
-						}
-						if (current == this) renderedAsActive = true;
-					}
-					else
-					{
-						if (active) Deactivate();
-						if (renderedAsActive) renderedAsActive = false;
-					}
+					windowManager->needRefresh = true;
 #undef ERROR_MESSAGE_PREFIX
 				}
 
