@@ -6,35 +6,43 @@
 [XXBBBBX]
 [XXXXXXX]
 
+windowA.SetTopMost(true)
+[XXXXXXX]
+[XaaaaXX]
+[XaaaaBX]
+[XaaaaBX]
+[XXBBBBX]
+[XXXXXXX]
+
 windowA.SetEnabled(false)
 [XXXXXXX]
 [X~a~aXX]
-[XaBBBBX]
-[X~BBBBX]
+[Xa~a~BX]
+[X~a~aBX]
 [XXBBBBX]
 [XXXXXXX]
 
 windowB.SetEnabled(false)
 [XXXXXXX]
 [X~a~aXX]
-[Xa~b~bX]
-[X~b~b~X]
+[Xa~a~bX]
+[X~a~a~X]
 [XX~b~bX]
 [XXXXXXX]
 
 mainWindow.SetEnabled(false)
 [~x~x~x~]
 [x~a~a~x]
-[~a~b~b~]
-[x~b~b~x]
+[~a~a~b~]
+[x~a~a~x]
 [~x~b~b~]
 [x~x~x~x]
 
 windowA.SetEnabled(true)
 [~x~x~x~]
 [xaaaa~x]
-[~a~b~b~]
-[xab~b~x]
+[~aaaab~]
+[xaaaa~x]
 [~x~b~b~]
 [x~x~x~x]
 

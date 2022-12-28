@@ -943,6 +943,7 @@ TEST_FILE
 		windowB.Show();
 		TAKE_SNAPSHOT_INITIAL();
 
+		TAKE_SNAPSHOT(windowA.SetTopMost(true));
 		TAKE_SNAPSHOT(windowA.SetEnabled(false));
 		TAKE_SNAPSHOT(windowB.SetEnabled(false));
 		TAKE_SNAPSHOT(mainWindow.SetEnabled(false));
@@ -953,6 +954,8 @@ TEST_FILE
 		DONT_TAKE_SNAPSHOT(windowB.Activate());
 		TAKE_SNAPSHOT(windowA.Deactivate());
 
+		TAKE_SNAPSHOT(windowA.SetTopMost(false));
+		TAKE_SNAPSHOT(windowB.SetTopMost(true));
 		TAKE_SNAPSHOT(windowA.Activate());
 		TAKE_SNAPSHOT(mainWindow.SetEnabled(true));
 		DONT_TAKE_SNAPSHOT(windowB.Activate());
