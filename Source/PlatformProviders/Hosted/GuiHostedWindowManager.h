@@ -288,9 +288,25 @@ Window
 				{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetEnabled(bool)#"
 					ENSURE_WINDOW_MANAGER;
-					CHECK_ERROR(value, L"Not Implemented.");
 
 					if (enabled == value) return;
+					enabled = value;
+					windowManager->needRefresh = true;
+
+					if (enabled)
+					{
+						auto current = windowManager->activeWindow;
+						while (current && current != this)
+						{
+							current = current->parent;
+						}
+						if (current == this) renderedAsActive = true;
+					}
+					else
+					{
+						if (active) Deactivate();
+						if (renderedAsActive) renderedAsActive = false;
+					}
 #undef ERROR_MESSAGE_PREFIX
 				}
 
