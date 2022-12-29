@@ -1186,5 +1186,5 @@ TEST_FILE
 		wm.EnsureCleanedUp();
 	}});
 
-	// TODO: non-normal windows
+	// TODO: test crashing
 }
