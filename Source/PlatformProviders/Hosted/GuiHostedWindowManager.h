@@ -612,6 +612,24 @@ WindowManager
 					{
 						window->parent = nullptr;
 						window->children.Clear();
+
+						if (window->active)
+						{
+							window->active = false;
+							OnLostFocus(window);
+						}
+
+						if (window->renderedAsActive)
+						{
+							window->renderedAsActive = false;
+							OnDeactivated(window);
+						}
+
+						if (window->visible)
+						{
+							window->visible = false;
+							OnClosed(window);
+						}
 					}
 #undef ERROR_MESSAGE_PREFIX
 				}

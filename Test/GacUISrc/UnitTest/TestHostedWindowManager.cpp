@@ -262,7 +262,7 @@ TEST_FILE
 		mainWindow.Show();								EVENTS(XO, XF, XA);
 		TAKE_SNAPSHOT_INITIAL();
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa);
 		wm.UnregisterWindow(&mainWindow);
 		wm.EnsureCleanedUp();
 	}});
@@ -295,7 +295,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.Activate());				EVENTS(BF, BA, Xf);
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Bf, Ba);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa, Ao, Bo);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -330,7 +330,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.Deactivate());			EVENTS(XF, Bf, Ba);
 		TAKE_SNAPSHOT(mainWindow.Deactivate());			EVENTS(Xf, Xa);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Ao, Bo);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -399,7 +399,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowK.Activate());				EVENTS(KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Ia, Kf, Ka);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa, Ao, Bo, Co, Io, Jo, Ko);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -474,7 +474,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowA.Deactivate());			EVENTS(Af, Aa, XF);
 		TAKE_SNAPSHOT(mainWindow.Deactivate());			EVENTS(Xf, Xa);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Ao, Bo, Co, Io, Jo, Ko);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -525,7 +525,7 @@ TEST_FILE
 		DONT_TAKE_SNAPSHOT(windowB.Activate());			EVENTS(*);
 		TAKE_SNAPSHOT(windowA.Deactivate());			EVENTS(Af, Aa, XF);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa, Ao, Bo);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -577,7 +577,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.SetVisible(false));		EVENTS(Bo);
 		TAKE_SNAPSHOT(windowB.SetVisible(true));		EVENTS(BO);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa, Ao, Bo, Co);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -625,7 +625,7 @@ TEST_FILE
 		TEST_ASSERT(windowA.children.Count() == 0);
 		TEST_ASSERT(!wm.registeredWindows.Keys().Contains(windowA.id));
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xa, Bo, Co, Cf, Ca);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowB);
 		wm.UnregisterWindow(&windowC);
@@ -693,7 +693,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.Activate());				EVENTS(BF, BA, Af, Aa);
 		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, Bf);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xa, Ao, Bo, Ba, Co, Cf, Ca);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -737,7 +737,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Xf);
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Af, Aa);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa, Ao, Bo);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -773,7 +773,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.Deactivate());			EVENTS(Bf, Ba, XF);
 		TAKE_SNAPSHOT(mainWindow.Deactivate());			EVENTS(Xf, Xa);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Ao, Bo);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -883,7 +883,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowK.Activate());				EVENTS(KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Ia, Kf, Ka);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa, Ao, Bo, Co, Io, Jo, Ko);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -989,7 +989,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(mainWindow.Deactivate());			EVENTS(Xf, Xa);
 		TAKE_SNAPSHOT(windowK.Activate());				EVENTS(KF, KA, XA, IA);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xa, Ao, Bo, Co, Io, Ia, Jo, Ko, Kf, Ka);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -1043,7 +1043,7 @@ TEST_FILE
 		DONT_TAKE_SNAPSHOT(windowB.Activate());			EVENTS(*);
 		TAKE_SNAPSHOT(windowA.Deactivate());			EVENTS(Af, Aa, XF);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xf, Xa, Ao, Bo);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -1105,7 +1105,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowC.Deactivate());			EVENTS(Cf, Ca, BF);
 		TAKE_SNAPSHOT(windowB.BringToFront());			EVENTS(*);
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xa, Ao, Bo, Bf, Ba, Co);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
@@ -1168,7 +1168,7 @@ TEST_FILE
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));		EVENTS(*);
 		TAKE_SNAPSHOT(windowI.SetTopMost(true));		EVENTS(*);
-		TAKE_SNAPSHOT(wm.UnregisterWindow(&windowA));	EVENTS(Ao, Aa);
+		TAKE_SNAPSHOT(wm.UnregisterWindow(&windowA));	EVENTS(Ao);
 		TEST_ASSERT(!windowA.visible);
 		TEST_ASSERT(!windowA.active);
 		TEST_ASSERT(!windowA.renderedAsActive);
@@ -1176,7 +1176,7 @@ TEST_FILE
 		TEST_ASSERT(windowA.children.Count() == 0);
 		TEST_ASSERT(!wm.registeredWindows.Keys().Contains(windowA.id));
 
-		wm.Stop();
+		wm.Stop();										EVENTS(Xo, Xa, Bo, Co, Io, Ia, Jo, Ko, Kf, Ka);
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowB);
 		wm.UnregisterWindow(&windowC);
