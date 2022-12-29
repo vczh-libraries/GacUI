@@ -463,16 +463,16 @@ TEST_FILE
 		windowK.Show();									EVENTS(KO, KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT_INITIAL();
 
-		TAKE_SNAPSHOT(windowK.Deactivate());
-		TAKE_SNAPSHOT(windowI.Deactivate());
-		TAKE_SNAPSHOT(windowJ.Activate());
-		TAKE_SNAPSHOT(windowJ.Deactivate());
-		TAKE_SNAPSHOT(windowI.Deactivate());
-		TAKE_SNAPSHOT(windowC.Activate());
-		TAKE_SNAPSHOT(windowC.Deactivate());
-		TAKE_SNAPSHOT(windowB.Deactivate());
-		TAKE_SNAPSHOT(windowA.Deactivate());
-		TAKE_SNAPSHOT(mainWindow.Deactivate());
+		TAKE_SNAPSHOT(windowK.Deactivate());			EVENTS(Kf, Ka, IF);
+		TAKE_SNAPSHOT(windowI.Deactivate());			EVENTS(If, Ia, XF);
+		TAKE_SNAPSHOT(windowJ.Activate());				EVENTS(JF, JA, Xf, IA);
+		TAKE_SNAPSHOT(windowJ.Deactivate());			EVENTS(Jf, Ja, IF);
+		TAKE_SNAPSHOT(windowI.Deactivate());			EVENTS(If, Ia, XF);
+		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, Xf, AA, BA);
+		TAKE_SNAPSHOT(windowC.Deactivate());			EVENTS(Cf, Ca, BF);
+		TAKE_SNAPSHOT(windowB.Deactivate());			EVENTS(Bf, Ba, AF);
+		TAKE_SNAPSHOT(windowA.Deactivate());			EVENTS(Af, Aa, XF);
+		TAKE_SNAPSHOT(mainWindow.Deactivate());			EVENTS(Xf, Xa);
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
