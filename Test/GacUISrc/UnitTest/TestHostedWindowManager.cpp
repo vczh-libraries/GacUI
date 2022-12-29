@@ -34,10 +34,11 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 		});
 	}
 
-#pragma warning(push)
-#pragma warning(disable: 4297)
-	~WindowManager()
+	void EnsureCleanedUp()
 	{
+		TEST_ASSERT(!mainWindow);
+		TEST_ASSERT(registeredWindows.Count() == 0);
+
 		auto snapshotPath = FilePath(GetTestBaselinePath()) / (unitTestTitle + L".txt");
 #ifdef UPDATE_SNAPSHOT
 		FileStream fileStream(snapshotPath.GetFullPath(), FileStream::WriteOnly);
@@ -57,19 +58,18 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 		for (auto [lines, snapshot] : snapshots)
 		{
 			WString baseline = GenerateToStream([&](StreamWriter& writer)
-			{
-				for (vint i = 0; i < lines; i++)
 				{
-					writer.WriteLine(reader.ReadLine());
-				}
-			});
+					for (vint i = 0; i < lines; i++)
+					{
+						writer.WriteLine(reader.ReadLine());
+					}
+				});
 			TEST_ASSERT(snapshot == baseline);
 			TEST_ASSERT(reader.ReadLine() == L"");
 		}
 		TEST_ASSERT(reader.ReadLine() == L"END");
 #endif
 	}
-#pragma warning(pop)
 
 	void CheckWindowStatus()
 	{

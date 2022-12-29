@@ -582,14 +582,6 @@ WindowManager
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				void EnsureCleanedUp()
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::EnsureCleanedUp()#"
-					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"Stop() should be called before deleting the window manager.");
-					CHECK_ERROR(registeredWindows.Count() == 0, ERROR_MESSAGE_PREFIX L"All windows must be unregistered before deleting the window manager.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-
 				Window<T>* HitTest(NativePoint position)
 				{
 					for (auto window : topMostedWindowsInOrder)
