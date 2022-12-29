@@ -5,6 +5,7 @@ using namespace vl;
 using namespace vl::collections;
 using namespace vl::stream;
 using namespace vl::filesystem;
+using namespace vl::regex;
 using namespace vl::presentation;
 
 namespace hosted_window_manager_tests
@@ -22,6 +23,8 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 {
 	WString						unitTestTitle;
 	List<Pair<vint, WString>>	snapshots;
+
+	Regex						regexEventDelimiter{ L",/s*" };
 	List<WString>				events;
 
 	void OnOpened(Window* window) override		{ events.Add(WString::FromChar(window->id) + L"O"); }
@@ -152,6 +155,18 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 			);
 	}
 
+	void AssertEvents(const wchar_t* eventNames)
+	{
+		List<Ptr<RegexMatch>> matches;
+		regexEventDelimiter.Split(eventNames, true, matches);
+
+		SortedList<WString> expected, actual;
+		CopyFrom(expected, From(matches).Select([](auto && match) { return match->Result().Value(); }));
+		CopyFrom(actual, events);
+		events.Clear();
+		TEST_ASSERT(CompareEnumerable(expected, actual) == 0);
+	}
+
 	void TakeSnapshot(const wchar_t* title)
 	{
 		vint w = 0;
@@ -214,6 +229,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 		wm.TakeSnapshot(TITLE);						\
 	}while(false)									\
 
+#define EVENTS(...) do{ wm.AssertEvents(L ## #__VA_ARGS__); }while(false)
 #define TAKE_SNAPSHOT(COMMAND) TAKE_SNAPSHOT_INTERNAL(COMMAND, L ## #COMMAND)
 #define TAKE_SNAPSHOT_INITIAL() TAKE_SNAPSHOT_INTERNAL((void)nullptr, L"<Initial>")
 
@@ -240,7 +256,7 @@ TEST_FILE
 		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
 
 		wm.Start(&mainWindow);
-		mainWindow.Show();
+		mainWindow.Show();						EVENTS(XO, XF, XA);
 		TAKE_SNAPSHOT_INITIAL();
 
 		wm.Stop();
@@ -266,15 +282,15 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
+		mainWindow.Show();						EVENTS(XO, XF, XA);
+		windowA.Show();							EVENTS(AO, AF, AA, Xf);
+		windowB.Show();							EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
-		TAKE_SNAPSHOT(windowA.Activate());
-		TAKE_SNAPSHOT(mainWindow.Activate());
-		TAKE_SNAPSHOT(windowB.Activate());
-		TAKE_SNAPSHOT(mainWindow.Activate());
+		TAKE_SNAPSHOT(windowA.Activate());		EVENTS(AF, AA, Bf, Ba);
+		TAKE_SNAPSHOT(mainWindow.Activate());	EVENTS(XF, Af, Aa);
+		TAKE_SNAPSHOT(windowB.Activate());		EVENTS(BF, BA, Xf);
+		TAKE_SNAPSHOT(mainWindow.Activate());	EVENTS(XF, Bf, Ba);
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
