@@ -158,7 +158,10 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	void AssertEvents(const wchar_t* eventNames)
 	{
 		List<Ptr<RegexMatch>> matches;
-		regexEventDelimiter.Split(eventNames, true, matches);
+		if (wcscmp(eventNames, L"*") != 0)
+		{
+			regexEventDelimiter.Split(eventNames, true, matches);
+		}
 
 		SortedList<WString> expected, actual;
 		CopyFrom(expected, From(matches).Select([](auto && match) { return match->Result().Value(); }));
@@ -317,15 +320,15 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
-		DONT_TAKE_SNAPSHOT(windowA.Deactivate());
-		DONT_TAKE_SNAPSHOT(mainWindow.Deactivate());
-		TAKE_SNAPSHOT(windowB.Deactivate());
-		TAKE_SNAPSHOT(mainWindow.Deactivate());
+		DONT_TAKE_SNAPSHOT(windowA.Deactivate());		EVENTS(*);
+		DONT_TAKE_SNAPSHOT(mainWindow.Deactivate());	EVENTS(*);
+		TAKE_SNAPSHOT(windowB.Deactivate());			EVENTS(XF, Bf, Ba);
+		TAKE_SNAPSHOT(mainWindow.Deactivate());			EVENTS(Xf, Xa);
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
