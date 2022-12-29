@@ -186,12 +186,20 @@ Window
 						{
 							current = current->parent;
 						}
-						if (current == this) renderedAsActive = true;
+						if (current == this && !renderedAsActive)
+						{
+							renderedAsActive = true;
+							windowManager->OnActivated(this);
+						}
 					}
-					else
+					else if (active)
 					{
-						if (active) Deactivate();
-						if (renderedAsActive) renderedAsActive = false;
+						Deactivate();
+					}
+					else if (renderedAsActive)
+					{
+						renderedAsActive = false;
+						windowManager->OnDeactivated(this);
 					}
 				}
 
@@ -285,6 +293,8 @@ Window
 						parentEventuallyTopMost || (!visible && topMost),
 						parentEventuallyTopMost || (visible && topMost)
 						);
+
+					if (visible) windowManager->OnOpened(this); else windowManager->OnClosed(this);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -312,6 +322,7 @@ Window
 					FixRenderedAsActive();
 
 					windowManager->needRefresh = true;
+					if (enabled) windowManager->OnEnabled(this); else windowManager->OnDisabled(this);
 #undef ERROR_MESSAGE_PREFIX
 				}
 
@@ -385,9 +396,11 @@ Window
 						if (previous)
 						{
 							previous->active = false;
+							windowManager->OnLostFocus(previous);
 						}
 						windowManager->activeWindow = this;
 						active = true;
+						windowManager->OnGotFocus(this);
 					}
 
 					vint previousCount = 0;
@@ -438,7 +451,11 @@ Window
 						auto current = previous;
 						while (current != commonParent)
 						{
-							current->renderedAsActive = false;
+							if (current->renderedAsActive)
+							{
+								current->renderedAsActive = false;
+								windowManager->OnDeactivated(current);
+							}
 							current = current->parent;
 						}
 					}
@@ -446,9 +463,10 @@ Window
 						auto current = this;
 						while (current != commonParent)
 						{
-							if (current->enabled)
+							if (current->enabled && !current->renderedAsActive)
 							{
 								current->renderedAsActive = true;
+								windowManager->OnActivated(current);
 							}
 							current = current->parent;
 						}
@@ -472,6 +490,9 @@ Window
 					if (!active) return;
 					active = false;
 					renderedAsActive = false;
+					windowManager->OnLostFocus(this);
+					windowManager->OnDeactivated(this);
+
 					if (windowManager->activeWindow == this)
 					{
 						auto current = parent;
@@ -479,7 +500,11 @@ Window
 						{
 							current = current->parent;
 						}
-						if (current) current->active = true;
+						if (current)
+						{
+							current->active = true;
+							windowManager->OnGotFocus(current);
+						}
 						windowManager->activeWindow = current;
 						windowManager->needRefresh = true;
 					}
@@ -508,6 +533,15 @@ WindowManager
 				Window<T>*									mainWindow = nullptr;
 				Window<T>*									activeWindow = nullptr;
 				bool										needRefresh = false;
+
+				virtual void OnOpened(Window<T>* window) = 0;
+				virtual void OnClosed(Window<T>* window) = 0;
+				virtual void OnEnabled(Window<T>* window) = 0;
+				virtual void OnDisabled(Window<T>* window) = 0;
+				virtual void OnGotFocus(Window<T>* window) = 0;
+				virtual void OnLostFocus(Window<T>* window) = 0;
+				virtual void OnActivated(Window<T>* window) = 0;
+				virtual void OnDeactivated(Window<T>* window) = 0;
 
 				void RegisterWindow(Window<T>* window)
 				{

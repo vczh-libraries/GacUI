@@ -22,6 +22,16 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 {
 	WString						unitTestTitle;
 	List<Pair<vint, WString>>	snapshots;
+	List<WString>				events;
+
+	void OnOpened(Window* window) override		{ events.Add(WString::FromChar(window->id) + L"O"); }
+	void OnClosed(Window* window) override		{ events.Add(WString::FromChar(window->id) + L"o"); }
+	void OnEnabled(Window* window) override		{ events.Add(WString::FromChar(window->id) + L"E"); }
+	void OnDisabled(Window* window) override	{ events.Add(WString::FromChar(window->id) + L"e"); }
+	void OnGotFocus(Window* window) override	{ events.Add(WString::FromChar(window->id) + L"F"); }
+	void OnLostFocus(Window* window) override	{ events.Add(WString::FromChar(window->id) + L"f"); }
+	void OnActivated(Window* window) override	{ events.Add(WString::FromChar(window->id) + L"A"); }
+	void OnDeactivated(Window* window) override	{ events.Add(WString::FromChar(window->id) + L"a"); }
 
 	WindowManager(const wchar_t* _unitTestTitle)
 	{
@@ -38,6 +48,7 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 	{
 		TEST_ASSERT(!mainWindow);
 		TEST_ASSERT(registeredWindows.Count() == 0);
+		TEST_ASSERT(events.Count() == 0);
 
 		auto snapshotPath = FilePath(GetTestBaselinePath()) / (unitTestTitle + L".txt");
 #ifdef UPDATE_SNAPSHOT
@@ -1156,6 +1167,5 @@ TEST_FILE
 		wm.EnsureCleanedUp();
 	}});
 
-	// TODO: Assert events sent from window manager
 	// TODO: non-normal windows
 }
