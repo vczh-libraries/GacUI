@@ -508,7 +508,7 @@ TEST_FILE
 		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
-		TAKE_SNAPSHOT(windowA.SetEnabled(false));		EVENTS(Ae, Aa);
+		TAKE_SNAPSHOT(windowA.SetEnabled(false));		EVENTS(Ae);
 		TAKE_SNAPSHOT(windowB.SetEnabled(false));		EVENTS(Be, Bf, Ba, XF);
 		TAKE_SNAPSHOT(mainWindow.SetEnabled(false));	EVENTS(Xe, Xf, Xa);
 
@@ -854,7 +854,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Ia, Kf, Ka);
 
 		TAKE_SNAPSHOT(windowI.SetTopMost(false));		EVENTS(*);
-		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Ia, Kf, Ka);
+		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Xf);
 		TAKE_SNAPSHOT(windowB.Activate());				EVENTS(BF, BA, Af);
 		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, Bf);
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Aa, Ba, Cf, Ca);
@@ -864,7 +864,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Ia, Kf, Ka);
 
 		DONT_TAKE_SNAPSHOT(windowC.SetTopMost(true));	EVENTS(*);
-		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Ia, Kf, Ka);
+		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Xf);
 		TAKE_SNAPSHOT(windowB.Activate());				EVENTS(BF, BA, Af);
 		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, Bf);
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Aa, Ba, Cf, Ca);
@@ -874,7 +874,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Ia, Kf, Ka);
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(false));		EVENTS(*);
-		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Ia, Kf, Ka);
+		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Xf);
 		TAKE_SNAPSHOT(windowB.Activate());				EVENTS(BF, BA, Af);
 		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, Bf);
 		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Aa, Ba, Cf, Ca);
@@ -1097,7 +1097,7 @@ TEST_FILE
 		TAKE_SNAPSHOT(windowB.SetVisible(false));		EVENTS(Bo);
 		TAKE_SNAPSHOT(windowB.SetVisible(true));		EVENTS(BO);
 
-		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, XA, BA);
+		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, Xf, BA);
 		TAKE_SNAPSHOT(windowB.SetVisible(false));		EVENTS(Bo, Ba);
 		DONT_TAKE_SNAPSHOT(windowC.Activate());			EVENTS(*);
 		TAKE_SNAPSHOT(windowB.SetVisible(true));		EVENTS(BO, BA);
