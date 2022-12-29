@@ -259,7 +259,7 @@ TEST_FILE
 		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
 
 		wm.Start(&mainWindow);
-		mainWindow.Show();						EVENTS(XO, XF, XA);
+		mainWindow.Show();								EVENTS(XO, XF, XA);
 		TAKE_SNAPSHOT_INITIAL();
 
 		wm.Stop();
@@ -285,15 +285,15 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
-		mainWindow.Show();						EVENTS(XO, XF, XA);
-		windowA.Show();							EVENTS(AO, AF, AA, Xf);
-		windowB.Show();							EVENTS(BO, BF, BA, Af, Aa);
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
-		TAKE_SNAPSHOT(windowA.Activate());		EVENTS(AF, AA, Bf, Ba);
-		TAKE_SNAPSHOT(mainWindow.Activate());	EVENTS(XF, Af, Aa);
-		TAKE_SNAPSHOT(windowB.Activate());		EVENTS(BF, BA, Xf);
-		TAKE_SNAPSHOT(mainWindow.Activate());	EVENTS(XF, Bf, Ba);
+		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Bf, Ba);
+		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Af, Aa);
+		TAKE_SNAPSHOT(windowB.Activate());				EVENTS(BF, BA, Xf);
+		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Bf, Ba);
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -381,23 +381,23 @@ TEST_FILE
 		TEST_ASSERT(windowI.parent == &mainWindow);
 		TEST_ASSERT(windowJ.parent == &windowI);
 		TEST_ASSERT(windowK.parent == &windowI);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
-		windowI.Show();
-		windowJ.Show();
-		windowK.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
+		windowI.Show();									EVENTS(IO, IF, IA, Aa, Ba, Cf, Ca);
+		windowJ.Show();									EVENTS(JO, JF, JA, If);
+		windowK.Show();									EVENTS(KO, KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT_INITIAL();
 
-		TAKE_SNAPSHOT(windowA.Activate());
-		TAKE_SNAPSHOT(windowB.Activate());
-		TAKE_SNAPSHOT(windowC.Activate());
-		TAKE_SNAPSHOT(mainWindow.Activate());
-		TAKE_SNAPSHOT(windowI.Activate());
-		TAKE_SNAPSHOT(windowJ.Activate());
-		TAKE_SNAPSHOT(windowK.Activate());
-		TAKE_SNAPSHOT(mainWindow.Activate());
+		TAKE_SNAPSHOT(windowA.Activate());				EVENTS(AF, AA, Ia, Kf, Ka);
+		TAKE_SNAPSHOT(windowB.Activate());				EVENTS(BF, BA, Af);
+		TAKE_SNAPSHOT(windowC.Activate());				EVENTS(CF, CA, Bf);
+		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Aa, Ba, Cf, Ca);
+		TAKE_SNAPSHOT(windowI.Activate());				EVENTS(IF, IA, Xf);
+		TAKE_SNAPSHOT(windowJ.Activate());				EVENTS(JF, JA, If);
+		TAKE_SNAPSHOT(windowK.Activate());				EVENTS(KF, KA, Jf, Ja);
+		TAKE_SNAPSHOT(mainWindow.Activate());			EVENTS(XF, Ia, Kf, Ka);
 
 		wm.Stop();
 		wm.UnregisterWindow(&mainWindow);
@@ -454,13 +454,13 @@ TEST_FILE
 		TEST_ASSERT(windowI.parent == &mainWindow);
 		TEST_ASSERT(windowJ.parent == &windowI);
 		TEST_ASSERT(windowK.parent == &windowI);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
-		windowI.Show();
-		windowJ.Show();
-		windowK.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
+		windowI.Show();									EVENTS(IO, IF, IA, Aa, Ba, Cf, Ca);
+		windowJ.Show();									EVENTS(JO, JF, JA, If);
+		windowK.Show();									EVENTS(KO, KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowK.Deactivate());
@@ -503,9 +503,9 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetEnabled(false));
@@ -557,10 +557,10 @@ TEST_FILE
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
 		TEST_ASSERT(windowC.parent == &windowB);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowC.SetVisible(false));
@@ -611,10 +611,10 @@ TEST_FILE
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &windowA);
 		TEST_ASSERT(windowC.parent == &windowA);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf, Ba);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(wm.UnregisterWindow(&windowA));
@@ -657,10 +657,10 @@ TEST_FILE
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
 		TEST_ASSERT(windowC.parent == &windowB);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
@@ -719,9 +719,9 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
@@ -762,9 +762,9 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
@@ -824,13 +824,13 @@ TEST_FILE
 		TEST_ASSERT(windowI.parent == &mainWindow);
 		TEST_ASSERT(windowJ.parent == &windowI);
 		TEST_ASSERT(windowK.parent == &windowI);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
-		windowI.Show();
-		windowJ.Show();
-		windowK.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
+		windowI.Show();									EVENTS(IO, IF, IA, Aa, Ba, Cf, Ca);
+		windowJ.Show();									EVENTS(JO, JF, JA, If);
+		windowK.Show();									EVENTS(KO, KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowI.SetTopMost(true));
@@ -938,13 +938,13 @@ TEST_FILE
 		TEST_ASSERT(windowI.parent == &mainWindow);
 		TEST_ASSERT(windowJ.parent == &windowI);
 		TEST_ASSERT(windowK.parent == &windowI);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
-		windowI.Show();
-		windowJ.Show();
-		windowK.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
+		windowI.Show();									EVENTS(IO, IF, IA, Aa, Ba, Cf, Ca);
+		windowJ.Show();									EVENTS(JO, JF, JA, If);
+		windowK.Show();									EVENTS(KO, KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
@@ -1018,9 +1018,9 @@ TEST_FILE
 		wm.Start(&mainWindow);
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
@@ -1075,10 +1075,10 @@ TEST_FILE
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &mainWindow);
 		TEST_ASSERT(windowC.parent == &windowB);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af, Aa);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
@@ -1157,13 +1157,13 @@ TEST_FILE
 		TEST_ASSERT(windowI.parent == &mainWindow);
 		TEST_ASSERT(windowJ.parent == &windowI);
 		TEST_ASSERT(windowK.parent == &windowI);
-		mainWindow.Show();
-		windowA.Show();
-		windowB.Show();
-		windowC.Show();
-		windowI.Show();
-		windowJ.Show();
-		windowK.Show();
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af);
+		windowC.Show();									EVENTS(CO, CF, CA, Bf);
+		windowI.Show();									EVENTS(IO, IF, IA, Aa, Ba, Cf, Ca);
+		windowJ.Show();									EVENTS(JO, JF, JA, If);
+		windowK.Show();									EVENTS(KO, KF, KA, Jf, Ja);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TAKE_SNAPSHOT(windowA.SetTopMost(true));
