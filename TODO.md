@@ -19,6 +19,8 @@
     - Call `StartHostedRendering` and `StopHostedRendering` in `GlobalTimer`
     - Call `INativeWindowListener::ForceRefreshing` of all windows in order
     - Handle failures
+- Stop using Webdings in default template.
+- Add HostedWindow theme.
 
 ## OS Provider Features
 
