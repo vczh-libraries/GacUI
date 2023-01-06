@@ -586,6 +586,15 @@ WindowManager
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::Start(Window<T>*)#"
 					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has started.");
 					CHECK_ERROR(!window->parent, ERROR_MESSAGE_PREFIX L"A main window should not have a parent window.");
+
+					for (auto popupWindow : registeredWindows.Values())
+					{
+						if (!popupWindow->normal)
+						{
+							CHECK_ERROR(popupWindow->parent, ERROR_MESSAGE_PREFIX L"A popup window should have a parent.");
+						}
+					}
+
 					mainWindow = window;
 
 					for (auto normalWindow : registeredWindows.Values())

@@ -267,6 +267,71 @@ TEST_FILE
 		wm.EnsureCleanedUp();
 	}});
 
+	WM_TEST_CASE(L"Detect Illegal Operations")
+	{
+		Window mainWindow(L'X', true);
+		TEST_ERROR(mainWindow.SetBounds(Bounds(0, 0, 8, 7)));
+		mainWindow.visible = true;
+		TEST_ERROR(wm.RegisterWindow(&mainWindow));
+		mainWindow.visible = false;
+		wm.RegisterWindow(&mainWindow);
+		TEST_ERROR(wm.RegisterWindow(&mainWindow));
+		{
+			Window anotherMainWindow(L'X', true);
+			TEST_ERROR(wm.RegisterWindow(&anotherMainWindow));
+		}
+
+		Window windowA(L'A', true);
+		wm.RegisterWindow(&windowA);
+
+		Window windowB(L'B', true);
+		wm.RegisterWindow(&windowB);
+
+		Window windowC(L'C', false);
+		wm.RegisterWindow(&windowC);
+
+		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
+		windowA.SetBounds(Bounds(1, 1, 4, 3));
+		windowB.SetBounds(Bounds(2, 2, 4, 3));
+		windowC.SetBounds(Bounds(3, 3, 4, 3));
+
+		TEST_ERROR(windowA.SetParent(&windowC));
+		windowB.SetParent(&windowA);
+		TEST_ERROR(windowA.SetParent(&windowB));
+		TEST_ASSERT(windowA.parent == nullptr);
+		TEST_ASSERT(windowB.parent == &windowA);
+		TEST_ASSERT(windowC.parent == nullptr);
+
+		TEST_ERROR(wm.Start(&windowB));
+		TEST_ERROR(wm.Start(&mainWindow));
+		windowC.SetParent(&mainWindow);
+		wm.Start(&mainWindow);
+		TEST_ERROR(wm.Start(&mainWindow));
+		TEST_ERROR(mainWindow.SetParent(&windowA));
+		TEST_ASSERT(windowA.parent == &mainWindow);
+		TEST_ASSERT(windowB.parent == &windowA);
+		TEST_ASSERT(windowC.parent == &mainWindow);
+
+		mainWindow.Show();								EVENTS(XO, XF, XA);
+		windowA.Show();									EVENTS(AO, AF, AA, Xf);
+		windowB.Show();									EVENTS(BO, BF, BA, Af);
+		windowC.Show();									EVENTS(CO, CF, CA, Aa, Bf, Ba);
+		TAKE_SNAPSHOT_INITIAL();
+
+		TEST_ERROR(wm.UnregisterWindow(&mainWindow));
+		wm.Stop();										EVENTS(Xo, Xa, Ao, Bo, Co, Cf, Ca);
+		TEST_ERROR(wm.Stop());
+		wm.UnregisterWindow(&mainWindow);
+		wm.UnregisterWindow(&windowA);
+		wm.UnregisterWindow(&windowB);
+		wm.UnregisterWindow(&windowC);
+		{
+			Window unregisteredWindow(L'Y', true);
+			TEST_ERROR(wm.UnregisterWindow(&unregisteredWindow));
+		}
+		wm.EnsureCleanedUp();
+	}});
+
 	WM_TEST_CASE(L"Activing windows")
 	{
 		Window mainWindow(L'X', true);
@@ -1185,6 +1250,4 @@ TEST_FILE
 		wm.UnregisterWindow(&windowK);
 		wm.EnsureCleanedUp();
 	}});
-
-	// TODO: test crashing
 }
