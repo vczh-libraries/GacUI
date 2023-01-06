@@ -8,22 +8,25 @@
 
 ## Progressing
 
-- `GuiHostedController`, `GuiHostedMonitor`, `GuiHostedWindow` and `GuiHostedMainWindow`.
-  - Stop using `GetCurrentController()` in `Source_GacUI_Windows`.
+- `GuiHostedController`, `GuiHostedMonitor` and `GuiHostedWindow`.
   - User offers an ordinary `INativeController` and `INativeWindow` implementation.
   - `GuiHostedController` and `GuiHostedWindow` use the above implementation to implement the `hosted single window` mode.
-    - `GuiHostedController` reuses all services provided from the underlying native `INativeController` except windows and monitors.
-      - Dialogs are optional.
-    - The first created `INativeWindow` from `GuiHostedController` is `GuiHostedMainWindow`.
+    - The only `GuiHostedWindow` passed to `IWindowService::Run` is the main window.
       - It is special that it could partially control and react to the underlying native `INativeWindow`.
       - It always fill the full `GuiHostedMonitor`.
-      - When the underlying native `INativeWindow` become inactived, `GuiHostedMainWindow` and all `GuiHostedWindow` are inactivated.
-      - When `GuiHostedMainWindow` is disabled, it doesn't affect the underlying native `INativeWindow`.
+      - When the underlying native `INativeWindow` become inactived, main window and all `GuiHostedWindow` are inactivated.
+      - When main window is disabled, it doesn't affect the underlying native `INativeWindow`.
       - ... (the window manager handles all the details)
     - `GuiHostedWindow` is free to move.
-    - A window manager that treats `GuiHostedMainWindow` as the desktop and `GuiHostedWindow` as windows.
+    - A window manager that treats main window as the desktop and other `GuiHostedWindow` as windows.
     - DPI still changes in runtime.
   - Implementing these interfaces enable GacUI to run in the `hosted single window` mode, all GacUI windows and menus are rendered in one native window.
+  - Rendering in `GlobalTimer`
+    - Call `StartHostedRendering` and `StopHostedRendering` in `GlobalTimer`
+    - Call `INativeWindowListener::ForceRefreshing` of all windows in order
+    - Handle failures
+- Stop using Webdings in default template.
+- Add HostedWindow theme.
 
 ## OS Provider Features
 
@@ -78,35 +81,35 @@
 - GIF player.
 - video player.
 
-## GacStudio
-
 ## Porting to New Platforms
 
-- SyncTree architecture that streams layout/element changes per `GuiControlHost`.
-  - or called remoting whatever
+- SyncTree architecture that streams layout/element changes, requiring Hosted for the first version.
+- ViewModel architecture that streams object changes.
+  - Requires all pointers are shared.
 - Port GacUI to other platforms:
+  - Unit Test
+    - Simplified CLI (Hosted)
   - Windows
-    - Command-line/Powershell in Windows (hosted)
-    - GDI (hosted mode)
-    - Direct2d (hosted mode)
-    - UWP (hosted mode + sync tree, optional)
+    - Command-line/Powershell in Windows (Hosted)
+    - GDI (Hosted or SyncTree)
+    - Direct2d (Hosted or SyncTree)
+    - UWP (Hosted and SyncTree)
   - Linux
-    - Ncurses on Ubuntu (hosted)
+    - Ncurses on Ubuntu (Hosted)
     - gGac repo: complete development process for release
   - macOS
     - iGac repo: complete development process for release
-  - Web Assembly (hosted mode + sync tree)
+  - Web Assembly (Hosted + SyncTree)
     - Canvas?
     - DOM?
 
 ## Binders for other Programming Languages
 
-- Xml still generates C++ files with optional files.
-  - User need to compile C++ code by themselves into a DLL.
-  - User need to specify all involved (including the default) themes.
-  - Generated DLL functions are for implementing view model or SyncTree.
-  - ViewModel metadata in JSON are also provided.
-  - Resources are required to be generated in C++ files since the DLL won't provide interfaces for loading external resources.
+- User need to specify which ViewModel interfaces are involved in streaming
+  - Metadata are offered so that users could write their own codegen
+  - Client side implementation for interfaces. These objects are given to the UI, they send out commands and waiting for receiving real view model data
+  - ViewModel streaming implementation for server side. You give them all implementations of interfaces, it handles commands and send back real view model data
+    - Users could use metadata to implement it in other languages other than C++
 - Applications written in other language can:
   - Implement view model.
   - Render the UI via SyncTree.
@@ -114,12 +117,18 @@
   - JavaScript / TypeScript through Web assembly
   - .NET (core?)
   - Python
-- Other options:
-  - UI becomes an EXE, the view model implementation is communicated via pipe or socket.
 
-## Optional
+## Streaming Tutorials
 
-### GacUI Resource Compiler
+- A GacUI D2D process connecting to a server process for streaming ViewModel
+  - ViewModel implements in C++ and C#
+- A GacUI SyncTree process connecting to a server process for streaming graphics
+  - GDI+ implements in C#
+  - D2D implements in C++
+
+## GacStudio
+
+## GacUI Resource Compiler
 
 - Remove all loader implementation, enabling custom control types from developers.
   - Try not to include `GacUI.cpp` if `VCZH_DEBUG_METAONLY_REFLECTION` is on.
@@ -133,7 +142,7 @@
   -  Cache workflow assembly per resource in file.
   -  Codegen c++ from multiple workflow assembly.
 
-### MISC
+## MISC
 
 - Use collection interfaces on function signatures.
   - Only if `Vlpp` decides to add collection interfaces.

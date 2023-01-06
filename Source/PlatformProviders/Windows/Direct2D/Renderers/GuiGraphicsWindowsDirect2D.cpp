@@ -2,6 +2,8 @@
 #include "GuiGraphicsRenderersWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
 #include "..\..\ServicesImpl\WindowsImageService.h"
+#include "..\..\WinNativeWindow.h"
+#include "..\..\..\Hosted\GuiHostedGraphics.h"
 #include <math.h>
 
 namespace vl
@@ -210,8 +212,8 @@ CachedResourceAllocator
 				class Direct2DCharMeasurer : public text::CharMeasurer
 				{
 				protected:
-					ComPtr<IDWriteTextFormat>		font;
-					vint								size;
+					ComPtr<IDWriteTextFormat>	font;
+					vint						size;
 
 					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
@@ -483,6 +485,16 @@ WindowsDirect2DRenderTarget
 					}
 				}
 
+				void StartHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
+				void StopHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
 				void StartRendering()override
 				{
 					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
@@ -579,7 +591,7 @@ WindowsDirect2DRenderTarget
 									"\x00\x00\x2F\x49\x44\x41\x54\x28\x53\x75\xC8\xB1\x0D\x00\x30\x0C\x02\x41\xEF\xBF\x34\xB1\x68\xA2\x47\xF8\x9B\x13"
 									"\x8C\xB6\xD9\x2E\x5D\x9E\x10\xA3\xE8\xF2\x84\x18\x45\x97\x27\xC4\x28\xBA\x3C\xBF\xD2\x03\xC2\xD7\x7F\x81\x23\x94"
 									"\x3E\x1F\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
-								auto effectImage = GetCurrentController()->ImageService()->CreateImageFromMemory((void*)EffectBuffer, (vint)(sizeof(EffectBuffer) - 1));
+								auto effectImage = GetWindowsNativeController()->ImageService()->CreateImageFromMemory((void*)EffectBuffer, (vint)(sizeof(EffectBuffer) - 1));
 								IWICBitmap* wicEffectBitmap = effectImage ? GetWICBitmap(effectImage->GetFrame(0)) : nullptr;
 								if (wicEffectBitmap)
 								{
@@ -754,28 +766,39 @@ using namespace vl::presentation::elements;
 
 extern void GuiApplicationMain();
 
-void RendererMainDirect2D()
+void RendererMainDirect2D(GuiHostedController* hostedController)
 {
 	elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
-	SetGuiGraphicsResourceManager(&resourceManager);
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
-	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
+	windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
 
-	elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
-	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
-	elements_windows_d2d::Gui3DBorderElementRenderer::Register();
-	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
-	elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
-	elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
-	elements_windows_d2d::GuiImageFrameElementRenderer::Register();
-	elements_windows_d2d::GuiPolygonElementRenderer::Register();
-	elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
-	elements_windows_d2d::GuiDirect2DElementRenderer::Register();
-	elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+	auto hostedResourceManager = hostedController ? new GuiHostedGraphicsResourceManager(hostedController, &resourceManager) : nullptr;
+	SetGuiGraphicsResourceManager(
+		hostedResourceManager
+		? hostedResourceManager
+		: static_cast<IGuiGraphicsResourceManager*>(&resourceManager)
+		);
 
-	GuiApplicationMain();
-	elements_windows_d2d::SetWindowsDirect2DResourceManager(0);
-	SetGuiGraphicsResourceManager(0);
+	{
+		elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
+		elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
+		elements_windows_d2d::Gui3DBorderElementRenderer::Register();
+		elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
+		elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
+		elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
+		elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
+		elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
+		elements_windows_d2d::GuiImageFrameElementRenderer::Register();
+		elements_windows_d2d::GuiPolygonElementRenderer::Register();
+		elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
+		elements_windows_d2d::GuiDirect2DElementRenderer::Register();
+		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+		GuiApplicationMain();
+	}
+
+	SetGuiGraphicsResourceManager(nullptr);
+	if (hostedResourceManager) delete hostedResourceManager;
+
+	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
+	elements_windows_d2d::SetWindowsDirect2DResourceManager(nullptr);
 }

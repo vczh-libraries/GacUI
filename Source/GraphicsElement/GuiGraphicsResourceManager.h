@@ -25,40 +25,31 @@ Resource Manager
 ***********************************************************************/
 
 			/// <summary>
-			/// This is a class for managing grpahics element factories and graphics renderer factories
+			/// This is an interface for managing grpahics element factories and graphics renderer factories
 			/// </summary>
-			class GuiGraphicsResourceManager : public Object
+			class IGuiGraphicsResourceManager : public Interface, public Description<INativeWindow>
 			{
-			protected:
-				collections::List<WString>								elementTypes;
-				collections::Array<Ptr<IGuiGraphicsRendererFactory>>	rendererFactories;
 			public:
-				/// <summary>
-				/// Create a graphics resource manager without any predefined factories
-				/// </summary>
-				GuiGraphicsResourceManager();
-				~GuiGraphicsResourceManager();
-
 				/// <summary>
 				/// Register a element type name.
 				/// This function crashes when an element type has already been registered.
 				/// </summary>
 				/// <param name="elementTypeName">The element type.</param>
 				/// <returns>A number identifies this element type.</returns>
-				vint									RegisterElementType(const WString& elementTypeName);
+				virtual vint							RegisterElementType(const WString& elementTypeName) = 0;
 				/// <summary>
 				/// Register a <see cref="IGuiGraphicsRendererFactory"/> and bind it to an registered element type from <see cref="RegisterElementType"/>.
 				/// This function crashes when an element type has already been binded a renderer factory.
 				/// </summary>
 				/// <param name="elementType">The element type to represent a graphics element factory.</param>
 				/// <param name="factory">The instance of the graphics renderer factory to register.</param>
-				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
+				virtual void							RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) = 0;
 				/// <summary>
 				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"/> that is binded to a specified element type.
 				/// </summary>
 				/// <returns>Returns the renderer factory.</returns>
 				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"/> to get a binded graphics renderer factory.</param>
-				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
+				virtual IGuiGraphicsRendererFactory*	GetRendererFactory(vint elementType) = 0;
 				/// <summary>
 				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"/> that is binded to an <see cref="INativeWindow"/>.
 				/// </summary>
@@ -83,15 +74,35 @@ Resource Manager
 			};
 
 			/// <summary>
+			/// This is a default implementation for <see cref="IGuiGraphicsResourceManager"/>
+			/// </summary>
+			class GuiGraphicsResourceManager : public Object, public virtual IGuiGraphicsResourceManager
+			{
+			protected:
+				collections::List<WString>								elementTypes;
+				collections::Array<Ptr<IGuiGraphicsRendererFactory>>	rendererFactories;
+			public:
+				/// <summary>
+				/// Create a graphics resource manager without any predefined factories
+				/// </summary>
+				GuiGraphicsResourceManager();
+				~GuiGraphicsResourceManager();
+
+				vint									RegisterElementType(const WString& elementTypeName);
+				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
+				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
+			};
+
+			/// <summary>
 			/// Get the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <returns>Returns the current resource manager.</returns>
-			extern GuiGraphicsResourceManager*			GetGuiGraphicsResourceManager();
+			extern IGuiGraphicsResourceManager*			GetGuiGraphicsResourceManager();
 			/// <summary>
 			/// Set the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <param name="resourceManager">The resource manager to set.</param>
-			extern void									SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager);
+			extern void									SetGuiGraphicsResourceManager(IGuiGraphicsResourceManager* resourceManager);
 
 /***********************************************************************
 Helpers

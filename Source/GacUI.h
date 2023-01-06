@@ -41,6 +41,9 @@ using namespace vl::presentation::templates;
 
 extern int SetupWindowsGDIRenderer();
 extern int SetupWindowsDirect2DRenderer();
+extern int SetupHostedWindowsGDIRenderer();
+extern int SetupHostedWindowsDirect2DRenderer();
+
 extern int SetupOSXCoreGraphicsRenderer();
 
 #endif

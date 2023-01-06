@@ -1,4 +1,5 @@
 #include "WindowsImageService.h"
+#include "../WinNativeWindow.h"
 #include "../GDI/WinGDI.h"
 #include <Shlwapi.h>
 
@@ -651,9 +652,14 @@ WindowsImageService
 Helper Functions
 ***********************************************************************/
 
+			WindowsImageService* GetWindowsImageService()
+			{
+				return  dynamic_cast<WindowsImageService*>(GetWindowsNativeController()->ImageService());
+			}
+
 			IWICImagingFactory* GetWICImagingFactory()
 			{
-				return dynamic_cast<WindowsImageService*>(GetCurrentController()->ImageService())->GetImagingFactory();
+				return GetWindowsImageService()->GetImagingFactory();
 			}
 
 			IWICBitmap* GetWICBitmap(INativeImageFrame* frame)
@@ -663,12 +669,12 @@ Helper Functions
 
 			Ptr<INativeImage> CreateImageFromHBITMAP(HBITMAP handle)
 			{
-				return dynamic_cast<WindowsImageService*>(GetCurrentController()->ImageService())->CreateImageFromHBITMAP(handle);
+				return GetWindowsImageService()->CreateImageFromHBITMAP(handle);
 			}
 
 			Ptr<INativeImage> CreateImageFromHICON(HICON handle)
 			{
-				return dynamic_cast<WindowsImageService*>(GetCurrentController()->ImageService())->CreateImageFromHICON(handle);
+				return GetWindowsImageService()->CreateImageFromHICON(handle);
 			}
 		}
 	}

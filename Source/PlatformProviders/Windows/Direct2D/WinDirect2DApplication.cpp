@@ -1,4 +1,5 @@
 #include "WinDirect2DApplication.h"
+#include "..\..\Hosted\GuiHostedController.h"
 #include "Renderers\GuiGraphicsWindowsDirect2D.h"
 #include <ShellScalingApi.h>
 
@@ -470,7 +471,7 @@ ControllerListener
 				}
 			};
 
-			Direct2DWindowsNativeControllerListener* direct2DListener=0;
+			Direct2DWindowsNativeControllerListener* direct2DListener = nullptr;
 
 			ID2D1Factory* GetDirect2DFactory()
 			{
@@ -612,34 +613,47 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_d2d;
 
-int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)())
+int SetupWindowsDirect2DRendererInternal(bool hosted)
 {
+	InitDpiAwareness(true);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
+	SetWindowsDirect2DObjectProvider(&objectProvider);
 	EnableCrossKernelCrashing();
+
 	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
-	SetCurrentController(controller);
+	GuiHostedController* hostedController = nullptr;
+	StartWindowsNativeController(hInstance);
+	auto nativeController = GetWindowsNativeController();
+	if (hosted) hostedController = new GuiHostedController(nativeController);
+	SetCurrentController(hostedController ? hostedController : nativeController);
+
 	{
 		// install listener
 		Direct2DWindowsNativeControllerListener listener;
-		controller->CallbackService()->InstallListener(&listener);
-		direct2DListener=&listener;
+		nativeController->CallbackService()->InstallListener(&listener);
+		direct2DListener = &listener;
 		// main
-		RendererMain();
+		RendererMainDirect2D(hostedController);
 		// uninstall listener
-		direct2DListener=0;
-		controller->CallbackService()->UninstallListener(&listener);
+		direct2DListener = nullptr;
+		nativeController->CallbackService()->UninstallListener(&listener);
 	}
+
 	// destroy controller
-	DestroyWindowsNativeController(controller);
+	SetCurrentController(nullptr);
+	if (hostedController) delete hostedController;
+	StopWindowsNativeController();
 	return 0;
 }
 
 int SetupWindowsDirect2DRenderer()
 {
-	InitDpiAwareness(true);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
-	SetWindowsDirect2DObjectProvider(&objectProvider);
-	return WinMainDirect2D(hInstance, &RendererMainDirect2D);
+	return SetupWindowsDirect2DRendererInternal(false);
+}
+
+int SetupHostedWindowsDirect2DRenderer()
+{
+	return SetupWindowsDirect2DRendererInternal(true);
 }

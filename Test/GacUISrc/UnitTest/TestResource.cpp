@@ -6,9 +6,13 @@ using namespace vl::stream;
 using namespace vl::filesystem;
 using namespace vl::presentation;
 
-extern WString GetTestResourcePath();
-extern WString GetTestBaselinePath();
-extern WString GetTestOutputPath();
+namespace compiler_error_tests
+{
+	extern WString GetTestResourcePath();
+	extern WString GetTestBaselinePath();
+	extern WString GetTestOutputPath();
+}
+using namespace compiler_error_tests;
 
 void WriteErrors(GuiResourceError::List& errors, const WString& resourceName)
 {

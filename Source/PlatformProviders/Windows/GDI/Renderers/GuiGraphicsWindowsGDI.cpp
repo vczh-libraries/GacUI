@@ -1,6 +1,8 @@
 #include "GuiGraphicsWindowsGDI.h"
 #include "GuiGraphicsRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
+#include "..\..\WinNativeWindow.h"
+#include "..\..\..\Hosted\GuiHostedGraphics.h"
 
 namespace vl
 {
@@ -62,6 +64,16 @@ WindowsGDIRenderTarget
 				WinDC* GetDC()override
 				{
 					return dc?dc:GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+				}
+
+				void StartHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
+				void StopHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
 				}
 
 				void StartRendering()override
@@ -491,28 +503,39 @@ using namespace vl::presentation::elements;
 
 extern void GuiApplicationMain();
 
-void RendererMainGDI()
+void RendererMainGDI(GuiHostedController* hostedController)
 {
 	elements_windows_gdi::WindowsGDIResourceManager resourceManager;
-	SetGuiGraphicsResourceManager(&resourceManager);
 	elements_windows_gdi::SetWindowsGDIResourceManager(&resourceManager);
-	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
+	windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
 
-	elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
-	elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
-	elements_windows_gdi::Gui3DBorderElementRenderer::Register();
-	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
-	elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
-	elements_windows_gdi::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_gdi::GuiInnerShadowElementRenderer::Register();
-	elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
-	elements_windows_gdi::GuiImageFrameElementRenderer::Register();
-	elements_windows_gdi::GuiPolygonElementRenderer::Register();
-	elements_windows_gdi::GuiColorizedTextElementRenderer::Register();
-	elements_windows_gdi::GuiGDIElementRenderer::Register();
-	elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+	auto hostedResourceManager = hostedController ? new GuiHostedGraphicsResourceManager(hostedController, &resourceManager) : nullptr;
+	SetGuiGraphicsResourceManager(
+		hostedResourceManager
+		? hostedResourceManager
+		: static_cast<IGuiGraphicsResourceManager*>(&resourceManager)
+		);
 
-	GuiApplicationMain();
-	elements_windows_gdi::SetWindowsGDIResourceManager(0);
-	SetGuiGraphicsResourceManager(0);
+	{
+		elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
+		elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
+		elements_windows_gdi::Gui3DBorderElementRenderer::Register();
+		elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
+		elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
+		elements_windows_gdi::GuiGradientBackgroundElementRenderer::Register();
+		elements_windows_gdi::GuiInnerShadowElementRenderer::Register();
+		elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
+		elements_windows_gdi::GuiImageFrameElementRenderer::Register();
+		elements_windows_gdi::GuiPolygonElementRenderer::Register();
+		elements_windows_gdi::GuiColorizedTextElementRenderer::Register();
+		elements_windows_gdi::GuiGDIElementRenderer::Register();
+		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+		GuiApplicationMain();
+	}
+
+	SetGuiGraphicsResourceManager(nullptr);
+	if (hostedResourceManager) delete hostedResourceManager;
+
+	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
+	elements_windows_gdi::SetWindowsGDIResourceManager(nullptr);
 }

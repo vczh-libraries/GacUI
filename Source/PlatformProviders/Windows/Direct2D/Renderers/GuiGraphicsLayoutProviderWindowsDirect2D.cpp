@@ -1,5 +1,6 @@
 #include "GuiGraphicsWindowsDirect2D.h"
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
+#include "..\..\WinNativeWindow.h"
 
 namespace vl
 {
@@ -463,7 +464,7 @@ WindowsDirect2DParagraph (Initialization)
 					,formatDataAvailable(false)
 					,paragraphCallback(_paragraphCallback)
 				{
-					FontProperties defaultFont=GetCurrentController()->ResourceService()->GetDefaultFont();
+					FontProperties defaultFont= windows::GetWindowsNativeController()->ResourceService()->GetDefaultFont();
 					Direct2DTextFormatPackage* package=GetWindowsDirect2DResourceManager()->CreateDirect2DTextFormat(defaultFont);
 					defaultTextColor=renderTarget->CreateDirect2DBrush(Color(0, 0, 0));
 					usedColors.Add(Color(0, 0, 0));

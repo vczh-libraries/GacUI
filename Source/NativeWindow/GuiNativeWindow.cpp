@@ -150,6 +150,15 @@ INativeWindowListener
 		{
 		}
 
+		bool INativeWindowListener::NeedRefresh()
+		{
+			return false;
+		}
+
+		void INativeWindowListener::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+		{
+		}
+
 /***********************************************************************
 INativeControllerListener
 ***********************************************************************/

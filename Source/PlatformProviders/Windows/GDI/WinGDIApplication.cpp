@@ -1,4 +1,5 @@
 #include "WinGDIApplication.h"
+#include "..\..\Hosted\GuiHostedController.h"
 #include "Renderers\GuiGraphicsWindowsGDI.h"
 #include <ShellScalingApi.h>
 #include "..\ServicesImpl\WindowsCallbackService.h"
@@ -80,7 +81,7 @@ namespace vl
 					if (needPaintAfterResize)
 					{
 						needPaintAfterResize = false;
-						auto callbackService = GetCurrentController()->CallbackService();
+						auto callbackService = GetWindowsNativeController()->CallbackService();
 						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
 					}
 					IWindowsForm* form=GetWindowsForm(window);
@@ -125,7 +126,7 @@ namespace vl
 				}
 			};
 
-			GdiWindowsNativeControllerListener* gdiListener=0;
+			GdiWindowsNativeControllerListener* gdiListener = nullptr;
 
 			WinDC* GetNativeWindowDC(INativeWindow* window)
 			{
@@ -202,34 +203,47 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_gdi;
 
-int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)())
+int SetupWindowsGDIRendererInternal(bool hosted)
 {
+	InitDpiAwareness(false);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+	WinGDIApplicationGDIObjectProvider objectProvider;
+	SetWindowsGDIObjectProvider(&objectProvider);
 	EnableCrossKernelCrashing();
+
 	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
-	SetCurrentController(controller);
+	GuiHostedController* hostedController = nullptr;
+	StartWindowsNativeController(hInstance);
+	auto nativeController = GetWindowsNativeController();
+	if (hosted) hostedController = new GuiHostedController(nativeController);
+	SetCurrentController(hostedController ? hostedController : nativeController);
+
 	{
 		// install listener
 		GdiWindowsNativeControllerListener listener;
-		controller->CallbackService()->InstallListener(&listener);
-		gdiListener=&listener;
+		nativeController->CallbackService()->InstallListener(&listener);
+		gdiListener = &listener;
 		// main
-		RendererMain();
+		RendererMainGDI(hostedController);
 		// uninstall listener
-		gdiListener=0;
-		controller->CallbackService()->UninstallListener(&listener);
+		gdiListener = nullptr;
+		nativeController->CallbackService()->UninstallListener(&listener);
 	}
+
 	// destroy controller
-	DestroyWindowsNativeController(controller);
+	SetCurrentController(nullptr);
+	if (hostedController) delete hostedController;
+	StopWindowsNativeController();
 	return 0;
 }
 
 int SetupWindowsGDIRenderer()
 {
-	InitDpiAwareness(false);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinGDIApplicationGDIObjectProvider objectProvider;
-	SetWindowsGDIObjectProvider(&objectProvider);
-	return WinMainGDI(hInstance, &RendererMainGDI);
+	return SetupWindowsGDIRendererInternal(false);
+}
+
+int SetupHostedWindowsGDIRenderer()
+{
+	return SetupWindowsGDIRendererInternal(true);
 }

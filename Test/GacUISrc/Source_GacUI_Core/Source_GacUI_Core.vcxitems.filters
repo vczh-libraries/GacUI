@@ -16,6 +16,12 @@
     <Filter Include="NativeWindow">
       <UniqueIdentifier>{71a8c4f2-90df-457d-931b-4e673ef15366}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlatformProviders">
+      <UniqueIdentifier>{0a9ba3bc-6166-4dd0-98b4-a28bc9b9a12e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlatformProviders\Hosted">
+      <UniqueIdentifier>{8194fce2-bfab-4bb1-a966-33ae0a012062}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
@@ -105,6 +111,15 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp">
       <Filter>NativeWindow</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.cpp">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.cpp">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.cpp">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.h">
@@ -150,5 +165,17 @@
       <Filter>NativeWindow</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\GuiTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.h">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.h">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.h">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindowManager.h">
+      <Filter>PlatformProviders\Hosted</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

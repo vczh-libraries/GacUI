@@ -16,6 +16,7 @@ Test/GacUISrc/*/Reflection.txt
 Test/GacUISrc/TestXml/TestXml.xml
 
 # User-specific files
+*/**/.vs/
 *.suo
 *.user
 *.sln.docstates

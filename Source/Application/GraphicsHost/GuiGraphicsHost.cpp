@@ -541,21 +541,36 @@ GuiGraphicsHost
 				}
 			}
 
+			bool GuiGraphicsHost::NeedRefresh()
+			{
+				return needRender;
+			}
+
+			void GuiGraphicsHost::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+			{
+				auto result = Render(true, handleFailure);
+				failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
+				failureByLostDevice |= result == RenderTargetFailure::LostDevice;
+			}
+
 			void GuiGraphicsHost::GlobalTimer()
 			{
 				timerManager.Play();
 
-				DateTime now=DateTime::UtcTime();
-				if(now.totalMilliseconds-lastCaretTime>=CaretInterval)
+				DateTime now = DateTime::UtcTime();
+				if (now.totalMilliseconds - lastCaretTime >= CaretInterval)
 				{
-					lastCaretTime=now.totalMilliseconds;
-					if(focusedComposition && focusedComposition->HasEventReceiver())
+					lastCaretTime = now.totalMilliseconds;
+					if (focusedComposition && focusedComposition->HasEventReceiver())
 					{
 						focusedComposition->GetEventReceiver()->caretNotify.Execute(GuiEventArgs(focusedComposition));
 					}
 				}
-				
-				Render(false);
+
+				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsActivelyRefreshing())
+				{
+					Render(false, true);
+				}
 			}
 
 			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
@@ -620,11 +635,12 @@ GuiGraphicsHost
 				return windowComposition;
 			}
 
-			void GuiGraphicsHost::Render(bool forceUpdate)
+			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool handleFailure)
 			{
+				RenderTargetFailure result = RenderTargetFailure::None;
 				if (!forceUpdate && !needRender)
 				{
-					return;
+					return result;
 				}
 				needRender = false;
 
@@ -632,20 +648,22 @@ GuiGraphicsHost
 				{
 					supressPaint = true;
 					hostRecord.renderTarget->StartRendering();
-					windowComposition->Render(Size());
-					auto result = hostRecord.renderTarget->StopRendering();
+					windowComposition->Render(hostRecord.nativeWindow->Convert(hostRecord.nativeWindow->GetRenderingOffset()));
+					result = hostRecord.renderTarget->StopRendering();
 					hostRecord.nativeWindow->RedrawContent();
 					supressPaint = false;
 
 					switch (result)
 					{
 					case RenderTargetFailure::ResizeWhileRendering:
+						if (handleFailure)
 						{
 							GetGuiGraphicsResourceManager()->ResizeRenderTarget(hostRecord.nativeWindow);
 							needRender = true;
 						}
 						break;
 					case RenderTargetFailure::LostDevice:
+						if (handleFailure)
 						{
 							RecreateRenderTarget();
 							needRender = true;
@@ -685,6 +703,8 @@ GuiGraphicsHost
 						}
 					}
 				}
+
+				return result;
 			}
 
 			void GuiGraphicsHost::RequestRender()

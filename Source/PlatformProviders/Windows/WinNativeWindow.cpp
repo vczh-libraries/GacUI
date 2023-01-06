@@ -760,60 +760,57 @@ WindowsForm
 					// ************************************** hit test
 					case WM_NCHITTEST:
 						{
-							POINTS location=MAKEPOINTS(lParam);
-							NativePoint windowLocation=GetBounds().LeftTop();
-							location.x-=(SHORT)windowLocation.x.value;
-							location.y-=(SHORT)windowLocation.y.value;
-							for(vint i=0;i<listeners.Count();i++)
+							POINTS location = MAKEPOINTS(lParam);
+							NativePoint windowLocation = GetBounds().LeftTop();
+							location.x -= (SHORT)windowLocation.x.value;
+							location.y -= (SHORT)windowLocation.y.value;
+							switch (PerformHitTest(From(listeners), { location.x,location.y }))
 							{
-								switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
-								{
-								case INativeWindowListener::BorderNoSizing:
-									result=HTBORDER;
-									return true;
-								case INativeWindowListener::BorderLeft:
-									result=HTLEFT;
-									return true;
-								case INativeWindowListener::BorderRight:
-									result=HTRIGHT;
-									return true;
-								case INativeWindowListener::BorderTop:
-									result=HTTOP;
-									return true;
-								case INativeWindowListener::BorderBottom:
-									result=HTBOTTOM;
-									return true;
-								case INativeWindowListener::BorderLeftTop:
-									result=HTTOPLEFT;
-									return true;
-								case INativeWindowListener::BorderRightTop:
-									result=HTTOPRIGHT;
-									return true;
-								case INativeWindowListener::BorderLeftBottom:
-									result=HTBOTTOMLEFT;
-									return true;
-								case INativeWindowListener::BorderRightBottom:
-									result=HTBOTTOMRIGHT;
-									return true;
-								case INativeWindowListener::Title:
-									result=HTCAPTION;
-									return true;
-								case INativeWindowListener::ButtonMinimum:
-									result=HTMINBUTTON;
-									return true;
-								case INativeWindowListener::ButtonMaximum:
-									result=HTMAXBUTTON;
-									return true;
-								case INativeWindowListener::ButtonClose:
-									result=HTCLOSE;
-									return true;
-								case INativeWindowListener::Client:
-									result=HTCLIENT;
-									return true;
-								case INativeWindowListener::Icon:
-									result=HTSYSMENU;
-									return true;
-								}
+							case INativeWindowListener::BorderNoSizing:
+								result = HTBORDER;
+								return true;
+							case INativeWindowListener::BorderLeft:
+								result = HTLEFT;
+								return true;
+							case INativeWindowListener::BorderRight:
+								result = HTRIGHT;
+								return true;
+							case INativeWindowListener::BorderTop:
+								result = HTTOP;
+								return true;
+							case INativeWindowListener::BorderBottom:
+								result = HTBOTTOM;
+								return true;
+							case INativeWindowListener::BorderLeftTop:
+								result = HTTOPLEFT;
+								return true;
+							case INativeWindowListener::BorderRightTop:
+								result = HTTOPRIGHT;
+								return true;
+							case INativeWindowListener::BorderLeftBottom:
+								result = HTBOTTOMLEFT;
+								return true;
+							case INativeWindowListener::BorderRightBottom:
+								result = HTBOTTOMRIGHT;
+								return true;
+							case INativeWindowListener::Title:
+								result = HTCAPTION;
+								return true;
+							case INativeWindowListener::ButtonMinimum:
+								result = HTMINBUTTON;
+								return true;
+							case INativeWindowListener::ButtonMaximum:
+								result = HTMAXBUTTON;
+								return true;
+							case INativeWindowListener::ButtonClose:
+								result = HTCLOSE;
+								return true;
+							case INativeWindowListener::Client:
+								result = HTCLIENT;
+								return true;
+							case INativeWindowListener::Icon:
+								result = HTSYSMENU;
+								return true;
 							}
 						}
 						break;
@@ -874,9 +871,9 @@ WindowsForm
 						case WM_LBUTTONUP:
 							{
 								POINTS location = MAKEPOINTS(lParam);
-								for(vint i=0;i<listeners.Count();i++)
+								for (vint i = 0; i < listeners.Count(); i++)
 								{
-									switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
+									switch (PerformHitTest(From(listeners), { location.x,location.y }))
 									{
 									case INativeWindowListener::ButtonMinimum:
 										ShowMinimized();
@@ -910,6 +907,7 @@ WindowsForm
 				WindowsForm*						parentWindow = nullptr;
 				List<WindowsForm*>					childWindows;
 				WindowMode							windowMode;
+				bool								isMainWindow = false;
 				List<INativeWindowListener*>		listeners;
 				vint								mouseLastX = -1;
 				vint								mouseLastY = -1;
@@ -938,7 +936,7 @@ WindowsForm
 				}
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance, INativeWindow::WindowMode _windowMode)
-					:windowMode(_windowMode)
+					: windowMode(_windowMode)
 				{
 					{
 						DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
@@ -980,6 +978,11 @@ WindowsForm
 						}
 					}
 					DestroyWindow(handle);
+				}
+
+				void SetIsMainWindow()
+				{
+					isMainWindow = true;
 				}
 
 				void InvokeDestroying()
@@ -1051,6 +1054,16 @@ WindowsForm
 					if (index == -1)return false;
 					messageHandlers.RemoveAt(handler);
 					return true;
+				}
+
+				bool IsActivelyRefreshing()override
+				{
+					return true;
+				}
+
+				NativeSize GetRenderingOffset()override
+				{
+					return { 0,0 };
 				}
 
 				Point Convert(NativePoint value)override
@@ -1423,7 +1436,7 @@ WindowsForm
 						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
 						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)TRUE, NULL);
 
-						if (this == GetCurrentController()->WindowService()->GetMainWindow())
+						if (isMainWindow)
 						{
 							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
 							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
@@ -1710,8 +1723,8 @@ WindowsController
 				HINSTANCE							hInstance;
 				HWND								godWindow;
 				Dictionary<HWND, WindowsForm*>		windows;
-				INativeWindow*						mainWindow;
-				HWND								mainWindowHandle;
+				WindowsForm*						mainWindow = nullptr;
+				HWND								mainWindowHandle = 0;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
@@ -1727,8 +1740,6 @@ WindowsController
 					:hInstance(_hInstance)
 					,windowClass(L"VczhWindow", false, false, WndProc, _hInstance)
 					,godClass(L"GodWindow", false, false, GodProc, _hInstance)
-					,mainWindow(0)
-					,mainWindowHandle(0)
 					,screenService(&GetHWNDFromNativeWindowHandle)
 					,dialogService(&GetHWNDFromNativeWindowHandle)
 				{
@@ -1835,7 +1846,7 @@ WindowsController
 
 				INativeWindow* CreateNativeWindow(INativeWindow::WindowMode windowMode)override
 				{
-					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
+					WindowsForm* window = new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
 					windows.Add(window->GetWindowHandle(), window);
 					callbackService.InvokeNativeWindowCreated(window);
 					window->SetWindowCursor(resourceService.GetDefaultSystemCursor());
@@ -1844,12 +1855,16 @@ WindowsController
 
 				void DestroyNativeWindow(INativeWindow* window)override
 				{
-					WindowsForm* windowsForm=dynamic_cast<WindowsForm*>(window);
+					auto windowsForm = dynamic_cast<WindowsForm*>(window);
 					windowsForm->InvokeDestroying();
-					if(windowsForm!=0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
+					if (windowsForm != 0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
 					{
 						callbackService.InvokeNativeWindowDestroyed(window);
 						windows.Remove(windowsForm->GetWindowHandle());
+						if (mainWindow == windowsForm)
+						{
+							mainWindow = nullptr;
+						}
 						delete windowsForm;
 					}
 				}
@@ -1861,8 +1876,9 @@ WindowsController
 
 				void Run(INativeWindow* window)override
 				{
-					mainWindow=window;
-					mainWindowHandle=GetWindowsForm(window)->GetWindowHandle();
+					mainWindow = dynamic_cast<WindowsForm*>(GetWindowsForm(window));
+					mainWindowHandle = mainWindow->GetWindowHandle();
+					mainWindow->SetIsMainWindow();
 					mainWindow->Show();
 					MSG message;
 					while(GetMessage(&message, NULL, 0, 0))
@@ -1961,13 +1977,14 @@ WindowsController
 Windows Procedure
 ***********************************************************************/
 
+			WindowsController* windowsController = nullptr;
+
 			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
+				if (windowsController)
 				{
-					LRESULT result=0;
-					if(controller->HandleMessage(hwnd, uMsg, wParam, lParam, result))
+					LRESULT result = 0;
+					if (windowsController->HandleMessage(hwnd, uMsg, wParam, lParam, result))
 					{
 						return result;
 					}
@@ -1977,16 +1994,15 @@ Windows Procedure
 
 			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
+				if (windowsController)
 				{
-					switch(uMsg)
+					switch (uMsg)
 					{
 					case WM_TIMER:
-						controller->InvokeGlobalTimer();
+						windowsController->InvokeGlobalTimer();
 						break;
 					case WM_CLIPBOARDUPDATE:
-						controller->InvokeClipboardUpdated();
+						windowsController->InvokeClipboardUpdated();
 						break;
 					}
 				}
@@ -1997,17 +2013,22 @@ Windows Procedure
 Windows Platform Native Controller
 ***********************************************************************/
 
-			INativeController* CreateWindowsNativeController(HINSTANCE hInstance)
+			void StartWindowsNativeController(HINSTANCE hInstance)
 			{
-				return new WindowsController(hInstance);
+				CHECK_ERROR(!windowsController, L"vl::presentation::windows::StartWindowsNativeController(HINSTANCE)#The Windows native controller has been started.");
+				windowsController = new WindowsController(hInstance);
+			}
+
+			INativeController* GetWindowsNativeController()
+			{
+				return windowsController;
 			}
 
 			IWindowsForm* GetWindowsFormFromHandle(HWND hwnd)
 			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
+				if (windowsController)
 				{
-					return controller->GetWindowsFormFromHandle(hwnd);
+					return windowsController->GetWindowsFormFromHandle(hwnd);
 				}
 				return nullptr;
 			}
@@ -2019,16 +2040,17 @@ Windows Platform Native Controller
 
 			void GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly)
 			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
+				if (windowsController)
 				{
-					controller->GetAllCreatedWindows(windows, rootWindowOnly);
+					windowsController->GetAllCreatedWindows(windows, rootWindowOnly);
 				}
 			}
 
-			void DestroyWindowsNativeController(INativeController* controller)
+			void StopWindowsNativeController()
 			{
-				delete controller;
+				CHECK_ERROR(windowsController, L"vl::presentation::windows::StopWindowsNativeController()#The Windows native controller has been stopped.");
+				delete windowsController;
+				windowsController = nullptr;
 			}
 
 			void EnableCrossKernelCrashing()

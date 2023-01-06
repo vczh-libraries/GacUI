@@ -127,34 +127,43 @@ Basic Construction
 			{
 			public:
 				/// <summary>
+				/// Notify the target to start hosted rendering, <see cref="StartRendering()"/> and <see cref="StopRendering"/> will be called multiple times.
+				/// </summary>
+				virtual void							StartHostedRendering() = 0;
+				/// <summary>
+				/// Notify the target to stop hosted rendering
+				/// </summary>
+				virtual void							StopHostedRendering() = 0;
+
+				/// <summary>
 				/// Notify the target to prepare for rendering.
 				/// </summary>
-				virtual void							StartRendering()=0;
+				virtual void							StartRendering() = 0;
 				/// <summary>
 				/// Notify the target to stop rendering.
 				/// </summary>
 				/// <returns>Returns false to recreate render target.</returns>
-				virtual RenderTargetFailure				StopRendering()=0;
+				virtual RenderTargetFailure				StopRendering() = 0;
 				/// <summary>
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
 				/// </summary>
 				/// <param name="clipper">The clipper to push.</param>
-				virtual void							PushClipper(Rect clipper)=0;
+				virtual void							PushClipper(Rect clipper) = 0;
 				/// <summary>
 				/// Remove the last pushed clipper from the clipper stack.
 				/// </summary>
-				virtual void							PopClipper()=0;
+				virtual void							PopClipper() = 0;
 				/// <summary>
 				/// Get the combined clipper
 				/// </summary>
 				/// <returns>The combined clipper</returns>
-				virtual Rect							GetClipper()=0;
+				virtual Rect							GetClipper() = 0;
 				/// <summary>
 				/// Test is the combined clipper is as large as the render target.
 				/// </summary>
 				/// <returns>Return true if the combined clipper is as large as the render target.</returns>
-				virtual bool							IsClipperCoverWholeTarget()=0;
+				virtual bool							IsClipperCoverWholeTarget() = 0;
 			};
 		}
 	}
