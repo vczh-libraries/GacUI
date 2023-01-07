@@ -547,6 +547,7 @@ GuiHostedController
 		{
 			wmManager = this;
 			nativeController->CallbackService()->InstallListener(this);
+			EnsureNativeWindowCreated();
 		}
 
 		GuiHostedController::~GuiHostedController()
