@@ -47,7 +47,6 @@ GuiHostedController
 			INativeWindow*												nativeWindow = nullptr;
 			bool														nativeWindowDestroyed = false;
 			GuiHostedWindow*											mainWindow = nullptr;
-			GuiHostedWindow*											focusedWindow = nullptr;
 			GuiHostedWindow*											capturingWindow = nullptr;
 			GuiHostedWindow*											hoveringWindow = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;

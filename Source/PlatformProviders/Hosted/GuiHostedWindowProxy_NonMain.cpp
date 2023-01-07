@@ -23,21 +23,22 @@ GuiNonMainHostedWindowProxy
 			{
 			}
 
+			void EnsureNoSystemBorder()
+			{
+				if (!data->windowCustomFrameMode)
+				{
+					CHECK_ERROR(
+						!data->windowBorder && !data->windowSizeBox && !data->windowTitleBar,
+						L"vl::presentation::GuiNonMainHostedWindowProxy::EnsureNoSystemBorder()#"
+						L"For non main window in hosted mode, when custom frame mode is disabled"
+						L"the following window features should also be disabled: "
+						L"Border, SizeBox, TitleBar.");
+				}
+			}
+
 			void CheckAndSyncProperties() override
 			{
-				// TODO:
-				//   sync window properties to nativeWindow
-				//   check main window properties
-				//     no parent
-				//   check non-main window properties
-				//     CustomFrameMode should be true to render the frame using templates
-				//     for normal windows, parent should be either null or the main window
-				//       if it is null, it is treated to be the main window
-				//     for other windows, parent should be non-null
-				//     ensure parent is partial ordered in realtime
-				//   sync non-main window window-management properties
-				//     changing activated or focused etc before calling Run() are ignored
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			/***********************************************************************
@@ -46,32 +47,27 @@ GuiNonMainHostedWindowProxy
 
 			NativeRect FixBounds(const NativeRect& bounds) override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				return bounds;
 			}
 
 			void UpdateBounds() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateTitle() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateIcon() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateEnabled() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateTopMost() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			/***********************************************************************
@@ -80,32 +76,32 @@ GuiNonMainHostedWindowProxy
 
 			void UpdateMaximizedBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			void UpdateMinimizedBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			void UpdateBorderVisible() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			void UpdateSizeBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			void UpdateIconVisible() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			void UpdateTitleBar() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			/***********************************************************************
@@ -114,22 +110,20 @@ GuiNonMainHostedWindowProxy
 
 			void UpdateShowInTaskBar() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateEnabledActivate() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void EnableCustomFrameMode() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			void DisableCustomFrameMode() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				EnsureNoSystemBorder();
 			}
 
 			/***********************************************************************
@@ -163,17 +157,17 @@ GuiNonMainHostedWindowProxy
 
 			void Hide() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.SetVisible(false);
 			}
 
 			void Close() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.SetVisible(false);
 			}
 
 			void SetFocus() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.Activate();
 			}
 		};
 

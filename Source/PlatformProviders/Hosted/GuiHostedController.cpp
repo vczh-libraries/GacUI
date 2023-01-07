@@ -11,34 +11,67 @@ namespace vl
 
 		void GuiHostedController::OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			for (auto listener : window->id->listeners)
+			{
+				listener->Opened();
+			}
 		}
 
 		void GuiHostedController::OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			for (auto listener : window->id->listeners)
+			{
+				listener->Closed();
+			}
 		}
 
 		void GuiHostedController::OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			for (auto listener : window->id->listeners)
+			{
+				listener->Enabled();
+			}
 		}
 
 		void GuiHostedController::OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			for (auto listener : window->id->listeners)
+			{
+				listener->Disabled();
+			}
 		}
 
 		void GuiHostedController::OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			for (auto listener : window->id->listeners)
+			{
+				listener->GotFocus();
+			}
 		}
 
 		void GuiHostedController::OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			window->id->BecomeFocusedWindow();
+			for (auto listener : window->id->listeners)
+			{
+				listener->LostFocus();
+			}
 		}
 
 		void GuiHostedController::OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			for (auto listener : window->id->listeners)
+			{
+				listener->RenderingAsActivated();
+			}
 		}
 
 		void GuiHostedController::OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
+			for (auto listener : window->id->listeners)
+			{
+				listener->RenderingAsDeactivated();
+			}
 		}
 
 
@@ -200,6 +233,11 @@ GuiHostedController::INativeControllerListener
 
 			if (hostedResourceManager && nativeWindow)
 			{
+				if (wmManager->needRefresh)
+				{
+					wmManager->needRefresh = false;
+					goto NEED_REFRESH;
+				}
 				for (auto hostedWindow : createdWindows)
 				{
 					for (auto listener : hostedWindow->listeners)
@@ -509,6 +547,10 @@ GuiHostedController::INativeWindowService
 			vint index = createdWindows.IndexOf(hostedWindow);
 			CHECK_ERROR(index != -1, L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#The window has been destroyed.");
 
+			for (auto listener : hostedWindow->listeners)
+			{
+				listener->Destroying();
+			}
 			for (auto listener : listeners)
 			{
 				listener->NativeWindowDestroying(hostedWindow);
@@ -535,7 +577,6 @@ GuiHostedController::INativeWindowService
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
 			CHECK_ERROR(hostedWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#The window is not created by GuiHostedController.");
 			mainWindow = hostedWindow;
-			focusedWindow = hostedWindow;
 
 			for (auto window : createdWindows)
 			{
@@ -567,7 +608,6 @@ GuiHostedController::INativeWindowService
 			wmManager->Stop();
 
 			mainWindow = nullptr;
-			focusedWindow = nullptr;
 			capturingWindow = nullptr;
 			hoveringWindow = nullptr;
 			EnsureNativeWindowDestroyed();

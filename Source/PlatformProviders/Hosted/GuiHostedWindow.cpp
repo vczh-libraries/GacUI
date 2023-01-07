@@ -23,7 +23,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::BecomeFocusedWindow()
 		{
-			CHECK_ERROR(this == controller->focusedWindow, L"vl::presentation::GuiHostedWindow::BecomeFocusedWindow()#Wrong timing to call this function.");
+			CHECK_ERROR(&wmWindow == controller->wmManager->activeWindow, L"vl::presentation::GuiHostedWindow::BecomeFocusedWindow()#Wrong timing to call this function.");
 			controller->nativeWindow->SetCaretPoint(windowCaretPoint + GetRenderingOffset());
 		}
 
@@ -42,6 +42,10 @@ GuiHostedWindow
 
 		GuiHostedWindow::~GuiHostedWindow()
 		{
+			for (auto listener : listeners)
+			{
+				listener->Destroyed();
+			}
 		}
 
 		bool GuiHostedWindow::IsActivelyRefreshing()
@@ -149,7 +153,7 @@ GuiHostedWindow
 		{
 			if (windowCaretPoint == point) return;
 			windowCaretPoint = point;
-			if (this == controller->focusedWindow)
+			if (&wmWindow == controller->wmManager->activeWindow)
 			{
 				controller->nativeWindow->SetCaretPoint(windowCaretPoint + GetRenderingOffset());
 			}
@@ -243,6 +247,13 @@ GuiHostedWindow
 
 		void GuiHostedWindow::Hide(bool closeWindow)
 		{
+			bool cancel = false;
+			for (auto listener : listeners)
+			{
+				listener->Closing(cancel);
+				if (cancel) return;
+			}
+
 			if (closeWindow)
 			{
 				proxy->Close();

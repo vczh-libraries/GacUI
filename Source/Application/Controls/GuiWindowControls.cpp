@@ -1072,7 +1072,9 @@ GuiPopup
 			{
 				SetMinimizedBox(false);
 				SetMaximizedBox(false);
+				SetBorder(false);
 				SetSizeBox(false);
+				SetIconVisible(false);
 				SetTitleBar(false);
 				SetShowInTaskBar(false);
 
