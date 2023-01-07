@@ -351,7 +351,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SupressAlt()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			controller->nativeWindow->SupressAlt();
 		}
 
 		bool GuiHostedWindow::InstallListener(INativeWindowListener* listener)
@@ -382,7 +382,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::RedrawContent()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			controller->nativeWindow->RedrawContent();
 		}
 	}
 }
