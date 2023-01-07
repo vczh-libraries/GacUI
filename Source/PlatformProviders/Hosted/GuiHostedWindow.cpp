@@ -9,31 +9,16 @@ namespace vl
 GuiHostedWindow
 ***********************************************************************/
 
-		void GuiHostedWindow::SyncWindowProperties()
-		{
-			// TODO:
-			//   sync window properties to nativeWindow
-			//   check main window properties
-			//     no parent
-			//   check non-main window properties
-			//     CustomFrameMode should be true to render the frame using templates
-			//     for normal windows, parent should be either null or the main window
-			//       if it is null, it is treated to be the main window
-			//     for other windows, parent should be non-null
-			//     ensure parent is partial ordered in realtime
-			//   sync non-main window window-management properties
-			//     changing activated or focused etc before calling Run() are ignored
-			CHECK_FAIL(L"Not implemented!");
-		}
-
 		void GuiHostedWindow::BecomeMainWindow()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy = CreateMainHostedWindowProxy(this);
+			proxy->CheckAndSyncProperties();
 		}
 
 		void GuiHostedWindow::BecomeNonMainWindow()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy = CreateNonMainHostedWindowProxy(this);
+			proxy->CheckAndSyncProperties();
 		}
 
 		void GuiHostedWindow::BecomeFocusedWindow()
@@ -51,6 +36,8 @@ GuiHostedWindow
 		GuiHostedWindow::GuiHostedWindow(GuiHostedController* _controller, INativeWindow::WindowMode _windowMode)
 			: GuiHostedWindowData(_controller, this, _windowMode)
 		{
+			proxy = CreatePlaceholderHostedWindowProxy(this);
+			proxy->CheckAndSyncProperties();
 		}
 
 		GuiHostedWindow::~GuiHostedWindow()

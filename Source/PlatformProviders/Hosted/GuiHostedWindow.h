@@ -61,6 +61,8 @@ Proxy
 			: public virtual Interface
 		{
 		public:
+			virtual void			CheckAndSyncProperties() = 0;
+
 			virtual NativeRect		FixBounds(const NativeRect& bounds) = 0;
 			virtual void			UpdateBounds() = 0;
 			virtual void			UpdateTitle() = 0;
@@ -90,6 +92,10 @@ Proxy
 			virtual void			SetFocus() = 0;
 		};
 
+		extern Ptr<IGuiHostedWindowProxy>		CreatePlaceholderHostedWindowProxy(GuiHostedWindowData* data);
+		extern Ptr<IGuiHostedWindowProxy>		CreateMainHostedWindowProxy(GuiHostedWindowData* data);
+		extern Ptr<IGuiHostedWindowProxy>		CreateNonMainHostedWindowProxy(GuiHostedWindowData* data);
+
 /***********************************************************************
 GuiHostedWindow
 ***********************************************************************/
@@ -103,7 +109,6 @@ GuiHostedWindow
 		protected:
 			Ptr<IGuiHostedWindowProxy>		proxy;
 
-			void							SyncWindowProperties();
 			void							BecomeMainWindow();
 			void							BecomeNonMainWindow();
 			void							BecomeFocusedWindow();
