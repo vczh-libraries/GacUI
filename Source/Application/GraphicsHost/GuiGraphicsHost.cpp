@@ -518,10 +518,7 @@ GuiGraphicsHost
 
 				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && hostRecord.nativeWindow)
 				{
-					if (hostRecord.nativeWindow)
-					{
-						hostRecord.nativeWindow->SupressAlt();
-					}
+					hostRecord.nativeWindow->SupressAlt();
 				}
 
 				if (focusedComposition && focusedComposition->HasEventReceiver())
