@@ -162,7 +162,7 @@ GuiControlHost
 				WindowOpened.Execute(GetNotifyEventArguments());
 			}
 
-			void GuiControlHost::Closing(bool& cancel)
+			void GuiControlHost::BeforeClosing(bool& cancel)
 			{
 				GuiRequestEventArgs arguments(boundsComposition);
 				arguments.cancel=cancel;
@@ -171,6 +171,11 @@ GuiControlHost
 				{
 					cancel=arguments.cancel;
 				}
+			}
+
+			void GuiControlHost::AfterClosing()
+			{
+				WindowReadyToClose.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiControlHost::Closed()
@@ -213,6 +218,7 @@ GuiControlHost
 				WindowDeactivated.SetAssociatedComposition(boundsComposition);
 				WindowOpened.SetAssociatedComposition(boundsComposition);
 				WindowClosing.SetAssociatedComposition(boundsComposition);
+				WindowReadyToClose.SetAssociatedComposition(boundsComposition);
 				WindowClosed.SetAssociatedComposition(boundsComposition);
 				WindowDestroying.SetAssociatedComposition(boundsComposition);
 
@@ -855,16 +861,20 @@ GuiWindow
 				owner->SetEnabled(false);
 				GetNativeWindow()->SetParent(owner->GetNativeWindow());
 				auto container = Ptr(new IGuiGraphicsEventHandler::Container);
-				container->handler = WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				auto disposeFlag = GetDisposedFlag();
+				container->handler = WindowReadyToClose.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
+					GetNativeWindow()->SetParent(nullptr);
+					callback();
+					owner->SetEnabled(true);
+					owner->SetFocused();
 					GetApplication()->InvokeInMainThread(this, [=]()
 					{
-						WindowClosed.Detach(container->handler);
+						if (!disposeFlag->IsDisposed())
+						{
+							WindowReadyToClose.Detach(container->handler);
+						}
 						container->handler = nullptr;
-						GetNativeWindow()->SetParent(nullptr);
-						callback();
-						owner->SetEnabled(true);
-						owner->SetFocused();
 					});
 				});
 				Show();

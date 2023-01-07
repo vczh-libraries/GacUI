@@ -79,7 +79,8 @@ GuiHostedController
 			void							RenderingAsActivated() override;
 			void							RenderingAsDeactivated() override;
 			void							Opened() override;
-			void							Closing(bool& cancel) override;
+			void							BeforeClosing(bool& cancel) override;
+			void							AfterClosing() override;
 			void							Closed() override;
 			void							Paint() override;
 			void							Destroying() override;

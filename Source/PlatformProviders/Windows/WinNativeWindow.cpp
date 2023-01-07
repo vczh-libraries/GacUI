@@ -473,10 +473,17 @@ WindowsForm
 						break;
 					case WM_CLOSE:
 						{
-							bool cancel=false;
-							for(vint i=0;i<listeners.Count();i++)
+							bool cancel = false;
+							for (vint i = 0; i < listeners.Count(); i++)
 							{
-								listeners[i]->Closing(cancel);
+								listeners[i]->BeforeClosing(cancel);
+							}
+							if (!cancel)
+							{
+								for (vint i = 0; i < listeners.Count(); i++)
+								{
+									listeners[i]->AfterClosing();
+								}
 							}
 							return cancel;
 						}
@@ -1481,14 +1488,7 @@ WindowsForm
 
 				void Hide(bool closeWindow)override
 				{
-					if (closeWindow)
-					{
-						PostMessage(handle, WM_CLOSE, NULL, NULL);
-					}
-					else
-					{
-						ShowWindow(handle, SW_HIDE);
-					}
+					PostMessage(handle, WM_CLOSE, NULL, NULL);
 				}
 
 				bool IsVisible()override

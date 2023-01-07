@@ -620,7 +620,11 @@ INativeWindow
 			/// Called when the window is closing.
 			/// </summary>
 			/// <param name="cancel">Change the value to true to prevent the windows from being closed.</param>
-			virtual void				Closing(bool& cancel);
+			virtual void				BeforeClosing(bool& cancel);
+			/// <summary>
+			/// Called when all <see cref="BeforeClosing"/> callback agree to close.
+			/// </summary>
+			virtual void				AfterClosing();
 			/// <summary>
 			/// Called when the window is closed.
 			/// </summary>

@@ -854,6 +854,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_GUIEVENT(WindowDeactivated)
 				CLASS_MEMBER_GUIEVENT(WindowOpened)
 				CLASS_MEMBER_GUIEVENT(WindowClosing)
+				CLASS_MEMBER_GUIEVENT(WindowReadyToClose)
 				CLASS_MEMBER_GUIEVENT(WindowClosed)
 				CLASS_MEMBER_GUIEVENT(WindowDestroying)
 

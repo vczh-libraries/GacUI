@@ -124,7 +124,11 @@ GuiHostedController::INativeWindowListener
 		{
 		}
 
-		void GuiHostedController::Closing(bool& cancel)
+		void GuiHostedController::BeforeClosing(bool& cancel)
+		{
+		}
+
+		void GuiHostedController::AfterClosing()
 		{
 		}
 

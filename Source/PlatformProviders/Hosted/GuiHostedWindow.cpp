@@ -250,8 +250,12 @@ GuiHostedWindow
 			bool cancel = false;
 			for (auto listener : listeners)
 			{
-				listener->Closing(cancel);
+				listener->BeforeClosing(cancel);
 				if (cancel) return;
+			}
+			for (auto listener : listeners)
+			{
+				listener->AfterClosing();
 			}
 
 			if (closeWindow)

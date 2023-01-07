@@ -65,7 +65,8 @@ Control Host
 				void											RenderingAsActivated()override;
 				void											RenderingAsDeactivated()override;
 				void											Opened()override;
-				void											Closing(bool& cancel)override;
+				void											BeforeClosing(bool& cancel)override;
+				void											AfterClosing()override;
 				void											Closed()override;
 				void											Destroying()override;
 
@@ -87,9 +88,11 @@ Control Host
 				compositions::GuiNotifyEvent					WindowDeactivated;
 				/// <summary>Window opened event.</summary>
 				compositions::GuiNotifyEvent					WindowOpened;
-				/// <summary>Window closing event.</summary>
+				/// <summary>Window closing event, raised to offer a chance to stop closing the window.</summary>
 				compositions::GuiRequestEvent					WindowClosing;
-				/// <summary>Window closed event.</summary>
+				/// <summary>Window ready to close event, raised when a window is about to close.</summary>
+				compositions::GuiNotifyEvent					WindowReadyToClose;
+				/// <summary>Window closed event, raised when a window is closed.</summary>
 				compositions::GuiNotifyEvent					WindowClosed;
 				/// <summary>Window destroying event.</summary>
 				compositions::GuiNotifyEvent					WindowDestroying;

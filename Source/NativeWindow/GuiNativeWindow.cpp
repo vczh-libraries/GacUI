@@ -54,7 +54,11 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::Closing(bool& cancel)
+		void INativeWindowListener::BeforeClosing(bool& cancel)
+		{
+		}
+
+		void INativeWindowListener::AfterClosing()
 		{
 		}
 
