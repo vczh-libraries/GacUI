@@ -18,7 +18,41 @@ namespace vl
 {
 	namespace presentation
 	{
+		class GuiHostedWindow;
 		class GuiHostedController;
+
+/***********************************************************************
+Proxy
+***********************************************************************/
+
+		struct GuiHostedWindowData
+		{
+			hosted_window_manager::Window<GuiHostedWindow*>		wmWindow;
+			GuiHostedController*								controller = nullptr;
+			INativeWindow::WindowMode							windowMode = INativeWindow::WindowMode::Normal;
+			collections::List<INativeWindowListener*>			listeners;
+
+			WString												windowTitle;
+			INativeCursor*										windowCursor = nullptr;
+			NativePoint											windowCaretPoint;
+			bool												customFrameMode = true;
+
+			GuiHostedWindowData(GuiHostedController* _controller, GuiHostedWindow* _window, INativeWindow::WindowMode _windowMode)
+				: wmWindow(_window, _windowMode == INativeWindow::Normal)
+				, controller(_controller)
+				, windowMode(_windowMode)
+			{
+			}
+		};
+
+		class IGuiHostedWindowProxy
+			: public virtual Interface
+		{
+		public:
+			virtual NativeRect		FixBounds(const NativeRect& bounds) = 0;
+			virtual void			UpdateBounds() = 0;
+			virtual void			UpdateTitle() = 0;
+		};
 
 /***********************************************************************
 GuiHostedWindow
@@ -27,12 +61,16 @@ GuiHostedWindow
 		class GuiHostedWindow
 			: public Object
 			, public INativeWindow
+			, protected GuiHostedWindowData
 		{
 			friend class GuiHostedController;
 		protected:
-			GuiHostedController*							controller = nullptr;
-			INativeWindow::WindowMode						windowMode = INativeWindow::WindowMode::Normal;
-			collections::List<INativeWindowListener*>		listeners;
+			Ptr<IGuiHostedWindowProxy>		proxy;
+
+			void							BecomeMainWindow();
+			void							BecomeNonMainWindow();
+			void							BecomeFocusedWindow();
+			void							BecomeHoveringWindow();
 
 		public:
 			GuiHostedWindow(GuiHostedController* _controller, INativeWindow::WindowMode _windowMode);

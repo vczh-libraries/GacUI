@@ -25,6 +25,7 @@ GuiHostedController
 
 		class GuiHostedController
 			: public Object
+			, protected hosted_window_manager::WindowManager<GuiHostedWindow*>
 			, protected INativeWindowListener
 			, protected INativeControllerListener
 			, public INativeController
@@ -38,14 +39,31 @@ GuiHostedController
 			friend class GuiHostedWindow;
 			friend class elements::GuiHostedGraphicsResourceManager;
 		protected:
-			INativeController*								nativeController = nullptr;
-			elements::GuiHostedGraphicsResourceManager*		hostedResourceManager = nullptr;
-			collections::List<INativeControllerListener*>	listeners;
+			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
+			INativeController*											nativeController = nullptr;
+			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
+			collections::List<INativeControllerListener*>				listeners;
 
-			INativeWindow*									nativeWindow = nullptr;
-			bool											nativeWindowDestroyed = false;
-			GuiHostedWindow*								mainWindow = nullptr;
-			collections::SortedList<Ptr<GuiHostedWindow>>	createdWindows;
+			INativeWindow*												nativeWindow = nullptr;
+			bool														nativeWindowDestroyed = false;
+			GuiHostedWindow*											mainWindow = nullptr;
+			GuiHostedWindow*											focusedWindow = nullptr;
+			GuiHostedWindow*											capturingWindow = nullptr;
+			GuiHostedWindow*											hoveringWindow = nullptr;
+			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
+
+			// =============================================================
+			// WindowManager<GuiHostedWindow*>
+			// =============================================================
+
+			void							OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
 
 			// =============================================================
 			// INativeWindowListener

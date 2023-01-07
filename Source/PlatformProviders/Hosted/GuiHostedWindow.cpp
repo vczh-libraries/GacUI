@@ -9,9 +9,42 @@ namespace vl
 GuiHostedWindow
 ***********************************************************************/
 
+		void GuiHostedWindow::BecomeMainWindow()
+		{
+			// TODO:
+			//   sync window properties to nativeWindow
+			//   check main window properties
+			//     no parent
+			//   check non-main window properties
+			//     CustomFrameMode should be true to render the frame using templates
+			//     for normal windows, parent should be either null or the main window
+			//       if it is null, it is treated to be the main window
+			//     for other windows, parent should be non-null
+			//     ensure parent is partial ordered in realtime
+			//   sync non-main window window-management properties
+			//     changing activated or focused etc before calling Run() are ignored
+			CHECK_FAIL(L"Not implemented!");
+		}
+
+		void GuiHostedWindow::BecomeNonMainWindow()
+		{
+			CHECK_FAIL(L"Not implemented!");
+		}
+
+		void GuiHostedWindow::BecomeFocusedWindow()
+		{
+			CHECK_ERROR(this == controller->focusedWindow, L"vl::presentation::GuiHostedWindow::BecomeFocusedWindow()#Wrong timing to call this function.");
+			controller->nativeWindow->SetCaretPoint(windowCaretPoint + GetRenderingOffset());
+		}
+
+		void GuiHostedWindow::BecomeHoveringWindow()
+		{
+			CHECK_ERROR(this == controller->hoveringWindow, L"vl::presentation::GuiHostedWindow::BecomeFocusedWindow()#Wrong timing to call this function.");
+			controller->nativeWindow->SetWindowCursor(windowCursor);
+		}
+
 		GuiHostedWindow::GuiHostedWindow(GuiHostedController* _controller, INativeWindow::WindowMode _windowMode)
-			: controller(_controller)
-			, windowMode(_windowMode)
+			: GuiHostedWindowData(_controller, this, _windowMode)
 		{
 		}
 
@@ -26,7 +59,8 @@ GuiHostedWindow
 
 		NativeSize GuiHostedWindow::GetRenderingOffset()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			auto pos = wmWindow.bounds.LeftTop();
+			return { pos.x,pos.y };
 		}
 
 		Point GuiHostedWindow::Convert(NativePoint value)
@@ -61,67 +95,78 @@ GuiHostedWindow
 
 		NativeRect GuiHostedWindow::GetBounds()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.bounds;
 		}
 
 		void GuiHostedWindow::SetBounds(const NativeRect& bounds)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			auto fixedBounds = proxy->FixBounds(bounds);
+			wmWindow.SetBounds(fixedBounds);
+			proxy->UpdateBounds();
 		}
 
 		NativeSize GuiHostedWindow::GetClientSize()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return GetBounds().GetSize();
 		}
 
 		void GuiHostedWindow::SetClientSize(NativeSize size)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			SetBounds({ GetBounds().LeftTop(),size });
 		}
 
 		NativeRect GuiHostedWindow::GetClientBoundsInScreen()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return GetBounds();
 		}
 
 		WString GuiHostedWindow::GetTitle()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowTitle;
 		}
 
 		void GuiHostedWindow::SetTitle(WString title)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			windowTitle = title;
+			proxy->UpdateTitle();
 		}
 
 		INativeCursor* GuiHostedWindow::GetWindowCursor()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowCursor;
 		}
 
 		void GuiHostedWindow::SetWindowCursor(INativeCursor* cursor)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			windowCursor = cursor;
+			if (this == controller->hoveringWindow)
+			{
+				controller->nativeWindow->SetWindowCursor(windowCursor);
+			}
 		}
 
 		NativePoint GuiHostedWindow::GetCaretPoint()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowCaretPoint;
 		}
 
 		void GuiHostedWindow::SetCaretPoint(NativePoint point)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			windowCaretPoint = point;
+			if (this == controller->focusedWindow)
+			{
+				controller->nativeWindow->SetCaretPoint(windowCaretPoint + GetRenderingOffset());
+			}
 		}
 
 		INativeWindow* GuiHostedWindow::GetParent()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.parent ? wmWindow.parent->id : nullptr;
 		}
 
 		void GuiHostedWindow::SetParent(INativeWindow* parent)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			wmWindow.SetParent(&dynamic_cast<GuiHostedWindow*>(parent)->wmWindow);
 		}
 
 		INativeWindow::WindowMode GuiHostedWindow::GetWindowMode()
@@ -131,17 +176,19 @@ GuiHostedWindow
 
 		void GuiHostedWindow::EnableCustomFrameMode()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy->EnableCustomFrameMode();
+			windowCustomFrameMode = true;
 		}
 
 		void GuiHostedWindow::DisableCustomFrameMode()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy->DisableCustomFrameMode();
+			windowCustomFrameMode = false;
 		}
 
 		bool GuiHostedWindow::IsCustomFrameModeEnabled()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowCustomFrameMode;
 		}
 
 		NativeMargin GuiHostedWindow::GetCustomFramePadding()
