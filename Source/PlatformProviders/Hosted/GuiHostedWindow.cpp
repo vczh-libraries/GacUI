@@ -280,7 +280,6 @@ GuiHostedWindow
 		void GuiHostedWindow::SetActivate()
 		{
 			EnableActivate();
-			wmWindow.Activate();
 			proxy->SetFocus();
 		}
 
