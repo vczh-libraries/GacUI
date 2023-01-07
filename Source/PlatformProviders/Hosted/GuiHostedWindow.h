@@ -35,7 +35,19 @@ Proxy
 			WString												windowTitle;
 			INativeCursor*										windowCursor = nullptr;
 			NativePoint											windowCaretPoint;
-			bool												customFrameMode = true;
+			Ptr<GuiImageData>									windowIcon;
+
+			bool												windowMaximizedBox = true;
+			bool												windowMinimizedBox = true;
+			bool												windowBorder = true;
+			bool												windowSizeBox = true;
+			bool												windowIconVisible = true;
+			bool												windowTitleBar = true;
+
+			INativeWindow::WindowSizeState						windowSizeState = INativeWindow::Restored;
+			bool												windowShowInTaskBar = true;
+			bool												windowEnabledActivate = true;
+			bool												windowCustomFrameMode = true;
 
 			GuiHostedWindowData(GuiHostedController* _controller, GuiHostedWindow* _window, INativeWindow::WindowMode _windowMode)
 				: wmWindow(_window, _windowMode == INativeWindow::Normal)
@@ -52,6 +64,30 @@ Proxy
 			virtual NativeRect		FixBounds(const NativeRect& bounds) = 0;
 			virtual void			UpdateBounds() = 0;
 			virtual void			UpdateTitle() = 0;
+			virtual void			UpdateIcon() = 0;
+			virtual void			UpdateEnabled() = 0;
+			virtual void			UpdateTopMost() = 0;
+
+			virtual void			UpdateMaximizedBox() = 0;
+			virtual void			UpdateMinimizedBox() = 0;
+			virtual void			UpdateBorderVisible() = 0;
+			virtual void			UpdateSizeBox() = 0;
+			virtual void			UpdateIconVisible() = 0;
+			virtual void			UpdateTitleBar() = 0;
+
+			virtual void			UpdateShowInTaskBar() = 0;
+			virtual void			UpdateEnabledActivate() = 0;
+			virtual void			EnableCustomFrameMode() = 0;
+			virtual void			DisableCustomFrameMode() = 0;
+
+			virtual void			Show() = 0;
+			virtual void			ShowDeactivated() = 0;
+			virtual void			ShowRestored() = 0;
+			virtual void			ShowMaximized() = 0;
+			virtual void			ShowMinimized() = 0;
+			virtual void			Hide() = 0;
+			virtual void			Close() = 0;
+			virtual void			SetFocus() = 0;
 		};
 
 /***********************************************************************
@@ -67,6 +103,7 @@ GuiHostedWindow
 		protected:
 			Ptr<IGuiHostedWindowProxy>		proxy;
 
+			void							SyncWindowProperties();
 			void							BecomeMainWindow();
 			void							BecomeNonMainWindow();
 			void							BecomeFocusedWindow();
