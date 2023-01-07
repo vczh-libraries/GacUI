@@ -205,7 +205,7 @@ GuiListControl
 			{
 				if(GetVisuallyEnabled())
 				{
-					SetFocus();
+					SetFocused();
 				}
 			}
 

@@ -564,7 +564,7 @@ GuiDocumentCommonInterface
 					case Selectable:
 					case Editable:
 						{
-							documentControl->SetFocus();
+							documentControl->SetFocused();
 							TextPos caret=documentElement->CalculateCaretFromPoint(Point(x, y));
 							TextPos oldCaret=documentElement->GetCaretEnd();
 							if(caret!=oldCaret)

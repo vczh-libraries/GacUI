@@ -79,11 +79,11 @@ GuiHostedController::INativeWindowListener
 		{
 		}
 
-		void GuiHostedController::Activated()
+		void GuiHostedController::RenderingAsActivated()
 		{
 		}
 
-		void GuiHostedController::Deactivated()
+		void GuiHostedController::RenderingAsDeactivated()
 		{
 		}
 

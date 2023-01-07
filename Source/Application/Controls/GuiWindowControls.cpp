@@ -145,13 +145,13 @@ GuiControlHost
 				OnVisualStatusChanged();
 			}
 
-			void GuiControlHost::Activated()
+			void GuiControlHost::RenderingAsActivated()
 			{
 				WindowActivated.Execute(GetNotifyEventArguments());
 				OnVisualStatusChanged();
 			}
 
-			void GuiControlHost::Deactivated()
+			void GuiControlHost::RenderingAsDeactivated()
 			{
 				WindowDeactivated.Execute(GetNotifyEventArguments());
 				OnVisualStatusChanged();
@@ -315,7 +315,7 @@ GuiControlHost
 			{
 				if(host->GetNativeWindow())
 				{
-					return host->GetNativeWindow()->IsFocused();
+					return host->GetNativeWindow()->IsActivated();
 				}
 				else
 				{
@@ -327,27 +327,19 @@ GuiControlHost
 			{
 				if(host->GetNativeWindow())
 				{
-					host->GetNativeWindow()->SetFocus();
+					host->GetNativeWindow()->SetActivate();
 				}
 			}
 
-			bool GuiControlHost::GetActivated()
+			bool GuiControlHost::GetRenderingAsActivated()
 			{
 				if(host->GetNativeWindow())
 				{
-					return host->GetNativeWindow()->IsActivated();
+					return host->GetNativeWindow()->IsRenderingAsActivated();
 				}
 				else
 				{
 					return false;
-				}
-			}
-
-			void GuiControlHost::SetActivated()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetActivate();
 				}
 			}
 
@@ -642,7 +634,7 @@ GuiWindow
 				ct->SetIconVisible(isIconVisible);
 				ct->SetTitleBar(hasTitleBar);
 				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
-				ct->SetActivated(GetActivated());
+				ct->SetActivated(GetRenderingAsActivated());
 
 				auto window = GetNativeWindow();
 				if (window)
@@ -872,7 +864,7 @@ GuiWindow
 						GetNativeWindow()->SetParent(nullptr);
 						callback();
 						owner->SetEnabled(true);
-						owner->SetActivated();
+						owner->SetFocused();
 					});
 				});
 				Show();

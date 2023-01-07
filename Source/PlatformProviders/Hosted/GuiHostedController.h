@@ -77,8 +77,8 @@ GuiHostedController
 			void							Disabled() override;
 			void							GotFocus() override;
 			void							LostFocus() override;
-			void							Activated() override;
-			void							Deactivated() override;
+			void							RenderingAsActivated() override;
+			void							RenderingAsDeactivated() override;
 			void							Opened() override;
 			void							Closing(bool& cancel) override;
 			void							Closed() override;

@@ -106,7 +106,7 @@ GuiButton
 					mousePressing = true;
 					if (autoFocus)
 					{
-						SetFocus();
+						SetFocused();
 					}
 					UpdateControlState();
 					if (!clickOnMouseUp)

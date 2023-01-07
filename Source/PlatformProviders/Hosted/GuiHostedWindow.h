@@ -161,10 +161,9 @@ GuiHostedWindow
 			void							Enable() override;
 			void							Disable() override;
 			bool							IsEnabled() override;
-			void							SetFocus() override;
-			bool							IsFocused() override;
 			void							SetActivate() override;
 			bool							IsActivated() override;
+			bool							IsRenderingAsActivated() override;
 			void							ShowInTaskBar() override;
 			void							HideInTaskBar() override;
 			bool							IsAppearedInTaskBar() override;

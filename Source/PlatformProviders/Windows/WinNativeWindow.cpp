@@ -428,22 +428,6 @@ WindowsForm
 							}
 						}
 						break;
-					case WM_SETFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->GotFocus();
-							}
-						}
-						break;
-					case WM_KILLFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->LostFocus();
-							}
-						}
-						break;
 					case WM_MOUSEACTIVATE:
 						if (!enabledActivate)
 						{
@@ -457,11 +441,13 @@ WindowsForm
 							{
 								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
 								{
-									listeners[i]->Activated();
+									listeners[i]->GotFocus();
+									listeners[i]->RenderingAsActivated();
 								}
 								else
 								{
-									listeners[i]->Deactivated();
+									listeners[i]->LostFocus();
+									listeners[i]->RenderingAsDeactivated();
 								}
 							}
 						}
@@ -1468,6 +1454,7 @@ WindowsForm
 
 				void Show()override
 				{
+					SetForegroundWindow(handle);
 					ShowWindow(handle, SW_SHOWNORMAL);
 				}
 
@@ -1524,16 +1511,6 @@ WindowsForm
 					return IsWindowEnabled(handle)!=0;
 				}
 
-				void SetFocus()override
-				{
-					::SetFocus(handle);
-				}
-
-				bool IsFocused()override
-				{
-					return GetFocus()==handle;
-				}
-
 				void SetActivate()override
 				{
 					SetActiveWindow(handle);
@@ -1542,6 +1519,14 @@ WindowsForm
 				bool IsActivated()override
 				{
 					return GetActiveWindow()==handle;
+				}
+
+				bool IsRenderingAsActivated()override
+				{
+					// TODO: should render as activated when
+					//   is activated
+					//   is a parent window of one that rendering as activated
+					return IsActivated();
 				}
 
 				void ShowInTaskBar()override

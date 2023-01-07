@@ -263,23 +263,18 @@ GuiHostedWindow
 			return wmWindow.enabled;
 		}
 
-		void GuiHostedWindow::SetFocus()
+		void GuiHostedWindow::SetActivate()
 		{
 			wmWindow.Activate();
 			proxy->SetFocus();
 		}
 
-		bool GuiHostedWindow::IsFocused()
+		bool GuiHostedWindow::IsActivated()
 		{
 			return wmWindow.active;
 		}
 
-		void GuiHostedWindow::SetActivate()
-		{
-			SetFocus();
-		}
-
-		bool GuiHostedWindow::IsActivated()
+		bool GuiHostedWindow::IsRenderingAsActivated()
 		{
 			return wmWindow.renderedAsActive;
 		}

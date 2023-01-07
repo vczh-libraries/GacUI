@@ -109,7 +109,7 @@ GuiTab::CommandExecutor
 				tab->SetSelectedPage(tab->GetPages().Get(index));
 				if (setFocus)
 				{
-					tab->SetFocus();
+					tab->SetFocused();
 				}
 			}
 

@@ -42,11 +42,11 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::Activated()
+		void INativeWindowListener::RenderingAsActivated()
 		{
 		}
 
-		void INativeWindowListener::Deactivated()
+		void INativeWindowListener::RenderingAsDeactivated()
 		{
 		}
 

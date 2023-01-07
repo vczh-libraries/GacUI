@@ -117,7 +117,7 @@ GuiScroll
 			{
 				if (autoFocus)
 				{
-					SetFocus();
+					SetFocused();
 				}
 			}
 

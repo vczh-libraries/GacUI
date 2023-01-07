@@ -62,8 +62,8 @@ Control Host
 				void											Disabled()override;
 				void											GotFocus()override;
 				void											LostFocus()override;
-				void											Activated()override;
-				void											Deactivated()override;
+				void											RenderingAsActivated()override;
+				void											RenderingAsDeactivated()override;
 				void											Opened()override;
 				void											Closing(bool& cancel)override;
 				void											Closed()override;
@@ -122,12 +122,10 @@ Control Host
 				/// <returns>Returns true if the window is focused.</returns>
 				bool											GetFocused()override;
 				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
-				void											SetFocused();
-				/// <summary>Test is the window activated.</summary>
-				/// <returns>Returns true if the window is activated.</returns>
-				bool											GetActivated();
-				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
-				void											SetActivated();
+				void											SetFocused()override;
+				/// <summary>Test is the window rendering as activated.</summary>
+				/// <returns>Returns true if the window is rendering as activated.</returns>
+				bool											GetRenderingAsActivated();
 				/// <summary>Test is the window icon shown in the task bar.</summary>
 				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
 				bool											GetShowInTaskBar();

@@ -318,7 +318,7 @@ GuiControl
 
 			void GuiControl::OnActiveAlt()
 			{
-				SetFocus();
+				SetFocused();
 			}
 
 			bool GuiControl::IsTabEnabled()
@@ -540,6 +540,17 @@ GuiControl
 				return isFocused;
 			}
 
+			void GuiControl::SetFocused()
+			{
+				if (focusableComposition)
+				{
+					if (auto host = focusableComposition->GetRelatedGraphicsHost())
+					{
+						host->SetFocus(focusableComposition);
+					}
+				}
+			}
+
 			bool GuiControl::GetAcceptTabInput()
 			{
 				return acceptTabInput;
@@ -672,17 +683,6 @@ GuiControl
 						controlTemplateObject->SetContext(context);
 					}
 					ContextChanged.Execute(GetNotifyEventArguments());
-				}
-			}
-
-			void GuiControl::SetFocus()
-			{
-				if (focusableComposition)
-				{
-					if (auto host = focusableComposition->GetRelatedGraphicsHost())
-					{
-						host->SetFocus(focusableComposition);
-					}
 				}
 			}
 
