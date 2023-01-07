@@ -33,34 +33,28 @@ GuiPlaceholderHostedWindowProxy
 
 			NativeRect FixBounds(const NativeRect& bounds) override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				return bounds;
 			}
 
 			void UpdateBounds() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateTitle() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateIcon() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateEnabled() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateTopMost() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
-
 
 			/***********************************************************************
 			Border Properties
@@ -68,34 +62,27 @@ GuiPlaceholderHostedWindowProxy
 
 			void UpdateMaximizedBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateMinimizedBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateBorderVisible() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateSizeBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateIconVisible() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateTitleBar() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
-
 
 			/***********************************************************************
 			Behavior Properties
@@ -103,24 +90,19 @@ GuiPlaceholderHostedWindowProxy
 
 			void UpdateShowInTaskBar() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void UpdateEnabledActivate() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void EnableCustomFrameMode() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void DisableCustomFrameMode() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
-
 
 			/***********************************************************************
 			Show/Hide/Focus
@@ -128,44 +110,40 @@ GuiPlaceholderHostedWindowProxy
 
 			void Show() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				CHECK_FAIL(L"vl::presentation::GuiPlaceholderHostedWindowProxy::Show()#This function should not be called.");
 			}
 
 			void ShowDeactivated() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				CHECK_FAIL(L"vl::presentation::GuiPlaceholderHostedWindowProxy::ShowDeactivated()#This function should not be called.");
 			}
 
 			void ShowRestored() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				CHECK_FAIL(L"vl::presentation::GuiPlaceholderHostedWindowProxy::ShowRestored()#This function should not be called.");
 			}
 
 			void ShowMaximized() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				CHECK_FAIL(L"vl::presentation::GuiPlaceholderHostedWindowProxy::ShowMaximized()#This function should not be called.");
 			}
 
 			void ShowMinimized() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				CHECK_FAIL(L"vl::presentation::GuiPlaceholderHostedWindowProxy::ShowMinimized()#This function should not be called.");
 			}
 
 			void Hide() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void Close() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void SetFocus() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
-
 		};
 
 /***********************************************************************

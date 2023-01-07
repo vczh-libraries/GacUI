@@ -477,7 +477,7 @@ GuiHostedController::INativeWindowService
 		{
 			CHECK_ERROR(!mainWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#This function has been called.");
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
-			CHECK_ERROR(!hostedWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#The window is not created by GuiHostedController.");
+			CHECK_ERROR(hostedWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#The window is not created by GuiHostedController.");
 			mainWindow = hostedWindow;
 			focusedWindow = hostedWindow;
 

@@ -37,6 +37,7 @@ GuiMainHostedWindowProxy
 				//     ensure parent is partial ordered in realtime
 				//   sync non-main window window-management properties
 				//     changing activated or focused etc before calling Run() are ignored
+				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			/***********************************************************************
@@ -73,7 +74,6 @@ GuiMainHostedWindowProxy
 				CHECK_FAIL(L"Not Implemented!");
 			}
 
-
 			/***********************************************************************
 			Border Properties
 			***********************************************************************/
@@ -108,7 +108,6 @@ GuiMainHostedWindowProxy
 				CHECK_FAIL(L"Not Implemented!");
 			}
 
-
 			/***********************************************************************
 			Behavior Properties
 			***********************************************************************/
@@ -132,7 +131,6 @@ GuiMainHostedWindowProxy
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			}
-
 
 			/***********************************************************************
 			Show/Hide/Focus
@@ -177,7 +175,6 @@ GuiMainHostedWindowProxy
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			}
-
 		};
 
 /***********************************************************************
