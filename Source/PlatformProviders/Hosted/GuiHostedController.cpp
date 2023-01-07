@@ -198,13 +198,69 @@ GuiHostedController::INativeControllerListener
 				listener->GlobalTimer();
 			}
 
-			if (hostedResourceManager)
+			if (hostedResourceManager && nativeWindow)
 			{
-				// TODO: call all visible INativeWindowListener::NeedRefresh
-				auto renderTarget = hostedResourceManager->nativeManager->GetRenderTarget(nativeWindow);
-				renderTarget->StartHostedRendering();
-				// TODO: call all visible INativeWindowListener::ForceRefresh
-				renderTarget->StopRendering();
+				for (auto hostedWindow : createdWindows)
+				{
+					for (auto listener : hostedWindow->listeners)
+					{
+						if (listener->NeedRefresh())
+						{
+							goto NEED_REFRESH;
+						}
+					}
+				}
+				return;
+
+			NEED_REFRESH:
+				while (true)
+				{
+					auto renderTarget = hostedResourceManager->nativeManager->GetRenderTarget(nativeWindow);
+					renderTarget->StartHostedRendering();
+					bool failureByResized = false;
+					bool failureByLostDevice = false;
+
+					for (vint i = wmManager->ordinaryWindowsInOrder.Count() - 1; i >= 0; i--)
+					{
+						auto hostedWindow = wmManager->ordinaryWindowsInOrder[i]->id;
+						for (auto listener : hostedWindow->listeners)
+						{
+							listener->ForceRefresh(true, failureByResized, failureByLostDevice);
+							if (failureByResized || failureByLostDevice)
+							{
+								goto STOP_RENDERING;
+							}
+						}
+					}
+					for (vint i = wmManager->topMostedWindowsInOrder.Count() - 1; i >= 0; i--)
+					{
+						auto hostedWindow = wmManager->topMostedWindowsInOrder[i]->id;
+						for (auto listener : hostedWindow->listeners)
+						{
+							listener->ForceRefresh(true, failureByResized, failureByLostDevice);
+							if (failureByResized || failureByLostDevice)
+							{
+								goto STOP_RENDERING;
+							}
+						}
+					}
+
+				STOP_RENDERING:
+					renderTarget->StopHostedRendering();
+
+					if (failureByLostDevice)
+					{
+						hostedResourceManager->nativeManager->RecreateRenderTarget(nativeWindow);
+					}
+					else if (failureByResized)
+					{
+						hostedResourceManager->nativeManager->ResizeRenderTarget(nativeWindow);
+					}
+					else
+					{
+						break;
+					}
+				}
 			}
 		}
 

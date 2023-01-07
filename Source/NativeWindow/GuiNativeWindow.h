@@ -138,7 +138,7 @@ INativeWindow
 			/// Set the title of the window. A title will be displayed as a name of this window.
 			/// </summary>
 			/// <param name="title">The title of the window.</param>
-			virtual void				SetTitle(WString title)=0;
+			virtual void				SetTitle(const WString& title)=0;
 			/// <summary>
 			/// Get the mouse cursor of the window. When the mouse is on the window, the mouse cursor will be rendered.
 			/// </summary>

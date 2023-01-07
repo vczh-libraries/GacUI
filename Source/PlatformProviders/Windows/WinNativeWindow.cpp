@@ -1162,7 +1162,7 @@ WindowsForm
 					return title;
 				}
 
-				void SetTitle(WString _title)override
+				void SetTitle(const WString& _title)override
 				{
 					title=_title;
 					SetWindowText(handle, title.Buffer());

@@ -136,7 +136,7 @@ GuiHostedWindow
 			void							SetClientSize(NativeSize size) override;
 			NativeRect						GetClientBoundsInScreen() override;
 			WString							GetTitle() override;
-			void							SetTitle(WString title) override;
+			void							SetTitle(const WString& title) override;
 			INativeCursor*					GetWindowCursor() override;
 			void							SetWindowCursor(INativeCursor* cursor) override;
 			NativePoint						GetCaretPoint() override;

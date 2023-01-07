@@ -93,6 +93,7 @@ GuiHostedWindow
 		void GuiHostedWindow::SetBounds(const NativeRect& bounds)
 		{
 			auto fixedBounds = proxy->FixBounds(bounds);
+			if (wmWindow.bounds == fixedBounds) return;
 			wmWindow.SetBounds(fixedBounds);
 			proxy->UpdateBounds();
 		}
@@ -117,8 +118,9 @@ GuiHostedWindow
 			return windowTitle;
 		}
 
-		void GuiHostedWindow::SetTitle(WString title)
+		void GuiHostedWindow::SetTitle(const WString& title)
 		{
+			if (windowTitle == title) return;
 			windowTitle = title;
 			proxy->UpdateTitle();
 		}
@@ -130,6 +132,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetWindowCursor(INativeCursor* cursor)
 		{
+			if (windowCursor == cursor) return;
 			windowCursor = cursor;
 			if (this == controller->hoveringWindow)
 			{
@@ -144,6 +147,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetCaretPoint(NativePoint point)
 		{
+			if (windowCaretPoint == point) return;
 			windowCaretPoint = point;
 			if (this == controller->focusedWindow)
 			{
@@ -158,7 +162,11 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetParent(INativeWindow* parent)
 		{
-			wmWindow.SetParent(&dynamic_cast<GuiHostedWindow*>(parent)->wmWindow);
+			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(parent);
+			CHECK_ERROR(!parent || hostedWindow, L"vl::presentation::GuiHostedWindow::SetParent(INativeWindow*)#The window is not created by GuiHostedController.");
+			auto parentWindow = hostedWindow ? &hostedWindow->wmWindow : nullptr;
+			if (wmWindow.parent == parentWindow) return;
+			wmWindow.SetParent(parentWindow);
 		}
 
 		INativeWindow::WindowMode GuiHostedWindow::GetWindowMode()
@@ -168,12 +176,14 @@ GuiHostedWindow
 
 		void GuiHostedWindow::EnableCustomFrameMode()
 		{
+			if (windowCustomFrameMode) return;
 			proxy->EnableCustomFrameMode();
 			windowCustomFrameMode = true;
 		}
 
 		void GuiHostedWindow::DisableCustomFrameMode()
 		{
+			if (!windowCustomFrameMode) return;
 			proxy->DisableCustomFrameMode();
 			windowCustomFrameMode = false;
 		}
@@ -195,6 +205,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetIcon(Ptr<GuiImageData> icon)
 		{
+			if (windowIcon == icon) return;
 			windowIcon = icon;
 			proxy->UpdateIcon();
 		}
@@ -206,6 +217,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::Show()
 		{
+			EnableActivate();
 			proxy->Show();
 		}
 
@@ -248,12 +260,14 @@ GuiHostedWindow
 
 		void GuiHostedWindow::Enable()
 		{
+			if (wmWindow.enabled) return;
 			wmWindow.SetEnabled(true);
 			proxy->UpdateEnabled();
 		}
 
 		void GuiHostedWindow::Disable()
 		{
+			if (!wmWindow.enabled) return;
 			wmWindow.SetEnabled(false);
 			proxy->UpdateEnabled();
 		}
@@ -265,6 +279,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetActivate()
 		{
+			EnableActivate();
 			wmWindow.Activate();
 			proxy->SetFocus();
 		}
@@ -281,12 +296,14 @@ GuiHostedWindow
 
 		void GuiHostedWindow::ShowInTaskBar()
 		{
+			if (windowShowInTaskBar) return;
 			windowShowInTaskBar = true;
 			proxy->UpdateShowInTaskBar();
 		}
 
 		void GuiHostedWindow::HideInTaskBar()
 		{
+			if (!windowShowInTaskBar) return;
 			windowShowInTaskBar = false;
 			proxy->UpdateShowInTaskBar();
 		}
@@ -298,12 +315,14 @@ GuiHostedWindow
 
 		void GuiHostedWindow::EnableActivate()
 		{
+			if (windowEnabledActivate) return;
 			windowEnabledActivate = true;
 			proxy->UpdateEnabledActivate();
 		}
 
 		void GuiHostedWindow::DisableActivate()
 		{
+			if (!windowEnabledActivate) return;
 			windowEnabledActivate = false;
 			proxy->UpdateEnabledActivate();
 		}
@@ -341,6 +360,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetMaximizedBox(bool visible)
 		{
+			if (windowMaximizedBox == visible) return;
 			windowMaximizedBox = visible;
 			proxy->UpdateMaximizedBox();
 		}
@@ -352,6 +372,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetMinimizedBox(bool visible)
 		{
+			if (windowMinimizedBox == visible) return;
 			windowMinimizedBox = visible;
 			proxy->UpdateMinimizedBox();
 		}
@@ -363,6 +384,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetBorder(bool visible)
 		{
+			if (windowBorder == visible) return;
 			windowBorder = visible;
 			proxy->UpdateBorderVisible();
 		}
@@ -374,6 +396,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetSizeBox(bool visible)
 		{
+			if (windowSizeBox == visible) return;
 			windowSizeBox = visible;
 			proxy->UpdateSizeBox();
 		}
@@ -385,6 +408,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetIconVisible(bool visible)
 		{
+			if (windowIconVisible == visible) return;
 			windowIconVisible = visible;
 			proxy->UpdateIconVisible();
 		}
@@ -396,6 +420,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetTitleBar(bool visible)
 		{
+			if (windowTitleBar == visible) return;
 			windowTitleBar = visible;
 			proxy->UpdateTitleBar();
 		}
@@ -407,6 +432,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::SetTopMost(bool topmost)
 		{
+			if (wmWindow.topMost == topmost) return;
 			wmWindow.SetTopMost(topmost);
 			proxy->UpdateTopMost();
 		}
