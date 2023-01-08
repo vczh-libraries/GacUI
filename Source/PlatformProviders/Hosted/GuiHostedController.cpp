@@ -267,7 +267,7 @@ GuiHostedController::INativeControllerListener
 						auto hostedWindow = wmManager->ordinaryWindowsInOrder[i]->id;
 						for (auto listener : hostedWindow->listeners)
 						{
-							listener->ForceRefresh(true, failureByResized, failureByLostDevice);
+							listener->ForceRefresh(false, failureByResized, failureByLostDevice);
 							if (failureByResized || failureByLostDevice)
 							{
 								goto STOP_RENDERING;
@@ -279,7 +279,7 @@ GuiHostedController::INativeControllerListener
 						auto hostedWindow = wmManager->topMostedWindowsInOrder[i]->id;
 						for (auto listener : hostedWindow->listeners)
 						{
-							listener->ForceRefresh(true, failureByResized, failureByLostDevice);
+							listener->ForceRefresh(false, failureByResized, failureByLostDevice);
 							if (failureByResized || failureByLostDevice)
 							{
 								goto STOP_RENDERING;

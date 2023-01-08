@@ -27,6 +27,12 @@ GuiMainHostedWindowProxy
 
 			void CheckAndSyncProperties() override
 			{
+				if (!data->wmWindow.visible)
+				{
+					data->wmWindow.Show();
+				}
+				data->wmWindow.SetBounds(FixBounds(data->wmWindow.bounds));
+
 				UpdateBounds();
 				UpdateTitle();
 				UpdateIcon();
@@ -43,11 +49,6 @@ GuiMainHostedWindowProxy
 				UpdateShowInTaskBar();
 				UpdateEnabledActivate();
 				UpdateCustomFrameMode();
-
-				if (!data->wmWindow.visible)
-				{
-					data->wmWindow.Show();
-				}
 			}
 
 			/***********************************************************************
@@ -154,44 +155,45 @@ GuiMainHostedWindowProxy
 
 			/***********************************************************************
 			Show/Hide/Focus
+
+			In hosted mode, the main window is never closed.
+			Closing the main window causes the native window to be closed.
 			***********************************************************************/
 
 			void Show() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.Activate();
+				nativeWindow->Show();
 			}
 
 			void ShowDeactivated() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.Deactivate();
+				nativeWindow->ShowDeactivated();
 			}
 
 			void ShowRestored() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->ShowRestored();
 			}
 
 			void ShowMaximized() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->ShowMaximized();
 			}
 
 			void ShowMinimized() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->ShowMinimized();
 			}
 
 			void Hide() override
 			{
-				// In hosted mode, the main window is never closed
-				// instead the native window is closed
 				nativeWindow->Hide(false);
 			}
 
 			void Close() override
 			{
-				// In hosted mode, the main window is never closed
-				// instead the native window is closed
 				nativeWindow->Hide(true);
 			}
 

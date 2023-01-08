@@ -37,6 +37,8 @@ WindowsGDIRenderTarget
 				WinDC*						dc = nullptr;
 				List<Rect>					clippers;
 				vint						clipperCoverWholeTargetCounter = 0;
+				bool						hostedRendering = false;
+				bool						rendering = false;
 
 				void ApplyClipper()
 				{
@@ -66,22 +68,36 @@ WindowsGDIRenderTarget
 
 				void StartHostedRendering()override
 				{
-					CHECK_FAIL(L"Not implemented!");
+					CHECK_ERROR(!hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartHostedRendering()#Wrong timing to call this function.");
+					hostedRendering = true;
+					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
 				void StopHostedRendering()override
 				{
-					CHECK_FAIL(L"Not implemented!");
+					CHECK_ERROR(hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopHostedRendering()#Wrong timing to call this function.");
+					dc = nullptr;
+					hostedRendering = false;
 				}
 
 				void StartRendering()override
 				{
-					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+					CHECK_ERROR(!rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartRendering()#Wrong timing to call this function.");
+					rendering = true;
+					if (!hostedRendering)
+					{
+						dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+					}
 				}
 
 				RenderTargetFailure StopRendering()override
 				{
-					dc = 0;
+					CHECK_ERROR(rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopRendering()#Wrong timing to call this function.");
+					rendering = false;
+					if (!hostedRendering)
+					{
+						dc = nullptr;
+					}
 					return RenderTargetFailure::None;
 				}
 
