@@ -50,7 +50,7 @@ Proxy
 			bool												windowCustomFrameMode = true;
 
 			GuiHostedWindowData(GuiHostedController* _controller, GuiHostedWindow* _window, INativeWindow::WindowMode _windowMode)
-				: wmWindow(_window, _windowMode == INativeWindow::Normal)
+				: wmWindow(_window)
 				, controller(_controller)
 				, windowMode(_windowMode)
 			{

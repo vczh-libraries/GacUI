@@ -36,7 +36,6 @@ Window
 
 			public:
 				const T										id = {};
-				const bool									normal = false;
 				Window<T>*									parent = nullptr;
 				collections::List<Window<T>*>				children;
 
@@ -204,7 +203,8 @@ Window
 				}
 
 			public:
-				Window(T _id, bool _normal) :id(_id), normal(_normal)
+				Window(T _id)
+					: id(_id)
 				{
 				}
 
@@ -236,12 +236,8 @@ Window
 						!windowManager || windowManager->mainWindow != this || !value,
 						ERROR_MESSAGE_PREFIX L"A main window should not have a parent window."
 						);
-					CHECK_ERROR(
-						!normal || ! value || value->normal,
-						ERROR_MESSAGE_PREFIX L"Window's parent window should not be a popup menu."
-						);
 
-					if (normal && !value)
+					if (!value)
 					{
 						value = windowManager->mainWindow;
 					}
@@ -587,19 +583,10 @@ WindowManager
 					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has started.");
 					CHECK_ERROR(!window->parent, ERROR_MESSAGE_PREFIX L"A main window should not have a parent window.");
 
-					for (auto popupWindow : registeredWindows.Values())
-					{
-						if (!popupWindow->normal)
-						{
-							CHECK_ERROR(popupWindow->parent, ERROR_MESSAGE_PREFIX L"A popup window should have a parent.");
-						}
-					}
-
 					mainWindow = window;
-
 					for (auto normalWindow : registeredWindows.Values())
 					{
-						if (normalWindow->normal && !normalWindow->parent && normalWindow != mainWindow)
+						if (!normalWindow->parent && normalWindow != mainWindow)
 						{
 							normalWindow->parent = mainWindow;
 							mainWindow->children.Add(normalWindow);
