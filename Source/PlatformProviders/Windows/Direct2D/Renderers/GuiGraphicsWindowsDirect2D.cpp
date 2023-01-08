@@ -30,7 +30,7 @@ GuiDirect2DElement
 
 			D2D1::ColorF GetD2DColor(Color color)
 			{
-				return D2D1::ColorF(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a/255.0f);
+				return D2D1::ColorF(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
 			}
 
 /***********************************************************************
@@ -41,10 +41,9 @@ CachedResourceAllocator
 			{
 				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, ComPtr<ID2D1SolidColorBrush>)
 
-				IWindowsDirect2DRenderTarget*	guiRenderTarget;
+				IWindowsDirect2DRenderTarget* guiRenderTarget = nullptr;
 			public:
 				CachedSolidBrushAllocator()
-					:guiRenderTarget(0)
 				{
 				}
 
@@ -68,10 +67,9 @@ CachedResourceAllocator
 				typedef Pair<Color, Color> ColorPair;
 				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1LinearGradientBrush>)
 
-				IWindowsDirect2DRenderTarget*	guiRenderTarget;
+				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedLinearBrushAllocator()
-					:guiRenderTarget(0)
 				{
 				}
 
@@ -119,10 +117,9 @@ CachedResourceAllocator
 				typedef Pair<Color, Color> ColorPair;
 				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1RadialGradientBrush>)
 
-				IWindowsDirect2DRenderTarget*	guiRenderTarget;
+				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedRadialBrushAllocator()
-					:guiRenderTarget(0)
 				{
 				}
 
@@ -271,8 +268,8 @@ WindowsDirect2DRenderTarget
 			class WindowsDirect2DImageFrameCache : public Object, public INativeImageFrameCache
 			{
 			protected:
-				IWindowsDirect2DRenderTarget*	renderTarget;
-				INativeImageFrame*				cachedFrame;
+				IWindowsDirect2DRenderTarget*	renderTarget = nullptr;
+				INativeImageFrame*				cachedFrame = nullptr;
 				ComPtr<ID2D1Bitmap>				bitmap;
 				ComPtr<ID2D1Bitmap>				disabledBitmap;
 			public:
@@ -309,7 +306,7 @@ WindowsDirect2DRenderTarget
 
 				ComPtr<ID2D1Bitmap> GetBitmap(bool enabled)
 				{
-					if(enabled)
+					if (enabled)
 					{
 						return bitmap;
 					}
@@ -331,11 +328,11 @@ WindowsDirect2DRenderTarget
 							rect.Y = 0;
 							rect.Width = bitmap->GetPixelSize().width;
 							rect.Height = bitmap->GetPixelSize().height;
-							BYTE* buffer = new BYTE[rect.Width*rect.Height * 4];
-							hr = frameBitmap->CopyPixels(&rect, rect.Width * 4, rect.Width*rect.Height * 4, buffer);
+							BYTE* buffer = new BYTE[rect.Width * rect.Height * 4];
+							hr = frameBitmap->CopyPixels(&rect, rect.Width * 4, rect.Width * rect.Height * 4, buffer);
 							if (SUCCEEDED(hr))
 							{
-								vint count = rect.Width*rect.Height;
+								vint count = rect.Width * rect.Height;
 								BYTE* read = buffer;
 								for (vint i = 0; i < count; i++)
 								{
@@ -381,19 +378,19 @@ WindowsDirect2DRenderTarget
 
 				ComPtr<IDWriteRenderingParams> CreateRenderingParams(DWRITE_RENDERING_MODE renderingMode, IDWriteRenderingParams* defaultParams, IDWriteFactory* dwriteFactory)
 				{
-					IDWriteRenderingParams* renderingParams=0;
-					FLOAT gamma=defaultParams->GetGamma();
-					FLOAT enhancedContrast=defaultParams->GetEnhancedContrast();
-					FLOAT clearTypeLevel=defaultParams->GetClearTypeLevel();
-					DWRITE_PIXEL_GEOMETRY pixelGeometry=defaultParams->GetPixelGeometry();
-					HRESULT hr=dwriteFactory->CreateCustomRenderingParams(
+					IDWriteRenderingParams* renderingParams = 0;
+					FLOAT gamma = defaultParams->GetGamma();
+					FLOAT enhancedContrast = defaultParams->GetEnhancedContrast();
+					FLOAT clearTypeLevel = defaultParams->GetClearTypeLevel();
+					DWRITE_PIXEL_GEOMETRY pixelGeometry = defaultParams->GetPixelGeometry();
+					HRESULT hr = dwriteFactory->CreateCustomRenderingParams(
 						gamma,
 						enhancedContrast,
 						clearTypeLevel,
 						pixelGeometry,
 						renderingMode,
 						&renderingParams);
-					if(!FAILED(hr))
+					if (!FAILED(hr))
 					{
 						return renderingParams;
 					}
@@ -404,7 +401,7 @@ WindowsDirect2DRenderTarget
 				}
 			public:
 				WindowsDirect2DRenderTarget(INativeWindow* _window)
-					:window(_window)
+					: window(_window)
 				{
 					solidBrushes.SetRenderTarget(this);
 					linearBrushes.SetRenderTarget(this);
@@ -424,9 +421,9 @@ WindowsDirect2DRenderTarget
 
 				~WindowsDirect2DRenderTarget()
 				{
-					while(imageCaches.Count())
+					while (imageCaches.Count())
 					{
-						Ptr<WindowsDirect2DImageFrameCache> cache=imageCaches[imageCaches.Count()-1];
+						Ptr<WindowsDirect2DImageFrameCache> cache = imageCaches[imageCaches.Count() - 1];
 						cache->GetFrame()->RemoveCache(this);
 					}
 				}
@@ -438,15 +435,15 @@ WindowsDirect2DRenderTarget
 
 				ComPtr<ID2D1Bitmap> GetBitmap(INativeImageFrame* frame, bool enabled)override
 				{
-					Ptr<INativeImageFrameCache> cache=frame->GetCache(this);
-					if(cache)
+					Ptr<INativeImageFrameCache> cache = frame->GetCache(this);
+					if (cache)
 					{
 						return cache.Cast<WindowsDirect2DImageFrameCache>()->GetBitmap(enabled);
 					}
 					else
 					{
-						auto d2dCache=Ptr(new WindowsDirect2DImageFrameCache(this));
-						if(frame->SetCache(this, d2dCache))
+						auto d2dCache = Ptr(new WindowsDirect2DImageFrameCache(this));
+						if (frame->SetCache(this, d2dCache))
 						{
 							imageCaches.Add(d2dCache);
 							return d2dCache->GetBitmap(enabled);
@@ -460,26 +457,26 @@ WindowsDirect2DRenderTarget
 
 				void DestroyBitmapCache(INativeImageFrame* frame)override
 				{
-					WindowsDirect2DImageFrameCache* cache=frame->GetCache(this).Cast<WindowsDirect2DImageFrameCache>().Obj();
+					WindowsDirect2DImageFrameCache* cache = frame->GetCache(this).Cast<WindowsDirect2DImageFrameCache>().Obj();
 					imageCaches.Remove(cache);
 				}
 
 				void SetTextAntialias(bool antialias, bool verticalAntialias)override
 				{
 					ComPtr<IDWriteRenderingParams> params;
-					if(!antialias)
+					if (!antialias)
 					{
-						params=noAntialiasParams;
+						params = noAntialiasParams;
 					}
-					else if(!verticalAntialias)
+					else if (!verticalAntialias)
 					{
-						params=horizontalAntialiasParams;
+						params = horizontalAntialiasParams;
 					}
 					else
 					{
-						params=bidirectionalAntialiasParams;
+						params = bidirectionalAntialiasParams;
 					}
-					if(params && d2dRenderTarget)
+					if (params && d2dRenderTarget)
 					{
 						d2dRenderTarget->SetTextRenderingParams(params.Obj());
 					}
@@ -513,27 +510,27 @@ WindowsDirect2DRenderTarget
 
 				void PushClipper(Rect clipper)override
 				{
-					if(clipperCoverWholeTargetCounter>0)
+					if (clipperCoverWholeTargetCounter > 0)
 					{
 						clipperCoverWholeTargetCounter++;
 					}
 					else
 					{
-						Rect previousClipper=GetClipper();
+						Rect previousClipper = GetClipper();
 						Rect currentClipper;
 
-						currentClipper.x1=(previousClipper.x1>clipper.x1?previousClipper.x1:clipper.x1);
-						currentClipper.y1=(previousClipper.y1>clipper.y1?previousClipper.y1:clipper.y1);
-						currentClipper.x2=(previousClipper.x2<clipper.x2?previousClipper.x2:clipper.x2);
-						currentClipper.y2=(previousClipper.y2<clipper.y2?previousClipper.y2:clipper.y2);
+						currentClipper.x1 = (previousClipper.x1 > clipper.x1 ? previousClipper.x1 : clipper.x1);
+						currentClipper.y1 = (previousClipper.y1 > clipper.y1 ? previousClipper.y1 : clipper.y1);
+						currentClipper.x2 = (previousClipper.x2 < clipper.x2 ? previousClipper.x2 : clipper.x2);
+						currentClipper.y2 = (previousClipper.y2 < clipper.y2 ? previousClipper.y2 : clipper.y2);
 
-						if(currentClipper.x1<currentClipper.x2 && currentClipper.y1<currentClipper.y2)
+						if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
 						{
 							clippers.Add(currentClipper);
 							d2dRenderTarget->PushAxisAlignedClip(
 								D2D1::RectF((FLOAT)currentClipper.x1, (FLOAT)currentClipper.y1, (FLOAT)currentClipper.x2, (FLOAT)currentClipper.y2),
 								D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
-								);
+							);
 						}
 						else
 						{
@@ -544,13 +541,13 @@ WindowsDirect2DRenderTarget
 
 				void PopClipper()override
 				{
-					if(clipperCoverWholeTargetCounter>0)
+					if (clipperCoverWholeTargetCounter > 0)
 					{
 						clipperCoverWholeTargetCounter--;
 					}
-					else if(clippers.Count()>0)
+					else if (clippers.Count() > 0)
 					{
-						clippers.RemoveAt(clippers.Count()-1);
+						clippers.RemoveAt(clippers.Count() - 1);
 						d2dRenderTarget->PopAxisAlignedClip();
 					}
 				}
@@ -569,7 +566,7 @@ WindowsDirect2DRenderTarget
 
 				bool IsClipperCoverWholeTarget()override
 				{
-					return clipperCoverWholeTargetCounter>0;
+					return clipperCoverWholeTargetCounter > 0;
 				}
 
 				ID2D1Effect* GetFocusRectangleEffect()override
@@ -663,14 +660,14 @@ WindowsGDIResourceManager
 			public:
 				WindowsDirect2DResourceManager()
 				{
-					layoutProvider=Ptr(new WindowsDirect2DLayoutProvider);
+					layoutProvider = Ptr(new WindowsDirect2DLayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override
 				{
 					return GetWindowsDirect2DObjectProvider()->GetBindedRenderTarget(window);
 				}
-				
+
 				void RecreateRenderTarget(INativeWindow* window)override
 				{
 					NativeWindowDestroying(window);
@@ -690,14 +687,14 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					auto renderTarget=Ptr(new WindowsDirect2DRenderTarget(window));
+					auto renderTarget = Ptr(new WindowsDirect2DRenderTarget(window));
 					renderTargets.Add(renderTarget);
 					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override
 				{
-					WindowsDirect2DRenderTarget* renderTarget=dynamic_cast<WindowsDirect2DRenderTarget*>(GetWindowsDirect2DObjectProvider()->GetBindedRenderTarget(window));
+					WindowsDirect2DRenderTarget* renderTarget = dynamic_cast<WindowsDirect2DRenderTarget*>(GetWindowsDirect2DObjectProvider()->GetBindedRenderTarget(window));
 					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, 0);
 					renderTargets.Remove(renderTarget);
 				}
@@ -726,7 +723,7 @@ WindowsGDIResourceManager
 
 		namespace elements_windows_d2d
 		{
-			IWindowsDirect2DResourceManager* windowsDirect2DResourceManager=0;
+			IWindowsDirect2DResourceManager* windowsDirect2DResourceManager = nullptr;
 
 			IWindowsDirect2DResourceManager* GetWindowsDirect2DResourceManager()
 			{
@@ -735,14 +732,14 @@ WindowsGDIResourceManager
 
 			void SetWindowsDirect2DResourceManager(IWindowsDirect2DResourceManager* resourceManager)
 			{
-				windowsDirect2DResourceManager=resourceManager;
+				windowsDirect2DResourceManager = resourceManager;
 			}
 
 /***********************************************************************
 OS Supporting
 ***********************************************************************/
 
-			IWindowsDirect2DObjectProvider* windowsDirect2DObjectProvider=0;
+			IWindowsDirect2DObjectProvider* windowsDirect2DObjectProvider = nullptr;
 
 			IWindowsDirect2DObjectProvider* GetWindowsDirect2DObjectProvider()
 			{
@@ -751,7 +748,7 @@ OS Supporting
 
 			void SetWindowsDirect2DObjectProvider(IWindowsDirect2DObjectProvider* provider)
 			{
-				windowsDirect2DObjectProvider=provider;
+				windowsDirect2DObjectProvider = provider;
 			}
 		}
 	}
