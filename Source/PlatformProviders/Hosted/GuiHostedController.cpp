@@ -604,6 +604,7 @@ GuiHostedController::INativeWindowService
 			}
 
 			wmManager->Start(&mainWindow->wmWindow);
+			wmManager->needRefresh = true;
 			nativeController->WindowService()->Run(nativeWindow);
 			wmManager->Stop();
 
