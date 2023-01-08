@@ -8,6 +8,7 @@
   - Handle DPI.
   - Dispatch mouse and key events.
   - Auto close popup window.
+  - Fix main window icon
 - Stop using Webdings in default template.
 - Add HostedWindow theme.
 
