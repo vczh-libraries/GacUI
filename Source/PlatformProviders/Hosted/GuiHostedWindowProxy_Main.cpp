@@ -43,6 +43,11 @@ GuiMainHostedWindowProxy
 				UpdateShowInTaskBar();
 				UpdateEnabledActivate();
 				UpdateCustomFrameMode();
+
+				if (!data->wmWindow.visible)
+				{
+					data->wmWindow.Show();
+				}
 			}
 
 			/***********************************************************************
