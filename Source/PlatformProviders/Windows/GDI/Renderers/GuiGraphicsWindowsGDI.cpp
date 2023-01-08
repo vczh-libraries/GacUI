@@ -2,7 +2,7 @@
 #include "GuiGraphicsRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
 #include "..\..\WinNativeWindow.h"
-#include "..\..\..\Hosted\GuiHostedGraphics.h"
+#include "..\..\..\Hosted\GuiHostedController.h"
 
 namespace vl
 {
@@ -530,7 +530,10 @@ void RendererMainGDI(GuiHostedController* hostedController)
 		elements_windows_gdi::GuiColorizedTextElementRenderer::Register();
 		elements_windows_gdi::GuiGDIElementRenderer::Register();
 		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+
+		if (hostedController) hostedController->Initialize();
 		GuiApplicationMain();
+		if (hostedController) hostedController->Finalize();
 	}
 
 	SetGuiGraphicsResourceManager(nullptr);

@@ -3,7 +3,7 @@
 #include "GuiGraphicsLayoutProviderWindowsDirect2D.h"
 #include "..\..\ServicesImpl\WindowsImageService.h"
 #include "..\..\WinNativeWindow.h"
-#include "..\..\..\Hosted\GuiHostedGraphics.h"
+#include "..\..\..\Hosted\GuiHostedController.h"
 #include <math.h>
 
 namespace vl
@@ -793,7 +793,10 @@ void RendererMainDirect2D(GuiHostedController* hostedController)
 		elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
 		elements_windows_d2d::GuiDirect2DElementRenderer::Register();
 		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+
+		if (hostedController) hostedController->Initialize();
 		GuiApplicationMain();
+		if (hostedController) hostedController->Finalize();
 	}
 
 	SetGuiGraphicsResourceManager(nullptr);

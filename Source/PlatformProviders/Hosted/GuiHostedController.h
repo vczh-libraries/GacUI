@@ -185,14 +185,12 @@ GuiHostedController
 			INativeWindow*					GetMainWindow() override;
 			INativeWindow*					GetWindow(NativePoint location) override;
 			void							Run(INativeWindow* window) override;
-
-		protected:
-
-			void							EnsureNativeWindowCreated();
-			void							EnsureNativeWindowDestroyed();
 		public:
 			GuiHostedController(INativeController* _nativeController);
 			~GuiHostedController();
+
+			void							Initialize();
+			void							Finalize();
 		};
 	}
 }

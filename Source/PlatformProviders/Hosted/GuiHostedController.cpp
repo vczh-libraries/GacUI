@@ -235,7 +235,7 @@ GuiHostedController::INativeControllerListener
 				listener->GlobalTimer();
 			}
 
-			if (hostedResourceManager && nativeWindow)
+			if (hostedResourceManager && nativeWindow && nativeWindow->IsVisible())
 			{
 				if (wmManager->needRefresh)
 				{
@@ -488,7 +488,6 @@ GuiHostedController::INativeScreen
 
 		NativeRect GuiHostedController::GetBounds()
 		{
-			EnsureNativeWindowCreated();
 			if (nativeWindow->IsCustomFrameModeEnabled())
 			{
 				return { {},nativeWindow->GetBounds().GetSize() };
@@ -501,7 +500,6 @@ GuiHostedController::INativeScreen
 
 		NativeRect GuiHostedController::GetClientBounds()
 		{
-			EnsureNativeWindowCreated();
 			return { {},nativeWindow->GetClientSize() };
 		}
 
@@ -517,13 +515,11 @@ GuiHostedController::INativeScreen
 
 		double GuiHostedController::GetScalingX()
 		{
-			EnsureNativeWindowCreated();
 			return nativeController->ScreenService()->GetScreen(nativeWindow)->GetScalingX();
 		}
 
 		double GuiHostedController::GetScalingY()
 		{
-			EnsureNativeWindowCreated();
 			return nativeController->ScreenService()->GetScreen(nativeWindow)->GetScalingY();
 		}
 
@@ -614,46 +610,47 @@ GuiHostedController::INativeWindowService
 			mainWindow = nullptr;
 			capturingWindow = nullptr;
 			hoveringWindow = nullptr;
-			EnsureNativeWindowDestroyed();
 		}
 
 /***********************************************************************
 GuiHostedController
 ***********************************************************************/
 
-		void GuiHostedController::EnsureNativeWindowCreated()
-		{
-			CHECK_ERROR(!nativeWindowDestroyed, L"vl::presentation::GuiHostedController()::EnsureNativeWindowCreated()#The underlying native window has been destroyed.");
-			if (!nativeWindow)
-			{
-				nativeWindow = nativeController->WindowService()->CreateNativeWindow(INativeWindow::WindowMode::Normal);
-				nativeWindow->InstallListener(this);
-			}
-		}
-
-		void GuiHostedController::EnsureNativeWindowDestroyed()
-		{
-			if (nativeWindow)
-			{
-				nativeWindow->UninstallListener(this);
-				nativeController->WindowService()->DestroyNativeWindow(nativeWindow);
-				nativeWindow = nullptr;
-				nativeWindowDestroyed = true;
-			}
-		}
-
 		GuiHostedController::GuiHostedController(INativeController* _nativeController)
 			: nativeController(_nativeController)
 		{
 			wmManager = this;
 			nativeController->CallbackService()->InstallListener(this);
-			EnsureNativeWindowCreated();
 		}
 
 		GuiHostedController::~GuiHostedController()
 		{
-			EnsureNativeWindowDestroyed();
+		}
+
+		void GuiHostedController::Initialize()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController()::Initialize()#"
+			CHECK_ERROR(!nativeWindow, ERROR_MESSAGE_PREFIX L"Initialize() has been called");
+			CHECK_ERROR(!nativeWindowDestroyed, ERROR_MESSAGE_PREFIX L"Finalize() has been called.");
+
+			nativeController->CallbackService()->InstallListener(this);
+			nativeWindow = nativeController->WindowService()->CreateNativeWindow(INativeWindow::WindowMode::Normal);
+			nativeWindow->InstallListener(this);
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void GuiHostedController::Finalize()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController()::Finalize()#"
+			CHECK_ERROR(!nativeWindowDestroyed, ERROR_MESSAGE_PREFIX L"Finalize() has been called.");
+			CHECK_ERROR(nativeWindow, ERROR_MESSAGE_PREFIX L"Initialize() has not been called");
+
+			nativeWindow->UninstallListener(this);
+			nativeController->WindowService()->DestroyNativeWindow(nativeWindow);
 			nativeController->CallbackService()->UninstallListener(this);
+			nativeWindow = nullptr;
+			nativeWindowDestroyed = true;
+#undef ERROR_MESSAGE_PREFIX
 		}
 	}
 }
