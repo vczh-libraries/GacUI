@@ -15,29 +15,34 @@ GuiMainHostedWindowProxy
 		{
 		protected:
 			GuiHostedWindowData*			data = nullptr;
+			INativeWindow*					nativeWindow = nullptr;
 
 		public:
 
-			GuiMainHostedWindowProxy(GuiHostedWindowData* _data)
+			GuiMainHostedWindowProxy(GuiHostedWindowData* _data, INativeWindow* _nativeWindow)
 				: data(_data)
+				, nativeWindow(_nativeWindow)
 			{
 			}
 
 			void CheckAndSyncProperties() override
 			{
-				// TODO:
-				//   sync window properties to nativeWindow
-				//   check main window properties
-				//     no parent
-				//   check non-main window properties
-				//     CustomFrameMode should be true to render the frame using templates
-				//     for normal windows, parent should be either null or the main window
-				//       if it is null, it is treated to be the main window
-				//     for other windows, parent should be non-null
-				//     ensure parent is partial ordered in realtime
-				//   sync non-main window window-management properties
-				//     changing activated or focused etc before calling Run() are ignored
-				CHECK_FAIL(L"Not Implemented!");
+				UpdateBounds();
+				UpdateTitle();
+				UpdateIcon();
+				UpdateEnabled();
+				UpdateTopMost();
+
+				UpdateMaximizedBox();
+				UpdateMinimizedBox();
+				UpdateBorderVisible();
+				UpdateSizeBox();
+				UpdateIconVisible();
+				UpdateTitleBar();
+
+				UpdateShowInTaskBar();
+				UpdateEnabledActivate();
+				UpdateCustomFrameMode();
 			}
 
 			/***********************************************************************
@@ -46,32 +51,33 @@ GuiMainHostedWindowProxy
 
 			NativeRect FixBounds(const NativeRect& bounds) override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				return { {},bounds.GetSize() };
 			}
 
 			void UpdateBounds() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetClientSize(data->wmWindow.bounds.GetSize());
 			}
 
 			void UpdateTitle() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetTitle(data->windowTitle);
 			}
 
 			void UpdateIcon() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetIcon(data->windowIcon);
 			}
 
 			void UpdateEnabled() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				// Disabling the main window will not disable the native window
+				// otherwise the whole application is disabled
 			}
 
 			void UpdateTopMost() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetTopMost(data->wmWindow.topMost);
 			}
 
 			/***********************************************************************
@@ -80,32 +86,32 @@ GuiMainHostedWindowProxy
 
 			void UpdateMaximizedBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetMaximizedBox(data->windowMaximizedBox);
 			}
 
 			void UpdateMinimizedBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetMinimizedBox(data->windowMinimizedBox);
 			}
 
 			void UpdateBorderVisible() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetBorder(data->windowBorder);
 			}
 
 			void UpdateSizeBox() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetSizeBox(data->windowSizeBox);
 			}
 
 			void UpdateIconVisible() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetIconVisible(data->windowIconVisible);
 			}
 
 			void UpdateTitleBar() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				nativeWindow->SetTitleBar(data->windowTitleBar);
 			}
 
 			/***********************************************************************
@@ -114,22 +120,31 @@ GuiMainHostedWindowProxy
 
 			void UpdateShowInTaskBar() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				if (data->windowShowInTaskBar)
+				{
+					nativeWindow->ShowInTaskBar();
+				}
+				else
+				{
+					nativeWindow->HideInTaskBar();
+				}
 			}
 
 			void UpdateEnabledActivate() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				// In hosted mode, the native window is always activatable
 			}
 
-			void EnableCustomFrameMode() override
+			void UpdateCustomFrameMode() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
-			}
-
-			void DisableCustomFrameMode() override
-			{
-				CHECK_FAIL(L"Not Implemented!");
+				if (data->windowCustomFrameMode)
+				{
+					nativeWindow->EnableCustomFrameMode();
+				}
+				else
+				{
+					nativeWindow->DisableCustomFrameMode();
+				}
 			}
 
 			/***********************************************************************
@@ -163,17 +178,22 @@ GuiMainHostedWindowProxy
 
 			void Hide() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				// In hosted mode, the main window is never closed
+				// instead the native window is closed
+				nativeWindow->Hide(false);
 			}
 
 			void Close() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				// In hosted mode, the main window is never closed
+				// instead the native window is closed
+				nativeWindow->Hide(true);
 			}
 
 			void SetFocus() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.Activate();
+				nativeWindow->SetActivate();
 			}
 		};
 
@@ -181,9 +201,9 @@ GuiMainHostedWindowProxy
 Helper
 ***********************************************************************/
 
-		Ptr<IGuiHostedWindowProxy> CreateMainHostedWindowProxy(GuiHostedWindowData* data)
+		Ptr<IGuiHostedWindowProxy> CreateMainHostedWindowProxy(GuiHostedWindowData* data, INativeWindow* nativeWindow)
 		{
-			return Ptr(new GuiMainHostedWindowProxy(data));
+			return Ptr(new GuiMainHostedWindowProxy(data, nativeWindow));
 		}
 	}
 }

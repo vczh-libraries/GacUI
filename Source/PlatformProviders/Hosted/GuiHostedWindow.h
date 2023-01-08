@@ -79,8 +79,7 @@ Proxy
 
 			virtual void			UpdateShowInTaskBar() = 0;
 			virtual void			UpdateEnabledActivate() = 0;
-			virtual void			EnableCustomFrameMode() = 0;
-			virtual void			DisableCustomFrameMode() = 0;
+			virtual void			UpdateCustomFrameMode() = 0;
 
 			virtual void			Show() = 0;
 			virtual void			ShowDeactivated() = 0;
@@ -93,7 +92,7 @@ Proxy
 		};
 
 		extern Ptr<IGuiHostedWindowProxy>		CreatePlaceholderHostedWindowProxy(GuiHostedWindowData* data);
-		extern Ptr<IGuiHostedWindowProxy>		CreateMainHostedWindowProxy(GuiHostedWindowData* data);
+		extern Ptr<IGuiHostedWindowProxy>		CreateMainHostedWindowProxy(GuiHostedWindowData* data, INativeWindow* nativeWindow);
 		extern Ptr<IGuiHostedWindowProxy>		CreateNonMainHostedWindowProxy(GuiHostedWindowData* data);
 
 /***********************************************************************

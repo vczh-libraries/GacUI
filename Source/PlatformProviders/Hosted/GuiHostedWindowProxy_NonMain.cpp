@@ -116,12 +116,7 @@ GuiNonMainHostedWindowProxy
 			{
 			}
 
-			void EnableCustomFrameMode() override
-			{
-				EnsureNoSystemBorder();
-			}
-
-			void DisableCustomFrameMode() override
+			void UpdateCustomFrameMode() override
 			{
 				EnsureNoSystemBorder();
 			}

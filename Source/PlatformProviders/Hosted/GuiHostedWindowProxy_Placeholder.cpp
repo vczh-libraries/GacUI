@@ -96,11 +96,7 @@ GuiPlaceholderHostedWindowProxy
 			{
 			}
 
-			void EnableCustomFrameMode() override
-			{
-			}
-
-			void DisableCustomFrameMode() override
+			void UpdateCustomFrameMode() override
 			{
 			}
 

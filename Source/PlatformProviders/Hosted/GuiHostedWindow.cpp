@@ -11,7 +11,7 @@ GuiHostedWindow
 
 		void GuiHostedWindow::BecomeMainWindow()
 		{
-			proxy = CreateMainHostedWindowProxy(this);
+			proxy = CreateMainHostedWindowProxy(this, controller->nativeWindow);
 			proxy->CheckAndSyncProperties();
 		}
 
@@ -181,15 +181,15 @@ GuiHostedWindow
 		void GuiHostedWindow::EnableCustomFrameMode()
 		{
 			if (windowCustomFrameMode) return;
-			proxy->EnableCustomFrameMode();
 			windowCustomFrameMode = true;
+			proxy->UpdateCustomFrameMode();
 		}
 
 		void GuiHostedWindow::DisableCustomFrameMode()
 		{
 			if (!windowCustomFrameMode) return;
-			proxy->DisableCustomFrameMode();
 			windowCustomFrameMode = false;
+			proxy->UpdateCustomFrameMode();
 		}
 
 		bool GuiHostedWindow::IsCustomFrameModeEnabled()
