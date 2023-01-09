@@ -49,6 +49,7 @@ GuiHostedController
 			GuiHostedWindow*											mainWindow = nullptr;
 			GuiHostedWindow*											capturingWindow = nullptr;
 			GuiHostedWindow*											hoveringWindow = nullptr;
+			GuiHostedWindow*											lastFocusedWindow = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
 
 			// =============================================================
@@ -72,19 +73,11 @@ GuiHostedController
 			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
 			void							Moved() override;
 			void							DpiChanged() override;
-			void							Enabled() override;
-			void							Disabled() override;
 			void							GotFocus() override;
 			void							LostFocus() override;
-			void							RenderingAsActivated() override;
-			void							RenderingAsDeactivated() override;
-			void							Opened() override;
 			void							BeforeClosing(bool& cancel) override;
 			void							AfterClosing() override;
-			void							Closed() override;
 			void							Paint() override;
-			void							Destroying() override;
-			void							Destroyed() override;
 
 			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;

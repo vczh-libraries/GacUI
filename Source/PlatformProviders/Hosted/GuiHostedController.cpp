@@ -85,10 +85,12 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 		{
+			// TODO: call mainWindow's Moving
 		}
 
 		void GuiHostedController::Moved()
 		{
+			// TODO: set mainWindow's size and call Moved
 		}
 
 		void GuiHostedController::DpiChanged()
@@ -102,56 +104,54 @@ GuiHostedController::INativeWindowListener
 			}
 		}
 
-		void GuiHostedController::Enabled()
-		{
-		}
-
-		void GuiHostedController::Disabled()
-		{
-		}
-
 		void GuiHostedController::GotFocus()
 		{
+			if (lastFocusedWindow)
+			{
+				lastFocusedWindow->wmWindow.Activate();
+				lastFocusedWindow = nullptr;
+			}
+			else if (mainWindow)
+			{
+				mainWindow->wmWindow.Activate();
+			}
 		}
 
 		void GuiHostedController::LostFocus()
 		{
-		}
-
-		void GuiHostedController::RenderingAsActivated()
-		{
-		}
-
-		void GuiHostedController::RenderingAsDeactivated()
-		{
-		}
-
-		void GuiHostedController::Opened()
-		{
+			lastFocusedWindow = wmManager->activeWindow ? wmManager->activeWindow->id : nullptr;
+			while (wmManager->activeWindow)
+			{
+				wmManager->activeWindow->Deactivate();
+			}
 		}
 
 		void GuiHostedController::BeforeClosing(bool& cancel)
 		{
+			if (mainWindow)
+			{
+				for (auto listener : mainWindow->listeners)
+				{
+					listener->BeforeClosing(cancel);
+					if (cancel) return;
+				}
+			}
 		}
 
 		void GuiHostedController::AfterClosing()
 		{
-		}
-
-		void GuiHostedController::Closed()
-		{
+			if (mainWindow)
+			{
+				for (auto listener : mainWindow->listeners)
+				{
+					listener->AfterClosing();
+				}
+			}
 		}
 
 		void GuiHostedController::Paint()
 		{
-		}
-
-		void GuiHostedController::Destroying()
-		{
-		}
-
-		void GuiHostedController::Destroyed()
-		{
+			wmManager->needRefresh = true;
 		}
 
 		void GuiHostedController::LeftButtonDown(const NativeWindowMouseInfo& info)
@@ -558,6 +558,20 @@ GuiHostedController::INativeWindowService
 			vint index = createdWindows.IndexOf(hostedWindow);
 			CHECK_ERROR(index != -1, L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#The window has been destroyed.");
 
+			if (hostedWindow == hoveringWindow)
+			{
+				hoveringWindow = nullptr;
+			}
+			if (hostedWindow == lastFocusedWindow)
+			{
+				lastFocusedWindow = nullptr;
+			}
+			if (hostedWindow == capturingWindow)
+			{
+				capturingWindow = nullptr;
+				nativeWindow->ReleaseCapture();
+			}
+
 			for (auto listener : hostedWindow->listeners)
 			{
 				listener->Destroying();
@@ -619,9 +633,11 @@ GuiHostedController::INativeWindowService
 			nativeController->WindowService()->Run(nativeWindow);
 			wmManager->Stop();
 
-			mainWindow = nullptr;
-			capturingWindow = nullptr;
-			hoveringWindow = nullptr;
+			for (vint i = createdWindows.Count() - 1; i >= 0; i--)
+			{
+				auto hostedWindow = createdWindows[i];
+				DestroyNativeWindow(hostedWindow.Obj());
+			}
 		}
 
 /***********************************************************************

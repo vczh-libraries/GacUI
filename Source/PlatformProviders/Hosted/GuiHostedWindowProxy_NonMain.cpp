@@ -178,12 +178,23 @@ GuiNonMainHostedWindowProxy
 
 			void Hide() override
 			{
+				bool cancel = false;
+				for (auto listener : data->listeners)
+				{
+					listener->BeforeClosing(cancel);
+					if (cancel) return;
+				}
+
+				for (auto listener : data->listeners)
+				{
+					listener->AfterClosing();
+				}
 				data->wmWindow.SetVisible(false);
 			}
 
 			void Close() override
 			{
-				data->wmWindow.SetVisible(false);
+				Hide();
 			}
 
 			void SetFocus() override
