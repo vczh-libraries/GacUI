@@ -249,6 +249,7 @@ Window
 				void									SyncNativeWindowProperties();
 				void									Moved()override;
 				void									DpiChanged()override;
+				void									BecomeNonMainHostedWindow()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				

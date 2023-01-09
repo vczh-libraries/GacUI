@@ -5,9 +5,9 @@ namespace vl
 	namespace presentation
 	{
 
-// =============================================================
-// GuiHostedController::WindowManager<GuiHostedWindow*>
-// =============================================================
+/***********************************************************************
+GuiHostedController::WindowManager<GuiHostedWindow*>
+***********************************************************************/
 
 		void GuiHostedController::OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window)
 		{
@@ -74,7 +74,6 @@ namespace vl
 			}
 		}
 
-
 /***********************************************************************
 GuiHostedController::INativeWindowListener
 ***********************************************************************/
@@ -94,6 +93,13 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::DpiChanged()
 		{
+			for (auto hostedWindow : createdWindows)
+			{
+				for (auto listener : hostedWindow->listeners)
+				{
+					listener->DpiChanged();
+				}
+			}
 		}
 
 		void GuiHostedController::Enabled()
@@ -536,6 +542,11 @@ GuiHostedController::INativeWindowService
 			for (auto listener : listeners)
 			{
 				listener->NativeWindowCreated(hostedWindow.Obj());
+			}
+
+			if (mainWindow)
+			{
+				hostedWindow->BecomeNonMainWindow();
 			}
 			return hostedWindow.Obj();
 		}

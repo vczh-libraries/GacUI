@@ -163,6 +163,10 @@ INativeWindowListener
 		{
 		}
 
+		void INativeWindowListener::BecomeNonMainHostedWindow()
+		{
+		}
+
 /***********************************************************************
 INativeControllerListener
 ***********************************************************************/

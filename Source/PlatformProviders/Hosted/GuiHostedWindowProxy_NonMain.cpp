@@ -23,22 +23,30 @@ GuiNonMainHostedWindowProxy
 			{
 			}
 
-			void EnsureNoSystemBorder()
+			void EnsureNoSystemBorderWhenVisible()
 			{
-				if (!data->windowCustomFrameMode)
-				{
-					CHECK_ERROR(
-						!data->windowBorder && !data->windowSizeBox && !data->windowTitleBar,
-						L"vl::presentation::GuiNonMainHostedWindowProxy::EnsureNoSystemBorder()#"
-						L"For non main window in hosted mode, when custom frame mode is disabled"
-						L"the following window features should also be disabled: "
-						L"Border, SizeBox, TitleBar.");
-				}
+				if (!data->wmWindow.visible) return;
+				if (data->windowCustomFrameMode) return;
+				CHECK_ERROR(
+					!data->windowBorder && !data->windowSizeBox && !data->windowTitleBar,
+					L"vl::presentation::GuiNonMainHostedWindowProxy::EnsureNoSystemBorder()#"
+					L"For non main window in hosted mode, when custom frame mode is disabled"
+					L"the following window features should also be disabled: "
+					L"Border, SizeBox, TitleBar.");
 			}
 
 			void CheckAndSyncProperties() override
 			{
-				EnsureNoSystemBorder();
+				if (data->windowMaximizedBox || data->windowMinimizedBox)
+				{
+					data->windowMaximizedBox = false;
+					data->windowMinimizedBox = false;
+					for (auto listener : data->listeners)
+					{
+						listener->BecomeNonMainHostedWindow();
+					}
+				}
+				EnsureNoSystemBorderWhenVisible();
 			}
 
 			/***********************************************************************
@@ -76,32 +84,45 @@ GuiNonMainHostedWindowProxy
 
 			void UpdateMaximizedBox() override
 			{
-				EnsureNoSystemBorder();
+				if (data->windowMaximizedBox)
+				{
+					data->windowMaximizedBox = false;
+					for (auto listener : data->listeners)
+					{
+						listener->BecomeNonMainHostedWindow();
+					}
+				}
 			}
 
 			void UpdateMinimizedBox() override
 			{
-				EnsureNoSystemBorder();
+				if (data->windowMinimizedBox)
+				{
+					data->windowMinimizedBox = false;
+					for (auto listener : data->listeners)
+					{
+						listener->BecomeNonMainHostedWindow();
+					}
+				}
 			}
 
 			void UpdateBorderVisible() override
 			{
-				EnsureNoSystemBorder();
+				EnsureNoSystemBorderWhenVisible();
 			}
 
 			void UpdateSizeBox() override
 			{
-				EnsureNoSystemBorder();
+				EnsureNoSystemBorderWhenVisible();
 			}
 
 			void UpdateIconVisible() override
 			{
-				EnsureNoSystemBorder();
 			}
 
 			void UpdateTitleBar() override
 			{
-				EnsureNoSystemBorder();
+				EnsureNoSystemBorderWhenVisible();
 			}
 
 			/***********************************************************************
@@ -118,36 +139,41 @@ GuiNonMainHostedWindowProxy
 
 			void UpdateCustomFrameMode() override
 			{
-				EnsureNoSystemBorder();
+				EnsureNoSystemBorderWhenVisible();
 			}
 
 			/***********************************************************************
 			Show/Hide/Focus
+
+			Maximized and Minimized are not available
 			***********************************************************************/
 
 			void Show() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.SetVisible(true);
+				data->wmWindow.Activate();
+				EnsureNoSystemBorderWhenVisible();
 			}
 
 			void ShowDeactivated() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				data->wmWindow.SetVisible(true);
+				EnsureNoSystemBorderWhenVisible();
 			}
 
 			void ShowRestored() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				Show();
 			}
 
 			void ShowMaximized() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				Show();
 			}
 
 			void ShowMinimized() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				Show();
 			}
 
 			void Hide() override
