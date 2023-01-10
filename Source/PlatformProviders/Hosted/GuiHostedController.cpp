@@ -289,7 +289,6 @@ GuiHostedController::INativeWindowListener
 		void GuiHostedController::MouseLeaved()
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::MouseLeaved()#"
-			CHECK_ERROR(!capturingWindow, ERROR_MESSAGE_PREFIX L"This callback is not supposed to be called when capturing.");
 			UpdateEnteringWindow(nullptr);
 			hoveringWindow = nullptr;
 #undef ERROR_MESSAGE_PREFIX
