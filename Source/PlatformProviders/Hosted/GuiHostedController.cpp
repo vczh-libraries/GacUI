@@ -162,7 +162,12 @@ GuiHostedController::INativeWindowListener
 		{
 			if (mainWindow)
 			{
-				mainWindow->SetBounds({ {},nativeWindow->GetClientSize() });
+				auto size = mainWindow->GetBounds().GetSize();
+				auto clientSize = nativeWindow->GetClientSize();
+				if (size != clientSize)
+				{
+					mainWindow->SetBounds({ {},clientSize });
+				}
 			}
 		}
 
