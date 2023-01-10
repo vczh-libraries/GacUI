@@ -48,13 +48,14 @@ GuiHostedController
 			bool														nativeWindowDestroyed = false;
 			GuiHostedWindow*											mainWindow = nullptr;
 			GuiHostedWindow*											capturingWindow = nullptr;
+			GuiHostedWindow*											enteringWindow = nullptr;
 			GuiHostedWindow*											hoveringWindow = nullptr;
 			GuiHostedWindow*											lastFocusedWindow = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
 
 			NativePoint						GetPointInClientSpace(NativePoint location);
 			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
-			GuiHostedWindow*				GetMouseEventTarget(NativePoint location);
+			void							UpdateEnteringWindow(GuiHostedWindow* window);
 
 			// =============================================================
 			// WindowManager<GuiHostedWindow*>

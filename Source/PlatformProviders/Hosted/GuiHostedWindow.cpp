@@ -359,6 +359,7 @@ GuiHostedWindow
 			if (controller->capturingWindow != this) return false;
 			controller->capturingWindow = nullptr;
 			controller->nativeWindow->ReleaseCapture();
+			controller->UpdateEnteringWindow(controller->hoveringWindow);
 			return true;
 		}
 

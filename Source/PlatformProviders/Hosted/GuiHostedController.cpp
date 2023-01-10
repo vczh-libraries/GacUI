@@ -24,14 +24,26 @@ GuiHostedController
 			return window ? window->id : nullptr;
 		}
 
-		GuiHostedWindow* GuiHostedController::GetMouseEventTarget(NativePoint location)
+		void GuiHostedController::UpdateEnteringWindow(GuiHostedWindow* window)
 		{
-			if (capturingWindow) return capturingWindow;
-			if (auto hostedWindow = HitTestInClientSpace(GetPointInClientSpace(location)))
+			if (enteringWindow != window)
 			{
-				return hostedWindow;
+				if (enteringWindow)
+				{
+					for (auto listener : enteringWindow->listeners)
+					{
+						listener->MouseLeaved();
+					}
+				}
+				enteringWindow = window;
+				if (enteringWindow)
+				{
+					for (auto listener : enteringWindow->listeners)
+					{
+						listener->MouseEntered();
+					}
+				}
 			}
-			return nullptr;
 		}
 
 /***********************************************************************
@@ -195,7 +207,8 @@ GuiHostedController::INativeWindowListener
 #define IMPLEMENT_MOUSE_CALLBACK(NAME)													\
 		void GuiHostedController::NAME(const NativeWindowMouseInfo& info)				\
 		{																				\
-			if (auto selectedWindow = GetMouseEventTarget({ info.x,info.y }))			\
+			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;	\
+			if (selectedWindow)															\
 			{																			\
 				auto adjustedInfo = info;												\
 				adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;		\
@@ -224,26 +237,9 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::MouseMoving(const NativeWindowMouseInfo& info)
 		{
-			auto selectedWindow = GetMouseEventTarget({ info.x,info.y });
-
-			if (hoveringWindow != selectedWindow)
-			{
-				if (hoveringWindow)
-				{
-					for (auto listener : hoveringWindow->listeners)
-					{
-						listener->MouseLeaved();
-					}
-				}
-				hoveringWindow = selectedWindow;
-				if (hoveringWindow)
-				{
-					for (auto listener : hoveringWindow->listeners)
-					{
-						listener->MouseEntered();
-					}
-				}
-			}
+			hoveringWindow = HitTestInClientSpace({ info.x,info.y });
+			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
+			UpdateEnteringWindow(selectedWindow);
 
 			if (selectedWindow)
 			{
@@ -266,14 +262,8 @@ GuiHostedController::INativeWindowListener
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::MouseLeaved()#"
 			CHECK_ERROR(!capturingWindow, ERROR_MESSAGE_PREFIX L"This callback is not supposed to be called when capturing.");
-			if (hoveringWindow)
-			{
-				for (auto listener : hoveringWindow->listeners)
-				{
-					listener->MouseLeaved();
-				}
-				hoveringWindow = nullptr;
-			}
+			UpdateEnteringWindow(nullptr);
+			hoveringWindow = nullptr;
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -636,8 +626,7 @@ GuiHostedController::INativeWindowService
 			}
 			if (hostedWindow == capturingWindow)
 			{
-				capturingWindow = nullptr;
-				nativeWindow->ReleaseCapture();
+				capturingWindow->ReleaseCapture();
 			}
 
 			for (auto listener : hostedWindow->listeners)
