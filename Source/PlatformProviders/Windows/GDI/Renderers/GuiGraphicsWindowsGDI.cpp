@@ -66,6 +66,11 @@ WindowsGDIRenderTarget
 					return dc ? dc : GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
+				bool IsInHostedRendering()override
+				{
+					return hostedRendering;
+				}
+
 				void StartHostedRendering()override
 				{
 					CHECK_ERROR(!hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartHostedRendering()#Wrong timing to call this function.");

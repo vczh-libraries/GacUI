@@ -328,6 +328,12 @@ GuiHostedController::INativeControllerListener
 
 			if (hostedResourceManager && nativeWindow && nativeWindow->IsVisible())
 			{
+				auto renderTarget = hostedResourceManager->nativeManager->GetRenderTarget(nativeWindow);
+				if (renderTarget->IsInHostedRendering())
+				{
+					goto SKIP_REFRESH;
+				}
+
 				if (wmManager->needRefresh)
 				{
 					wmManager->needRefresh = false;
@@ -348,7 +354,6 @@ GuiHostedController::INativeControllerListener
 			NEED_REFRESH:
 				while (true)
 				{
-					auto renderTarget = hostedResourceManager->nativeManager->GetRenderTarget(nativeWindow);
 					renderTarget->StartHostedRendering();
 					bool failureByResized = false;
 					bool failureByLostDevice = false;
@@ -394,6 +399,7 @@ GuiHostedController::INativeControllerListener
 						break;
 					}
 				}
+			SKIP_REFRESH:;
 			}
 		}
 
@@ -647,14 +653,9 @@ GuiHostedController::INativeWindowService
 			vint index = createdWindows.IndexOf(hostedWindow);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"The window has been destroyed.");
 
-			if (hostedWindow == hoveringWindow)
-			{
-				hoveringWindow = nullptr;
-			}
-			if (hostedWindow == lastFocusedWindow)
-			{
-				lastFocusedWindow = nullptr;
-			}
+			if (hostedWindow == enteringWindow) enteringWindow = nullptr;
+			if (hostedWindow == hoveringWindow) enteringWindow = nullptr;
+			if (hostedWindow == lastFocusedWindow) enteringWindow = nullptr;
 			if (hostedWindow == capturingWindow)
 			{
 				capturingWindow->ReleaseCapture();

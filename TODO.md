@@ -11,8 +11,6 @@
   - Fix main window icon
 - Stop using Webdings in default template.
 - Add HostedWindow theme.
-- Check List (main window)
-  - Minimize
 - Check List (other window)
   - Drag
   - Resize

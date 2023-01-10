@@ -482,6 +482,11 @@ WindowsDirect2DRenderTarget
 					}
 				}
 
+				bool IsInHostedRendering()override
+				{
+					CHECK_FAIL(L"Not implemented!");
+				}
+
 				void StartHostedRendering()override
 				{
 					CHECK_FAIL(L"Not implemented!");

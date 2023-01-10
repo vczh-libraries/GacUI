@@ -127,6 +127,11 @@ Basic Construction
 			{
 			public:
 				/// <summary>
+				/// Test if the target is doing hosted rendering.
+				/// </summary>
+				/// <returns>Returns true if the target is doing hosted rendering.</returns>
+				virtual bool							IsInHostedRendering() = 0;
+				/// <summary>
 				/// Notify the target to start hosted rendering, <see cref="StartRendering()"/> and <see cref="StopRendering"/> will be called multiple times.
 				/// </summary>
 				virtual void							StartHostedRendering() = 0;
