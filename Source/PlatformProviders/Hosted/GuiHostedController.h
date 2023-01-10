@@ -79,6 +79,7 @@ GuiHostedController
 			void							AfterClosing() override;
 			void							Paint() override;
 
+			GuiHostedWindow*				GetMouseEventTarget(NativePoint position);
 			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;

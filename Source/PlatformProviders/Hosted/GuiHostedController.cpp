@@ -159,49 +159,48 @@ GuiHostedController::INativeWindowListener
 			wmManager->needRefresh = true;
 		}
 
-		void GuiHostedController::LeftButtonDown(const NativeWindowMouseInfo& info)
+		GuiHostedWindow* GuiHostedController::GetMouseEventTarget(NativePoint position)
 		{
+			if (capturingWindow) return capturingWindow;
+
+			auto window = wmManager->HitTest(position);
+			if (window)
+			{
+				return window->id;
+			}
+
+			return nullptr;
 		}
 
-		void GuiHostedController::LeftButtonUp(const NativeWindowMouseInfo& info)
-		{
-		}
+#define IMPLEMENT_MOUSE_CALLBACK(NAME)													\
+		void GuiHostedController::NAME(const NativeWindowMouseInfo& info)				\
+		{																				\
+			if (auto selectedWindow = GetMouseEventTarget({ info.x,info.y }))			\
+			{																			\
+				auto adjustedInfo = info;												\
+				adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;		\
+				adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;		\
+																						\
+				for (auto listener : selectedWindow->listeners)							\
+				{																		\
+					listener->NAME(adjustedInfo);										\
+				}																		\
+			}																			\
+		}																				\
 
-		void GuiHostedController::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
-		{
-		}
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick)
+		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel)
+		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel)
 
-		void GuiHostedController::RightButtonDown(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void GuiHostedController::RightButtonUp(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void GuiHostedController::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void GuiHostedController::MiddleButtonDown(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void GuiHostedController::MiddleButtonUp(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void GuiHostedController::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void GuiHostedController::HorizontalWheel(const NativeWindowMouseInfo& info)
-		{
-		}
-
-		void GuiHostedController::VerticalWheel(const NativeWindowMouseInfo& info)
-		{
-		}
+#undef IMPLEMENT_MOUSE_CALLBACK
 
 		void GuiHostedController::MouseMoving(const NativeWindowMouseInfo& info)
 		{
@@ -215,25 +214,26 @@ GuiHostedController::INativeWindowListener
 		{
 		}
 
-		void GuiHostedController::KeyDown(const NativeWindowKeyInfo& info)
-		{
-		}
+#define IMPLEMENT_KEY_CALLBACK(NAME, TYPE)										\
+		void GuiHostedController::NAME(const TYPE& info)						\
+		{																		\
+			if (wmManager->activeWindow)										\
+			{																	\
+				auto hostedWindow = wmManager->activeWindow->id;				\
+				for (auto listener : hostedWindow->listeners)					\
+				{																\
+					listener->NAME(info);										\
+				}																\
+			}																	\
+		}																		\
 
-		void GuiHostedController::KeyUp(const NativeWindowKeyInfo& info)
-		{
-		}
+		IMPLEMENT_KEY_CALLBACK(KeyDown, NativeWindowKeyInfo)
+		IMPLEMENT_KEY_CALLBACK(KeyUp, NativeWindowKeyInfo)
+		IMPLEMENT_KEY_CALLBACK(SysKeyDown, NativeWindowKeyInfo)
+		IMPLEMENT_KEY_CALLBACK(SysKeyUp, NativeWindowKeyInfo)
+		IMPLEMENT_KEY_CALLBACK(Char, NativeWindowCharInfo)
 
-		void GuiHostedController::SysKeyDown(const NativeWindowKeyInfo& info)
-		{
-		}
-
-		void GuiHostedController::SysKeyUp(const NativeWindowKeyInfo& info)
-		{
-		}
-
-		void GuiHostedController::Char(const NativeWindowCharInfo& info)
-		{
-		}
+#undef IMPLEMENT_KEY_CALLBACK
 
 /***********************************************************************
 GuiHostedController::INativeControllerListener
