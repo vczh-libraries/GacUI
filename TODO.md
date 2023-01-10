@@ -11,6 +11,18 @@
   - Fix main window icon
 - Stop using Webdings in default template.
 - Add HostedWindow theme.
+- Check List (main window)
+  - Drag
+  - Resize
+  - Minimize
+  - Maximize
+  - Restore
+  - Close
+- Check List (other window)
+  - Drag
+  - Resize
+  - Close
+  - No min/max button
 
 ## OS Provider Features
 

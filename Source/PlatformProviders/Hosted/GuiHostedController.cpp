@@ -11,10 +11,10 @@ GuiHostedController
 
 		NativePoint GuiHostedController::GetPointInClientSpace(NativePoint location)
 		{
-			auto bounds = nativeWindow->GetBounds();
+			auto windowBounds = nativeWindow->GetBounds();
 			auto clientBounds = nativeWindow->GetClientBoundsInScreen();
-			location.x.value += bounds.x1.value - clientBounds.x1.value;
-			location.y.value += bounds.y1.value - clientBounds.y1.value;
+			location.x.value += windowBounds.x1.value - clientBounds.x1.value;
+			location.y.value += windowBounds.y1.value - clientBounds.y1.value;
 			return location;
 		}
 
@@ -135,7 +135,27 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 		{
-			// TODO: call mainWindow's Moving
+			if (mainWindow)
+			{
+				auto windowBounds = nativeWindow->GetBounds();
+				auto clientBounds = nativeWindow->GetClientBoundsInScreen();
+				auto w = clientBounds.Width().value - windowBounds.Width().value;
+				auto h = clientBounds.Height().value - windowBounds.Height().value;
+
+				NativeRect mainBounds;
+				mainBounds.x2 = bounds.Width().value - w;
+				mainBounds.y2 = bounds.Height().value - h;
+
+				for (auto listener : mainWindow->listeners)
+				{
+					listener->Moving(mainBounds, fixSizeOnly, draggingBorder);
+				}
+
+				bounds.x1.value += mainBounds.x1.value;
+				bounds.y1.value += mainBounds.y1.value;
+				bounds.x2.value = bounds.x1.value + mainBounds.Width().value + w;
+				bounds.y2.value = bounds.y1.value + mainBounds.Height().value + h;
+			}
 		}
 
 		void GuiHostedController::Moved()
