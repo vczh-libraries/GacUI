@@ -80,6 +80,11 @@ GuiHostedController::INativeWindowListener
 
 		INativeWindowListener::HitTestResult GuiHostedController::HitTest(NativePoint location)
 		{
+			auto window = wmManager->HitTest(location);
+			if (window && window->id == mainWindow)
+			{
+				return PerformHitTest(From(mainWindow->listeners), location);
+			}
 			return INativeWindowListener::HitTestResult::NoDecision;
 		}
 
