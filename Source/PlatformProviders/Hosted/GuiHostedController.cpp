@@ -224,6 +224,38 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::MouseMoving(const NativeWindowMouseInfo& info)
 		{
+			auto selectedWindow = GetMouseEventTarget({ info.x,info.y });
+
+			if (hoveringWindow != selectedWindow)
+			{
+				if (hoveringWindow)
+				{
+					for (auto listener : hoveringWindow->listeners)
+					{
+						listener->MouseLeaved();
+					}
+				}
+				hoveringWindow = selectedWindow;
+				if (hoveringWindow)
+				{
+					for (auto listener : hoveringWindow->listeners)
+					{
+						listener->MouseEntered();
+					}
+				}
+			}
+
+			if (selectedWindow)
+			{
+				auto adjustedInfo = info;
+				adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;
+				adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;
+
+				for (auto listener : selectedWindow->listeners)
+				{
+					listener->MouseMoving(adjustedInfo);
+				}
+			}
 		}
 
 		void GuiHostedController::MouseEntered()
@@ -232,6 +264,17 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::MouseLeaved()
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::MouseLeaved()#"
+			CHECK_ERROR(!capturingWindow, ERROR_MESSAGE_PREFIX L"This callback is not supposed to be called when capturing.");
+			if (hoveringWindow)
+			{
+				for (auto listener : hoveringWindow->listeners)
+				{
+					listener->MouseLeaved();
+				}
+				hoveringWindow = nullptr;
+			}
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 #define IMPLEMENT_KEY_CALLBACK(NAME, TYPE)										\
