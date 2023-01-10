@@ -468,7 +468,6 @@ GuiHostedController::INativeAsyncService
 
 		bool GuiHostedController::IsInMainThread(INativeWindow* window)
 		{
-			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::IsInMainThread(INativeWindow*)#The underlying native window has not been created.");
 			return nativeController->AsyncService()->IsInMainThread(nativeWindow);
 		}
 
@@ -479,13 +478,11 @@ GuiHostedController::INativeAsyncService
 
 		void GuiHostedController::InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)
 		{
-			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::InvokeInMainThread(INativeWindow*, ...)#The underlying native window has not been created.");
 			return nativeController->AsyncService()->InvokeInMainThread(nativeWindow, proc);
 		}
 
 		bool GuiHostedController::InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)
 		{
-			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::InvokeInMainThreadAndWait(INativeWindow*, ...)#The underlying native window has not been created.");
 			return nativeController->AsyncService()->InvokeInMainThreadAndWait(nativeWindow, proc, milliseconds);
 		}
 
@@ -505,25 +502,21 @@ GuiHostedController::INativeDialogService
 
 		INativeDialogService::MessageBoxButtonsOutput GuiHostedController::ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)
 		{
-			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowMessageBox(INativeWindow*, ...)#The underlying native window has not been created.");
 			return nativeController->DialogService()->ShowMessageBox(nativeWindow, text, title, buttons, defaultButton, icon, modal);
 		}
 
 		bool GuiHostedController::ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)
 		{
-			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowColorDialog(INativeWindow*, ...)#The underlying native window has not been created.");
 			return nativeController->DialogService()->ShowColorDialog(nativeWindow, selection, selected, customColorOptions, customColors);
 		}
 
 		bool GuiHostedController::ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)
 		{
-			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowFontDialog(INativeWindow*, ...)#The underlying native window has not been created.");
 			return nativeController->DialogService()->ShowFontDialog(nativeWindow, selectionFont, selectionColor, selected, showEffect, forceFontExist);
 		}
 
 		bool GuiHostedController::ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)
 		{
-			CHECK_ERROR(nativeWindow, L"vl::presentation::GuiHostedController::ShowFileDialog(INativeWindow*, ...)#The underlying native window has not been created.");
 			return nativeController->DialogService()->ShowFileDialog(nativeWindow, selectionFileNames, selectionFilterIndex, dialogType, title, initialFileName, initialDirectory, defaultExtension, filter, options);
 		}
 
@@ -538,6 +531,7 @@ GuiHostedController::INativeScreenService
 
 		INativeScreen* GuiHostedController::GetScreen(vint index)
 		{
+			CHECK_ERROR(index == 0, L"vl::presentation::GuiHostedController::GetScreen(vint)#Index out of range.");
 			return this;
 		}
 
@@ -611,10 +605,11 @@ GuiHostedController::INativeWindowService
 
 		void GuiHostedController::DestroyNativeWindow(INativeWindow* window)
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#"
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
-			CHECK_ERROR(!hostedWindow, L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#The window is not created by GuiHostedController.");
+			CHECK_ERROR(!hostedWindow, ERROR_MESSAGE_PREFIX L"The window is not created by GuiHostedController.");
 			vint index = createdWindows.IndexOf(hostedWindow);
-			CHECK_ERROR(index != -1, L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#The window has been destroyed.");
+			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"The window has been destroyed.");
 
 			if (hostedWindow == hoveringWindow)
 			{
@@ -640,6 +635,7 @@ GuiHostedController::INativeWindowService
 
 			wmManager->UnregisterWindow(&hostedWindow->wmWindow);
 			createdWindows.RemoveAt(index);
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		INativeWindow* GuiHostedController::GetMainWindow()
@@ -655,9 +651,10 @@ GuiHostedController::INativeWindowService
 
 		void GuiHostedController::Run(INativeWindow* window)
 		{
-			CHECK_ERROR(!mainWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#This function has been called.");
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::Run(INativeWindow*)#"
+			CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"This function has been called.");
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
-			CHECK_ERROR(hostedWindow, L"vl::presentation::GuiHostedController::Run(INativeWindow*)#The window is not created by GuiHostedController.");
+			CHECK_ERROR(hostedWindow, ERROR_MESSAGE_PREFIX L"The window is not created by GuiHostedController.");
 			mainWindow = hostedWindow;
 
 			for (auto window : createdWindows)
@@ -695,6 +692,7 @@ GuiHostedController::INativeWindowService
 				auto hostedWindow = createdWindows[i];
 				DestroyNativeWindow(hostedWindow.Obj());
 			}
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 /***********************************************************************
