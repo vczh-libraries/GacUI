@@ -111,6 +111,7 @@ GuiHostedController
 
 			void							GlobalTimer() override;
 			void							ClipboardUpdated() override;
+			void							NativeWindowDestroying(INativeWindow* window);
 
 			// =============================================================
 			// INativeController

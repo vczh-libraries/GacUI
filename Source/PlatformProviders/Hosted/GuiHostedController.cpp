@@ -406,6 +406,15 @@ GuiHostedController::INativeControllerListener
 			}
 		}
 
+		void GuiHostedController::NativeWindowDestroying(INativeWindow* window)
+		{
+			if (nativeWindow == window)
+			{
+				nativeWindow->UninstallListener(this);
+				nativeWindow = nullptr;
+			}
+		}
+
 /***********************************************************************
 GuiHostedController::INativeController
 ***********************************************************************/
@@ -635,7 +644,7 @@ GuiHostedController::INativeWindowService
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::DestroyNativeWindow(INativeWindow*)#"
 			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(window);
-			CHECK_ERROR(!hostedWindow, ERROR_MESSAGE_PREFIX L"The window is not created by GuiHostedController.");
+			CHECK_ERROR(hostedWindow, ERROR_MESSAGE_PREFIX L"The window is not created by GuiHostedController.");
 			vint index = createdWindows.IndexOf(hostedWindow);
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"The window has been destroyed.");
 
@@ -754,13 +763,14 @@ GuiHostedController
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController()::Finalize()#"
 			CHECK_ERROR(!nativeWindowDestroyed, ERROR_MESSAGE_PREFIX L"Finalize() has been called.");
-			CHECK_ERROR(nativeWindow, ERROR_MESSAGE_PREFIX L"Initialize() has not been called");
 
-			nativeWindow->UninstallListener(this);
-			nativeController->WindowService()->DestroyNativeWindow(nativeWindow);
+			if (nativeWindow)
+			{
+				nativeController->WindowService()->DestroyNativeWindow(nativeWindow);
+			}
 			nativeController->CallbackService()->UninstallListener(this);
-			nativeWindow = nullptr;
 			nativeWindowDestroyed = true;
+
 #undef ERROR_MESSAGE_PREFIX
 		}
 	}

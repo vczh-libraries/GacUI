@@ -17,7 +17,6 @@
   - Minimize
   - Maximize
   - Restore
-  - Close
 - Check List (other window)
   - Drag
   - Resize
