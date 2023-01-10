@@ -160,7 +160,10 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::Moved()
 		{
-			// TODO: set mainWindow's size and call Moved
+			if (mainWindow)
+			{
+				mainWindow->SetBounds({ {},nativeWindow->GetClientSize() });
+			}
 		}
 
 		void GuiHostedController::DpiChanged()

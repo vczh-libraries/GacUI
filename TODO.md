@@ -23,6 +23,7 @@
   - Resize
   - Close
   - No min/max button
+- Check List (play with controls)
 
 ## OS Provider Features
 
