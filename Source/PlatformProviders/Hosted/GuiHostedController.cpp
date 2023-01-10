@@ -6,6 +6,35 @@ namespace vl
 	{
 
 /***********************************************************************
+GuiHostedController
+***********************************************************************/
+
+		NativePoint GuiHostedController::GetPointInClientSpace(NativePoint location)
+		{
+			auto bounds = nativeWindow->GetBounds();
+			auto clientBounds = nativeWindow->GetClientBoundsInScreen();
+			location.x.value += bounds.x1.value - clientBounds.x1.value;
+			location.y.value += bounds.y1.value - clientBounds.y1.value;
+			return location;
+		}
+
+		GuiHostedWindow* GuiHostedController::HitTestInClientSpace(NativePoint location)
+		{
+			auto window = wmManager->HitTest(location);
+			return window ? window->id : nullptr;
+		}
+
+		GuiHostedWindow* GuiHostedController::GetMouseEventTarget(NativePoint location)
+		{
+			if (capturingWindow) return capturingWindow;
+			if (auto hostedWindow = HitTestInClientSpace(GetPointInClientSpace(location)))
+			{
+				return hostedWindow;
+			}
+			return nullptr;
+		}
+
+/***********************************************************************
 GuiHostedController::WindowManager<GuiHostedWindow*>
 ***********************************************************************/
 
@@ -80,10 +109,14 @@ GuiHostedController::INativeWindowListener
 
 		INativeWindowListener::HitTestResult GuiHostedController::HitTest(NativePoint location)
 		{
-			auto window = wmManager->HitTest(location);
-			if (window && window->id == mainWindow)
+			if (mainWindow)
 			{
-				return PerformHitTest(From(mainWindow->listeners), location);
+				auto point = GetPointInClientSpace(location);
+				auto window = HitTestInClientSpace(point);
+				if (window == mainWindow)
+				{
+					return PerformHitTest(From(mainWindow->listeners), point);
+				}
 			}
 			return INativeWindowListener::HitTestResult::NoDecision;
 		}
@@ -157,19 +190,6 @@ GuiHostedController::INativeWindowListener
 		void GuiHostedController::Paint()
 		{
 			wmManager->needRefresh = true;
-		}
-
-		GuiHostedWindow* GuiHostedController::GetMouseEventTarget(NativePoint position)
-		{
-			if (capturingWindow) return capturingWindow;
-
-			auto window = wmManager->HitTest(position);
-			if (window)
-			{
-				return window->id;
-			}
-
-			return nullptr;
 		}
 
 #define IMPLEMENT_MOUSE_CALLBACK(NAME)													\

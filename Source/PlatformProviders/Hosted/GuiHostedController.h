@@ -52,6 +52,10 @@ GuiHostedController
 			GuiHostedWindow*											lastFocusedWindow = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
 
+			NativePoint						GetPointInClientSpace(NativePoint location);
+			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
+			GuiHostedWindow*				GetMouseEventTarget(NativePoint location);
+
 			// =============================================================
 			// WindowManager<GuiHostedWindow*>
 			// =============================================================
@@ -79,7 +83,6 @@ GuiHostedController
 			void							AfterClosing() override;
 			void							Paint() override;
 
-			GuiHostedWindow*				GetMouseEventTarget(NativePoint position);
 			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
