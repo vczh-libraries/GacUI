@@ -36,6 +36,7 @@ GuiHostedWindow
 		GuiHostedWindow::GuiHostedWindow(GuiHostedController* _controller, INativeWindow::WindowMode _windowMode)
 			: GuiHostedWindowData(_controller, this, _windowMode)
 		{
+			wmWindow.bounds = { {0,0},{1,1} };
 			proxy = CreatePlaceholderHostedWindowProxy(this);
 			proxy->CheckAndSyncProperties();
 		}

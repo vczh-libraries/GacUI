@@ -55,7 +55,11 @@ GuiNonMainHostedWindowProxy
 
 			NativeRect FixBounds(const NativeRect& bounds) override
 			{
-				return bounds;
+				auto w = bounds.Width().value;
+				auto h = bounds.Height().value;
+				if (w < 1) w = 1;
+				if (h < 1) h = 1;
+				return { bounds.LeftTop(),{{w},{h}} };
 			}
 
 			void UpdateBounds() override
