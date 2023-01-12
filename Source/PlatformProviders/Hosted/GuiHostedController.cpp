@@ -131,7 +131,7 @@ GuiHostedController::INativeWindowListener
 
 		INativeWindowListener::HitTestResult GuiHostedController::HitTest(NativePoint location)
 		{
-			if (mainWindow)
+			if (mainWindow && mainWindow->IsEnabled())
 			{
 				auto point = GetPointInClientSpace(location);
 				auto window = HitTestInClientSpace(point);
@@ -242,6 +242,16 @@ GuiHostedController::INativeWindowListener
 			wmManager->needRefresh = true;
 		}
 
+		GuiHostedWindow* GuiHostedController::GetSelectedWindow_LeftMouseDown(const NativeWindowMouseInfo& info)
+		{
+			return GetSelectedWindow_MouseDown(info);
+		}
+
+		GuiHostedWindow* GuiHostedController::GetSelectedWindow_LeftMouseUp(const NativeWindowMouseInfo& info)
+		{
+			return GetSelectedWindow_Other(info);
+		}
+
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info)
 		{
 			if (!capturingWindow)
@@ -292,8 +302,7 @@ GuiHostedController::INativeWindowListener
 #define IMPLEMENT_MOUSE_CALLBACK(NAME, POLICY)											\
 		void GuiHostedController::NAME(const NativeWindowMouseInfo& info)				\
 		{																				\
-			auto selectedWindow = GetSelectedWindow_##POLICY(info);						\
-			if (selectedWindow)															\
+			if (auto selectedWindow = GetSelectedWindow_##POLICY(info))					\
 			{																			\
 				auto adjustedInfo = info;												\
 				adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;		\
@@ -306,8 +315,8 @@ GuiHostedController::INativeWindowListener
 			}																			\
 		}																				\
 
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			MouseDown)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				Other)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			LeftMouseDown)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				LeftMouseUp)
 		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other)
 		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown)
 		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other)
