@@ -4,6 +4,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace collections;
 
 /***********************************************************************
 GuiHostedController
@@ -243,6 +244,33 @@ GuiHostedController::INativeWindowListener
 
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info)
 		{
+			if (!capturingWindow)
+			{
+				SortedList<GuiHostedWindow*> survivedPopups;
+				auto current = hoveringWindow;
+				while (current)
+				{
+					if (current->IsVisible() && current->GetWindowMode() != INativeWindow::Normal)
+					{
+						survivedPopups.Add(current);
+					}
+					current = current->wmWindow.parent ? current->wmWindow.parent->id : nullptr;
+				}
+
+				List<GuiHostedWindow*> closingPopups;
+				CopyFrom(
+					closingPopups,
+					From(wmManager->ordinaryWindowsInOrder)
+						.Concat(wmManager->topMostedWindowsInOrder)
+						.Select([](auto window) { return window->id; })
+						.Where([&](auto window) { return window->GetWindowMode() != INativeWindow::Normal && !survivedPopups.Contains(window); })
+					);
+				for (auto popupWindow : closingPopups)
+				{
+					popupWindow->Hide(false);
+				}
+			}
+
 			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
 			return selectedWindow;
 		}
