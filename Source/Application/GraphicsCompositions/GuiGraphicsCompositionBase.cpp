@@ -650,6 +650,11 @@ GuiGraphicsSite
 				return GetBoundsInternal(Rect(Point(0, 0), GetMinPreferredClientSize()));
 			}
 
+			Rect GuiGraphicsSite::GetPreviousCalculatedBounds()
+			{
+				return previousBounds;
+			}
+
 /***********************************************************************
 Helper Functions
 ***********************************************************************/

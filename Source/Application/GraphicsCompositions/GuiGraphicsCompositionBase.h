@@ -281,6 +281,10 @@ Basic Construction
 				bool								IsSizeAffectParent()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetPreferredBounds()override;
+
+				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
+				/// <returns>The previous calculated bounds.</returns>
+				Rect								GetPreviousCalculatedBounds();
 			};
 			
 			/// <summary>

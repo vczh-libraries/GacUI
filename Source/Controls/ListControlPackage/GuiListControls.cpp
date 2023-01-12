@@ -494,8 +494,8 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					Size controlSize = boundsComposition->GetBounds().GetSize();
-					Size viewSize = containerComposition->GetBounds().GetSize();
+					Size controlSize = boundsComposition->GetPreviousCalculatedBounds().GetSize();
+					Size viewSize = containerComposition->GetPreviousCalculatedBounds().GetSize();
 					vint x = controlSize.x - viewSize.x;
 					vint y = controlSize.y - viewSize.y;
 
