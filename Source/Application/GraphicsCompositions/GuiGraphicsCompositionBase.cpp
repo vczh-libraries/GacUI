@@ -151,7 +151,7 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::InvokeOnCompositionStateChanged()
 			{
-				if (relatedHostRecord)
+				if (relatedHostRecord && GetEventuallyVisible())
 				{
 					relatedHostRecord->host->RequestRender();
 				}
@@ -291,6 +291,17 @@ GuiGraphicsComposition
 			{
 				visible = value;
 				InvokeOnCompositionStateChanged();
+			}
+
+			bool GuiGraphicsComposition::GetEventuallyVisible()
+			{
+				auto current = this;
+				while (current)
+				{
+					if (!current->visible) return false;
+					current = current->parent;
+				}
+				return true;
 			}
 
 			GuiGraphicsComposition::MinSizeLimitation GuiGraphicsComposition::GetMinSizeLimitation()

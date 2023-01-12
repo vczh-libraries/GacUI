@@ -3,20 +3,19 @@
 ## Progressing
 
 - `GuiHostedController`
-  - The hosted screen represents the client area of the native window.
-  - Rendering in `GlobalTimer`.
-  - Handle DPI.
-  - Dispatch mouse and key events.
-  - Auto close popup window.
+  - Handle DPI
   - Fix main window icon
 - Stop using Webdings in default template.
 - Add HostedWindow theme.
-- Check List (other window)
+- Window manager
   - Drag
   - Resize
   - Close
   - No min/max button
-- Check List (play with controls)
+- Issues
+  - Big cursor of document empty paragraph
+  - Focused tab header becomes black
+  - When a menu is visible, it flashes during rendering
 
 ## OS Provider Features
 
