@@ -24,6 +24,15 @@ GuiHostedController
 			return window ? window->id : nullptr;
 		}
 
+		void GuiHostedController::UpdateHoveringWindow(Nullable<NativePoint> location)
+		{
+			if (location)
+			{
+				hoveringLocation = location.Value();
+			}
+			hoveringWindow = HitTestInClientSpace(hoveringLocation);
+		}
+
 		void GuiHostedController::UpdateEnteringWindow(GuiHostedWindow* window)
 		{
 			if (enteringWindow != window)
@@ -232,10 +241,30 @@ GuiHostedController::INativeWindowListener
 			wmManager->needRefresh = true;
 		}
 
-#define IMPLEMENT_MOUSE_CALLBACK(NAME)													\
+		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info)
+		{
+			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
+			return selectedWindow;
+		}
+
+		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info)
+		{
+			UpdateHoveringWindow({ { info.x,info.y } });
+			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
+			UpdateEnteringWindow(selectedWindow);
+			return selectedWindow;
+		}
+
+		GuiHostedWindow* GuiHostedController::GetSelectedWindow_Other(const NativeWindowMouseInfo& info)
+		{
+			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
+			return selectedWindow;
+		}
+
+#define IMPLEMENT_MOUSE_CALLBACK(NAME, POLICY)											\
 		void GuiHostedController::NAME(const NativeWindowMouseInfo& info)				\
 		{																				\
-			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;	\
+			auto selectedWindow = GetSelectedWindow_##POLICY(info);						\
 			if (selectedWindow)															\
 			{																			\
 				auto adjustedInfo = info;												\
@@ -249,38 +278,20 @@ GuiHostedController::INativeWindowListener
 			}																			\
 		}																				\
 
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick)
-		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel)
-		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			MouseDown)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				Other)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick,	Other)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown,			MouseDown)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp,			Other)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick,	Other)
+		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel,			Other)
+		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel,				Other)
+		IMPLEMENT_MOUSE_CALLBACK(MouseMoving,				MouseMoving)
 
 #undef IMPLEMENT_MOUSE_CALLBACK
-
-		void GuiHostedController::MouseMoving(const NativeWindowMouseInfo& info)
-		{
-			hoveringWindow = HitTestInClientSpace({ info.x,info.y });
-			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
-			UpdateEnteringWindow(selectedWindow);
-
-			if (selectedWindow)
-			{
-				auto adjustedInfo = info;
-				adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;
-				adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;
-
-				for (auto listener : selectedWindow->listeners)
-				{
-					listener->MouseMoving(adjustedInfo);
-				}
-			}
-		}
 
 		void GuiHostedController::MouseEntered()
 		{
@@ -290,7 +301,6 @@ GuiHostedController::INativeWindowListener
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::MouseLeaved()#"
 			UpdateEnteringWindow(nullptr);
-			hoveringWindow = nullptr;
 #undef ERROR_MESSAGE_PREFIX
 		}
 
@@ -654,7 +664,7 @@ GuiHostedController::INativeWindowService
 			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"The window has been destroyed.");
 
 			if (hostedWindow == enteringWindow) enteringWindow = nullptr;
-			if (hostedWindow == hoveringWindow) enteringWindow = nullptr;
+			if (hostedWindow == hoveringWindow) hoveringWindow = nullptr;
 			if (hostedWindow == lastFocusedWindow) enteringWindow = nullptr;
 			if (hostedWindow == capturingWindow)
 			{
@@ -672,6 +682,8 @@ GuiHostedController::INativeWindowService
 
 			wmManager->UnregisterWindow(&hostedWindow->wmWindow);
 			createdWindows.RemoveAt(index);
+
+			UpdateHoveringWindow({});
 #undef ERROR_MESSAGE_PREFIX
 		}
 

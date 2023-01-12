@@ -49,12 +49,14 @@ GuiHostedController
 			GuiHostedWindow*											mainWindow = nullptr;
 			GuiHostedWindow*											capturingWindow = nullptr;
 			GuiHostedWindow*											enteringWindow = nullptr;
+			NativePoint													hoveringLocation{ -1,-1 };
 			GuiHostedWindow*											hoveringWindow = nullptr;
 			GuiHostedWindow*											lastFocusedWindow = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
 
 			NativePoint						GetPointInClientSpace(NativePoint location);
 			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
+			void							UpdateHoveringWindow(Nullable<NativePoint> location);
 			void							UpdateEnteringWindow(GuiHostedWindow* window);
 
 			// =============================================================
@@ -83,6 +85,10 @@ GuiHostedController
 			void							BeforeClosing(bool& cancel) override;
 			void							AfterClosing() override;
 			void							Paint() override;
+
+			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
 
 			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
