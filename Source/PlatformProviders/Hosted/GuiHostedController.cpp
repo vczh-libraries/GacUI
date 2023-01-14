@@ -316,6 +316,33 @@ GuiHostedController::INativeWindowListener (PreAction)
 
 		void GuiHostedController::PreAction_MouseMoving(const NativeWindowMouseInfo& info)
 		{
+			if (!capturingWindow && !wmWindow && hoveringWindow && hoveringWindow != mainWindow && hoveringWindow->IsEnabled())
+			{
+				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
+				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
+				auto hitTestResult = PerformHitTest(From(hoveringWindow->listeners), { {x},{y} });
+				switch (hitTestResult)
+				{
+				case INativeWindowListener::BorderLeft:
+				case INativeWindowListener::BorderRight:
+					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
+					break;
+				case INativeWindowListener::BorderTop:
+				case INativeWindowListener::BorderBottom:
+					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
+					break;
+				case INativeWindowListener::BorderLeftTop:
+				case INativeWindowListener::BorderRightBottom:
+					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeNWSE));
+					break;
+				case INativeWindowListener::BorderRightTop:
+				case INativeWindowListener::BorderLeftBottom:
+					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeNESW));
+					break;
+				default:
+					nativeWindow->SetWindowCursor(hoveringWindow->GetWindowCursor());
+				}
+			}
 		}
 
 		void GuiHostedController::PreAction_Other(const NativeWindowMouseInfo& info)
@@ -328,7 +355,7 @@ GuiHostedController::INativeWindowListener (PostAction)
 
 		void GuiHostedController::PostAction_LeftMouseUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info)
 		{
-			if (!capturingWindow && !wmWindow && selectedWindow && selectedWindow->IsEnabled())
+			if (!capturingWindow && !wmWindow && selectedWindow && selectedWindow != mainWindow && selectedWindow->IsEnabled())
 			{
 				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
 				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
