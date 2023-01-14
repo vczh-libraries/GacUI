@@ -351,6 +351,11 @@ Window
 				/// <param name="visible">True to make the title bar visible.</param>
 				void									SetTitleBar(bool visible);
 				/// <summary>
+				/// Show a window and keep it always in front of the owner window.
+				/// </summary>
+				/// <param name="owner">The window to disable as a parent window.</param>
+				void									ShowWithOwner(GuiWindow* owner);
+				/// <summary>
 				/// Show a model window, get a callback when the window is closed.
 				/// </summary>
 				/// <param name="owner">The window to disable as a parent window.</param>

@@ -888,6 +888,23 @@ GuiWindow
 #undef IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
 #undef IMPL_WINDOW_PROPERTY
 
+			void GuiWindow::ShowWithOwner(GuiWindow* owner)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::ShowWithOwner(GuiWindow*)#"
+				auto ownerNativeWindow = owner->GetNativeWindow();
+				auto nativeWindow = GetNativeWindow();
+				CHECK_ERROR(nativeWindow->GetParent() == nullptr || nativeWindow->GetParent() == ownerNativeWindow, L"This function cannot be called when the window already has a different parent window.");
+				if (nativeWindow->GetParent() == nullptr)
+				{
+					WindowReadyToClose.AttachLambda([nativeWindow](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						nativeWindow->SetParent(nullptr);
+					});
+				}
+				Show();
+#undef ERROR_MESSAGE_PREFIX
+			}
+
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
 			{
 				owner->SetEnabled(false);

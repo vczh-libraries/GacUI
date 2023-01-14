@@ -897,6 +897,7 @@ Type Declaration (Class)
 
 				CLASS_MEMBER_METHOD_OVERLOAD(MoveToScreenCenter, NO_PARAMETER, void(GuiWindow::*)())
 				CLASS_MEMBER_METHOD_OVERLOAD(MoveToScreenCenter, { L"screen" }, void(GuiWindow::*)(INativeScreen*))
+				CLASS_MEMBER_METHOD(ShowWithOwner, { L"owner" })
 				CLASS_MEMBER_METHOD(ShowModal, { L"owner" _ L"callback" })
 				CLASS_MEMBER_METHOD(ShowModalAndDelete, { L"owner" _ L"callback" })
 				CLASS_MEMBER_METHOD(ShowModalAsync, { L"owner" })

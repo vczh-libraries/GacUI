@@ -15,6 +15,7 @@
   - Big cursor of document empty line
   - Focused tab header becomes black
   - When a menu is visible, it flashes during rendering
+- Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 
 ## OS Provider Features
 

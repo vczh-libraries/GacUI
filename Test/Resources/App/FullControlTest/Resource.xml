@@ -61,13 +61,10 @@
             <ev.Clicked-eval>
               <![CDATA[
                   {
-                    var subWindow = new SubWindow*();
+                    var subWindow = new SubWindow^();
+                    self.openedSubWindows.Add(subWindow);
                     subWindow.MoveToScreenCenter();
-                    subWindow.Show();
-                    attach(subWindow.WindowClosed, func(sender: GuiGraphicsComposition*, eventArgs:GuiEventArgs*): void
-                    {
-                      subWindow.DeleteAfterProcessingAllEvents();
-                    });
+                    subWindow.ShowWithOwner(self);
                   }
                 ]]>
             </ev.Clicked-eval>
@@ -79,6 +76,9 @@
   
   <Instance name="SubWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::SubWindow" ref.Styles="res://WindowManagerContentStyles">
+      <ref.Members><![CDATA[
+        var openedSubWindows: GuiWindow^[] = {};
+      ]]></ref.Members>
       <Window ref.Name="self" Text-eval="Sys::LoremIpsumTitle(20)" ClientSize="x:240 y:160">
         <Stack ref.Style="windowManagerContent"/>
       </Window>
@@ -87,6 +87,9 @@
 
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*" ref.Styles="res://WindowManagerContentStyles">
+      <ref.Members><![CDATA[
+        var openedSubWindows: GuiWindow^[] = {};
+      ]]></ref.Members>
       <Window ref.Name="self" Text="Complete Control Showcase" ClientSize="x:640 y:480">
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
         <Tab>

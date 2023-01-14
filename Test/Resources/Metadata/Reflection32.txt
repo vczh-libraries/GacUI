@@ -1198,6 +1198,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     property Bounds : presentation::Rect { get:GetBounds }
     property Children : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^ { get:GetChildren }
     property ClientArea : presentation::Rect { get:GetClientArea }
+    property EventuallyVisible : system::Boolean { get:GetEventuallyVisible }
     property GlobalBounds : presentation::Rect { get:GetGlobalBounds }
     property InternalMargin : presentation::Margin { get:GetInternalMargin set:SetInternalMargin }
     property Margin : presentation::Margin { get:GetMargin set:SetMargin }
@@ -1224,6 +1225,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Children)
     function GetChildren() : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^;
     function GetClientArea() : presentation::Rect;
+    function GetEventuallyVisible() : system::Boolean;
     function GetGlobalBounds() : presentation::Rect;
     function GetInternalMargin() : presentation::Margin;
     function GetMargin() : presentation::Margin;
@@ -1272,8 +1274,10 @@ class presentation::compositions::GuiGraphicsSite : presentation::compositions::
         Bounds,
 }
     property Bounds : presentation::Rect { get:GetBounds event:BoundsChanged }
+    property PreviousCalculatedBounds : presentation::Rect { get:GetPreviousCalculatedBounds }
 
     function GetBounds() : presentation::Rect;
+    function GetPreviousCalculatedBounds() : presentation::Rect;
 
 }
 
@@ -2051,6 +2055,7 @@ class presentation::controls::GuiControlHost : presentation::controls::GuiContro
     event WindowGotFocus : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event WindowLostFocus : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event WindowOpened : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event WindowReadyToClose : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
     property ClientSize : presentation::Size { get:GetClientSize set:SetClientSize }
     property EnabledActivate : system::Boolean { get:GetEnabledActivate set:SetEnabledActivate }
@@ -3120,6 +3125,7 @@ class presentation::controls::GuiWindow : presentation::controls::GuiControlHost
     function ShowModal(owner : presentation::controls::GuiWindow*, callback : system::Function<system::Void>^) : system::Void;
     function ShowModalAndDelete(owner : presentation::controls::GuiWindow*, callback : system::Function<system::Void>^) : system::Void;
     function ShowModalAsync(owner : presentation::controls::GuiWindow*) : system::Async^;
+    function ShowWithOwner(owner : presentation::controls::GuiWindow*) : system::Void;
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiWindowTemplate*;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiWindow*;
