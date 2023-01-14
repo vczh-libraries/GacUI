@@ -254,6 +254,7 @@ GuiHostedController::INativeWindowListener
 
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info)
 		{
+			if (wmWindow) return nullptr;
 			if (!capturingWindow)
 			{
 				SortedList<GuiHostedWindow*> survivedPopups;
@@ -287,6 +288,7 @@ GuiHostedController::INativeWindowListener
 
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info)
 		{
+			if (wmWindow) return nullptr;
 			UpdateHoveringWindow({ { info.x,info.y } });
 			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
 			UpdateEnteringWindow(selectedWindow);
@@ -295,6 +297,7 @@ GuiHostedController::INativeWindowListener
 
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_Other(const NativeWindowMouseInfo& info)
 		{
+			if (wmWindow) return nullptr;
 			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
 			return selectedWindow;
 		}
@@ -707,6 +710,11 @@ GuiHostedController::INativeWindowService
 			if (hostedWindow == capturingWindow)
 			{
 				capturingWindow->ReleaseCapture();
+			}
+			if (hostedWindow == wmWindow)
+			{
+				wmOperation = WindowManagerOperation::None;
+				wmWindow = nullptr;
 			}
 
 			for (auto listener : hostedWindow->listeners)

@@ -43,16 +43,35 @@ GuiHostedController
 			INativeController*											nativeController = nullptr;
 			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
 			collections::List<INativeControllerListener*>				listeners;
+			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
 
 			INativeWindow*												nativeWindow = nullptr;
 			bool														nativeWindowDestroyed = false;
+
 			GuiHostedWindow*											mainWindow = nullptr;
 			GuiHostedWindow*											capturingWindow = nullptr;
 			GuiHostedWindow*											enteringWindow = nullptr;
+
 			NativePoint													hoveringLocation{ -1,-1 };
 			GuiHostedWindow*											hoveringWindow = nullptr;
 			GuiHostedWindow*											lastFocusedWindow = nullptr;
-			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
+
+			enum class WindowManagerOperation
+			{
+				None,
+				Title,
+				BorderLeft,
+				BorderRight,
+				BorderTop,
+				BorderBottom,
+				BorderLeftTop,
+				BorderRightTop,
+				BorderLeftBottom,
+				BorderRightBottom,
+			};
+			WindowManagerOperation										wmOperation = WindowManagerOperation::None;
+			GuiHostedWindow*											wmWindow = nullptr;
+			NativePoint													wmRelative;
 
 			NativePoint						GetPointInClientSpace(NativePoint location);
 			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
