@@ -1109,6 +1109,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::demo::MainWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::MainWindow*(), NO_PARAMETER)
+				CLASS_MEMBER_FIELD(openedSubWindows)
 			END_CLASS_MEMBER(::demo::MainWindow)
 
 			BEGIN_CLASS_MEMBER(::demo::MainWindowConstructor)
@@ -1582,6 +1583,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::demo::SubWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::demo::SubWindow*(), NO_PARAMETER)
+				CLASS_MEMBER_FIELD(openedSubWindows)
 			END_CLASS_MEMBER(::demo::SubWindow)
 
 			BEGIN_CLASS_MEMBER(::demo::SubWindowConstructor)

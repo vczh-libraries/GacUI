@@ -61,8 +61,8 @@
             <ev.Clicked-eval>
               <![CDATA[
                   {
-                    var subWindow = new SubWindow^();
-                    self.openedSubWindows.Add(subWindow);
+                    var subWindow = new SubWindow*();
+                    self.openedSubWindows.Add(cast (SubWindow^) subWindow);
                     subWindow.MoveToScreenCenter();
                     subWindow.ShowWithOwner(self);
                   }
