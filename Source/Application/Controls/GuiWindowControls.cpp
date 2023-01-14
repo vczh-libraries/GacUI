@@ -893,12 +893,13 @@ GuiWindow
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::ShowWithOwner(GuiWindow*)#"
 				auto ownerNativeWindow = owner->GetNativeWindow();
 				auto nativeWindow = GetNativeWindow();
-				CHECK_ERROR(nativeWindow->GetParent() == nullptr || nativeWindow->GetParent() == ownerNativeWindow, L"This function cannot be called when the window already has a different parent window.");
-				if (nativeWindow->GetParent() == nullptr)
+				auto previousParent = nativeWindow->GetParent();
+				if (ownerNativeWindow != previousParent)
 				{
-					WindowReadyToClose.AttachLambda([nativeWindow](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					nativeWindow->SetParent(ownerNativeWindow);
+					WindowReadyToClose.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 					{
-						nativeWindow->SetParent(nullptr);
+						nativeWindow->SetParent(previousParent);
 					});
 				}
 				Show();
