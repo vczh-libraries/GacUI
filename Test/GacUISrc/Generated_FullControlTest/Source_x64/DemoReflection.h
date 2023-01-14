@@ -112,6 +112,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::StyleItem)
 			DECL_TYPE_INFO(::demo::StyleItemTemplate)
 			DECL_TYPE_INFO(::demo::StyleItemTemplateConstructor)
+			DECL_TYPE_INFO(::demo::SystemFrameWindowTemplate)
+			DECL_TYPE_INFO(::demo::SystemFrameWindowTemplateConstructor)
 			DECL_TYPE_INFO(::demo::TextBoxSubTabPage)
 			DECL_TYPE_INFO(::demo::TextBoxSubTabPageConstructor)
 			DECL_TYPE_INFO(::demo::TextBoxTabPage)

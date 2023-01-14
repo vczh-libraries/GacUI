@@ -92,14 +92,14 @@ void GuiMain()
 #endif
 
 	List<WString> dependencies;
-	LoadResource(CompileResources(
-		L"DarkSkin",
-		dependencies,
-		(GetResourcePath() + DARKSKIN_PATH),
-		(GetResourcePath() + DARKSKIN_BINARY_FOLDER),
-		(GetResourcePath() + DARKSKIN_SOURCE_FOLDER),
-		true
-	));
+	//LoadResource(CompileResources(
+	//	L"DarkSkin",
+	//	dependencies,
+	//	(GetResourcePath() + DARKSKIN_PATH),
+	//	(GetResourcePath() + DARKSKIN_BINARY_FOLDER),
+	//	(GetResourcePath() + DARKSKIN_SOURCE_FOLDER),
+	//	true
+	//));
 	LoadResource(CompileResources(
 		L"Demo",
 		dependencies,

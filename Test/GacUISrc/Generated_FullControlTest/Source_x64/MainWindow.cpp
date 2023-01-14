@@ -61,3 +61,9 @@ namespace demo
 #elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
+// UNUSED_USER_CONTENT:
+//	{/* USER_CONTENT_BEGIN(::demo::MainWindow) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */
+///* USER_CONTENT_BEGIN(custom global declarations) */
+///* USER_CONTENT_END() */

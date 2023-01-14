@@ -7,9 +7,26 @@
       <Text name="Name">Demo</Text>
     </Folder>
   </Folder>
+
+  <Instance name="SystemFrameWindowTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::SystemFrameWindowTemplate">
+      <WindowTemplate ContainerComposition-ref="container" CustomFrameEnabled="false" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren"/>
+      </WindowTemplate>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.Class="demo::MainWindow" xmlns:demo="demo::*">
-      <Window ref.Name="self" Text="Complete Control Showcase" ClientSize="x:640 y:480">
+      <Window ref.Name="self" Text="Complete Control Showcase" ClientSize="x:640 y:480"
+        MaximizedBox-bind="checkMax.Selected"
+        MinimizedBox-bind="checkMin.Selected"
+        Border-bind="checkBorder.Selected"
+        SizeBox-bind="checkSizeBox.Selected"
+        IconVisible-bind="checkIcon.Selected"
+        TitleBar-bind="checkTitle.Selected"
+        >
         <att.BoundsComposition-set PreferredMinSize="x:640 y:480"/>
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
@@ -62,6 +79,34 @@
                   <demo:DatePickerTabPage Alt="D"/>
                 </att.Pages>
               </Tab>
+            </TabPage>
+            <TabPage Alt="W" Text="Window Manager">
+              <Stack Direction="Vertical" AlignmentToParent="left:5 top:5 right:5 bottom:5" Padding="5" MinSizeLimitation="LimitToElementAndChildren">
+                <StackItem><CheckBox Selected="true" ref.Name="checkFrame" Text="Customized Frame">
+                  <ev.SelectedChanged-eval><![CDATA[
+                    {
+                      if (checkFrame.Selected)
+                      {
+                        self.ControlTemplate = null;
+                      }
+                      else
+                      {
+                        self.ControlTemplate = func(context: object): GuiControlTemplate*
+                        {
+                          return new SystemFrameWindowTemplate*();
+                        };
+                      }
+                    }
+                  ]]></ev.SelectedChanged-eval>
+                </CheckBox></StackItem>
+                <StackItem><CheckBox Selected="true" ref.Name="checkMax" Text="MaximizedBox"/></StackItem>
+                <StackItem><CheckBox Selected="true" ref.Name="checkMin" Text="MinimizedBox"/></StackItem>
+                <StackItem><CheckBox Selected="true" ref.Name="checkBorder" Text="Border"/></StackItem>
+                <StackItem><CheckBox Selected="true" ref.Name="checkSizeBox" Text="SizeBox"/></StackItem>
+                <StackItem><CheckBox Selected="true" ref.Name="checkIcon" Text="IconVisible"/></StackItem>
+                <StackItem><CheckBox Selected="true" ref.Name="checkTitle" Text="TitleBar"/></StackItem>
+                <StackItem><Button Text="Open New Window"/></StackItem>
+              </Stack>
             </TabPage>
           </att.Pages>
         </Tab>
