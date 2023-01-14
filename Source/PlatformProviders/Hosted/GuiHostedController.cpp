@@ -304,6 +304,7 @@ GuiHostedController::INativeWindowListener
 		{																				\
 			if (auto selectedWindow = GetSelectedWindow_##POLICY(info))					\
 			{																			\
+				if (!selectedWindow->IsEnabled()) return;								\
 				auto adjustedInfo = info;												\
 				adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;		\
 				adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;		\
