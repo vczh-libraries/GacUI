@@ -255,6 +255,7 @@ GuiHostedController::INativeWindowListener
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info)
 		{
 			if (wmWindow) return nullptr;
+
 			if (!capturingWindow)
 			{
 				SortedList<GuiHostedWindow*> survivedPopups;
@@ -279,6 +280,14 @@ GuiHostedController::INativeWindowListener
 				for (auto popupWindow : closingPopups)
 				{
 					popupWindow->Hide(false);
+				}
+			}
+
+			if (!capturingWindow && hoveringWindow)
+			{
+				if (hoveringWindow->IsEnabled() && hoveringWindow->IsEnabledActivate())
+				{
+					hoveringWindow->SetActivate();
 				}
 			}
 

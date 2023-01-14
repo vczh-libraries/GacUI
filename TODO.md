@@ -2,19 +2,18 @@
 
 ## Progressing
 
-- `GuiHostedController`
-  - Handle DPI
-- Stop using Webdings in default template.
-- Add HostedWindow theme.
+- Handle DPI
 - Window manager
   - Drag
   - Resize
   - Close
-  - No min/max button
 - Issues
   - Big cursor of document empty line
   - Focused tab header becomes black
-  - When a menu is visible, it flashes during rendering
+  - Multiple windows flash during rendering
+- Theme
+  - Stop using Webdings in default template.
+  - Add HostedWindow theme.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 
 ## OS Provider Features
