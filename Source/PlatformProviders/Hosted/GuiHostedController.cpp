@@ -300,10 +300,75 @@ GuiHostedController::INativeWindowListener (PreAction)
 		void GuiHostedController::PreAction_LeftButtonDown(const NativeWindowMouseInfo& info)
 		{
 			PreAction_MouseDown(info);
-		}
 
-		void GuiHostedController::PreAction_LeftButtonUp(const NativeWindowMouseInfo& info)
-		{
+			if (!capturingWindow && !wmWindow && hoveringWindow && hoveringWindow != mainWindow && hoveringWindow->IsEnabled())
+			{
+				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
+				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
+				auto hitTestResult = PerformHitTest(From(hoveringWindow->listeners), { {x},{y} });
+
+				switch (hitTestResult)
+				{
+#define HANDLE_HIT_TEST_RESULT(NAME)\
+				case INativeWindowListener::NAME:				\
+					wmOperation = WindowManagerOperation::NAME;	\
+					break;										\
+
+				HANDLE_HIT_TEST_RESULT(Title)
+				HANDLE_HIT_TEST_RESULT(BorderLeft)
+				HANDLE_HIT_TEST_RESULT(BorderRight)
+				HANDLE_HIT_TEST_RESULT(BorderTop)
+				HANDLE_HIT_TEST_RESULT(BorderBottom)
+				HANDLE_HIT_TEST_RESULT(BorderLeftTop)
+				HANDLE_HIT_TEST_RESULT(BorderRightBottom)
+				HANDLE_HIT_TEST_RESULT(BorderRightTop)
+				HANDLE_HIT_TEST_RESULT(BorderLeftBottom)
+				default: return;
+
+#undef HANDLE_HIT_TEST_RESULT
+				}
+
+				wmWindow = hoveringWindow;
+				nativeWindow->RequireCapture();
+
+				switch (wmOperation)
+				{
+				case WindowManagerOperation::Title:
+				case WindowManagerOperation::BorderLeft:
+				case WindowManagerOperation::BorderLeftTop:
+				case WindowManagerOperation::BorderLeftBottom:
+					wmRelative.x.value = x;
+					break;
+				case WindowManagerOperation::BorderTop:
+				case WindowManagerOperation::BorderBottom:
+					wmRelative.x.value = wmWindow->wmWindow.bounds.Width().value / 2;
+					break;
+				case WindowManagerOperation::BorderRight:
+				case WindowManagerOperation::BorderRightTop:
+				case WindowManagerOperation::BorderRightBottom:
+					wmRelative.x.value = wmWindow->wmWindow.bounds.x2.value - x;
+					break;
+				}
+
+				switch (wmOperation)
+				{
+				case WindowManagerOperation::Title:
+				case WindowManagerOperation::BorderTop:
+				case WindowManagerOperation::BorderLeftTop:
+				case WindowManagerOperation::BorderRightTop:
+					wmRelative.y.value = y;
+					break;
+				case WindowManagerOperation::BorderLeft:
+				case WindowManagerOperation::BorderRight:
+					wmRelative.y.value = wmWindow->wmWindow.bounds.Height().value / 2;
+					break;
+				case WindowManagerOperation::BorderBottom:
+				case WindowManagerOperation::BorderLeftBottom:
+				case WindowManagerOperation::BorderRightBottom:
+					wmRelative.y.value = wmWindow->wmWindow.bounds.y2.value - y;
+					break;
+				}
+			}
 		}
 
 		void GuiHostedController::PreAction_MouseDown(const NativeWindowMouseInfo& info)
@@ -343,6 +408,36 @@ GuiHostedController::INativeWindowListener (PreAction)
 					nativeWindow->SetWindowCursor(hoveringWindow->GetWindowCursor());
 				}
 			}
+
+			if (wmWindow)
+			{
+				if (wmOperation == WindowManagerOperation::Title)
+				{
+					auto oldBounds = wmWindow->wmWindow.bounds;
+					NativeRect newBounds = {
+						{
+							{info.x.value - wmRelative.x.value},
+							{info.y.value - wmRelative.y.value}
+						},
+						oldBounds.GetSize()
+					};
+
+					for (auto listener : wmWindow->listeners)
+					{
+						listener->Moving(newBounds, false, false);
+					}
+
+					wmWindow->wmWindow.SetBounds(newBounds);
+
+					for (auto listener : wmWindow->listeners)
+					{
+						listener->Moved();
+					}
+				}
+				else if (wmOperation != WindowManagerOperation::None)
+				{
+				}
+			}
 		}
 
 		void GuiHostedController::PreAction_Other(const NativeWindowMouseInfo& info)
@@ -364,6 +459,13 @@ GuiHostedController::INativeWindowListener (PostAction)
 				{
 					hoveringWindow->Hide(true);
 				}
+			}
+
+			if (wmWindow)
+			{
+				wmWindow = nullptr;
+				wmOperation = WindowManagerOperation::None;
+				nativeWindow->ReleaseCapture();
 			}
 		}
 
@@ -410,7 +512,7 @@ GuiHostedController::INativeWindowListener (Template)
 		>
 		void GuiHostedController::HandleKeyboardCallback(const TInfo& info)
 		{
-			if (wmManager->activeWindow)
+			if (wmManager->activeWindow && !wmWindow)
 			{
 				auto hostedWindow = wmManager->activeWindow->id;
 				for (auto listener : hostedWindow->listeners)
@@ -436,7 +538,7 @@ GuiHostedController::INativeWindowListener (IO Event Handling)
 		}																				\
 
 		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			LeftButtonDown,	MouseDown,		Other			)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				LeftButtonUp,	Other,			LeftButtonUp	)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				Other,			Other,			LeftButtonUp	)
 		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other,			Other,			Other			)
 		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown,		MouseDown,		Other			)
 		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other,			Other,			Other			)
@@ -827,6 +929,7 @@ GuiHostedController::INativeWindowService
 			{
 				wmOperation = WindowManagerOperation::None;
 				wmWindow = nullptr;
+				nativeWindow->ReleaseCapture();
 			}
 
 			for (auto listener : hostedWindow->listeners)

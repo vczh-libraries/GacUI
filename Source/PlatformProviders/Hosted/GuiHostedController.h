@@ -110,7 +110,6 @@ GuiHostedController
 			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
 
 			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
-			void							PreAction_LeftButtonUp(const NativeWindowMouseInfo& info);
 			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
 			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
 			void							PreAction_Other(const NativeWindowMouseInfo& info);
