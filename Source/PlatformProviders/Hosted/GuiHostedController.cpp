@@ -297,12 +297,12 @@ GuiHostedController::INativeWindowListener (GetSelectedWindow)
 GuiHostedController::INativeWindowListener (PreAction)
 ***********************************************************************/
 
-		void GuiHostedController::PreAction_LeftMouseDown(const NativeWindowMouseInfo& info)
+		void GuiHostedController::PreAction_LeftButtonDown(const NativeWindowMouseInfo& info)
 		{
 			PreAction_MouseDown(info);
 		}
 
-		void GuiHostedController::PreAction_LeftMouseUp(const NativeWindowMouseInfo& info)
+		void GuiHostedController::PreAction_LeftButtonUp(const NativeWindowMouseInfo& info)
 		{
 		}
 
@@ -353,7 +353,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 GuiHostedController::INativeWindowListener (PostAction)
 ***********************************************************************/
 
-		void GuiHostedController::PostAction_LeftMouseUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info)
+		void GuiHostedController::PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info)
 		{
 			if (!capturingWindow && !wmWindow && selectedWindow && selectedWindow != mainWindow && selectedWindow->IsEnabled())
 			{
@@ -372,45 +372,81 @@ GuiHostedController::INativeWindowListener (PostAction)
 		}
 
 /***********************************************************************
+GuiHostedController::INativeWindowListener (Template)
+***********************************************************************/
+
+
+		template<
+			void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+			GuiHostedWindow*(GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+			void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+			void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
+		>
+		void GuiHostedController::HandleMouseCallback(const NativeWindowMouseInfo& info)
+		{
+			(this->*PreAction)(info);
+			auto postActionWindow = hoveringWindow;
+			if (!wmWindow)
+			{
+				if (auto selectedWindow = (this->*GetSelectedWindow)(info))
+				{
+					postActionWindow = selectedWindow;
+					if (!selectedWindow->IsEnabled()) return;
+					auto adjustedInfo = info;
+					adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;
+					adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;
+					for (auto listener : selectedWindow->listeners)
+					{
+						(listener->*Callback)(adjustedInfo);
+					}
+				}
+			}
+			(this->*PostAction)(postActionWindow, info);
+		}
+
+		template<
+			typename TInfo,
+			void (INativeWindowListener::* Callback)(const TInfo&)
+		>
+		void GuiHostedController::HandleKeyboardCallback(const TInfo& info)
+		{
+			if (wmManager->activeWindow)
+			{
+				auto hostedWindow = wmManager->activeWindow->id;
+				for (auto listener : hostedWindow->listeners)
+				{
+					(listener->*Callback)(info);
+				}
+			}
+		}
+
+/***********************************************************************
 GuiHostedController::INativeWindowListener (IO Event Handling)
 ***********************************************************************/
 
 #define IMPLEMENT_MOUSE_CALLBACK(NAME, PREACTION, POLICY, POSTACTION)					\
 		void GuiHostedController::NAME(const NativeWindowMouseInfo& info)				\
 		{																				\
-			PreAction_##PREACTION(info);												\
-			auto postActionWindow = hoveringWindow;										\
-			if (!wmWindow)																\
-			{																			\
-				if (auto selectedWindow = GetSelectedWindow_##POLICY(info))				\
-				{																		\
-					postActionWindow = selectedWindow;									\
-					if (!selectedWindow->IsEnabled()) return;							\
-					auto adjustedInfo = info;											\
-					adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;	\
-					adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;	\
-																						\
-					for (auto listener : selectedWindow->listeners)						\
-					{																	\
-						listener->NAME(adjustedInfo);									\
-					}																	\
-				}																		\
-			}																			\
-			PostAction_##POSTACTION(postActionWindow, info);							\
+			HandleMouseCallback<														\
+				&GuiHostedController::PreAction_##PREACTION,							\
+				&GuiHostedController::GetSelectedWindow_##POLICY,						\
+				&GuiHostedController::PostAction_##POSTACTION,							\
+				&INativeWindowListener::NAME											\
+			>(info);																	\
 		}																				\
 
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			LeftMouseDown,	MouseDown,		Other		)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				LeftMouseUp,	Other,			LeftMouseUp	)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other,			Other,			Other		)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown,		MouseDown,		Other		)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other,			Other,			Other		)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick,	Other,			Other,			Other		)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown,			MouseDown,		MouseDown,		Other		)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp,			Other,			Other,			Other		)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick,	Other,			Other,			Other		)
-		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel,			Other,			Other,			Other		)
-		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel,				Other,			Other,			Other		)
-		IMPLEMENT_MOUSE_CALLBACK(MouseMoving,				MouseMoving,	MouseMoving,	Other		)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			LeftButtonDown,	MouseDown,		Other			)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				LeftButtonUp,	Other,			LeftButtonUp	)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other,			Other,			Other			)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown,		MouseDown,		Other			)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other,			Other,			Other			)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick,	Other,			Other,			Other			)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown,			MouseDown,		MouseDown,		Other			)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp,			Other,			Other,			Other			)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick,	Other,			Other,			Other			)
+		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel,			Other,			Other,			Other			)
+		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel,				Other,			Other,			Other			)
+		IMPLEMENT_MOUSE_CALLBACK(MouseMoving,				MouseMoving,	MouseMoving,	Other			)
 
 #undef IMPLEMENT_MOUSE_CALLBACK
 
@@ -426,23 +462,19 @@ GuiHostedController::INativeWindowListener (IO Event Handling)
 		}
 
 #define IMPLEMENT_KEY_CALLBACK(NAME, TYPE)										\
-		void GuiHostedController::NAME(const TYPE& info)						\
+		void GuiHostedController::NAME(const NativeWindow##TYPE##Info& info)	\
 		{																		\
-			if (wmManager->activeWindow)										\
-			{																	\
-				auto hostedWindow = wmManager->activeWindow->id;				\
-				for (auto listener : hostedWindow->listeners)					\
-				{																\
-					listener->NAME(info);										\
-				}																\
-			}																	\
+			HandleKeyboardCallback<												\
+				NativeWindow##TYPE##Info,										\
+				&INativeWindowListener::NAME									\
+			>(info);															\
 		}																		\
 
-		IMPLEMENT_KEY_CALLBACK(KeyDown, NativeWindowKeyInfo)
-		IMPLEMENT_KEY_CALLBACK(KeyUp, NativeWindowKeyInfo)
-		IMPLEMENT_KEY_CALLBACK(SysKeyDown, NativeWindowKeyInfo)
-		IMPLEMENT_KEY_CALLBACK(SysKeyUp, NativeWindowKeyInfo)
-		IMPLEMENT_KEY_CALLBACK(Char, NativeWindowCharInfo)
+		IMPLEMENT_KEY_CALLBACK(KeyDown, Key)
+		IMPLEMENT_KEY_CALLBACK(KeyUp, Key)
+		IMPLEMENT_KEY_CALLBACK(SysKeyDown, Key)
+		IMPLEMENT_KEY_CALLBACK(SysKeyUp, Key)
+		IMPLEMENT_KEY_CALLBACK(Char, Char)
 
 #undef IMPLEMENT_KEY_CALLBACK
 

@@ -109,14 +109,28 @@ GuiHostedController
 			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
 			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
 
-			void							PreAction_LeftMouseDown(const NativeWindowMouseInfo& info);
-			void							PreAction_LeftMouseUp(const NativeWindowMouseInfo& info);
+			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
+			void							PreAction_LeftButtonUp(const NativeWindowMouseInfo& info);
 			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
 			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
 			void							PreAction_Other(const NativeWindowMouseInfo& info);
 
-			void							PostAction_LeftMouseUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+			void							PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
 			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+
+			template<
+				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
+				>
+			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
+
+			template<
+				typename TInfo,
+				void (INativeWindowListener::* Callback)(const TInfo&)
+			>
+			void							HandleKeyboardCallback(const TInfo& info);
 
 			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
