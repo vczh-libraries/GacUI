@@ -105,11 +105,18 @@ GuiHostedController
 			void							AfterClosing() override;
 			void							Paint() override;
 			
-			GuiHostedWindow*				GetSelectedWindow_LeftMouseDown(const NativeWindowMouseInfo& info);
-			GuiHostedWindow*				GetSelectedWindow_LeftMouseUp(const NativeWindowMouseInfo& info);
 			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
 			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
 			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
+
+			void							PreAction_LeftMouseDown(const NativeWindowMouseInfo& info);
+			void							PreAction_LeftMouseUp(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
+			void							PreAction_Other(const NativeWindowMouseInfo& info);
+
+			void							PostAction_LeftMouseUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
 
 			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;

@@ -242,20 +242,12 @@ GuiHostedController::INativeWindowListener
 			wmManager->needRefresh = true;
 		}
 
-		GuiHostedWindow* GuiHostedController::GetSelectedWindow_LeftMouseDown(const NativeWindowMouseInfo& info)
-		{
-			return GetSelectedWindow_MouseDown(info);
-		}
-
-		GuiHostedWindow* GuiHostedController::GetSelectedWindow_LeftMouseUp(const NativeWindowMouseInfo& info)
-		{
-			return GetSelectedWindow_Other(info);
-		}
+/***********************************************************************
+GuiHostedController::INativeWindowListener (GetSelectedWindow)
+***********************************************************************/
 
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info)
 		{
-			if (wmWindow) return nullptr;
-
 			if (!capturingWindow)
 			{
 				SortedList<GuiHostedWindow*> survivedPopups;
@@ -283,21 +275,12 @@ GuiHostedController::INativeWindowListener
 				}
 			}
 
-			if (!capturingWindow && hoveringWindow)
-			{
-				if (hoveringWindow->IsEnabled() && hoveringWindow->IsEnabledActivate())
-				{
-					hoveringWindow->SetActivate();
-				}
-			}
-
 			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
 			return selectedWindow;
 		}
 
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info)
 		{
-			if (wmWindow) return nullptr;
 			UpdateHoveringWindow({ { info.x,info.y } });
 			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
 			UpdateEnteringWindow(selectedWindow);
@@ -306,40 +289,101 @@ GuiHostedController::INativeWindowListener
 
 		GuiHostedWindow* GuiHostedController::GetSelectedWindow_Other(const NativeWindowMouseInfo& info)
 		{
-			if (wmWindow) return nullptr;
 			auto selectedWindow = capturingWindow ? capturingWindow : hoveringWindow;
 			return selectedWindow;
 		}
 
-#define IMPLEMENT_MOUSE_CALLBACK(NAME, POLICY)											\
+/***********************************************************************
+GuiHostedController::INativeWindowListener (PreAction)
+***********************************************************************/
+
+		void GuiHostedController::PreAction_LeftMouseDown(const NativeWindowMouseInfo& info)
+		{
+			PreAction_MouseDown(info);
+		}
+
+		void GuiHostedController::PreAction_LeftMouseUp(const NativeWindowMouseInfo& info)
+		{
+		}
+
+		void GuiHostedController::PreAction_MouseDown(const NativeWindowMouseInfo& info)
+		{
+			if (!capturingWindow && !wmWindow && hoveringWindow && hoveringWindow->IsEnabled() && hoveringWindow->IsEnabledActivate())
+			{
+				hoveringWindow->SetActivate();
+			}
+		}
+
+		void GuiHostedController::PreAction_MouseMoving(const NativeWindowMouseInfo& info)
+		{
+		}
+
+		void GuiHostedController::PreAction_Other(const NativeWindowMouseInfo& info)
+		{
+		}
+
+/***********************************************************************
+GuiHostedController::INativeWindowListener (PostAction)
+***********************************************************************/
+
+		void GuiHostedController::PostAction_LeftMouseUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info)
+		{
+			if (!capturingWindow && !wmWindow && selectedWindow && selectedWindow->IsEnabled())
+			{
+				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
+				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
+				auto hitTestResult = PerformHitTest(From(hoveringWindow->listeners), { {x},{y} });
+				if (hitTestResult == INativeWindowListener::ButtonClose)
+				{
+					hoveringWindow->Hide(true);
+				}
+			}
+		}
+
+		void GuiHostedController::PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info)
+		{
+		}
+
+/***********************************************************************
+GuiHostedController::INativeWindowListener (IO Event Handling)
+***********************************************************************/
+
+#define IMPLEMENT_MOUSE_CALLBACK(NAME, PREACTION, POLICY, POSTACTION)					\
 		void GuiHostedController::NAME(const NativeWindowMouseInfo& info)				\
 		{																				\
-			if (auto selectedWindow = GetSelectedWindow_##POLICY(info))					\
+			PreAction_##PREACTION(info);												\
+			auto postActionWindow = hoveringWindow;										\
+			if (!wmWindow)																\
 			{																			\
-				if (!selectedWindow->IsEnabled()) return;								\
-				auto adjustedInfo = info;												\
-				adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;		\
-				adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;		\
-																						\
-				for (auto listener : selectedWindow->listeners)							\
+				if (auto selectedWindow = GetSelectedWindow_##POLICY(info))				\
 				{																		\
-					listener->NAME(adjustedInfo);										\
+					postActionWindow = selectedWindow;									\
+					if (!selectedWindow->IsEnabled()) return;							\
+					auto adjustedInfo = info;											\
+					adjustedInfo.x.value -= selectedWindow->wmWindow.bounds.x1.value;	\
+					adjustedInfo.y.value -= selectedWindow->wmWindow.bounds.y1.value;	\
+																						\
+					for (auto listener : selectedWindow->listeners)						\
+					{																	\
+						listener->NAME(adjustedInfo);									\
+					}																	\
 				}																		\
 			}																			\
+			PostAction_##POSTACTION(postActionWindow, info);							\
 		}																				\
 
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			LeftMouseDown)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				LeftMouseUp)
-		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other)
-		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick,	Other)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown,			MouseDown)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp,			Other)
-		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick,	Other)
-		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel,			Other)
-		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel,				Other)
-		IMPLEMENT_MOUSE_CALLBACK(MouseMoving,				MouseMoving)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDown,			LeftMouseDown,	MouseDown,		Other		)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonUp,				LeftMouseUp,	Other,			LeftMouseUp	)
+		IMPLEMENT_MOUSE_CALLBACK(LeftButtonDoubleClick,		Other,			Other,			Other		)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDown,			MouseDown,		MouseDown,		Other		)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonUp,				Other,			Other,			Other		)
+		IMPLEMENT_MOUSE_CALLBACK(RightButtonDoubleClick,	Other,			Other,			Other		)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDown,			MouseDown,		MouseDown,		Other		)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonUp,			Other,			Other,			Other		)
+		IMPLEMENT_MOUSE_CALLBACK(MiddleButtonDoubleClick,	Other,			Other,			Other		)
+		IMPLEMENT_MOUSE_CALLBACK(HorizontalWheel,			Other,			Other,			Other		)
+		IMPLEMENT_MOUSE_CALLBACK(VerticalWheel,				Other,			Other,			Other		)
+		IMPLEMENT_MOUSE_CALLBACK(MouseMoving,				MouseMoving,	MouseMoving,	Other		)
 
 #undef IMPLEMENT_MOUSE_CALLBACK
 

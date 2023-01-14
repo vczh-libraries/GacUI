@@ -587,7 +587,7 @@ GuiControlHost
 					}
 					else
 					{
-						window->Hide(false);
+						window->Hide(true);
 					}
 				}
 			}
