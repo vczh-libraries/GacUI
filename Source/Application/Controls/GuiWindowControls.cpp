@@ -647,10 +647,15 @@ GuiWindow
 				{
 					window->SetIcon(icon);
 				}
-				UpdateCustomFramePadding(window, ct);
 
-				ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
+				UpdateIcon(window, ct);
+				UpdateCustomFramePadding(window, ct);
 				SyncNativeWindowProperties();
+			}
+
+			void GuiWindow::UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct)
+			{
+				ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
 			}
 
 			void GuiWindow::UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct)
@@ -692,6 +697,15 @@ GuiWindow
 			{
 				GuiControlHost::Moved();
 				TypedControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+			}
+
+			void GuiWindow::Opened()
+			{
+				GuiControlHost::Opened();
+				if (auto ct = TypedControlTemplateObject(false))
+				{
+					UpdateIcon(GetNativeWindow(), ct);
+				}
 			}
 
 			void GuiWindow::DpiChanged()
@@ -865,7 +879,7 @@ GuiWindow
 
 					if (auto ct = TypedControlTemplateObject(false))
 					{
-						ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
+						UpdateIcon(window, ct);
 					}
 				}
 			}

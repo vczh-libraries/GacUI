@@ -205,7 +205,9 @@ GuiHostedWindow
 
 		Ptr<GuiImageData> GuiHostedWindow::GetIcon()
 		{
-			return windowIcon;
+			if (windowIcon) return windowIcon;
+			if (controller->nativeWindow)return controller->nativeWindow->GetIcon();
+			return nullptr;
 		}
 
 		void GuiHostedWindow::SetIcon(Ptr<GuiImageData> icon)

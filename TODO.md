@@ -4,7 +4,6 @@
 
 - `GuiHostedController`
   - Handle DPI
-  - Fix main window icon
 - Stop using Webdings in default template.
 - Add HostedWindow theme.
 - Window manager
