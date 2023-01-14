@@ -19495,7 +19495,7 @@ Class (::demo::MainWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_29)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(640L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(480L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"GacUI 完整控件测试"));
+			::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"Complete Control Showcase"));
 		}
 		{
 			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiTab(::vl::presentation::theme::ThemeName::Tab));
