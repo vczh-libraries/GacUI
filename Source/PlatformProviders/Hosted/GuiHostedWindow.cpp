@@ -488,7 +488,6 @@ GuiHostedWindow
 
 		void GuiHostedWindow::RedrawContent()
 		{
-			controller->nativeWindow->RedrawContent();
 		}
 	}
 }

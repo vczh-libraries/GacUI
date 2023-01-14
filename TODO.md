@@ -8,7 +8,7 @@
 - Issues
   - Big cursor of document empty line
   - Focused tab header becomes black
-  - Multiple windows flash during rendering
+  - The dragging non-main window disappears when mouse is out of main window
 - Theme
   - Stop using Webdings in default template.
   - Add HostedWindow theme.

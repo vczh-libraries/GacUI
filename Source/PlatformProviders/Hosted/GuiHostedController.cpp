@@ -661,6 +661,7 @@ GuiHostedController::INativeControllerListener
 					}
 					else
 					{
+						nativeWindow->RedrawContent();
 						break;
 					}
 				}
