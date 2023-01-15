@@ -411,31 +411,60 @@ GuiHostedController::INativeWindowListener (PreAction)
 
 			if (wmWindow)
 			{
+				auto oldBounds = wmWindow->wmWindow.bounds;
+				auto newBounds = oldBounds;
+
 				if (wmOperation == WindowManagerOperation::Title)
 				{
-					auto oldBounds = wmWindow->wmWindow.bounds;
-					NativeRect newBounds = {
+					newBounds = {
 						{
 							{info.x.value - wmRelative.x.value},
 							{info.y.value - wmRelative.y.value}
 						},
 						oldBounds.GetSize()
 					};
-
-					for (auto listener : wmWindow->listeners)
+				}
+				else
+				{
+					switch (wmOperation)
 					{
-						listener->Moving(newBounds, false, false);
+					case WindowManagerOperation::BorderLeft:
+					case WindowManagerOperation::BorderLeftTop:
+					case WindowManagerOperation::BorderLeftBottom:
+						newBounds.x1.value = info.x.value - wmRelative.x.value;
+						break;
+					case WindowManagerOperation::BorderRight:
+					case WindowManagerOperation::BorderRightTop:
+					case WindowManagerOperation::BorderRightBottom:
+						newBounds.x2.value = info.x.value + wmRelative.x.value;
+						break;
 					}
 
-					wmWindow->wmWindow.SetBounds(newBounds);
-
-					for (auto listener : wmWindow->listeners)
+					switch (wmOperation)
 					{
-						listener->Moved();
+					case WindowManagerOperation::BorderTop:
+					case WindowManagerOperation::BorderLeftTop:
+					case WindowManagerOperation::BorderRightTop:
+						newBounds.y1.value = info.y.value - wmRelative.y.value;
+						break;
+					case WindowManagerOperation::BorderBottom:
+					case WindowManagerOperation::BorderLeftBottom:
+					case WindowManagerOperation::BorderRightBottom:
+						newBounds.y2.value = info.y.value + wmRelative.y.value;
+						break;
 					}
 				}
-				else if (wmOperation != WindowManagerOperation::None)
+
+				for (auto listener : wmWindow->listeners)
 				{
+					listener->Moving(newBounds, false, wmOperation != WindowManagerOperation::Title);
+				}
+
+				wmWindow->wmWindow.SetBounds(newBounds);
+
+				for (auto listener : wmWindow->listeners)
+				{
+					listener->Moved();
 				}
 			}
 		}
