@@ -62,10 +62,11 @@ Control Host
 				void											Disabled()override;
 				void											GotFocus()override;
 				void											LostFocus()override;
-				void											Activated()override;
-				void											Deactivated()override;
+				void											RenderingAsActivated()override;
+				void											RenderingAsDeactivated()override;
 				void											Opened()override;
-				void											Closing(bool& cancel)override;
+				void											BeforeClosing(bool& cancel)override;
+				void											AfterClosing()override;
 				void											Closed()override;
 				void											Destroying()override;
 
@@ -87,9 +88,11 @@ Control Host
 				compositions::GuiNotifyEvent					WindowDeactivated;
 				/// <summary>Window opened event.</summary>
 				compositions::GuiNotifyEvent					WindowOpened;
-				/// <summary>Window closing event.</summary>
+				/// <summary>Window closing event, raised to offer a chance to stop closing the window.</summary>
 				compositions::GuiRequestEvent					WindowClosing;
-				/// <summary>Window closed event.</summary>
+				/// <summary>Window ready to close event, raised when a window is about to close.</summary>
+				compositions::GuiNotifyEvent					WindowReadyToClose;
+				/// <summary>Window closed event, raised when a window is closed.</summary>
 				compositions::GuiNotifyEvent					WindowClosed;
 				/// <summary>Window destroying event.</summary>
 				compositions::GuiNotifyEvent					WindowDestroying;
@@ -122,12 +125,10 @@ Control Host
 				/// <returns>Returns true if the window is focused.</returns>
 				bool											GetFocused()override;
 				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
-				void											SetFocused();
-				/// <summary>Test is the window activated.</summary>
-				/// <returns>Returns true if the window is activated.</returns>
-				bool											GetActivated();
-				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
-				void											SetActivated();
+				void											SetFocused()override;
+				/// <summary>Test is the window rendering as activated.</summary>
+				/// <returns>Returns true if the window is rendering as activated.</returns>
+				bool											GetRenderingAsActivated();
 				/// <summary>Test is the window icon shown in the task bar.</summary>
 				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
 				bool											GetShowInTaskBar();
@@ -244,10 +245,14 @@ Window
 				bool									hasTitleBar = true;
 				Ptr<GuiImageData>						icon;
 				
+				void									UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									SyncNativeWindowProperties();
+
 				void									Moved()override;
+				void									Opened()override;
 				void									DpiChanged()override;
+				void									BecomeNonMainHostedWindow()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				
@@ -345,6 +350,11 @@ Window
 				/// </summary>
 				/// <param name="visible">True to make the title bar visible.</param>
 				void									SetTitleBar(bool visible);
+				/// <summary>
+				/// Show a window and keep it always in front of the owner window.
+				/// </summary>
+				/// <param name="owner">The window to disable as a parent window.</param>
+				void									ShowWithOwner(GuiWindow* owner);
 				/// <summary>
 				/// Show a model window, get a callback when the window is closed.
 				/// </summary>

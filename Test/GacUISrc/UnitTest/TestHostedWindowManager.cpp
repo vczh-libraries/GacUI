@@ -253,7 +253,7 @@ TEST_FILE
 {
 	WM_TEST_CASE(L"Start and stop")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
 		mainWindow.SetBounds(Bounds(0, 0, 6, 4));
@@ -269,7 +269,7 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Detect Illegal Operations")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		TEST_ERROR(mainWindow.SetBounds(Bounds(0, 0, 8, 7)));
 		mainWindow.visible = true;
 		TEST_ERROR(wm.RegisterWindow(&mainWindow));
@@ -277,56 +277,44 @@ TEST_FILE
 		wm.RegisterWindow(&mainWindow);
 		TEST_ERROR(wm.RegisterWindow(&mainWindow));
 		{
-			Window anotherMainWindow(L'X', true);
+			Window anotherMainWindow(L'X');
 			TEST_ERROR(wm.RegisterWindow(&anotherMainWindow));
 		}
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', false);
-		wm.RegisterWindow(&windowC);
-
-		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
+		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
 		windowA.SetBounds(Bounds(1, 1, 4, 3));
 		windowB.SetBounds(Bounds(2, 2, 4, 3));
-		windowC.SetBounds(Bounds(3, 3, 4, 3));
 
-		TEST_ERROR(windowA.SetParent(&windowC));
 		windowB.SetParent(&windowA);
 		TEST_ERROR(windowA.SetParent(&windowB));
 		TEST_ASSERT(windowA.parent == nullptr);
 		TEST_ASSERT(windowB.parent == &windowA);
-		TEST_ASSERT(windowC.parent == nullptr);
 
 		TEST_ERROR(wm.Start(&windowB));
-		TEST_ERROR(wm.Start(&mainWindow));
-		windowC.SetParent(&mainWindow);
 		wm.Start(&mainWindow);
-		TEST_ERROR(wm.Start(&mainWindow));
 		TEST_ERROR(mainWindow.SetParent(&windowA));
 		TEST_ASSERT(windowA.parent == &mainWindow);
 		TEST_ASSERT(windowB.parent == &windowA);
-		TEST_ASSERT(windowC.parent == &mainWindow);
 
 		mainWindow.Show();								EVENTS(XO, XF, XA);
 		windowA.Show();									EVENTS(AO, AF, AA, Xf);
 		windowB.Show();									EVENTS(BO, BF, BA, Af);
-		windowC.Show();									EVENTS(CO, CF, CA, Aa, Bf, Ba);
 		TAKE_SNAPSHOT_INITIAL();
 
 		TEST_ERROR(wm.UnregisterWindow(&mainWindow));
-		wm.Stop();										EVENTS(Xo, Xa, Ao, Bo, Co, Cf, Ca);
+		wm.Stop();										EVENTS(Xo, Xa, Ao, Aa, Bo, Bf, Ba);
 		TEST_ERROR(wm.Stop());
 		wm.UnregisterWindow(&mainWindow);
 		wm.UnregisterWindow(&windowA);
 		wm.UnregisterWindow(&windowB);
-		wm.UnregisterWindow(&windowC);
 		{
-			Window unregisteredWindow(L'Y', true);
+			Window unregisteredWindow(L'Y');
 			TEST_ERROR(wm.UnregisterWindow(&unregisteredWindow));
 		}
 		wm.EnsureCleanedUp();
@@ -334,13 +322,13 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Activing windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
 		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
@@ -369,13 +357,13 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Deactivating windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
 		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
@@ -404,25 +392,25 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Activing many windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
-		Window windowI(L'I', true);
+		Window windowI(L'I');
 		wm.RegisterWindow(&windowI);
 
-		Window windowJ(L'J', true);
+		Window windowJ(L'J');
 		wm.RegisterWindow(&windowJ);
 
-		Window windowK(L'K', true);
+		Window windowK(L'K');
 		wm.RegisterWindow(&windowK);
 
 		mainWindow.SetBounds(Bounds(0, 0, 12, 10));
@@ -477,25 +465,25 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Deactivating many windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
-		Window windowI(L'I', true);
+		Window windowI(L'I');
 		wm.RegisterWindow(&windowI);
 
-		Window windowJ(L'J', true);
+		Window windowJ(L'J');
 		wm.RegisterWindow(&windowJ);
 
-		Window windowK(L'K', true);
+		Window windowK(L'K');
 		wm.RegisterWindow(&windowK);
 
 		mainWindow.SetBounds(Bounds(0, 0, 12, 10));
@@ -552,13 +540,13 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Disabling windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
 		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
@@ -599,16 +587,16 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Hiding windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
 		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
@@ -652,16 +640,16 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Closing windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
 		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
@@ -699,16 +687,16 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Changing topmost of windows")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
 		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
@@ -768,13 +756,13 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Activing windows with topmost")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
 		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
@@ -811,13 +799,13 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Deactivating windows with topmost")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
 		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
@@ -847,25 +835,25 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Activing many windows with topmost")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
-		Window windowI(L'I', true);
+		Window windowI(L'I');
 		wm.RegisterWindow(&windowI);
 
-		Window windowJ(L'J', true);
+		Window windowJ(L'J');
 		wm.RegisterWindow(&windowJ);
 
-		Window windowK(L'K', true);
+		Window windowK(L'K');
 		wm.RegisterWindow(&windowK);
 
 		mainWindow.SetBounds(Bounds(0, 0, 12, 10));
@@ -961,25 +949,25 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Deactivating many windows with topmost")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
-		Window windowI(L'I', true);
+		Window windowI(L'I');
 		wm.RegisterWindow(&windowI);
 
-		Window windowJ(L'J', true);
+		Window windowJ(L'J');
 		wm.RegisterWindow(&windowJ);
 
-		Window windowK(L'K', true);
+		Window windowK(L'K');
 		wm.RegisterWindow(&windowK);
 
 		mainWindow.SetBounds(Bounds(0, 0, 12, 10));
@@ -1067,13 +1055,13 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Disabling windows with topmost")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
 		mainWindow.SetBounds(Bounds(0, 0, 7, 6));
@@ -1117,16 +1105,16 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Hiding windows with topmost")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
 		mainWindow.SetBounds(Bounds(0, 0, 8, 7));
@@ -1180,25 +1168,25 @@ TEST_FILE
 
 	WM_TEST_CASE(L"Closing windows with topmost")
 	{
-		Window mainWindow(L'X', true);
+		Window mainWindow(L'X');
 		wm.RegisterWindow(&mainWindow);
 
-		Window windowA(L'A', true);
+		Window windowA(L'A');
 		wm.RegisterWindow(&windowA);
 
-		Window windowB(L'B', true);
+		Window windowB(L'B');
 		wm.RegisterWindow(&windowB);
 
-		Window windowC(L'C', true);
+		Window windowC(L'C');
 		wm.RegisterWindow(&windowC);
 
-		Window windowI(L'I', true);
+		Window windowI(L'I');
 		wm.RegisterWindow(&windowI);
 
-		Window windowJ(L'J', true);
+		Window windowJ(L'J');
 		wm.RegisterWindow(&windowJ);
 
-		Window windowK(L'K', true);
+		Window windowK(L'K');
 		wm.RegisterWindow(&windowK);
 
 		mainWindow.SetBounds(Bounds(0, 0, 12, 10));

@@ -155,7 +155,7 @@ GuiMultilineTextBox
 			{
 				if(GetVisuallyEnabled())
 				{
-					SetFocus();
+					SetFocused();
 				}
 			}
 
@@ -325,7 +325,7 @@ GuiSinglelineTextBox
 			{
 				if(GetVisuallyEnabled())
 				{
-					SetFocus();
+					SetFocused();
 				}
 			}
 

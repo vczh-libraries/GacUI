@@ -315,7 +315,7 @@ DefaultDataGridItemTemplate
 						cell->AddChild(editorBounds);
 						if (auto focusControl = currentEditor->GetTemplate()->GetFocusControl())
 						{
-							focusControl->SetFocus();
+							focusControl->SetFocused();
 						}
 						dataVisualizers[column]->GetTemplate()->SetVisible(false);
 					}
@@ -530,7 +530,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 					if (currentEditor && focusedControl)
 					{
-						focusedControl->SetFocus();
+						focusedControl->SetFocused();
 					}
 				}
 			}
@@ -593,7 +593,7 @@ GuiVirtualDataGrid
 						arguments.handled = true;
 						if (!currentEditor)
 						{
-							SetFocus();
+							SetFocused();
 						}
 						arguments.handled = true;
 					}
@@ -602,7 +602,7 @@ GuiVirtualDataGrid
 						if (currentEditor)
 						{
 							SelectCell(currentEditorPos, false);
-							SetFocus();
+							SetFocused();
 							arguments.handled = true;
 						}
 					}

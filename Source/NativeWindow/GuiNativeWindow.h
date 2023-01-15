@@ -138,7 +138,7 @@ INativeWindow
 			/// Set the title of the window. A title will be displayed as a name of this window.
 			/// </summary>
 			/// <param name="title">The title of the window.</param>
-			virtual void				SetTitle(WString title)=0;
+			virtual void				SetTitle(const WString& title)=0;
 			/// <summary>
 			/// Get the mouse cursor of the window. When the mouse is on the window, the mouse cursor will be rendered.
 			/// </summary>
@@ -182,13 +182,6 @@ INativeWindow
 				/// </summary>
 				Normal,
 				/// <summary>
-				/// A tooltip window.
-				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
-				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
-				/// This window is automatically closed when the top level window is deactivated or clicked.
-				/// </summary>
-				Tooltip,
-				/// <summary>
 				/// A popup window.
 				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
 				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
@@ -196,10 +189,11 @@ INativeWindow
 				/// </summary>
 				Popup,
 				/// <summary>
-				/// A menu window.
-				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
-				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
-				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// A tooltip window, just like Popup.
+				/// </summary>
+				Tooltip,
+				/// <summary>
+				/// A menu window, just like Menu.
 				/// </summary>
 				Menu,
 			};
@@ -303,16 +297,6 @@ INativeWindow
 			virtual bool				IsEnabled()=0;
 			
 			/// <summary>
-			/// Set focus to the window.
-			/// A window with activation disabled cannot receive focus.
-			/// </summary>
-			virtual void				SetFocus()=0;
-			/// <summary>
-			/// Test is the window focused.
-			/// </summary>
-			/// <returns>Returns true if the window is focused.</returns>
-			virtual bool				IsFocused()=0;
-			/// <summary>
 			/// Activate to the window.
 			/// If the window disabled activation, this function enables it again.
 			/// </summary>
@@ -322,6 +306,11 @@ INativeWindow
 			/// </summary>
 			/// <returns>Returns true if the window is activated.</returns>
 			virtual bool				IsActivated()=0;
+			/// <summary>
+			/// Test is the window rendering as activated.
+			/// </summary>
+			/// <returns>Returns true if the window is rendering as activated.</returns>
+			virtual bool				IsRenderingAsActivated() = 0;
 			
 			/// <summary>
 			/// Show the icon in the task bar.
@@ -343,7 +332,7 @@ INativeWindow
 			virtual void				EnableActivate()=0;
 			/// <summary>
 			/// Disable activation to the window.
-			/// Clicking a window with activation disabled doesn't bring activation and focus.
+			/// Clicking a window with activation disabled doesn't bring activation.
 			/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivate"/>.
 			/// </summary>
 			virtual void				DisableActivate()=0;
@@ -616,13 +605,13 @@ INativeWindow
 			/// </summary>
 			virtual void				LostFocus();
 			/// <summary>
-			/// Called when the window is activated.
+			/// Called when the window is rending as activated.
 			/// </summary>
-			virtual void				Activated();
+			virtual void				RenderingAsActivated();
 			/// <summary>
-			/// Called when the window is deactivated.
+			/// Called when the window is rendering as deactivated.
 			/// </summary>
-			virtual void				Deactivated();
+			virtual void				RenderingAsDeactivated();
 			/// <summary>
 			/// Called when the window is opened.
 			/// </summary>
@@ -631,7 +620,11 @@ INativeWindow
 			/// Called when the window is closing.
 			/// </summary>
 			/// <param name="cancel">Change the value to true to prevent the windows from being closed.</param>
-			virtual void				Closing(bool& cancel);
+			virtual void				BeforeClosing(bool& cancel);
+			/// <summary>
+			/// Called when all <see cref="BeforeClosing"/> callback agree to close.
+			/// </summary>
+			virtual void				AfterClosing();
 			/// <summary>
 			/// Called when the window is closed.
 			/// </summary>
@@ -755,6 +748,12 @@ INativeWindow
 			/// <returns>Returns true if the window needs to be updated.</returns>
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
 			virtual void				ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice);
+			/// <summary>
+			/// Called when the window becomes a non-main window in hosted mode.
+			/// It requires MaximizedBox and MinimizedBox to be disabled.
+			/// This callback could be called more than once on a window.
+			/// </summary>
+			virtual void				BecomeNonMainHostedWindow();
 		};
 
 /***********************************************************************

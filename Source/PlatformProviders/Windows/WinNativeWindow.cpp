@@ -428,22 +428,6 @@ WindowsForm
 							}
 						}
 						break;
-					case WM_SETFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->GotFocus();
-							}
-						}
-						break;
-					case WM_KILLFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->LostFocus();
-							}
-						}
-						break;
 					case WM_MOUSEACTIVATE:
 						if (!enabledActivate)
 						{
@@ -457,11 +441,13 @@ WindowsForm
 							{
 								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
 								{
-									listeners[i]->Activated();
+									listeners[i]->GotFocus();
+									listeners[i]->RenderingAsActivated();
 								}
 								else
 								{
-									listeners[i]->Deactivated();
+									listeners[i]->LostFocus();
+									listeners[i]->RenderingAsDeactivated();
 								}
 							}
 						}
@@ -487,10 +473,17 @@ WindowsForm
 						break;
 					case WM_CLOSE:
 						{
-							bool cancel=false;
-							for(vint i=0;i<listeners.Count();i++)
+							bool cancel = false;
+							for (vint i = 0; i < listeners.Count(); i++)
 							{
-								listeners[i]->Closing(cancel);
+								listeners[i]->BeforeClosing(cancel);
+							}
+							if (!cancel)
+							{
+								for (vint i = 0; i < listeners.Count(); i++)
+								{
+									listeners[i]->AfterClosing();
+								}
 							}
 							return cancel;
 						}
@@ -922,14 +915,18 @@ WindowsForm
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
 				HICON								replacementHIcon = NULL;
-				UINT								dpiX = 0;
-				UINT								dpiY = 0;
+				vint								dpiX = 0;
+				vint								dpiY = 0;
 
 				void UpdateDpiAwaredFields(bool refreshDpiXY)
 				{
 					if (refreshDpiXY)
 					{
-						DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
+						UINT x = 0;
+						UINT y = 0;
+						DpiAwared_GetDpiForWindow(handle, &x, &y);
+						dpiX = (vint)x;
+						dpiY = (vint)y;
 					}
 					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, dpiX));
 					customFramePadding = NativeMargin(padding, padding, padding, padding);
@@ -1176,7 +1173,7 @@ WindowsForm
 					return title;
 				}
 
-				void SetTitle(WString _title)override
+				void SetTitle(const WString& _title)override
 				{
 					title=_title;
 					SetWindowText(handle, title.Buffer());
@@ -1468,6 +1465,7 @@ WindowsForm
 
 				void Show()override
 				{
+					SetForegroundWindow(handle);
 					ShowWindow(handle, SW_SHOWNORMAL);
 				}
 
@@ -1494,14 +1492,7 @@ WindowsForm
 
 				void Hide(bool closeWindow)override
 				{
-					if (closeWindow)
-					{
-						PostMessage(handle, WM_CLOSE, NULL, NULL);
-					}
-					else
-					{
-						ShowWindow(handle, SW_HIDE);
-					}
+					PostMessage(handle, WM_CLOSE, NULL, NULL);
 				}
 
 				bool IsVisible()override
@@ -1524,16 +1515,6 @@ WindowsForm
 					return IsWindowEnabled(handle)!=0;
 				}
 
-				void SetFocus()override
-				{
-					::SetFocus(handle);
-				}
-
-				bool IsFocused()override
-				{
-					return GetFocus()==handle;
-				}
-
 				void SetActivate()override
 				{
 					SetActiveWindow(handle);
@@ -1542,6 +1523,14 @@ WindowsForm
 				bool IsActivated()override
 				{
 					return GetActiveWindow()==handle;
+				}
+
+				bool IsRenderingAsActivated()override
+				{
+					// TODO: should render as activated when
+					//   is activated
+					//   is a parent window of one that rendering as activated
+					return IsActivated();
 				}
 
 				void ShowInTaskBar()override

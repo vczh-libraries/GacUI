@@ -137,7 +137,7 @@ GuiTabActionManager
 
 					if (auto next = GetNextFocusControl(focusedControl, (info.shift ? -1 : 1)))
 					{
-						next->SetFocus();
+						next->SetFocused();
 						supressTabOnce = true;
 						return true;
 					}

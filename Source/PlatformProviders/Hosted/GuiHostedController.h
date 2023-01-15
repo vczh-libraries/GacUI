@@ -25,6 +25,7 @@ GuiHostedController
 
 		class GuiHostedController
 			: public Object
+			, protected hosted_window_manager::WindowManager<GuiHostedWindow*>
 			, protected INativeWindowListener
 			, protected INativeControllerListener
 			, public INativeController
@@ -38,14 +39,57 @@ GuiHostedController
 			friend class GuiHostedWindow;
 			friend class elements::GuiHostedGraphicsResourceManager;
 		protected:
-			INativeController*								nativeController = nullptr;
-			elements::GuiHostedGraphicsResourceManager*		hostedResourceManager = nullptr;
-			collections::List<INativeControllerListener*>	listeners;
+			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
+			INativeController*											nativeController = nullptr;
+			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
+			collections::List<INativeControllerListener*>				listeners;
+			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
 
-			INativeWindow*									nativeWindow = nullptr;
-			bool											nativeWindowDestroyed = false;
-			GuiHostedWindow*								mainWindow = nullptr;
-			collections::SortedList<Ptr<GuiHostedWindow>>	createdWindows;
+			INativeWindow*												nativeWindow = nullptr;
+			bool														nativeWindowDestroyed = false;
+
+			GuiHostedWindow*											mainWindow = nullptr;
+			GuiHostedWindow*											capturingWindow = nullptr;
+			GuiHostedWindow*											enteringWindow = nullptr;
+
+			NativePoint													hoveringLocation{ -1,-1 };
+			GuiHostedWindow*											hoveringWindow = nullptr;
+			GuiHostedWindow*											lastFocusedWindow = nullptr;
+
+			enum class WindowManagerOperation
+			{
+				None,
+				Title,
+				BorderLeft,
+				BorderRight,
+				BorderTop,
+				BorderBottom,
+				BorderLeftTop,
+				BorderRightTop,
+				BorderLeftBottom,
+				BorderRightBottom,
+			};
+			WindowManagerOperation										wmOperation = WindowManagerOperation::None;
+			GuiHostedWindow*											wmWindow = nullptr;
+			NativePoint													wmRelative;
+
+			NativePoint						GetPointInClientSpace(NativePoint location);
+			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
+			void							UpdateHoveringWindow(Nullable<NativePoint> location);
+			void							UpdateEnteringWindow(GuiHostedWindow* window);
+
+			// =============================================================
+			// WindowManager<GuiHostedWindow*>
+			// =============================================================
+
+			void							OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
 
 			// =============================================================
 			// INativeWindowListener
@@ -55,18 +99,37 @@ GuiHostedController
 			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
 			void							Moved() override;
 			void							DpiChanged() override;
-			void							Enabled() override;
-			void							Disabled() override;
 			void							GotFocus() override;
 			void							LostFocus() override;
-			void							Activated() override;
-			void							Deactivated() override;
-			void							Opened() override;
-			void							Closing(bool& cancel) override;
-			void							Closed() override;
+			void							BeforeClosing(bool& cancel) override;
+			void							AfterClosing() override;
 			void							Paint() override;
-			void							Destroying() override;
-			void							Destroyed() override;
+			
+			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
+
+			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
+			void							PreAction_Other(const NativeWindowMouseInfo& info);
+
+			void							PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+
+			template<
+				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
+				>
+			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
+
+			template<
+				typename TInfo,
+				void (INativeWindowListener::* Callback)(const TInfo&)
+			>
+			void							HandleKeyboardCallback(const TInfo& info);
 
 			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
 			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
@@ -95,6 +158,7 @@ GuiHostedController
 
 			void							GlobalTimer() override;
 			void							ClipboardUpdated() override;
+			void							NativeWindowDestroying(INativeWindow* window);
 
 			// =============================================================
 			// INativeController
@@ -167,14 +231,12 @@ GuiHostedController
 			INativeWindow*					GetMainWindow() override;
 			INativeWindow*					GetWindow(NativePoint location) override;
 			void							Run(INativeWindow* window) override;
-
-		protected:
-
-			void							EnsureNativeWindowCreated();
-			void							EnsureNativeWindowDestroyed();
 		public:
 			GuiHostedController(INativeController* _nativeController);
 			~GuiHostedController();
+
+			void							Initialize();
+			void							Finalize();
 		};
 	}
 }

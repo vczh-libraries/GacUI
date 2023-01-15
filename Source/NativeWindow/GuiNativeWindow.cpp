@@ -42,11 +42,11 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::Activated()
+		void INativeWindowListener::RenderingAsActivated()
 		{
 		}
 
-		void INativeWindowListener::Deactivated()
+		void INativeWindowListener::RenderingAsDeactivated()
 		{
 		}
 
@@ -54,7 +54,11 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::Closing(bool& cancel)
+		void INativeWindowListener::BeforeClosing(bool& cancel)
+		{
+		}
+
+		void INativeWindowListener::AfterClosing()
 		{
 		}
 
@@ -156,6 +160,10 @@ INativeWindowListener
 		}
 
 		void INativeWindowListener::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+		{
+		}
+
+		void INativeWindowListener::BecomeNonMainHostedWindow()
 		{
 		}
 

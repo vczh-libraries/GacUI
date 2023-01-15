@@ -9,14 +9,44 @@ namespace vl
 GuiHostedWindow
 ***********************************************************************/
 
-		GuiHostedWindow::GuiHostedWindow(GuiHostedController* _controller, INativeWindow::WindowMode _windowMode)
-			: controller(_controller)
-			, windowMode(_windowMode)
+		void GuiHostedWindow::BecomeMainWindow()
 		{
+			proxy = CreateMainHostedWindowProxy(this, controller->nativeWindow);
+			proxy->CheckAndSyncProperties();
+		}
+
+		void GuiHostedWindow::BecomeNonMainWindow()
+		{
+			proxy = CreateNonMainHostedWindowProxy(this);
+			proxy->CheckAndSyncProperties();
+		}
+
+		void GuiHostedWindow::BecomeFocusedWindow()
+		{
+			CHECK_ERROR(&wmWindow == controller->wmManager->activeWindow, L"vl::presentation::GuiHostedWindow::BecomeFocusedWindow()#Wrong timing to call this function.");
+			controller->nativeWindow->SetCaretPoint(windowCaretPoint + GetRenderingOffset());
+		}
+
+		void GuiHostedWindow::BecomeHoveringWindow()
+		{
+			CHECK_ERROR(this == controller->hoveringWindow, L"vl::presentation::GuiHostedWindow::BecomeFocusedWindow()#Wrong timing to call this function.");
+			controller->nativeWindow->SetWindowCursor(windowCursor);
+		}
+
+		GuiHostedWindow::GuiHostedWindow(GuiHostedController* _controller, INativeWindow::WindowMode _windowMode)
+			: GuiHostedWindowData(_controller, this, _windowMode)
+		{
+			wmWindow.bounds = { {0,0},{1,1} };
+			proxy = CreatePlaceholderHostedWindowProxy(this);
+			proxy->CheckAndSyncProperties();
 		}
 
 		GuiHostedWindow::~GuiHostedWindow()
 		{
+			for (auto listener : listeners)
+			{
+				listener->Destroyed();
+			}
 		}
 
 		bool GuiHostedWindow::IsActivelyRefreshing()
@@ -26,7 +56,8 @@ GuiHostedWindow
 
 		NativeSize GuiHostedWindow::GetRenderingOffset()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			auto pos = wmWindow.bounds.LeftTop();
+			return { pos.x,pos.y };
 		}
 
 		Point GuiHostedWindow::Convert(NativePoint value)
@@ -61,67 +92,86 @@ GuiHostedWindow
 
 		NativeRect GuiHostedWindow::GetBounds()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.bounds;
 		}
 
 		void GuiHostedWindow::SetBounds(const NativeRect& bounds)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			auto fixedBounds = proxy->FixBounds(bounds);
+			if (wmWindow.bounds == fixedBounds) return;
+			wmWindow.SetBounds(fixedBounds);
+			proxy->UpdateBounds();
 		}
 
 		NativeSize GuiHostedWindow::GetClientSize()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return GetBounds().GetSize();
 		}
 
 		void GuiHostedWindow::SetClientSize(NativeSize size)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			SetBounds({ GetBounds().LeftTop(),size });
 		}
 
 		NativeRect GuiHostedWindow::GetClientBoundsInScreen()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return GetBounds();
 		}
 
 		WString GuiHostedWindow::GetTitle()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowTitle;
 		}
 
-		void GuiHostedWindow::SetTitle(WString title)
+		void GuiHostedWindow::SetTitle(const WString& title)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowTitle == title) return;
+			windowTitle = title;
+			proxy->UpdateTitle();
 		}
 
 		INativeCursor* GuiHostedWindow::GetWindowCursor()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowCursor;
 		}
 
 		void GuiHostedWindow::SetWindowCursor(INativeCursor* cursor)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowCursor == cursor) return;
+			windowCursor = cursor;
+			if (this == controller->hoveringWindow)
+			{
+				controller->nativeWindow->SetWindowCursor(windowCursor);
+			}
 		}
 
 		NativePoint GuiHostedWindow::GetCaretPoint()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowCaretPoint;
 		}
 
 		void GuiHostedWindow::SetCaretPoint(NativePoint point)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowCaretPoint == point) return;
+			windowCaretPoint = point;
+			if (&wmWindow == controller->wmManager->activeWindow)
+			{
+				controller->nativeWindow->SetCaretPoint(windowCaretPoint + GetRenderingOffset());
+			}
 		}
 
 		INativeWindow* GuiHostedWindow::GetParent()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.parent ? wmWindow.parent->id : nullptr;
 		}
 
 		void GuiHostedWindow::SetParent(INativeWindow* parent)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			auto hostedWindow = dynamic_cast<GuiHostedWindow*>(parent);
+			CHECK_ERROR(!parent || hostedWindow, L"vl::presentation::GuiHostedWindow::SetParent(INativeWindow*)#The window is not created by GuiHostedController.");
+			auto parentWindow = hostedWindow ? &hostedWindow->wmWindow : nullptr;
+			if (wmWindow.parent == parentWindow) return;
+			wmWindow.SetParent(parentWindow);
 		}
 
 		INativeWindow::WindowMode GuiHostedWindow::GetWindowMode()
@@ -131,227 +181,283 @@ GuiHostedWindow
 
 		void GuiHostedWindow::EnableCustomFrameMode()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowCustomFrameMode) return;
+			windowCustomFrameMode = true;
+			proxy->UpdateCustomFrameMode();
 		}
 
 		void GuiHostedWindow::DisableCustomFrameMode()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (!windowCustomFrameMode) return;
+			windowCustomFrameMode = false;
+			proxy->UpdateCustomFrameMode();
 		}
 
 		bool GuiHostedWindow::IsCustomFrameModeEnabled()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowCustomFrameMode;
 		}
 
 		NativeMargin GuiHostedWindow::GetCustomFramePadding()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->nativeWindow->GetCustomFramePadding();
 		}
 
 		Ptr<GuiImageData> GuiHostedWindow::GetIcon()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowIcon) return windowIcon;
+			if (controller->nativeWindow)return controller->nativeWindow->GetIcon();
+			return nullptr;
 		}
 
 		void GuiHostedWindow::SetIcon(Ptr<GuiImageData> icon)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowIcon == icon) return;
+			windowIcon = icon;
+			proxy->UpdateIcon();
 		}
 
 		INativeWindow::WindowSizeState GuiHostedWindow::GetSizeState()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowSizeState;
 		}
 
 		void GuiHostedWindow::Show()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			EnableActivate();
+			proxy->Show();
 		}
 
 		void GuiHostedWindow::ShowDeactivated()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy->ShowDeactivated();
 		}
 
 		void GuiHostedWindow::ShowRestored()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy->ShowRestored();
 		}
 
 		void GuiHostedWindow::ShowMaximized()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy->ShowMaximized();
 		}
 
 		void GuiHostedWindow::ShowMinimized()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			proxy->ShowMinimized();
 		}
 
 		void GuiHostedWindow::Hide(bool closeWindow)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			bool cancel = false;
+			for (auto listener : listeners)
+			{
+				listener->BeforeClosing(cancel);
+				if (cancel) return;
+			}
+			for (auto listener : listeners)
+			{
+				listener->AfterClosing();
+			}
+
+			if (closeWindow)
+			{
+				proxy->Close();
+			}
+			else
+			{
+				proxy->Hide();
+			}
 		}
 
 		bool GuiHostedWindow::IsVisible()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.visible;
 		}
 
 		void GuiHostedWindow::Enable()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (wmWindow.enabled) return;
+			wmWindow.SetEnabled(true);
+			proxy->UpdateEnabled();
 		}
 
 		void GuiHostedWindow::Disable()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (!wmWindow.enabled) return;
+			wmWindow.SetEnabled(false);
+			proxy->UpdateEnabled();
 		}
 
 		bool GuiHostedWindow::IsEnabled()
 		{
-			CHECK_FAIL(L"Not implemented!");
-		}
-
-		void GuiHostedWindow::SetFocus()
-		{
-			CHECK_FAIL(L"Not implemented!");
-		}
-
-		bool GuiHostedWindow::IsFocused()
-		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.enabled;
 		}
 
 		void GuiHostedWindow::SetActivate()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			EnableActivate();
+			proxy->SetFocus();
 		}
 
 		bool GuiHostedWindow::IsActivated()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.active;
+		}
+
+		bool GuiHostedWindow::IsRenderingAsActivated()
+		{
+			return wmWindow.renderedAsActive;
 		}
 
 		void GuiHostedWindow::ShowInTaskBar()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowShowInTaskBar) return;
+			windowShowInTaskBar = true;
+			proxy->UpdateShowInTaskBar();
 		}
 
 		void GuiHostedWindow::HideInTaskBar()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (!windowShowInTaskBar) return;
+			windowShowInTaskBar = false;
+			proxy->UpdateShowInTaskBar();
 		}
 
 		bool GuiHostedWindow::IsAppearedInTaskBar()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowShowInTaskBar;
 		}
 
 		void GuiHostedWindow::EnableActivate()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowEnabledActivate) return;
+			windowEnabledActivate = true;
+			proxy->UpdateEnabledActivate();
 		}
 
 		void GuiHostedWindow::DisableActivate()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (!windowEnabledActivate) return;
+			windowEnabledActivate = false;
+			proxy->UpdateEnabledActivate();
 		}
 
 		bool GuiHostedWindow::IsEnabledActivate()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowEnabledActivate;
 		}
 
 		bool GuiHostedWindow::RequireCapture()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (controller->capturingWindow) return false;
+			controller->capturingWindow = this;
+			controller->nativeWindow->RequireCapture();
+			return true;
 		}
 
 		bool GuiHostedWindow::ReleaseCapture()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (controller->capturingWindow != this) return false;
+			controller->capturingWindow = nullptr;
+			controller->nativeWindow->ReleaseCapture();
+			controller->UpdateEnteringWindow(controller->hoveringWindow);
+			return true;
 		}
 
 		bool GuiHostedWindow::IsCapturing()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return controller->capturingWindow == this;
 		}
 
 		bool GuiHostedWindow::GetMaximizedBox()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowMaximizedBox;
 		}
 
 		void GuiHostedWindow::SetMaximizedBox(bool visible)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowMaximizedBox == visible) return;
+			windowMaximizedBox = visible;
+			proxy->UpdateMaximizedBox();
 		}
 
 		bool GuiHostedWindow::GetMinimizedBox()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowMinimizedBox;
 		}
 
 		void GuiHostedWindow::SetMinimizedBox(bool visible)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowMinimizedBox == visible) return;
+			windowMinimizedBox = visible;
+			proxy->UpdateMinimizedBox();
 		}
 
 		bool GuiHostedWindow::GetBorder()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowBorder;
 		}
 
 		void GuiHostedWindow::SetBorder(bool visible)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowBorder == visible) return;
+			windowBorder = visible;
+			proxy->UpdateBorderVisible();
 		}
 
 		bool GuiHostedWindow::GetSizeBox()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowSizeBox;
 		}
 
 		void GuiHostedWindow::SetSizeBox(bool visible)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowSizeBox == visible) return;
+			windowSizeBox = visible;
+			proxy->UpdateSizeBox();
 		}
 
 		bool GuiHostedWindow::GetIconVisible()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowIconVisible;
 		}
 
 		void GuiHostedWindow::SetIconVisible(bool visible)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowIconVisible == visible) return;
+			windowIconVisible = visible;
+			proxy->UpdateIconVisible();
 		}
 
 		bool GuiHostedWindow::GetTitleBar()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return windowTitleBar;
 		}
 
 		void GuiHostedWindow::SetTitleBar(bool visible)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (windowTitleBar == visible) return;
+			windowTitleBar = visible;
+			proxy->UpdateTitleBar();
 		}
 
 		bool GuiHostedWindow::GetTopMost()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			return wmWindow.topMost;
 		}
 
 		void GuiHostedWindow::SetTopMost(bool topmost)
 		{
-			CHECK_FAIL(L"Not implemented!");
+			if (wmWindow.topMost == topmost) return;
+			wmWindow.SetTopMost(topmost);
+			proxy->UpdateTopMost();
 		}
 
 		void GuiHostedWindow::SupressAlt()
 		{
-			CHECK_FAIL(L"Not implemented!");
+			controller->nativeWindow->SupressAlt();
 		}
 
 		bool GuiHostedWindow::InstallListener(INativeWindowListener* listener)
@@ -382,7 +488,6 @@ GuiHostedWindow
 
 		void GuiHostedWindow::RedrawContent()
 		{
-			CHECK_FAIL(L"Not implemented!");
 		}
 	}
 }

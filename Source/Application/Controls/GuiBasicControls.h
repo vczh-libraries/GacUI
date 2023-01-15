@@ -251,6 +251,8 @@ Basic Construction
 				/// <summary>Test if this control is focused.</summary>
 				/// <returns>Returns true if this control is focused.</returns>
 				virtual bool							GetFocused();
+				/// <summary>Focus this control.</summary>
+				virtual void							SetFocused();
 				/// <summary>Test if this control accepts tab character input.</summary>
 				/// <returns>Returns true if this control accepts tab character input.</returns>
 				virtual bool							GetAcceptTabInput()override;
@@ -306,8 +308,6 @@ Basic Construction
 				/// <summary>Set the context of this control.</summary>
 				/// <param name="value">The context of this control.</param>
 				virtual void							SetContext(const description::Value& value);
-				/// <summary>Focus this control.</summary>
-				virtual void							SetFocus();
 
 				/// <summary>Get the tag object of the control.</summary>
 				/// <returns>The tag object of the control.</returns>

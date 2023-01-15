@@ -145,13 +145,13 @@ GuiControlHost
 				OnVisualStatusChanged();
 			}
 
-			void GuiControlHost::Activated()
+			void GuiControlHost::RenderingAsActivated()
 			{
 				WindowActivated.Execute(GetNotifyEventArguments());
 				OnVisualStatusChanged();
 			}
 
-			void GuiControlHost::Deactivated()
+			void GuiControlHost::RenderingAsDeactivated()
 			{
 				WindowDeactivated.Execute(GetNotifyEventArguments());
 				OnVisualStatusChanged();
@@ -162,7 +162,7 @@ GuiControlHost
 				WindowOpened.Execute(GetNotifyEventArguments());
 			}
 
-			void GuiControlHost::Closing(bool& cancel)
+			void GuiControlHost::BeforeClosing(bool& cancel)
 			{
 				GuiRequestEventArgs arguments(boundsComposition);
 				arguments.cancel=cancel;
@@ -171,6 +171,11 @@ GuiControlHost
 				{
 					cancel=arguments.cancel;
 				}
+			}
+
+			void GuiControlHost::AfterClosing()
+			{
+				WindowReadyToClose.Execute(GetNotifyEventArguments());
 			}
 
 			void GuiControlHost::Closed()
@@ -213,6 +218,7 @@ GuiControlHost
 				WindowDeactivated.SetAssociatedComposition(boundsComposition);
 				WindowOpened.SetAssociatedComposition(boundsComposition);
 				WindowClosing.SetAssociatedComposition(boundsComposition);
+				WindowReadyToClose.SetAssociatedComposition(boundsComposition);
 				WindowClosed.SetAssociatedComposition(boundsComposition);
 				WindowDestroying.SetAssociatedComposition(boundsComposition);
 
@@ -315,7 +321,7 @@ GuiControlHost
 			{
 				if(host->GetNativeWindow())
 				{
-					return host->GetNativeWindow()->IsFocused();
+					return host->GetNativeWindow()->IsActivated();
 				}
 				else
 				{
@@ -327,27 +333,19 @@ GuiControlHost
 			{
 				if(host->GetNativeWindow())
 				{
-					host->GetNativeWindow()->SetFocus();
+					host->GetNativeWindow()->SetActivate();
 				}
 			}
 
-			bool GuiControlHost::GetActivated()
+			bool GuiControlHost::GetRenderingAsActivated()
 			{
 				if(host->GetNativeWindow())
 				{
-					return host->GetNativeWindow()->IsActivated();
+					return host->GetNativeWindow()->IsRenderingAsActivated();
 				}
 				else
 				{
 					return false;
-				}
-			}
-
-			void GuiControlHost::SetActivated()
-			{
-				if(host->GetNativeWindow())
-				{
-					host->GetNativeWindow()->SetActivate();
 				}
 			}
 
@@ -589,7 +587,7 @@ GuiControlHost
 					}
 					else
 					{
-						window->Hide(false);
+						window->Hide(true);
 					}
 				}
 			}
@@ -642,22 +640,27 @@ GuiWindow
 				ct->SetIconVisible(isIconVisible);
 				ct->SetTitleBar(hasTitleBar);
 				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
-				ct->SetActivated(GetActivated());
+				ct->SetActivated(GetRenderingAsActivated());
 
 				auto window = GetNativeWindow();
 				if (window)
 				{
 					window->SetIcon(icon);
 				}
-				UpdateCustomFramePadding(window, ct);
 
-				ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
+				UpdateIcon(window, ct);
+				UpdateCustomFramePadding(window, ct);
 				SyncNativeWindowProperties();
+			}
+
+			void GuiWindow::UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct)
+			{
+				ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
 			}
 
 			void GuiWindow::UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct)
 			{
-				if (auto window = GetNativeWindow())
+				if (window)
 				{
 					ct->SetCustomFramePadding(window->Convert(window->GetCustomFramePadding()));
 				}
@@ -696,12 +699,39 @@ GuiWindow
 				TypedControlTemplateObject(true)->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
 			}
 
+			void GuiWindow::Opened()
+			{
+				GuiControlHost::Opened();
+				if (auto ct = TypedControlTemplateObject(false))
+				{
+					UpdateIcon(GetNativeWindow(), ct);
+				}
+			}
+
 			void GuiWindow::DpiChanged()
 			{
 				if (auto ct = TypedControlTemplateObject(false))
 				{
 					UpdateCustomFramePadding(GetNativeWindow(), ct);
 				}
+			}
+
+			void GuiWindow::BecomeNonMainHostedWindow()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::BecomeNonMainHostedWindow()#"
+				auto ct = TypedControlTemplateObject(true);
+				CHECK_ERROR(ct->GetMaximizedBoxOption() != templates::BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MaximizedBox for non-main hosted windows must be able to config to false.");
+				CHECK_ERROR(ct->GetMinimizedBoxOption() != templates::BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MinimizedBox for non-main hosted windows must be able to config to false.");
+				if (hasMaximizedBox || hasMinimizedBox)
+				{
+					hasMaximizedBox = false;
+					hasMinimizedBox = false;
+
+					ct->SetMaximizedBox(false);
+					ct->SetMinimizedBox(false);
+					UpdateCustomFramePadding(GetNativeWindow(), ct);
+				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
@@ -849,7 +879,7 @@ GuiWindow
 
 					if (auto ct = TypedControlTemplateObject(false))
 					{
-						ct->SetIcon(icon ? icon : window ? window->GetIcon() : nullptr);
+						UpdateIcon(window, ct);
 					}
 				}
 			}
@@ -858,21 +888,43 @@ GuiWindow
 #undef IMPL_WINDOW_PROPERTY_EMPTY_CONDITION
 #undef IMPL_WINDOW_PROPERTY
 
+			void GuiWindow::ShowWithOwner(GuiWindow* owner)
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::ShowWithOwner(GuiWindow*)#"
+				auto ownerNativeWindow = owner->GetNativeWindow();
+				auto nativeWindow = GetNativeWindow();
+				auto previousParent = nativeWindow->GetParent();
+				if (ownerNativeWindow != previousParent)
+				{
+					nativeWindow->SetParent(ownerNativeWindow);
+					WindowReadyToClose.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						nativeWindow->SetParent(previousParent);
+					});
+				}
+				Show();
+#undef ERROR_MESSAGE_PREFIX
+			}
+
 			void GuiWindow::ShowModal(GuiWindow* owner, const Func<void()>& callback)
 			{
 				owner->SetEnabled(false);
 				GetNativeWindow()->SetParent(owner->GetNativeWindow());
 				auto container = Ptr(new IGuiGraphicsEventHandler::Container);
-				container->handler = WindowClosed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				auto disposeFlag = GetDisposedFlag();
+				container->handler = WindowReadyToClose.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
+					GetNativeWindow()->SetParent(nullptr);
+					callback();
+					owner->SetEnabled(true);
+					owner->SetFocused();
 					GetApplication()->InvokeInMainThread(this, [=]()
 					{
-						WindowClosed.Detach(container->handler);
+						if (!disposeFlag->IsDisposed())
+						{
+							WindowReadyToClose.Detach(container->handler);
+						}
 						container->handler = nullptr;
-						GetNativeWindow()->SetParent(nullptr);
-						callback();
-						owner->SetEnabled(true);
-						owner->SetActivated();
 					});
 				});
 				Show();
@@ -1080,7 +1132,9 @@ GuiPopup
 			{
 				SetMinimizedBox(false);
 				SetMaximizedBox(false);
+				SetBorder(false);
 				SetSizeBox(false);
+				SetIconVisible(false);
 				SetTitleBar(false);
 				SetShowInTaskBar(false);
 

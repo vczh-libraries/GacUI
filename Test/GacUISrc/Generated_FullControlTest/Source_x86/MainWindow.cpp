@@ -37,6 +37,7 @@ namespace demo
 {
 	MainWindow::MainWindow()
 		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, openedSubWindows(::vl::reflection::description::IValueList::Create())
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"demo::MainWindow"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
@@ -61,3 +62,9 @@ namespace demo
 #elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
+// UNUSED_USER_CONTENT:
+//	{/* USER_CONTENT_BEGIN(::demo::MainWindow) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */
+///* USER_CONTENT_BEGIN(custom global declarations) */
+///* USER_CONTENT_END() */

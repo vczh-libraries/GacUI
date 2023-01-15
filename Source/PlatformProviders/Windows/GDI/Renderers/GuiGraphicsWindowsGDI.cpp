@@ -2,7 +2,7 @@
 #include "GuiGraphicsRenderersWindowsGDI.h"
 #include "GuiGraphicsLayoutProviderWindowsGDI.h"
 #include "..\..\WinNativeWindow.h"
-#include "..\..\..\Hosted\GuiHostedGraphics.h"
+#include "..\..\..\Hosted\GuiHostedController.h"
 
 namespace vl
 {
@@ -33,10 +33,12 @@ WindowsGDIRenderTarget
 			class WindowsGDIRenderTarget : public Object, public IWindowsGDIRenderTarget
 			{
 			protected:
-				INativeWindow*				window;
-				WinDC*						dc;
+				INativeWindow*				window = nullptr;
+				WinDC*						dc = nullptr;
 				List<Rect>					clippers;
-				vint							clipperCoverWholeTargetCounter;
+				vint						clipperCoverWholeTargetCounter = 0;
+				bool						hostedRendering = false;
+				bool						rendering = false;
 
 				void ApplyClipper()
 				{
@@ -55,55 +57,72 @@ WindowsGDIRenderTarget
 				}
 			public:
 				WindowsGDIRenderTarget(INativeWindow* _window)
-					:window(_window)
-					,dc(0)
-					,clipperCoverWholeTargetCounter(0)
+					: window(_window)
 				{
 				}
 
 				WinDC* GetDC()override
 				{
-					return dc?dc:GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+					return dc ? dc : GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+				}
+
+				bool IsInHostedRendering()override
+				{
+					return hostedRendering;
 				}
 
 				void StartHostedRendering()override
 				{
-					CHECK_FAIL(L"Not implemented!");
+					CHECK_ERROR(!hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartHostedRendering()#Wrong timing to call this function.");
+					hostedRendering = true;
+					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
 				void StopHostedRendering()override
 				{
-					CHECK_FAIL(L"Not implemented!");
+					CHECK_ERROR(hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopHostedRendering()#Wrong timing to call this function.");
+					dc = nullptr;
+					hostedRendering = false;
 				}
 
 				void StartRendering()override
 				{
-					dc=GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+					CHECK_ERROR(!rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartRendering()#Wrong timing to call this function.");
+					rendering = true;
+					if (!hostedRendering)
+					{
+						dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+					}
 				}
 
 				RenderTargetFailure StopRendering()override
 				{
-					dc = 0;
+					CHECK_ERROR(rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopRendering()#Wrong timing to call this function.");
+					rendering = false;
+					if (!hostedRendering)
+					{
+						dc = nullptr;
+					}
 					return RenderTargetFailure::None;
 				}
 
 				void PushClipper(Rect clipper)override
 				{
-					if(clipperCoverWholeTargetCounter>0)
+					if (clipperCoverWholeTargetCounter > 0)
 					{
 						clipperCoverWholeTargetCounter++;
 					}
 					else
 					{
-						Rect previousClipper=GetClipper();
+						Rect previousClipper = GetClipper();
 						Rect currentClipper;
 
-						currentClipper.x1=(previousClipper.x1>clipper.x1?previousClipper.x1:clipper.x1);
-						currentClipper.y1=(previousClipper.y1>clipper.y1?previousClipper.y1:clipper.y1);
-						currentClipper.x2=(previousClipper.x2<clipper.x2?previousClipper.x2:clipper.x2);
-						currentClipper.y2=(previousClipper.y2<clipper.y2?previousClipper.y2:clipper.y2);
+						currentClipper.x1 = (previousClipper.x1 > clipper.x1 ? previousClipper.x1 : clipper.x1);
+						currentClipper.y1 = (previousClipper.y1 > clipper.y1 ? previousClipper.y1 : clipper.y1);
+						currentClipper.x2 = (previousClipper.x2 < clipper.x2 ? previousClipper.x2 : clipper.x2);
+						currentClipper.y2 = (previousClipper.y2 < clipper.y2 ? previousClipper.y2 : clipper.y2);
 
-						if(currentClipper.x1<currentClipper.x2 && currentClipper.y1<currentClipper.y2)
+						if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
 						{
 							clippers.Add(currentClipper);
 						}
@@ -117,18 +136,19 @@ WindowsGDIRenderTarget
 
 				void PopClipper()override
 				{
-					if(clippers.Count()>0)
+					if (clipperCoverWholeTargetCounter > 0)
 					{
-						if(clipperCoverWholeTargetCounter>0)
-						{
-							clipperCoverWholeTargetCounter--;
-						}
-						else
-						{
-							clippers.RemoveAt(clippers.Count()-1);
-						}
-						ApplyClipper();
+						clipperCoverWholeTargetCounter--;
 					}
+					else if (clippers.Count() > 0)
+					{
+						clippers.RemoveAt(clippers.Count() - 1);
+					}
+					else
+					{
+						return;
+					}
+					ApplyClipper();
 				}
 
 				Rect GetClipper()override
@@ -145,7 +165,7 @@ WindowsGDIRenderTarget
 
 				bool IsClipperCoverWholeTarget()override
 				{
-					return clipperCoverWholeTargetCounter>0;
+					return clipperCoverWholeTargetCounter > 0;
 				}
 			};
 
@@ -169,7 +189,7 @@ CachedResourceAllocator
 			public:
 				Ptr<WinBrush> CreateInternal(Color color)
 				{
-					return color.a==0?Ptr(new WinBrush):Ptr(new WinBrush(RGB(color.r, color.g, color.b)));
+					return color.a == 0 ? Ptr(new WinBrush) : Ptr(new WinBrush(RGB(color.r, color.g, color.b)));
 				}
 			};
 
@@ -179,8 +199,8 @@ CachedResourceAllocator
 			public:
 				static Ptr<WinFont> CreateGdiFont(const FontProperties& value)
 				{
-					vint size=value.size<0?value.size:-value.size;
-					return Ptr(new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold?FW_BOLD:FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias));
+					vint size = value.size < 0 ? value.size : -value.size;
+					return Ptr(new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold ? FW_BOLD : FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias));
 				}
 
 				Ptr<WinFont> CreateInternal(const FontProperties& value)
@@ -198,7 +218,7 @@ CachedResourceAllocator
 				{
 				protected:
 					Ptr<WinFont>			font;
-					vint						size;
+					vint					size;
 
 					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
@@ -225,7 +245,7 @@ CachedResourceAllocator
 
 					vint GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)
 					{
-						if(renderTarget)
+						if (renderTarget)
 						{
 							return MeasureInternal({ L' ' }, renderTarget).y;
 						}
@@ -236,9 +256,9 @@ CachedResourceAllocator
 					}
 				public:
 					GdiCharMeasurer(Ptr<WinFont> _font, vint _size)
-						:text::CharMeasurer(_size)
-						,size(_size)
-						,font(_font)
+						: text::CharMeasurer(_size)
+						, size(_size)
+						, font(_font)
 					{
 					}
 				};
@@ -256,8 +276,8 @@ WindowsGDIResourceManager
 			class WindowsGDIImageFrameCache : public Object, public INativeImageFrameCache
 			{
 			protected:
-				IWindowsGDIResourceManager*			resourceManager;
-				INativeImageFrame*					cachedFrame;
+				IWindowsGDIResourceManager* resourceManager = nullptr;
+				INativeImageFrame* cachedFrame = nullptr;
 				Ptr<WinBitmap>						bitmap;
 				Ptr<WinBitmap>						disabledBitmap;
 			public:
@@ -272,21 +292,21 @@ WindowsGDIResourceManager
 
 				void OnAttach(INativeImageFrame* frame)override
 				{
-					cachedFrame=frame;
-					Size size=frame->GetSize();
-					bitmap=Ptr(new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true));
+					cachedFrame = frame;
+					Size size = frame->GetSize();
+					bitmap = Ptr(new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true));
 
-					IWICBitmap* wicBitmap=GetWindowsGDIObjectProvider()->GetWICBitmap(frame);
+					IWICBitmap* wicBitmap = GetWindowsGDIObjectProvider()->GetWICBitmap(frame);
 					WICRect rect;
-					rect.X=0;
-					rect.Y=0;
-					rect.Width=(INT)size.x;
-					rect.Height=(INT)size.y;
-					wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes()*size.y), (BYTE*)bitmap->GetScanLines()[0]);
+					rect.X = 0;
+					rect.Y = 0;
+					rect.Width = (INT)size.x;
+					rect.Height = (INT)size.y;
+					wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes() * size.y), (BYTE*)bitmap->GetScanLines()[0]);
 
 					bitmap->BuildAlphaChannel(false);
 				}
-				
+
 				void OnDetach(INativeImageFrame* frame)override
 				{
 					resourceManager->DestroyBitmapCache(cachedFrame);
@@ -299,30 +319,30 @@ WindowsGDIResourceManager
 
 				Ptr<WinBitmap> GetBitmap(bool enabled)
 				{
-					if(enabled)
+					if (enabled)
 					{
 						return bitmap;
 					}
 					else
 					{
-						if(!disabledBitmap)
+						if (!disabledBitmap)
 						{
-							vint w=bitmap->GetWidth();
-							vint h=bitmap->GetHeight();
-							disabledBitmap=Ptr(new WinBitmap(w, h, WinBitmap::vbb32Bits, true));
-							for(vint y=0;y<h;y++)
+							vint w = bitmap->GetWidth();
+							vint h = bitmap->GetHeight();
+							disabledBitmap = Ptr(new WinBitmap(w, h, WinBitmap::vbb32Bits, true));
+							for (vint y = 0; y < h; y++)
 							{
-								BYTE* read=bitmap->GetScanLines()[y];
-								BYTE* write=disabledBitmap->GetScanLines()[y];
-								for(vint x=0;x<w;x++)
+								BYTE* read = bitmap->GetScanLines()[y];
+								BYTE* write = disabledBitmap->GetScanLines()[y];
+								for (vint x = 0; x < w; x++)
 								{
-									BYTE g=(read[0]+read[1]+read[2])/6+read[3]/2;
-									write[0]=g;
-									write[1]=g;
-									write[2]=g;
-									write[3]=read[3];
-									read+=4;
-									write+=4;
+									BYTE g = (read[0] + read[1] + read[2]) / 6 + read[3] / 2;
+									write[0] = g;
+									write[1] = g;
+									write[2] = g;
+									write[3] = read[3];
+									read += 4;
+									write += 4;
 								}
 							}
 							disabledBitmap->BuildAlphaChannel(false);
@@ -347,7 +367,7 @@ WindowsGDIResourceManager
 			public:
 				WindowsGDIResourceManager()
 				{
-					layoutProvider=Ptr(new WindowsGDILayoutProvider);
+					layoutProvider = Ptr(new WindowsGDILayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override
@@ -370,14 +390,14 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					auto renderTarget=Ptr(new WindowsGDIRenderTarget(window));
+					auto renderTarget = Ptr(new WindowsGDIRenderTarget(window));
 					renderTargets.Add(renderTarget);
 					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override
 				{
-					WindowsGDIRenderTarget* renderTarget=dynamic_cast<WindowsGDIRenderTarget*>(GetWindowsGDIObjectProvider()->GetBindedRenderTarget(window));
+					WindowsGDIRenderTarget* renderTarget = dynamic_cast<WindowsGDIRenderTarget*>(GetWindowsGDIObjectProvider()->GetBindedRenderTarget(window));
 					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, 0);
 					renderTargets.Remove(renderTarget);
 				}
@@ -434,15 +454,15 @@ WindowsGDIResourceManager
 
 				Ptr<windows::WinBitmap> GetBitmap(INativeImageFrame* frame, bool enabled)override
 				{
-					Ptr<INativeImageFrameCache> cache=frame->GetCache(this);
-					if(cache)
+					Ptr<INativeImageFrameCache> cache = frame->GetCache(this);
+					if (cache)
 					{
 						return cache.Cast<WindowsGDIImageFrameCache>()->GetBitmap(enabled);
 					}
 					else
 					{
-						auto gdiCache=Ptr(new WindowsGDIImageFrameCache(this));
-						if(frame->SetCache(this, gdiCache))
+						auto gdiCache = Ptr(new WindowsGDIImageFrameCache(this));
+						if (frame->SetCache(this, gdiCache))
 						{
 							return gdiCache->GetBitmap(enabled);
 						}
@@ -455,7 +475,7 @@ WindowsGDIResourceManager
 
 				void DestroyBitmapCache(INativeImageFrame* frame)override
 				{
-					WindowsGDIImageFrameCache* cache=frame->GetCache(this).Cast<WindowsGDIImageFrameCache>().Obj();
+					WindowsGDIImageFrameCache* cache = frame->GetCache(this).Cast<WindowsGDIImageFrameCache>().Obj();
 					imageCaches.Remove(cache);
 				}
 			};
@@ -463,7 +483,7 @@ WindowsGDIResourceManager
 
 		namespace elements_windows_gdi
 		{
-			IWindowsGDIResourceManager* windowsGDIResourceManager=0;
+			IWindowsGDIResourceManager* windowsGDIResourceManager = nullptr;
 
 			IWindowsGDIResourceManager* GetWindowsGDIResourceManager()
 			{
@@ -472,14 +492,14 @@ WindowsGDIResourceManager
 
 			void SetWindowsGDIResourceManager(IWindowsGDIResourceManager* resourceManager)
 			{
-				windowsGDIResourceManager=resourceManager;
+				windowsGDIResourceManager = resourceManager;
 			}
 
 /***********************************************************************
 OS Supporting
 ***********************************************************************/
 
-			IWindowsGDIObjectProvider* windowsGDIObjectProvider=0;
+			IWindowsGDIObjectProvider* windowsGDIObjectProvider = nullptr;
 
 			IWindowsGDIObjectProvider* GetWindowsGDIObjectProvider()
 			{
@@ -488,7 +508,7 @@ OS Supporting
 
 			void SetWindowsGDIObjectProvider(IWindowsGDIObjectProvider* provider)
 			{
-				windowsGDIObjectProvider=provider;
+				windowsGDIObjectProvider = provider;
 			}
 		}
 	}
@@ -530,7 +550,10 @@ void RendererMainGDI(GuiHostedController* hostedController)
 		elements_windows_gdi::GuiColorizedTextElementRenderer::Register();
 		elements_windows_gdi::GuiGDIElementRenderer::Register();
 		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+
+		if (hostedController) hostedController->Initialize();
 		GuiApplicationMain();
+		if (hostedController) hostedController->Finalize();
 	}
 
 	SetGuiGraphicsResourceManager(nullptr);

@@ -589,7 +589,7 @@ interface presentation::INativeWindow : system::Interface {
     function IsCustomFrameModeEnabled() : system::Boolean;
     function IsEnabled() : system::Boolean;
     function IsEnabledActivate() : system::Boolean;
-    function IsFocused() : system::Boolean;
+    function IsRenderingAsActivated() : system::Boolean;
     function IsVisible() : system::Boolean;
     function RedrawContent() : system::Void;
     function ReleaseCapture() : system::Boolean;
@@ -599,7 +599,6 @@ interface presentation::INativeWindow : system::Interface {
     function SetBounds(value : presentation::NativeRect) : system::Void;
     function SetCaretPoint(value : presentation::NativePoint) : system::Void;
     function SetClientSize(value : presentation::NativeSize) : system::Void;
-    function SetFocus() : system::Void;
     function SetIcon(value : presentation::GuiImageData^) : system::Void;
     function SetIconVisible(value : system::Boolean) : system::Void;
     function SetMaximizedBox(value : system::Boolean) : system::Void;
@@ -623,8 +622,8 @@ interface presentation::INativeWindow : system::Interface {
 enum presentation::INativeWindow::WindowMode {
     Menu = 3,
     Normal = 0,
-    Popup = 2,
-    Tooltip = 1,
+    Popup = 1,
+    Tooltip = 2,
 }
 
 @ValueType
@@ -1199,6 +1198,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     property Bounds : presentation::Rect { get:GetBounds }
     property Children : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^ { get:GetChildren }
     property ClientArea : presentation::Rect { get:GetClientArea }
+    property EventuallyVisible : system::Boolean { get:GetEventuallyVisible }
     property GlobalBounds : presentation::Rect { get:GetGlobalBounds }
     property InternalMargin : presentation::Margin { get:GetInternalMargin set:SetInternalMargin }
     property Margin : presentation::Margin { get:GetMargin set:SetMargin }
@@ -1225,6 +1225,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Children)
     function GetChildren() : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^;
     function GetClientArea() : presentation::Rect;
+    function GetEventuallyVisible() : system::Boolean;
     function GetGlobalBounds() : presentation::Rect;
     function GetInternalMargin() : presentation::Margin;
     function GetMargin() : presentation::Margin;
@@ -1273,8 +1274,10 @@ class presentation::compositions::GuiGraphicsSite : presentation::compositions::
         Bounds,
 }
     property Bounds : presentation::Rect { get:GetBounds event:BoundsChanged }
+    property PreviousCalculatedBounds : presentation::Rect { get:GetPreviousCalculatedBounds }
 
     function GetBounds() : presentation::Rect;
+    function GetPreviousCalculatedBounds() : presentation::Rect;
 
 }
 
@@ -2030,7 +2033,7 @@ class presentation::controls::GuiControl : system::ReferenceType {
     function SetControlThemeName(value : presentation::theme::ThemeName) : system::Void;
     function SetControlThemeNameAndTemplate(themeNameValue : presentation::theme::ThemeName, controlTemplateValue : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^) : system::Void;
     function SetEnabled(value : system::Boolean) : system::Void;
-    function SetFocus() : system::Void;
+    function SetFocused() : system::Void;
     function SetFont(value : presentation::FontProperties?) : system::Void;
     function SetTabPriority(value : system::Int64) : system::Void;
     function SetTag(value : system::Object) : system::Void;
@@ -2052,12 +2055,14 @@ class presentation::controls::GuiControlHost : presentation::controls::GuiContro
     event WindowGotFocus : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event WindowLostFocus : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event WindowOpened : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event WindowReadyToClose : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
     property ClientSize : presentation::Size { get:GetClientSize set:SetClientSize }
     property EnabledActivate : system::Boolean { get:GetEnabledActivate set:SetEnabledActivate }
     property Location : presentation::NativePoint { get:GetLocation set:SetLocation }
     property MainComposition : presentation::compositions::GuiGraphicsComposition* { get:GetMainComposition }
     property RelatedScreen : presentation::INativeScreen* { get:GetRelatedScreen }
+    property RenderingAsActivated : system::Boolean { get:GetRenderingAsActivated }
     property ShortcutKeyManager : presentation::compositions::IGuiShortcutKeyManager* { get:GetShortcutKeyManager set:SetShortcutKeyManager }
     property ShowInTaskBar : system::Boolean { get:GetShowInTaskBar set:SetShowInTaskBar }
     property TopMost : system::Boolean { get:GetTopMost set:SetTopMost }
@@ -2065,23 +2070,20 @@ class presentation::controls::GuiControlHost : presentation::controls::GuiContro
     function Close() : system::Void;
     function DeleteAfterProcessingAllEvents() : system::Void;
     function ForceCalculateSizeImmediately() : system::Void;
-    function GetActivated() : system::Boolean;
     function GetClientSize() : presentation::Size;
     function GetEnabledActivate() : system::Boolean;
-    function GetFocused() : system::Boolean;
     function GetLocation() : presentation::NativePoint;
     function GetMainComposition() : presentation::compositions::GuiGraphicsComposition*;
     function GetOpening() : system::Boolean;
     function GetRelatedScreen() : presentation::INativeScreen*;
+    function GetRenderingAsActivated() : system::Boolean;
     function GetShortcutKeyManager() : presentation::compositions::IGuiShortcutKeyManager*;
     function GetShowInTaskBar() : system::Boolean;
     function GetTopMost() : system::Boolean;
     function Hide() : system::Void;
-    function SetActivated() : system::Void;
     function SetBounds(location : presentation::NativePoint, size : presentation::Size) : system::Void;
     function SetClientSize(value : presentation::Size) : system::Void;
     function SetEnabledActivate(value : system::Boolean) : system::Void;
-    function SetFocused() : system::Void;
     function SetLocation(value : presentation::NativePoint) : system::Void;
     function SetShortcutKeyManager(value : presentation::compositions::IGuiShortcutKeyManager*) : system::Void;
     function SetShowInTaskBar(value : system::Boolean) : system::Void;
@@ -3123,6 +3125,7 @@ class presentation::controls::GuiWindow : presentation::controls::GuiControlHost
     function ShowModal(owner : presentation::controls::GuiWindow*, callback : system::Function<system::Void>^) : system::Void;
     function ShowModalAndDelete(owner : presentation::controls::GuiWindow*, callback : system::Function<system::Void>^) : system::Void;
     function ShowModalAsync(owner : presentation::controls::GuiWindow*) : system::Async^;
+    function ShowWithOwner(owner : presentation::controls::GuiWindow*) : system::Void;
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiWindowTemplate*;
 
     constructor (themeName : presentation::theme::ThemeName) : presentation::controls::GuiWindow*;

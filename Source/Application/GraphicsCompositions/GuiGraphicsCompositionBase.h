@@ -153,6 +153,9 @@ Basic Construction
 				/// <summary>Set the visibility of the composition.</summary>
 				/// <param name="value">Set to true to make the composition visible.</param>
 				void										SetVisible(bool value);
+				/// <summary>Get the visibility of the composition all the way to the root.</summary>
+				/// <returns>Returns true if the composition and all ancestors are visible.</returns>
+				bool										GetEventuallyVisible();
 				/// <summary>Get the minimum size limitation of the composition.</summary>
 				/// <returns>The minimum size limitation of the composition.</returns>
 				MinSizeLimitation							GetMinSizeLimitation();
@@ -281,6 +284,10 @@ Basic Construction
 				bool								IsSizeAffectParent()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetPreferredBounds()override;
+
+				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
+				/// <returns>The previous calculated bounds.</returns>
+				Rect								GetPreviousCalculatedBounds();
 			};
 			
 			/// <summary>
