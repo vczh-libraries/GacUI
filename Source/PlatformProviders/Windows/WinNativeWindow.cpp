@@ -915,14 +915,18 @@ WindowsForm
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
 				HICON								replacementHIcon = NULL;
-				UINT								dpiX = 0;
-				UINT								dpiY = 0;
+				vint								dpiX = 0;
+				vint								dpiY = 0;
 
 				void UpdateDpiAwaredFields(bool refreshDpiXY)
 				{
 					if (refreshDpiXY)
 					{
-						DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
+						UINT x = 0;
+						UINT y = 0;
+						DpiAwared_GetDpiForWindow(handle, &x, &y);
+						dpiX = (vint)x;
+						dpiY = (vint)y;
 					}
 					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, dpiX));
 					customFramePadding = NativeMargin(padding, padding, padding, padding);

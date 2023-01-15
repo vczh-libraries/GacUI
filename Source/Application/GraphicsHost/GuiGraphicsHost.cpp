@@ -644,10 +644,14 @@ GuiGraphicsHost
 				if(hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
 					supressPaint = true;
-					hostRecord.renderTarget->StartRendering();
-					windowComposition->Render(hostRecord.nativeWindow->Convert(hostRecord.nativeWindow->GetRenderingOffset()));
-					result = hostRecord.renderTarget->StopRendering();
-					hostRecord.nativeWindow->RedrawContent();
+					{
+						hostRecord.renderTarget->StartRendering();
+						auto nativeOffset = hostRecord.nativeWindow->GetRenderingOffset();
+						auto localOffset = hostRecord.nativeWindow->Convert(nativeOffset);
+						windowComposition->Render(localOffset);
+						result = hostRecord.renderTarget->StopRendering();
+						hostRecord.nativeWindow->RedrawContent();
+					}
 					supressPaint = false;
 
 					switch (result)
