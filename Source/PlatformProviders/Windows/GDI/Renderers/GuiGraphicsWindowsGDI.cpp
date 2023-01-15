@@ -136,18 +136,19 @@ WindowsGDIRenderTarget
 
 				void PopClipper()override
 				{
-					if (clippers.Count() > 0)
+					if (clipperCoverWholeTargetCounter > 0)
 					{
-						if (clipperCoverWholeTargetCounter > 0)
-						{
-							clipperCoverWholeTargetCounter--;
-						}
-						else
-						{
-							clippers.RemoveAt(clippers.Count() - 1);
-						}
-						ApplyClipper();
+						clipperCoverWholeTargetCounter--;
 					}
+					else if (clippers.Count() > 0)
+					{
+						clippers.RemoveAt(clippers.Count() - 1);
+					}
+					else
+					{
+						return;
+					}
+					ApplyClipper();
 				}
 
 				Rect GetClipper()override

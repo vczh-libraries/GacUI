@@ -413,13 +413,35 @@ GuiHostedController::INativeWindowListener (PreAction)
 			{
 				auto oldBounds = wmWindow->wmWindow.bounds;
 				auto newBounds = oldBounds;
+				vint mouseX = info.x.value;
+				vint mouseY = info.y.value;
+				vint displayX = mainWindow->wmWindow.bounds.Width().value;
+				vint displayY = mainWindow->wmWindow.bounds.Height().value;
+
+				if (mouseX < 0)
+				{
+					mouseX = 0;
+				}
+				else if (mouseX >= displayX)
+				{
+					mouseX = displayX - 1;
+				}
+
+				if (mouseY < 0)
+				{
+					mouseY = 0;
+				}
+				else if (mouseY >= displayY)
+				{
+					mouseY = displayY - 1;
+				}
 
 				if (wmOperation == WindowManagerOperation::Title)
 				{
 					newBounds = {
 						{
-							{info.x.value - wmRelative.x.value},
-							{info.y.value - wmRelative.y.value}
+							{mouseX - wmRelative.x.value},
+							{mouseY - wmRelative.y.value}
 						},
 						oldBounds.GetSize()
 					};
@@ -431,12 +453,12 @@ GuiHostedController::INativeWindowListener (PreAction)
 					case WindowManagerOperation::BorderLeft:
 					case WindowManagerOperation::BorderLeftTop:
 					case WindowManagerOperation::BorderLeftBottom:
-						newBounds.x1.value = info.x.value - wmRelative.x.value;
+						newBounds.x1.value = mouseX - wmRelative.x.value;
 						break;
 					case WindowManagerOperation::BorderRight:
 					case WindowManagerOperation::BorderRightTop:
 					case WindowManagerOperation::BorderRightBottom:
-						newBounds.x2.value = info.x.value + wmRelative.x.value;
+						newBounds.x2.value = mouseX + wmRelative.x.value;
 						break;
 					}
 
@@ -445,12 +467,12 @@ GuiHostedController::INativeWindowListener (PreAction)
 					case WindowManagerOperation::BorderTop:
 					case WindowManagerOperation::BorderLeftTop:
 					case WindowManagerOperation::BorderRightTop:
-						newBounds.y1.value = info.y.value - wmRelative.y.value;
+						newBounds.y1.value = mouseY - wmRelative.y.value;
 						break;
 					case WindowManagerOperation::BorderBottom:
 					case WindowManagerOperation::BorderLeftBottom:
 					case WindowManagerOperation::BorderRightBottom:
-						newBounds.y2.value = info.y.value + wmRelative.y.value;
+						newBounds.y2.value = mouseY + wmRelative.y.value;
 						break;
 					}
 				}
