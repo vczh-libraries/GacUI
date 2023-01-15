@@ -10,6 +10,7 @@
   - Stop using Webdings in default template.
   - Add HostedWindow theme.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
+- One GacGen.exe instead of GacGen32.exe and GacGen64.exe
 
 ## OS Provider Features
 
