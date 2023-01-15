@@ -1070,7 +1070,15 @@ GuiHostedController::INativeWindowService
 			for (vint i = createdWindows.Count() - 1; i >= 0; i--)
 			{
 				auto hostedWindow = createdWindows[i];
-				DestroyNativeWindow(hostedWindow.Obj());
+				if (hostedWindow != mainWindow)
+				{
+					DestroyNativeWindow(hostedWindow.Obj());
+				}
+			}
+
+			if (mainWindow)
+			{
+				DestroyNativeWindow(mainWindow);
 			}
 #undef ERROR_MESSAGE_PREFIX
 		}
