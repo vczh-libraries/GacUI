@@ -3,8 +3,6 @@
 ## Progressing
 
 - Handle DPI
-- Window manager
-  - Resize
 - Issues
   - Big cursor of document empty line
   - Focused tab header becomes black

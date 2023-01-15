@@ -346,7 +346,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 				case WindowManagerOperation::BorderRight:
 				case WindowManagerOperation::BorderRightTop:
 				case WindowManagerOperation::BorderRightBottom:
-					wmRelative.x.value = wmWindow->wmWindow.bounds.x2.value - x;
+					wmRelative.x.value = wmWindow->wmWindow.bounds.Width().value - x;
 					break;
 				}
 
@@ -365,7 +365,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 				case WindowManagerOperation::BorderBottom:
 				case WindowManagerOperation::BorderLeftBottom:
 				case WindowManagerOperation::BorderRightBottom:
-					wmRelative.y.value = wmWindow->wmWindow.bounds.y2.value - y;
+					wmRelative.y.value = wmWindow->wmWindow.bounds.Height().value - y;
 					break;
 				}
 			}
