@@ -323,9 +323,27 @@ GuiHostedController::INativeWindowListener (PreAction)
 				HANDLE_HIT_TEST_RESULT(BorderRightBottom)
 				HANDLE_HIT_TEST_RESULT(BorderRightTop)
 				HANDLE_HIT_TEST_RESULT(BorderLeftBottom)
-				default: return;
 
 #undef HANDLE_HIT_TEST_RESULT
+				}
+
+				switch (wmOperation)
+				{
+				case WindowManagerOperation::None:
+					return;
+				case WindowManagerOperation::Title:
+					if (!hoveringWindow->GetTitleBar())
+					{
+						wmOperation = WindowManagerOperation::None;
+						return;
+					}
+					break;
+				default:
+					if (!hoveringWindow->GetSizeBox())
+					{
+						wmOperation = WindowManagerOperation::None;
+						return;
+					}
 				}
 
 				wmWindow = hoveringWindow;
@@ -381,7 +399,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 
 		void GuiHostedController::PreAction_MouseMoving(const NativeWindowMouseInfo& info)
 		{
-			if (!capturingWindow && !wmWindow && hoveringWindow && hoveringWindow != mainWindow && hoveringWindow->IsEnabled())
+			if (!capturingWindow && !wmWindow && hoveringWindow && hoveringWindow != mainWindow && hoveringWindow->IsEnabled() && hoveringWindow->GetSizeBox())
 			{
 				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
 				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
