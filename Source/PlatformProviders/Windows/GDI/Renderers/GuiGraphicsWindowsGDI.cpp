@@ -78,11 +78,12 @@ WindowsGDIRenderTarget
 					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 
-				void StopHostedRendering()override
+				RenderTargetFailure StopHostedRendering()override
 				{
 					CHECK_ERROR(hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopHostedRendering()#Wrong timing to call this function.");
-					dc = nullptr;
 					hostedRendering = false;
+					dc = nullptr;
+					return RenderTargetFailure::None;
 				}
 
 				void StartRendering()override

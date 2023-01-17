@@ -138,7 +138,8 @@ Basic Construction
 				/// <summary>
 				/// Notify the target to stop hosted rendering
 				/// </summary>
-				virtual void							StopHostedRendering() = 0;
+				/// <returns>Returns values other "None" to indicate device failure.</returns>
+				virtual RenderTargetFailure				StopHostedRendering() = 0;
 
 				/// <summary>
 				/// Notify the target to prepare for rendering.
@@ -147,7 +148,7 @@ Basic Construction
 				/// <summary>
 				/// Notify the target to stop rendering.
 				/// </summary>
-				/// <returns>Returns false to recreate render target.</returns>
+				/// <returns>Returns values other "None" to indicate device failure.</returns>
 				virtual RenderTargetFailure				StopRendering() = 0;
 				/// <summary>
 				/// Apply a clipper to the render target.

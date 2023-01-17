@@ -365,6 +365,8 @@ WindowsDirect2DRenderTarget
 				ID2D1DeviceContext*				d2dDeviceContext = nullptr;
 				List<Rect>						clippers;
 				vint							clipperCoverWholeTargetCounter = 0;
+				bool							hostedRendering = false;
+				bool							rendering = false;
 
 				CachedSolidBrushAllocator		solidBrushes;
 				CachedLinearBrushAllocator		linearBrushes;
@@ -484,33 +486,57 @@ WindowsDirect2DRenderTarget
 
 				bool IsInHostedRendering()override
 				{
-					CHECK_FAIL(L"Not implemented!");
+					return hostedRendering;
+				}
+
+				void StartRenderingOnNativeWindow()
+				{
+					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRenderingOnNativeWindow()#Invalid render target.");
+					GetWindowsDirect2DObjectProvider()->StartRendering(window);
+				}
+
+				RenderTargetFailure StopRenderingOnNativeWindow()
+				{
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopRenderingOnNativeWindow()#Invalid render target.");
+					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
+					d2dRenderTarget = nullptr;
+					return result;
 				}
 
 				void StartHostedRendering()override
 				{
-					CHECK_FAIL(L"Not implemented!");
+					CHECK_ERROR(!hostedRendering && !rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartHostedRendering()#Wrong timing to call this function.");
+					hostedRendering = true;
+					StartRenderingOnNativeWindow();
 				}
 
-				void StopHostedRendering()override
+				RenderTargetFailure StopHostedRendering()override
 				{
-					CHECK_FAIL(L"Not implemented!");
+					CHECK_ERROR(hostedRendering && !rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopHostedRendering()#Wrong timing to call this function.");
+					hostedRendering = false;
+					return StopRenderingOnNativeWindow();
 				}
 
 				void StartRendering()override
 				{
-					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
-					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
-
-					GetWindowsDirect2DObjectProvider()->StartRendering(window);
+					CHECK_ERROR(!rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Wrong timing to call this function.");
+					rendering = true;
+					if (!hostedRendering)
+					{
+						StartRenderingOnNativeWindow();
+					}
 				}
 
 				RenderTargetFailure StopRendering()override
 				{
-					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
-					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
-					d2dRenderTarget = nullptr;
-					return result;
+					CHECK_ERROR(rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopRendering()#Wrong timing to call this function.");
+					rendering = false;
+					if (!hostedRendering)
+					{
+						return StopRenderingOnNativeWindow();
+					}
+					return RenderTargetFailure::None;
 				}
 
 				void PushClipper(Rect clipper)override

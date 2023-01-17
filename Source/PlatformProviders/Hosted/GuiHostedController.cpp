@@ -718,7 +718,15 @@ GuiHostedController::INativeControllerListener
 					}
 
 				STOP_RENDERING:
-					renderTarget->StopHostedRendering();
+					switch (renderTarget->StopHostedRendering())
+					{
+					case elements::RenderTargetFailure::LostDevice:
+						failureByLostDevice = true;
+						break;
+					case elements::RenderTargetFailure::ResizeWhileRendering:
+						failureByResized = true;
+						break;
+					}
 
 					if (failureByLostDevice)
 					{
