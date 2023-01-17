@@ -356,7 +356,7 @@ WindowsDirect2DRenderTarget
 				}
 			};
 
-			class WindowsDirect2DRenderTarget : public Object, public IWindowsDirect2DRenderTarget
+			class WindowsDirect2DRenderTarget : public IWindowsDirect2DRenderTarget
 			{
 				typedef SortedList<Ptr<WindowsDirect2DImageFrameCache>> ImageCacheList;
 			protected:
@@ -400,6 +400,47 @@ WindowsDirect2DRenderTarget
 					{
 						return nullptr;
 					}
+				}
+
+				void StartRenderingOnNativeWindow() override
+				{
+					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRenderingOnNativeWindow()#Invalid render target.");
+					GetWindowsDirect2DObjectProvider()->StartRendering(window);
+				}
+
+				RenderTargetFailure StopRenderingOnNativeWindow() override
+				{
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopRenderingOnNativeWindow()#Invalid render target.");
+					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
+					d2dRenderTarget = nullptr;
+					return result;
+				}
+
+				Size GetCanvasSize() override
+				{
+					return  window->Convert(window->GetClientSize());
+				}
+
+				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				{
+					d2dRenderTarget->PushAxisAlignedClip(
+						D2D1::RectF((FLOAT)validArea.x1, (FLOAT)validArea.y1, (FLOAT)validArea.x2, (FLOAT)validArea.y2),
+						D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+						);
+				}
+
+				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				{
+				}
+
+				void AfterPoppedClipperAndBecameValid(Rect validArea) override
+				{
+				}
+
+				void AfterPoppedClipper(Rect validArea) override
+				{
+					d2dRenderTarget->PopAxisAlignedClip();
 				}
 			public:
 				WindowsDirect2DRenderTarget(INativeWindow* _window)
@@ -482,122 +523,6 @@ WindowsDirect2DRenderTarget
 					{
 						d2dRenderTarget->SetTextRenderingParams(params.Obj());
 					}
-				}
-
-				bool IsInHostedRendering()override
-				{
-					return hostedRendering;
-				}
-
-				void StartRenderingOnNativeWindow()
-				{
-					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
-					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRenderingOnNativeWindow()#Invalid render target.");
-					GetWindowsDirect2DObjectProvider()->StartRendering(window);
-				}
-
-				RenderTargetFailure StopRenderingOnNativeWindow()
-				{
-					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopRenderingOnNativeWindow()#Invalid render target.");
-					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
-					d2dRenderTarget = nullptr;
-					return result;
-				}
-
-				void StartHostedRendering()override
-				{
-					CHECK_ERROR(!hostedRendering && !rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartHostedRendering()#Wrong timing to call this function.");
-					hostedRendering = true;
-					StartRenderingOnNativeWindow();
-				}
-
-				RenderTargetFailure StopHostedRendering()override
-				{
-					CHECK_ERROR(hostedRendering && !rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopHostedRendering()#Wrong timing to call this function.");
-					hostedRendering = false;
-					return StopRenderingOnNativeWindow();
-				}
-
-				void StartRendering()override
-				{
-					CHECK_ERROR(!rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Wrong timing to call this function.");
-					rendering = true;
-					if (!hostedRendering)
-					{
-						StartRenderingOnNativeWindow();
-					}
-				}
-
-				RenderTargetFailure StopRendering()override
-				{
-					CHECK_ERROR(rendering, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopRendering()#Wrong timing to call this function.");
-					rendering = false;
-					if (!hostedRendering)
-					{
-						return StopRenderingOnNativeWindow();
-					}
-					return RenderTargetFailure::None;
-				}
-
-				void PushClipper(Rect clipper)override
-				{
-					if (clipperCoverWholeTargetCounter > 0)
-					{
-						clipperCoverWholeTargetCounter++;
-					}
-					else
-					{
-						Rect previousClipper = GetClipper();
-						Rect currentClipper;
-
-						currentClipper.x1 = (previousClipper.x1 > clipper.x1 ? previousClipper.x1 : clipper.x1);
-						currentClipper.y1 = (previousClipper.y1 > clipper.y1 ? previousClipper.y1 : clipper.y1);
-						currentClipper.x2 = (previousClipper.x2 < clipper.x2 ? previousClipper.x2 : clipper.x2);
-						currentClipper.y2 = (previousClipper.y2 < clipper.y2 ? previousClipper.y2 : clipper.y2);
-
-						if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
-						{
-							clippers.Add(currentClipper);
-							d2dRenderTarget->PushAxisAlignedClip(
-								D2D1::RectF((FLOAT)currentClipper.x1, (FLOAT)currentClipper.y1, (FLOAT)currentClipper.x2, (FLOAT)currentClipper.y2),
-								D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
-							);
-						}
-						else
-						{
-							clipperCoverWholeTargetCounter++;
-						}
-					}
-				}
-
-				void PopClipper()override
-				{
-					if (clipperCoverWholeTargetCounter > 0)
-					{
-						clipperCoverWholeTargetCounter--;
-					}
-					else if (clippers.Count() > 0)
-					{
-						clippers.RemoveAt(clippers.Count() - 1);
-						d2dRenderTarget->PopAxisAlignedClip();
-					}
-				}
-
-				Rect GetClipper()override
-				{
-					if (clippers.Count() == 0)
-					{
-						return Rect(Point(0, 0), window->Convert(window->GetClientSize()));
-					}
-					else
-					{
-						return clippers[clippers.Count() - 1];
-					}
-				}
-
-				bool IsClipperCoverWholeTarget()override
-				{
-					return clipperCoverWholeTargetCounter > 0;
 				}
 
 				ID2D1Effect* GetFocusRectangleEffect()override

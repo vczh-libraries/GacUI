@@ -176,7 +176,7 @@ Basic Construction
 			/// <summary>
 			/// This is a default implementation for <see cref="IGuiGraphicsRenderTarget"/>
 			/// </summary>
-			class GuiGraphicsRenderTarget : public Object, public virtual IGuiGraphicsRenderTarget
+			class GuiGraphicsRenderTarget : public Object, public IGuiGraphicsRenderTarget
 			{
 			protected:
 				collections::List<Rect>					clippers;

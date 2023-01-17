@@ -82,7 +82,7 @@ Raw API Rendering Element
 Functionality
 ***********************************************************************/
 
-			class IWindowsDirect2DRenderTarget : public elements::IGuiGraphicsRenderTarget
+			class IWindowsDirect2DRenderTarget : public elements::GuiGraphicsRenderTarget
 			{
 			public:
 				virtual ID2D1RenderTarget*					GetDirect2DRenderTarget()=0;
