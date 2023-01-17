@@ -3,6 +3,7 @@
 ## Progressing
 
 - Handle DPI
+- Common implementation for `IGuiGraphicsRenderTarget`
 - Issues
   - Big cursor of document empty line
   - Focused tab header becomes black
