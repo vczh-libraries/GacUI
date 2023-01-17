@@ -183,6 +183,9 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::DpiChanged()
 		{
+			hostedResourceManager->nativeManager->RecreateRenderTarget(nativeWindow);
+			wmManager->needRefresh = true;
+
 			for (auto hostedWindow : createdWindows)
 			{
 				for (auto listener : hostedWindow->listeners)

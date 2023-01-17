@@ -49,12 +49,10 @@ GuiHostedGraphicsResourceManager
 
 			void GuiHostedGraphicsResourceManager::RecreateRenderTarget(INativeWindow* window)
 			{
-				CHECK_FAIL(L"vl::presentation::elements::GuiHostedGraphicsResourceManager::RecreateRenderTarget(INativeWindow*)#This function should not be called.");
 			}
 
 			void GuiHostedGraphicsResourceManager::ResizeRenderTarget(INativeWindow* window)
 			{
-				CHECK_FAIL(L"vl::presentation::elements::GuiHostedGraphicsResourceManager::ResizeRenderTarget(INativeWindow*)#This function should not be called.");
 			}
 
 			IGuiGraphicsLayoutProvider* GuiHostedGraphicsResourceManager::GetLayoutProvider()
