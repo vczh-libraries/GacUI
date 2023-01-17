@@ -71,19 +71,29 @@ WindowsGDIRenderTarget
 					return hostedRendering;
 				}
 
+				void StartRenderingOnNativeWindow()
+				{
+					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+				}
+
+				RenderTargetFailure StopRenderingOnNativeWindow()
+				{
+					dc = nullptr;
+					return RenderTargetFailure::None;
+				}
+
 				void StartHostedRendering()override
 				{
 					CHECK_ERROR(!hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartHostedRendering()#Wrong timing to call this function.");
 					hostedRendering = true;
-					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+					StartRenderingOnNativeWindow();
 				}
 
 				RenderTargetFailure StopHostedRendering()override
 				{
 					CHECK_ERROR(hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopHostedRendering()#Wrong timing to call this function.");
 					hostedRendering = false;
-					dc = nullptr;
-					return RenderTargetFailure::None;
+					return StopRenderingOnNativeWindow();
 				}
 
 				void StartRendering()override
@@ -92,7 +102,7 @@ WindowsGDIRenderTarget
 					rendering = true;
 					if (!hostedRendering)
 					{
-						dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+						StartRenderingOnNativeWindow();
 					}
 				}
 
@@ -102,7 +112,7 @@ WindowsGDIRenderTarget
 					rendering = false;
 					if (!hostedRendering)
 					{
-						dc = nullptr;
+						return StopRenderingOnNativeWindow();
 					}
 					return RenderTargetFailure::None;
 				}

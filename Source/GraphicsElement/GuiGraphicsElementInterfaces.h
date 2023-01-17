@@ -150,6 +150,7 @@ Basic Construction
 				/// </summary>
 				/// <returns>Returns values other "None" to indicate device failure.</returns>
 				virtual RenderTargetFailure				StopRendering() = 0;
+
 				/// <summary>
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
