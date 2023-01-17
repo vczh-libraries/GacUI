@@ -2,7 +2,7 @@
 
 ## Progressing
 
-- Issues
+- Issues on GDI (no matter hosted or not, repros in Playground)
   - Big cursor of document empty line
   - Focused tab header becomes black
 - Theme

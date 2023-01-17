@@ -14,7 +14,7 @@ using namespace vl::reflection::description;
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int CmdShow)
 {
-	int result = SetupWindowsDirect2DRenderer();
+	int result = SetupWindowsGDIRenderer();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
