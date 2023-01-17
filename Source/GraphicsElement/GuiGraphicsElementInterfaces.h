@@ -172,6 +172,39 @@ Basic Construction
 				/// <returns>Return true if the combined clipper is as large as the render target.</returns>
 				virtual bool							IsClipperCoverWholeTarget() = 0;
 			};
+
+			/// <summary>
+			/// This is a default implementation for <see cref="IGuiGraphicsRenderTarget"/>
+			/// </summary>
+			class GuiGraphicsRenderTarget : public Object, public virtual IGuiGraphicsRenderTarget
+			{
+			protected:
+				collections::List<Rect>					clippers;
+				vint									clipperCoverWholeTargetCounter = 0;
+				bool									hostedRendering = false;
+				bool									rendering = false;
+
+				virtual void							StartRenderingOnNativeWindow() = 0;
+				virtual RenderTargetFailure				StopRenderingOnNativeWindow() = 0;
+
+				virtual Size							GetCanvasSize() = 0;
+				virtual void							AfterPushedClipper(Rect clipper, Rect validArea) = 0;
+				virtual void							AfterPushedClipperAndBecameInvalid(Rect clipper) = 0;
+				virtual void							AfterPoppedClipperAndBecameValid(Rect validArea) = 0;
+				virtual void							AfterPoppedClipper(Rect validArea) = 0;
+			public:
+
+				bool									IsInHostedRendering() override;
+				void									StartHostedRendering() override;
+				RenderTargetFailure						StopHostedRendering() override;
+				void									StartRendering() override;
+				RenderTargetFailure						StopRendering() override;
+
+				void									PushClipper(Rect clipper) override;
+				void									PopClipper() override;
+				Rect									GetClipper() override;
+				bool									IsClipperCoverWholeTarget() override;
+			};
 		}
 	}
 }
