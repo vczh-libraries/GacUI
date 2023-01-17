@@ -10,6 +10,7 @@
   - Add HostedWindow theme.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - One GacGen.exe instead of GacGen32.exe and GacGen64.exe
+- Remove exe in Release/Tools, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
 
 ## OS Provider Features
 
