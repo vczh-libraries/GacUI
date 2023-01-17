@@ -235,9 +235,13 @@ GuiGraphicsHost
 				}
 			}
 
-			void GuiGraphicsHost::RecreateRenderTarget()
+			void GuiGraphicsHost::ResetRenderTarget()
 			{
 				windowComposition->UpdateRelatedHostRecord(nullptr);
+			}
+
+			void GuiGraphicsHost::CreateRenderTarget()
+			{
 				GetGuiGraphicsResourceManager()->RecreateRenderTarget(hostRecord.nativeWindow);
 				RefreshRelatedHostRecord(hostRecord.nativeWindow);
 			}
@@ -318,10 +322,17 @@ GuiGraphicsHost
 				}
 			}
 
-			void GuiGraphicsHost::DpiChanged()
+			void GuiGraphicsHost::DpiChanged(bool preparing)
 			{
-				RecreateRenderTarget();
-				needRender = true;
+				if (preparing)
+				{
+					ResetRenderTarget();
+				}
+				else
+				{
+					CreateRenderTarget();
+					needRender = true;
+				}
 			}
 
 			void GuiGraphicsHost::Paint()
@@ -666,7 +677,8 @@ GuiGraphicsHost
 					case RenderTargetFailure::LostDevice:
 						if (handleFailure)
 						{
-							RecreateRenderTarget();
+							ResetRenderTarget();
+							CreateRenderTarget();
 							needRender = true;
 						}
 						break;

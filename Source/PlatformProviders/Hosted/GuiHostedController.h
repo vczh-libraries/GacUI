@@ -98,7 +98,7 @@ GuiHostedController
 			HitTestResult					HitTest(NativePoint location) override;
 			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
 			void							Moved() override;
-			void							DpiChanged() override;
+			void							DpiChanged(bool preparing) override;
 			void							GotFocus() override;
 			void							LostFocus() override;
 			void							BeforeClosing(bool& cancel) override;

@@ -181,16 +181,19 @@ GuiHostedController::INativeWindowListener
 			}
 		}
 
-		void GuiHostedController::DpiChanged()
+		void GuiHostedController::DpiChanged(bool preparing)
 		{
-			hostedResourceManager->nativeManager->RecreateRenderTarget(nativeWindow);
-			wmManager->needRefresh = true;
+			if (!preparing)
+			{
+				hostedResourceManager->nativeManager->RecreateRenderTarget(nativeWindow);
+				wmManager->needRefresh = true;
+			}
 
 			for (auto hostedWindow : createdWindows)
 			{
 				for (auto listener : hostedWindow->listeners)
 				{
-					listener->DpiChanged();
+					listener->DpiChanged(preparing);
 				}
 			}
 		}

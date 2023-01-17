@@ -22,7 +22,7 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::DpiChanged()
+		void INativeWindowListener::DpiChanged(bool preparing)
 		{
 		}
 

@@ -251,7 +251,7 @@ Window
 
 				void									Moved()override;
 				void									Opened()override;
-				void									DpiChanged()override;
+				void									DpiChanged(bool preparing)override;
 				void									BecomeNonMainHostedWindow()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
