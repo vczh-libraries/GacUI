@@ -230,6 +230,9 @@ GuiHostedController
 			void							DestroyNativeWindow(INativeWindow* window) override;
 			INativeWindow*					GetMainWindow() override;
 			INativeWindow*					GetWindow(NativePoint location) override;
+
+			void							SettingHostedWindowsBeforeRunning();
+			void							DestroyHostedWindowsAfterRunning();
 			void							Run(INativeWindow* window) override;
 		public:
 			GuiHostedController(INativeController* _nativeController);

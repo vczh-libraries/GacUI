@@ -764,6 +764,7 @@ GuiHostedController::INativeControllerListener
 		{
 			if (nativeWindow == window)
 			{
+				DestroyHostedWindowsAfterRunning();
 				nativeWindow->UninstallListener(this);
 				nativeWindow = nullptr;
 			}
@@ -1043,6 +1044,62 @@ GuiHostedController::INativeWindowService
 			return wmWindow ? wmWindow->id : nullptr;
 		}
 
+		void GuiHostedController::SettingHostedWindowsBeforeRunning()
+		{
+			if (nativeWindow)
+			{
+				for (auto window : createdWindows)
+				{
+					if (window == mainWindow)
+					{
+						window->BecomeMainWindow();
+					}
+					else
+					{
+						window->BecomeNonMainWindow();
+					}
+				}
+
+				if (auto screen = nativeController->ScreenService()->GetScreen(nativeWindow))
+				{
+					auto screenBounds = screen->GetClientBounds();
+					auto windowSize = nativeWindow->GetBounds().GetSize();
+					nativeWindow->SetBounds({
+						{
+							screenBounds.Left() + (screenBounds.Width() - windowSize.x) / 2,
+							screenBounds.Top() + (screenBounds.Height() - windowSize.y) / 2
+						},
+						windowSize
+						});
+				}
+
+				wmManager->Start(&mainWindow->wmWindow);
+			}
+		}
+
+		void GuiHostedController::DestroyHostedWindowsAfterRunning()
+		{
+			if (nativeWindow)
+			{
+				wmManager->Stop();
+
+				for (vint i = createdWindows.Count() - 1; i >= 0; i--)
+				{
+					auto hostedWindow = createdWindows[i];
+					if (hostedWindow != mainWindow)
+					{
+						DestroyNativeWindow(hostedWindow.Obj());
+					}
+				}
+
+				if (mainWindow)
+				{
+					DestroyNativeWindow(mainWindow);
+					mainWindow = nullptr;
+				}
+			}
+		}
+
 		void GuiHostedController::Run(INativeWindow* window)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::GuiHostedController::Run(INativeWindow*)#"
@@ -1051,49 +1108,11 @@ GuiHostedController::INativeWindowService
 			CHECK_ERROR(hostedWindow, ERROR_MESSAGE_PREFIX L"The window is not created by GuiHostedController.");
 			mainWindow = hostedWindow;
 
-			for (auto window : createdWindows)
-			{
-				if (window == mainWindow)
-				{
-					window->BecomeMainWindow();
-				}
-				else
-				{
-					window->BecomeNonMainWindow();
-				}
-			}
-
-			if (auto screen = nativeController->ScreenService()->GetScreen(nativeWindow))
-			{
-				auto screenBounds = screen->GetClientBounds();
-				auto windowSize = nativeWindow->GetBounds().GetSize();
-				nativeWindow->SetBounds({
-					{
-						screenBounds.Left() + (screenBounds.Width() - windowSize.x) / 2,
-						screenBounds.Top() + (screenBounds.Height() - windowSize.y) / 2
-					},
-					windowSize
-					});
-			}
-
-			wmManager->Start(&mainWindow->wmWindow);
+			SettingHostedWindowsBeforeRunning();
 			wmManager->needRefresh = true;
 			nativeController->WindowService()->Run(nativeWindow);
-			wmManager->Stop();
-
-			for (vint i = createdWindows.Count() - 1; i >= 0; i--)
-			{
-				auto hostedWindow = createdWindows[i];
-				if (hostedWindow != mainWindow)
-				{
-					DestroyNativeWindow(hostedWindow.Obj());
-				}
-			}
-
-			if (mainWindow)
-			{
-				DestroyNativeWindow(mainWindow);
-			}
+			CHECK_ERROR((nativeWindow == nullptr) == (mainWindow == nullptr), ERROR_MESSAGE_PREFIX L"Hosted windows should have been destroyed if the native windows is destroyed.");
+			DestroyHostedWindowsAfterRunning();
 #undef ERROR_MESSAGE_PREFIX
 		}
 
