@@ -88,13 +88,13 @@ GuiGraphicsRenderTarget
 					clipperCoverWholeTargetCounter--;
 					if (clipperCoverWholeTargetCounter == 0)
 					{
-						AfterPoppedClipperAndBecameValid(GetClipper());
+						AfterPoppedClipperAndBecameValid(GetClipper(), clippers.Count() > 0);
 					}
 				}
 				else if (clippers.Count() > 0)
 				{
 					clippers.RemoveAt(clippers.Count() - 1);
-					AfterPoppedClipper(GetClipper());
+					AfterPoppedClipper(GetClipper(), clippers.Count() > 0);
 				}
 			}
 

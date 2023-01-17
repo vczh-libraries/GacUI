@@ -419,7 +419,7 @@ WindowsDirect2DRenderTarget
 
 				Size GetCanvasSize() override
 				{
-					return  window->Convert(window->GetClientSize());
+					return window->Convert(window->GetClientSize());
 				}
 
 				void AfterPushedClipper(Rect clipper, Rect validArea) override
@@ -434,11 +434,11 @@ WindowsDirect2DRenderTarget
 				{
 				}
 
-				void AfterPoppedClipperAndBecameValid(Rect validArea) override
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
 				{
 				}
 
-				void AfterPoppedClipper(Rect validArea) override
+				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
 				{
 					d2dRenderTarget->PopAxisAlignedClip();
 				}
