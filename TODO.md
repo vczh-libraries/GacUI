@@ -10,7 +10,9 @@
   - Add HostedWindow theme.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - One GacGen.exe instead of GacGen32.exe and GacGen64.exe
-- Remove exe in Release/Tools, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
+- Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
+- Remove exe in Release/Tools, add CodePack.exe, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
+- Rewrite GacBuild.ps1 in C++ (optional)
 
 ## OS Provider Features
 
