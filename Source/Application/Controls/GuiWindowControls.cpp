@@ -708,11 +708,14 @@ GuiWindow
 				}
 			}
 
-			void GuiWindow::DpiChanged()
+			void GuiWindow::DpiChanged(bool preparing)
 			{
-				if (auto ct = TypedControlTemplateObject(false))
+				if (!preparing)
 				{
-					UpdateCustomFramePadding(GetNativeWindow(), ct);
+					if (auto ct = TypedControlTemplateObject(false))
+					{
+						UpdateCustomFramePadding(GetNativeWindow(), ct);
+					}
 				}
 			}
 

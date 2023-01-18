@@ -71,7 +71,7 @@ Raw API Rendering Element
 Functionality
 ***********************************************************************/
 
-			class IWindowsGDIRenderTarget : public elements::IGuiGraphicsRenderTarget
+			class IWindowsGDIRenderTarget : public elements::GuiGraphicsRenderTarget
 			{
 			public:
 				virtual windows::WinDC*					GetDC()=0;

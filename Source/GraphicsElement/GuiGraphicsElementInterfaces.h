@@ -138,7 +138,8 @@ Basic Construction
 				/// <summary>
 				/// Notify the target to stop hosted rendering
 				/// </summary>
-				virtual void							StopHostedRendering() = 0;
+				/// <returns>Returns values other "None" to indicate device failure.</returns>
+				virtual RenderTargetFailure				StopHostedRendering() = 0;
 
 				/// <summary>
 				/// Notify the target to prepare for rendering.
@@ -147,8 +148,9 @@ Basic Construction
 				/// <summary>
 				/// Notify the target to stop rendering.
 				/// </summary>
-				/// <returns>Returns false to recreate render target.</returns>
+				/// <returns>Returns values other "None" to indicate device failure.</returns>
 				virtual RenderTargetFailure				StopRendering() = 0;
+
 				/// <summary>
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
@@ -169,6 +171,39 @@ Basic Construction
 				/// </summary>
 				/// <returns>Return true if the combined clipper is as large as the render target.</returns>
 				virtual bool							IsClipperCoverWholeTarget() = 0;
+			};
+
+			/// <summary>
+			/// This is a default implementation for <see cref="IGuiGraphicsRenderTarget"/>
+			/// </summary>
+			class GuiGraphicsRenderTarget : public Object, public IGuiGraphicsRenderTarget
+			{
+			protected:
+				collections::List<Rect>					clippers;
+				vint									clipperCoverWholeTargetCounter = 0;
+				bool									hostedRendering = false;
+				bool									rendering = false;
+
+				virtual void							StartRenderingOnNativeWindow() = 0;
+				virtual RenderTargetFailure				StopRenderingOnNativeWindow() = 0;
+
+				virtual Size							GetCanvasSize() = 0;
+				virtual void							AfterPushedClipper(Rect clipper, Rect validArea) = 0;
+				virtual void							AfterPushedClipperAndBecameInvalid(Rect clipper) = 0;
+				virtual void							AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) = 0;
+				virtual void							AfterPoppedClipper(Rect validArea, bool clipperExists) = 0;
+			public:
+
+				bool									IsInHostedRendering() override;
+				void									StartHostedRendering() override;
+				RenderTargetFailure						StopHostedRendering() override;
+				void									StartRendering() override;
+				RenderTargetFailure						StopRendering() override;
+
+				void									PushClipper(Rect clipper) override;
+				void									PopClipper() override;
+				Rect									GetClipper() override;
+				bool									IsClipperCoverWholeTarget() override;
 			};
 		}
 	}

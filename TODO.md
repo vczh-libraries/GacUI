@@ -2,14 +2,20 @@
 
 ## Progressing
 
-- Handle DPI
-- Issues
+- Issues on GDI (no matter hosted or not, repros in Playground)
   - Big cursor of document empty line
-  - Focused tab header becomes black
 - Theme
-  - Stop using Webdings in default template.
   - Add HostedWindow theme.
+  - `INativeWindow` add callback for state changing.
+    - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
+    - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
+    - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
+- Add default dialog service, will be use in hosted mode.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
+- One GacGen.exe instead of GacGen32.exe and GacGen64.exe
+- Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
+- Remove exe in Release/Tools, add CodePack.exe, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
+- Rewrite GacBuild.ps1 in C++ (optional)
 
 ## OS Provider Features
 

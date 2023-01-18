@@ -45,6 +45,24 @@
       ]]>
     </att.Color-bind>
   </Style>
+  <Style ref.Path="//*.buttonPolygon">
+    <att.BorderColor-bind>
+      <![CDATA[
+        cast Color (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          "#F1F1F1"
+        )
+      ]]>
+    </att.BorderColor-bind>
+    <att.BackgroundColor-bind>
+      <![CDATA[
+        cast Color (
+          not self.VisuallyEnabled ? "#6D6D6D" :
+          "#F1F1F1"
+        )
+      ]]>
+    </att.BackgroundColor-bind>
+  </Style>
   <Style ref.Path="//*.buttonText">
     <att.Color-bind>
       <![CDATA[

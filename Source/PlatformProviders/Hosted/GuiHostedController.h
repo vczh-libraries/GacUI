@@ -98,7 +98,7 @@ GuiHostedController
 			HitTestResult					HitTest(NativePoint location) override;
 			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
 			void							Moved() override;
-			void							DpiChanged() override;
+			void							DpiChanged(bool preparing) override;
 			void							GotFocus() override;
 			void							LostFocus() override;
 			void							BeforeClosing(bool& cancel) override;
@@ -230,6 +230,9 @@ GuiHostedController
 			void							DestroyNativeWindow(INativeWindow* window) override;
 			INativeWindow*					GetMainWindow() override;
 			INativeWindow*					GetWindow(NativePoint location) override;
+
+			void							SettingHostedWindowsBeforeRunning();
+			void							DestroyHostedWindowsAfterRunning();
 			void							Run(INativeWindow* window) override;
 		public:
 			GuiHostedController(INativeController* _nativeController);

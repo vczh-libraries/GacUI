@@ -17,6 +17,7 @@ GuiSolidBorderElementRenderer
 			{
 				auto resourceManager = GetWindowsGDIResourceManager();
 				pen = resourceManager->GetFocusRectanglePen();
+				brush = resourceManager->CreateGdiBrush(Color(0, 0, 0, 0));
 			}
 
 			void GuiFocusRectangleElementRenderer::FinalizeInternal()
@@ -31,6 +32,7 @@ GuiSolidBorderElementRenderer
 			{
 				int originRop2 = renderTarget->GetDC()->SetRasterOperation(R2_XORPEN);
 				renderTarget->GetDC()->SetPen(pen);
+				renderTarget->GetDC()->SetBrush(brush);
 				renderTarget->GetDC()->Rectangle(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1);
 				renderTarget->GetDC()->SetRasterOperation(originRop2);
 			}

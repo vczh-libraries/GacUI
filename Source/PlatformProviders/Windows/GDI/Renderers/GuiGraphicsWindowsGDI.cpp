@@ -30,7 +30,7 @@ GuiGDIElement
 WindowsGDIRenderTarget
 ***********************************************************************/
 
-			class WindowsGDIRenderTarget : public Object, public IWindowsGDIRenderTarget
+			class WindowsGDIRenderTarget : public IWindowsGDIRenderTarget
 			{
 			protected:
 				INativeWindow*				window = nullptr;
@@ -40,20 +40,51 @@ WindowsGDIRenderTarget
 				bool						hostedRendering = false;
 				bool						rendering = false;
 
-				void ApplyClipper()
+				void ApplyClipper(Rect validArea, bool clipperExists)
 				{
-					if(clipperCoverWholeTargetCounter==0)
+					if (clipperExists)
 					{
-						if(clippers.Count()==0)
-						{
-							dc->RemoveClip();
-						}
-						else
-						{
-							Rect clipper=GetClipper();
-							dc->ClipRegion(Ptr(new WinRegion(clipper.Left(), clipper.Top(), clipper.Right(), clipper.Bottom(), true)));
-						}
+						dc->ClipRegion(Ptr(new WinRegion(validArea.Left(), validArea.Top(), validArea.Right(), validArea.Bottom(), true)));
 					}
+					else
+					{
+						dc->RemoveClip();
+					}
+				}
+
+				void StartRenderingOnNativeWindow() override
+				{
+					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+				}
+
+				RenderTargetFailure StopRenderingOnNativeWindow() override
+				{
+					dc = nullptr;
+					return RenderTargetFailure::None;
+				}
+
+				Size GetCanvasSize() override
+				{
+					return window->Convert(window->GetClientSize());
+				}
+
+				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				{
+					ApplyClipper(validArea, true);
+				}
+
+				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				{
+				}
+
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
+				{
+					ApplyClipper(validArea, clipperExists);
+				}
+
+				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
+				{
+					ApplyClipper(validArea, clipperExists);
 				}
 			public:
 				WindowsGDIRenderTarget(INativeWindow* _window)
@@ -64,108 +95,6 @@ WindowsGDIRenderTarget
 				WinDC* GetDC()override
 				{
 					return dc ? dc : GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
-				}
-
-				bool IsInHostedRendering()override
-				{
-					return hostedRendering;
-				}
-
-				void StartHostedRendering()override
-				{
-					CHECK_ERROR(!hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartHostedRendering()#Wrong timing to call this function.");
-					hostedRendering = true;
-					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
-				}
-
-				void StopHostedRendering()override
-				{
-					CHECK_ERROR(hostedRendering && !rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopHostedRendering()#Wrong timing to call this function.");
-					dc = nullptr;
-					hostedRendering = false;
-				}
-
-				void StartRendering()override
-				{
-					CHECK_ERROR(!rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StartRendering()#Wrong timing to call this function.");
-					rendering = true;
-					if (!hostedRendering)
-					{
-						dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
-					}
-				}
-
-				RenderTargetFailure StopRendering()override
-				{
-					CHECK_ERROR(rendering, L"vl::presentation::elements_windows_gdi::WindowsGDIRenderTarget::StopRendering()#Wrong timing to call this function.");
-					rendering = false;
-					if (!hostedRendering)
-					{
-						dc = nullptr;
-					}
-					return RenderTargetFailure::None;
-				}
-
-				void PushClipper(Rect clipper)override
-				{
-					if (clipperCoverWholeTargetCounter > 0)
-					{
-						clipperCoverWholeTargetCounter++;
-					}
-					else
-					{
-						Rect previousClipper = GetClipper();
-						Rect currentClipper;
-
-						currentClipper.x1 = (previousClipper.x1 > clipper.x1 ? previousClipper.x1 : clipper.x1);
-						currentClipper.y1 = (previousClipper.y1 > clipper.y1 ? previousClipper.y1 : clipper.y1);
-						currentClipper.x2 = (previousClipper.x2 < clipper.x2 ? previousClipper.x2 : clipper.x2);
-						currentClipper.y2 = (previousClipper.y2 < clipper.y2 ? previousClipper.y2 : clipper.y2);
-
-						if (currentClipper.x1 < currentClipper.x2 && currentClipper.y1 < currentClipper.y2)
-						{
-							clippers.Add(currentClipper);
-						}
-						else
-						{
-							clipperCoverWholeTargetCounter++;
-						}
-					}
-					ApplyClipper();
-				}
-
-				void PopClipper()override
-				{
-					if (clipperCoverWholeTargetCounter > 0)
-					{
-						clipperCoverWholeTargetCounter--;
-					}
-					else if (clippers.Count() > 0)
-					{
-						clippers.RemoveAt(clippers.Count() - 1);
-					}
-					else
-					{
-						return;
-					}
-					ApplyClipper();
-				}
-
-				Rect GetClipper()override
-				{
-					if (clippers.Count() == 0)
-					{
-						return Rect(Point(0, 0), window->Convert(window->GetClientSize()));
-					}
-					else
-					{
-						return clippers[clippers.Count() - 1];
-					}
-				}
-
-				bool IsClipperCoverWholeTarget()override
-				{
-					return clipperCoverWholeTargetCounter > 0;
 				}
 			};
 

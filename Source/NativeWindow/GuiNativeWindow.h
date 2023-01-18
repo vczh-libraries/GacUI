@@ -586,8 +586,10 @@ INativeWindow
 			virtual void				Moved();
 			/// <summary>
 			/// Called when the dpi associated with this window is changed.
+			/// The native window should call DpiChanged(true) before DpiChanged(false).
 			/// </summary>
-			virtual void				DpiChanged();
+			/// <param name="preparing">True for before changing phase, false for after changing phase.</param>
+			virtual void				DpiChanged(bool preparing);
 			/// <summary>
 			/// Called when the window is enabled.
 			/// </summary>

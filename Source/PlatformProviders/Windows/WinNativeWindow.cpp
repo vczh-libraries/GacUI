@@ -1,9 +1,9 @@
 #include "..\..\Resources\GuiResource.h"
+#include "..\..\NativeWindow\SharedServices\GuiSharedAsyncService.h"
 #include "WinNativeWindow.h"
 #include "ServicesImpl\WindowsResourceService.h"
 #include "ServicesImpl\WindowsClipboardService.h"
 #include "ServicesImpl\WindowsImageService.h"
-#include "ServicesImpl\WindowsAsyncService.h"
 #include "ServicesImpl\WindowsScreenService.h"
 #include "ServicesImpl\WindowsCallbackService.h"
 #include "ServicesImpl\WindowsInputService.h"
@@ -406,9 +406,15 @@ WindowsForm
 							UpdateDpiAwaredFields(false);
 							auto newRect = (RECT*)lParam;
 							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
+
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
-								listeners[i]->DpiChanged();
+								listeners[i]->DpiChanged(true);
+							}
+
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->DpiChanged(false);
 							}
 						}
 						break;
@@ -928,7 +934,7 @@ WindowsForm
 						dpiX = (vint)x;
 						dpiY = (vint)y;
 					}
-					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, dpiX));
+					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, (UINT)dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, (UINT)dpiX));
 					customFramePadding = NativeMargin(padding, padding, padding, padding);
 				}
 			public:
@@ -1138,7 +1144,7 @@ WindowsForm
 						RECT required = { 0,0,(int)size.x.value,(int)size.y.value };
 						RECT bounds;
 						GetWindowRect(handle, &bounds);
-						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
+						DpiAwared_AdjustWindowRect(&required, handle, (UINT)dpiX);
 						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right - required.left, required.bottom - required.top)));
 					}
 				}
@@ -1154,7 +1160,7 @@ WindowsForm
 						RECT required={0,0,0,0};
 						RECT bounds;
 						GetWindowRect(handle, &bounds);
-						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
+						DpiAwared_AdjustWindowRect(&required, handle, (UINT)dpiX);
 						return NativeRect(
 							NativePoint(
 								(bounds.left-required.left),
@@ -1717,7 +1723,7 @@ WindowsController
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
-				WindowsAsyncService					asyncService;
+				SharedAsyncService					asyncService;
 				WindowsClipboardService				clipboardService;
 				WindowsImageService					imageService;
 				WindowsScreenService				screenService;

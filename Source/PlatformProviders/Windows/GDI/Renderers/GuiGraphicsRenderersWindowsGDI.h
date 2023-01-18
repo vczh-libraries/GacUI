@@ -28,6 +28,7 @@ Renderers
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget)
 			protected:
 				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
 
 				void					InitializeInternal();
 				void					FinalizeInternal();
