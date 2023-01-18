@@ -167,6 +167,7 @@ SharedAsyncService
 				taskItems.Add(item);
 			}
 
+#ifdef VCZH_MSVC
 			if(milliseconds<0)
 			{
 				return semaphore.Wait();
@@ -175,6 +176,9 @@ SharedAsyncService
 			{
 				return semaphore.WaitForTime(milliseconds);
 			}
+#else
+			return semaphore.Wait();
+#endif
 		}
 
 		Ptr<INativeDelay> SharedAsyncService::DelayExecute(const Func<void()>& proc, vint milliseconds)
