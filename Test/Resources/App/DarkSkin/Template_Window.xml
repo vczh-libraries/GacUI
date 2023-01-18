@@ -134,6 +134,23 @@
                       </att.Points>
                     </Polygon>
                   </BoundsComposition>
+                  <BoundsComposition Visible-bind="self.Maximized" AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:24 y:16" MinSizeLimitation="LimitToElement">
+                    <Polygon ref.Style="buttonPolygon" Size="x:24 y:16">
+                      <att.Points>
+                        <Point>x:6 y:6</Point>
+                        <Point>x:14 y:6</Point>
+                        <Point>x:14 y:13</Point>
+                        <Point>x:6 y:13</Point>
+                        <Point>x:6 y:6</Point>
+
+                        <Point>x:6 y:6</Point>
+                        <Point>x:6 y:13</Point>
+                        <Point>x:14 y:13</Point>
+                        <Point>x:14 y:7</Point>
+                        <Point>x:6 y:7</Point>
+                      </att.Points>
+                    </Polygon>
+                  </BoundsComposition>
                 </att.ContainerComposition-set>
               </Button>
             </Cell>

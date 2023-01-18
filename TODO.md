@@ -7,7 +7,9 @@
 - Theme
   - Add HostedWindow theme.
   - `INativeWindow` add callback for state changing.
+    - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
     - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
+    - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Add default dialog service, will be use in hosted mode.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - One GacGen.exe instead of GacGen32.exe and GacGen64.exe
