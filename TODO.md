@@ -5,7 +5,6 @@
 - Issues on GDI (no matter hosted or not, repros in Playground)
   - Big cursor of document empty line
 - Theme
-  - Stop using Webdings in default template.
   - Add HostedWindow theme.
 - Add default dialog service.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.

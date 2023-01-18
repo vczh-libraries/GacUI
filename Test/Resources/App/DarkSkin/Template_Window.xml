@@ -92,10 +92,22 @@
 
             <Cell Site="row:0 column:2">
               <att.AssociatedHitTestResult-bind>self.MinimizedBox ? ButtonMinimum : NoDecision</att.AssociatedHitTestResult-bind>
-              <Button AutoFocus="false" Text=" 0 " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+              <Button AutoFocus="false" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
                 <att.Enabled-bind>self.MinimizedBox</att.Enabled-bind>
                 <att.Visible-bind>self.MinimizedBox or self.MaximizedBox</att.Visible-bind>
+                <att.ContainerComposition-set>
+                  <BoundsComposition AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:24 y:16" MinSizeLimitation="LimitToElement">
+                    <Polygon ref.Style="buttonPolygon" Size="x:24 y:16">
+                      <att.Points>
+                        <Point>x:8 y:12</Point>
+                        <Point>x:15 y:12</Point>
+                        <Point>x:15 y:13</Point>
+                        <Point>x:8 y:13</Point>
+                      </att.Points>
+                    </Polygon>
+                  </BoundsComposition>
+                </att.ContainerComposition-set>
               </Button>
             </Cell>
             <Cell Site="row:0 column:3">
