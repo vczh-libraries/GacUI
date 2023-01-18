@@ -6,7 +6,9 @@
   - Big cursor of document empty line
 - Theme
   - Add HostedWindow theme.
-- Add default dialog service.
+  - `INativeWindow` add callback for state changing.
+    - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
+- Add default dialog service, will be use in hosted mode.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - One GacGen.exe instead of GacGen32.exe and GacGen64.exe
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
