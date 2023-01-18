@@ -1,9 +1,9 @@
 #include "..\..\Resources\GuiResource.h"
+#include "..\..\NativeWindow\SharedServices\GuiSharedAsyncService.h"
 #include "WinNativeWindow.h"
 #include "ServicesImpl\WindowsResourceService.h"
 #include "ServicesImpl\WindowsClipboardService.h"
 #include "ServicesImpl\WindowsImageService.h"
-#include "ServicesImpl\WindowsAsyncService.h"
 #include "ServicesImpl\WindowsScreenService.h"
 #include "ServicesImpl\WindowsCallbackService.h"
 #include "ServicesImpl\WindowsInputService.h"
@@ -1723,7 +1723,7 @@ WindowsController
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
-				WindowsAsyncService					asyncService;
+				SharedAsyncService					asyncService;
 				WindowsClipboardService				clipboardService;
 				WindowsImageService					imageService;
 				WindowsScreenService				screenService;

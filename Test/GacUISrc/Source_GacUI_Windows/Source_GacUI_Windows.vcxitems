@@ -24,7 +24,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsWindowsGDI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\WinGDI.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\WinGDIApplication.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsAsyncService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsCallbackService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsClipboardService.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsDialogService.cpp" />
@@ -46,7 +45,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsWindowsGDI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\WinGDI.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\GDI\WinGDIApplication.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsAsyncService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsCallbackService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsClipboardService.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsDialogService.h" />

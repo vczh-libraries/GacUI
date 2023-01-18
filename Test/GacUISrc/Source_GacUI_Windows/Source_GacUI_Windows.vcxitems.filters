@@ -39,9 +39,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsScreenService.cpp">
       <Filter>PlatformProviders\Windows\ServicesImpl</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsAsyncService.cpp">
-      <Filter>PlatformProviders\Windows\ServicesImpl</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsCallbackService.cpp">
       <Filter>PlatformProviders\Windows\ServicesImpl</Filter>
     </ClCompile>
@@ -102,9 +99,6 @@
       <Filter>PlatformProviders\Windows\ServicesImpl</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsScreenService.h">
-      <Filter>PlatformProviders\Windows\ServicesImpl</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsAsyncService.h">
       <Filter>PlatformProviders\Windows\ServicesImpl</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsCallbackService.h">
