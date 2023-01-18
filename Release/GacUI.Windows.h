@@ -103,6 +103,8 @@ namespace vl
 {
 	namespace presentation
 	{
+		class GuiHostedController;
+
 		namespace elements
 		{
 			
@@ -162,7 +164,7 @@ Raw API Rendering Element
 Functionality
 ***********************************************************************/
 
-			class IWindowsDirect2DRenderTarget : public elements::IGuiGraphicsRenderTarget
+			class IWindowsDirect2DRenderTarget : public elements::GuiGraphicsRenderTarget
 			{
 			public:
 				virtual ID2D1RenderTarget*					GetDirect2DRenderTarget()=0;
@@ -226,7 +228,7 @@ OS Supporting
 	}
 }
 
-extern void RendererMainDirect2D();
+extern void RendererMainDirect2D(vl::presentation::GuiHostedController* hostedController);
 
 #endif
 
@@ -1387,6 +1389,8 @@ namespace vl
 {
 	namespace presentation
 	{
+		class GuiHostedController;
+
 		namespace elements
 		{
 			
@@ -1436,7 +1440,7 @@ Raw API Rendering Element
 Functionality
 ***********************************************************************/
 
-			class IWindowsGDIRenderTarget : public elements::IGuiGraphicsRenderTarget
+			class IWindowsGDIRenderTarget : public elements::GuiGraphicsRenderTarget
 			{
 			public:
 				virtual windows::WinDC*					GetDC()=0;
@@ -1482,7 +1486,7 @@ OS Supporting
 	}
 }
 
-extern void RendererMainGDI();
+extern void RendererMainGDI(vl::presentation::GuiHostedController* hostedController);
 
 #endif
 
@@ -1518,6 +1522,7 @@ Renderers
 				DEFINE_GUI_GRAPHICS_RENDERER(GuiFocusRectangleElement, GuiFocusRectangleElementRenderer, IWindowsGDIRenderTarget)
 			protected:
 				Ptr<windows::WinPen>	pen;
+				Ptr<windows::WinBrush>	brush;
 
 				void					InitializeInternal();
 				void					FinalizeInternal();
@@ -1736,79 +1741,6 @@ Renderers
 
 				void					Render(Rect bounds)override;
 				void					OnElementStateChanged()override;
-			};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\SERVICESIMPL\WINDOWSASYNCSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Windows Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
-#define VCZH_PRESENTATION_WINDOWS_SERVICESIMPL_WINDOWSASYNCSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-			class WindowsAsyncService : public INativeAsyncService
-			{
-			protected:
-				struct TaskItem
-				{
-					Semaphore*							semaphore;
-					Func<void()>						proc;
-
-					TaskItem();
-					TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
-					~TaskItem();
-				};
-
-				class DelayItem : public Object, public INativeDelay
-				{
-				public:
-					DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
-					~DelayItem();
-
-					WindowsAsyncService*				service;
-					Func<void()>						proc;
-					ExecuteStatus						status;
-					DateTime							executeTime;
-					bool								executeInMainThread;
-
-					ExecuteStatus						GetStatus()override;
-					bool								Delay(vint milliseconds)override;
-					bool								Cancel()override;
-				};
-			protected:
-				vint									mainThreadId;
-				SpinLock								taskListLock;
-				collections::List<TaskItem>				taskItems;
-				collections::List<Ptr<DelayItem>>		delayItems;
-			public:
-				WindowsAsyncService();
-				~WindowsAsyncService();
-
-				void									ExecuteAsyncTasks();
-				bool									IsInMainThread(INativeWindow* window)override;
-				void									InvokeAsync(const Func<void()>& proc)override;
-				void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
-				bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
-				Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
 			};
 		}
 	}
@@ -2137,11 +2069,12 @@ Windows Platform Native Controller
 			};
 
 			extern void										SetWindowDefaultIcon(UINT resourceId);
-			extern INativeController*						CreateWindowsNativeController(HINSTANCE hInstance);
+			extern void										StartWindowsNativeController(HINSTANCE hInstance);
+			extern INativeController*						GetWindowsNativeController();
 			extern IWindowsForm*							GetWindowsFormFromHandle(HWND hwnd);
 			extern IWindowsForm*							GetWindowsForm(INativeWindow* window);
 			extern void										GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly);
-			extern void										DestroyWindowsNativeController(INativeController* controller);
+			extern void										StopWindowsNativeController();
 			extern void										EnableCrossKernelCrashing();
 		}
 	}

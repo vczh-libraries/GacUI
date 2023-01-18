@@ -38,8 +38,18 @@
             <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
               <SolidBorder ref.Style="buttonBorder"/>
             </Bounds>
-            <Bounds Visible-bind="self.Selected" AlignmentToParent="left:0 top:0 right:0 bottom:0">
-              <SolidLabel ref.Style="buttonText" Text="a" Font="fontFamily:'Webdings' size:16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Bounds Visible-bind="self.Selected" AlignmentToParent="left:3 top:3 right:3 bottom:3">
+              <Polygon ref.Style="buttonPolygon" Size="x:11 y:11">
+                <att.Points>
+                  <Point>x:0 y:6</Point>
+                  <Point>x:3 y:9</Point>
+                  <Point>x:10 y:2</Point>
+
+                  <Point>x:10 y:1</Point>
+                  <Point>x:3 y:8</Point>
+                  <Point>x:0 y:5</Point>
+                </att.Points>
+              </Polygon>
             </Bounds>
           </Cell>
 

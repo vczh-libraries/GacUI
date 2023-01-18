@@ -1263,34 +1263,83 @@ Basic Construction
 			{
 			public:
 				/// <summary>
+				/// Test if the target is doing hosted rendering.
+				/// </summary>
+				/// <returns>Returns true if the target is doing hosted rendering.</returns>
+				virtual bool							IsInHostedRendering() = 0;
+				/// <summary>
+				/// Notify the target to start hosted rendering, <see cref="StartRendering()"/> and <see cref="StopRendering"/> will be called multiple times.
+				/// </summary>
+				virtual void							StartHostedRendering() = 0;
+				/// <summary>
+				/// Notify the target to stop hosted rendering
+				/// </summary>
+				/// <returns>Returns values other "None" to indicate device failure.</returns>
+				virtual RenderTargetFailure				StopHostedRendering() = 0;
+
+				/// <summary>
 				/// Notify the target to prepare for rendering.
 				/// </summary>
-				virtual void							StartRendering()=0;
+				virtual void							StartRendering() = 0;
 				/// <summary>
 				/// Notify the target to stop rendering.
 				/// </summary>
-				/// <returns>Returns false to recreate render target.</returns>
-				virtual RenderTargetFailure				StopRendering()=0;
+				/// <returns>Returns values other "None" to indicate device failure.</returns>
+				virtual RenderTargetFailure				StopRendering() = 0;
+
 				/// <summary>
 				/// Apply a clipper to the render target.
 				/// The result clipper is combined by all clippers in the clipper stack maintained by the render target.
 				/// </summary>
 				/// <param name="clipper">The clipper to push.</param>
-				virtual void							PushClipper(Rect clipper)=0;
+				virtual void							PushClipper(Rect clipper) = 0;
 				/// <summary>
 				/// Remove the last pushed clipper from the clipper stack.
 				/// </summary>
-				virtual void							PopClipper()=0;
+				virtual void							PopClipper() = 0;
 				/// <summary>
 				/// Get the combined clipper
 				/// </summary>
 				/// <returns>The combined clipper</returns>
-				virtual Rect							GetClipper()=0;
+				virtual Rect							GetClipper() = 0;
 				/// <summary>
 				/// Test is the combined clipper is as large as the render target.
 				/// </summary>
 				/// <returns>Return true if the combined clipper is as large as the render target.</returns>
-				virtual bool							IsClipperCoverWholeTarget()=0;
+				virtual bool							IsClipperCoverWholeTarget() = 0;
+			};
+
+			/// <summary>
+			/// This is a default implementation for <see cref="IGuiGraphicsRenderTarget"/>
+			/// </summary>
+			class GuiGraphicsRenderTarget : public Object, public IGuiGraphicsRenderTarget
+			{
+			protected:
+				collections::List<Rect>					clippers;
+				vint									clipperCoverWholeTargetCounter = 0;
+				bool									hostedRendering = false;
+				bool									rendering = false;
+
+				virtual void							StartRenderingOnNativeWindow() = 0;
+				virtual RenderTargetFailure				StopRenderingOnNativeWindow() = 0;
+
+				virtual Size							GetCanvasSize() = 0;
+				virtual void							AfterPushedClipper(Rect clipper, Rect validArea) = 0;
+				virtual void							AfterPushedClipperAndBecameInvalid(Rect clipper) = 0;
+				virtual void							AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) = 0;
+				virtual void							AfterPoppedClipper(Rect validArea, bool clipperExists) = 0;
+			public:
+
+				bool									IsInHostedRendering() override;
+				void									StartHostedRendering() override;
+				RenderTargetFailure						StopHostedRendering() override;
+				void									StartRendering() override;
+				RenderTargetFailure						StopRendering() override;
+
+				void									PushClipper(Rect clipper) override;
+				void									PopClipper() override;
+				Rect									GetClipper() override;
+				bool									IsClipperCoverWholeTarget() override;
 			};
 		}
 	}
@@ -1555,10 +1604,27 @@ GacUI::Native Window
 
 Interfaces:
   INativeController						: Interface for Operating System abstraction
+    INativeControllerListener
+  INativeScreenService					: Screen Service
+    INativeScreen
+  INativeResourceService				: Resource Service
+    INativeCursor
+  INativeImageService					: Image Service
+    INativeImageFrameCache
+    INativeImageFrame
+    INativeImage
+  INativeWindowService					: Window Service
+    INativeWindow
+    INativeWindowListener
+  INativeAsyncService					: Async Service
+    INativeDelay
+  INativeClipboardService				: Clipboard Service
+    INativeClipboardReader
+    INativeClipboardWriter
+  INativeInputService					: Input Service
+  INativeCallbackService				: Callback Service
+  INativeDialogService					: Dialog Service
 
-Renderers:
-  GUI_GRAPHICS_RENDERER_GDI
-  GUI_GRAPHICS_RENDERER_DIRECT2D
 ***********************************************************************/
 
 #ifndef VCZH_PRESENTATION_GUINATIVEWINDOW
@@ -1569,304 +1635,15 @@ namespace vl
 {
 	namespace presentation
 	{
+
+/***********************************************************************
+INativeWindow
+***********************************************************************/
+
 		class GuiImageData;
 		class DocumentModel;
-		class INativeWindow;
+		class INativeCursor;
 		class INativeWindowListener;
-		class INativeController;
-		class INativeControllerListener;
-
-/***********************************************************************
-System Object
-***********************************************************************/
-
-		/// <summary>
-		/// Represents a screen.
-		/// </summary>
-		class INativeScreen : public virtual IDescriptable, public Description<INativeScreen>
-		{
-		public:
-			/// <summary>
-			/// Get the bounds of the screen.
-			/// </summary>
-			/// <returns>The bounds of the screen.</returns>
-			virtual NativeRect			GetBounds()=0;
-			/// <summary>
-			/// Get the bounds of the screen client area.
-			/// </summary>
-			/// <returns>The bounds of the screen client area.</returns>
-			virtual NativeRect			GetClientBounds()=0;
-			/// <summary>
-			/// Get the name of the screen.
-			/// </summary>
-			/// <returns>The name of the screen.</returns>
-			virtual WString				GetName()=0;
-			/// <summary>
-			/// Test is the screen is a primary screen.
-			/// </summary>
-			/// <returns>Returns true if the screen is a primary screen.</returns>
-			virtual bool				IsPrimary()=0;
-			/// <summary>
-			/// Get the scaling for the screen's horizontal edge.
-			/// </summary>
-			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
-			virtual double				GetScalingX() = 0;
-			/// <summary>
-			/// Get the scaling for the screen's vertical edge.
-			/// </summary>
-			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
-			virtual double				GetScalingY() = 0;
-		};
-		
-		/// <summary>
-		/// Represents a cursor.
-		/// </summary>
-		class INativeCursor : public virtual IDescriptable, public Description<INativeCursor>
-		{
-		public:
-			/// <summary>
-			/// Represents a predefined cursor type.
-			/// </summary>
-			enum SystemCursorType
-			{
-				/// <summary>
-				/// Small waiting cursor.
-				/// </summary>
-				SmallWaiting,
-				/// <summary>
-				/// large waiting cursor.
-				/// </summary>
-				LargeWaiting,
-				/// <summary>
-				/// Arrow cursor.
-				/// </summary>
-				Arrow,
-				/// <summary>
-				/// Cross cursor.
-				/// </summary>
-				Cross,
-				/// <summary>
-				/// Hand cursor.
-				/// </summary>
-				Hand,
-				/// <summary>
-				/// Help cursor.
-				/// </summary>
-				Help,
-				/// <summary>
-				/// I beam cursor.
-				/// </summary>
-				IBeam,
-				/// <summary>
-				/// Sizing in all direction cursor.
-				/// </summary>
-				SizeAll,
-				/// <summary>
-				/// Sizing NE-SW cursor.
-				/// </summary>
-				SizeNESW,
-				/// <summary>
-				/// Sizing N-S cursor.
-				/// </summary>
-				SizeNS,
-				/// <summary>
-				/// Sizing NW-SE cursor.
-				/// </summary>
-				SizeNWSE,
-				/// <summary>
-				/// Sizing W-E cursor.
-				/// </summary>
-				SizeWE,
-				/// <summary>
-				/// Number of available cursors, this is not an available cursor by itself.
-				/// </summary>
-				LastSystemCursor=SizeWE,
-			};
-
-			static const vint			SystemCursorCount=LastSystemCursor+1;
-		public:
-			/// <summary>
-			/// Test is the cursor a system provided cursor.
-			/// </summary>
-			/// <returns>Returns true if the cursor a system provided cursor.</returns>
-			virtual bool				IsSystemCursor()=0;
-			/// <summary>
-			/// Get the cursor type if the cursor a system provided cursor.
-			/// </summary>
-			/// <returns>The cursor type.</returns>
-			virtual SystemCursorType	GetSystemCursorType()=0;
-		};
-
-/***********************************************************************
-Image Object
-***********************************************************************/
-
-		class INativeImageService;
-		class INativeImage;
-		class INativeImageFrame;
-		
-		/// <summary>
-		/// Represents a customized cache object for an image frame.
-		/// </summary>
-		class INativeImageFrameCache : public Interface
-		{
-		public:
-			/// <summary>
-			/// Called when this cache object is attached to an image frame.
-			/// </summary>
-			/// <param name="frame">The image frame that attached to.</param>
-			virtual void						OnAttach(INativeImageFrame* frame)=0;
-			/// <summary>
-			/// Called when this cache object is detached to an image frame.
-			/// </summary>
-			/// <param name="frame">The image frame that detached from.</param>
-			virtual void						OnDetach(INativeImageFrame* frame)=0;
-		};
-
-		/// <summary>
-		/// Represents an image frame.
-		/// </summary>
-		class INativeImageFrame : public virtual IDescriptable, public Description<INativeImageFrame>
-		{
-		public:
-			/// <summary>
-			/// Get the image that owns this frame.
-			/// </summary>
-			/// <returns>The image that owns this frame.</returns>
-			virtual INativeImage*				GetImage()=0;
-			/// <summary>
-			/// Get the size of this frame.
-			/// </summary>
-			/// <returns>The size of this frame.</returns>
-			virtual Size						GetSize()=0;
-
-			/// <summary>
-			/// Attach a customized cache object to this image frame and bind to a key.
-			/// </summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			/// <param name="key">The key binded with the customized cache object.</param>
-			/// <param name="cache">The customized cache object.</param>
-			virtual bool						SetCache(void* key, Ptr<INativeImageFrameCache> cache)=0;
-			/// <summary>
-			/// Get the attached customized cache object that is already binded to a key.
-			/// </summary>
-			/// <returns>The attached customized cache object.</returns>
-			/// <param name="key">The key binded with the customized cache object.</param>
-			virtual Ptr<INativeImageFrameCache>	GetCache(void* key)=0;
-			/// <summary>
-			/// Get the attached customized cache object that is already binded to a key, and then detach it.
-			/// </summary>
-			/// <returns>The detached customized cache object.</returns>
-			/// <param name="key">The key binded with the customized cache object.</param>
-			virtual Ptr<INativeImageFrameCache>	RemoveCache(void* key)=0;
-		};
-		
-		/// <summary>
-		/// Represents an image.
-		/// </summary>
-		class INativeImage : public virtual IDescriptable, public Description<INativeImage>
-		{
-		public:
-			/// <summary>
-			/// Represents an image format.
-			/// </summary>
-			enum FormatType
-			{
-				/// <summary>
-				/// Bitmap format.
-				/// </summary>
-				Bmp,
-				/// <summary>
-				/// GIF format.
-				/// </summary>
-				Gif,
-				/// <summary>
-				/// Icon format.
-				/// </summary>
-				Icon,
-				/// <summary>
-				/// JPEG format.
-				/// </summary>
-				Jpeg,
-				/// <summary>
-				/// PNG format.
-				/// </summary>
-				Png,
-				/// <summary>
-				/// TIFF format.
-				/// </summary>
-				Tiff,
-				/// <summary>
-				/// WMP format.
-				/// </summary>
-				Wmp,
-				/// <summary>
-				/// Unknown format.
-				/// </summary>
-				Unknown,
-			};
-			
-			/// <summary>
-			/// Get the image service that creates this image.
-			/// </summary>
-			/// <returns>The image service that creates this image.</returns>
-			virtual INativeImageService*		GetImageService()=0;
-			/// <summary>
-			/// Get the image format.
-			/// </summary>
-			/// <returns>The image format.</returns>
-			virtual FormatType					GetFormat()=0;
-			/// <summary>
-			/// Get the number of frames in this image.
-			/// </summary>
-			/// <returns>The number of frames in this image.</returns>
-			virtual vint						GetFrameCount()=0;
-			/// <summary>
-			/// Get the frame in this image by a specified frame index.
-			/// </summary>
-			/// <returns>The frame in this image by a specified frame index.</returns>
-			/// <param name="index">The specified frame index.</param>
-			virtual INativeImageFrame*			GetFrame(vint index)=0;
-			/// <summary>
-			/// Save the image to a stream.
-			/// </summary>
-			/// <param name="imageStream">The stream.</param>
-			/// <param name="formatType">The format of the image.</param>
-			virtual void						SaveToStream(stream::IStream& imageStream, FormatType formatType = FormatType::Unknown) = 0;
-		};
-		
-		/// <summary>
-		/// Image service. To access this service, use [M:vl.presentation.INativeController.ImageService].
-		/// </summary>
-		class INativeImageService : public virtual IDescriptable, public Description<INativeImageService>
-		{
-		public:
-			/// <summary>
-			/// Create an image from file.
-			/// </summary>
-			/// <returns>The created image.</returns>
-			/// <param name="path">The file path.</param>
-			virtual Ptr<INativeImage>			CreateImageFromFile(const WString& path)=0;
-
-			/// <summary>
-			/// Create an image from memory.
-			/// </summary>
-			/// <returns>The created image.</returns>
-			/// <param name="buffer">The memory pointer.</param>
-			/// <param name="length">The memory length.</param>
-			virtual Ptr<INativeImage>			CreateImageFromMemory(void* buffer, vint length)=0;
-
-			/// <summary>
-			/// Create an image from stream.
-			/// </summary>
-			/// <returns>The created image.</returns>
-			/// <param name="imageStream">The stream.</param>
-			virtual Ptr<INativeImage>			CreateImageFromStream(stream::IStream& imageStream)=0;
-		};
-
-/***********************************************************************
-Native Window
-***********************************************************************/
 		
 		/// <summary>
 		/// Represents a window.
@@ -1874,6 +1651,19 @@ Native Window
 		class INativeWindow : public Interface, public Description<INativeWindow>
 		{
 		public:
+			/// <summary>
+			/// Test if the window needs to actively refreshing itself.
+			/// It should return true if it has an exclusive OS native window.
+			/// </summary>
+			/// <returns>Returns true if the window needs to actively refreshing itself.</returns>
+			virtual bool				IsActivelyRefreshing() = 0;
+			/// <summary>
+			/// Get the rendering offset to the render target.
+			/// It should return (0,0) if it has an exclusive OS native window.
+			/// </summary>
+			/// <returns>Returns the rendering offset to the render target.</returns>
+			virtual NativeSize			GetRenderingOffset() = 0;
+
 			/// <summary>
 			/// Convert point from native coordinate to GUI coordinate.
 			/// </summary>
@@ -1946,7 +1736,7 @@ Native Window
 			/// Set the title of the window. A title will be displayed as a name of this window.
 			/// </summary>
 			/// <param name="title">The title of the window.</param>
-			virtual void				SetTitle(WString title)=0;
+			virtual void				SetTitle(const WString& title)=0;
 			/// <summary>
 			/// Get the mouse cursor of the window. When the mouse is on the window, the mouse cursor will be rendered.
 			/// </summary>
@@ -1990,13 +1780,6 @@ Native Window
 				/// </summary>
 				Normal,
 				/// <summary>
-				/// A tooltip window.
-				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
-				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
-				/// This window is automatically closed when the top level window is deactivated or clicked.
-				/// </summary>
-				Tooltip,
-				/// <summary>
 				/// A popup window.
 				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
 				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
@@ -2004,10 +1787,11 @@ Native Window
 				/// </summary>
 				Popup,
 				/// <summary>
-				/// A menu window.
-				/// Such window is expected to be disabled activation, [M:vl.presentation.INativeWindow.DisableActivate] must be called manually.
-				/// Such window is expected to have a parent window, [M:vl.presentation.INativeWindow.SetParent] must be called before [M:vl.presentation.INativeWindow.ShowDeactivated].
-				/// This window is automatically closed when the top level window is deactivated or clicked.
+				/// A tooltip window, just like Popup.
+				/// </summary>
+				Tooltip,
+				/// <summary>
+				/// A menu window, just like Menu.
 				/// </summary>
 				Menu,
 			};
@@ -2111,16 +1895,6 @@ Native Window
 			virtual bool				IsEnabled()=0;
 			
 			/// <summary>
-			/// Set focus to the window.
-			/// A window with activation disabled cannot receive focus.
-			/// </summary>
-			virtual void				SetFocus()=0;
-			/// <summary>
-			/// Test is the window focused.
-			/// </summary>
-			/// <returns>Returns true if the window is focused.</returns>
-			virtual bool				IsFocused()=0;
-			/// <summary>
 			/// Activate to the window.
 			/// If the window disabled activation, this function enables it again.
 			/// </summary>
@@ -2130,6 +1904,11 @@ Native Window
 			/// </summary>
 			/// <returns>Returns true if the window is activated.</returns>
 			virtual bool				IsActivated()=0;
+			/// <summary>
+			/// Test is the window rendering as activated.
+			/// </summary>
+			/// <returns>Returns true if the window is rendering as activated.</returns>
+			virtual bool				IsRenderingAsActivated() = 0;
 			
 			/// <summary>
 			/// Show the icon in the task bar.
@@ -2151,7 +1930,7 @@ Native Window
 			virtual void				EnableActivate()=0;
 			/// <summary>
 			/// Disable activation to the window.
-			/// Clicking a window with activation disabled doesn't bring activation and focus.
+			/// Clicking a window with activation disabled doesn't bring activation.
 			/// Activation will be automatically enabled by calling <see cref="Show"/> or <see cref="SetActivate"/>.
 			/// </summary>
 			virtual void				DisableActivate()=0;
@@ -2405,8 +2184,10 @@ Native Window
 			virtual void				Moved();
 			/// <summary>
 			/// Called when the dpi associated with this window is changed.
+			/// The native window should call DpiChanged(true) before DpiChanged(false).
 			/// </summary>
-			virtual void				DpiChanged();
+			/// <param name="preparing">True for before changing phase, false for after changing phase.</param>
+			virtual void				DpiChanged(bool preparing);
 			/// <summary>
 			/// Called when the window is enabled.
 			/// </summary>
@@ -2424,13 +2205,13 @@ Native Window
 			/// </summary>
 			virtual void				LostFocus();
 			/// <summary>
-			/// Called when the window is activated.
+			/// Called when the window is rending as activated.
 			/// </summary>
-			virtual void				Activated();
+			virtual void				RenderingAsActivated();
 			/// <summary>
-			/// Called when the window is deactivated.
+			/// Called when the window is rendering as deactivated.
 			/// </summary>
-			virtual void				Deactivated();
+			virtual void				RenderingAsDeactivated();
 			/// <summary>
 			/// Called when the window is opened.
 			/// </summary>
@@ -2439,7 +2220,11 @@ Native Window
 			/// Called when the window is closing.
 			/// </summary>
 			/// <param name="cancel">Change the value to true to prevent the windows from being closed.</param>
-			virtual void				Closing(bool& cancel);
+			virtual void				BeforeClosing(bool& cancel);
+			/// <summary>
+			/// Called when all <see cref="BeforeClosing"/> callback agree to close.
+			/// </summary>
+			virtual void				AfterClosing();
 			/// <summary>
 			/// Called when the window is closed.
 			/// </summary>
@@ -2551,11 +2336,275 @@ Native Window
 			/// </summary>
 			/// <param name="info">Detailed information to this message.</param>
 			virtual void				Char(const NativeWindowCharInfo& info);
+
+			/// <summary>
+			/// Called to test if the window needs to be updated, only when <see cref="INativeWindow::IsActivelyRefreshing"/> returns false.
+			/// </summary>
+			/// <returns>Returns true if the window needs to be updated.</returns>
+			virtual bool				NeedRefresh();
+			/// <summary>
+			/// Called to refresh the window, only when <see cref="INativeWindow::IsActivelyRefreshing"/> returns false.
+			/// </summary>
+			/// <returns>Returns true if the window needs to be updated.</returns>
+			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
+			virtual void				ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice);
+			/// <summary>
+			/// Called when the window becomes a non-main window in hosted mode.
+			/// It requires MaximizedBox and MinimizedBox to be disabled.
+			/// This callback could be called more than once on a window.
+			/// </summary>
+			virtual void				BecomeNonMainHostedWindow();
 		};
 
 /***********************************************************************
-Native Window Services
+INativeImageService
 ***********************************************************************/
+
+		class INativeImageService;
+		class INativeImage;
+		class INativeImageFrame;
+		
+		/// <summary>
+		/// Represents a customized cache object for an image frame.
+		/// </summary>
+		class INativeImageFrameCache : public Interface
+		{
+		public:
+			/// <summary>
+			/// Called when this cache object is attached to an image frame.
+			/// </summary>
+			/// <param name="frame">The image frame that attached to.</param>
+			virtual void						OnAttach(INativeImageFrame* frame)=0;
+			/// <summary>
+			/// Called when this cache object is detached to an image frame.
+			/// </summary>
+			/// <param name="frame">The image frame that detached from.</param>
+			virtual void						OnDetach(INativeImageFrame* frame)=0;
+		};
+
+		/// <summary>
+		/// Represents an image frame.
+		/// </summary>
+		class INativeImageFrame : public virtual IDescriptable, public Description<INativeImageFrame>
+		{
+		public:
+			/// <summary>
+			/// Get the image that owns this frame.
+			/// </summary>
+			/// <returns>The image that owns this frame.</returns>
+			virtual INativeImage*				GetImage()=0;
+			/// <summary>
+			/// Get the size of this frame.
+			/// </summary>
+			/// <returns>The size of this frame.</returns>
+			virtual Size						GetSize()=0;
+
+			/// <summary>
+			/// Attach a customized cache object to this image frame and bind to a key.
+			/// </summary>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			/// <param name="key">The key binded with the customized cache object.</param>
+			/// <param name="cache">The customized cache object.</param>
+			virtual bool						SetCache(void* key, Ptr<INativeImageFrameCache> cache)=0;
+			/// <summary>
+			/// Get the attached customized cache object that is already binded to a key.
+			/// </summary>
+			/// <returns>The attached customized cache object.</returns>
+			/// <param name="key">The key binded with the customized cache object.</param>
+			virtual Ptr<INativeImageFrameCache>	GetCache(void* key)=0;
+			/// <summary>
+			/// Get the attached customized cache object that is already binded to a key, and then detach it.
+			/// </summary>
+			/// <returns>The detached customized cache object.</returns>
+			/// <param name="key">The key binded with the customized cache object.</param>
+			virtual Ptr<INativeImageFrameCache>	RemoveCache(void* key)=0;
+		};
+		
+		/// <summary>
+		/// Represents an image.
+		/// </summary>
+		class INativeImage : public virtual IDescriptable, public Description<INativeImage>
+		{
+		public:
+			/// <summary>
+			/// Represents an image format.
+			/// </summary>
+			enum FormatType
+			{
+				/// <summary>
+				/// Bitmap format.
+				/// </summary>
+				Bmp,
+				/// <summary>
+				/// GIF format.
+				/// </summary>
+				Gif,
+				/// <summary>
+				/// Icon format.
+				/// </summary>
+				Icon,
+				/// <summary>
+				/// JPEG format.
+				/// </summary>
+				Jpeg,
+				/// <summary>
+				/// PNG format.
+				/// </summary>
+				Png,
+				/// <summary>
+				/// TIFF format.
+				/// </summary>
+				Tiff,
+				/// <summary>
+				/// WMP format.
+				/// </summary>
+				Wmp,
+				/// <summary>
+				/// Unknown format.
+				/// </summary>
+				Unknown,
+			};
+			
+			/// <summary>
+			/// Get the image service that creates this image.
+			/// </summary>
+			/// <returns>The image service that creates this image.</returns>
+			virtual INativeImageService*		GetImageService()=0;
+			/// <summary>
+			/// Get the image format.
+			/// </summary>
+			/// <returns>The image format.</returns>
+			virtual FormatType					GetFormat()=0;
+			/// <summary>
+			/// Get the number of frames in this image.
+			/// </summary>
+			/// <returns>The number of frames in this image.</returns>
+			virtual vint						GetFrameCount()=0;
+			/// <summary>
+			/// Get the frame in this image by a specified frame index.
+			/// </summary>
+			/// <returns>The frame in this image by a specified frame index.</returns>
+			/// <param name="index">The specified frame index.</param>
+			virtual INativeImageFrame*			GetFrame(vint index)=0;
+			/// <summary>
+			/// Save the image to a stream.
+			/// </summary>
+			/// <param name="imageStream">The stream.</param>
+			/// <param name="formatType">The format of the image.</param>
+			virtual void						SaveToStream(stream::IStream& imageStream, FormatType formatType = FormatType::Unknown) = 0;
+		};
+		
+		/// <summary>
+		/// Image service. To access this service, use [M:vl.presentation.INativeController.ImageService].
+		/// </summary>
+		class INativeImageService : public virtual IDescriptable, public Description<INativeImageService>
+		{
+		public:
+			/// <summary>
+			/// Create an image from file.
+			/// </summary>
+			/// <returns>The created image.</returns>
+			/// <param name="path">The file path.</param>
+			virtual Ptr<INativeImage>			CreateImageFromFile(const WString& path)=0;
+
+			/// <summary>
+			/// Create an image from memory.
+			/// </summary>
+			/// <returns>The created image.</returns>
+			/// <param name="buffer">The memory pointer.</param>
+			/// <param name="length">The memory length.</param>
+			virtual Ptr<INativeImage>			CreateImageFromMemory(void* buffer, vint length)=0;
+
+			/// <summary>
+			/// Create an image from stream.
+			/// </summary>
+			/// <returns>The created image.</returns>
+			/// <param name="imageStream">The stream.</param>
+			virtual Ptr<INativeImage>			CreateImageFromStream(stream::IStream& imageStream)=0;
+		};
+
+/***********************************************************************
+INativeResourceService
+***********************************************************************/
+		
+		/// <summary>
+		/// Represents a cursor.
+		/// </summary>
+		class INativeCursor : public virtual IDescriptable, public Description<INativeCursor>
+		{
+		public:
+			/// <summary>
+			/// Represents a predefined cursor type.
+			/// </summary>
+			enum SystemCursorType
+			{
+				/// <summary>
+				/// Small waiting cursor.
+				/// </summary>
+				SmallWaiting,
+				/// <summary>
+				/// large waiting cursor.
+				/// </summary>
+				LargeWaiting,
+				/// <summary>
+				/// Arrow cursor.
+				/// </summary>
+				Arrow,
+				/// <summary>
+				/// Cross cursor.
+				/// </summary>
+				Cross,
+				/// <summary>
+				/// Hand cursor.
+				/// </summary>
+				Hand,
+				/// <summary>
+				/// Help cursor.
+				/// </summary>
+				Help,
+				/// <summary>
+				/// I beam cursor.
+				/// </summary>
+				IBeam,
+				/// <summary>
+				/// Sizing in all direction cursor.
+				/// </summary>
+				SizeAll,
+				/// <summary>
+				/// Sizing NE-SW cursor.
+				/// </summary>
+				SizeNESW,
+				/// <summary>
+				/// Sizing N-S cursor.
+				/// </summary>
+				SizeNS,
+				/// <summary>
+				/// Sizing NW-SE cursor.
+				/// </summary>
+				SizeNWSE,
+				/// <summary>
+				/// Sizing W-E cursor.
+				/// </summary>
+				SizeWE,
+				/// <summary>
+				/// Number of available cursors, this is not an available cursor by itself.
+				/// </summary>
+				LastSystemCursor=SizeWE,
+			};
+
+			static const vint			SystemCursorCount=LastSystemCursor+1;
+		public:
+			/// <summary>
+			/// Test is the cursor a system provided cursor.
+			/// </summary>
+			/// <returns>Returns true if the cursor a system provided cursor.</returns>
+			virtual bool				IsSystemCursor()=0;
+			/// <summary>
+			/// Get the cursor type if the cursor a system provided cursor.
+			/// </summary>
+			/// <returns>The cursor type.</returns>
+			virtual SystemCursorType	GetSystemCursorType()=0;
+		};
 
 		/// <summary>
 		/// System resource service. To access this service, use [M:vl.presentation.INativeController.ResourceService].
@@ -2586,6 +2635,10 @@ Native Window Services
 			/// <param name="value">The font configuration to override.</param>
 			virtual void					SetDefaultFont(const FontProperties& value)=0;
 		};
+
+/***********************************************************************
+INativeAsyncService
+***********************************************************************/
 
 		/// <summary>
 		/// Delay execution controller.
@@ -2666,6 +2719,10 @@ Native Window Services
 			virtual Ptr<INativeDelay>		DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)=0;
 		};
 
+/***********************************************************************
+INativeClipboardService
+***********************************************************************/
+
 		/// <summary>
 		/// Clipboard reader.
 		/// </summary>
@@ -2733,6 +2790,48 @@ Native Window Services
 			/// <returns>The clipboard writer.</returns>
 			virtual Ptr<INativeClipboardWriter>		WriteClipboard() = 0;
 		};
+
+/***********************************************************************
+INativeScreenService
+***********************************************************************/
+
+		/// <summary>
+		/// Represents a screen.
+		/// </summary>
+		class INativeScreen : public virtual IDescriptable, public Description<INativeScreen>
+		{
+		public:
+			/// <summary>
+			/// Get the bounds of the screen.
+			/// </summary>
+			/// <returns>The bounds of the screen.</returns>
+			virtual NativeRect			GetBounds()=0;
+			/// <summary>
+			/// Get the bounds of the screen client area.
+			/// </summary>
+			/// <returns>The bounds of the screen client area.</returns>
+			virtual NativeRect			GetClientBounds()=0;
+			/// <summary>
+			/// Get the name of the screen.
+			/// </summary>
+			/// <returns>The name of the screen.</returns>
+			virtual WString				GetName()=0;
+			/// <summary>
+			/// Test is the screen is a primary screen.
+			/// </summary>
+			/// <returns>Returns true if the screen is a primary screen.</returns>
+			virtual bool				IsPrimary()=0;
+			/// <summary>
+			/// Get the scaling for the screen's horizontal edge.
+			/// </summary>
+			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
+			virtual double				GetScalingX() = 0;
+			/// <summary>
+			/// Get the scaling for the screen's vertical edge.
+			/// </summary>
+			/// <returns>The scaling. For example, in Windows when you have a 96 DPI, this function returns 1.0.</returns>
+			virtual double				GetScalingY() = 0;
+		};
 		
 		/// <summary>
 		/// Screen information service. To access this service, use [M:vl.presentation.INativeController.ScreenService].
@@ -2758,6 +2857,10 @@ Native Window Services
 			/// <param name="window">The specified window.</param>
 			virtual INativeScreen*			GetScreen(INativeWindow* window)=0;
 		};
+
+/***********************************************************************
+INativeWindowService
+***********************************************************************/
 		
 		/// <summary>
 		/// Window service. To access this service, use [M:vl.presentation.INativeController.WindowService].
@@ -2793,6 +2896,10 @@ Native Window Services
 			/// <param name="window">The specified window.</param>
 			virtual void					Run(INativeWindow* window) = 0;
 		};
+
+/***********************************************************************
+INativeInputService
+***********************************************************************/
 		
 		/// <summary>
 		/// User input service. To access this service, use [M:vl.presentation.INativeController.InputService].
@@ -2840,6 +2947,12 @@ Native Window Services
 			/// <param name="name">Key name</param>
 			virtual VKEY					GetKey(const WString& name)=0;
 		};
+
+/***********************************************************************
+INativeCallbackService
+***********************************************************************/
+
+		class INativeControllerListener;
 		
 		/// <summary>
 		/// Callback service. To access this service, use [M:vl.presentation.INativeController.CallbackService].
@@ -2861,6 +2974,9 @@ Native Window Services
 			virtual bool					UninstallListener(INativeControllerListener* listener)=0;
 		};
 
+/***********************************************************************
+INativeDialogService
+***********************************************************************/
 
 		/// <summary>
 		/// Dialog service. To access this service, use [M:vl.presentation.INativeController.DialogService].
@@ -3163,6 +3279,29 @@ Native Window Controller
 		/// </summary>
 		/// <param name="controller">The global native system service controller.</param>
 		extern void							SetCurrentController(INativeController* controller);
+
+		/// <summary>
+		/// A helper function calling multiple <see cref="INativeWindowListener::HitTest"/>.
+		/// </summary>
+		/// <returns>The hit test result.</returns>
+		template<typename T>
+		INativeWindowListener::HitTestResult PerformHitTest(collections::LazyList<T> listeners, NativePoint location)
+		{
+			auto hitTestResult = INativeWindowListener::NoDecision;
+			for (auto listener : listeners)
+			{
+				auto singleResult = listener->HitTest(location);
+				CHECK_ERROR(
+					hitTestResult == INativeWindowListener::NoDecision || singleResult == INativeWindowListener::NoDecision,
+					L"vl::presentation::PerformHitTest(LazyList<T>, NativePoint)#Incompatible INativeWindowListener::HitTest() callback results occured."
+					);
+				if (singleResult != INativeWindowListener::NoDecision)
+				{
+					hitTestResult = singleResult;
+				}
+			}
+			return hitTestResult;
+		}
 	}
 }
 
@@ -3902,6 +4041,9 @@ Basic Construction
 				/// <summary>Set the visibility of the composition.</summary>
 				/// <param name="value">Set to true to make the composition visible.</param>
 				void										SetVisible(bool value);
+				/// <summary>Get the visibility of the composition all the way to the root.</summary>
+				/// <returns>Returns true if the composition and all ancestors are visible.</returns>
+				bool										GetEventuallyVisible();
 				/// <summary>Get the minimum size limitation of the composition.</summary>
 				/// <returns>The minimum size limitation of the composition.</returns>
 				MinSizeLimitation							GetMinSizeLimitation();
@@ -4030,6 +4172,10 @@ Basic Construction
 				bool								IsSizeAffectParent()override;
 				Size								GetMinPreferredClientSize()override;
 				Rect								GetPreferredBounds()override;
+
+				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
+				/// <returns>The previous calculated bounds.</returns>
+				Rect								GetPreviousCalculatedBounds();
 			};
 			
 			/// <summary>
@@ -4594,13 +4740,15 @@ Host
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
-				void									RecreateRenderTarget();
+
+				void									ResetRenderTarget();
+				void									CreateRenderTarget();
 				
 			private:
 				INativeWindowListener::HitTestResult	HitTest(NativePoint location)override;
 				void									Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)override;
 				void									Moved()override;
-				void									DpiChanged()override;
+				void									DpiChanged(bool preparing)override;
 				void									Paint()override;
 
 				void									LeftButtonDown(const NativeWindowMouseInfo& info)override;
@@ -4624,6 +4772,9 @@ Host
 				void									SysKeyUp(const NativeWindowKeyInfo& info)override;
 				void									Char(const NativeWindowCharInfo& info)override;
 
+				bool									NeedRefresh()override;
+				void									ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)override;
+
 				void									GlobalTimer()override;
 			public:
 				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
@@ -4640,7 +4791,8 @@ Host
 				GuiGraphicsComposition*					GetMainComposition();
 				/// <summary>Render the main composition and all content to the associated window.</summary>
 				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				void									Render(bool forceUpdate);
+				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
+				elements::RenderTargetFailure			Render(bool forceUpdate, bool handleFailure);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
 				/// <summary>Invoke a specified function after rendering.</summary>
@@ -6047,40 +6199,31 @@ Resource Manager
 ***********************************************************************/
 
 			/// <summary>
-			/// This is a class for managing grpahics element factories and graphics renderer factories
+			/// This is an interface for managing grpahics element factories and graphics renderer factories
 			/// </summary>
-			class GuiGraphicsResourceManager : public Object
+			class IGuiGraphicsResourceManager : public Interface, public Description<INativeWindow>
 			{
-			protected:
-				collections::List<WString>								elementTypes;
-				collections::Array<Ptr<IGuiGraphicsRendererFactory>>	rendererFactories;
 			public:
-				/// <summary>
-				/// Create a graphics resource manager without any predefined factories
-				/// </summary>
-				GuiGraphicsResourceManager();
-				~GuiGraphicsResourceManager();
-
 				/// <summary>
 				/// Register a element type name.
 				/// This function crashes when an element type has already been registered.
 				/// </summary>
 				/// <param name="elementTypeName">The element type.</param>
 				/// <returns>A number identifies this element type.</returns>
-				vint									RegisterElementType(const WString& elementTypeName);
+				virtual vint							RegisterElementType(const WString& elementTypeName) = 0;
 				/// <summary>
 				/// Register a <see cref="IGuiGraphicsRendererFactory"/> and bind it to an registered element type from <see cref="RegisterElementType"/>.
 				/// This function crashes when an element type has already been binded a renderer factory.
 				/// </summary>
 				/// <param name="elementType">The element type to represent a graphics element factory.</param>
 				/// <param name="factory">The instance of the graphics renderer factory to register.</param>
-				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
+				virtual void							RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) = 0;
 				/// <summary>
 				/// Get the instance of a registered <see cref="IGuiGraphicsRendererFactory"/> that is binded to a specified element type.
 				/// </summary>
 				/// <returns>Returns the renderer factory.</returns>
 				/// <param name="elementType">The registered element type from <see cref="RegisterElementType"/> to get a binded graphics renderer factory.</param>
-				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
+				virtual IGuiGraphicsRendererFactory*	GetRendererFactory(vint elementType) = 0;
 				/// <summary>
 				/// Get the instance of a <see cref="IGuiGraphicsRenderTarget"/> that is binded to an <see cref="INativeWindow"/>.
 				/// </summary>
@@ -6105,15 +6248,35 @@ Resource Manager
 			};
 
 			/// <summary>
+			/// This is a default implementation for <see cref="IGuiGraphicsResourceManager"/>
+			/// </summary>
+			class GuiGraphicsResourceManager : public Object, public virtual IGuiGraphicsResourceManager
+			{
+			protected:
+				collections::List<WString>								elementTypes;
+				collections::Array<Ptr<IGuiGraphicsRendererFactory>>	rendererFactories;
+			public:
+				/// <summary>
+				/// Create a graphics resource manager without any predefined factories
+				/// </summary>
+				GuiGraphicsResourceManager();
+				~GuiGraphicsResourceManager();
+
+				vint									RegisterElementType(const WString& elementTypeName);
+				void									RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory);
+				IGuiGraphicsRendererFactory*			GetRendererFactory(vint elementType);
+			};
+
+			/// <summary>
 			/// Get the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <returns>Returns the current resource manager.</returns>
-			extern GuiGraphicsResourceManager*			GetGuiGraphicsResourceManager();
+			extern IGuiGraphicsResourceManager*			GetGuiGraphicsResourceManager();
 			/// <summary>
 			/// Set the current <see cref="GuiGraphicsResourceManager"/>.
 			/// </summary>
 			/// <param name="resourceManager">The resource manager to set.</param>
-			extern void									SetGuiGraphicsResourceManager(GuiGraphicsResourceManager* resourceManager);
+			extern void									SetGuiGraphicsResourceManager(IGuiGraphicsResourceManager* resourceManager);
 
 /***********************************************************************
 Helpers
@@ -6320,6 +6483,1236 @@ Helpers
 					}\
 				}
 		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\NATIVEWINDOW\SHAREDSERVICES\GUISHAREDASYNCSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUINATIVEWINDOW_SHAREDSERVICES_SHAREDASYNCSERVICE
+#define VCZH_PRESENTATION_GUINATIVEWINDOW_SHAREDSERVICES_SHAREDASYNCSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class SharedAsyncService : public INativeAsyncService
+		{
+		protected:
+			struct TaskItem
+			{
+				Semaphore*							semaphore;
+				Func<void()>						proc;
+
+				TaskItem();
+				TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
+				~TaskItem();
+			};
+
+			class DelayItem : public Object, public INativeDelay
+			{
+			public:
+				DelayItem(SharedAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
+				~DelayItem();
+
+				SharedAsyncService*					service;
+				Func<void()>						proc;
+				ExecuteStatus						status;
+				DateTime							executeTime;
+				bool								executeInMainThread;
+
+				ExecuteStatus						GetStatus()override;
+				bool								Delay(vint milliseconds)override;
+				bool								Cancel()override;
+			};
+		protected:
+			vint									mainThreadId;
+			SpinLock								taskListLock;
+			collections::List<TaskItem>				taskItems;
+			collections::List<Ptr<DelayItem>>		delayItems;
+		public:
+			SharedAsyncService();
+			~SharedAsyncService();
+
+			void									ExecuteAsyncTasks();
+			bool									IsInMainThread(INativeWindow* window)override;
+			void									InvokeAsync(const Func<void()>& proc)override;
+			void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+			bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
+			Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
+			Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDGRAPHICS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Hosted Window
+
+Interfaces:
+  IGuiGraphicsResourceManager
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIHOSTEDGRAPHICS
+#define VCZH_PRESENTATION_GUIHOSTEDGRAPHICS
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiHostedController;
+
+		namespace elements
+		{
+
+/***********************************************************************
+GuiHostedGraphicsResourceManager
+***********************************************************************/
+
+			class GuiHostedGraphicsResourceManager : public Object, public virtual IGuiGraphicsResourceManager
+			{
+				friend class GuiHostedController;
+			protected:
+				GuiHostedController*				hostedController = nullptr;
+				IGuiGraphicsResourceManager*		nativeManager = nullptr;
+
+			public:
+				GuiHostedGraphicsResourceManager(GuiHostedController* _hostedController, IGuiGraphicsResourceManager* _nativeManager);
+				~GuiHostedGraphicsResourceManager();
+
+				vint								RegisterElementType(const WString& elementTypeName) override;
+				void								RegisterRendererFactory(vint elementType, Ptr<IGuiGraphicsRendererFactory> factory) override;
+				IGuiGraphicsRendererFactory*		GetRendererFactory(vint elementType) override;
+				IGuiGraphicsRenderTarget*			GetRenderTarget(INativeWindow* window) override;
+				void								RecreateRenderTarget(INativeWindow* window) override;
+				void								ResizeRenderTarget(INativeWindow* window) override;
+				IGuiGraphicsLayoutProvider*			GetLayoutProvider() override;
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDWINDOWMANAGER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Hosted Window
+
+Interfaces:
+  Window<T>
+  WindowManager<T>
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIHOSTEDWINDOWMANAGER
+#define VCZH_PRESENTATION_GUIHOSTEDWINDOWMANAGER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace hosted_window_manager
+		{
+			template<typename T>
+			struct WindowManager;
+
+/***********************************************************************
+Window
+***********************************************************************/
+
+			template<typename T>
+			struct Window
+			{
+				friend struct WindowManager<T>;
+			protected:
+				WindowManager<T>*							windowManager = nullptr;
+
+			public:
+				const T										id = {};
+				Window<T>*									parent = nullptr;
+				collections::List<Window<T>*>				children;
+
+				NativeRect									bounds;
+				bool										topMost = false;
+				bool										visible = false;
+				bool										enabled = true;
+				bool										active = false;
+				bool										renderedAsActive = false;
+
+			protected:
+
+				Window<T>* GetVisibleParent()
+				{
+					auto visibleParent = parent;
+					while (visibleParent && !visibleParent->visible)
+					{
+						visibleParent = visibleParent->parent;
+					}
+					return visibleParent;
+				}
+
+				template<typename TWindows>
+				void CollectVisibleSubTreeInSamePriority(TWindows& windows, bool inTopMostLevel)
+				{
+					if (visible)
+					{
+						windows.Add(this);
+					}
+					for (auto child : children)
+					{
+						if (inTopMostLevel || !child->topMost)
+						{
+							child->CollectVisibleSubTreeInSamePriority(windows, inTopMostLevel);
+						}
+					}
+				}
+
+				void EnsureChildrenMovedInFrontOf(bool eventuallyTopMost, Window<T>* baseline)
+				{
+					auto&& orderedWindows = eventuallyTopMost ? windowManager->topMostedWindowsInOrder : windowManager->ordinaryWindowsInOrder;
+					vint order = -1;
+					if (baseline) order = orderedWindows.IndexOf(baseline);
+					if (order == -1) order = orderedWindows.Count();
+
+					for (auto child : children)
+					{
+						if (eventuallyTopMost || !child->topMost)
+						{
+							if (child->visible)
+							{
+								vint childOrder = orderedWindows.IndexOf(child);
+								if (childOrder == -1 || childOrder > order)
+								{
+									windowManager->ordinaryWindowsInOrder.Remove(child);
+									windowManager->topMostedWindowsInOrder.Remove(child);
+									orderedWindows.Insert(order, child);
+								}
+							}
+							child->EnsureChildrenMovedInFrontOf(eventuallyTopMost || child->topMost, (child->visible ? child : baseline));
+						}
+					}
+				}
+
+				void EnsureMovedInFrontOf(collections::List<Window<T>*>& windowsInOrder, Window<T>* baseline, bool wasEventuallyTopMost, bool eventuallyTopMost)
+				{
+					vint maxOrder = -1;
+					vint order = windowsInOrder.IndexOf(this);
+
+					if (wasEventuallyTopMost && order == -1)
+					{
+						maxOrder = 0;
+					}
+					else if (baseline)
+					{
+						maxOrder = windowsInOrder.IndexOf(baseline);
+					}
+					else if (order == -1)
+					{
+						maxOrder = windowsInOrder.Count();
+					}
+					else
+					{
+						maxOrder = windowsInOrder.Count() - 1;
+					}
+
+					if (order == -1)
+					{
+						windowsInOrder.Insert(maxOrder, this);
+						windowManager->needRefresh = true;
+					}
+					else if (order > maxOrder)
+					{
+						windowsInOrder.RemoveAt(order);
+						windowsInOrder.Insert(maxOrder, this);
+						windowManager->needRefresh = true;
+					}
+				}
+
+				void FixWindowInOrder(bool wasEventuallyTopMost, bool isEventuallyTopMost)
+				{
+					if (!visible)
+					{
+						if (windowManager->ordinaryWindowsInOrder.Remove(this) || windowManager->topMostedWindowsInOrder.Remove(this))
+						{
+							windowManager->needRefresh = true;
+						}
+					}
+
+					auto visibleParent = GetVisibleParent();
+
+					if (visible)
+					{
+
+						if (isEventuallyTopMost)
+						{
+							if (windowManager->ordinaryWindowsInOrder.Remove(this))
+							{
+								windowManager->needRefresh = true;
+							}
+
+							if (visibleParent && !visibleParent->IsEventuallyTopMost())
+							{
+								visibleParent = nullptr;
+							}
+							EnsureMovedInFrontOf(windowManager->topMostedWindowsInOrder, visibleParent, wasEventuallyTopMost, true);
+						}
+						else
+						{
+							if (windowManager->topMostedWindowsInOrder.Remove(this))
+							{
+								windowManager->needRefresh = true;
+							}
+							EnsureMovedInFrontOf(windowManager->ordinaryWindowsInOrder, visibleParent, wasEventuallyTopMost, false);
+						}
+					}
+
+					EnsureChildrenMovedInFrontOf(isEventuallyTopMost, (visible ? this : visibleParent));
+				}
+
+				void FixRenderedAsActive()
+				{
+					if (enabled && visible)
+					{
+						auto current = windowManager->activeWindow;
+						while (current && current != this)
+						{
+							current = current->parent;
+						}
+						if (current == this && !renderedAsActive)
+						{
+							renderedAsActive = true;
+							windowManager->OnActivated(this);
+						}
+					}
+					else if (active)
+					{
+						Deactivate();
+					}
+					else if (renderedAsActive)
+					{
+						renderedAsActive = false;
+						windowManager->OnDeactivated(this);
+					}
+				}
+
+			public:
+				Window(T _id)
+					: id(_id)
+				{
+				}
+
+				~Window()
+				{
+				}
+
+				bool IsEventuallyTopMost()
+				{
+					bool result = visible && topMost;
+					auto current = parent;
+					while (current && !result)
+					{
+						result |= current->visible && current->topMost;
+						current = current->parent;
+					}
+					return result;
+				}
+
+#define ENSURE_WINDOW_MANAGER CHECK_ERROR(windowManager, ERROR_MESSAGE_PREFIX L"This operation can only be called between window manager's RegisterWindow and Stop.")
+
+				void SetParent(Window<T>* value)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetParent(Window<T>*)#"
+					ENSURE_WINDOW_MANAGER;
+
+					if (parent == value) return;
+					CHECK_ERROR(
+						!windowManager || windowManager->mainWindow != this || !value,
+						ERROR_MESSAGE_PREFIX L"A main window should not have a parent window."
+						);
+
+					if (!value)
+					{
+						value = windowManager->mainWindow;
+					}
+
+					auto current = value;
+					while (current)
+					{
+						CHECK_ERROR(current != this, ERROR_MESSAGE_PREFIX L"Parent window should not be cyclic.");
+						current = current->parent;
+					}
+
+					if (parent)
+					{
+						parent->children.Remove(this);
+					}
+					parent = value;
+					if (parent)
+					{
+						parent->children.Add(this);
+					}
+					bool isEventuallyTopMost = IsEventuallyTopMost();
+					FixWindowInOrder(isEventuallyTopMost, isEventuallyTopMost);
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void SetBounds(const NativeRect& value)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetBounds(const NativeRect&)#"
+					ENSURE_WINDOW_MANAGER;
+
+					if (bounds == value) return;
+					bounds = value;
+					windowManager->needRefresh = true;
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void SetVisible(bool value)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetVisible(bool)#"
+					ENSURE_WINDOW_MANAGER;
+
+					if (visible == value) return;
+
+					bool parentEventuallyTopMost = parent ? parent->IsEventuallyTopMost() : false;
+					visible = value;
+					FixRenderedAsActive();
+
+					FixWindowInOrder(
+						parentEventuallyTopMost || (!visible && topMost),
+						parentEventuallyTopMost || (visible && topMost)
+						);
+
+					if (visible) windowManager->OnOpened(this); else windowManager->OnClosed(this);
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void SetTopMost(bool value)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetTopMost(bool)#"
+					ENSURE_WINDOW_MANAGER;
+
+					if (topMost == value) return;
+					bool parentEventuallyTopMost = parent ? parent->IsEventuallyTopMost() : false;
+					bool wasEventuallyTopMost = parentEventuallyTopMost || (visible && topMost);
+					topMost = value;
+					bool isEventuallyTopMost = parentEventuallyTopMost || (visible && topMost);
+					FixWindowInOrder(wasEventuallyTopMost, isEventuallyTopMost);
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void SetEnabled(bool value)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::SetEnabled(bool)#"
+					ENSURE_WINDOW_MANAGER;
+
+					if (enabled == value) return;
+					enabled = value;
+					FixRenderedAsActive();
+
+					windowManager->needRefresh = true;
+					if (enabled) windowManager->OnEnabled(this); else windowManager->OnDisabled(this);
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void BringToFront()
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::BringToFront()#"
+					ENSURE_WINDOW_MANAGER;
+
+					bool eventuallyTopMost = IsEventuallyTopMost();
+					auto&& orderedWindows = eventuallyTopMost ? windowManager->topMostedWindowsInOrder : windowManager->ordinaryWindowsInOrder;
+
+					if (orderedWindows.Contains(this))
+					{
+						collections::SortedList<Window<T>*> windows;
+						CollectVisibleSubTreeInSamePriority(windows, eventuallyTopMost);
+
+						collections::List<Window<T>*> selected, remainings;
+						for (auto window : orderedWindows)
+						{
+							if (windows.Contains(window))
+							{
+								selected.Add(window);
+							}
+							else
+							{
+								remainings.Add(window);
+							}
+						}
+
+						if (collections::CompareEnumerable(selected, From(orderedWindows).Take(selected.Count())) != 0)
+						{
+							collections::CopyFrom(orderedWindows, selected);
+							collections::CopyFrom(orderedWindows, remainings, true);
+							windowManager->needRefresh = true;
+						}
+					}
+					else
+					{
+						collections::List<Window<T>*> windows, remainings;
+						CollectVisibleSubTreeInSamePriority(windows, eventuallyTopMost);
+
+						CopyFrom(remainings, orderedWindows);
+						orderedWindows.Clear();
+						for (vint i = windows.Count() - 1; i >= 0; i--)
+						{
+							orderedWindows.Add(windows[i]);
+						}
+						CopyFrom(orderedWindows, remainings, true);
+						windowManager->needRefresh = true;
+					}
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void Activate()
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::Activate()#"
+					ENSURE_WINDOW_MANAGER;
+
+					if (active)
+					{
+						BringToFront();
+						return;
+					}
+					if (!windowManager->mainWindow) return;
+					if (!visible) return;
+					if (!enabled) return;
+
+					auto previous = windowManager->activeWindow;
+					if (previous != this)
+					{
+						if (previous)
+						{
+							previous->active = false;
+							windowManager->OnLostFocus(previous);
+						}
+						windowManager->activeWindow = this;
+						active = true;
+						windowManager->OnGotFocus(this);
+					}
+
+					vint previousCount = 0;
+					vint thisCount = 0;
+					Window<T>* commonParent = nullptr;
+					{
+						auto current = previous;
+						while (current)
+						{
+							previousCount++;
+							current = current->parent;
+						}
+					}
+					{
+						auto current = this;
+						while (current)
+						{
+							thisCount++;
+							current = current->parent;
+						}
+					}
+					{
+						auto previousStep = previous;
+						auto thisStep = this;
+						if (previousCount < thisCount)
+						{
+							while (thisCount-- != previousCount)
+							{
+								thisStep = thisStep->parent;
+							}
+						}
+						else if (previousCount > thisCount)
+						{
+							while (previousCount-- != thisCount)
+							{
+								previousStep = previousStep->parent;
+							}
+						}
+
+						while (previousStep && thisStep && previousStep != thisStep)
+						{
+							previousStep = previousStep->parent;
+							thisStep = thisStep->parent;
+						}
+						commonParent = thisStep;
+					}
+					{
+						auto current = previous;
+						while (current != commonParent)
+						{
+							if (current->renderedAsActive)
+							{
+								current->renderedAsActive = false;
+								windowManager->OnDeactivated(current);
+							}
+							current = current->parent;
+						}
+					}
+					{
+						auto current = this;
+						while (current != commonParent)
+						{
+							if (current->enabled && !current->renderedAsActive)
+							{
+								current->renderedAsActive = true;
+								windowManager->OnActivated(current);
+							}
+							current = current->parent;
+						}
+					}
+
+					if (commonParent != previous || commonParent != this)
+					{
+						windowManager->needRefresh = true;
+					}
+
+					BringToFront();
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void Deactivate()
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::Window<T>::Deactivate()#"
+					ENSURE_WINDOW_MANAGER;
+
+					if (!windowManager->mainWindow) return;
+					if (!active) return;
+					active = false;
+					renderedAsActive = false;
+					windowManager->OnLostFocus(this);
+					windowManager->OnDeactivated(this);
+
+					if (windowManager->activeWindow == this)
+					{
+						auto current = parent;
+						while (current && !current->enabled)
+						{
+							current = current->parent;
+						}
+						if (current)
+						{
+							current->active = true;
+							windowManager->OnGotFocus(current);
+						}
+						windowManager->activeWindow = current;
+						windowManager->needRefresh = true;
+					}
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void Show()
+				{
+					SetVisible(true);
+					Activate();
+				}
+#undef ENSURE_WINDOW_MANAGER
+			};
+
+/***********************************************************************
+WindowManager
+***********************************************************************/
+
+			template<typename T>
+			struct WindowManager
+			{
+				collections::Dictionary<T, Window<T>*>		registeredWindows;
+				collections::List<Window<T>*>				topMostedWindowsInOrder;
+				collections::List<Window<T>*>				ordinaryWindowsInOrder;
+
+				Window<T>*									mainWindow = nullptr;
+				Window<T>*									activeWindow = nullptr;
+				bool										needRefresh = false;
+
+				virtual void OnOpened(Window<T>* window) = 0;
+				virtual void OnClosed(Window<T>* window) = 0;
+				virtual void OnEnabled(Window<T>* window) = 0;
+				virtual void OnDisabled(Window<T>* window) = 0;
+				virtual void OnGotFocus(Window<T>* window) = 0;
+				virtual void OnLostFocus(Window<T>* window) = 0;
+				virtual void OnActivated(Window<T>* window) = 0;
+				virtual void OnDeactivated(Window<T>* window) = 0;
+
+				void RegisterWindow(Window<T>* window)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::RegisterWindow(Window<T>*)#"
+					CHECK_ERROR(!window->windowManager, ERROR_MESSAGE_PREFIX L"The window has been registered.");
+					CHECK_ERROR(!registeredWindows.Keys().Contains(window->id), ERROR_MESSAGE_PREFIX L"The window has a duplicated key with an existing window.");
+					CHECK_ERROR(!window->visible, ERROR_MESSAGE_PREFIX L"RegisterWindow must be called right after a window is created.");
+
+					window->windowManager = this;
+					registeredWindows.Add(window->id, window);
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void UnregisterWindow(Window<T>* window)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::UnregisterWindow(Window<T>*)#"
+					CHECK_ERROR(window->windowManager == this, ERROR_MESSAGE_PREFIX L"The window has not been registered.");
+					CHECK_ERROR(window != mainWindow, ERROR_MESSAGE_PREFIX L"The main window cannot be unregistered before stopping the window manager.");
+					if (mainWindow)
+					{
+						window->SetVisible(false);
+
+						auto parent = window->parent;
+						for (auto child : window->children)
+						{
+							child->parent = parent;
+						}
+
+						CopyFrom(parent->children, window->children, true);
+						parent->children.Remove(window);
+						window->parent = nullptr;
+						window->children.Clear();
+					}
+
+					registeredWindows.Remove(window->id);
+					window->windowManager = nullptr;
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void Start(Window<T>* window)
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::Start(Window<T>*)#"
+					CHECK_ERROR(!mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has started.");
+					CHECK_ERROR(!window->parent, ERROR_MESSAGE_PREFIX L"A main window should not have a parent window.");
+
+					mainWindow = window;
+					for (auto normalWindow : registeredWindows.Values())
+					{
+						if (!normalWindow->parent && normalWindow != mainWindow)
+						{
+							normalWindow->parent = mainWindow;
+							mainWindow->children.Add(normalWindow);
+						}
+					}
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				void Stop()
+				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::hosted_window_manager::WindowManager<T>::Stop(Window<T>*)#"
+					CHECK_ERROR(mainWindow, ERROR_MESSAGE_PREFIX L"The window manager has stopped.");
+					mainWindow = nullptr;
+					activeWindow = nullptr;
+					ordinaryWindowsInOrder.Clear();
+					topMostedWindowsInOrder.Clear();
+
+					for (auto window : registeredWindows.Values())
+					{
+						window->parent = nullptr;
+						window->children.Clear();
+
+						if (window->active)
+						{
+							window->active = false;
+							OnLostFocus(window);
+						}
+
+						if (window->renderedAsActive)
+						{
+							window->renderedAsActive = false;
+							OnDeactivated(window);
+						}
+
+						if (window->visible)
+						{
+							window->visible = false;
+							OnClosed(window);
+						}
+					}
+#undef ERROR_MESSAGE_PREFIX
+				}
+
+				Window<T>* HitTest(NativePoint position)
+				{
+					for (auto window : topMostedWindowsInOrder)
+					{
+						if (!window->visible) continue;
+						if (window->bounds.Contains(position)) return window;
+					}
+
+					for (auto window : ordinaryWindowsInOrder)
+					{
+						if (!window->visible) continue;
+						if (window->bounds.Contains(position)) return window;
+					}
+
+					return nullptr;
+				}
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDWINDOW.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Hosted Window
+
+Interfaces:
+  GuiHostedWindow
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIHOSTEDWINDOW
+#define VCZH_PRESENTATION_GUIHOSTEDWINDOW
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class GuiHostedWindow;
+		class GuiHostedController;
+
+/***********************************************************************
+Proxy
+***********************************************************************/
+
+		struct GuiHostedWindowData
+		{
+			hosted_window_manager::Window<GuiHostedWindow*>		wmWindow;
+			GuiHostedController*								controller = nullptr;
+			INativeWindow::WindowMode							windowMode = INativeWindow::WindowMode::Normal;
+			collections::List<INativeWindowListener*>			listeners;
+
+			WString												windowTitle;
+			INativeCursor*										windowCursor = nullptr;
+			NativePoint											windowCaretPoint;
+			Ptr<GuiImageData>									windowIcon;
+
+			bool												windowMaximizedBox = true;
+			bool												windowMinimizedBox = true;
+			bool												windowBorder = true;
+			bool												windowSizeBox = true;
+			bool												windowIconVisible = true;
+			bool												windowTitleBar = true;
+
+			INativeWindow::WindowSizeState						windowSizeState = INativeWindow::Restored;
+			bool												windowShowInTaskBar = true;
+			bool												windowEnabledActivate = true;
+			bool												windowCustomFrameMode = true;
+
+			GuiHostedWindowData(GuiHostedController* _controller, GuiHostedWindow* _window, INativeWindow::WindowMode _windowMode)
+				: wmWindow(_window)
+				, controller(_controller)
+				, windowMode(_windowMode)
+			{
+			}
+		};
+
+		class IGuiHostedWindowProxy
+			: public virtual Interface
+		{
+		public:
+			virtual void			CheckAndSyncProperties() = 0;
+
+			virtual NativeRect		FixBounds(const NativeRect& bounds) = 0;
+			virtual void			UpdateBounds() = 0;
+			virtual void			UpdateTitle() = 0;
+			virtual void			UpdateIcon() = 0;
+			virtual void			UpdateEnabled() = 0;
+			virtual void			UpdateTopMost() = 0;
+
+			virtual void			UpdateMaximizedBox() = 0;
+			virtual void			UpdateMinimizedBox() = 0;
+			virtual void			UpdateBorderVisible() = 0;
+			virtual void			UpdateSizeBox() = 0;
+			virtual void			UpdateIconVisible() = 0;
+			virtual void			UpdateTitleBar() = 0;
+
+			virtual void			UpdateShowInTaskBar() = 0;
+			virtual void			UpdateEnabledActivate() = 0;
+			virtual void			UpdateCustomFrameMode() = 0;
+
+			virtual void			Show() = 0;
+			virtual void			ShowDeactivated() = 0;
+			virtual void			ShowRestored() = 0;
+			virtual void			ShowMaximized() = 0;
+			virtual void			ShowMinimized() = 0;
+			virtual void			Hide() = 0;
+			virtual void			Close() = 0;
+			virtual void			SetFocus() = 0;
+		};
+
+		extern Ptr<IGuiHostedWindowProxy>		CreatePlaceholderHostedWindowProxy(GuiHostedWindowData* data);
+		extern Ptr<IGuiHostedWindowProxy>		CreateMainHostedWindowProxy(GuiHostedWindowData* data, INativeWindow* nativeWindow);
+		extern Ptr<IGuiHostedWindowProxy>		CreateNonMainHostedWindowProxy(GuiHostedWindowData* data);
+
+/***********************************************************************
+GuiHostedWindow
+***********************************************************************/
+
+		class GuiHostedWindow
+			: public Object
+			, public INativeWindow
+			, protected GuiHostedWindowData
+		{
+			friend class GuiHostedController;
+		protected:
+			Ptr<IGuiHostedWindowProxy>		proxy;
+
+			void							BecomeMainWindow();
+			void							BecomeNonMainWindow();
+			void							BecomeFocusedWindow();
+			void							BecomeHoveringWindow();
+
+		public:
+			GuiHostedWindow(GuiHostedController* _controller, INativeWindow::WindowMode _windowMode);
+			~GuiHostedWindow();
+
+			// =============================================================
+			// INativeWindowListener
+			// =============================================================
+
+			bool							IsActivelyRefreshing() override;
+			NativeSize						GetRenderingOffset() override;
+			Point							Convert(NativePoint value) override;
+			NativePoint						Convert(Point value) override;
+			Size							Convert(NativeSize value) override;
+			NativeSize						Convert(Size value) override;
+			Margin							Convert(NativeMargin value) override;
+			NativeMargin					Convert(Margin value) override;
+			NativeRect						GetBounds() override;
+			void							SetBounds(const NativeRect& bounds) override;
+			NativeSize						GetClientSize() override;
+			void							SetClientSize(NativeSize size) override;
+			NativeRect						GetClientBoundsInScreen() override;
+			WString							GetTitle() override;
+			void							SetTitle(const WString& title) override;
+			INativeCursor*					GetWindowCursor() override;
+			void							SetWindowCursor(INativeCursor* cursor) override;
+			NativePoint						GetCaretPoint() override;
+			void							SetCaretPoint(NativePoint point) override;
+			INativeWindow*					GetParent() override;
+			void							SetParent(INativeWindow* parent) override;
+			WindowMode						GetWindowMode() override;
+			void							EnableCustomFrameMode() override;
+			void							DisableCustomFrameMode() override;
+			bool							IsCustomFrameModeEnabled() override;
+			NativeMargin					GetCustomFramePadding() override;
+			Ptr<GuiImageData>				GetIcon() override;
+			void							SetIcon(Ptr<GuiImageData> icon) override;
+			WindowSizeState					GetSizeState() override;
+			void							Show() override;
+			void							ShowDeactivated() override;
+			void							ShowRestored() override;
+			void							ShowMaximized() override;
+			void							ShowMinimized() override;
+			void							Hide(bool closeWindow) override;
+			bool							IsVisible() override;
+			void							Enable() override;
+			void							Disable() override;
+			bool							IsEnabled() override;
+			void							SetActivate() override;
+			bool							IsActivated() override;
+			bool							IsRenderingAsActivated() override;
+			void							ShowInTaskBar() override;
+			void							HideInTaskBar() override;
+			bool							IsAppearedInTaskBar() override;
+			void							EnableActivate() override;
+			void							DisableActivate() override;
+			bool							IsEnabledActivate() override;
+			bool							RequireCapture() override;
+			bool							ReleaseCapture() override;
+			bool							IsCapturing() override;
+			bool							GetMaximizedBox() override;
+			void							SetMaximizedBox(bool visible) override;
+			bool							GetMinimizedBox() override;
+			void							SetMinimizedBox(bool visible) override;
+			bool							GetBorder() override;
+			void							SetBorder(bool visible) override;
+			bool							GetSizeBox() override;
+			void							SetSizeBox(bool visible) override;
+			bool							GetIconVisible() override;
+			void							SetIconVisible(bool visible) override;
+			bool							GetTitleBar() override;
+			void							SetTitleBar(bool visible) override;
+			bool							GetTopMost() override;
+			void							SetTopMost(bool topmost) override;
+			void							SupressAlt() override;
+			bool							InstallListener(INativeWindowListener* listener) override;
+			bool							UninstallListener(INativeWindowListener* listener) override;
+			void							RedrawContent() override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDCONTROLLER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Hosted Window
+
+Interfaces:
+  GuiHostedController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
+#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+GuiHostedController
+***********************************************************************/
+
+		class GuiHostedController
+			: public Object
+			, protected hosted_window_manager::WindowManager<GuiHostedWindow*>
+			, protected INativeWindowListener
+			, protected INativeControllerListener
+			, public INativeController
+			, protected INativeCallbackService
+			, protected INativeAsyncService
+			, protected INativeDialogService
+			, protected INativeScreenService
+			, protected INativeScreen
+			, protected INativeWindowService
+		{
+			friend class GuiHostedWindow;
+			friend class elements::GuiHostedGraphicsResourceManager;
+		protected:
+			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
+			INativeController*											nativeController = nullptr;
+			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
+			collections::List<INativeControllerListener*>				listeners;
+			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
+
+			INativeWindow*												nativeWindow = nullptr;
+			bool														nativeWindowDestroyed = false;
+
+			GuiHostedWindow*											mainWindow = nullptr;
+			GuiHostedWindow*											capturingWindow = nullptr;
+			GuiHostedWindow*											enteringWindow = nullptr;
+
+			NativePoint													hoveringLocation{ -1,-1 };
+			GuiHostedWindow*											hoveringWindow = nullptr;
+			GuiHostedWindow*											lastFocusedWindow = nullptr;
+
+			enum class WindowManagerOperation
+			{
+				None,
+				Title,
+				BorderLeft,
+				BorderRight,
+				BorderTop,
+				BorderBottom,
+				BorderLeftTop,
+				BorderRightTop,
+				BorderLeftBottom,
+				BorderRightBottom,
+			};
+			WindowManagerOperation										wmOperation = WindowManagerOperation::None;
+			GuiHostedWindow*											wmWindow = nullptr;
+			NativePoint													wmRelative;
+
+			NativePoint						GetPointInClientSpace(NativePoint location);
+			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
+			void							UpdateHoveringWindow(Nullable<NativePoint> location);
+			void							UpdateEnteringWindow(GuiHostedWindow* window);
+
+			// =============================================================
+			// WindowManager<GuiHostedWindow*>
+			// =============================================================
+
+			void							OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+
+			// =============================================================
+			// INativeWindowListener
+			// =============================================================
+
+			HitTestResult					HitTest(NativePoint location) override;
+			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
+			void							Moved() override;
+			void							DpiChanged(bool preparing) override;
+			void							GotFocus() override;
+			void							LostFocus() override;
+			void							BeforeClosing(bool& cancel) override;
+			void							AfterClosing() override;
+			void							Paint() override;
+			
+			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
+
+			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
+			void							PreAction_Other(const NativeWindowMouseInfo& info);
+
+			void							PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+
+			template<
+				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
+				>
+			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
+
+			template<
+				typename TInfo,
+				void (INativeWindowListener::* Callback)(const TInfo&)
+			>
+			void							HandleKeyboardCallback(const TInfo& info);
+
+			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
+			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
+			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							RightButtonDown(const NativeWindowMouseInfo& info) override;
+			void							RightButtonUp(const NativeWindowMouseInfo& info) override;
+			void							RightButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonDown(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonUp(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							HorizontalWheel(const NativeWindowMouseInfo& info) override;
+			void							VerticalWheel(const NativeWindowMouseInfo& info) override;
+			void							MouseMoving(const NativeWindowMouseInfo& info) override;
+			void							MouseEntered() override;
+			void							MouseLeaved() override;
+
+			void							KeyDown(const NativeWindowKeyInfo& info) override;
+			void							KeyUp(const NativeWindowKeyInfo& info) override;
+			void							SysKeyDown(const NativeWindowKeyInfo& info) override;
+			void							SysKeyUp(const NativeWindowKeyInfo& info) override;
+			void							Char(const NativeWindowCharInfo& info) override;
+
+			// =============================================================
+			// INativeControllerListener
+			// =============================================================
+
+			void							GlobalTimer() override;
+			void							ClipboardUpdated() override;
+			void							NativeWindowDestroying(INativeWindow* window);
+
+			// =============================================================
+			// INativeController
+			// =============================================================
+
+			INativeCallbackService*			CallbackService() override;
+			INativeResourceService*			ResourceService() override;
+			INativeAsyncService*			AsyncService() override;
+			INativeClipboardService*		ClipboardService() override;
+			INativeImageService*			ImageService() override;
+			INativeInputService*			InputService() override;
+			INativeDialogService*			DialogService() override;
+			WString							GetExecutablePath() override;
+			
+			INativeScreenService*			ScreenService() override;
+			INativeWindowService*			WindowService() override;
+
+			// =============================================================
+			// INativeCallbackService
+			// =============================================================
+
+			bool							InstallListener(INativeControllerListener* listener) override;
+			bool							UninstallListener(INativeControllerListener* listener) override;
+
+			// =============================================================
+			// INativeAsyncService
+			// =============================================================
+
+			bool							IsInMainThread(INativeWindow* window) override;
+			void							InvokeAsync(const Func<void()>& proc) override;
+			void							InvokeInMainThread(INativeWindow* window, const Func<void()>& proc) override;
+			bool							InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecute(const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds) override;
+
+			// =============================================================
+			// INativeDialogService
+			// =============================================================
+
+			MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal) override;
+			bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors) override;
+			bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist) override;
+			bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options) override;
+
+			// =============================================================
+			// INativeScreenService
+			// =============================================================
+
+			vint							GetScreenCount() override;
+			INativeScreen*					GetScreen(vint index) override;
+			INativeScreen*					GetScreen(INativeWindow* window) override;
+
+			// =============================================================
+			// INativeScreen
+			// =============================================================
+
+			NativeRect						GetBounds() override;
+			NativeRect						GetClientBounds() override;
+			WString							GetName() override;
+			bool							IsPrimary() override;
+			double							GetScalingX() override;
+			double							GetScalingY() override;
+
+			// =============================================================
+			// INativeWindowService
+			// =============================================================
+
+			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
+			void							DestroyNativeWindow(INativeWindow* window) override;
+			INativeWindow*					GetMainWindow() override;
+			INativeWindow*					GetWindow(NativePoint location) override;
+
+			void							SettingHostedWindowsBeforeRunning();
+			void							DestroyHostedWindowsAfterRunning();
+			void							Run(INativeWindow* window) override;
+		public:
+			GuiHostedController(INativeController* _nativeController);
+			~GuiHostedController();
+
+			void							Initialize();
+			void							Finalize();
+		};
 	}
 }
 
@@ -7866,6 +9259,8 @@ Basic Construction
 				/// <summary>Test if this control is focused.</summary>
 				/// <returns>Returns true if this control is focused.</returns>
 				virtual bool							GetFocused();
+				/// <summary>Focus this control.</summary>
+				virtual void							SetFocused();
 				/// <summary>Test if this control accepts tab character input.</summary>
 				/// <returns>Returns true if this control accepts tab character input.</returns>
 				virtual bool							GetAcceptTabInput()override;
@@ -7921,8 +9316,6 @@ Basic Construction
 				/// <summary>Set the context of this control.</summary>
 				/// <param name="value">The context of this control.</param>
 				virtual void							SetContext(const description::Value& value);
-				/// <summary>Focus this control.</summary>
-				virtual void							SetFocus();
 
 				/// <summary>Get the tag object of the control.</summary>
 				/// <returns>The tag object of the control.</returns>
@@ -8175,10 +9568,11 @@ Control Host
 				void											Disabled()override;
 				void											GotFocus()override;
 				void											LostFocus()override;
-				void											Activated()override;
-				void											Deactivated()override;
+				void											RenderingAsActivated()override;
+				void											RenderingAsDeactivated()override;
 				void											Opened()override;
-				void											Closing(bool& cancel)override;
+				void											BeforeClosing(bool& cancel)override;
+				void											AfterClosing()override;
 				void											Closed()override;
 				void											Destroying()override;
 
@@ -8200,9 +9594,11 @@ Control Host
 				compositions::GuiNotifyEvent					WindowDeactivated;
 				/// <summary>Window opened event.</summary>
 				compositions::GuiNotifyEvent					WindowOpened;
-				/// <summary>Window closing event.</summary>
+				/// <summary>Window closing event, raised to offer a chance to stop closing the window.</summary>
 				compositions::GuiRequestEvent					WindowClosing;
-				/// <summary>Window closed event.</summary>
+				/// <summary>Window ready to close event, raised when a window is about to close.</summary>
+				compositions::GuiNotifyEvent					WindowReadyToClose;
+				/// <summary>Window closed event, raised when a window is closed.</summary>
 				compositions::GuiNotifyEvent					WindowClosed;
 				/// <summary>Window destroying event.</summary>
 				compositions::GuiNotifyEvent					WindowDestroying;
@@ -8235,12 +9631,10 @@ Control Host
 				/// <returns>Returns true if the window is focused.</returns>
 				bool											GetFocused()override;
 				/// <summary>Focus the window. A window with activation disabled cannot receive focus.</summary>
-				void											SetFocused();
-				/// <summary>Test is the window activated.</summary>
-				/// <returns>Returns true if the window is activated.</returns>
-				bool											GetActivated();
-				/// <summary>Activate the window. If the window disabled activation, this function enables it again.</summary>
-				void											SetActivated();
+				void											SetFocused()override;
+				/// <summary>Test is the window rendering as activated.</summary>
+				/// <returns>Returns true if the window is rendering as activated.</returns>
+				bool											GetRenderingAsActivated();
 				/// <summary>Test is the window icon shown in the task bar.</summary>
 				/// <returns>Returns true if the window is icon shown in the task bar.</returns>
 				bool											GetShowInTaskBar();
@@ -8357,10 +9751,14 @@ Window
 				bool									hasTitleBar = true;
 				Ptr<GuiImageData>						icon;
 				
+				void									UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									SyncNativeWindowProperties();
+
 				void									Moved()override;
-				void									DpiChanged()override;
+				void									Opened()override;
+				void									DpiChanged(bool preparing)override;
+				void									BecomeNonMainHostedWindow()override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				
@@ -8458,6 +9856,11 @@ Window
 				/// </summary>
 				/// <param name="visible">True to make the title bar visible.</param>
 				void									SetTitleBar(bool visible);
+				/// <summary>
+				/// Show a window and keep it always in front of the owner window.
+				/// </summary>
+				/// <param name="owner">The window to disable as a parent window.</param>
+				void									ShowWithOwner(GuiWindow* owner);
 				/// <summary>
 				/// Show a model window, get a callback when the window is closed.
 				/// </summary>
@@ -19931,6 +21334,9 @@ using namespace vl::presentation::templates;
 
 extern int SetupWindowsGDIRenderer();
 extern int SetupWindowsDirect2DRenderer();
+extern int SetupHostedWindowsGDIRenderer();
+extern int SetupHostedWindowsDirect2DRenderer();
+
 extern int SetupOSXCoreGraphicsRenderer();
 
 #endif

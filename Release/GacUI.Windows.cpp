@@ -507,9 +507,15 @@ WindowsForm
 							UpdateDpiAwaredFields(false);
 							auto newRect = (RECT*)lParam;
 							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
+
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
-								listeners[i]->DpiChanged();
+								listeners[i]->DpiChanged(true);
+							}
+
+							for (vint i = 0; i < listeners.Count(); i++)
+							{
+								listeners[i]->DpiChanged(false);
 							}
 						}
 						break;
@@ -529,22 +535,6 @@ WindowsForm
 							}
 						}
 						break;
-					case WM_SETFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->GotFocus();
-							}
-						}
-						break;
-					case WM_KILLFOCUS:
-						{
-							for(vint i=0;i<listeners.Count();i++)
-							{
-								listeners[i]->LostFocus();
-							}
-						}
-						break;
 					case WM_MOUSEACTIVATE:
 						if (!enabledActivate)
 						{
@@ -558,11 +548,13 @@ WindowsForm
 							{
 								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
 								{
-									listeners[i]->Activated();
+									listeners[i]->GotFocus();
+									listeners[i]->RenderingAsActivated();
 								}
 								else
 								{
-									listeners[i]->Deactivated();
+									listeners[i]->LostFocus();
+									listeners[i]->RenderingAsDeactivated();
 								}
 							}
 						}
@@ -588,10 +580,17 @@ WindowsForm
 						break;
 					case WM_CLOSE:
 						{
-							bool cancel=false;
-							for(vint i=0;i<listeners.Count();i++)
+							bool cancel = false;
+							for (vint i = 0; i < listeners.Count(); i++)
 							{
-								listeners[i]->Closing(cancel);
+								listeners[i]->BeforeClosing(cancel);
+							}
+							if (!cancel)
+							{
+								for (vint i = 0; i < listeners.Count(); i++)
+								{
+									listeners[i]->AfterClosing();
+								}
 							}
 							return cancel;
 						}
@@ -861,60 +860,57 @@ WindowsForm
 					// ************************************** hit test
 					case WM_NCHITTEST:
 						{
-							POINTS location=MAKEPOINTS(lParam);
-							NativePoint windowLocation=GetBounds().LeftTop();
-							location.x-=(SHORT)windowLocation.x.value;
-							location.y-=(SHORT)windowLocation.y.value;
-							for(vint i=0;i<listeners.Count();i++)
+							POINTS location = MAKEPOINTS(lParam);
+							NativePoint windowLocation = GetBounds().LeftTop();
+							location.x -= (SHORT)windowLocation.x.value;
+							location.y -= (SHORT)windowLocation.y.value;
+							switch (PerformHitTest(From(listeners), { location.x,location.y }))
 							{
-								switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
-								{
-								case INativeWindowListener::BorderNoSizing:
-									result=HTBORDER;
-									return true;
-								case INativeWindowListener::BorderLeft:
-									result=HTLEFT;
-									return true;
-								case INativeWindowListener::BorderRight:
-									result=HTRIGHT;
-									return true;
-								case INativeWindowListener::BorderTop:
-									result=HTTOP;
-									return true;
-								case INativeWindowListener::BorderBottom:
-									result=HTBOTTOM;
-									return true;
-								case INativeWindowListener::BorderLeftTop:
-									result=HTTOPLEFT;
-									return true;
-								case INativeWindowListener::BorderRightTop:
-									result=HTTOPRIGHT;
-									return true;
-								case INativeWindowListener::BorderLeftBottom:
-									result=HTBOTTOMLEFT;
-									return true;
-								case INativeWindowListener::BorderRightBottom:
-									result=HTBOTTOMRIGHT;
-									return true;
-								case INativeWindowListener::Title:
-									result=HTCAPTION;
-									return true;
-								case INativeWindowListener::ButtonMinimum:
-									result=HTMINBUTTON;
-									return true;
-								case INativeWindowListener::ButtonMaximum:
-									result=HTMAXBUTTON;
-									return true;
-								case INativeWindowListener::ButtonClose:
-									result=HTCLOSE;
-									return true;
-								case INativeWindowListener::Client:
-									result=HTCLIENT;
-									return true;
-								case INativeWindowListener::Icon:
-									result=HTSYSMENU;
-									return true;
-								}
+							case INativeWindowListener::BorderNoSizing:
+								result = HTBORDER;
+								return true;
+							case INativeWindowListener::BorderLeft:
+								result = HTLEFT;
+								return true;
+							case INativeWindowListener::BorderRight:
+								result = HTRIGHT;
+								return true;
+							case INativeWindowListener::BorderTop:
+								result = HTTOP;
+								return true;
+							case INativeWindowListener::BorderBottom:
+								result = HTBOTTOM;
+								return true;
+							case INativeWindowListener::BorderLeftTop:
+								result = HTTOPLEFT;
+								return true;
+							case INativeWindowListener::BorderRightTop:
+								result = HTTOPRIGHT;
+								return true;
+							case INativeWindowListener::BorderLeftBottom:
+								result = HTBOTTOMLEFT;
+								return true;
+							case INativeWindowListener::BorderRightBottom:
+								result = HTBOTTOMRIGHT;
+								return true;
+							case INativeWindowListener::Title:
+								result = HTCAPTION;
+								return true;
+							case INativeWindowListener::ButtonMinimum:
+								result = HTMINBUTTON;
+								return true;
+							case INativeWindowListener::ButtonMaximum:
+								result = HTMAXBUTTON;
+								return true;
+							case INativeWindowListener::ButtonClose:
+								result = HTCLOSE;
+								return true;
+							case INativeWindowListener::Client:
+								result = HTCLIENT;
+								return true;
+							case INativeWindowListener::Icon:
+								result = HTSYSMENU;
+								return true;
 							}
 						}
 						break;
@@ -975,9 +971,9 @@ WindowsForm
 						case WM_LBUTTONUP:
 							{
 								POINTS location = MAKEPOINTS(lParam);
-								for(vint i=0;i<listeners.Count();i++)
+								for (vint i = 0; i < listeners.Count(); i++)
 								{
-									switch(listeners[i]->HitTest(NativePoint(location.x, location.y)))
+									switch (PerformHitTest(From(listeners), { location.x,location.y }))
 									{
 									case INativeWindowListener::ButtonMinimum:
 										ShowMinimized();
@@ -1011,6 +1007,7 @@ WindowsForm
 				WindowsForm*						parentWindow = nullptr;
 				List<WindowsForm*>					childWindows;
 				WindowMode							windowMode;
+				bool								isMainWindow = false;
 				List<INativeWindowListener*>		listeners;
 				vint								mouseLastX = -1;
 				vint								mouseLastY = -1;
@@ -1025,21 +1022,25 @@ WindowsForm
 				Ptr<GuiImageData>					defaultIcon;
 				Ptr<GuiImageData>					replacementIcon;
 				HICON								replacementHIcon = NULL;
-				UINT								dpiX = 0;
-				UINT								dpiY = 0;
+				vint								dpiX = 0;
+				vint								dpiY = 0;
 
 				void UpdateDpiAwaredFields(bool refreshDpiXY)
 				{
 					if (refreshDpiXY)
 					{
-						DpiAwared_GetDpiForWindow(handle, &dpiX, &dpiY);
+						UINT x = 0;
+						UINT y = 0;
+						DpiAwared_GetDpiForWindow(handle, &x, &y);
+						dpiX = (vint)x;
+						dpiY = (vint)y;
 					}
-					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, dpiX));
+					auto padding = (vint)(DpiAwared_GetSystemMetrics(SM_CXSIZEFRAME, (UINT)dpiX) + DpiAwared_GetSystemMetrics(SM_CXPADDEDBORDER, (UINT)dpiX));
 					customFramePadding = NativeMargin(padding, padding, padding, padding);
 				}
 			public:
 				WindowsForm(HWND parent, WString className, HINSTANCE hInstance, INativeWindow::WindowMode _windowMode)
-					:windowMode(_windowMode)
+					: windowMode(_windowMode)
 				{
 					{
 						DWORD exStyle = WS_EX_APPWINDOW | WS_EX_CONTROLPARENT;
@@ -1081,6 +1082,11 @@ WindowsForm
 						}
 					}
 					DestroyWindow(handle);
+				}
+
+				void SetIsMainWindow()
+				{
+					isMainWindow = true;
 				}
 
 				void InvokeDestroying()
@@ -1152,6 +1158,16 @@ WindowsForm
 					if (index == -1)return false;
 					messageHandlers.RemoveAt(handler);
 					return true;
+				}
+
+				bool IsActivelyRefreshing()override
+				{
+					return true;
+				}
+
+				NativeSize GetRenderingOffset()override
+				{
+					return { 0,0 };
 				}
 
 				Point Convert(NativePoint value)override
@@ -1229,7 +1245,7 @@ WindowsForm
 						RECT required = { 0,0,(int)size.x.value,(int)size.y.value };
 						RECT bounds;
 						GetWindowRect(handle, &bounds);
-						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
+						DpiAwared_AdjustWindowRect(&required, handle, (UINT)dpiX);
 						SetBounds(NativeRect(NativePoint(bounds.left, bounds.top), NativeSize(required.right - required.left, required.bottom - required.top)));
 					}
 				}
@@ -1245,7 +1261,7 @@ WindowsForm
 						RECT required={0,0,0,0};
 						RECT bounds;
 						GetWindowRect(handle, &bounds);
-						DpiAwared_AdjustWindowRect(&required, handle, dpiX);
+						DpiAwared_AdjustWindowRect(&required, handle, (UINT)dpiX);
 						return NativeRect(
 							NativePoint(
 								(bounds.left-required.left),
@@ -1264,7 +1280,7 @@ WindowsForm
 					return title;
 				}
 
-				void SetTitle(WString _title)override
+				void SetTitle(const WString& _title)override
 				{
 					title=_title;
 					SetWindowText(handle, title.Buffer());
@@ -1524,7 +1540,7 @@ WindowsForm
 						SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
 						if (isVisible) SendMessage(handle, WM_SETREDRAW, (WPARAM)TRUE, NULL);
 
-						if (this == GetCurrentController()->WindowService()->GetMainWindow())
+						if (isMainWindow)
 						{
 							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_BIG, (LPARAM)hAppIcon);
 							SendMessage(GetWindow(handle, GW_OWNER), WM_SETICON, ICON_SMALL, (LPARAM)hAppIcon);
@@ -1556,6 +1572,7 @@ WindowsForm
 
 				void Show()override
 				{
+					SetForegroundWindow(handle);
 					ShowWindow(handle, SW_SHOWNORMAL);
 				}
 
@@ -1582,14 +1599,7 @@ WindowsForm
 
 				void Hide(bool closeWindow)override
 				{
-					if (closeWindow)
-					{
-						PostMessage(handle, WM_CLOSE, NULL, NULL);
-					}
-					else
-					{
-						ShowWindow(handle, SW_HIDE);
-					}
+					PostMessage(handle, WM_CLOSE, NULL, NULL);
 				}
 
 				bool IsVisible()override
@@ -1612,16 +1622,6 @@ WindowsForm
 					return IsWindowEnabled(handle)!=0;
 				}
 
-				void SetFocus()override
-				{
-					::SetFocus(handle);
-				}
-
-				bool IsFocused()override
-				{
-					return GetFocus()==handle;
-				}
-
 				void SetActivate()override
 				{
 					SetActiveWindow(handle);
@@ -1630,6 +1630,14 @@ WindowsForm
 				bool IsActivated()override
 				{
 					return GetActiveWindow()==handle;
+				}
+
+				bool IsRenderingAsActivated()override
+				{
+					// TODO: should render as activated when
+					//   is activated
+					//   is a parent window of one that rendering as activated
+					return IsActivated();
 				}
 
 				void ShowInTaskBar()override
@@ -1811,12 +1819,12 @@ WindowsController
 				HINSTANCE							hInstance;
 				HWND								godWindow;
 				Dictionary<HWND, WindowsForm*>		windows;
-				INativeWindow*						mainWindow;
-				HWND								mainWindowHandle;
+				WindowsForm*						mainWindow = nullptr;
+				HWND								mainWindowHandle = 0;
 
 				WindowsCallbackService				callbackService;
 				WindowsResourceService				resourceService;
-				WindowsAsyncService					asyncService;
+				SharedAsyncService					asyncService;
 				WindowsClipboardService				clipboardService;
 				WindowsImageService					imageService;
 				WindowsScreenService				screenService;
@@ -1828,8 +1836,6 @@ WindowsController
 					:hInstance(_hInstance)
 					,windowClass(L"VczhWindow", false, false, WndProc, _hInstance)
 					,godClass(L"GodWindow", false, false, GodProc, _hInstance)
-					,mainWindow(0)
-					,mainWindowHandle(0)
 					,screenService(&GetHWNDFromNativeWindowHandle)
 					,dialogService(&GetHWNDFromNativeWindowHandle)
 				{
@@ -1936,7 +1942,7 @@ WindowsController
 
 				INativeWindow* CreateNativeWindow(INativeWindow::WindowMode windowMode)override
 				{
-					WindowsForm* window=new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
+					WindowsForm* window = new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
 					windows.Add(window->GetWindowHandle(), window);
 					callbackService.InvokeNativeWindowCreated(window);
 					window->SetWindowCursor(resourceService.GetDefaultSystemCursor());
@@ -1945,12 +1951,16 @@ WindowsController
 
 				void DestroyNativeWindow(INativeWindow* window)override
 				{
-					WindowsForm* windowsForm=dynamic_cast<WindowsForm*>(window);
+					auto windowsForm = dynamic_cast<WindowsForm*>(window);
 					windowsForm->InvokeDestroying();
-					if(windowsForm!=0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
+					if (windowsForm != 0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
 					{
 						callbackService.InvokeNativeWindowDestroyed(window);
 						windows.Remove(windowsForm->GetWindowHandle());
+						if (mainWindow == windowsForm)
+						{
+							mainWindow = nullptr;
+						}
 						delete windowsForm;
 					}
 				}
@@ -1962,8 +1972,9 @@ WindowsController
 
 				void Run(INativeWindow* window)override
 				{
-					mainWindow=window;
-					mainWindowHandle=GetWindowsForm(window)->GetWindowHandle();
+					mainWindow = dynamic_cast<WindowsForm*>(GetWindowsForm(window));
+					mainWindowHandle = mainWindow->GetWindowHandle();
+					mainWindow->SetIsMainWindow();
 					mainWindow->Show();
 					MSG message;
 					while(GetMessage(&message, NULL, 0, 0))
@@ -2062,13 +2073,14 @@ WindowsController
 Windows Procedure
 ***********************************************************************/
 
+			WindowsController* windowsController = nullptr;
+
 			LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
+				if (windowsController)
 				{
-					LRESULT result=0;
-					if(controller->HandleMessage(hwnd, uMsg, wParam, lParam, result))
+					LRESULT result = 0;
+					if (windowsController->HandleMessage(hwnd, uMsg, wParam, lParam, result))
 					{
 						return result;
 					}
@@ -2078,16 +2090,15 @@ Windows Procedure
 
 			LRESULT CALLBACK GodProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				WindowsController* controller=dynamic_cast<WindowsController*>(GetCurrentController());
-				if(controller)
+				if (windowsController)
 				{
-					switch(uMsg)
+					switch (uMsg)
 					{
 					case WM_TIMER:
-						controller->InvokeGlobalTimer();
+						windowsController->InvokeGlobalTimer();
 						break;
 					case WM_CLIPBOARDUPDATE:
-						controller->InvokeClipboardUpdated();
+						windowsController->InvokeClipboardUpdated();
 						break;
 					}
 				}
@@ -2098,17 +2109,22 @@ Windows Procedure
 Windows Platform Native Controller
 ***********************************************************************/
 
-			INativeController* CreateWindowsNativeController(HINSTANCE hInstance)
+			void StartWindowsNativeController(HINSTANCE hInstance)
 			{
-				return new WindowsController(hInstance);
+				CHECK_ERROR(!windowsController, L"vl::presentation::windows::StartWindowsNativeController(HINSTANCE)#The Windows native controller has been started.");
+				windowsController = new WindowsController(hInstance);
+			}
+
+			INativeController* GetWindowsNativeController()
+			{
+				return windowsController;
 			}
 
 			IWindowsForm* GetWindowsFormFromHandle(HWND hwnd)
 			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
+				if (windowsController)
 				{
-					return controller->GetWindowsFormFromHandle(hwnd);
+					return windowsController->GetWindowsFormFromHandle(hwnd);
 				}
 				return nullptr;
 			}
@@ -2120,16 +2136,17 @@ Windows Platform Native Controller
 
 			void GetAllCreatedWindows(collections::List<IWindowsForm*>& windows, bool rootWindowOnly)
 			{
-				auto controller = dynamic_cast<WindowsController*>(GetCurrentController());
-				if (controller)
+				if (windowsController)
 				{
-					controller->GetAllCreatedWindows(windows, rootWindowOnly);
+					windowsController->GetAllCreatedWindows(windows, rootWindowOnly);
 				}
 			}
 
-			void DestroyWindowsNativeController(INativeController* controller)
+			void StopWindowsNativeController()
 			{
-				delete controller;
+				CHECK_ERROR(windowsController, L"vl::presentation::windows::StopWindowsNativeController()#The Windows native controller has been stopped.");
+				delete windowsController;
+				windowsController = nullptr;
 			}
 
 			void EnableCrossKernelCrashing()
@@ -2634,7 +2651,7 @@ ControllerListener
 				}
 			};
 
-			Direct2DWindowsNativeControllerListener* direct2DListener=0;
+			Direct2DWindowsNativeControllerListener* direct2DListener = nullptr;
 
 			ID2D1Factory* GetDirect2DFactory()
 			{
@@ -2776,36 +2793,49 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_d2d;
 
-int WinMainDirect2D(HINSTANCE hInstance, void(*RendererMain)())
+int SetupWindowsDirect2DRendererInternal(bool hosted)
 {
+	InitDpiAwareness(true);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
+	SetWindowsDirect2DObjectProvider(&objectProvider);
 	EnableCrossKernelCrashing();
+
 	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
-	SetCurrentController(controller);
+	GuiHostedController* hostedController = nullptr;
+	StartWindowsNativeController(hInstance);
+	auto nativeController = GetWindowsNativeController();
+	if (hosted) hostedController = new GuiHostedController(nativeController);
+	SetCurrentController(hostedController ? hostedController : nativeController);
+
 	{
 		// install listener
 		Direct2DWindowsNativeControllerListener listener;
-		controller->CallbackService()->InstallListener(&listener);
-		direct2DListener=&listener;
+		nativeController->CallbackService()->InstallListener(&listener);
+		direct2DListener = &listener;
 		// main
-		RendererMain();
+		RendererMainDirect2D(hostedController);
 		// uninstall listener
-		direct2DListener=0;
-		controller->CallbackService()->UninstallListener(&listener);
+		direct2DListener = nullptr;
+		nativeController->CallbackService()->UninstallListener(&listener);
 	}
+
 	// destroy controller
-	DestroyWindowsNativeController(controller);
+	SetCurrentController(nullptr);
+	if (hostedController) delete hostedController;
+	StopWindowsNativeController();
 	return 0;
 }
 
 int SetupWindowsDirect2DRenderer()
 {
-	InitDpiAwareness(true);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinDirect2DApplicationDirect2DObjectProvider objectProvider;
-	SetWindowsDirect2DObjectProvider(&objectProvider);
-	return WinMainDirect2D(hInstance, &RendererMainDirect2D);
+	return SetupWindowsDirect2DRendererInternal(false);
+}
+
+int SetupHostedWindowsDirect2DRenderer()
+{
+	return SetupWindowsDirect2DRendererInternal(true);
 }
 
 /***********************************************************************
@@ -3274,7 +3304,7 @@ WindowsDirect2DParagraph (Initialization)
 					,formatDataAvailable(false)
 					,paragraphCallback(_paragraphCallback)
 				{
-					FontProperties defaultFont=GetCurrentController()->ResourceService()->GetDefaultFont();
+					FontProperties defaultFont= windows::GetWindowsNativeController()->ResourceService()->GetDefaultFont();
 					Direct2DTextFormatPackage* package=GetWindowsDirect2DResourceManager()->CreateDirect2DTextFormat(defaultFont);
 					defaultTextColor=renderTarget->CreateDirect2DBrush(Color(0, 0, 0));
 					usedColors.Add(Color(0, 0, 0));
@@ -4708,7 +4738,7 @@ GuiSolidLabelElementRenderer
 				{
 					IWindowsDirect2DResourceManager* resourceManager=GetWindowsDirect2DResourceManager();
 					oldFont=element->GetFont();
-					if (oldFont.fontFamily == L"") oldFont.fontFamily = GetCurrentController()->ResourceService()->GetDefaultFont().fontFamily;
+					if (oldFont.fontFamily == L"") oldFont.fontFamily = windows::GetWindowsNativeController()->ResourceService()->GetDefaultFont().fontFamily;
 					if (oldFont.size == 0) oldFont.size = 12;
 					textFormat=resourceManager->CreateDirect2DTextFormat(oldFont);
 				}
@@ -5367,7 +5397,7 @@ GuiColorizedTextElementRenderer
 					resourceManager->DestroyDirect2DCharMeasurer(oldFont);
 				}
 				oldFont = element->GetFont();
-				if (oldFont.fontFamily == L"") oldFont.fontFamily = GetCurrentController()->ResourceService()->GetDefaultFont().fontFamily;
+				if (oldFont.fontFamily == L"") oldFont.fontFamily = windows::GetWindowsNativeController()->ResourceService()->GetDefaultFont().fontFamily;
 				if (oldFont.size == 0) oldFont.size = 12;
 
 				textFormat = resourceManager->CreateDirect2DTextFormat(oldFont);
@@ -5615,7 +5645,7 @@ GuiDirect2DElement
 
 			D2D1::ColorF GetD2DColor(Color color)
 			{
-				return D2D1::ColorF(color.r/255.0f, color.g/255.0f, color.b/255.0f, color.a/255.0f);
+				return D2D1::ColorF(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
 			}
 
 /***********************************************************************
@@ -5626,10 +5656,9 @@ CachedResourceAllocator
 			{
 				DEFINE_CACHED_RESOURCE_ALLOCATOR(Color, ComPtr<ID2D1SolidColorBrush>)
 
-				IWindowsDirect2DRenderTarget*	guiRenderTarget;
+				IWindowsDirect2DRenderTarget* guiRenderTarget = nullptr;
 			public:
 				CachedSolidBrushAllocator()
-					:guiRenderTarget(0)
 				{
 				}
 
@@ -5653,10 +5682,9 @@ CachedResourceAllocator
 				typedef Pair<Color, Color> ColorPair;
 				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1LinearGradientBrush>)
 
-				IWindowsDirect2DRenderTarget*	guiRenderTarget;
+				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedLinearBrushAllocator()
-					:guiRenderTarget(0)
 				{
 				}
 
@@ -5704,10 +5732,9 @@ CachedResourceAllocator
 				typedef Pair<Color, Color> ColorPair;
 				DEFINE_CACHED_RESOURCE_ALLOCATOR(ColorPair, ComPtr<ID2D1RadialGradientBrush>)
 
-				IWindowsDirect2DRenderTarget*	guiRenderTarget;
+				IWindowsDirect2DRenderTarget*	guiRenderTarget = nullptr;
 			public:
 				CachedRadialBrushAllocator()
-					:guiRenderTarget(0)
 				{
 				}
 
@@ -5797,8 +5824,8 @@ CachedResourceAllocator
 				class Direct2DCharMeasurer : public text::CharMeasurer
 				{
 				protected:
-					ComPtr<IDWriteTextFormat>		font;
-					vint								size;
+					ComPtr<IDWriteTextFormat>	font;
+					vint						size;
 
 					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
@@ -5856,8 +5883,8 @@ WindowsDirect2DRenderTarget
 			class WindowsDirect2DImageFrameCache : public Object, public INativeImageFrameCache
 			{
 			protected:
-				IWindowsDirect2DRenderTarget*	renderTarget;
-				INativeImageFrame*				cachedFrame;
+				IWindowsDirect2DRenderTarget*	renderTarget = nullptr;
+				INativeImageFrame*				cachedFrame = nullptr;
 				ComPtr<ID2D1Bitmap>				bitmap;
 				ComPtr<ID2D1Bitmap>				disabledBitmap;
 			public:
@@ -5894,7 +5921,7 @@ WindowsDirect2DRenderTarget
 
 				ComPtr<ID2D1Bitmap> GetBitmap(bool enabled)
 				{
-					if(enabled)
+					if (enabled)
 					{
 						return bitmap;
 					}
@@ -5916,11 +5943,11 @@ WindowsDirect2DRenderTarget
 							rect.Y = 0;
 							rect.Width = bitmap->GetPixelSize().width;
 							rect.Height = bitmap->GetPixelSize().height;
-							BYTE* buffer = new BYTE[rect.Width*rect.Height * 4];
-							hr = frameBitmap->CopyPixels(&rect, rect.Width * 4, rect.Width*rect.Height * 4, buffer);
+							BYTE* buffer = new BYTE[rect.Width * rect.Height * 4];
+							hr = frameBitmap->CopyPixels(&rect, rect.Width * 4, rect.Width * rect.Height * 4, buffer);
 							if (SUCCEEDED(hr))
 							{
-								vint count = rect.Width*rect.Height;
+								vint count = rect.Width * rect.Height;
 								BYTE* read = buffer;
 								for (vint i = 0; i < count; i++)
 								{
@@ -5944,7 +5971,7 @@ WindowsDirect2DRenderTarget
 				}
 			};
 
-			class WindowsDirect2DRenderTarget : public Object, public IWindowsDirect2DRenderTarget
+			class WindowsDirect2DRenderTarget : public IWindowsDirect2DRenderTarget
 			{
 				typedef SortedList<Ptr<WindowsDirect2DImageFrameCache>> ImageCacheList;
 			protected:
@@ -5953,6 +5980,8 @@ WindowsDirect2DRenderTarget
 				ID2D1DeviceContext*				d2dDeviceContext = nullptr;
 				List<Rect>						clippers;
 				vint							clipperCoverWholeTargetCounter = 0;
+				bool							hostedRendering = false;
+				bool							rendering = false;
 
 				CachedSolidBrushAllocator		solidBrushes;
 				CachedLinearBrushAllocator		linearBrushes;
@@ -5966,19 +5995,19 @@ WindowsDirect2DRenderTarget
 
 				ComPtr<IDWriteRenderingParams> CreateRenderingParams(DWRITE_RENDERING_MODE renderingMode, IDWriteRenderingParams* defaultParams, IDWriteFactory* dwriteFactory)
 				{
-					IDWriteRenderingParams* renderingParams=0;
-					FLOAT gamma=defaultParams->GetGamma();
-					FLOAT enhancedContrast=defaultParams->GetEnhancedContrast();
-					FLOAT clearTypeLevel=defaultParams->GetClearTypeLevel();
-					DWRITE_PIXEL_GEOMETRY pixelGeometry=defaultParams->GetPixelGeometry();
-					HRESULT hr=dwriteFactory->CreateCustomRenderingParams(
+					IDWriteRenderingParams* renderingParams = 0;
+					FLOAT gamma = defaultParams->GetGamma();
+					FLOAT enhancedContrast = defaultParams->GetEnhancedContrast();
+					FLOAT clearTypeLevel = defaultParams->GetClearTypeLevel();
+					DWRITE_PIXEL_GEOMETRY pixelGeometry = defaultParams->GetPixelGeometry();
+					HRESULT hr = dwriteFactory->CreateCustomRenderingParams(
 						gamma,
 						enhancedContrast,
 						clearTypeLevel,
 						pixelGeometry,
 						renderingMode,
 						&renderingParams);
-					if(!FAILED(hr))
+					if (!FAILED(hr))
 					{
 						return renderingParams;
 					}
@@ -5987,9 +6016,50 @@ WindowsDirect2DRenderTarget
 						return nullptr;
 					}
 				}
+
+				void StartRenderingOnNativeWindow() override
+				{
+					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRenderingOnNativeWindow()#Invalid render target.");
+					GetWindowsDirect2DObjectProvider()->StartRendering(window);
+				}
+
+				RenderTargetFailure StopRenderingOnNativeWindow() override
+				{
+					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StopRenderingOnNativeWindow()#Invalid render target.");
+					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
+					d2dRenderTarget = nullptr;
+					return result;
+				}
+
+				Size GetCanvasSize() override
+				{
+					return window->Convert(window->GetClientSize());
+				}
+
+				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				{
+					d2dRenderTarget->PushAxisAlignedClip(
+						D2D1::RectF((FLOAT)validArea.x1, (FLOAT)validArea.y1, (FLOAT)validArea.x2, (FLOAT)validArea.y2),
+						D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
+						);
+				}
+
+				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				{
+				}
+
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
+				{
+				}
+
+				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
+				{
+					d2dRenderTarget->PopAxisAlignedClip();
+				}
 			public:
 				WindowsDirect2DRenderTarget(INativeWindow* _window)
-					:window(_window)
+					: window(_window)
 				{
 					solidBrushes.SetRenderTarget(this);
 					linearBrushes.SetRenderTarget(this);
@@ -6009,9 +6079,9 @@ WindowsDirect2DRenderTarget
 
 				~WindowsDirect2DRenderTarget()
 				{
-					while(imageCaches.Count())
+					while (imageCaches.Count())
 					{
-						Ptr<WindowsDirect2DImageFrameCache> cache=imageCaches[imageCaches.Count()-1];
+						Ptr<WindowsDirect2DImageFrameCache> cache = imageCaches[imageCaches.Count() - 1];
 						cache->GetFrame()->RemoveCache(this);
 					}
 				}
@@ -6023,15 +6093,15 @@ WindowsDirect2DRenderTarget
 
 				ComPtr<ID2D1Bitmap> GetBitmap(INativeImageFrame* frame, bool enabled)override
 				{
-					Ptr<INativeImageFrameCache> cache=frame->GetCache(this);
-					if(cache)
+					Ptr<INativeImageFrameCache> cache = frame->GetCache(this);
+					if (cache)
 					{
 						return cache.Cast<WindowsDirect2DImageFrameCache>()->GetBitmap(enabled);
 					}
 					else
 					{
-						auto d2dCache=Ptr(new WindowsDirect2DImageFrameCache(this));
-						if(frame->SetCache(this, d2dCache))
+						auto d2dCache = Ptr(new WindowsDirect2DImageFrameCache(this));
+						if (frame->SetCache(this, d2dCache))
 						{
 							imageCaches.Add(d2dCache);
 							return d2dCache->GetBitmap(enabled);
@@ -6045,106 +6115,29 @@ WindowsDirect2DRenderTarget
 
 				void DestroyBitmapCache(INativeImageFrame* frame)override
 				{
-					WindowsDirect2DImageFrameCache* cache=frame->GetCache(this).Cast<WindowsDirect2DImageFrameCache>().Obj();
+					WindowsDirect2DImageFrameCache* cache = frame->GetCache(this).Cast<WindowsDirect2DImageFrameCache>().Obj();
 					imageCaches.Remove(cache);
 				}
 
 				void SetTextAntialias(bool antialias, bool verticalAntialias)override
 				{
 					ComPtr<IDWriteRenderingParams> params;
-					if(!antialias)
+					if (!antialias)
 					{
-						params=noAntialiasParams;
+						params = noAntialiasParams;
 					}
-					else if(!verticalAntialias)
+					else if (!verticalAntialias)
 					{
-						params=horizontalAntialiasParams;
+						params = horizontalAntialiasParams;
 					}
 					else
 					{
-						params=bidirectionalAntialiasParams;
+						params = bidirectionalAntialiasParams;
 					}
-					if(params && d2dRenderTarget)
+					if (params && d2dRenderTarget)
 					{
 						d2dRenderTarget->SetTextRenderingParams(params.Obj());
 					}
-				}
-
-				void StartRendering()override
-				{
-					d2dRenderTarget = GetWindowsDirect2DObjectProvider()->GetNativeWindowDirect2DRenderTarget(window);
-					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
-
-					GetWindowsDirect2DObjectProvider()->StartRendering(window);
-				}
-
-				RenderTargetFailure StopRendering()override
-				{
-					CHECK_ERROR(d2dRenderTarget, L"vl::presentation::elements_windows_d2d::WindowsDirect2DRenderTarget::StartRendering()#Invalid render target.");
-					auto result = GetWindowsDirect2DObjectProvider()->StopRenderingAndPresent(window);
-					d2dRenderTarget = nullptr;
-					return result;
-				}
-
-				void PushClipper(Rect clipper)override
-				{
-					if(clipperCoverWholeTargetCounter>0)
-					{
-						clipperCoverWholeTargetCounter++;
-					}
-					else
-					{
-						Rect previousClipper=GetClipper();
-						Rect currentClipper;
-
-						currentClipper.x1=(previousClipper.x1>clipper.x1?previousClipper.x1:clipper.x1);
-						currentClipper.y1=(previousClipper.y1>clipper.y1?previousClipper.y1:clipper.y1);
-						currentClipper.x2=(previousClipper.x2<clipper.x2?previousClipper.x2:clipper.x2);
-						currentClipper.y2=(previousClipper.y2<clipper.y2?previousClipper.y2:clipper.y2);
-
-						if(currentClipper.x1<currentClipper.x2 && currentClipper.y1<currentClipper.y2)
-						{
-							clippers.Add(currentClipper);
-							d2dRenderTarget->PushAxisAlignedClip(
-								D2D1::RectF((FLOAT)currentClipper.x1, (FLOAT)currentClipper.y1, (FLOAT)currentClipper.x2, (FLOAT)currentClipper.y2),
-								D2D1_ANTIALIAS_MODE_PER_PRIMITIVE
-								);
-						}
-						else
-						{
-							clipperCoverWholeTargetCounter++;
-						}
-					}
-				}
-
-				void PopClipper()override
-				{
-					if(clipperCoverWholeTargetCounter>0)
-					{
-						clipperCoverWholeTargetCounter--;
-					}
-					else if(clippers.Count()>0)
-					{
-						clippers.RemoveAt(clippers.Count()-1);
-						d2dRenderTarget->PopAxisAlignedClip();
-					}
-				}
-
-				Rect GetClipper()override
-				{
-					if (clippers.Count() == 0)
-					{
-						return Rect(Point(0, 0), window->Convert(window->GetClientSize()));
-					}
-					else
-					{
-						return clippers[clippers.Count() - 1];
-					}
-				}
-
-				bool IsClipperCoverWholeTarget()override
-				{
-					return clipperCoverWholeTargetCounter>0;
 				}
 
 				ID2D1Effect* GetFocusRectangleEffect()override
@@ -6166,7 +6159,7 @@ WindowsDirect2DRenderTarget
 									"\x00\x00\x2F\x49\x44\x41\x54\x28\x53\x75\xC8\xB1\x0D\x00\x30\x0C\x02\x41\xEF\xBF\x34\xB1\x68\xA2\x47\xF8\x9B\x13"
 									"\x8C\xB6\xD9\x2E\x5D\x9E\x10\xA3\xE8\xF2\x84\x18\x45\x97\x27\xC4\x28\xBA\x3C\xBF\xD2\x03\xC2\xD7\x7F\x81\x23\x94"
 									"\x3E\x1F\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82";
-								auto effectImage = GetCurrentController()->ImageService()->CreateImageFromMemory((void*)EffectBuffer, (vint)(sizeof(EffectBuffer) - 1));
+								auto effectImage = GetWindowsNativeController()->ImageService()->CreateImageFromMemory((void*)EffectBuffer, (vint)(sizeof(EffectBuffer) - 1));
 								IWICBitmap* wicEffectBitmap = effectImage ? GetWICBitmap(effectImage->GetFrame(0)) : nullptr;
 								if (wicEffectBitmap)
 								{
@@ -6238,14 +6231,14 @@ WindowsGDIResourceManager
 			public:
 				WindowsDirect2DResourceManager()
 				{
-					layoutProvider=Ptr(new WindowsDirect2DLayoutProvider);
+					layoutProvider = Ptr(new WindowsDirect2DLayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override
 				{
 					return GetWindowsDirect2DObjectProvider()->GetBindedRenderTarget(window);
 				}
-				
+
 				void RecreateRenderTarget(INativeWindow* window)override
 				{
 					NativeWindowDestroying(window);
@@ -6265,14 +6258,14 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					auto renderTarget=Ptr(new WindowsDirect2DRenderTarget(window));
+					auto renderTarget = Ptr(new WindowsDirect2DRenderTarget(window));
 					renderTargets.Add(renderTarget);
 					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override
 				{
-					WindowsDirect2DRenderTarget* renderTarget=dynamic_cast<WindowsDirect2DRenderTarget*>(GetWindowsDirect2DObjectProvider()->GetBindedRenderTarget(window));
+					WindowsDirect2DRenderTarget* renderTarget = dynamic_cast<WindowsDirect2DRenderTarget*>(GetWindowsDirect2DObjectProvider()->GetBindedRenderTarget(window));
 					GetWindowsDirect2DObjectProvider()->SetBindedRenderTarget(window, 0);
 					renderTargets.Remove(renderTarget);
 				}
@@ -6301,7 +6294,7 @@ WindowsGDIResourceManager
 
 		namespace elements_windows_d2d
 		{
-			IWindowsDirect2DResourceManager* windowsDirect2DResourceManager=0;
+			IWindowsDirect2DResourceManager* windowsDirect2DResourceManager = nullptr;
 
 			IWindowsDirect2DResourceManager* GetWindowsDirect2DResourceManager()
 			{
@@ -6310,14 +6303,14 @@ WindowsGDIResourceManager
 
 			void SetWindowsDirect2DResourceManager(IWindowsDirect2DResourceManager* resourceManager)
 			{
-				windowsDirect2DResourceManager=resourceManager;
+				windowsDirect2DResourceManager = resourceManager;
 			}
 
 /***********************************************************************
 OS Supporting
 ***********************************************************************/
 
-			IWindowsDirect2DObjectProvider* windowsDirect2DObjectProvider=0;
+			IWindowsDirect2DObjectProvider* windowsDirect2DObjectProvider = nullptr;
 
 			IWindowsDirect2DObjectProvider* GetWindowsDirect2DObjectProvider()
 			{
@@ -6326,7 +6319,7 @@ OS Supporting
 
 			void SetWindowsDirect2DObjectProvider(IWindowsDirect2DObjectProvider* provider)
 			{
-				windowsDirect2DObjectProvider=provider;
+				windowsDirect2DObjectProvider = provider;
 			}
 		}
 	}
@@ -6341,30 +6334,44 @@ using namespace vl::presentation::elements;
 
 extern void GuiApplicationMain();
 
-void RendererMainDirect2D()
+void RendererMainDirect2D(GuiHostedController* hostedController)
 {
 	elements_windows_d2d::WindowsDirect2DResourceManager resourceManager;
-	SetGuiGraphicsResourceManager(&resourceManager);
 	elements_windows_d2d::SetWindowsDirect2DResourceManager(&resourceManager);
-	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
+	windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
 
-	elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
-	elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
-	elements_windows_d2d::Gui3DBorderElementRenderer::Register();
-	elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
-	elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
-	elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
-	elements_windows_d2d::GuiImageFrameElementRenderer::Register();
-	elements_windows_d2d::GuiPolygonElementRenderer::Register();
-	elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
-	elements_windows_d2d::GuiDirect2DElementRenderer::Register();
-	elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+	auto hostedResourceManager = hostedController ? new GuiHostedGraphicsResourceManager(hostedController, &resourceManager) : nullptr;
+	SetGuiGraphicsResourceManager(
+		hostedResourceManager
+		? hostedResourceManager
+		: static_cast<IGuiGraphicsResourceManager*>(&resourceManager)
+		);
 
-	GuiApplicationMain();
-	elements_windows_d2d::SetWindowsDirect2DResourceManager(0);
-	SetGuiGraphicsResourceManager(0);
+	{
+		elements_windows_d2d::GuiFocusRectangleElementRenderer::Register();
+		elements_windows_d2d::GuiSolidBorderElementRenderer::Register();
+		elements_windows_d2d::Gui3DBorderElementRenderer::Register();
+		elements_windows_d2d::Gui3DSplitterElementRenderer::Register();
+		elements_windows_d2d::GuiSolidBackgroundElementRenderer::Register();
+		elements_windows_d2d::GuiGradientBackgroundElementRenderer::Register();
+		elements_windows_d2d::GuiInnerShadowElementRenderer::Register();
+		elements_windows_d2d::GuiSolidLabelElementRenderer::Register();
+		elements_windows_d2d::GuiImageFrameElementRenderer::Register();
+		elements_windows_d2d::GuiPolygonElementRenderer::Register();
+		elements_windows_d2d::GuiColorizedTextElementRenderer::Register();
+		elements_windows_d2d::GuiDirect2DElementRenderer::Register();
+		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+
+		if (hostedController) hostedController->Initialize();
+		GuiApplicationMain();
+		if (hostedController) hostedController->Finalize();
+	}
+
+	SetGuiGraphicsResourceManager(nullptr);
+	if (hostedResourceManager) delete hostedResourceManager;
+
+	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
+	elements_windows_d2d::SetWindowsDirect2DResourceManager(nullptr);
 }
 
 /***********************************************************************
@@ -8391,7 +8398,7 @@ namespace vl
 					if (needPaintAfterResize)
 					{
 						needPaintAfterResize = false;
-						auto callbackService = GetCurrentController()->CallbackService();
+						auto callbackService = GetWindowsNativeController()->CallbackService();
 						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
 					}
 					IWindowsForm* form=GetWindowsForm(window);
@@ -8436,7 +8443,7 @@ namespace vl
 				}
 			};
 
-			GdiWindowsNativeControllerListener* gdiListener=0;
+			GdiWindowsNativeControllerListener* gdiListener = nullptr;
 
 			WinDC* GetNativeWindowDC(INativeWindow* window)
 			{
@@ -8513,36 +8520,49 @@ using namespace vl::presentation;
 using namespace vl::presentation::windows;
 using namespace vl::presentation::elements_windows_gdi;
 
-int WinMainGDI(HINSTANCE hInstance, void(*RendererMain)())
+int SetupWindowsGDIRendererInternal(bool hosted)
 {
+	InitDpiAwareness(false);
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(NULL);
+	WinGDIApplicationGDIObjectProvider objectProvider;
+	SetWindowsGDIObjectProvider(&objectProvider);
 	EnableCrossKernelCrashing();
+
 	// create controller
-	INativeController* controller=CreateWindowsNativeController(hInstance);
-	SetCurrentController(controller);
+	GuiHostedController* hostedController = nullptr;
+	StartWindowsNativeController(hInstance);
+	auto nativeController = GetWindowsNativeController();
+	if (hosted) hostedController = new GuiHostedController(nativeController);
+	SetCurrentController(hostedController ? hostedController : nativeController);
+
 	{
 		// install listener
 		GdiWindowsNativeControllerListener listener;
-		controller->CallbackService()->InstallListener(&listener);
-		gdiListener=&listener;
+		nativeController->CallbackService()->InstallListener(&listener);
+		gdiListener = &listener;
 		// main
-		RendererMain();
+		RendererMainGDI(hostedController);
 		// uninstall listener
-		gdiListener=0;
-		controller->CallbackService()->UninstallListener(&listener);
+		gdiListener = nullptr;
+		nativeController->CallbackService()->UninstallListener(&listener);
 	}
+
 	// destroy controller
-	DestroyWindowsNativeController(controller);
+	SetCurrentController(nullptr);
+	if (hostedController) delete hostedController;
+	StopWindowsNativeController();
 	return 0;
 }
 
 int SetupWindowsGDIRenderer()
 {
-	InitDpiAwareness(false);
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HINSTANCE hInstance=(HINSTANCE)GetModuleHandle(NULL);
-	WinGDIApplicationGDIObjectProvider objectProvider;
-	SetWindowsGDIObjectProvider(&objectProvider);
-	return WinMainGDI(hInstance, &RendererMainGDI);
+	return SetupWindowsGDIRendererInternal(false);
+}
+
+int SetupHostedWindowsGDIRenderer()
+{
+	return SetupWindowsGDIRendererInternal(true);
 }
 
 /***********************************************************************
@@ -8617,7 +8637,7 @@ WindowsGDIParagraph
 					paragraph->paragraphText=text;
 
 					auto fragment=Ptr(new UniscribeFragment(_text));
-					fragment->fontStyle=GetCurrentController()->ResourceService()->GetDefaultFont();
+					fragment->fontStyle=GetWindowsNativeController()->ResourceService()->GetDefaultFont();
 					paragraph->documentFragments.Add(fragment);
 				}
 
@@ -8902,6 +8922,7 @@ GuiSolidBorderElementRenderer
 			{
 				auto resourceManager = GetWindowsGDIResourceManager();
 				pen = resourceManager->GetFocusRectanglePen();
+				brush = resourceManager->CreateGdiBrush(Color(0, 0, 0, 0));
 			}
 
 			void GuiFocusRectangleElementRenderer::FinalizeInternal()
@@ -8916,6 +8937,7 @@ GuiSolidBorderElementRenderer
 			{
 				int originRop2 = renderTarget->GetDC()->SetRasterOperation(R2_XORPEN);
 				renderTarget->GetDC()->SetPen(pen);
+				renderTarget->GetDC()->SetBrush(brush);
 				renderTarget->GetDC()->Rectangle(bounds.Left(), bounds.Top(), bounds.Right() - 1, bounds.Bottom() - 1);
 				renderTarget->GetDC()->SetRasterOperation(originRop2);
 			}
@@ -12482,112 +12504,71 @@ GuiGDIElement
 WindowsGDIRenderTarget
 ***********************************************************************/
 
-			class WindowsGDIRenderTarget : public Object, public IWindowsGDIRenderTarget
+			class WindowsGDIRenderTarget : public IWindowsGDIRenderTarget
 			{
 			protected:
-				INativeWindow*				window;
-				WinDC*						dc;
+				INativeWindow*				window = nullptr;
+				WinDC*						dc = nullptr;
 				List<Rect>					clippers;
-				vint							clipperCoverWholeTargetCounter;
+				vint						clipperCoverWholeTargetCounter = 0;
+				bool						hostedRendering = false;
+				bool						rendering = false;
 
-				void ApplyClipper()
+				void ApplyClipper(Rect validArea, bool clipperExists)
 				{
-					if(clipperCoverWholeTargetCounter==0)
+					if (clipperExists)
 					{
-						if(clippers.Count()==0)
-						{
-							dc->RemoveClip();
-						}
-						else
-						{
-							Rect clipper=GetClipper();
-							dc->ClipRegion(Ptr(new WinRegion(clipper.Left(), clipper.Top(), clipper.Right(), clipper.Bottom(), true)));
-						}
+						dc->ClipRegion(Ptr(new WinRegion(validArea.Left(), validArea.Top(), validArea.Right(), validArea.Bottom(), true)));
 					}
+					else
+					{
+						dc->RemoveClip();
+					}
+				}
+
+				void StartRenderingOnNativeWindow() override
+				{
+					dc = GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
+				}
+
+				RenderTargetFailure StopRenderingOnNativeWindow() override
+				{
+					dc = nullptr;
+					return RenderTargetFailure::None;
+				}
+
+				Size GetCanvasSize() override
+				{
+					return window->Convert(window->GetClientSize());
+				}
+
+				void AfterPushedClipper(Rect clipper, Rect validArea) override
+				{
+					ApplyClipper(validArea, true);
+				}
+
+				void AfterPushedClipperAndBecameInvalid(Rect clipper) override
+				{
+				}
+
+				void AfterPoppedClipperAndBecameValid(Rect validArea, bool clipperExists) override
+				{
+					ApplyClipper(validArea, clipperExists);
+				}
+
+				void AfterPoppedClipper(Rect validArea, bool clipperExists) override
+				{
+					ApplyClipper(validArea, clipperExists);
 				}
 			public:
 				WindowsGDIRenderTarget(INativeWindow* _window)
-					:window(_window)
-					,dc(0)
-					,clipperCoverWholeTargetCounter(0)
+					: window(_window)
 				{
 				}
 
 				WinDC* GetDC()override
 				{
-					return dc?dc:GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
-				}
-
-				void StartRendering()override
-				{
-					dc=GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
-				}
-
-				RenderTargetFailure StopRendering()override
-				{
-					dc = 0;
-					return RenderTargetFailure::None;
-				}
-
-				void PushClipper(Rect clipper)override
-				{
-					if(clipperCoverWholeTargetCounter>0)
-					{
-						clipperCoverWholeTargetCounter++;
-					}
-					else
-					{
-						Rect previousClipper=GetClipper();
-						Rect currentClipper;
-
-						currentClipper.x1=(previousClipper.x1>clipper.x1?previousClipper.x1:clipper.x1);
-						currentClipper.y1=(previousClipper.y1>clipper.y1?previousClipper.y1:clipper.y1);
-						currentClipper.x2=(previousClipper.x2<clipper.x2?previousClipper.x2:clipper.x2);
-						currentClipper.y2=(previousClipper.y2<clipper.y2?previousClipper.y2:clipper.y2);
-
-						if(currentClipper.x1<currentClipper.x2 && currentClipper.y1<currentClipper.y2)
-						{
-							clippers.Add(currentClipper);
-						}
-						else
-						{
-							clipperCoverWholeTargetCounter++;
-						}
-					}
-					ApplyClipper();
-				}
-
-				void PopClipper()override
-				{
-					if(clippers.Count()>0)
-					{
-						if(clipperCoverWholeTargetCounter>0)
-						{
-							clipperCoverWholeTargetCounter--;
-						}
-						else
-						{
-							clippers.RemoveAt(clippers.Count()-1);
-						}
-						ApplyClipper();
-					}
-				}
-
-				Rect GetClipper()override
-				{
-					if (clippers.Count() == 0)
-					{
-						return Rect(Point(0, 0), window->Convert(window->GetClientSize()));
-					}
-					else
-					{
-						return clippers[clippers.Count() - 1];
-					}
-				}
-
-				bool IsClipperCoverWholeTarget()override
-				{
-					return clipperCoverWholeTargetCounter>0;
+					return dc ? dc : GetWindowsGDIObjectProvider()->GetNativeWindowDC(window);
 				}
 			};
 
@@ -12611,7 +12592,7 @@ CachedResourceAllocator
 			public:
 				Ptr<WinBrush> CreateInternal(Color color)
 				{
-					return color.a==0?Ptr(new WinBrush):Ptr(new WinBrush(RGB(color.r, color.g, color.b)));
+					return color.a == 0 ? Ptr(new WinBrush) : Ptr(new WinBrush(RGB(color.r, color.g, color.b)));
 				}
 			};
 
@@ -12621,8 +12602,8 @@ CachedResourceAllocator
 			public:
 				static Ptr<WinFont> CreateGdiFont(const FontProperties& value)
 				{
-					vint size=value.size<0?value.size:-value.size;
-					return Ptr(new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold?FW_BOLD:FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias));
+					vint size = value.size < 0 ? value.size : -value.size;
+					return Ptr(new WinFont(value.fontFamily, size, 0, 0, 0, (value.bold ? FW_BOLD : FW_NORMAL), value.italic, value.underline, value.strikeline, value.antialias));
 				}
 
 				Ptr<WinFont> CreateInternal(const FontProperties& value)
@@ -12640,7 +12621,7 @@ CachedResourceAllocator
 				{
 				protected:
 					Ptr<WinFont>			font;
-					vint						size;
+					vint					size;
 
 					Size MeasureInternal(text::UnicodeCodePoint codePoint, IGuiGraphicsRenderTarget* renderTarget)
 					{
@@ -12667,7 +12648,7 @@ CachedResourceAllocator
 
 					vint GetRowHeightInternal(IGuiGraphicsRenderTarget* renderTarget)
 					{
-						if(renderTarget)
+						if (renderTarget)
 						{
 							return MeasureInternal({ L' ' }, renderTarget).y;
 						}
@@ -12678,9 +12659,9 @@ CachedResourceAllocator
 					}
 				public:
 					GdiCharMeasurer(Ptr<WinFont> _font, vint _size)
-						:text::CharMeasurer(_size)
-						,size(_size)
-						,font(_font)
+						: text::CharMeasurer(_size)
+						, size(_size)
+						, font(_font)
 					{
 					}
 				};
@@ -12698,8 +12679,8 @@ WindowsGDIResourceManager
 			class WindowsGDIImageFrameCache : public Object, public INativeImageFrameCache
 			{
 			protected:
-				IWindowsGDIResourceManager*			resourceManager;
-				INativeImageFrame*					cachedFrame;
+				IWindowsGDIResourceManager* resourceManager = nullptr;
+				INativeImageFrame* cachedFrame = nullptr;
 				Ptr<WinBitmap>						bitmap;
 				Ptr<WinBitmap>						disabledBitmap;
 			public:
@@ -12714,21 +12695,21 @@ WindowsGDIResourceManager
 
 				void OnAttach(INativeImageFrame* frame)override
 				{
-					cachedFrame=frame;
-					Size size=frame->GetSize();
-					bitmap=Ptr(new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true));
+					cachedFrame = frame;
+					Size size = frame->GetSize();
+					bitmap = Ptr(new WinBitmap(size.x, size.y, WinBitmap::vbb32Bits, true));
 
-					IWICBitmap* wicBitmap=GetWindowsGDIObjectProvider()->GetWICBitmap(frame);
+					IWICBitmap* wicBitmap = GetWindowsGDIObjectProvider()->GetWICBitmap(frame);
 					WICRect rect;
-					rect.X=0;
-					rect.Y=0;
-					rect.Width=(INT)size.x;
-					rect.Height=(INT)size.y;
-					wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes()*size.y), (BYTE*)bitmap->GetScanLines()[0]);
+					rect.X = 0;
+					rect.Y = 0;
+					rect.Width = (INT)size.x;
+					rect.Height = (INT)size.y;
+					wicBitmap->CopyPixels(&rect, (UINT)bitmap->GetLineBytes(), (UINT)(bitmap->GetLineBytes() * size.y), (BYTE*)bitmap->GetScanLines()[0]);
 
 					bitmap->BuildAlphaChannel(false);
 				}
-				
+
 				void OnDetach(INativeImageFrame* frame)override
 				{
 					resourceManager->DestroyBitmapCache(cachedFrame);
@@ -12741,30 +12722,30 @@ WindowsGDIResourceManager
 
 				Ptr<WinBitmap> GetBitmap(bool enabled)
 				{
-					if(enabled)
+					if (enabled)
 					{
 						return bitmap;
 					}
 					else
 					{
-						if(!disabledBitmap)
+						if (!disabledBitmap)
 						{
-							vint w=bitmap->GetWidth();
-							vint h=bitmap->GetHeight();
-							disabledBitmap=Ptr(new WinBitmap(w, h, WinBitmap::vbb32Bits, true));
-							for(vint y=0;y<h;y++)
+							vint w = bitmap->GetWidth();
+							vint h = bitmap->GetHeight();
+							disabledBitmap = Ptr(new WinBitmap(w, h, WinBitmap::vbb32Bits, true));
+							for (vint y = 0; y < h; y++)
 							{
-								BYTE* read=bitmap->GetScanLines()[y];
-								BYTE* write=disabledBitmap->GetScanLines()[y];
-								for(vint x=0;x<w;x++)
+								BYTE* read = bitmap->GetScanLines()[y];
+								BYTE* write = disabledBitmap->GetScanLines()[y];
+								for (vint x = 0; x < w; x++)
 								{
-									BYTE g=(read[0]+read[1]+read[2])/6+read[3]/2;
-									write[0]=g;
-									write[1]=g;
-									write[2]=g;
-									write[3]=read[3];
-									read+=4;
-									write+=4;
+									BYTE g = (read[0] + read[1] + read[2]) / 6 + read[3] / 2;
+									write[0] = g;
+									write[1] = g;
+									write[2] = g;
+									write[3] = read[3];
+									read += 4;
+									write += 4;
 								}
 							}
 							disabledBitmap->BuildAlphaChannel(false);
@@ -12789,7 +12770,7 @@ WindowsGDIResourceManager
 			public:
 				WindowsGDIResourceManager()
 				{
-					layoutProvider=Ptr(new WindowsGDILayoutProvider);
+					layoutProvider = Ptr(new WindowsGDILayoutProvider);
 				}
 
 				IGuiGraphicsRenderTarget* GetRenderTarget(INativeWindow* window)override
@@ -12812,14 +12793,14 @@ WindowsGDIResourceManager
 
 				void NativeWindowCreated(INativeWindow* window)override
 				{
-					auto renderTarget=Ptr(new WindowsGDIRenderTarget(window));
+					auto renderTarget = Ptr(new WindowsGDIRenderTarget(window));
 					renderTargets.Add(renderTarget);
 					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, renderTarget.Obj());
 				}
 
 				void NativeWindowDestroying(INativeWindow* window)override
 				{
-					WindowsGDIRenderTarget* renderTarget=dynamic_cast<WindowsGDIRenderTarget*>(GetWindowsGDIObjectProvider()->GetBindedRenderTarget(window));
+					WindowsGDIRenderTarget* renderTarget = dynamic_cast<WindowsGDIRenderTarget*>(GetWindowsGDIObjectProvider()->GetBindedRenderTarget(window));
 					GetWindowsGDIObjectProvider()->SetBindedRenderTarget(window, 0);
 					renderTargets.Remove(renderTarget);
 				}
@@ -12876,15 +12857,15 @@ WindowsGDIResourceManager
 
 				Ptr<windows::WinBitmap> GetBitmap(INativeImageFrame* frame, bool enabled)override
 				{
-					Ptr<INativeImageFrameCache> cache=frame->GetCache(this);
-					if(cache)
+					Ptr<INativeImageFrameCache> cache = frame->GetCache(this);
+					if (cache)
 					{
 						return cache.Cast<WindowsGDIImageFrameCache>()->GetBitmap(enabled);
 					}
 					else
 					{
-						auto gdiCache=Ptr(new WindowsGDIImageFrameCache(this));
-						if(frame->SetCache(this, gdiCache))
+						auto gdiCache = Ptr(new WindowsGDIImageFrameCache(this));
+						if (frame->SetCache(this, gdiCache))
 						{
 							return gdiCache->GetBitmap(enabled);
 						}
@@ -12897,7 +12878,7 @@ WindowsGDIResourceManager
 
 				void DestroyBitmapCache(INativeImageFrame* frame)override
 				{
-					WindowsGDIImageFrameCache* cache=frame->GetCache(this).Cast<WindowsGDIImageFrameCache>().Obj();
+					WindowsGDIImageFrameCache* cache = frame->GetCache(this).Cast<WindowsGDIImageFrameCache>().Obj();
 					imageCaches.Remove(cache);
 				}
 			};
@@ -12905,7 +12886,7 @@ WindowsGDIResourceManager
 
 		namespace elements_windows_gdi
 		{
-			IWindowsGDIResourceManager* windowsGDIResourceManager=0;
+			IWindowsGDIResourceManager* windowsGDIResourceManager = nullptr;
 
 			IWindowsGDIResourceManager* GetWindowsGDIResourceManager()
 			{
@@ -12914,14 +12895,14 @@ WindowsGDIResourceManager
 
 			void SetWindowsGDIResourceManager(IWindowsGDIResourceManager* resourceManager)
 			{
-				windowsGDIResourceManager=resourceManager;
+				windowsGDIResourceManager = resourceManager;
 			}
 
 /***********************************************************************
 OS Supporting
 ***********************************************************************/
 
-			IWindowsGDIObjectProvider* windowsGDIObjectProvider=0;
+			IWindowsGDIObjectProvider* windowsGDIObjectProvider = nullptr;
 
 			IWindowsGDIObjectProvider* GetWindowsGDIObjectProvider()
 			{
@@ -12930,7 +12911,7 @@ OS Supporting
 
 			void SetWindowsGDIObjectProvider(IWindowsGDIObjectProvider* provider)
 			{
-				windowsGDIObjectProvider=provider;
+				windowsGDIObjectProvider = provider;
 			}
 		}
 	}
@@ -12945,238 +12926,44 @@ using namespace vl::presentation::elements;
 
 extern void GuiApplicationMain();
 
-void RendererMainGDI()
+void RendererMainGDI(GuiHostedController* hostedController)
 {
 	elements_windows_gdi::WindowsGDIResourceManager resourceManager;
-	SetGuiGraphicsResourceManager(&resourceManager);
 	elements_windows_gdi::SetWindowsGDIResourceManager(&resourceManager);
-	GetCurrentController()->CallbackService()->InstallListener(&resourceManager);
+	windows::GetWindowsNativeController()->CallbackService()->InstallListener(&resourceManager);
 
-	elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
-	elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
-	elements_windows_gdi::Gui3DBorderElementRenderer::Register();
-	elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
-	elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
-	elements_windows_gdi::GuiGradientBackgroundElementRenderer::Register();
-	elements_windows_gdi::GuiInnerShadowElementRenderer::Register();
-	elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
-	elements_windows_gdi::GuiImageFrameElementRenderer::Register();
-	elements_windows_gdi::GuiPolygonElementRenderer::Register();
-	elements_windows_gdi::GuiColorizedTextElementRenderer::Register();
-	elements_windows_gdi::GuiGDIElementRenderer::Register();
-	elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
+	auto hostedResourceManager = hostedController ? new GuiHostedGraphicsResourceManager(hostedController, &resourceManager) : nullptr;
+	SetGuiGraphicsResourceManager(
+		hostedResourceManager
+		? hostedResourceManager
+		: static_cast<IGuiGraphicsResourceManager*>(&resourceManager)
+		);
 
-	GuiApplicationMain();
-	elements_windows_gdi::SetWindowsGDIResourceManager(0);
-	SetGuiGraphicsResourceManager(0);
-}
-
-/***********************************************************************
-.\SERVICESIMPL\WINDOWSASYNCSERVICE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
 	{
-		namespace windows
-		{
-			using namespace collections;
+		elements_windows_gdi::GuiFocusRectangleElementRenderer::Register();
+		elements_windows_gdi::GuiSolidBorderElementRenderer::Register();
+		elements_windows_gdi::Gui3DBorderElementRenderer::Register();
+		elements_windows_gdi::Gui3DSplitterElementRenderer::Register();
+		elements_windows_gdi::GuiSolidBackgroundElementRenderer::Register();
+		elements_windows_gdi::GuiGradientBackgroundElementRenderer::Register();
+		elements_windows_gdi::GuiInnerShadowElementRenderer::Register();
+		elements_windows_gdi::GuiSolidLabelElementRenderer::Register();
+		elements_windows_gdi::GuiImageFrameElementRenderer::Register();
+		elements_windows_gdi::GuiPolygonElementRenderer::Register();
+		elements_windows_gdi::GuiColorizedTextElementRenderer::Register();
+		elements_windows_gdi::GuiGDIElementRenderer::Register();
+		elements::GuiDocumentElement::GuiDocumentElementRenderer::Register();
 
-/***********************************************************************
-WindowsAsyncService::TaskItem
-***********************************************************************/
-
-			WindowsAsyncService::TaskItem::TaskItem()
-				:semaphore(0)
-			{
-			}
-
-			WindowsAsyncService::TaskItem::TaskItem(Semaphore* _semaphore, const Func<void()>& _proc)
-				:semaphore(_semaphore)
-				,proc(_proc)
-			{
-			}
-
-			WindowsAsyncService::TaskItem::~TaskItem()
-			{
-			}
-
-/***********************************************************************
-WindowsAsyncService::DelayItem
-***********************************************************************/
-
-			WindowsAsyncService::DelayItem::DelayItem(WindowsAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds)
-				:service(_service)
-				,proc(_proc)
-				,status(INativeDelay::Pending)
-				,executeTime(DateTime::LocalTime().Forward(milliseconds))
-				,executeInMainThread(_executeInMainThread)
-			{
-			}
-
-			WindowsAsyncService::DelayItem::~DelayItem()
-			{
-			}
-
-			INativeDelay::ExecuteStatus WindowsAsyncService::DelayItem::GetStatus()
-			{
-				return status;
-			}
-
-			bool WindowsAsyncService::DelayItem::Delay(vint milliseconds)
-			{
-				SPIN_LOCK(service->taskListLock)
-				{
-					if(status==INativeDelay::Pending)
-					{
-						executeTime=DateTime::LocalTime().Forward(milliseconds);
-						return true;
-					}
-				}
-				return false;
-			}
-
-			bool WindowsAsyncService::DelayItem::Cancel()
-			{
-				SPIN_LOCK(service->taskListLock)
-				{
-					if(status==INativeDelay::Pending)
-					{
-						if(service->delayItems.Remove(this))
-						{
-							status=INativeDelay::Canceled;
-							return true;
-						}
-					}
-				}
-				return false;
-			}
-
-/***********************************************************************
-WindowsAsyncService
-***********************************************************************/
-
-			WindowsAsyncService::WindowsAsyncService()
-				:mainThreadId(Thread::GetCurrentThreadId())
-			{
-			}
-
-			WindowsAsyncService::~WindowsAsyncService()
-			{
-			}
-
-			void WindowsAsyncService::ExecuteAsyncTasks()
-			{
-				DateTime now=DateTime::LocalTime();
-				Array<TaskItem> items;
-				List<Ptr<DelayItem>> executableDelayItems;
-
-				SPIN_LOCK(taskListLock)
-				{
-					CopyFrom(items, taskItems);
-					taskItems.RemoveRange(0, items.Count());
-					for(vint i=delayItems.Count()-1;i>=0;i--)
-					{
-						Ptr<DelayItem> item=delayItems[i];
-						if(now.filetime>=item->executeTime.filetime)
-						{
-							item->status=INativeDelay::Executing;
-							executableDelayItems.Add(item);
-							delayItems.RemoveAt(i);
-						}
-					}
-				}
-
-				for (auto item : items)
-				{
-					item.proc();
-					if(item.semaphore)
-					{
-						item.semaphore->Release();
-					}
-				}
-				for (auto item : executableDelayItems)
-				{
-					if(item->executeInMainThread)
-					{
-						item->proc();
-						item->status=INativeDelay::Executed;
-					}
-					else
-					{
-						InvokeAsync([=]()
-						{
-							item->proc();
-							item->status=INativeDelay::Executed;
-						});
-					}
-				}
-			}
-
-			bool WindowsAsyncService::IsInMainThread(INativeWindow* window)
-			{
-				return Thread::GetCurrentThreadId()==mainThreadId;
-			}
-
-			void WindowsAsyncService::InvokeAsync(const Func<void()>& proc)
-			{
-				ThreadPoolLite::Queue(proc);
-			}
-
-			void WindowsAsyncService::InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)
-			{
-				SPIN_LOCK(taskListLock)
-				{
-					TaskItem item(0, proc);
-					taskItems.Add(item);
-				}
-			}
-
-			bool WindowsAsyncService::InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)
-			{
-				Semaphore semaphore;
-				semaphore.Create(0, 1);
-
-				SPIN_LOCK(taskListLock)
-				{
-					TaskItem item(&semaphore, proc);
-					taskItems.Add(item);
-				}
-
-				if(milliseconds<0)
-				{
-					return semaphore.Wait();
-				}
-				else
-				{
-					return semaphore.WaitForTime(milliseconds);
-				}
-			}
-
-			Ptr<INativeDelay> WindowsAsyncService::DelayExecute(const Func<void()>& proc, vint milliseconds)
-			{
-				Ptr<DelayItem> delay;
-				SPIN_LOCK(taskListLock)
-				{
-					delay=Ptr(new DelayItem(this, proc, false, milliseconds));
-					delayItems.Add(delay);
-				}
-				return delay;
-			}
-
-			Ptr<INativeDelay> WindowsAsyncService::DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)
-			{
-				Ptr<DelayItem> delay;
-				SPIN_LOCK(taskListLock)
-				{
-					delay=Ptr(new DelayItem(this, proc, true, milliseconds));
-					delayItems.Add(delay);
-				}
-				return delay;
-			}
-		}
+		if (hostedController) hostedController->Initialize();
+		GuiApplicationMain();
+		if (hostedController) hostedController->Finalize();
 	}
+
+	SetGuiGraphicsResourceManager(nullptr);
+	if (hostedResourceManager) delete hostedResourceManager;
+
+	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
+	elements_windows_gdi::SetWindowsGDIResourceManager(nullptr);
 }
 
 /***********************************************************************
@@ -14474,9 +14261,14 @@ WindowsImageService
 Helper Functions
 ***********************************************************************/
 
+			WindowsImageService* GetWindowsImageService()
+			{
+				return  dynamic_cast<WindowsImageService*>(GetWindowsNativeController()->ImageService());
+			}
+
 			IWICImagingFactory* GetWICImagingFactory()
 			{
-				return dynamic_cast<WindowsImageService*>(GetCurrentController()->ImageService())->GetImagingFactory();
+				return GetWindowsImageService()->GetImagingFactory();
 			}
 
 			IWICBitmap* GetWICBitmap(INativeImageFrame* frame)
@@ -14486,12 +14278,12 @@ Helper Functions
 
 			Ptr<INativeImage> CreateImageFromHBITMAP(HBITMAP handle)
 			{
-				return dynamic_cast<WindowsImageService*>(GetCurrentController()->ImageService())->CreateImageFromHBITMAP(handle);
+				return GetWindowsImageService()->CreateImageFromHBITMAP(handle);
 			}
 
 			Ptr<INativeImage> CreateImageFromHICON(HICON handle)
 			{
-				return dynamic_cast<WindowsImageService*>(GetCurrentController()->ImageService())->CreateImageFromHICON(handle);
+				return GetWindowsImageService()->CreateImageFromHICON(handle);
 			}
 		}
 	}
