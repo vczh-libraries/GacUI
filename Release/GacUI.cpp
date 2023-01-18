@@ -33683,6 +33683,7 @@ SharedAsyncService
 				taskItems.Add(item);
 			}
 
+#ifdef VCZH_MSVC
 			if(milliseconds<0)
 			{
 				return semaphore.Wait();
@@ -33691,6 +33692,9 @@ SharedAsyncService
 			{
 				return semaphore.WaitForTime(milliseconds);
 			}
+#else
+			return semaphore.Wait();
+#endif
 		}
 
 		Ptr<INativeDelay> SharedAsyncService::DelayExecute(const Func<void()>& proc, vint milliseconds)
@@ -34050,6 +34054,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 				HANDLE_HIT_TEST_RESULT(BorderRightBottom)
 				HANDLE_HIT_TEST_RESULT(BorderRightTop)
 				HANDLE_HIT_TEST_RESULT(BorderLeftBottom)
+				default:;
 
 #undef HANDLE_HIT_TEST_RESULT
 				}
@@ -34093,6 +34098,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 				case WindowManagerOperation::BorderRightBottom:
 					wmRelative.x.value = wmWindow->wmWindow.bounds.Width().value - x;
 					break;
+				default:;
 				}
 
 				switch (wmOperation)
@@ -34112,6 +34118,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 				case WindowManagerOperation::BorderRightBottom:
 					wmRelative.y.value = wmWindow->wmWindow.bounds.Height().value - y;
 					break;
+				default:;
 				}
 			}
 		}
@@ -34205,6 +34212,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 					case WindowManagerOperation::BorderRightBottom:
 						newBounds.x2.value = mouseX + wmRelative.x.value;
 						break;
+					default:;
 					}
 
 					switch (wmOperation)
@@ -34219,6 +34227,7 @@ GuiHostedController::INativeWindowListener (PreAction)
 					case WindowManagerOperation::BorderRightBottom:
 						newBounds.y2.value = mouseY + wmRelative.y.value;
 						break;
+					default:;
 					}
 				}
 
@@ -34453,6 +34462,7 @@ GuiHostedController::INativeControllerListener
 					case elements::RenderTargetFailure::ResizeWhileRendering:
 						failureByResized = true;
 						break;
+					default:;
 					}
 
 					if (failureByLostDevice)

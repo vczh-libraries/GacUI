@@ -6590,7 +6590,7 @@ GuiHostedGraphicsResourceManager
 
 			class GuiHostedGraphicsResourceManager : public Object, public virtual IGuiGraphicsResourceManager
 			{
-				friend class GuiHostedController;
+				friend class vl::presentation::GuiHostedController;
 			protected:
 				GuiHostedController*				hostedController = nullptr;
 				IGuiGraphicsResourceManager*		nativeManager = nullptr;
@@ -7630,7 +7630,7 @@ GuiHostedController
 
 			void							GlobalTimer() override;
 			void							ClipboardUpdated() override;
-			void							NativeWindowDestroying(INativeWindow* window);
+			void							NativeWindowDestroying(INativeWindow* window) override;
 
 			// =============================================================
 			// INativeController
