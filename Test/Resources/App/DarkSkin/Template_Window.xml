@@ -119,8 +119,35 @@
               </Button>
             </Cell>
             <Cell Site="row:0 column:4" AssociatedHitTestResult="ButtonClose">
-              <Button AutoFocus="false" Text=" r " Font="fontFamily:'Webdings' size:16" ControlTemplate="darkskin::ButtonTemplate">
+              <Button AutoFocus="false" ControlTemplate="darkskin::ButtonTemplate">
                 <att.BoundsComposition-set AlignmentToParent="left:1 top:1 right:1 bottom:1"/>
+                <att.ContainerComposition-set>
+                  <BoundsComposition AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:24 y:16" MinSizeLimitation="LimitToElement">
+                    <Polygon ref.Style="buttonPolygon" Size="x:24 y:16">
+                      <att.Points>
+                        <Point>x:7 y:4</Point>
+                        <Point>x:11 y:8</Point>
+                        <Point>x:12 y:8</Point>
+                        <Point>x:16 y:4</Point>
+
+                        <Point>x:17 y:5</Point>
+                        <Point>x:13 y:9</Point>
+                        <Point>x:13 y:10</Point>
+                        <Point>x:17 y:14</Point>
+
+                        <Point>x:16 y:15</Point>
+                        <Point>x:12 y:10</Point>
+                        <Point>x:11 y:10</Point>
+                        <Point>x:7 y:15</Point>
+
+                        <Point>x:6 y:14</Point>
+                        <Point>x:10 y:10</Point>
+                        <Point>x:10 y:9</Point>
+                        <Point>x:6 y:5</Point>
+                      </att.Points>
+                    </Polygon>
+                  </BoundsComposition>
+                </att.ContainerComposition-set>
               </Button>
             </Cell>
 
