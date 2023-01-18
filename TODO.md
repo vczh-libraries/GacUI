@@ -4,10 +4,10 @@
 
 - Issues on GDI (no matter hosted or not, repros in Playground)
   - Big cursor of document empty line
-  - Focused tab header becomes black
 - Theme
   - Stop using Webdings in default template.
   - Add HostedWindow theme.
+- Add default dialog service.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - One GacGen.exe instead of GacGen32.exe and GacGen64.exe
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
