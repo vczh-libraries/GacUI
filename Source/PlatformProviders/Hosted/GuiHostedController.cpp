@@ -413,27 +413,12 @@ GuiHostedController::INativeWindowListener (PreAction)
 				auto x = info.x.value - hoveringWindow->wmWindow.bounds.x1.value;
 				auto y = info.y.value - hoveringWindow->wmWindow.bounds.y1.value;
 				auto hitTestResult = PerformHitTest(From(hoveringWindow->listeners), { {x},{y} });
-				switch (hitTestResult)
+				auto cursor = GetCursorFromHitTest(hitTestResult, ResourceService());
+				if (cursor == nullptr)
 				{
-				case INativeWindowListener::BorderLeft:
-				case INativeWindowListener::BorderRight:
-					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
-					break;
-				case INativeWindowListener::BorderTop:
-				case INativeWindowListener::BorderBottom:
-					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
-					break;
-				case INativeWindowListener::BorderLeftTop:
-				case INativeWindowListener::BorderRightBottom:
-					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeNWSE));
-					break;
-				case INativeWindowListener::BorderRightTop:
-				case INativeWindowListener::BorderLeftBottom:
-					nativeWindow->SetWindowCursor(ResourceService()->GetSystemCursor(INativeCursor::SizeNESW));
-					break;
-				default:
-					nativeWindow->SetWindowCursor(hoveringWindow->GetWindowCursor());
+					cursor = hoveringWindow->GetWindowCursor();
 				}
+				nativeWindow->SetWindowCursor(cursor);
 			}
 
 			if (wmWindow)

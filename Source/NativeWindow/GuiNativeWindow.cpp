@@ -202,5 +202,30 @@ Native Window Provider
 		{
 			currentController=controller;
 		}
+
+/***********************************************************************
+Helper Functions
+***********************************************************************/
+
+		INativeCursor* GetCursorFromHitTest(INativeWindowListener::HitTestResult hitTestResult, INativeResourceService* resourceService)
+		{
+			switch (hitTestResult)
+			{
+			case INativeWindowListener::BorderLeft:
+			case INativeWindowListener::BorderRight:
+				return resourceService->GetSystemCursor(INativeCursor::SizeWE);
+			case INativeWindowListener::BorderTop:
+			case INativeWindowListener::BorderBottom:
+				return resourceService->GetSystemCursor(INativeCursor::SizeNS);
+			case INativeWindowListener::BorderLeftTop:
+			case INativeWindowListener::BorderRightBottom:
+				return resourceService->GetSystemCursor(INativeCursor::SizeNWSE);
+			case INativeWindowListener::BorderRightTop:
+			case INativeWindowListener::BorderLeftBottom:
+				return resourceService->GetSystemCursor(INativeCursor::SizeNESW);
+			default:
+				return nullptr;
+			}
+		}
 	}
 }

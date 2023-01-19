@@ -1683,6 +1683,14 @@ Native Window Controller
 		extern void							SetCurrentController(INativeController* controller);
 
 		/// <summary>
+		/// Get a cursor according to the hit test result.
+		/// </summary>
+		/// <param name="hitTestResult">The hit test result.</param>
+		/// <param name="resourceService">The resource service to get cursors.</param>
+		/// <returns>Returns the cursor according to the hit test result. It could return nullptr when the cursor is not defined.</returns>
+		extern INativeCursor*				GetCursorFromHitTest(INativeWindowListener::HitTestResult hitTestResult, INativeResourceService* resourceService);
+
+		/// <summary>
 		/// A helper function calling multiple <see cref="INativeWindowListener::HitTest"/>.
 		/// </summary>
 		/// <returns>The hit test result.</returns>
