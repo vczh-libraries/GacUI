@@ -1104,7 +1104,7 @@ GuiWorkflowSharedManagerPlugin
 			{
 				if (!workflowManager)
 				{
-					workflowManager = Ptr(new WfLexicalScopeManager(workflowParser));
+					workflowManager = Ptr(new WfLexicalScopeManager(workflowParser, WfCpuArchitecture::AsExecutable));
 				}
 				return workflowManager.Obj();
 			}

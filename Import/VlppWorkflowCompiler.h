@@ -5046,6 +5046,16 @@ Scope Manager
 				collections::Dictionary<WString, vint>		stateIds;
 			};
 
+			/// <summary>
+			/// CPU architecture
+			/// </summary>
+			enum class WfCpuArchitecture
+			{
+				x86,
+				x64,
+				AsExecutable,
+			};
+
 			/// <summary>Scope manager for storing all information generated from Workflow modules during compiling.</summary>
 			class WfLexicalScopeManager : public Object
 			{
@@ -5089,6 +5099,12 @@ Scope Manager
 				vint										usedCodeIndex = 0;
 
 			public:
+				WfCpuArchitecture							cpuArchitecture = WfCpuArchitecture::AsExecutable;
+				ITypeDescriptor*							cputdSInt = nullptr;
+				ITypeDescriptor*							cputdUInt = nullptr;
+				Ptr<ITypeInfo>								cputiSInt;
+				Ptr<ITypeInfo>								cputiUInt;
+
 				workflow::Parser&							workflowParser;
 				Ptr<EventHandler>							workflowParserHandler;
 				AttributeTypeMap							attributes;
@@ -5122,7 +5138,8 @@ Scope Manager
 
 				/// <summary>Create a Workflow compiler.</summary>
 				/// <param name="_parsingTable">The workflow parser table. It can be retrived from [M:vl.workflow.WfLoadTable].</param>
-				WfLexicalScopeManager(workflow::Parser& _workflowParser);
+				/// <param name="_cpuArchitecture">The target CPU architecture.</param>
+				WfLexicalScopeManager(workflow::Parser& _workflowParser, WfCpuArchitecture _cpuArchitecture);
 				~WfLexicalScopeManager();
 				
 				/// <summary>Add a Workflow module. Syntax errors can be found at <see cref="errors"/>.</summary>
@@ -5695,9 +5712,10 @@ Code Generation
 			/// <summary>Compile a Workflow program. Use the other one whenever possible, which alloes reusing <see cref="analyzer::WfLexicalScopeManager"/> to improve performance.</summary>
 			/// <returns>The generated assembly. Return nullptr if failed to compile.</returns>
 			/// <param name="workflowParser">The generated parser class.</param>
+			/// <param name="cpuArchitecture">The target CPU architecture.</param>
 			/// <param name="moduleCodes">All workflow module codes.</param>
 			/// <param name="errors">Container to get all errors generated during compiling.</param>
-			extern Ptr<runtime::WfAssembly>					Compile(workflow::Parser& workflowParser, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors);
+			extern Ptr<runtime::WfAssembly>					Compile(workflow::Parser& workflowParser, analyzer::WfCpuArchitecture cpuArchitecture, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors);
 		}
 	}
 }

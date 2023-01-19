@@ -1217,12 +1217,6 @@ UnitTest
 
 		namespace execution_impl
 		{
-			struct UnitTestLink
-			{
-				const char*					fileName;
-				UnitTestFileProc			testProc = nullptr;
-				UnitTestLink*				next = nullptr;
-			};
 			UnitTestLink*					testHead = nullptr;
 			UnitTestLink**					testTail = &testHead;
 
@@ -1383,10 +1377,6 @@ UnitTest
 			}
 
 			{
-				auto current = testHead;
-				testHead = nullptr;
-				testTail = nullptr;
-
 				UnitTestContext context;
 				testContext = &context;
 				totalFiles = 0;
@@ -1403,18 +1393,17 @@ UnitTest
 					PrintMessage(L"Failures are not suppressed.", MessageKind::Info);
 				}
 
+				auto current = testHead;
 				while (current)
 				{
 					context.failed = false;
-					PrintMessage(atow(current->fileName), MessageKind::File);
+					PrintMessage(atow(AString::Unmanaged(current->fileName)), MessageKind::File);
 					context.indentation = L"    ";
 					ExecuteAndSuppressFailure(current->testProc);
 					if (!testContext->failed) passedFiles++;
 					totalFiles++;
 					context.indentation = L"";
-					auto temp = current;
 					current = current->next;
-					delete temp;
 				}
 
 				bool passed = totalFiles == passedFiles;
@@ -1464,11 +1453,8 @@ UnitTest
 			}
 		}
 
-		void UnitTest::RegisterTestFile(const char* fileName, UnitTestFileProc testProc)
+		void UnitTest::RegisterTestFile(UnitTestLink* link)
 		{
-			auto link = new UnitTestLink;
-			link->fileName = fileName;
-			link->testProc = testProc;
 			*testTail = link;
 			testTail = &link->next;
 		}

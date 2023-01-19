@@ -259,16 +259,26 @@ CheckScopes_CycleDependency
 									})
 								);
 
-							switch (tds[0]->GetTypeDescriptorFlags())
+							auto selectedTd = tds[0];
+							for (auto candidateTd : From(tds).Skip(1))
+							{
+								auto selectedRange = visitor.depItems[selectedTd]->codeRange;
+								auto candidateRange = visitor.depItems[candidateTd]->codeRange;
+
+								if (candidateRange.codeIndex > selectedRange.codeIndex) { selectedTd = candidateTd; continue; }
+								if (candidateRange.start > selectedRange.start) { selectedTd = candidateTd; continue; }
+							}
+
+							switch (selectedTd->GetTypeDescriptorFlags())
 							{
 							case TypeDescriptorFlags::Struct:
-								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(dynamic_cast<WfStructDeclaration*>(visitor.depItems[tds[0]]), tds));
+								manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(dynamic_cast<WfStructDeclaration*>(visitor.depItems[selectedTd]), tds));
 								break;
 							case TypeDescriptorFlags::Class:
-								manager->errors.Add(WfErrors::ClassRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								manager->errors.Add(WfErrors::ClassRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[selectedTd]), tds));
 								break;
 							case TypeDescriptorFlags::Interface:
-								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[tds[0]]), tds));
+								manager->errors.Add(WfErrors::InterfaceRecursiveInheritance(dynamic_cast<WfClassDeclaration*>(visitor.depItems[selectedTd]), tds));
 								break;
 							default:;
 							}
@@ -668,8 +678,9 @@ ResolveExpressionResult
 WfLexicalScopeManager
 ***********************************************************************/
 
-			WfLexicalScopeManager::WfLexicalScopeManager(workflow::Parser& _workflowParser)
+			WfLexicalScopeManager::WfLexicalScopeManager(workflow::Parser& _workflowParser, WfCpuArchitecture _cpuArchitecture)
 				:workflowParser(_workflowParser)
+				, cpuArchitecture(_cpuArchitecture)
 			{
 				workflowParserHandler = glr::InstallDefaultErrorMessageGenerator(workflowParser, errors);
 				attributes.Add({ L"cpp", L"File" }, TypeInfoRetriver<WString>::CreateTypeInfo());
@@ -677,6 +688,28 @@ WfLexicalScopeManager
 				attributes.Add({ L"cpp", L"Private" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Protected" }, TypeInfoRetriver<void>::CreateTypeInfo());
 				attributes.Add({ L"cpp", L"Friend" }, TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo());
+
+				switch (cpuArchitecture)
+				{
+				case WfCpuArchitecture::x86:
+					cputdSInt = reflection::description::GetTypeDescriptor<vint32_t>();
+					cputdUInt = reflection::description::GetTypeDescriptor<vuint32_t>();
+					cputiSInt = reflection::description::TypeInfoRetriver<vint32_t>::CreateTypeInfo();
+					cputiUInt = reflection::description::TypeInfoRetriver<vuint32_t>::CreateTypeInfo();
+					break;
+				case WfCpuArchitecture::x64:
+					cputdSInt = reflection::description::GetTypeDescriptor<vint64_t>();
+					cputdUInt = reflection::description::GetTypeDescriptor<vuint64_t>();
+					cputiSInt = reflection::description::TypeInfoRetriver<vint64_t>::CreateTypeInfo();
+					cputiUInt = reflection::description::TypeInfoRetriver<vuint64_t>::CreateTypeInfo();
+					break;
+				case WfCpuArchitecture::AsExecutable:
+					cputdSInt = reflection::description::GetTypeDescriptor<vint>();
+					cputdUInt = reflection::description::GetTypeDescriptor<vuint>();
+					cputiSInt = reflection::description::TypeInfoRetriver<vint>::CreateTypeInfo();
+					cputiUInt = reflection::description::TypeInfoRetriver<vuint>::CreateTypeInfo();
+					break;
+				}
 			}
 
 			WfLexicalScopeManager::~WfLexicalScopeManager()
@@ -2553,7 +2586,22 @@ CheckScopes_SymbolType
 			bool CheckScopes_SymbolType(WfLexicalScopeManager* manager)
 			{
 				vint errorCount = manager->errors.Count();
-				for (auto scope : manager->nodeScopes.Values())
+				for (auto scope : From(manager->nodeScopes)
+					.OrderBy([](auto&& a, auto&& b)
+					{
+						auto rangeA = a.key->codeRange;
+						auto rangeB = b.key->codeRange;
+						if (rangeA.codeIndex != rangeB.codeIndex)
+						{
+							return rangeA.codeIndex - rangeB.codeIndex;
+						}
+						else
+						{
+							return glr::ParsingTextPos::Compare(rangeA.start, rangeB.start);
+						}
+					})
+					.Select([](auto&& pair) { return pair.value; })
+					)
 				{
 					if (!manager->checkedScopes_SymbolType.Contains(scope.Obj()))
 					{
@@ -2768,7 +2816,7 @@ CompleteScopeForClassMember
 					}
 
 					auto& smInfo = manager->stateMachineInfos[node];
-					smInfo->createCoroutineMethod->AddParameter(Ptr(new ParameterInfoImpl(smInfo->createCoroutineMethod.Obj(), L"<state>startState", TypeInfoRetriver<vint>::CreateTypeInfo())));
+					smInfo->createCoroutineMethod->AddParameter(Ptr(new ParameterInfoImpl(smInfo->createCoroutineMethod.Obj(), L"<state>startState", manager->cputiSInt)));
 					smInfo->createCoroutineMethod->SetReturn(TypeInfoRetriver<void>::CreateTypeInfo());
 				}
 
@@ -3587,6 +3635,21 @@ namespace vl
 				return { node, node->codeRange, message };
 			}
 
+			template<typename T, typename F>
+			WString ListToErrorMessage(List<T>& items, F&& f)
+			{
+				WString description;
+				for (auto friendlyName : From(items)
+					.Select(f)
+					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					)
+				{
+					description += L"\r\n\t";
+					description += friendlyName;
+				}
+				return description;
+			}
+
 /***********************************************************************
 WfErrors
 ***********************************************************************/
@@ -3788,12 +3851,7 @@ WfErrors
 
 			glr::ParsingError WfErrors::CannotPickOverloadedFunctions(glr::ParsingAstBase* node, collections::List<ResolveExpressionResult>& results)
 			{
-				WString description;
-				for (auto [result, index] : indexed(results))
-				{
-					description += L"\r\n\t";
-					description += result.GetFriendlyName();
-				}
+				auto description = ListToErrorMessage(results, [](auto&& result) { return result.GetFriendlyName(); });
 				return MakeParsingError(node, L"A22: Cannot decide which function to call in multiple targets: " + description + L".");
 			}
 
@@ -3967,12 +4025,7 @@ WfErrors
 
 			glr::ParsingError WfErrors::CoProviderNotExists(WfCoProviderStatement* node, collections::List<WString>& candidates)
 			{
-				WString description;
-				for (auto candidate : candidates)
-				{
-					description += L"\r\n\t";
-					description += candidate;
-				}
+				auto description = ListToErrorMessage(candidates, [](auto&& candidate) { return candidate; });
 				if (node->name.value == L"")
 				{
 					return MakeParsingError(node, L"C9: Cannot find a coroutine provider based on the function return type, all of the following types do not exist: " + description + L".");
@@ -4015,12 +4068,7 @@ WfErrors
 				}
 				else
 				{
-					WString description;
-					for (auto type : types)
-					{
-						description += L"\r\n\t";
-						description += type->GetTypeFriendlyName();
-					}
+					auto description = ListToErrorMessage(types, [](auto&& type) { return type->GetTypeFriendlyName(); });
 					return MakeParsingError(node, L"C11: Failed to resolve the result type of coroutine operator \"" + operatorName + L"\", no appropriate static function \"CastResult\" is found in the following types. It requires exactly one argument of type \"object\" with a return type which is not \"void\": " + description + L".");
 				}
 			}
@@ -4148,12 +4196,7 @@ WfErrors
 
 			glr::ParsingError WfErrors::CannotPickOverloadedInterfaceMethods(WfExpression* node, collections::List<ResolveExpressionResult>& results)
 			{
-				WString description;
-				for (auto result : results)
-				{
-					description += L"\r\n\t";
-					description += result.GetFriendlyName();
-				}
+				auto description = ListToErrorMessage(results, [](auto&& result) { return result.GetFriendlyName(); });
 				return MakeParsingError(node, L"D5: Cannot decide which function to implement in multiple targets:" + description + L".");
 			}
 
@@ -4224,12 +4267,7 @@ WfErrors
 
 			glr::ParsingError WfErrors::StructRecursivelyIncludeItself(WfStructDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				WString description;
-				for (auto td : tds)
-				{
-					description += L"\r\n\t";
-					description += td->GetTypeName();
-				}
+				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });
 				return MakeParsingError(node, L"D13: Recursive references are found in these struct definitions:" + description + L".");
 			}
 
@@ -4285,12 +4323,7 @@ WfErrors
 
 			glr::ParsingError WfErrors::TooManyTargets(glr::ParsingAstBase* node, collections::List<ResolveExpressionResult>& results, const WString& name)
 			{
-				WString description;
-				for (auto [result, index] : indexed(results))
-				{
-					description += L"\r\n\t";
-					description += result.GetFriendlyName();
-				}
+				auto description = ListToErrorMessage(results, [](auto&& result) { return result.GetFriendlyName(); });
 				return MakeParsingError(node, L"F3: Symbol \"" + name + L"\" references to too many targets: " + description + L".");
 			}
 
@@ -4412,23 +4445,13 @@ WfErrors
 
 			glr::ParsingError WfErrors::ClassRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				WString description;
-				for (auto td : tds)
-				{
-					description += L"\r\n\t";
-					description += td->GetTypeName();
-				}
+				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });
 				return MakeParsingError(node, L"G10: Recursive inheriting are found in these class definitions:" + description + L".");
 			}
 
 			glr::ParsingError WfErrors::InterfaceRecursiveInheritance(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				WString description;
-				for (auto td : tds)
-				{
-					description += L"\r\n\t";
-					description += td->GetTypeName();
-				}
+				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });
 				return MakeParsingError(node, L"G10: Recursive inheriting are found in these interface definitions:" + description + L".");
 			}
 
@@ -4459,23 +4482,13 @@ WfErrors
 
 			glr::ParsingError WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				WString description;
-				for (auto td : tds)
-				{
-					description += L"\r\n\t";
-					description += td->GetTypeName();
-				}
+				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });
 				return MakeParsingError(node, L"CPP1: (C++ Code Generation) Cannot decide order of the following classes. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
 			}
 
 			glr::ParsingError WfErrors::CppUnableToSeparateCustomFile(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
-				WString description;
-				for (auto td : tds)
-				{
-					description += L"\r\n\t";
-					description += td->GetTypeName();
-				}
+				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });
 				return MakeParsingError(node, L"CPP2: (C++ Code Generation) @cpp:File atrribute values for these classes are invalid. Generating classes to source files specified by these attribute values will create source files which do not compile. It is probably caused by inheritance relationships of internal classes inside these classes:" + description + L".");
 			}
 		}
@@ -7461,7 +7474,7 @@ ExpandNewCoroutineExpression
 					auto varDecl = Ptr(new WfVariableDeclaration);
 					newExpr->declarations.Add(varDecl);
 					varDecl->name.value = L"<co-state>";
-					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+					varDecl->type = GetTypeFromTypeInfo(manager->cputiSInt.Obj());
 
 					auto stateExpr = Ptr(new WfIntegerExpression);
 					stateExpr->value.value = L"0";
@@ -7476,7 +7489,7 @@ ExpandNewCoroutineExpression
 					auto varDecl = Ptr(new WfVariableDeclaration);
 					newExpr->declarations.Add(varDecl);
 					varDecl->name.value = L"<co-state-before-pause>";
-					varDecl->type = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+					varDecl->type = GetTypeFromTypeInfo(manager->cputiSInt.Obj());
 					varDecl->expression = GenerateCoroutineInvalidId();
 				}
 
@@ -10289,10 +10302,10 @@ CreateTypeInfoFromType
 						typeDescriptor = description::GetTypeDescriptor<IDescriptable>();
 						break;
 					case WfPredefinedTypeName::Int:
-						typeDescriptor = description::GetTypeDescriptor<vint>();
+						typeDescriptor = scope->FindManager()->cputdSInt;
 						break;
 					case WfPredefinedTypeName::UInt:
-						typeDescriptor = description::GetTypeDescriptor<vuint>();
+						typeDescriptor = scope->FindManager()->cputdUInt;
 						break;
 					case WfPredefinedTypeName::Float:
 						typeDescriptor = description::GetTypeDescriptor<float>();
@@ -12497,11 +12510,7 @@ ValidateSemantic(Expression)
 					auto typeDescriptor = expectedType ? expectedType->GetTypeDescriptor() : nullptr;
 					if (!typeDescriptor || typeDescriptor->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object || typeDescriptor==description::GetTypeDescriptor<WString>())
 					{
-#ifdef VCZH_64
-						typeDescriptor = description::GetTypeDescriptor<vint64_t>();
-#else
-						typeDescriptor = description::GetTypeDescriptor<vint32_t>();
-#endif
+						typeDescriptor = manager->cputdSInt;
 					}
 
 					if (auto serializableType = typeDescriptor->GetSerializableType())
@@ -12608,24 +12617,24 @@ ValidateSemantic(Expression)
 									ITypeInfo* classType = genericType->GetElementType();
 									if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 										leftValue = true;
 									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 										leftValue = true;
 									}
 									else if (classType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = CopyTypeInfo(genericType->GetGenericArgument(0));
 										leftValue = true;
 									}
@@ -12649,24 +12658,24 @@ ValidateSemantic(Expression)
 								{
 									if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueReadonlyList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueArray>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 										leftValue = true;
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 										leftValue = true;
 									}
 									else if (genericType->GetTypeDescriptor() == description::GetTypeDescriptor<IValueObservableList>())
 									{
-										indexType = TypeInfoRetriver<vint>::CreateTypeInfo();
+										indexType = manager->cputiSInt;
 										resultType = TypeInfoRetriver<Value>::CreateTypeInfo();
 										leftValue = true;
 									}
@@ -24394,9 +24403,9 @@ Compile
 				return GenerateAssembly(manager);
 			}
 
-			Ptr<runtime::WfAssembly> Compile(workflow::Parser& workflowParser, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors)
+			Ptr<runtime::WfAssembly> Compile(workflow::Parser& workflowParser, analyzer::WfCpuArchitecture cpuArchitecture, collections::List<WString>& moduleCodes, collections::List<glr::ParsingError>& errors)
 			{
-				WfLexicalScopeManager manager(workflowParser);
+				WfLexicalScopeManager manager(workflowParser, cpuArchitecture);
 				return Compile(&manager, moduleCodes, errors);
 			}
 		}
@@ -25629,18 +25638,32 @@ GenerateInstructions(Expression)
 					auto result = context.manager->expressionResolvings[node];
 					auto elementType = Ptr(result.type->GetElementType()->GetGenericArgument(0));
 					auto type = GetInstructionTypeArgument(elementType);
+
+					WfRuntimeValue one;
+					switch (context.manager->cpuArchitecture)
+					{
+					case WfCpuArchitecture::x86:
+						one = {(vint32_t)1};
+						break;
+					case WfCpuArchitecture::x64:
+						one = { (vint64_t)1 };
+						break;
+					default:
+						one = { (vint)1 };
+						break;
+					}
 					
 					GenerateExpressionInstructions(context, node->begin, elementType);
 					if (node->beginBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
+						INSTRUCTION(Ins::LoadValue(one));
 						INSTRUCTION(Ins::OpAdd(type));
 					}
 					
 					GenerateExpressionInstructions(context, node->end, elementType);
 					if (node->endBoundary == WfRangeBoundary::Exclusive)
 					{
-						INSTRUCTION(Ins::LoadValue({ (vint)1 }));
+						INSTRUCTION(Ins::LoadValue(one));
 						INSTRUCTION(Ins::OpSub(type));
 					}
 

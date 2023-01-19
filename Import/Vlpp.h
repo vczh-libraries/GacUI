@@ -8502,6 +8502,13 @@ namespace vl
 	namespace unittest
 	{
 		using UnitTestFileProc = void(*)();
+		
+		struct UnitTestLink
+		{
+			const char*					fileName = nullptr;
+			UnitTestFileProc			testProc = nullptr;
+			UnitTestLink*				next = nullptr;
+		};
 
 		/// <summary>
 		/// <p>Unit test framework.</p>
@@ -8615,17 +8622,22 @@ namespace vl
 			/// <param name="argv">Accept the second argument of the main function.</param>
 			static int RunAndDisposeTests(int argc, char* argv[]);
 
-			static void RegisterTestFile(const char* fileName, UnitTestFileProc testProc);
+			static void RegisterTestFile(UnitTestLink* link);
 			static void RunCategoryOrCase(const WString& description, bool isCategory, Func<void()>&& callback);
 			static void EnsureLegalToAssert();
 		};
 
 		class UnitTestFile
 		{
+		protected:
+			UnitTestLink				link;
+
 		public:
 			UnitTestFile(const char* fileName, UnitTestFileProc testProc)
 			{
-				UnitTest::RegisterTestFile(fileName, testProc);
+				link.fileName = fileName;
+				link.testProc = testProc;
+				UnitTest::RegisterTestFile(&link);
 			}
 		};
 
