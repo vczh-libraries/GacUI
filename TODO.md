@@ -2,8 +2,9 @@
 
 ## Progressing
 
-- Issues on GDI (no matter hosted or not, repros in Playground)
-  - Big cursor of document empty line
+- Issues on GDI
+  - Big cursor of document empty line (GDI)
+  - Non main window doesn't shrink when moving back to low DPI monitor.
 - Theme
   - Add HostedWindow theme.
   - `INativeWindow` add callback for state changing.
