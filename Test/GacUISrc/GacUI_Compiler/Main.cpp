@@ -1,8 +1,12 @@
 #include "ResourceCompiler.h"
+#ifdef VCZH_MSVC
+#include <Windows.h>
+#endif
 
 using namespace vl;
 using namespace vl::collections;
 using namespace vl::stream;
+using namespace vl::filesystem;
 using namespace vl::reflection::description;
 
 extern void UnitTestInGuiMain();
@@ -14,34 +18,40 @@ extern void UnitTestInGuiMain();
 #endif
 
 #if defined VCZH_MSVC
+
 int wmain(vint argc, wchar_t* argv[])
 {
-	int result = SetupWindowsDirect2DRenderer();
+	int result = SetupGacGenNativeController();
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
 	return result;
 }
 
-WString GetResourcePath()
+FilePath GetResourcePath()
 {
+	Array<wchar_t> buffer(65536);
+	GetModuleFileName(NULL, &buffer[0], (DWORD)buffer.Count());
+	auto folder = FilePath(WString::Unmanaged(&buffer[0])).GetFolder();
 #ifdef _WIN64
-	return GetApplication()->GetExecutableFolder() + L"../../../Resources/";
+	return folder / L"../../../Resources";
 #else
-	return GetApplication()->GetExecutableFolder() + L"../../Resources/";
+	return folder / L"../../Resources";
 #endif
 }
+
 #elif defined VCZH_GCC
-extern int SetupGacGenNativeController();
+
 int main(int argc, char* argv[])
 {
 	return SetupGacGenNativeController();
 }
 
-WString GetResourcePath()
+FilePath GetResourcePath()
 {
-	return L"../../Resources/";
+	return FilePath(WString::Unmanaged(L"../../Resources"));
 }
+
 #endif
 
 class GuiReflectionPlugin : public Object, public IGuiPlugin
@@ -60,7 +70,7 @@ public:
 		INSTALL_SERIALIZABLE_TYPE(Color)
 		INSTALL_SERIALIZABLE_TYPE(GlobalStringKey)
 		INSTALL_SERIALIZABLE_TYPE(DocumentFontSize)
-		FileStream fileStream(GetResourcePath() + REFLECTION_BIN, FileStream::ReadOnly);
+		FileStream fileStream((GetResourcePath() / REFLECTION_BIN).GetFullPath(), FileStream::ReadOnly);
 		auto typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
 		auto tm = GetGlobalTypeManager();
 		tm->AddTypeLoader(typeLoader);
@@ -95,17 +105,17 @@ void GuiMain()
 	LoadResource(CompileResources(
 		L"DarkSkin",
 		dependencies,
-		(GetResourcePath() + DARKSKIN_PATH),
-		(GetResourcePath() + DARKSKIN_BINARY_FOLDER),
-		(GetResourcePath() + DARKSKIN_SOURCE_FOLDER),
+		(GetResourcePath() / DARKSKIN_PATH),
+		(GetResourcePath() / DARKSKIN_BINARY_FOLDER),
+		(GetResourcePath() / DARKSKIN_SOURCE_FOLDER),
 		true
 	));
 	LoadResource(CompileResources(
 		L"Demo",
 		dependencies,
-		(GetResourcePath() + FULLCONTROLTEST_PATH),
-		(GetResourcePath() + FULLCONTROLTEST_BINARY_FOLDER),
-		(GetResourcePath() + FULLCONTROLTEST_SOURCE_FOLDER),
+		(GetResourcePath() / FULLCONTROLTEST_PATH),
+		(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER),
+		(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER),
 		false
 	));
 }

@@ -39,11 +39,19 @@ using namespace vl::presentation::templates;
 
 #endif
 
+// GacUI Compiler
+extern int SetupGacGenNativeController();
+
+// Windows
 extern int SetupWindowsGDIRenderer();
 extern int SetupWindowsDirect2DRenderer();
 extern int SetupHostedWindowsGDIRenderer();
 extern int SetupHostedWindowsDirect2DRenderer();
 
+// Gtk
+extern int SetupGtkRenderer();
+
+// macOS
 extern int SetupOSXCoreGraphicsRenderer();
 
 #endif

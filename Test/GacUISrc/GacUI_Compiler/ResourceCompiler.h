@@ -35,9 +35,9 @@ public:
 extern FilePath CompileResources(
 	const WString& name,
 	collections::List<WString>& dependencies,
-	const WString& resourcePath,
-	const WString& outputBinaryFolder,
-	const WString& outputCppFolder,
+	FilePath resourcePath,
+	FilePath outputBinaryFolder,
+	FilePath outputCppFolder,
 	bool compressResource
 	);
 

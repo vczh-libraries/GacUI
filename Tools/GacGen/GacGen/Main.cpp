@@ -4,8 +4,6 @@ using namespace vl::filesystem;
 using namespace vl::presentation::controls;
 
 Array<WString>* arguments = 0;
-
-extern int SetupGacGenNativeController();
 WString executablePath;
 
 #if defined VCZH_MSVC

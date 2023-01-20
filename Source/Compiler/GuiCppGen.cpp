@@ -60,7 +60,7 @@ namespace vl
 						}
 					}
 
-					if (File(workflowPath).WriteAllText(text))
+					if (File(workflowPath).WriteAllText(text, true, BomEncoder::Utf8))
 					{
 						return compiled;
 					}
