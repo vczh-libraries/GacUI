@@ -101,11 +101,23 @@ FilePath CompileResources(
 	FilePath binaryPath = outputBinaryFolder / (name + L".UI.bin");
 	FilePath assemblyPath32 = outputBinaryFolder / (name + L".UI.x86.bin");
 	FilePath assemblyPath64 = outputBinaryFolder / (name + L".UI.x64.bin");
+	FilePath assemblyPath;
+
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86:
+		assemblyPath = assemblyPath32;
+		break;
+	case GuiResourceCpuArchitecture::x64:
+		assemblyPath = assemblyPath64;
+		break;
+	default:
 #ifdef VCZH_64
-	FilePath assemblyPath = assemblyPath64;
+		assemblyPath = assemblyPath64;
 #else
-	FilePath assemblyPath = assemblyPath32;
+		assemblyPath = assemblyPath32;
 #endif
+	}
 
 	List<GuiResourceError> errors;
 	auto resource = GuiResource::LoadFromXml(resourcePath.GetFullPath(), errors);
