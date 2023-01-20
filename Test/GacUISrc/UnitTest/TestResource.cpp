@@ -77,7 +77,7 @@ Ptr<GuiResource> LoadResource(const WString& resourceName)
 
 		resource = GuiResource::LoadFromXml(inputPath.GetFullPath(), errors);
 		PRINT_ERROR;
-		resource->Precompile(nullptr, errors);
+		resource->Precompile(GuiResourceCpuArchitecture::Unspecified, nullptr, errors);
 		PRINT_ERROR;
 		TEST_ASSERT(false);
 	});
