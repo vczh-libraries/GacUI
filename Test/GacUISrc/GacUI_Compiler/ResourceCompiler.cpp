@@ -85,6 +85,7 @@ CompileResources
 ***********************************************************************/
 
 FilePath CompileResources(
+	GuiResourceCpuArchitecture targetCpuArchitecture,
 	const WString& name,
 	collections::List<WString>& dependencies,
 	FilePath resourcePath,
@@ -122,7 +123,7 @@ FilePath CompileResources(
 	File(assemblyPath32).Delete();
 	File(assemblyPath64).Delete();
 
-	auto precompiledFolder = PrecompileResource(resource, &debugCallback, errors);
+	auto precompiledFolder = PrecompileResource(resource, targetCpuArchitecture, &debugCallback, errors);
 	if (errors.Count() > 0)
 	{
 		WriteErrors(errors, errorPath);

@@ -22,6 +22,7 @@ namespace vl
 
 		extern Ptr<GuiResourceFolder>					PrecompileResource(
 															Ptr<GuiResource> resource,
+															GuiResourceCpuArchitecture targetCpuArchitecture,
 															IGuiResourcePrecompileCallback* callback,
 															collections::List<GuiResourceError>& errors);
 

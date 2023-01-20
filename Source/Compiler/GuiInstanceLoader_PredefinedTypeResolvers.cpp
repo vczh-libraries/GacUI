@@ -133,7 +133,7 @@ namespace vl
 			if (!compiled->assembly)
 			{
 				List<WString> codes;
-				auto manager = Workflow_GetSharedManager();
+				auto manager = Workflow_GetSharedManager(context.targetCpuArchitecture);
 				manager->Clear(false, true);
 
 				auto addCode = [&codes](TextReader& reader)

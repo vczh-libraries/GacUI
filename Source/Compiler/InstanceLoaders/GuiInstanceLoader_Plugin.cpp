@@ -73,12 +73,12 @@ GuiControlInstanceLoader
 					return typeName;
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
@@ -91,7 +91,7 @@ GuiControlInstanceLoader
 						}
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override

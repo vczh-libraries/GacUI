@@ -1,6 +1,5 @@
 #include "GuiInstanceAnimation.h"
 #include "WorkflowCodegen/GuiInstanceLoader_WorkflowCodegen.h"
-#include "../Controls/Templates/GuiAnimation.h"
 
 namespace vl
 {

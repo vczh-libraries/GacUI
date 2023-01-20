@@ -193,7 +193,7 @@ WorkflowGenerateCreatingVisitor
 				)
 			{
 				List<GlobalStringKey> pairedProps;
-				info.loader->GetPairedProperties(propInfo, pairedProps);
+				info.loader->GetPairedProperties(precompileContext, propInfo, pairedProps);
 				if (pairedProps.Count() == 0)
 				{
 					pairedProps.Add(propInfo.propertyName);

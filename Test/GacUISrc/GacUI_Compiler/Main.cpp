@@ -102,7 +102,15 @@ void GuiMain()
 #endif
 
 	List<WString> dependencies;
+	GuiResourceCpuArchitecture targetCpuArchitecture = GuiResourceCpuArchitecture::Unspecified;
+#ifdef VCZH_64
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+#else
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+#endif
+
 	LoadResource(CompileResources(
+		targetCpuArchitecture,
 		L"DarkSkin",
 		dependencies,
 		(GetResourcePath() / DARKSKIN_PATH),
@@ -111,6 +119,7 @@ void GuiMain()
 		true
 	));
 	LoadResource(CompileResources(
+		targetCpuArchitecture,
 		L"Demo",
 		dependencies,
 		(GetResourcePath() / FULLCONTROLTEST_PATH),

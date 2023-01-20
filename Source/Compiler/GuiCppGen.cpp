@@ -21,10 +21,11 @@ namespace vl
 
 		Ptr<GuiResourceFolder> PrecompileResource(
 			Ptr<GuiResource> resource,
+			GuiResourceCpuArchitecture targetCpuArchitecture,
 			IGuiResourcePrecompileCallback* callback,
 			collections::List<GuiResourceError>& errors)
 		{
-			auto precompiledFolder = resource->Precompile(callback, errors);
+			auto precompiledFolder = resource->Precompile(targetCpuArchitecture, callback, errors);
 			return precompiledFolder;
 		}
 

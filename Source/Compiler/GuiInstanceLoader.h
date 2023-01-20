@@ -136,10 +136,10 @@ Instance Loader
 			virtual GlobalStringKey							GetTypeName() = 0;
 			virtual void									ClearReflectionCache();
 
-			virtual void									GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual void									GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual void									GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
+			virtual void									GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void									GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void									GetPairedProperties(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo);
 
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
 			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);

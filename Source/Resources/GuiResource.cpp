@@ -1425,7 +1425,7 @@ GuiResource
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 
-		Ptr<GuiResourceFolder> GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
+		Ptr<GuiResourceFolder> GuiResource::Precompile(GuiResourceCpuArchitecture targetCpuArchitecture, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
 			if (GetFolder(L"Precompiled"))
 			{
@@ -1434,6 +1434,7 @@ GuiResource
 			}
 
 			GuiResourcePrecompileContext context;
+			context.targetCpuArchitecture = targetCpuArchitecture;
 			context.compilerCallback = callback ? callback->GetCompilerCallback() : nullptr;
 			context.rootResource = this;
 			context.resolver = Ptr(new GuiResourcePathResolver(Ptr(this), workingDirectory));

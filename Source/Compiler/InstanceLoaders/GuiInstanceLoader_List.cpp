@@ -58,22 +58,22 @@ GuiComboBoxInstanceLoader
 					_ListControl = GlobalStringKey::Get(L"ListControl");
 				}
 
-				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (CanCreate(typeInfo))
 					{
 						propertyNames.Add(_ListControl);
 					}
-					BASE_TYPE::GetRequiredPropertyNames(typeInfo, propertyNames);
+					BASE_TYPE::GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					GetRequiredPropertyNames(typeInfo, propertyNames);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+					GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
+					BASE_TYPE::GetPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _ListControl)
 					{
@@ -81,7 +81,7 @@ GuiComboBoxInstanceLoader
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(precompileContext, propertyInfo);
 				}
 			};
 #undef BASE_TYPE
@@ -106,16 +106,16 @@ GuiTreeViewInstanceLoader
 					_Nodes = GlobalStringKey::Get(L"Nodes");
 				}
 
-				void GetPropertyNames(const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const typename BASE_TYPE::TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (!bindable)
 					{
 						propertyNames.Add(_Nodes);
 					}
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+					BASE_TYPE::GetPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const typename BASE_TYPE::PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const typename BASE_TYPE::PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _Nodes)
 					{
@@ -124,7 +124,7 @@ GuiTreeViewInstanceLoader
 							return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 						}
 					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const typename BASE_TYPE::TypeInfo& typeInfo, GlobalStringKey variableName, typename BASE_TYPE::ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
@@ -211,7 +211,7 @@ GuiTreeNodeInstanceLoader
 					return typeName;
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(_Text);
 					propertyNames.Add(_Image);
@@ -219,7 +219,7 @@ GuiTreeNodeInstanceLoader
 					propertyNames.Add(GlobalStringKey::Empty);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _Text)
 					{
@@ -243,7 +243,7 @@ GuiTreeNodeInstanceLoader
 					{
 						return GuiInstancePropertyInfo::Collection(TypeInfoRetriver<Ptr<tree::MemoryNodeProvider>>::CreateTypeInfo());
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				bool CanCreate(const TypeInfo& typeInfo)override

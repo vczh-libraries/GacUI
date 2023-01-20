@@ -33,6 +33,7 @@ public:
 };
 
 extern FilePath CompileResources(
+	GuiResourceCpuArchitecture targetCpuArchitecture,
 	const WString& name,
 	collections::List<WString>& dependencies,
 	FilePath resourcePath,
