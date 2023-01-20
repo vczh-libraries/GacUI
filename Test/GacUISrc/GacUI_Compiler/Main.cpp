@@ -136,7 +136,6 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 
 void GuiMain()
 {
-	return;
 	UnitTestInGuiMain();
 
 	List<WString> dependencies;
