@@ -55,20 +55,36 @@ Plugin
 Plugin Manager
 ***********************************************************************/
 
+		struct GuiPluginDescriptor
+		{
+			GuiPluginDescriptor*							next = nullptr;
+
+			virtual Ptr<IGuiPlugin>							CreatePlugin() = 0;
+		};
+
 		/// <summary>Get the global <see cref="IGuiPluginManager"/> object.</summary>
 		/// <returns>The global <see cref="IGuiPluginManager"/> object.</returns>
 		extern IGuiPluginManager*							GetPluginManager();
+
+		/// <summary>Register a plugin descriptor. Do not call this function directly, use GUI_REGISTER_PLUGIN macro instead.</summary>
+		/// <param name="pluginDescriptor">The plugin descriptor.</param>
+		extern void											RegisterPluginDescriptor(GuiPluginDescriptor* pluginDescriptor);
 
 		/// <summary>Destroy the global <see cref="IGuiPluginManager"/> object.</summary>
 		extern void											DestroyPluginManager();
 
 #define GUI_REGISTER_PLUGIN(TYPE)\
-	class GuiRegisterPluginClass_##TYPE\
+	struct GuiRegisterPluginClass_##TYPE : private vl::presentation::GuiPluginDescriptor\
 	{\
+	private:\
+		vl::Ptr<vl::presentation::IGuiPlugin> CreatePlugin() override\
+		{\
+			return vl::Ptr(new TYPE);\
+		}\
 	public:\
 		GuiRegisterPluginClass_##TYPE()\
 		{\
-			vl::presentation::GetPluginManager()->AddPlugin(Ptr(new TYPE));\
+			vl::presentation::RegisterPluginDescriptor(this);\
 		}\
 	} instance_GuiRegisterPluginClass_##TYPE;\
 

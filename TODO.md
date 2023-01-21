@@ -14,7 +14,6 @@
 - Add default dialog service, will be use in hosted mode.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - One GacGen.exe instead of GacGen32.exe and GacGen64.exe
-  - `GUI_REGISTER_PLUGIN` need to register itself to a global link instead of `AddPlugin(new TYPE)` so that plugins could be loaded twice.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
 - Remove exe in Release/Tools, add CodePack.exe, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
 - Rewrite GacBuild.ps1 in C++ (optional)
