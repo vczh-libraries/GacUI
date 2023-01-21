@@ -16,7 +16,7 @@ clean:
 
 all:pre-build ./Bin/GacGen
 
-./Bin/GacGen:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppParser.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/VlppWorkflowCompiler.o ./Obj/VlppWorkflowLibrary.o ./Obj/VlppWorkflowRuntime.o ./Obj/GacUI.o ./Obj/GacUICompiler.o ./Obj/GacUIReflection.o ./Obj/GacGen.o ./Obj/Main.o ./Obj/NativeController.o
+./Bin/GacGen:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppParser.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/VlppWorkflowCompiler.o ./Obj/VlppWorkflowLibrary.o ./Obj/VlppWorkflowRuntime.o ./Obj/GacUI.o ./Obj/GacUICompiler.o ./Obj/GacUIReflection.o ./Obj/GacGen.o ./Obj/Main.o
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../Import/Vlpp.cpp ../../Import/Vlpp.h
@@ -65,7 +65,4 @@ all:pre-build ./Bin/GacGen
 	$(CPP_COMPILE)
 
 ./Obj/Main.o: GacGen/Main.cpp GacGen/GacGen.h ../../Release/GacUICompiler.h ../../Release/GacUIReflection.h ../../Release/GacUI.h ../../Import/VlppGlrParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h ../../Import/VlppWorkflowLibrary.h ../../Import/VlppParser.h ../../Import/VlppWorkflowCompiler.h ../../Import/VlppWorkflowRuntime.h
-	$(CPP_COMPILE)
-
-./Obj/NativeController.o: GacGen/NativeController.cpp ../../Release/GacUI.h ../../Import/VlppGlrParser.h ../../Import/VlppReflection.h ../../Import/VlppOS.h ../../Import/Vlpp.h ../../Import/VlppRegex.h ../../Import/VlppWorkflowLibrary.h ../../Import/VlppParser.h
 	$(CPP_COMPILE)
