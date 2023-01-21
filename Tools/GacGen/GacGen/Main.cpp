@@ -7,6 +7,21 @@ GuiResourceCpuArchitecture targetCpuArchitecture = GuiResourceCpuArchitecture::U
 Array<WString>* arguments = 0;
 WString executablePath;
 
+void SetTargetCpuArchitecture()
+{
+	if (arguments->Count() > 0)
+	{
+		if (arguments->Get(0) == L"/P32" || arguments->Get(0) == L"/D32" || arguments->Get(0) == L"/C32")
+		{
+			targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+		}
+		else if (arguments->Get(0) == L"/P64" || arguments->Get(0) == L"/D64" || arguments->Get(0) == L"/C64")
+		{
+			targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+		}
+	}
+}
+
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 {
@@ -17,6 +32,7 @@ int wmain(int argc, wchar_t* argv[])
 		_arguments[i - 1] = argv[i];
 	}
 	arguments = &_arguments;
+	SetTargetCpuArchitecture();
 	return SetupGacGenNativeController();
 }
 #elif defined VCZH_GCC
@@ -29,6 +45,7 @@ int main(int argc, char* argv[])
 		_arguments[i - 1] = atow(argv[i]);
 	}
 	arguments = &_arguments;
+	SetTargetCpuArchitecture();
 	return SetupGacGenNativeController();
 }
 #endif
@@ -728,9 +745,6 @@ void GuiMain()
 	{
 		if (arguments->Get(0) == L"/P32" || arguments->Get(0) == L"/P64")
 		{
-			if (arguments->Get(0) == L"/P32") targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
-			if (arguments->Get(0) == L"/P64") targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
-
 			switch (arguments->Count())
 			{
 			case 2:
@@ -743,9 +757,6 @@ void GuiMain()
 		}
 		else if (arguments->Get(0) == L"/D32" || arguments->Get(0) == L"/D64")
 		{
-			if (arguments->Get(0) == L"/P32") targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
-			if (arguments->Get(0) == L"/P64") targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
-
 			switch (arguments->Count())
 			{
 			case 3:
@@ -755,12 +766,9 @@ void GuiMain()
 		}
 		else if (arguments->Get(0) == L"/C32" || arguments->Get(0) == L"/C64")
 		{
-			if (arguments->Get(0) == L"/C32") targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
-			if (arguments->Get(0) == L"/C64") targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
-
 			switch (arguments->Count())
 			{
-			case 1:
+			case 2:
 				CompileResource(false, arguments->Get(1), {});
 				return;
 			}
