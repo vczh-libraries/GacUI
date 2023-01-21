@@ -8094,55 +8094,70 @@ namespace vl
 	class GlobalStorage : public Object
 	{
 	private:
-		bool					cleared = false;
+		bool						initialized = false;
+
+	protected:
+		virtual void				InitializeResource() = 0;
+		virtual void				FinalizeResource() = 0;
+
 	public:
 		NOT_COPYABLE(GlobalStorage);
-		GlobalStorage(const wchar_t* key);
+		GlobalStorage();
 		~GlobalStorage();
 
-		bool					Cleared();
-		virtual void			ClearResource() = 0;
+		bool						IsInitialized();
+		void						EnsureInitialized();
+		void						EnsureFinalized();
 	};
 
-	extern GlobalStorage* GetGlobalStorage(const wchar_t* key);
-	extern GlobalStorage* GetGlobalStorage(const WString& key);
+	struct GlobalStorageDescriptor
+	{
+		GlobalStorage*				globalStorage = nullptr;
+		GlobalStorageDescriptor*	next = nullptr;
+	};
 
-	extern void InitializeGlobalStorage();
+	extern void RegisterStorageDescriptor(GlobalStorageDescriptor* globalStorageDescriptor);
+
 	/// <summary>Free all memories used by global storages.</summary>
 	extern void FinalizeGlobalStorage();
 }
 
-#define BEGIN_GLOBAL_STORAGE_CLASS(NAME)		\
-	class NAME : public vl::GlobalStorage		\
-	{											\
-	public:										\
-		NAME()									\
-			:vl::GlobalStorage(L ## #NAME)		\
-		{										\
-			InitializeClearResource();			\
-		}										\
-		~NAME()									\
-		{										\
-			if(!Cleared())ClearResource();		\
-		}										\
+#define BEGIN_GLOBAL_STORAGE_CLASS(NAME)				\
+	class NAME											\
+		: public vl::GlobalStorage						\
+		, private vl::GlobalStorageDescriptor			\
+	{													\
+	public:												\
+		NAME()											\
+		{												\
+			globalStorage = this;						\
+			vl::RegisterStorageDescriptor(this);		\
+		}												\
+		~NAME()											\
+		{												\
+			EnsureFinalized();							\
+		}												\
 
-#define INITIALIZE_GLOBAL_STORAGE_CLASS			\
-		void InitializeClearResource()			\
-		{										\
+#define INITIALIZE_GLOBAL_STORAGE_CLASS					\
+	protected:											\
+		void InitializeResource()						\
+		{												\
 
-#define FINALIZE_GLOBAL_STORAGE_CLASS			\
-		}										\
-		void ClearResource()					\
-		{										\
+#define FINALIZE_GLOBAL_STORAGE_CLASS					\
+		}												\
+	protected:											\
+		void FinalizeResource()							\
+		{												\
 
-#define END_GLOBAL_STORAGE_CLASS(NAME)			\
-		}										\
-	};											\
-	NAME& Get##NAME()							\
-	{											\
-		static NAME __global_storage_##NAME;	\
-		return __global_storage_##NAME;			\
-	}											\
+#define END_GLOBAL_STORAGE_CLASS(NAME)					\
+		}												\
+	};													\
+	NAME& Get##NAME()									\
+	{													\
+		static NAME __global_storage_##NAME;			\
+		 __global_storage_##NAME.EnsureInitialized();	\
+		return __global_storage_##NAME;					\
+	}													\
 
 #define EXTERN_GLOBAL_STORAGE_CLASS(NAME)\
 	class NAME;\

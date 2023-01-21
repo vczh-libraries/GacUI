@@ -2,12 +2,12 @@
 
 - **Metadata_Generate**: Run both Win32 and X64 to generate metaonly reflection binary files.
 - **Metadata_Test**: Test the generated binary files, both Win32 and X64 at the same time.
-- **GacUI_Compiler**: Compile `Host/Resources/FullControlTest/Resource.xml` and get both binary and C++ files, with `VCZH_DEBUG_METAONLY_REFLECTION`.
-- **GacUI_Host**: Load the compiled binary file and run.
-- **CppTest**: Compile and run generated C++ files in **hosted mode** with `VCZH_DEBUG_NO_REFLECTION`.
-- **CppTest_Metaonly**: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`.
-- **CppTest_Reflection**: Compile and run generated C++ files.
-- **Playground**: Compile and load XML with generated DarkSkin.
+- **GacUI_Compiler**: Compile `DarkSkin` and `FullControlTest`, both Win32 and X64 at the same time.
+  - **GacUI_Host**: Load the compiled binary file and run.
+  - **CppTest**: Compile and run generated C++ files in **hosted mode** with `VCZH_DEBUG_NO_REFLECTION`.
+  - **CppTest_Metaonly**: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`.
+  - **CppTest_Reflection**: Compile and run generated C++ files.
+  - **Playground**: Compile and load XML with generated DarkSkin.
 - **UnitTest**: Test cases for GacUI.
 
 - **Lib_**: Lib files under different configurations
