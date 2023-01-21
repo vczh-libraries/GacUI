@@ -691,10 +691,10 @@ public:
 		switch (targetCpuArchitecture)
 		{
 		case GuiResourceCpuArchitecture::x86:
-			BINARY_NAME = L"Reflection64.bin";
+			BINARY_NAME = L"Reflection32.bin";
 			break;
 		case GuiResourceCpuArchitecture::x64:
-			BINARY_NAME = L"Reflection32.bin";
+			BINARY_NAME = L"Reflection64.bin";
 			break;
 		default:;
 		}
