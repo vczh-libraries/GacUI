@@ -7785,20 +7785,36 @@ Plugin
 Plugin Manager
 ***********************************************************************/
 
+		struct GuiPluginDescriptor
+		{
+			GuiPluginDescriptor*							next = nullptr;
+
+			virtual Ptr<IGuiPlugin>							CreatePlugin() = 0;
+		};
+
 		/// <summary>Get the global <see cref="IGuiPluginManager"/> object.</summary>
 		/// <returns>The global <see cref="IGuiPluginManager"/> object.</returns>
 		extern IGuiPluginManager*							GetPluginManager();
+
+		/// <summary>Register a plugin descriptor. Do not call this function directly, use GUI_REGISTER_PLUGIN macro instead.</summary>
+		/// <param name="pluginDescriptor">The plugin descriptor.</param>
+		extern void											RegisterPluginDescriptor(GuiPluginDescriptor* pluginDescriptor);
 
 		/// <summary>Destroy the global <see cref="IGuiPluginManager"/> object.</summary>
 		extern void											DestroyPluginManager();
 
 #define GUI_REGISTER_PLUGIN(TYPE)\
-	class GuiRegisterPluginClass_##TYPE\
+	struct GuiRegisterPluginClass_##TYPE : private vl::presentation::GuiPluginDescriptor\
 	{\
+	private:\
+		vl::Ptr<vl::presentation::IGuiPlugin> CreatePlugin() override\
+		{\
+			return vl::Ptr(new TYPE);\
+		}\
 	public:\
 		GuiRegisterPluginClass_##TYPE()\
 		{\
-			vl::presentation::GetPluginManager()->AddPlugin(Ptr(new TYPE));\
+			vl::presentation::RegisterPluginDescriptor(this);\
 		}\
 	} instance_GuiRegisterPluginClass_##TYPE;\
 
@@ -7839,6 +7855,7 @@ namespace vl
 		class GuiResourceItem;
 		class GuiResourceFolder;
 		class GuiResource;
+		class GuiResourcePathResolver;
 
 /***********************************************************************
 Helper Functions
@@ -7951,6 +7968,56 @@ Resource String
 		};
 
 /***********************************************************************
+Resource Precompile Context
+***********************************************************************/
+
+		/// <summary>
+		/// CPU architecture
+		/// </summary>
+		enum class GuiResourceCpuArchitecture
+		{
+			x86,
+			x64,
+			Unspecified,
+		};
+
+		/// <summary>
+		/// Resource usage
+		/// </summary>
+		enum class GuiResourceUsage
+		{
+			DataOnly,
+			InstanceClass,
+		};
+
+		/// <summary>Provide a context for resource precompiling</summary>
+		struct GuiResourcePrecompileContext
+		{
+			typedef collections::Dictionary<Ptr<DescriptableObject>, Ptr<DescriptableObject>>	PropertyMap;
+
+			/// <summary>The target CPU architecture.</summary>
+			GuiResourceCpuArchitecture							targetCpuArchitecture = GuiResourceCpuArchitecture::Unspecified;
+			/// <summary>Progress callback.</summary>
+			workflow::IWfCompilerCallback*						compilerCallback = nullptr;
+			/// <summary>The folder to contain compiled objects.</summary>
+			Ptr<GuiResourceFolder>								targetFolder;
+			/// <summary>The root resource object.</summary>
+			GuiResource*										rootResource = nullptr;
+			/// <summary>Indicate the pass index of this precompiling pass.</summary>
+			vint												passIndex = -1;
+			/// <summary>The path resolver. This is only for delay load resource.</summary>
+			Ptr<GuiResourcePathResolver>						resolver;
+			/// <summary>Additional properties for resource item contents</summary>
+			PropertyMap											additionalProperties;
+		};
+
+		/// <summary>Provide a context for resource initializing</summary>
+		struct GuiResourceInitializeContext : GuiResourcePrecompileContext
+		{
+			GuiResourceUsage									usage;
+		};
+
+/***********************************************************************
 Resource Structure
 ***********************************************************************/
 
@@ -8039,9 +8106,6 @@ Resource Structure
 		};
 
 		class DocumentModel;
-		class GuiResourcePathResolver;
-		struct GuiResourcePrecompileContext;
-		struct GuiResourceInitializeContext;
 		class IGuiResourcePrecompileCallback;
 		
 		/// <summary>Resource item.</summary>
@@ -8183,12 +8247,6 @@ Resource Structure
 Resource
 ***********************************************************************/
 
-		enum class GuiResourceUsage
-		{
-			DataOnly,
-			InstanceClass,
-		};
-
 		/// <summary>Resource metadata.</summary>
 		class GuiResourceMetadata : public Object
 		{
@@ -8261,7 +8319,7 @@ Resource
 			/// <returns>The resource folder contains all precompiled result. The folder will be added to the resource if there is no error.</returns>
 			/// <param name="callback">A callback to receive progress.</param>
 			/// <param name="errors">All collected errors during precompiling a resource.</param>
-			Ptr<GuiResourceFolder>					Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
+			Ptr<GuiResourceFolder>					Precompile(GuiResourceCpuArchitecture targetCpuArchitecture, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors);
 
 			/// <summary>Initialize a precompiled resource.</summary>
 			/// <param name="usage">In which role an application is initializing this resource.</param>
@@ -8379,25 +8437,6 @@ Resource Type Resolver
 			virtual IGuiResourceTypeResolver_IndirectLoad*		IndirectLoad(){ return 0; }
 		};
 
-		/// <summary>Provide a context for resource precompiling</summary>
-		struct GuiResourcePrecompileContext
-		{
-			typedef collections::Dictionary<Ptr<DescriptableObject>, Ptr<DescriptableObject>>	PropertyMap;
-
-			/// <summary>Progress callback.</summary>
-			workflow::IWfCompilerCallback*						compilerCallback = nullptr;
-			/// <summary>The folder to contain compiled objects.</summary>
-			Ptr<GuiResourceFolder>								targetFolder;
-			/// <summary>The root resource object.</summary>
-			GuiResource*										rootResource = nullptr;
-			/// <summary>Indicate the pass index of this precompiling pass.</summary>
-			vint												passIndex = -1;
-			/// <summary>The path resolver. This is only for delay load resource.</summary>
-			Ptr<GuiResourcePathResolver>						resolver;
-			/// <summary>Additional properties for resource item contents</summary>
-			PropertyMap											additionalProperties;
-		};
-
 		/// <summary>
 		///		Represents a precompiler for resources of a specified type.
 		///		Current resources that needs precompiling:
@@ -8461,12 +8500,6 @@ Resource Type Resolver
 			virtual workflow::IWfCompilerCallback*				GetCompilerCallback() = 0;
 			virtual void										OnPerPass(vint passIndex) = 0;
 			virtual void										OnPerResource(vint passIndex, Ptr<GuiResourceItem> resource) = 0;
-		};
-
-		/// <summary>Provide a context for resource initializing</summary>
-		struct GuiResourceInitializeContext : GuiResourcePrecompileContext
-		{
-			GuiResourceUsage									usage;
 		};
 
 		/// <summary>
@@ -21340,11 +21373,19 @@ using namespace vl::presentation::templates;
 
 #endif
 
+// GacUI Compiler
+extern int SetupGacGenNativeController();
+
+// Windows
 extern int SetupWindowsGDIRenderer();
 extern int SetupWindowsDirect2DRenderer();
 extern int SetupHostedWindowsGDIRenderer();
 extern int SetupHostedWindowsDirect2DRenderer();
 
+// Gtk
+extern int SetupGtkRenderer();
+
+// macOS
 extern int SetupOSXCoreGraphicsRenderer();
 
 #endif

@@ -39,6 +39,7 @@ namespace vl
 
 		extern Ptr<GuiResourceFolder>					PrecompileResource(
 															Ptr<GuiResource> resource,
+															GuiResourceCpuArchitecture targetCpuArchitecture,
 															IGuiResourcePrecompileCallback* callback,
 															collections::List<GuiResourceError>& errors);
 
@@ -781,10 +782,10 @@ Instance Loader
 			virtual GlobalStringKey							GetTypeName() = 0;
 			virtual void									ClearReflectionCache();
 
-			virtual void									GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual void									GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual void									GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
-			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(const PropertyInfo& propertyInfo);
+			virtual void									GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void									GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual void									GetPairedProperties(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames);
+			virtual Ptr<GuiInstancePropertyInfo>			GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo);
 
 			virtual bool									CanCreate(const TypeInfo& typeInfo);
 			virtual Ptr<workflow::WfBaseConstructorCall>	CreateRootInstance(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, ArgumentMap& arguments, GuiResourceError::List& errors);
@@ -1095,7 +1096,7 @@ namespace vl
 				PropertyResolvingMap							propertyResolvings;				// information of property values which are calling constructors
 			};
 		}
-		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager();
+		extern workflow::analyzer::WfLexicalScopeManager*		Workflow_GetSharedManager(GuiResourceCpuArchitecture targetCpuArchitecture);
 		extern Ptr<workflow::analyzer::WfLexicalScopeManager>	Workflow_TransferSharedManager();
 		
 
@@ -1166,9 +1167,9 @@ WorkflowCompiler (Compile)
 			}
 		};
 
-		extern IGuiInstanceLoader::TypeInfo						Workflow_AdjustPropertySearchType(types::ResolvingResult& resolvingResult, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop);
-		extern bool												Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors);
-		extern Ptr<reflection::description::ITypeInfo>			Workflow_GetSuggestedParameterType(reflection::description::ITypeDescriptor* typeDescriptor);
+		extern IGuiInstanceLoader::TypeInfo						Workflow_AdjustPropertySearchType(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop);
+		extern bool												Workflow_GetPropertyTypes(GuiResourcePrecompileContext& precompileContext, WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors);
+		extern Ptr<reflection::description::ITypeInfo>			Workflow_GetSuggestedParameterType(GuiResourcePrecompileContext& precompileContext, reflection::description::ITypeDescriptor* typeDescriptor);
 		extern IGuiInstanceLoader::TypeInfo						Workflow_CollectReferences(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, GuiResourceError::List& errors);
 		extern void												Workflow_GenerateCreating(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
 		extern void												Workflow_GenerateBindings(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, Ptr<workflow::WfBlockStatement> statements, GuiResourceError::List& errors);
