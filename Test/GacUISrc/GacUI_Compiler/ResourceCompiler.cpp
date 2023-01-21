@@ -85,29 +85,42 @@ CompileResources
 ***********************************************************************/
 
 FilePath CompileResources(
+	GuiResourceCpuArchitecture targetCpuArchitecture,
 	const WString& name,
 	collections::List<WString>& dependencies,
-	const WString& resourcePath,
-	const WString& outputBinaryFolder,
-	const WString& outputCppFolder,
+	FilePath resourcePath,
+	FilePath outputBinaryFolder,
+	FilePath outputCppFolder,
 	bool compressResource
 )
 {
-	FilePath errorPath = outputBinaryFolder + name + L".UI.error.txt";
-	FilePath workflowPath1 = outputBinaryFolder + name + L".Shared.UI.txt";
-	FilePath workflowPath2 = outputBinaryFolder + name + L".TemporaryClass.UI.txt";
-	FilePath workflowPath3 = outputBinaryFolder + name + L".InstanceClass.UI.txt";
-	FilePath binaryPath = outputBinaryFolder + name + L".UI.bin";
-	FilePath assemblyPath32 = outputBinaryFolder + name + L".UI.x86.bin";
-	FilePath assemblyPath64 = outputBinaryFolder + name + L".UI.x64.bin";
+	FilePath errorPath = outputBinaryFolder / (name + L".UI.error.txt");
+	FilePath workflowPath1 = outputBinaryFolder / (name + L".Shared.UI.txt");
+	FilePath workflowPath2 = outputBinaryFolder / (name + L".TemporaryClass.UI.txt");
+	FilePath workflowPath3 = outputBinaryFolder / (name + L".InstanceClass.UI.txt");
+	FilePath binaryPath = outputBinaryFolder / (name + L".UI.bin");
+	FilePath assemblyPath32 = outputBinaryFolder / (name + L".UI.x86.bin");
+	FilePath assemblyPath64 = outputBinaryFolder / (name + L".UI.x64.bin");
+	FilePath assemblyPath;
+
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86:
+		assemblyPath = assemblyPath32;
+		break;
+	case GuiResourceCpuArchitecture::x64:
+		assemblyPath = assemblyPath64;
+		break;
+	default:
 #ifdef VCZH_64
-	FilePath assemblyPath = assemblyPath64;
+		assemblyPath = assemblyPath64;
 #else
-	FilePath assemblyPath = assemblyPath32;
+		assemblyPath = assemblyPath32;
 #endif
+	}
 
 	List<GuiResourceError> errors;
-	auto resource = GuiResource::LoadFromXml(resourcePath, errors);
+	auto resource = GuiResource::LoadFromXml(resourcePath.GetFullPath(), errors);
 	{
 		auto metadata = resource->GetMetadata();
 		metadata->name = name;
@@ -122,7 +135,7 @@ FilePath CompileResources(
 	File(assemblyPath32).Delete();
 	File(assemblyPath64).Delete();
 
-	auto precompiledFolder = PrecompileResource(resource, &debugCallback, errors);
+	auto precompiledFolder = PrecompileResource(resource, targetCpuArchitecture, &debugCallback, errors);
 	if (errors.Count() > 0)
 	{
 		WriteErrors(errors, errorPath);

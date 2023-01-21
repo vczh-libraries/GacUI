@@ -13,7 +13,7 @@ namespace vl
 Workflow_AdjustPropertySearchType
 ***********************************************************************/
 
-		IGuiInstanceLoader::TypeInfo Workflow_AdjustPropertySearchType(types::ResolvingResult& resolvingResult, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop)
+		IGuiInstanceLoader::TypeInfo Workflow_AdjustPropertySearchType(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop)
 		{
 			if (resolvedTypeInfo.typeName.ToString() == resolvingResult.context->className)
 			{
@@ -57,9 +57,9 @@ Workflow_AdjustPropertySearchType
 Workflow_GetPropertyTypes
 ***********************************************************************/
 
-		bool Workflow_GetPropertyTypes(WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors)
+		bool Workflow_GetPropertyTypes(GuiResourcePrecompileContext& precompileContext, WString& errorPrefix, types::ResolvingResult& resolvingResult, IGuiInstanceLoader* loader, IGuiInstanceLoader::TypeInfo resolvedTypeInfo, GlobalStringKey prop, Ptr<GuiAttSetterRepr::SetterValue> setter, collections::List<types::PropertyResolving>& possibleInfos, GuiResourceError::List& errors)
 		{
-			resolvedTypeInfo = Workflow_AdjustPropertySearchType(resolvingResult, resolvedTypeInfo, prop);
+			resolvedTypeInfo = Workflow_AdjustPropertySearchType(precompileContext, resolvingResult, resolvedTypeInfo, prop);
 			bool reportedNotSupported = false;
 			IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
 
@@ -69,7 +69,7 @@ Workflow_GetPropertyTypes
 
 				while (currentLoader)
 				{
-					if (auto propertyTypeInfo = currentLoader->GetPropertyType(propertyInfo))
+					if (auto propertyTypeInfo = currentLoader->GetPropertyType(precompileContext, propertyInfo))
 					{
 						if (propertyTypeInfo->support == GuiInstancePropertyInfo::NotSupport)
 						{
@@ -264,7 +264,7 @@ WorkflowReferenceNamesVisitor
 					auto prop = repr->setters.Keys()[index];
 
 					WString errorPrefix;
-					if (Workflow_GetPropertyTypes(errorPrefix, resolvingResult, loader, resolvedTypeInfo, prop, setter, possibleInfos, errors))
+					if (Workflow_GetPropertyTypes(precompileContext, errorPrefix, resolvingResult, loader, resolvedTypeInfo, prop, setter, possibleInfos, errors))
 					{
 						if (setter->binding == GlobalStringKey::Empty)
 						{
@@ -370,7 +370,7 @@ WorkflowReferenceNamesVisitor
 						auto currentLoader = loader;
 						while (currentLoader)
 						{
-							currentLoader->GetRequiredPropertyNames(resolvedTypeInfo, requiredProps);
+							currentLoader->GetRequiredPropertyNames(precompileContext, resolvedTypeInfo, requiredProps);
 							currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
 						}
 					}
@@ -383,7 +383,7 @@ WorkflowReferenceNamesVisitor
 								auto currentLoader = loader;
 								while (currentLoader && !info)
 								{
-									info = currentLoader->GetPropertyType({ resolvedTypeInfo, prop });
+									info = currentLoader->GetPropertyType(precompileContext, { resolvedTypeInfo, prop });
 									currentLoader = GetInstanceLoaderManager()->GetParentLoader(currentLoader);
 								}
 							}
@@ -407,7 +407,7 @@ WorkflowReferenceNamesVisitor
 					IGuiInstanceLoader::PropertyInfo propertyInfo(resolvedTypeInfo, prop);
 
 					List<GlobalStringKey> pairProps;
-					loader->GetPairedProperties(propertyInfo, pairProps);
+					loader->GetPairedProperties(precompileContext, propertyInfo, pairProps);
 					if (pairProps.Count() > 0)
 					{
 						List<GlobalStringKey> missingProps;
@@ -636,10 +636,10 @@ WorkflowReferenceNamesVisitor
 								if (repr == resolvingResult.context->instance.Obj())
 								{
 									List<GlobalStringKey> propertyNames;
-									loader->GetPropertyNames(resolvedTypeInfo, propertyNames);
+									loader->GetPropertyNames(precompileContext, resolvedTypeInfo, propertyNames);
 									for (vint i = propertyNames.Count() - 1; i >= 0; i--)
 									{
-										auto info = loader->GetPropertyType({ resolvedTypeInfo, propertyNames[i] });
+										auto info = loader->GetPropertyType(precompileContext, { resolvedTypeInfo, propertyNames[i] });
 										if (!info || info->usage == GuiInstancePropertyInfo::Property)
 										{
 											propertyNames.RemoveAt(i);
@@ -689,7 +689,7 @@ WorkflowReferenceNamesVisitor
 			}
 		};
 
-		Ptr<reflection::description::ITypeInfo> Workflow_GetSuggestedParameterType(reflection::description::ITypeDescriptor* typeDescriptor)
+		Ptr<reflection::description::ITypeInfo> Workflow_GetSuggestedParameterType(GuiResourcePrecompileContext& precompileContext, reflection::description::ITypeDescriptor* typeDescriptor)
 		{
 			auto elementType = Ptr(new TypeDescriptorTypeInfo(typeDescriptor, TypeInfoHint::Normal));
 			if ((typeDescriptor->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
@@ -750,7 +750,7 @@ WorkflowReferenceNamesVisitor
 				}
 				else
 				{
-					auto referenceType = Workflow_GetSuggestedParameterType(type);
+					auto referenceType = Workflow_GetSuggestedParameterType(precompileContext, type);
 					resolvingResult.typeInfos.Add(parameter->name, { GlobalStringKey::Get(type->GetTypeName()),referenceType });
 				}
 			}

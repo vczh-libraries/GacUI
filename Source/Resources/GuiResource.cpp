@@ -1425,8 +1425,17 @@ GuiResource
 			SaveResourceFolderToBinary(writer, typeNames);
 		}
 
-		Ptr<GuiResourceFolder> GuiResource::Precompile(IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
+		Ptr<GuiResourceFolder> GuiResource::Precompile(GuiResourceCpuArchitecture targetCpuArchitecture, IGuiResourcePrecompileCallback* callback, GuiResourceError::List& errors)
 		{
+			if (targetCpuArchitecture == GuiResourceCpuArchitecture::Unspecified)
+			{
+#ifdef VCZH_64
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+#else
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+#endif
+			}
+
 			if (GetFolder(L"Precompiled"))
 			{
 				errors.Add(GuiResourceError({Ptr(this)}, L"A precompiled resource cannot be compiled again."));
@@ -1434,6 +1443,7 @@ GuiResource
 			}
 
 			GuiResourcePrecompileContext context;
+			context.targetCpuArchitecture = targetCpuArchitecture;
 			context.compilerCallback = callback ? callback->GetCompilerCallback() : nullptr;
 			context.rootResource = this;
 			context.resolver = Ptr(new GuiResourcePathResolver(Ptr(this), workingDirectory));

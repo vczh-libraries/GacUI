@@ -1,47 +1,108 @@
 #include "ResourceCompiler.h"
+#ifdef VCZH_MSVC
+#include <Windows.h>
+#endif
 
 using namespace vl;
 using namespace vl::collections;
 using namespace vl::stream;
+using namespace vl::filesystem;
 using namespace vl::reflection::description;
 
 extern void UnitTestInGuiMain();
 
-#ifdef VCZH_64
-#define REFLECTION_BIN L"Metadata/Reflection64.bin"
-#else
-#define REFLECTION_BIN L"Metadata/Reflection32.bin"
-#endif
+GuiResourceCpuArchitecture targetCpuArchitecture = GuiResourceCpuArchitecture::Unspecified;
+
+const wchar_t* REFLECTION_BIN()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"Metadata/Reflection32.bin";
+	case GuiResourceCpuArchitecture::x64: return L"Metadata/Reflection64.bin";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* DARKSKIN_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_DarkSkin/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_DarkSkin/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* DARKSKIN_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_DarkSkin/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_DarkSkin/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* FULLCONTROLTEST_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_FullControlTest/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_FullControlTest/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* FULLCONTROLTEST_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_FullControlTest/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_FullControlTest/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
 
 #if defined VCZH_MSVC
+
 int wmain(vint argc, wchar_t* argv[])
 {
-	int result = SetupWindowsDirect2DRenderer();
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+	SetupGacGenNativeController();
+
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+	SetupGacGenNativeController();
+
 #if VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
-	return result;
+	return 0;
 }
 
-WString GetResourcePath()
+FilePath GetResourcePath()
 {
+	Array<wchar_t> buffer(65536);
+	GetModuleFileName(NULL, &buffer[0], (DWORD)buffer.Count());
+	auto folder = FilePath(WString::Unmanaged(&buffer[0])).GetFolder();
 #ifdef _WIN64
-	return GetApplication()->GetExecutableFolder() + L"../../../Resources/";
+	return folder / L"../../../Resources";
 #else
-	return GetApplication()->GetExecutableFolder() + L"../../Resources/";
+	return folder / L"../../Resources";
 #endif
 }
+
 #elif defined VCZH_GCC
-extern int SetupGacGenNativeController();
+
 int main(int argc, char* argv[])
 {
 	return SetupGacGenNativeController();
 }
 
-WString GetResourcePath()
+FilePath GetResourcePath()
 {
-	return L"../../Resources/";
+	return FilePath(WString::Unmanaged(L"../../Resources"));
 }
+
 #endif
 
 class GuiReflectionPlugin : public Object, public IGuiPlugin
@@ -60,7 +121,7 @@ public:
 		INSTALL_SERIALIZABLE_TYPE(Color)
 		INSTALL_SERIALIZABLE_TYPE(GlobalStringKey)
 		INSTALL_SERIALIZABLE_TYPE(DocumentFontSize)
-		FileStream fileStream(GetResourcePath() + REFLECTION_BIN, FileStream::ReadOnly);
+		FileStream fileStream((GetResourcePath() / REFLECTION_BIN()).GetFullPath(), FileStream::ReadOnly);
 		auto typeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
 		auto tm = GetGlobalTypeManager();
 		tm->AddTypeLoader(typeLoader);
@@ -76,36 +137,24 @@ GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 void GuiMain()
 {
 	UnitTestInGuiMain();
-#define DARKSKIN_PATH					L"App/DarkSkin/Resource.xml"
-#define FULLCONTROLTEST_PATH			L"App/FullControlTest/Resource.xml"
-
-#ifdef VCZH_64
-#define DARKSKIN_BINARY_FOLDER			L"../GacUISrc/Generated_DarkSkin/Resource_x64/"
-#define DARKSKIN_SOURCE_FOLDER			L"../GacUISrc/Generated_DarkSkin/Source_x64/"
-#define FULLCONTROLTEST_BINARY_FOLDER	L"../GacUISrc/Generated_FullControlTest/Resource_x64/"
-#define FULLCONTROLTEST_SOURCE_FOLDER	L"../GacUISrc/Generated_FullControlTest/Source_x64/"
-#else
-#define DARKSKIN_BINARY_FOLDER			L"../GacUISrc/Generated_DarkSkin/Resource_x86/"
-#define DARKSKIN_SOURCE_FOLDER			L"../GacUISrc/Generated_DarkSkin/Source_x86/"
-#define FULLCONTROLTEST_BINARY_FOLDER	L"../GacUISrc/Generated_FullControlTest/Resource_x86/"
-#define FULLCONTROLTEST_SOURCE_FOLDER	L"../GacUISrc/Generated_FullControlTest/Source_x86/"
-#endif
 
 	List<WString> dependencies;
 	LoadResource(CompileResources(
+		targetCpuArchitecture,
 		L"DarkSkin",
 		dependencies,
-		(GetResourcePath() + DARKSKIN_PATH),
-		(GetResourcePath() + DARKSKIN_BINARY_FOLDER),
-		(GetResourcePath() + DARKSKIN_SOURCE_FOLDER),
+		(GetResourcePath() / L"App/DarkSkin/Resource.xml"),
+		(GetResourcePath() / DARKSKIN_BINARY_FOLDER()),
+		(GetResourcePath() / DARKSKIN_SOURCE_FOLDER()),
 		true
 	));
 	LoadResource(CompileResources(
+		targetCpuArchitecture,
 		L"Demo",
 		dependencies,
-		(GetResourcePath() + FULLCONTROLTEST_PATH),
-		(GetResourcePath() + FULLCONTROLTEST_BINARY_FOLDER),
-		(GetResourcePath() + FULLCONTROLTEST_SOURCE_FOLDER),
+		(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
+		(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),
+		(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER()),
 		false
 	));
 }

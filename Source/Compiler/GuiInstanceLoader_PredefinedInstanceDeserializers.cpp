@@ -746,7 +746,17 @@ GuiDataProcessorDeserializer
 					else
 					{
 						decl->name.value = L"Compare";
-						decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<vint>::CreateTypeInfo().Obj());
+						switch (precompileContext.targetCpuArchitecture)
+						{
+						case GuiResourceCpuArchitecture::x86:
+							decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<vint32_t>::CreateTypeInfo().Obj());
+							break;
+						case GuiResourceCpuArchitecture::x64:
+							decl->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<vint64_t>::CreateTypeInfo().Obj());
+							break;
+						default:
+							CHECK_FAIL(L"The target CPU architecture is unspecified.");
+						}
 						argumentNames.Add(L"<row1>");
 						argumentNames.Add(L"<row2>");
 					}

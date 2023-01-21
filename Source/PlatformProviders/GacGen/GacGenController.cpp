@@ -1,7 +1,8 @@
-#include "GacUI.h"
+#include "../../NativeWindow/GuiNativeWindow.h"
 
 using namespace vl;
 using namespace vl::stream;
+using namespace vl::reflection::description;
 using namespace vl::presentation;
 
 class GacGenNativeController
@@ -208,13 +209,15 @@ public:
 	{
 		CHECK_FAIL(L"Not implemented!");
 	}
-
 };
+
+extern void GuiApplicationMain();
 
 int SetupGacGenNativeController()
 {
 	GacGenNativeController controller;
 	SetCurrentController(&controller);
 	GuiApplicationMain();
+	SetCurrentController(nullptr);
 	return 0;
 }

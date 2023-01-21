@@ -107,7 +107,7 @@ void GuiMain()
 		{
 			CopyFrom(dependencies, deps.GetByIndex(index));
 		}
-		paths.Add(name, CompileResources(name, dependencies, L"Resources/" + name + L".xml", L"./", L"", false));
+		paths.Add(name, CompileResources(GuiResourceCpuArchitecture::Unspecified, name, dependencies, L"Resources/" + name + L".xml", L"./", L"", false));
 		LoadResource(paths[name]);
 	}
 

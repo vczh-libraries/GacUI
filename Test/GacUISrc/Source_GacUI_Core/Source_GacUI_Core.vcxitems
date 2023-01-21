@@ -43,6 +43,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsTextElement.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\GuiNativeWindow.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\SharedServices\GuiSharedAsyncService.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\GacGen\GacGenController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedGraphics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindow.cpp" />

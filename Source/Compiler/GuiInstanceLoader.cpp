@@ -82,19 +82,19 @@ IGuiInstanceLoader
 		{
 		}
 
-		void IGuiInstanceLoader::GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
+		void IGuiInstanceLoader::GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
 		}
 
-		void IGuiInstanceLoader::GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
+		void IGuiInstanceLoader::GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
 		}
 
-		void IGuiInstanceLoader::GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
+		void IGuiInstanceLoader::GetPairedProperties(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)
 		{
 		}
 
-		Ptr<GuiInstancePropertyInfo> IGuiInstanceLoader::GetPropertyType(const PropertyInfo& propertyInfo)
+		Ptr<GuiInstancePropertyInfo> IGuiInstanceLoader::GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)
 		{
 			return nullptr;
 		}
@@ -396,7 +396,7 @@ GuiDefaultInstanceLoader
 				return nullptr;
 			}
 
-			void CollectPropertyNames(const TypeInfo& typeInfo, ITypeDescriptor* typeDescriptor, collections::List<GlobalStringKey>& propertyNames)
+			void CollectPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, ITypeDescriptor* typeDescriptor, collections::List<GlobalStringKey>& propertyNames)
 			{
 				vint propertyCount = typeDescriptor->GetPropertyCount();
 				for (vint i = 0; i < propertyCount; i++)
@@ -404,7 +404,7 @@ GuiDefaultInstanceLoader
 					GlobalStringKey propertyName = GlobalStringKey::Get(typeDescriptor->GetProperty(i)->GetName());
 					if (!propertyNames.Contains(propertyName))
 					{
-						auto info = GetPropertyType(PropertyInfo(typeInfo, propertyName));
+						auto info = GetPropertyType(precompileContext, PropertyInfo(typeInfo, propertyName));
 						if (info && info->support != GuiInstancePropertyInfo::NotSupport)
 						{
 							propertyNames.Add(propertyName);
@@ -415,13 +415,13 @@ GuiDefaultInstanceLoader
 				vint parentCount = typeDescriptor->GetBaseTypeDescriptorCount();
 				for (vint i = 0; i < parentCount; i++)
 				{
-					CollectPropertyNames(typeInfo, typeDescriptor->GetBaseTypeDescriptor(i), propertyNames);
+					CollectPropertyNames(precompileContext, typeInfo, typeDescriptor->GetBaseTypeDescriptor(i), propertyNames);
 				}
 			}
 
 			//***********************************************************************************
 
-			void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			void GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
 				if (CanCreate(typeInfo))
 				{
@@ -439,10 +439,10 @@ GuiDefaultInstanceLoader
 				}
 			}
 
-			void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+			void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 			{
-				GetRequiredPropertyNames(typeInfo, propertyNames);
-				CollectPropertyNames(typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
+				GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
+				CollectPropertyNames(precompileContext, typeInfo, typeInfo.typeInfo->GetTypeDescriptor(), propertyNames);
 			}
 
 			PropertyType GetPropertyTypeCached(const PropertyInfo& propertyInfo)
@@ -492,7 +492,7 @@ GuiDefaultInstanceLoader
 				}
 			}
 
-			Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+			Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 			{
 				return GetPropertyTypeCached(propertyInfo).f0;
 			}

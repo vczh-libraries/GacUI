@@ -350,7 +350,7 @@ GuiApplicationMain
 				ThreadLocalStorage::DisposeStorages();
 				FinalizeGlobalStorage();
 #ifndef VCZH_DEBUG_NO_REFLECTION
-				DestroyGlobalTypeManager();
+				ResetGlobalTypeManager();
 #endif
 			}
 		}

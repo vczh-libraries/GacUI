@@ -31,7 +31,7 @@ GuiDocumentItemInstanceLoader
 					return typeName;
 				}
 
-				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (CanCreate(typeInfo))
 					{
@@ -39,13 +39,13 @@ GuiDocumentItemInstanceLoader
 					}
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					GetRequiredPropertyNames(typeInfo, propertyNames);
+					GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
 					propertyNames.Add(GlobalStringKey::Empty);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
@@ -60,7 +60,7 @@ GuiDocumentItemInstanceLoader
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				
@@ -173,19 +173,19 @@ GuiDocumentInstanceLoaderBase
 				{
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
-					TBaseType::GetPropertyNames(typeInfo, propertyNames);
+					TBaseType::GetPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
 						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<Ptr<GuiDocumentItem>>::CreateTypeInfo());
 					}
-					return TBaseType::GetPropertyType(propertyInfo);
+					return TBaseType::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override

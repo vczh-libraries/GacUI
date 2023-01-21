@@ -124,23 +124,39 @@ GuiPluginManager
 Helpers
 ***********************************************************************/
 
-		IGuiPluginManager* pluginManager=0;
+		GuiPluginDescriptor* firstPluginDescriptor = nullptr;
+		GuiPluginDescriptor** lastPluginDescriptor = &firstPluginDescriptor;
+		IGuiPluginManager* pluginManager = nullptr;
 
 		IGuiPluginManager* GetPluginManager()
 		{
-			if(!pluginManager)
+			if (!pluginManager)
 			{
-				pluginManager=new GuiPluginManager;
+				pluginManager = new GuiPluginManager;
+
+				auto current = firstPluginDescriptor;
+				while (current)
+				{
+					pluginManager->AddPlugin(current->CreatePlugin());
+					current = current->next;
+				}
 			}
 			return pluginManager;
 		}
 
+		void RegisterPluginDescriptor(GuiPluginDescriptor* pluginDescriptor)
+		{
+			CHECK_ERROR(!pluginManager, L"vl::presentation::RegisterPluginDescriptor(GuiPluginDescriptor*)#This function should be called before calling GetPluginManager.");
+			*lastPluginDescriptor = pluginDescriptor;
+			lastPluginDescriptor = &pluginDescriptor->next;
+		}
+
 		void DestroyPluginManager()
 		{
-			if(pluginManager)
+			if (pluginManager)
 			{
 				delete pluginManager;
-				pluginManager=0;
+				pluginManager = nullptr;
 			}
 		}
 	}

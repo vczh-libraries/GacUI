@@ -178,7 +178,7 @@ WorkflowEventNamesVisitor
 					auto prop = repr->setters.Keys()[index];
 
 					WString errorPrefix;
-					if (Workflow_GetPropertyTypes(errorPrefix, resolvingResult, loader, resolvedTypeInfo, prop, setter, possibleInfos, errors))
+					if (Workflow_GetPropertyTypes(precompileContext, errorPrefix, resolvingResult, loader, resolvedTypeInfo, prop, setter, possibleInfos, errors))
 					{
 						if (setter->binding == GlobalStringKey::_Set)
 						{
@@ -538,7 +538,7 @@ Workflow_GenerateInstanceClass
 
 				if (paramTd)
 				{
-					auto typeInfo = Workflow_GetSuggestedParameterType(paramTd);
+					auto typeInfo = Workflow_GetSuggestedParameterType(precompileContext, paramTd);
 					switch (typeInfo->GetDecorator())
 					{
 					case ITypeInfo::RawPtr: return { typeInfo,className + L"*" };
@@ -670,7 +670,7 @@ Workflow_GenerateInstanceClass
 
 						prop->functionKind = WfFunctionKind::Normal;
 						prop->name.value = localized->name.ToString();
-						prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(lsiTd).Obj());
+						prop->type = GetTypeFromTypeInfo(Workflow_GetSuggestedParameterType(precompileContext, lsiTd).Obj());
 						prop->configConst = WfAPConst::Writable;
 						prop->configObserve = WfAPObserve::Observable;
 
@@ -1100,11 +1100,28 @@ GuiWorkflowSharedManagerPlugin
 				sharedManagerPlugin = 0;
 			}
 
-			WfLexicalScopeManager* GetWorkflowManager()
+			WfLexicalScopeManager* GetWorkflowManager(GuiResourceCpuArchitecture targetCpuArchitecture)
 			{
+				WfCpuArchitecture wfCpuArchitecture = WfCpuArchitecture::AsExecutable;
+				switch (targetCpuArchitecture)
+				{
+				case GuiResourceCpuArchitecture::x86:
+					wfCpuArchitecture = WfCpuArchitecture::x86;
+					break;
+				case GuiResourceCpuArchitecture::x64:
+					wfCpuArchitecture = WfCpuArchitecture::x64;
+					break;
+				default:
+					CHECK_FAIL(L"The target CPU architecture is unspecified.");
+				}
+
 				if (!workflowManager)
 				{
-					workflowManager = Ptr(new WfLexicalScopeManager(workflowParser, WfCpuArchitecture::AsExecutable));
+					workflowManager = Ptr(new WfLexicalScopeManager(workflowParser, wfCpuArchitecture));
+				}
+				else
+				{
+					CHECK_ERROR(workflowManager->cpuArchitecture == wfCpuArchitecture, L"The target CPU architecture cannot be changed.");
 				}
 				return workflowManager.Obj();
 			}
@@ -1118,9 +1135,9 @@ GuiWorkflowSharedManagerPlugin
 		};
 		GUI_REGISTER_PLUGIN(GuiWorkflowSharedManagerPlugin)
 
-		WfLexicalScopeManager* Workflow_GetSharedManager()
+		WfLexicalScopeManager* Workflow_GetSharedManager(GuiResourceCpuArchitecture targetCpuArchitecture)
 		{
-			return sharedManagerPlugin->GetWorkflowManager();
+			return sharedManagerPlugin->GetWorkflowManager(targetCpuArchitecture);
 		}
 
 		Ptr<WfLexicalScopeManager> Workflow_TransferSharedManager()

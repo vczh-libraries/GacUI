@@ -31,7 +31,7 @@ GuiAxisInstanceLoader
 					return typeName;
 				}
 
-				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (CanCreate(typeInfo))
 					{
@@ -39,12 +39,12 @@ GuiAxisInstanceLoader
 					}
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					GetRequiredPropertyNames(typeInfo, propertyNames);
+					GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _AxisDirection)
 					{
@@ -52,7 +52,7 @@ GuiAxisInstanceLoader
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				bool CanCreate(const TypeInfo& typeInfo)override
@@ -108,12 +108,12 @@ GuiCompositionInstanceLoader
 					return typeName;
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
@@ -127,7 +127,7 @@ GuiCompositionInstanceLoader
 						}
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
@@ -264,13 +264,13 @@ GuiTableCompositionInstanceLoader
 					return typeName;
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(_Rows);
 					propertyNames.Add(_Columns);
 				}
 
-				void GetPairedProperties(const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPairedProperties(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (propertyInfo.propertyName == _Rows || propertyInfo.propertyName == _Columns)
 					{
@@ -279,13 +279,13 @@ GuiTableCompositionInstanceLoader
 					}
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _Rows || propertyInfo.propertyName == _Columns)
 					{
 						return GuiInstancePropertyInfo::Array(TypeInfoRetriver<GuiCellOption>::CreateTypeInfo());
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
@@ -403,18 +403,18 @@ GuiCellCompositionInstanceLoader
 					return typeName;
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(_Site);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _Site)
 					{
 						return GuiInstancePropertyInfo::Assign(TypeInfoRetriver<SiteValue>::CreateTypeInfo());
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override

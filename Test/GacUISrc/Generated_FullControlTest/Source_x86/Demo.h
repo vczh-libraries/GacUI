@@ -562,7 +562,6 @@ namespace demo
 #endif
 	protected:
 		::demo::AnimationTabPage* self;
-		::vl::presentation::compositions::GuiBoundsComposition* animationBackground;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_2;
@@ -583,6 +582,7 @@ namespace demo
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_18;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_19;
+		::vl::presentation::compositions::GuiBoundsComposition* animationBackground;
 		void __vwsn_demo_AnimationTabPage_Initialize(::demo::AnimationTabPage* __vwsn_this_);
 	public:
 		AnimationTabPageConstructor();
@@ -683,9 +683,9 @@ namespace demo
 #endif
 	protected:
 		::demo::CategoryEditor* self;
-		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		void __vwsn_demo_CategoryEditor_Initialize(::demo::CategoryEditor* __vwsn_this_);
 	public:
 		CategoryEditorConstructor();
@@ -718,9 +718,9 @@ namespace demo
 #endif
 	protected:
 		::demo::CategoryItemTemplate* self;
-		::demo::MyCategory SelectedCategory;
 		::demo::CategoryDisplayer* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::demo::MyCategory SelectedCategory;
 		void __vwsn_demo_CategoryItemTemplate_Initialize(::demo::CategoryItemTemplate* __vwsn_this_);
 	public:
 		CategoryItemTemplateConstructor();
@@ -885,9 +885,6 @@ namespace demo
 #endif
 	protected:
 		::demo::DataGridTabPage* self;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
-		::demo::DateFilter* dateFilter;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -911,6 +908,9 @@ namespace demo
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_20;
 		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_21;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
+		::demo::DateFilter* dateFilter;
 		void __vwsn_demo_DataGridTabPage_Initialize(::demo::DataGridTabPage* __vwsn_this_);
 	public:
 		DataGridTabPageConstructor();
@@ -978,8 +978,8 @@ namespace demo
 #endif
 	protected:
 		::demo::DateEditor* self;
-		::vl::presentation::controls::GuiDateComboBox* comboBox;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::presentation::controls::GuiDateComboBox* comboBox;
 		void __vwsn_demo_DateEditor_Initialize(::demo::DateEditor* __vwsn_this_);
 	public:
 		DateEditorConstructor();
@@ -1015,10 +1015,6 @@ namespace demo
 #endif
 	protected:
 		::demo::DateFilter* self;
-		::vl::presentation::controls::GuiSelectableButton* checkFrom;
-		::vl::presentation::controls::GuiDateComboBox* dateFrom;
-		::vl::presentation::controls::GuiSelectableButton* checkTo;
-		::vl::presentation::controls::GuiDateComboBox* dateTo;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
@@ -1026,6 +1022,10 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
+		::vl::presentation::controls::GuiSelectableButton* checkFrom;
+		::vl::presentation::controls::GuiDateComboBox* dateFrom;
+		::vl::presentation::controls::GuiSelectableButton* checkTo;
+		::vl::presentation::controls::GuiDateComboBox* dateTo;
 		void __vwsn_demo_DateFilter_Initialize(::demo::DateFilter* __vwsn_this_);
 	public:
 		DateFilterConstructor();
@@ -1081,10 +1081,6 @@ namespace demo
 #endif
 	protected:
 		::demo::DatePickerTabPage* self;
-		::vl::presentation::controls::GuiDatePicker* dp1;
-		::vl::presentation::controls::GuiDatePicker* dp2;
-		::vl::presentation::controls::GuiDateComboBox* dc1;
-		::vl::presentation::controls::GuiDateComboBox* dc2;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -1104,6 +1100,10 @@ namespace demo
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_16;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_17;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_18;
+		::vl::presentation::controls::GuiDatePicker* dp1;
+		::vl::presentation::controls::GuiDatePicker* dp2;
+		::vl::presentation::controls::GuiDateComboBox* dc1;
+		::vl::presentation::controls::GuiDateComboBox* dc2;
 		void __vwsn_demo_DatePickerTabPage_Initialize(::demo::DatePickerTabPage* __vwsn_this_);
 	public:
 		DatePickerTabPageConstructor();
@@ -1281,6 +1281,9 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentEditorBase* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
 		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
 		::vl::presentation::controls::GuiMessageDialog* dialogNotImpl;
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen;
@@ -1321,9 +1324,6 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignLeft;
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignCenter;
 		::vl::presentation::controls::GuiToolstripCommand* commandAlignRight;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
 		void __vwsn_demo_DocumentEditorBase_Initialize(::demo::DocumentEditorBase* __vwsn_this_);
 	public:
 		DocumentEditorBaseConstructor();
@@ -1360,10 +1360,6 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentEditorRibbon* self;
-		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
-		::vl::presentation::controls::GuiToolstripMenu* toolstripHome;
-		::vl::presentation::controls::GuiButton* buttonHome;
-		::vl::presentation::controls::GuiBindableRibbonGalleryList* styleGallery;
 		::vl::presentation::controls::GuiToolstripGroupContainer* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_2;
@@ -1403,6 +1399,10 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_36;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_38;
+		::vl::presentation::controls::GuiMessageDialog* dialogMessage;
+		::vl::presentation::controls::GuiToolstripMenu* toolstripHome;
+		::vl::presentation::controls::GuiButton* buttonHome;
+		::vl::presentation::controls::GuiBindableRibbonGalleryList* styleGallery;
 		::vl::presentation::controls::GuiToolstripGroup* __vwsn_precompile_39;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_40;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_41;
@@ -1476,7 +1476,6 @@ namespace demo
 #endif
 	protected:
 		::demo::DocumentEditorToolstrip* self;
-		::vl::presentation::controls::GuiToolstripButton* buttonAlignment;
 		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiToolstripMenuBar* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_2;
@@ -1516,6 +1515,7 @@ namespace demo
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_36;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiToolstripButton* __vwsn_precompile_38;
+		::vl::presentation::controls::GuiToolstripButton* buttonAlignment;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_39;
 		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_40;
 		::vl::presentation::controls::GuiToolstripToolBar* __vwsn_precompile_41;
@@ -1711,11 +1711,11 @@ namespace demo
 #endif
 	protected:
 		::vl::presentation::compositions::GuiCellComposition* content;
-		::demo::EnglishNumbersController* controller;
 		::demo::EnglishNumbersControllerTabPage* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::demo::EnglishNumbersController* controller;
 		void __vwsn_demo_EnglishNumbersControllerTabPage_Initialize(::demo::EnglishNumbersControllerTabPage* __vwsn_this_);
 	public:
 		EnglishNumbersControllerTabPageConstructor();
@@ -1785,9 +1785,9 @@ namespace demo
 #endif
 	protected:
 		::demo::GenderEditor* self;
-		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		void __vwsn_demo_GenderEditor_Initialize(::demo::GenderEditor* __vwsn_this_);
 	public:
 		GenderEditorConstructor();
@@ -1817,10 +1817,10 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GenderItemTemplateConstructor>;
 #endif
 	protected:
-		::demo::MyGender SelectedGender;
 		::demo::GenderItemTemplate* __vwsn_precompile_0;
 		::demo::GenderDisplayer* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::demo::MyGender SelectedGender;
 		void __vwsn_demo_GenderItemTemplate_Initialize(::demo::GenderItemTemplate* __vwsn_this_);
 	public:
 		GenderItemTemplateConstructor();
@@ -1877,7 +1877,6 @@ namespace demo
 #endif
 	protected:
 		::demo::HyperlinkWindow* self;
-		::vl::presentation::controls::GuiSinglelineTextBox* textUrl;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
@@ -1892,6 +1891,7 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_11;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_12;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_13;
+		::vl::presentation::controls::GuiSinglelineTextBox* textUrl;
 		void __vwsn_demo_HyperlinkWindow_Initialize(::demo::HyperlinkWindow* __vwsn_this_);
 	public:
 		HyperlinkWindowConstructor();
@@ -1949,9 +1949,6 @@ namespace demo
 #endif
 	protected:
 		::demo::ListViewTabPage* self;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiListView* listView;
-		::vl::presentation::controls::GuiBindableListView* bindableListView;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -1977,6 +1974,9 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_22;
 		::vl::Ptr<::vl::presentation::controls::list::ListViewColumn> __vwsn_precompile_23;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_24;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiListView* listView;
+		::vl::presentation::controls::GuiBindableListView* bindableListView;
 		void __vwsn_demo_ListViewTabPage_Initialize(::demo::ListViewTabPage* __vwsn_this_);
 	public:
 		ListViewTabPageConstructor();
@@ -2047,8 +2047,6 @@ namespace demo
 #endif
 	protected:
 		::demo::LocalizedStringsTabPage* self;
-		::vl::presentation::controls::GuiComboBoxListControl* comboLocales;
-		::vl::presentation::controls::GuiTextList* listLocales;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_2;
@@ -2071,6 +2069,8 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_19;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_20;
 		::vl::Ptr<::vl::presentation::controls::list::TextItem> __vwsn_precompile_21;
+		::vl::presentation::controls::GuiComboBoxListControl* comboLocales;
+		::vl::presentation::controls::GuiTextList* listLocales;
 		void __vwsn_demo_LocalizedStringsTabPage_Initialize(::demo::LocalizedStringsTabPage* __vwsn_this_);
 	public:
 		LocalizedStringsTabPageConstructor();
@@ -2155,16 +2155,7 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindowConstructor>;
 #endif
 	protected:
-		::vl::presentation::controls::GuiSelectableButton* checkFrame;
-		::vl::presentation::controls::GuiSelectableButton* checkMax;
-		::vl::presentation::controls::GuiSelectableButton* checkMin;
-		::vl::presentation::controls::GuiSelectableButton* checkBorder;
-		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
-		::vl::presentation::controls::GuiSelectableButton* checkIcon;
-		::vl::presentation::controls::GuiSelectableButton* checkTitle;
 		::demo::MainWindow* self;
-		::demo::DocumentEditorRibbon* editorRibbon;
-		::demo::DocumentEditorToolstrip* editorToolstrip;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTabPage* __vwsn_precompile_2;
@@ -2204,6 +2195,15 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_37;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_38;
+		::vl::presentation::controls::GuiSelectableButton* checkFrame;
+		::vl::presentation::controls::GuiSelectableButton* checkMax;
+		::vl::presentation::controls::GuiSelectableButton* checkMin;
+		::vl::presentation::controls::GuiSelectableButton* checkBorder;
+		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
+		::vl::presentation::controls::GuiSelectableButton* checkIcon;
+		::vl::presentation::controls::GuiSelectableButton* checkTitle;
+		::demo::DocumentEditorRibbon* editorRibbon;
+		::demo::DocumentEditorToolstrip* editorToolstrip;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_39;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_40;
 		void __vwsn_demo_MainWindow_Initialize(::demo::MainWindow* __vwsn_this_);
@@ -2281,10 +2281,10 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatItemTemplateConstructor>;
 #endif
 	protected:
-		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		::demo::RepeatItemTemplate* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		void __vwsn_demo_RepeatItemTemplate_Initialize(::demo::RepeatItemTemplate* __vwsn_this_);
 	public:
 		RepeatItemTemplateConstructor();
@@ -2319,11 +2319,6 @@ namespace demo
 #endif
 	protected:
 		::demo::RepeatTabPage* self;
-		::demo::EnglishNumbersControllerTabPage* repeatStackTabPage;
-		::demo::EnglishNumbersControllerTabPage* repeatFlowTabPage;
-		::demo::EnglishNumbersControllerTabPage* sharedSizeFlowTabPage;
-		::demo::EnglishNumbersControllerTabPage* sharedSizeListTabPage;
-		::vl::presentation::controls::GuiScroll* hTracker;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
@@ -2359,6 +2354,11 @@ namespace demo
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_32;
 		::vl::presentation::controls::GuiScroll* __vwsn_precompile_33;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_34;
+		::demo::EnglishNumbersControllerTabPage* repeatStackTabPage;
+		::demo::EnglishNumbersControllerTabPage* repeatFlowTabPage;
+		::demo::EnglishNumbersControllerTabPage* sharedSizeFlowTabPage;
+		::demo::EnglishNumbersControllerTabPage* sharedSizeListTabPage;
+		::vl::presentation::controls::GuiScroll* hTracker;
 		void __vwsn_demo_RepeatTabPage_Initialize(::demo::RepeatTabPage* __vwsn_this_);
 	public:
 		RepeatTabPageConstructor();
@@ -2395,7 +2395,6 @@ namespace demo
 #endif
 	protected:
 		::demo::ResponsiveGroupControl* self;
-		::vl::presentation::compositions::GuiResponsiveGroupComposition* responsive;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -2435,6 +2434,7 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_38;
+		::vl::presentation::compositions::GuiResponsiveGroupComposition* responsive;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_40;
 		void __vwsn_demo_ResponsiveGroupControl_Initialize(::demo::ResponsiveGroupControl* __vwsn_this_);
@@ -2472,7 +2472,6 @@ namespace demo
 #endif
 	protected:
 		::demo::ResponsiveStackControl* self;
-		::vl::presentation::compositions::GuiResponsiveStackComposition* responsive;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -2512,6 +2511,7 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_37;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_38;
+		::vl::presentation::compositions::GuiResponsiveStackComposition* responsive;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_39;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_40;
 		void __vwsn_demo_ResponsiveStackControl_Initialize(::demo::ResponsiveStackControl* __vwsn_this_);
@@ -2596,8 +2596,6 @@ namespace demo
 #endif
 	protected:
 		::demo::ResponsiveViewControl* self;
-		::vl::presentation::compositions::GuiResponsiveViewComposition* responsive;
-		::vl::presentation::controls::GuiDocumentLabel* documentBox;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
@@ -2634,6 +2632,8 @@ namespace demo
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_33;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_34;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_35;
+		::vl::presentation::compositions::GuiResponsiveViewComposition* responsive;
+		::vl::presentation::controls::GuiDocumentLabel* documentBox;
 		void __vwsn_demo_ResponsiveViewControl_Initialize(::demo::ResponsiveViewControl* __vwsn_this_);
 	public:
 		ResponsiveViewControlConstructor();
@@ -2672,11 +2672,11 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SharedSizeItemTemplateConstructor>;
 #endif
 	protected:
-		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		::demo::SharedSizeItemTemplate* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		void __vwsn_demo_SharedSizeItemTemplate_Initialize(::demo::SharedSizeItemTemplate* __vwsn_this_);
 	public:
 		SharedSizeItemTemplateConstructor();
@@ -2710,9 +2710,9 @@ namespace demo
 #endif
 	protected:
 		::demo::SharedSizeTextItemTemplate* self;
-		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_1;
+		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		void __vwsn_demo_SharedSizeTextItemTemplate_Initialize(::demo::SharedSizeTextItemTemplate* __vwsn_this_);
 	public:
 		SharedSizeTextItemTemplateConstructor();
@@ -2785,9 +2785,6 @@ namespace demo
 #endif
 	protected:
 		::demo::StyleItemTemplate* self;
-		::vl::Ptr<::demo::StyleItem> ViewModel;
-		::vl::presentation::controls::GuiCustomControl* containerControl;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> styleLabel;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
@@ -2796,6 +2793,9 @@ namespace demo
 		::vl::presentation::controls::GuiCustomControl* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_7;
+		::vl::Ptr<::demo::StyleItem> ViewModel;
+		::vl::presentation::controls::GuiCustomControl* containerControl;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> styleLabel;
 		void __vwsn_demo_StyleItemTemplate_Initialize(::demo::StyleItemTemplate* __vwsn_this_);
 	public:
 		StyleItemTemplateConstructor();
@@ -2842,13 +2842,6 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SubWindowConstructor>;
 #endif
 	protected:
-		::vl::presentation::controls::GuiSelectableButton* checkFrame;
-		::vl::presentation::controls::GuiSelectableButton* checkMax;
-		::vl::presentation::controls::GuiSelectableButton* checkMin;
-		::vl::presentation::controls::GuiSelectableButton* checkBorder;
-		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
-		::vl::presentation::controls::GuiSelectableButton* checkIcon;
-		::vl::presentation::controls::GuiSelectableButton* checkTitle;
 		::demo::SubWindow* self;
 		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_1;
@@ -2860,6 +2853,13 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_7;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_8;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_9;
+		::vl::presentation::controls::GuiSelectableButton* checkFrame;
+		::vl::presentation::controls::GuiSelectableButton* checkMax;
+		::vl::presentation::controls::GuiSelectableButton* checkMin;
+		::vl::presentation::controls::GuiSelectableButton* checkBorder;
+		::vl::presentation::controls::GuiSelectableButton* checkSizeBox;
+		::vl::presentation::controls::GuiSelectableButton* checkIcon;
+		::vl::presentation::controls::GuiSelectableButton* checkTitle;
 		void __vwsn_demo_SubWindow_Initialize(::demo::SubWindow* __vwsn_this_);
 	public:
 		SubWindowConstructor();
@@ -2972,10 +2972,6 @@ namespace demo
 #endif
 	protected:
 		::demo::TextBoxTabPage* self;
-		::demo::TextBoxSubTabPage* t1;
-		::demo::TextBoxSubTabPage* t2;
-		::demo::DocumentBoxSubTabPage* d1;
-		::demo::DocumentBoxSubTabPage* d2;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTab* __vwsn_precompile_2;
@@ -2984,6 +2980,10 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_7;
+		::demo::TextBoxSubTabPage* t1;
+		::demo::TextBoxSubTabPage* t2;
+		::demo::DocumentBoxSubTabPage* d1;
+		::demo::DocumentBoxSubTabPage* d2;
 		void __vwsn_demo_TextBoxTabPage_Initialize(::demo::TextBoxTabPage* __vwsn_this_);
 	public:
 		TextBoxTabPageConstructor();
@@ -3024,8 +3024,8 @@ namespace demo
 #endif
 	protected:
 		::demo::TextEditor* self;
-		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
+		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
 		void __vwsn_demo_TextEditor_Initialize(::demo::TextEditor* __vwsn_this_);
 	public:
 		TextEditorConstructor();
@@ -3061,10 +3061,6 @@ namespace demo
 #endif
 	protected:
 		::demo::TextListTabPage* self;
-		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* mutexGroupController;
-		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiTextList* textList;
-		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -3104,6 +3100,10 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_36;
 		::vl::presentation::controls::GuiSelectableButton* __vwsn_precompile_37;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_38;
+		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* mutexGroupController;
+		::vl::presentation::controls::GuiComboBoxListControl* comboView;
+		::vl::presentation::controls::GuiTextList* textList;
+		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
 		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_39;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_40;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_41;
@@ -3145,8 +3145,6 @@ namespace demo
 #endif
 	protected:
 		::demo::TreeViewTabPage* self;
-		::vl::presentation::controls::GuiTreeView* treeView;
-		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
@@ -3186,6 +3184,8 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_36;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_37;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_38;
+		::vl::presentation::controls::GuiTreeView* treeView;
+		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_39;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_40;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_41;
@@ -5163,7 +5163,7 @@ Closures
 
 		__vwsnf58_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf59_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_
@@ -5172,7 +5172,7 @@ Closures
 
 		__vwsnf59_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize_(::demo::RepeatTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::WString operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::presentation::templates::GuiListItemTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
 
 	struct __vwsnf5_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_
@@ -7408,14 +7408,12 @@ Closures
 
 		__vwsnc65_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7428,12 +7426,14 @@ Closures
 
 		__vwsnc66_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7446,14 +7446,12 @@ Closures
 
 		__vwsnc67_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7466,12 +7464,14 @@ Closures
 
 		__vwsnc68_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7484,14 +7484,12 @@ Closures
 
 		__vwsnc69_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
-		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_0();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7522,24 +7520,6 @@ Closures
 
 		__vwsnc70_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
-		bool __vwsn_bind_opened_ = false;
-		bool __vwsn_bind_closed_ = false;
-		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0();
-		bool Open() override;
-		bool Update() override;
-		bool Close() override;
-	};
-
-	class __vwsnc71_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
-	{
-	public:
-		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
-
-		__vwsnc71_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
-
 		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
@@ -7553,12 +7533,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc72_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc71_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
 		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
 
-		__vwsnc72_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
+		__vwsnc71_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
 		::demo::DocumentEditorBase* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
@@ -7566,6 +7546,26 @@ Closures
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
 		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc72_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::demo::DocumentEditorBaseConstructor* __vwsnthis_0;
+
+		__vwsnc72_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
+		void __vwsn_bind_callback_0_1(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7647,12 +7647,9 @@ Closures
 
 		__vwsnc77_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7665,9 +7662,12 @@ Closures
 
 		__vwsnc78_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7680,12 +7680,9 @@ Closures
 
 		__vwsnc79_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7716,9 +7713,12 @@ Closures
 
 		__vwsnc80_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7731,12 +7731,9 @@ Closures
 
 		__vwsnc81_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
-		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
-		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
-		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;
@@ -7749,9 +7746,12 @@ Closures
 
 		__vwsnc82_Demo_demo_DocumentEditorBaseConstructor___vwsn_demo_DocumentEditorBase_Initialize__vl_reflection_description_IValueSubscription(::demo::DocumentEditorBaseConstructor* __vwsnctorthis_0);
 
+		::vl::presentation::controls::GuiDocumentViewer* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1);
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

@@ -81,19 +81,19 @@ GuiToolstripInstanceLoaderBase
 				{
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(GlobalStringKey::Empty);
-					TBaseType::GetPropertyNames(typeInfo, propertyNames);
+					TBaseType::GetPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == GlobalStringKey::Empty)
 					{
 						return GuiInstancePropertyInfo::CollectionWithParent(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
 					}
-					return TBaseType::GetPropertyType(propertyInfo);
+					return TBaseType::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfStatement> AssignParameters(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
@@ -208,19 +208,19 @@ GuiToolstripButtonInstanceLoader
 					_SubMenu = GlobalStringKey::Get(L"SubMenu");
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					propertyNames.Add(_SubMenu);
-					BASE_TYPE::GetPropertyNames(typeInfo, propertyNames);
+					BASE_TYPE::GetPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _SubMenu)
 					{
 						return GuiInstancePropertyInfo::Set(TypeInfoRetriver<GuiToolstripMenu*>::CreateTypeInfo());
 					}
-					return BASE_TYPE::GetPropertyType(propertyInfo);
+					return BASE_TYPE::GetPropertyType(precompileContext, propertyInfo);
 				}
 
 				Ptr<workflow::WfExpression> GetParameter(GuiResourcePrecompileContext& precompileContext, types::ResolvingResult& resolvingResult, const PropertyInfo& propertyInfo, GlobalStringKey variableName, GuiResourceTextPos attPosition, GuiResourceError::List& errors)override
@@ -295,7 +295,7 @@ GuiRibbonButtonsInstanceLoader
 					_MinSize = GlobalStringKey::Get(L"MinSize");
 				}
 
-				void GetRequiredPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
 					if (CanCreate(typeInfo))
 					{
@@ -304,12 +304,12 @@ GuiRibbonButtonsInstanceLoader
 					}
 				}
 
-				void GetPropertyNames(const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
 				{
-					GetRequiredPropertyNames(typeInfo, propertyNames);
+					GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
 				}
 
-				Ptr<GuiInstancePropertyInfo> GetPropertyType(const PropertyInfo& propertyInfo)override
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 				{
 					if (propertyInfo.propertyName == _MaxSize || propertyInfo.propertyName == _MinSize)
 					{
@@ -317,7 +317,7 @@ GuiRibbonButtonsInstanceLoader
 						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
 						return info;
 					}
-					return IGuiInstanceLoader::GetPropertyType(propertyInfo);
+					return IGuiInstanceLoader::GetPropertyType(precompileContext, propertyInfo);
 				}
 			};
 #undef BASE_TYPE

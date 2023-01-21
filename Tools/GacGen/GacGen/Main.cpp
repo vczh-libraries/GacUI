@@ -3,9 +3,8 @@
 using namespace vl::filesystem;
 using namespace vl::presentation::controls;
 
+GuiResourceCpuArchitecture targetCpuArchitecture = GuiResourceCpuArchitecture::Unspecified;
 Array<WString>* arguments = 0;
-
-extern int SetupGacGenNativeController();
 WString executablePath;
 
 #if defined VCZH_MSVC
@@ -291,11 +290,18 @@ bool LoadDependencies(Ptr<CodegenConfig> config, Dictionary<WString, FilePath>& 
 void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> mappingPath)
 {
 	PrintSuccessMessage(L"gacgen> Clearning logs ... : " + inputPath.GetFullPath());
-#if defined VCZH_64
-	WString logFolderPostfix = L".log/x64";
-#else
-	WString logFolderPostfix = L".log/x32";
-#endif
+
+	WString logFolderPostfix;
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86:
+		logFolderPostfix = L".log/x32";
+		break;
+	case GuiResourceCpuArchitecture::x64:
+		logFolderPostfix = L".log/x64";
+		break;
+	default:;
+	}
 
 	FilePath logFolderPath = inputPath.GetFullPath() + logFolderPostfix;
 	FilePath scriptFilePath = logFolderPath / L"Workflow.txt";
@@ -419,21 +425,24 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 		}
 
 		cppOutput = config->cppOutput;
-#ifdef VCZH_64
-		resOutput = config->resOutputx64;
-#else
-		resOutput = config->resOutputx32;
-#endif
+		switch (targetCpuArchitecture)
+		{
+		case GuiResourceCpuArchitecture::x86:
+			resOutput = config->resOutputx32;
+			break;
+		case GuiResourceCpuArchitecture::x64:
+			resOutput = config->resOutputx64;
+			break;
+		default:;
+		}
+
 		if (cppOutput)
 		{
 			if (config->cppOutput->resource != L"") cppResourcePaths.Add(workingDir / config->cppOutput->resource);
 			if (config->cppOutput->compressed != L"") resAssemblyPaths.Add(workingDir / config->cppOutput->compressed);
 		}
-#ifdef VCZH_64
+
 		if (resOutput)
-#else
-		if (resOutput)
-#endif
 		{
 			if (resOutput->resource != L"") resResourcePaths.Add(workingDir / resOutput->resource);
 			if (resOutput->compressed != L"") resCompressedPaths.Add(workingDir / resOutput->compressed);
@@ -445,7 +454,7 @@ void CompileResource(bool partialMode, FilePath inputPath, Nullable<FilePath> ma
 	List<GuiResourceError> errors;
 	Callback callback;
 
-	auto precompiledFolder = PrecompileResource(resource, &callback, errors);
+	auto precompiledFolder = PrecompileResource(resource, targetCpuArchitecture, &callback, errors);
 	if (errors.Count() > 0)
 	{
 		SaveErrors(errorFilePath, errors);
@@ -661,12 +670,18 @@ public:
 
 	void Load()override
 	{
+		const wchar_t* BINARY_NAME = nullptr;
+		switch (targetCpuArchitecture)
+		{
+		case GuiResourceCpuArchitecture::x86:
+			BINARY_NAME = L"Reflection64.bin";
+			break;
+		case GuiResourceCpuArchitecture::x64:
+			BINARY_NAME = L"Reflection32.bin";
+			break;
+		default:;
+		}
 
-#ifdef VCZH_64
-#define BINARY_NAME L"Reflection64.bin"
-#else
-#define BINARY_NAME L"Reflection32.bin"
-#endif
 		FilePath exeFolder = FilePath(executablePath).GetFolder();
 		FilePath metadataFolder = exeFolder;
 		{
@@ -711,8 +726,11 @@ void GuiMain()
 
 	if (arguments->Count() > 0)
 	{
-		if (arguments->Get(0) == L"/P")
+		if (arguments->Get(0) == L"/P32" || arguments->Get(0) == L"/P64")
 		{
+			if (arguments->Get(0) == L"/P32") targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+			if (arguments->Get(0) == L"/P64") targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+
 			switch (arguments->Count())
 			{
 			case 2:
@@ -723,8 +741,11 @@ void GuiMain()
 				return;
 			}
 		}
-		else if (arguments->Get(0) == L"/D")
+		else if (arguments->Get(0) == L"/D32" || arguments->Get(0) == L"/D64")
 		{
+			if (arguments->Get(0) == L"/P32") targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+			if (arguments->Get(0) == L"/P64") targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+
 			switch (arguments->Count())
 			{
 			case 3:
@@ -732,19 +753,11 @@ void GuiMain()
 				return;
 			}
 		}
-		else
-		{
-			switch (arguments->Count())
-			{
-			case 1:
-				CompileResource(false, arguments->Get(0), {});
-				return;
-			}
-		}
 	}
 
 	PrintErrorMessage(L"Usage");
-	PrintErrorMessage(L"    GacGen.exe <input-xml>");
-	PrintErrorMessage(L"    GacGen.exe /P <input-xml> [<mapping-file>]");
-	PrintErrorMessage(L"    GacGen.exe /D <input-xml> <output-xml>");
+	PrintErrorMessage(L"    GacGen.exe /P32 <input-xml> [<mapping-file>]");
+	PrintErrorMessage(L"    GacGen.exe /P64 <input-xml> [<mapping-file>]");
+	PrintErrorMessage(L"    GacGen.exe /D32 <input-xml> <output-xml>");
+	PrintErrorMessage(L"    GacGen.exe /D64 <input-xml> <output-xml>");
 }

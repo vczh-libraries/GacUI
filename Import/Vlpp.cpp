@@ -129,72 +129,61 @@ namespace vl
 {
 	using namespace collections;
 
-	class GlobalStorageManager
-	{
-	public:
-		Ptr<Dictionary<WString, GlobalStorage*>> storages;
+/***********************************************************************
+Helper Functions
+***********************************************************************/
 
-		GlobalStorageManager()
+	GlobalStorageDescriptor* firstGlobalStorageDescriptor = nullptr;
+	GlobalStorageDescriptor** lastGlobalStorageDescriptor = &firstGlobalStorageDescriptor;
+
+	void RegisterStorageDescriptor(GlobalStorageDescriptor* globalStorageDescriptor)
+	{
+		*lastGlobalStorageDescriptor = globalStorageDescriptor;
+		lastGlobalStorageDescriptor = &globalStorageDescriptor->next;
+	}
+
+	void FinalizeGlobalStorage()
+	{
+		auto current = firstGlobalStorageDescriptor;
+		while (current)
 		{
+			current->globalStorage->EnsureFinalized();
+			current = current->next;
 		}
-	};
-
-	GlobalStorageManager& GetGlobalStorageManager()
-	{
-		static GlobalStorageManager globalStorageManager;
-		return globalStorageManager;
 	}
 
 /***********************************************************************
 GlobalStorage
 ***********************************************************************/
 
-	GlobalStorage::GlobalStorage(const wchar_t* key)
+	GlobalStorage::GlobalStorage()
 	{
-		InitializeGlobalStorage();
-		GetGlobalStorageManager().storages->Add(key, this);
 	}
 
 	GlobalStorage::~GlobalStorage()
 	{
 	}
 
-	bool GlobalStorage::Cleared()
+	bool GlobalStorage::IsInitialized()
 	{
-		return cleared;
+		return initialized;
 	}
 
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-	GlobalStorage* GetGlobalStorage(const wchar_t* key)
+	void GlobalStorage::EnsureInitialized()
 	{
-		return GetGlobalStorage(WString::Unmanaged(key));
-	}
-
-	GlobalStorage* GetGlobalStorage(const WString& key)
-	{
-		return GetGlobalStorageManager().storages->Get(key);
-	}
-
-	void InitializeGlobalStorage()
-	{
-		if (!GetGlobalStorageManager().storages)
+		if (!initialized)
 		{
-			GetGlobalStorageManager().storages = Ptr(new Dictionary<WString, GlobalStorage*>);
+			initialized = true;
+			InitializeResource();
 		}
 	}
 
-	void FinalizeGlobalStorage()
+	void GlobalStorage::EnsureFinalized()
 	{
-		if (GetGlobalStorageManager().storages)
+		if (initialized)
 		{
-			for (vint i = 0; i < GetGlobalStorageManager().storages->Count(); i++)
-			{
-				GetGlobalStorageManager().storages->Values().Get(i)->ClearResource();
-			}
-			GetGlobalStorageManager().storages = nullptr;
+			initialized = false;
+			FinalizeResource();
 		}
 	}
 }

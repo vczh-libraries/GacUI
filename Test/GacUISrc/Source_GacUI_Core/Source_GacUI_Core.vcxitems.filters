@@ -25,6 +25,9 @@
     <Filter Include="NativeWindow\SharedServices">
       <UniqueIdentifier>{348dd77c-95b5-4635-a9e4-9f18d110911e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PlatformProviders\GacGen">
+      <UniqueIdentifier>{0de502fc-a6e3-4061-a107-80814e08eaca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Resources\GuiDocument.cpp">
@@ -137,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\SharedServices\GuiSharedAsyncService.cpp">
       <Filter>NativeWindow\SharedServices</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\GacGen\GacGenController.cpp">
+      <Filter>PlatformProviders\GacGen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
