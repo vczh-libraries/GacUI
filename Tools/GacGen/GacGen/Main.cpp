@@ -753,11 +753,28 @@ void GuiMain()
 				return;
 			}
 		}
+		else if (arguments->Get(0) == L"/C32" || arguments->Get(0) == L"/C64")
+		{
+			if (arguments->Get(0) == L"/C32") targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+			if (arguments->Get(0) == L"/C64") targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+
+			switch (arguments->Count())
+			{
+			case 1:
+				CompileResource(false, arguments->Get(1), {});
+				return;
+			}
+		}
 	}
 
 	PrintErrorMessage(L"Usage");
+	PrintErrorMessage(L"  Compile for x86 or x64 for GacBuild.ps1:");
 	PrintErrorMessage(L"    GacGen.exe /P32 <input-xml> [<mapping-file>]");
 	PrintErrorMessage(L"    GacGen.exe /P64 <input-xml> [<mapping-file>]");
+	PrintErrorMessage(L"  Dump for x86 or x64 for GacBuild.ps1:");
 	PrintErrorMessage(L"    GacGen.exe /D32 <input-xml> <output-xml>");
 	PrintErrorMessage(L"    GacGen.exe /D64 <input-xml> <output-xml>");
+	PrintErrorMessage(L"  Compile for x86 or x64 if you only want one architecture:");
+	PrintErrorMessage(L"    GacGen.exe /C32 <input-xml>");
+	PrintErrorMessage(L"    GacGen.exe /C64 <input-xml>");
 }
