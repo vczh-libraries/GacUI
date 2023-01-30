@@ -13,6 +13,7 @@
     - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Add default dialog service, will be use in hosted mode.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
+- Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
 - Remove exe in Release/Tools, add CodePack.exe, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
 - Rewrite GacBuild.ps1 in C++ (optional)
