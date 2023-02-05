@@ -25,7 +25,7 @@
     - In `GacUI_Utilities_Controls` and `GacUI_Utilities_Reflection`.
     - With `GuiFakeDialogService` that gives predefined windows to `GuiFakeDialogService`.
   - A way to subsitute services.
-    - Rename `SetCurrentController` to `SetNativeController`.
+    - ~~Rename `SetCurrentController` to `SetNativeController`.~~
     - `GetCurrentController` returns a `INativeController` implementation that allow subsituting services.
       - If a service is not provided, and there is also no substitution, it crashes.
       - If a service is used, substituting crashes.

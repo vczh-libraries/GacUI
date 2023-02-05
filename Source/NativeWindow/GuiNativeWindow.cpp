@@ -198,7 +198,7 @@ Native Window Provider
 			return currentController;
 		}
 
-		void SetCurrentController(INativeController* controller)
+		void SetNativeController(INativeController* controller)
 		{
 			currentController=controller;
 		}

@@ -1711,7 +1711,7 @@ Native Window Controller
 		/// Set the global native system service controller.
 		/// </summary>
 		/// <param name="controller">The global native system service controller.</param>
-		extern void							SetCurrentController(INativeController* controller);
+		extern void							SetNativeController(INativeController* controller);
 
 		/// <summary>
 		/// Get a cursor according to the hit test result.

@@ -221,8 +221,8 @@ extern void GuiApplicationMain();
 int SetupGacGenNativeController()
 {
 	GacGenNativeController controller;
-	SetCurrentController(&controller);
+	SetNativeController(&controller);
 	GuiApplicationMain();
-	SetCurrentController(nullptr);
+	SetNativeController(nullptr);
 	return 0;
 }

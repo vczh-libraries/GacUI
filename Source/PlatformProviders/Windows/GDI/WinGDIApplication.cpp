@@ -215,7 +215,7 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 	StartWindowsNativeController(hInstance);
 	auto nativeController = GetWindowsNativeController();
 	if (hosted) hostedController = new GuiHostedController(nativeController);
-	SetCurrentController(hostedController ? hostedController : nativeController);
+	SetNativeController(hostedController ? hostedController : nativeController);
 
 	{
 		// install listener
@@ -230,7 +230,7 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 	}
 
 	// destroy controller
-	SetCurrentController(nullptr);
+	SetNativeController(nullptr);
 	if (hostedController) delete hostedController;
 	StopWindowsNativeController();
 	return 0;
