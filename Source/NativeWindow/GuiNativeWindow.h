@@ -1355,6 +1355,32 @@ INativeCallbackService
 ***********************************************************************/
 
 		class INativeControllerListener;
+
+		/// <summary>
+		/// Callback invoker.
+		/// </summary>
+		class INativeCallbackInvoker : public virtual Interface
+		{
+		public:
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::GlobalTimer"/> of all installed listeners. 
+			/// </summary>
+			virtual void					InvokeGlobalTimer()=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::ClipboardUpdated"/> of all installed listeners.
+			/// </summary>
+			virtual void					InvokeClipboardUpdated()=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::NativeWindowCreated"/> of all installed listeners.
+			/// </summary>
+			/// <param name="window">The argument to the callback.</param>
+			virtual void					InvokeNativeWindowCreated(INativeWindow* window)=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::NativeWindowDestroying"/> of all installed listeners.
+			/// </summary>
+			/// <param name="window">The argument to the callback.</param>
+			virtual void					InvokeNativeWindowDestroying(INativeWindow* window)=0;
+		};
 		
 		/// <summary>
 		/// Callback service. To access this service, use [M:vl.presentation.INativeController.CallbackService].
@@ -1374,6 +1400,11 @@ INativeCallbackService
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="listener">The global message listener to uninstall.</param>
 			virtual bool					UninstallListener(INativeControllerListener* listener)=0;
+			/// <summary>
+			/// Get the invoker that invoke all listeners.
+			/// </summary>
+			/// <returns>The invoker.</returns>
+			virtual INativeCallbackInvoker*	Invoker()=0;
 		};
 
 /***********************************************************************

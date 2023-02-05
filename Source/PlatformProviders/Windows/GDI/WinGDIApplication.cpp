@@ -2,7 +2,6 @@
 #include "..\..\Hosted\GuiHostedController.h"
 #include "Renderers\GuiGraphicsWindowsGDI.h"
 #include <ShellScalingApi.h>
-#include "..\ServicesImpl\WindowsCallbackService.h"
 
 namespace vl
 {
@@ -81,8 +80,7 @@ namespace vl
 					if (needPaintAfterResize)
 					{
 						needPaintAfterResize = false;
-						auto callbackService = GetWindowsNativeController()->CallbackService();
-						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
+						GetWindowsNativeController()->CallbackService()->Invoker()->InvokeGlobalTimer();
 					}
 					IWindowsForm* form=GetWindowsForm(window);
 					WinControlDC controlDC(form->GetWindowHandle());

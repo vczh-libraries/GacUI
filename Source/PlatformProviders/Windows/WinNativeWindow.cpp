@@ -1,11 +1,11 @@
 #include "..\..\Resources\GuiResource.h"
+#include "..\..\Utilities\SharedServices\GuiSharedCallbackService.h"
 #include "..\..\Utilities\SharedServices\GuiSharedAsyncService.h"
 #include "WinNativeWindow.h"
 #include "ServicesImpl\WindowsResourceService.h"
 #include "ServicesImpl\WindowsClipboardService.h"
 #include "ServicesImpl\WindowsImageService.h"
 #include "ServicesImpl\WindowsScreenService.h"
-#include "ServicesImpl\WindowsCallbackService.h"
 #include "ServicesImpl\WindowsInputService.h"
 #include "ServicesImpl\WindowsDialogService.h"
 #include <CommCtrl.h>
@@ -1721,9 +1721,9 @@ WindowsController
 				WindowsForm*						mainWindow = nullptr;
 				HWND								mainWindowHandle = 0;
 
-				WindowsCallbackService				callbackService;
-				WindowsResourceService				resourceService;
+				SharedCallbackService				callbackService;
 				SharedAsyncService					asyncService;
+				WindowsResourceService				resourceService;
 				WindowsClipboardService				clipboardService;
 				WindowsImageService					imageService;
 				WindowsScreenService				screenService;
@@ -1854,7 +1854,7 @@ WindowsController
 					windowsForm->InvokeDestroying();
 					if (windowsForm != 0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
 					{
-						callbackService.InvokeNativeWindowDestroyed(window);
+						callbackService.InvokeNativeWindowDestroying(window);
 						windows.Remove(windowsForm->GetWindowHandle());
 						if (mainWindow == windowsForm)
 						{

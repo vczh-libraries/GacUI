@@ -407,6 +407,7 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(FileDialogAddToRecent)
 			END_ENUM_ITEM(INativeDialogService::FileDialogOptions)
 
+			// no CallbackService, WindowService, DialogService
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeController)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(GetCurrentController, NO_PARAMETER, INativeController*(*)(), vl::presentation::GetCurrentController)
 

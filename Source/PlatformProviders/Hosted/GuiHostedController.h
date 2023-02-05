@@ -13,6 +13,7 @@ Interfaces:
 
 #include "GuiHostedWindow.h"
 #include "GuiHostedGraphics.h"
+#include "../../Utilities/SharedServices/GuiSharedCallbackService.h"
 
 namespace vl
 {
@@ -29,7 +30,6 @@ GuiHostedController
 			, protected INativeWindowListener
 			, protected INativeControllerListener
 			, public INativeController
-			, protected INativeCallbackService
 			, protected INativeAsyncService
 			, protected INativeDialogService
 			, protected INativeScreenService
@@ -39,10 +39,10 @@ GuiHostedController
 			friend class GuiHostedWindow;
 			friend class elements::GuiHostedGraphicsResourceManager;
 		protected:
+			SharedCallbackService										callbackService;
 			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
 			INativeController*											nativeController = nullptr;
 			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
-			collections::List<INativeControllerListener*>				listeners;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
 
 			INativeWindow*												nativeWindow = nullptr;
@@ -175,13 +175,6 @@ GuiHostedController
 			
 			INativeScreenService*			ScreenService() override;
 			INativeWindowService*			WindowService() override;
-
-			// =============================================================
-			// INativeCallbackService
-			// =============================================================
-
-			bool							InstallListener(INativeControllerListener* listener) override;
-			bool							UninstallListener(INativeControllerListener* listener) override;
 
 			// =============================================================
 			// INativeAsyncService

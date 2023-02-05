@@ -651,10 +651,7 @@ GuiHostedController::INativeControllerListener
 
 		void GuiHostedController::GlobalTimer()
 		{
-			for (auto listener : listeners)
-			{
-				listener->GlobalTimer();
-			}
+			callbackService.InvokeGlobalTimer();
 
 			if (hostedResourceManager && nativeWindow && nativeWindow->IsVisible())
 			{
@@ -745,10 +742,7 @@ GuiHostedController::INativeControllerListener
 
 		void GuiHostedController::ClipboardUpdated()
 		{
-			for (auto listener : listeners)
-			{
-				listener->ClipboardUpdated();
-			}
+			callbackService.InvokeClipboardUpdated();
 		}
 
 		void GuiHostedController::NativeWindowDestroying(INativeWindow* window)
@@ -767,7 +761,7 @@ GuiHostedController::INativeController
 
 		INativeCallbackService* GuiHostedController::CallbackService()
 		{
-			return this;
+			return &callbackService;
 		}
 
 		INativeResourceService* GuiHostedController::ResourceService()
@@ -813,36 +807,6 @@ GuiHostedController::INativeController
 		INativeWindowService* GuiHostedController::WindowService()
 		{
 			return this;
-		}
-
-/***********************************************************************
-GuiHostedController::INativeCallbackService
-***********************************************************************/
-
-		bool GuiHostedController::InstallListener(INativeControllerListener* listener)
-		{
-			if (listeners.Contains(listener))
-			{
-				return false;
-			}
-			else
-			{
-				listeners.Add(listener);
-				return true;
-			}
-		}
-
-		bool GuiHostedController::UninstallListener(INativeControllerListener* listener)
-		{
-			if (listeners.Contains(listener))
-			{
-				listeners.Remove(listener);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
 		}
 
 /***********************************************************************
@@ -974,11 +938,7 @@ GuiHostedController::INativeWindowService
 			createdWindows.Add(hostedWindow);
 			wmManager->RegisterWindow(&hostedWindow->wmWindow);
 
-			for (auto listener : listeners)
-			{
-				listener->NativeWindowCreated(hostedWindow.Obj());
-			}
-
+			callbackService.InvokeNativeWindowCreated(hostedWindow.Obj());
 			if (mainWindow)
 			{
 				hostedWindow->BecomeNonMainWindow();
@@ -1012,11 +972,8 @@ GuiHostedController::INativeWindowService
 			{
 				listener->Destroying();
 			}
-			for (auto listener : listeners)
-			{
-				listener->NativeWindowDestroying(hostedWindow);
-			}
 
+			callbackService.InvokeNativeWindowDestroying(hostedWindow);
 			wmManager->UnregisterWindow(&hostedWindow->wmWindow);
 			createdWindows.RemoveAt(index);
 
