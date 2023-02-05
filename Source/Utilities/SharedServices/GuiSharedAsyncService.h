@@ -9,7 +9,7 @@ Interfaces:
 #ifndef VCZH_PRESENTATION_GUINATIVEWINDOW_SHAREDSERVICES_SHAREDASYNCSERVICE
 #define VCZH_PRESENTATION_GUINATIVEWINDOW_SHAREDSERVICES_SHAREDASYNCSERVICE
 
-#include "../GuiNativeWindow.h"
+#include "../../NativeWindow/GuiNativeWindow.h"
 
 namespace vl
 {

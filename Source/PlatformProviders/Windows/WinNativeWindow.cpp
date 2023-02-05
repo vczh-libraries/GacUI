@@ -1,5 +1,5 @@
 #include "..\..\Resources\GuiResource.h"
-#include "..\..\NativeWindow\SharedServices\GuiSharedAsyncService.h"
+#include "..\..\Utilities\SharedServices\GuiSharedAsyncService.h"
 #include "WinNativeWindow.h"
 #include "ServicesImpl\WindowsResourceService.h"
 #include "ServicesImpl\WindowsClipboardService.h"

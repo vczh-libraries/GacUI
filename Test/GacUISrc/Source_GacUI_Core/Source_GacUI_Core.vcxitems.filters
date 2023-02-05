@@ -22,9 +22,6 @@
     <Filter Include="PlatformProviders\Hosted">
       <UniqueIdentifier>{8194fce2-bfab-4bb1-a966-33ae0a012062}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NativeWindow\SharedServices">
-      <UniqueIdentifier>{348dd77c-95b5-4635-a9e4-9f18d110911e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PlatformProviders\GacGen">
       <UniqueIdentifier>{0de502fc-a6e3-4061-a107-80814e08eaca}</UniqueIdentifier>
     </Filter>
@@ -138,9 +135,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsElement\GuiGraphicsElementInterfaces.cpp">
       <Filter>GraphicsElement</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\SharedServices\GuiSharedAsyncService.cpp">
-      <Filter>NativeWindow\SharedServices</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\GacGen\GacGenController.cpp">
       <Filter>PlatformProviders\GacGen</Filter>
     </ClCompile>
@@ -200,9 +194,6 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\PlatformProviders\Hosted\GuiHostedWindowManager.h">
       <Filter>PlatformProviders\Hosted</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\NativeWindow\SharedServices\GuiSharedAsyncService.h">
-      <Filter>NativeWindow\SharedServices</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

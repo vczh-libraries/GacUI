@@ -12,15 +12,17 @@
     - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
     - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Add default dialog service, will be use in hosted mode.
-  - Predefined reflectable view models for dialogs, with predefined implementations.
-  - Create `GacUI_Utilities` and `GacUI_Utilities_Controls`, depending on `GacUI_Controls`, to store all services.
-    - Move `GuiSharedAsyncService` here.
+  - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
+    - ~~Move `GuiSharedAsyncService` here.~~
     - A `GuiFakeDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
     - A `GuiSharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.
       - Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.
     - A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.
     - `GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.
+  - Predefined reflectable view models for dialogs, with predefined implementations.
+    - In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.
   - Predefined windows implemented in XML.
+    - In `GacUI_Utilities_Controls` and `GacUI_Utilities_Reflection`.
     - With `GuiFakeDialogService` that gives predefined windows to `GuiFakeDialogService`.
   - A way to subsitute services.
     - Rename `SetCurrentController` to `SetNativeController`.
