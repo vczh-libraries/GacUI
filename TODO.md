@@ -35,6 +35,7 @@
   - ~~Substitutable services:~~
     - ~~Clipboard~~
     - ~~Dialog~~
+- Remove SysKey callbacks, merge into Key callbacks.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
