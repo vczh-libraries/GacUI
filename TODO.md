@@ -12,6 +12,28 @@
     - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
     - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Add default dialog service, will be use in hosted mode.
+  - Predefined reflectable view models for dialogs, with predefined implementations.
+  - A `SharedDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
+  - A `SharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.
+    - Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.
+  - A `DefaultClipboardService` that transfer objects in the current process, not talking to the OS.
+  - A `DefaulgDragAndDropService` that transfers events in the current process, not talking to the OS.
+  - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
+  - Predefined windows implemented in XML.
+    - With `SharedDialogService` that gives predefined windows to `SharedDialogService`.
+  - A way to subsitute services.
+    - Rename `SetCurrentController` to `SetNativeController`.
+    - `GetCurrentController` returns a `INativeController` implementation that allow subsituting services.
+      - If a service is not provided, and there is also no substitution, it crashes.
+      - If a service is used, substituting crashes.
+    - `GetNativeServiceSubstitution` returns an object to
+      - Config how services are substituted (force activated, or only activate when it is not provided).
+  - `GuiApplication` substitute Async, Dialog, Clipboard and DragAndDrop, activating them only when it is not provided.
+  - Substitutable services:
+    - Async
+    - Clipboard
+    - Dialog
+    - DragAndDrop
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
