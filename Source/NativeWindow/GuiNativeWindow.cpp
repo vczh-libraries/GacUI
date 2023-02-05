@@ -191,16 +191,89 @@ INativeControllerListener
 Native Window Provider
 ***********************************************************************/
 
-		INativeController* currentController=0;
+		class SubstitutableController;
+		INativeController* nativeController = nullptr;
+		SubstitutableController* substitutableController = nullptr;
+
+		class SubstitutableController
+			: public Object
+			, public INativeController
+			, public INativeServiceSubstitution
+		{
+		protected:
+		public:
+			WString GetExecutablePath() override
+			{
+				return nativeController->GetExecutablePath();
+			}
+
+			// INativeServiceSubstitution
+
+#define SUBSTITUTE_SERVICE(NAME)															\
+			void Substitute(INative##NAME##Service* service, bool optional) override		\
+			{																				\
+				CHECK_FAIL(L"Not Implemented!");											\
+			}																				\
+																							\
+			void Unsubstitute(INative##NAME##Service* service) override						\
+			{																				\
+				CHECK_FAIL(L"Not Implemented!");											\
+			}																				\
+
+			GUI_SUBSTITUTABLE_SERVICES(SUBSTITUTE_SERVICE)
+#undef SUBSTITUTE_SERVICE
+
+			// INativeController
+
+#define GET_SUBSTITUTABLE_SERVICE(NAME)\
+			INative##NAME##Service* NAME##Service() override		\
+			{														\
+				return nativeController->NAME##Service();			\
+			}														\
+
+			GUI_SUBSTITUTABLE_SERVICES(GET_SUBSTITUTABLE_SERVICE)
+#undef GET_SUBSTITUTABLE_SERVICE
+
+
+#define GET_UNSUBSTITUTABLE_SERVICE(NAME)							\
+			INative##NAME##Service* NAME##Service() override		\
+			{														\
+				return nativeController->NAME##Service();			\
+			}														\
+
+			GUI_UNSUBSTITUTABLE_SERVICES(GET_UNSUBSTITUTABLE_SERVICE)
+#undef GET_UNSUBSTITUTABLE_SERVICE
+		};
+
+		INativeServiceSubstitution* GetNativeServiceSubstitution()
+		{
+			return substitutableController;
+		}
 
 		INativeController* GetCurrentController()
 		{
-			return currentController;
+			return substitutableController;
 		}
 
 		void SetNativeController(INativeController* controller)
 		{
-			currentController=controller;
+			nativeController = controller;
+
+			if (nativeController)
+			{
+				if (!substitutableController)
+				{
+					substitutableController = new SubstitutableController();
+				}
+			}
+			else
+			{
+				if (substitutableController)
+				{
+					delete substitutableController;
+					substitutableController = 0;
+				}
+			}
 		}
 
 /***********************************************************************

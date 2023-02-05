@@ -1713,6 +1713,33 @@ Native Window Controller
 		/// <param name="controller">The global native system service controller.</param>
 		extern void							SetNativeController(INativeController* controller);
 
+#define GUI_SUBSTITUTABLE_SERVICES(F)	\
+		F(Clipboard)					\
+		F(Dialog)						\
+
+#define GUI_UNSUBSTITUTABLE_SERVICES(F)	\
+		F(Callback)						\
+		F(Resource)						\
+		F(Async)						\
+		F(Image)						\
+		F(Screen)						\
+		F(Window)						\
+		F(Input)						\
+
+		class INativeServiceSubstitution : public Interface
+		{
+		public:
+
+#define SUBSTITUTE_SERVICE(NAME)																			\
+			virtual void					Substitute(INative##NAME##Service* service, bool optional) = 0;	\
+			virtual void					Unsubstitute(INative##NAME##Service* service) = 0;				\
+
+			GUI_SUBSTITUTABLE_SERVICES(SUBSTITUTE_SERVICE)
+#undef SUBSTITUTE_SERVICE
+		};
+
+		extern INativeServiceSubstitution*	GetNativeServiceSubstitution();
+
 		/// <summary>
 		/// Get a cursor according to the hit test result.
 		/// </summary>

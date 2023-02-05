@@ -29,12 +29,12 @@
     - `GetCurrentController` returns a `INativeController` implementation that allow subsituting services.
       - If a service is not provided, and there is also no substitution, it crashes.
       - If a service is used, substituting crashes.
-    - `GetNativeServiceSubstitution` returns an object to
+    - ~~`GetNativeServiceSubstitution` returns an object to~~
       - Config how services are substituted (force activated, or only activate when it is not provided).
     - ~~Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`~~.
-  - Substitutable services:
-    - Clipboard
-    - Dialog
+  - ~~Substitutable services:~~
+    - ~~Clipboard~~
+    - ~~Dialog~~
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
