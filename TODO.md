@@ -13,14 +13,15 @@
     - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Add default dialog service, will be use in hosted mode.
   - Predefined reflectable view models for dialogs, with predefined implementations.
-  - A `SharedDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
-  - A `SharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.
-    - Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.
-  - A `DefaultClipboardService` that transfer objects in the current process, not talking to the OS.
-  - A `DefaulgDragAndDropService` that transfers events in the current process, not talking to the OS.
-  - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
+  - Create `GacUI_Utilities` and `GacUI_Utilities_Controls`, depending on `GacUI_Controls`, to store all services.
+    - Move `GuiSharedAsyncService` here.
+    - A `GuiFakeDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
+    - A `GuiSharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.
+      - Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.
+    - A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.
+    - `GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.
   - Predefined windows implemented in XML.
-    - With `SharedDialogService` that gives predefined windows to `SharedDialogService`.
+    - With `GuiFakeDialogService` that gives predefined windows to `GuiFakeDialogService`.
   - A way to subsitute services.
     - Rename `SetCurrentController` to `SetNativeController`.
     - `GetCurrentController` returns a `INativeController` implementation that allow subsituting services.
@@ -28,21 +29,23 @@
       - If a service is used, substituting crashes.
     - `GetNativeServiceSubstitution` returns an object to
       - Config how services are substituted (force activated, or only activate when it is not provided).
-  - `GuiApplication` substitute Async, Dialog, Clipboard and DragAndDrop, activating them only when it is not provided.
+    - Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`.
   - Substitutable services:
-    - Async
     - Clipboard
     - Dialog
-    - DragAndDrop
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
 - Remove exe in Release/Tools, add CodePack.exe, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
 - Rewrite GacBuild.ps1 in C++ (optional)
+- Add DarkSkin and Dialog in Reflection(32|64).bin (optional)
 
 ## OS Provider Features
 
 - Drag and Drop framework.
+  - Substitutable.
+  - `GuiFakeDragAndDropService`.
+  - Substitute DragAndDrop by default optionally.
 - Windows
   - `INativeImage::SaveToStream` handle correctly for git format. It is possible that LoadFromStream need to process diff between git raw frames.
 
