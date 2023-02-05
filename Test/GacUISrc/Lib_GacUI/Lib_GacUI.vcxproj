@@ -66,6 +66,7 @@
     <Import Project="..\Source_GacUI_Core\Source_GacUI_Core.vcxitems" Label="Shared" />
     <Import Project="..\Source_GacUI_CoreApplication\Source_GacUI_CoreApplication.vcxitems" Label="Shared" />
     <Import Project="..\Source_GacUI_Utilities\Source_GacUI_Utilities.vcxitems" Label="Shared" />
+    <Import Project="..\Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />

@@ -62,6 +62,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GacUI_Compiler_DependendTes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Source_GacUI_Utilities", "Source_GacUI_Utilities\Source_GacUI_Utilities.vcxitems", "{3E7E3E0E-E051-486B-A093-4D0443EAEBCD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Source_GacUI_Utilities_Controls", "Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems", "{39F6DD5B-DF85-49DC-82DC-D173ACD0F7BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -192,6 +194,7 @@ Global
 		{5395CEA2-F2A6-4DFA-A8C3-070E8F3B5A43} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 		{E2F1D033-808D-4D82-8FBC-EBCE0F1CC11C} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 		{3E7E3E0E-E051-486B-A093-4D0443EAEBCD} = {1A152782-BECB-4D33-AD39-F54D3B234262}
+		{39F6DD5B-DF85-49DC-82DC-D173ACD0F7BF} = {1A152782-BECB-4D33-AD39-F54D3B234262}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23701A6D-5A6A-4396-9B46-EC3D6DD7B20F}
@@ -206,8 +209,10 @@ Global
 		Source_GacUI_CoreApplication\Source_GacUI_CoreApplication.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_GacUI_Core\Source_GacUI_Core.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_GacUI_Utilities\Source_GacUI_Utilities.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{31b9787f-5739-4812-84cf-4c542bbdf7fb}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{39f6dd5b-df85-49dc-82dc-d173acd0f7bf}*SharedItemsImports = 9
 		Source_GacUI_Utilities\Source_GacUI_Utilities.vcxitems*{3e7e3e0e-e051-486b-a093-4d0443eaebcd}*SharedItemsImports = 9
 		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4
 		Source_GacUI_Compiler\Source_GacUI_Compiler.vcxitems*{41f61ea9-e8b4-47c4-9946-36dca7e8272a}*SharedItemsImports = 4
@@ -219,6 +224,7 @@ Global
 		Source_GacUI_Core\Source_GacUI_Core.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_GacUI_Utilities\Source_GacUI_Utilities.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
 		Source_Import_Reflection\Source_Import_Reflection.vcxitems*{543b32d9-e229-472a-9d11-9bf12c7982bd}*SharedItemsImports = 4
@@ -235,6 +241,7 @@ Global
 		Source_GacUI_Core\Source_GacUI_Core.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_GacUI_Reflection\Source_GacUI_Reflection.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_GacUI_Utilities\Source_GacUI_Utilities.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_Import_Reflection\Source_Import_Reflection.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4

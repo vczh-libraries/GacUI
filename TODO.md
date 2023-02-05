@@ -31,7 +31,7 @@
       - If a service is used, substituting crashes.
     - `GetNativeServiceSubstitution` returns an object to
       - Config how services are substituted (force activated, or only activate when it is not provided).
-    - Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`.
+    - ~~Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`~~.
   - Substitutable services:
     - Clipboard
     - Dialog

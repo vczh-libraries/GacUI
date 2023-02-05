@@ -18,6 +18,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.h">
       <Filter>Utilities\SharedServices</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\GuiFakeClipboardService.h">
+      <Filter>Utilities\FakeServices</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp">
@@ -25,6 +28,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\SharedServices\GuiSharedCallbackService.cpp">
       <Filter>Utilities\SharedServices</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\GuiFakeClipboardService.cpp">
+      <Filter>Utilities\FakeServices</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

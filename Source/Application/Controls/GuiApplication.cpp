@@ -6,6 +6,9 @@ namespace vl
 {
 	namespace presentation
 	{
+		extern void GuiInitializeUtilities();
+		extern void GuiFinalizeUtilities();
+
 		namespace controls
 		{
 			using namespace collections;
@@ -339,7 +342,9 @@ GuiApplicationMain
 					application = &app;
 					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
 					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
+					GuiInitializeUtilities();
 					GuiMain();
+					GuiFinalizeUtilities();
 					IAsyncScheduler::UnregisterDefaultScheduler();
 					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
 				}
