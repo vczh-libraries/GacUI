@@ -13,6 +13,17 @@
 - **Lib_**: Lib files under different configurations
   - **Use Library Dependencies Input** must be turned on for all exe projects
 
+## Source File Dependencies
+
+- **Core**: Minimum source code that opens and renders a window in the OS.
+- **CoreApplication** -> **Core**: Minimum source code that runs `GuiApplication`.
+- **GacUI** -> **CoreApplication**: All controls.
+- **Utilities** -> **CoreApplication**: Utilities.
+- **Utilities_Controls** -> **Utilities** + **GacUI**: Utilities that brings UI.
+- **Reflection** -> **Utilities_Controls**: All reflection definition.
+- **Compiler** -> **Reflection**: GacUI XML Compiler.
+- **Windows** -> **Utilities**: Windows platform provider.
+
 ## Notice
 
 - Run **Metadata_Generate** in both Win32 and X64 to generate binary files.
