@@ -267,15 +267,24 @@ Native Window Provider
 #undef GET_SUBSTITUTABLE_SERVICE
 
 
+			template<typename T, T* (INativeController::* Getter)()>
+			T* GetUnsubstitutableService()
+			{
+				auto service = (nativeController->*Getter)();
+				CHECK_ERROR(
+					service != nullptr,
+					L"Required service does not exist."
+				);
+				return service;	
+			}
+
 #define GET_UNSUBSTITUTABLE_SERVICE(NAME)													\
 			INative##NAME##Service* NAME##Service() override								\
 			{																				\
-				auto service =  nativeController->NAME##Service();							\
-				CHECK_ERROR(																\
-					service != nullptr,														\
-					L"Required service does not exist."										\
-					);																		\
-				return service;																\
+				return GetUnsubstitutableService<											\
+					INative##NAME##Service,													\
+					&INativeController::NAME##Service										\
+					>();																	\
 			}																				\
 
 			GUI_UNSUBSTITUTABLE_SERVICES(GET_UNSUBSTITUTABLE_SERVICE)
