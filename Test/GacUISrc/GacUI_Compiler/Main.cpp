@@ -9,6 +9,15 @@ using namespace vl::stream;
 using namespace vl::filesystem;
 using namespace vl::reflection::description;
 
+namespace vl
+{
+	namespace presentation
+	{
+		void GuiInitializeUtilities() {}
+		void GuiFinalizeUtilities() {}
+	}
+}
+
 extern void UnitTestInGuiMain();
 
 GuiResourceCpuArchitecture targetCpuArchitecture = GuiResourceCpuArchitecture::Unspecified;

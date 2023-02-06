@@ -15,6 +15,15 @@ using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::workflow::analyzer;
 
+namespace vl
+{
+	namespace presentation
+	{
+		void GuiInitializeUtilities() {}
+		void GuiFinalizeUtilities() {}
+	}
+}
+
 #if defined VCZH_MSVC
 WString GetExePath()
 {

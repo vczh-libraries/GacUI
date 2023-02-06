@@ -11,6 +11,15 @@ using namespace vl::reflection::description;
 
 namespace vl
 {
+	namespace presentation
+	{
+		void GuiInitializeUtilities() {}
+		void GuiFinalizeUtilities() {}
+	}
+}
+
+namespace vl
+{
 	namespace reflection
 	{
 		namespace description

@@ -5,6 +5,15 @@
 
 using namespace vl;
 
+namespace vl
+{
+	namespace presentation
+	{
+		void GuiInitializeUtilities() {}
+		void GuiFinalizeUtilities() {}
+	}
+}
+
 #if defined VCZH_MSVC
 using namespace vl::filesystem;
 #endif
