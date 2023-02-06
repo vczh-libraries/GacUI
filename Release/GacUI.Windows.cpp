@@ -316,11 +316,11 @@ WindowsForm
 					}
 					else
 					{
-						info.ctrl=((VKEY)wParam & VKEY::KEY_CONTROL)!=(VKEY)0;
-						info.shift=((VKEY)wParam & VKEY::KEY_SHIFT)!= (VKEY)0;
-						info.left=((VKEY)wParam & VKEY::KEY_LBUTTON)!= (VKEY)0;
-						info.middle=((VKEY)wParam & VKEY::KEY_MBUTTON)!= (VKEY)0;
-						info.right=((VKEY)wParam & VKEY::KEY_RBUTTON)!= (VKEY)0;
+						info.ctrl=(wParam & MK_CONTROL)!=0;
+						info.shift=(wParam & MK_SHIFT)!= 0;
+						info.left=(wParam & MK_LBUTTON)!= 0;
+						info.middle=(wParam & MK_MBUTTON)!= 0;
+						info.right=(wParam & MK_RBUTTON)!= 0;
 
 						POINTS point = MAKEPOINTS(lParam);
 
