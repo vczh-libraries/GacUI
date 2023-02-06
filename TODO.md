@@ -18,7 +18,7 @@
     - ~~A `GuiSharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.~~
       - ~~Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.~~
     - ~~A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.~~
-    - `GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.
+    - ~~`GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.~~
   - Predefined reflectable view models for dialogs, with predefined implementations.
     - In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.
   - Predefined windows implemented in XML.
@@ -26,11 +26,11 @@
     - With `GuiFakeDialogService` that gives predefined windows to `GuiFakeDialogService`.
   - A way to subsitute services.
     - ~~Rename `SetCurrentController` to `SetNativeController`.~~
-    - `GetCurrentController` returns a `INativeController` implementation that allow subsituting services.
-      - If a service is not provided, and there is also no substitution, it crashes.
-      - If a service is used, substituting crashes.
+    - ~~`GetCurrentController` returns a `INativeController` implementation that allow subsituting services.~~
+      - ~~If a service is not provided, and there is also no substitution, it crashes.~~
+      - ~~If a service is used, substituting crashes.~~
     - ~~`GetNativeServiceSubstitution` returns an object to~~
-      - Config how services are substituted (force activated, or only activate when it is not provided).
+      - ~~Config how services are substituted (force activated, or only activate when it is not provided).~~
     - ~~Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`~~.
   - ~~Substitutable services:~~
     - ~~Clipboard~~

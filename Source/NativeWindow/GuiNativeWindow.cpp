@@ -200,7 +200,6 @@ Native Window Provider
 			, public INativeController
 			, public INativeServiceSubstitution
 		{
-		protected:
 		public:
 			WString GetExecutablePath() override
 			{
@@ -210,14 +209,31 @@ Native Window Provider
 			// INativeServiceSubstitution
 
 #define SUBSTITUTE_SERVICE(NAME)															\
+			INative##NAME##Service*	substituted##NAME##Service = nullptr;					\
+			bool					is##NAME##ServiceOptional = false;						\
+			bool					is##NAME##ServiceRequested = false;						\
+			bool					is##NAME##ServiceUnsubstituted = false;					\
+																							\
 			void Substitute(INative##NAME##Service* service, bool optional) override		\
 			{																				\
-				CHECK_FAIL(L"Not Implemented!");											\
+				CHECK_ERROR(																\
+					!is##NAME##ServiceRequested,											\
+					L"The service cannot be substituted because it has been used."			\
+					);																		\
+				substituted##NAME##Service = service;										\
+				is##NAME##ServiceOptional = optional;										\
 			}																				\
 																							\
 			void Unsubstitute(INative##NAME##Service* service) override						\
 			{																				\
-				CHECK_FAIL(L"Not Implemented!");											\
+				if (service == substituted##NAME##Service)									\
+				{																			\
+					if (is##NAME##ServiceRequested)											\
+					{																		\
+						is##NAME##ServiceUnsubstituted = true;								\
+					}																		\
+					substituted##NAME##Service = nullptr;									\
+				}																			\
 			}																				\
 
 			GUI_SUBSTITUTABLE_SERVICES(SUBSTITUTE_SERVICE)
@@ -226,20 +242,41 @@ Native Window Provider
 			// INativeController
 
 #define GET_SUBSTITUTABLE_SERVICE(NAME)\
-			INative##NAME##Service* NAME##Service() override		\
-			{														\
-				return nativeController->NAME##Service();			\
-			}														\
+			INative##NAME##Service* NAME##Service() override								\
+			{																				\
+				CHECK_ERROR(																\
+					!is##NAME##ServiceUnsubstituted,										\
+					L"The service cannot be used because it has been unsubstituted."		\
+					);																		\
+				is##NAME##ServiceRequested = true;											\
+				auto service = nativeController->NAME##Service();							\
+				auto substituted = substituted##NAME##Service;								\
+				bool optional = is##NAME##ServiceOptional;									\
+				if (substituted && (!service || !optional))									\
+				{																			\
+					return substituted;														\
+				}																			\
+				CHECK_ERROR(																\
+					service != nullptr,														\
+					L"Required service does not exist."										\
+					);																		\
+				return service;																\
+			}																				\
 
 			GUI_SUBSTITUTABLE_SERVICES(GET_SUBSTITUTABLE_SERVICE)
 #undef GET_SUBSTITUTABLE_SERVICE
 
 
-#define GET_UNSUBSTITUTABLE_SERVICE(NAME)							\
-			INative##NAME##Service* NAME##Service() override		\
-			{														\
-				return nativeController->NAME##Service();			\
-			}														\
+#define GET_UNSUBSTITUTABLE_SERVICE(NAME)													\
+			INative##NAME##Service* NAME##Service() override								\
+			{																				\
+				auto service =  nativeController->NAME##Service();							\
+				CHECK_ERROR(																\
+					service != nullptr,														\
+					L"Required service does not exist."										\
+					);																		\
+				return service;																\
+			}																				\
 
 			GUI_UNSUBSTITUTABLE_SERVICES(GET_UNSUBSTITUTABLE_SERVICE)
 #undef GET_UNSUBSTITUTABLE_SERVICE
