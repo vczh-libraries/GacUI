@@ -17,7 +17,7 @@
     - A `GuiFakeDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
     - ~~A `GuiSharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.~~
       - ~~Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.~~
-    - A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.
+    - ~~A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.~~
     - `GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.
   - Predefined reflectable view models for dialogs, with predefined implementations.
     - In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.

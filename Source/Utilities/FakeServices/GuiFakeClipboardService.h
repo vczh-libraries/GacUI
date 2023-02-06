@@ -15,13 +15,20 @@ namespace vl
 {
 	namespace presentation
 	{
+		class FakeClipboardReader;
+		class FakeClipboardWriter;
+
 		class FakeClipboardService
 			: public Object
 			, public INativeClipboardService
 		{
+			friend class FakeClipboardReader;
+			friend class FakeClipboardWriter;
+		protected:
+			Ptr<INativeClipboardReader>		reader;
+
 		public:
 			FakeClipboardService();
-
 
 			Ptr<INativeClipboardReader>		ReadClipboard() override;
 			Ptr<INativeClipboardWriter>		WriteClipboard() override;
