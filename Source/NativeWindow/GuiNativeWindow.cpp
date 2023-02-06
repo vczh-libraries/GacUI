@@ -206,77 +206,98 @@ Native Window Provider
 				return nativeController->GetExecutablePath();
 			}
 
-			// INativeServiceSubstitution
+			// Substitutable Service
 
-#define SUBSTITUTE_SERVICE(NAME)															\
-			INative##NAME##Service*	substituted##NAME##Service = nullptr;					\
-			bool					is##NAME##ServiceOptional = false;						\
-			bool					is##NAME##ServiceRequested = false;						\
-			bool					is##NAME##ServiceUnsubstituted = false;					\
-																							\
-			void Substitute(INative##NAME##Service* service, bool optional) override		\
-			{																				\
-				CHECK_ERROR(																\
-					!is##NAME##ServiceRequested,											\
-					L"The service cannot be substituted because it has been used."			\
-					);																		\
-				substituted##NAME##Service = service;										\
-				is##NAME##ServiceOptional = optional;										\
-			}																				\
-																							\
-			void Unsubstitute(INative##NAME##Service* service) override						\
-			{																				\
-				if (service == substituted##NAME##Service)									\
-				{																			\
-					if (is##NAME##ServiceRequested)											\
-					{																		\
-						is##NAME##ServiceUnsubstituted = true;								\
-					}																		\
-					substituted##NAME##Service = nullptr;									\
-				}																			\
-			}																				\
+			template<typename T, T* (INativeController::* Getter)()>
+			struct Substitution
+			{
+				T*					service = nullptr;
+				bool				optional = false;
+				bool				requested = false;
+				bool				unsubstituted = false;
 
-			GUI_SUBSTITUTABLE_SERVICES(SUBSTITUTE_SERVICE)
-#undef SUBSTITUTE_SERVICE
+				void Substitute(T* _service, bool _optional)
+				{
+					CHECK_ERROR(
+						!requested,
+						L"The service cannot be substituted because it has been used."
+						);
+					service = _service;
+					optional = _optional;
+				}
 
-			// INativeController
+				void Unsubstitute(T* _service)
+				{
+					if (service == _service)
+					{
+						if (requested)
+						{
+							unsubstituted = true;
+						}
+						service = nullptr;
+					}
+				}
 
-#define GET_SUBSTITUTABLE_SERVICE(NAME)\
-			INative##NAME##Service* NAME##Service() override								\
-			{																				\
-				CHECK_ERROR(																\
-					!is##NAME##ServiceUnsubstituted,										\
-					L"The service cannot be used because it has been unsubstituted."		\
-					);																		\
-				is##NAME##ServiceRequested = true;											\
-				auto service = nativeController->NAME##Service();							\
-				auto substituted = substituted##NAME##Service;								\
-				bool optional = is##NAME##ServiceOptional;									\
-				if (substituted && (!service || !optional))									\
-				{																			\
-					return substituted;														\
-				}																			\
-				CHECK_ERROR(																\
-					service != nullptr,														\
-					L"Required service does not exist."										\
-					);																		\
-				return service;																\
-			}																				\
+				T* GetService()
+				{
+					CHECK_ERROR(
+						!unsubstituted,
+						L"The service cannot be used because it has been unsubstituted."
+						);
+					requested = true;
 
-			GUI_SUBSTITUTABLE_SERVICES(GET_SUBSTITUTABLE_SERVICE)
-#undef GET_SUBSTITUTABLE_SERVICE
+					auto nativeService = (nativeController->*Getter)();
+					if (service && (!nativeService || !optional))
+					{
+						return service;
+					}
 
+					CHECK_ERROR(
+						nativeService != nullptr,
+						L"Required service does not exist."
+						);
+					return nativeService;
+				}
+			};
+
+			// Unsubstitutable Service
 
 			template<typename T, T* (INativeController::* Getter)()>
 			T* GetUnsubstitutableService()
 			{
-				auto service = (nativeController->*Getter)();
+				auto nativeService = (nativeController->*Getter)();
 				CHECK_ERROR(
-					service != nullptr,
+					nativeService != nullptr,
 					L"Required service does not exist."
 				);
-				return service;	
+				return nativeService;
 			}
+
+			// INativeServiceSubstitution and INativeController
+
+#define GET_SUBSTITUTABLE_SERVICE(NAME)														\
+			Substitution<																	\
+				INative##NAME##Service,														\
+				&INativeController::NAME##Service											\
+				> substituted##NAME;														\
+																							\
+			void Substitute(INative##NAME##Service* service, bool optional) override		\
+			{																				\
+				substituted##NAME.Substitute(service, optional);							\
+			}																				\
+																							\
+			void Unsubstitute(INative##NAME##Service* service) override						\
+			{																				\
+				substituted##NAME.Unsubstitute(service);									\
+			}																				\
+																							\
+			INative##NAME##Service* NAME##Service() override								\
+			{																				\
+				return substituted##NAME.GetService();										\
+			}																				\
+
+			GUI_SUBSTITUTABLE_SERVICES(GET_SUBSTITUTABLE_SERVICE)
+#undef GET_SUBSTITUTABLE_SERVICE
 
 #define GET_UNSUBSTITUTABLE_SERVICE(NAME)													\
 			INative##NAME##Service* NAME##Service() override								\
