@@ -96,6 +96,10 @@ FakeClipboardService
 		{
 		}
 
+		FakeClipboardService::~FakeClipboardService()
+		{
+		}
+
 		Ptr<INativeClipboardReader> FakeClipboardService::ReadClipboard()
 		{
 			return reader;

@@ -6,8 +6,8 @@ GacUI::Native Window::Default Service Implementation
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICEBASE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICEBASE
 
 #include "../../NativeWindow/GuiNativeWindow.h"
 
@@ -21,6 +21,7 @@ namespace vl
 		{
 		public:
 			FakeDialogServiceBase();
+			~FakeDialogServiceBase();
 
 			MessageBoxButtonsOutput	ShowMessageBox(
 										INativeWindow* window,

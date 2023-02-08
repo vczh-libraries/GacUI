@@ -25,6 +25,7 @@ namespace vl
 
 		public:
 			SharedCallbackService();
+			~SharedCallbackService();
 
 			bool											InstallListener(INativeControllerListener* listener) override;
 			bool											UninstallListener(INativeControllerListener* listener) override;

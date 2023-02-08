@@ -13,6 +13,10 @@ FakeDialogServiceBase
 		{
 		}
 
+		FakeDialogServiceBase::~FakeDialogServiceBase()
+		{
+		}
+
 		FakeDialogServiceBase::MessageBoxButtonsOutput	FakeDialogServiceBase::ShowMessageBox(
 			INativeWindow* window,
 			const WString& text,

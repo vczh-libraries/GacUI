@@ -13,6 +13,10 @@ SharedCallbackService
 		{
 		}
 
+		SharedCallbackService::~SharedCallbackService()
+		{
+		}
+
 		bool SharedCallbackService::InstallListener(INativeControllerListener* listener)
 		{
 			if(listeners.Contains(listener))

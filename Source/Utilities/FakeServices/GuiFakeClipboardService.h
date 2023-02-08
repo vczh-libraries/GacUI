@@ -6,8 +6,8 @@ GacUI::Native Window::Default Service Implementation
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKECLIPBOARDSERVICE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKECLIPBOARDSERVICE
 
 #include "../../NativeWindow/GuiNativeWindow.h"
 
@@ -29,6 +29,7 @@ namespace vl
 
 		public:
 			FakeClipboardService();
+			~FakeClipboardService();
 
 			Ptr<INativeClipboardReader>		ReadClipboard() override;
 			Ptr<INativeClipboardWriter>		WriteClipboard() override;

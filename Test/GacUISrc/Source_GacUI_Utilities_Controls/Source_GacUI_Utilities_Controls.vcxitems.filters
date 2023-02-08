@@ -24,6 +24,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.cpp">
       <Filter>Utilities\FakeServices\Dialogs\Source</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.cpp">
+      <Filter>Utilities\FakeServices\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.h">
@@ -31,6 +34,9 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIIncludes.h">
       <Filter>Utilities\FakeServices\Dialogs\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.h">
+      <Filter>Utilities\FakeServices\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
