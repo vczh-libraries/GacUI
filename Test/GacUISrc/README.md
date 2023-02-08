@@ -2,7 +2,7 @@
 
 - **Metadata_Generate**: Run both Win32 and X64 to generate metaonly reflection binary files.
 - **Metadata_Test**: Test the generated binary files, both Win32 and X64 at the same time.
-- **GacUI_Compiler**: Compile `DarkSkin` and `FullControlTest`, both Win32 and X64 at the same time.
+- **GacUI_Compiler**: Compile `FakeDialogServiceUI` (with merging), `DarkSkin` and `FullControlTest`, both Win32 and X64 at the same time.
   - **GacUI_Host**: Load the compiled binary file and run.
   - **CppTest**: Compile and run generated C++ files in **hosted mode** with `VCZH_DEBUG_NO_REFLECTION`.
   - **CppTest_Metaonly**: Compile and run generated C++ files with `VCZH_DEBUG_METAONLY_REFLECTION`.
@@ -21,6 +21,7 @@
 - **Utilities** -> **CoreApplication**: Utilities.
 - **Utilities_Controls** -> **Utilities** + **GacUI**: Utilities that brings UI.
 - **Reflection** -> **Utilities_Controls**: All reflection definition.
+- **Utilities_Reflection** -> **Utilities_Controls** + **Reflection**: Utilities UI reflection definition.
 - **Compiler** -> **Reflection**: GacUI XML Compiler.
 - **Windows** -> **Utilities**: Windows platform provider.
 
