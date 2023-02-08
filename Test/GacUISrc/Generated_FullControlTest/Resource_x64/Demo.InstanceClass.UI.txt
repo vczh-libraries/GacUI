@@ -2228,12 +2228,12 @@ namespace demo
         func <demo-MainWindow>Initialize(<this> : ::demo::MainWindow*) : (::system::Void)
         {
             (self = <this>);
-            {
-                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
-            }
             (<precompile>40 = self.BoundsComposition);
             {
                 (<precompile>40.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
+            }
+            {
+                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
                 (self.Text = "Complete Control Showcase");
@@ -11263,9 +11263,6 @@ namespace demo
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 320; y : 80;} of (::presentation::Size));
-            }
-            {
                 (self.SizeBox = false);
             }
             {
@@ -11277,6 +11274,9 @@ namespace demo
             (<precompile>13 = self.BoundsComposition);
             {
                 (<precompile>13.PreferredMinSize = {x : 320; y : 80;} of (::presentation::Size));
+            }
+            {
+                (self.ClientSize = {x : 320; y : 80;} of (::presentation::Size));
             }
             {
                 (self.Text = "Hyperlink");

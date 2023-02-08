@@ -2,8 +2,8 @@
   <Folder name="GacGenConfig">
     <Folder name="Cpp">
       <Text name="SourceFolder">Source</Text>
-      <Text name="NormalInclude">../../../GacUI.h</Text>
-      <Text name="ReflectionInclude">../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h</Text>
+      <Text name="NormalInclude">../../../../GacUI.h</Text>
+      <Text name="ReflectionInclude">../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h</Text>
       <Text name="Name">GuiFakeDialogServiceUI</Text>
       <Text name="CppCompressed">GuiFakeDialogServiceUI.cpp</Text>
     </Folder>

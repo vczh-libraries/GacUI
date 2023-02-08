@@ -548,10 +548,10 @@ namespace darkskin
     class ButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ButtonTemplate* = null of (::darkskin::ButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ButtonTemplate* = null of (::darkskin::ButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -1213,10 +1213,10 @@ namespace darkskin
     class CheckBoxTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::CheckBoxTemplate* = null of (::darkskin::CheckBoxTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::CheckBoxTemplate* = null of (::darkskin::CheckBoxTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -2172,10 +2172,10 @@ namespace darkskin
     class RadioButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::RadioButtonTemplate* = null of (::darkskin::RadioButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RadioButtonTemplate* = null of (::darkskin::RadioButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -3169,10 +3169,10 @@ namespace darkskin
     class DocumentTextBoxTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::DocumentTextBoxTemplate* = null of (::darkskin::DocumentTextBoxTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::DocumentTextBoxTemplate* = null of (::darkskin::DocumentTextBoxTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -3635,10 +3635,10 @@ namespace darkskin
     class ComboBoxTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ComboBoxTemplate* = null of (::darkskin::ComboBoxTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ComboBoxTemplate* = null of (::darkskin::ComboBoxTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -5389,10 +5389,10 @@ namespace darkskin
     class ItemBackgroundTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ItemBackgroundTemplate* = null of (::darkskin::ItemBackgroundTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ItemBackgroundTemplate* = null of (::darkskin::ItemBackgroundTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -5605,10 +5605,10 @@ namespace darkskin
     class ListViewColumnHeaderTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ListViewColumnHeaderTemplate* = null of (::darkskin::ListViewColumnHeaderTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ListViewColumnHeaderTemplate* = null of (::darkskin::ListViewColumnHeaderTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -7795,10 +7795,10 @@ namespace darkskin
     class DateButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::DateButtonTemplate* = null of (::darkskin::DateButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::DateButtonTemplate* = null of (::darkskin::DateButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -8587,10 +8587,10 @@ namespace darkskin
     class GroupBoxTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::GroupBoxTemplate* = null of (::darkskin::GroupBoxTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::GroupBoxTemplate* = null of (::darkskin::GroupBoxTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var titleBounds : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -11076,10 +11076,10 @@ namespace darkskin
     class RibbonGalleryTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::RibbonGalleryTemplate* = null of (::darkskin::RibbonGalleryTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonGalleryTemplate* = null of (::darkskin::RibbonGalleryTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -12051,10 +12051,10 @@ namespace darkskin
     class RibbonGroupTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::RibbonGroupTemplate* = null of (::darkskin::RibbonGroupTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonGroupTemplate* = null of (::darkskin::RibbonGroupTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var table : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -12523,10 +12523,10 @@ namespace darkskin
     class RibbonIconLabelTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var self : ::darkskin::RibbonIconLabelTemplate* = null of (::darkskin::RibbonIconLabelTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonIconLabelTemplate* = null of (::darkskin::RibbonIconLabelTemplate*);
+        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -12884,10 +12884,10 @@ namespace darkskin
     class RibbonLargeButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::RibbonLargeButtonTemplate* = null of (::darkskin::RibbonLargeButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonLargeButtonTemplate* = null of (::darkskin::RibbonLargeButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -13751,10 +13751,10 @@ namespace darkskin
     class RibbonLargeDropdownButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::RibbonLargeDropdownButtonTemplate* = null of (::darkskin::RibbonLargeDropdownButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonLargeDropdownButtonTemplate* = null of (::darkskin::RibbonLargeDropdownButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -14892,10 +14892,10 @@ namespace darkskin
     class RibbonLargeSplitButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::RibbonLargeSplitButtonTemplate* = null of (::darkskin::RibbonLargeSplitButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonLargeSplitButtonTemplate* = null of (::darkskin::RibbonLargeSplitButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -15783,10 +15783,10 @@ namespace darkskin
     class RibbonSmallButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var self : ::darkskin::RibbonSmallButtonTemplate* = null of (::darkskin::RibbonSmallButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonSmallButtonTemplate* = null of (::darkskin::RibbonSmallButtonTemplate*);
+        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -16636,10 +16636,10 @@ namespace darkskin
     class RibbonSmallDropdownButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var self : ::darkskin::RibbonSmallDropdownButtonTemplate* = null of (::darkskin::RibbonSmallDropdownButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonSmallDropdownButtonTemplate* = null of (::darkskin::RibbonSmallDropdownButtonTemplate*);
+        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -17871,10 +17871,10 @@ namespace darkskin
     class RibbonSmallIconLabelTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var self : ::darkskin::RibbonSmallIconLabelTemplate* = null of (::darkskin::RibbonSmallIconLabelTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonSmallIconLabelTemplate* = null of (::darkskin::RibbonSmallIconLabelTemplate*);
+        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -18491,10 +18491,10 @@ namespace darkskin
     class RibbonSmallSplitButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var self : ::darkskin::RibbonSmallSplitButtonTemplate* = null of (::darkskin::RibbonSmallSplitButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::RibbonSmallSplitButtonTemplate* = null of (::darkskin::RibbonSmallSplitButtonTemplate*);
+        var container : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
         var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -21910,10 +21910,10 @@ namespace darkskin
     class ProgressBarTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ProgressBarTemplate* = null of (::darkskin::ProgressBarTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ProgressBarTemplate* = null of (::darkskin::ProgressBarTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -25278,10 +25278,10 @@ namespace darkskin
     class TabTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::TabTemplate* = null of (::darkskin::TabTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::TabTemplate* = null of (::darkskin::TabTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var beforeHeadersContainer : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -26076,10 +26076,10 @@ namespace darkskin
     class SinglelineTextBoxTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::SinglelineTextBoxTemplate* = null of (::darkskin::SinglelineTextBoxTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::SinglelineTextBoxTemplate* = null of (::darkskin::SinglelineTextBoxTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
@@ -28637,10 +28637,10 @@ namespace darkskin
     class ToolstripButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ToolstripButtonTemplate* = null of (::darkskin::ToolstripButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ToolstripButtonTemplate* = null of (::darkskin::ToolstripButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -29211,10 +29211,10 @@ namespace darkskin
     class ToolstripDropdownButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ToolstripDropdownButtonTemplate* = null of (::darkskin::ToolstripDropdownButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ToolstripDropdownButtonTemplate* = null of (::darkskin::ToolstripDropdownButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -30290,10 +30290,10 @@ namespace darkskin
     class ToolstripSplitButtonTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::ToolstripSplitButtonTemplate* = null of (::darkskin::ToolstripSplitButtonTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::ToolstripSplitButtonTemplate* = null of (::darkskin::ToolstripSplitButtonTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var buttonArrow : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
@@ -31528,10 +31528,10 @@ namespace darkskin
     class WindowTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var self : ::darkskin::WindowTemplate* = null of (::darkskin::WindowTemplate*);
 
         @cpp:Protected
-        var self : ::darkskin::WindowTemplate* = null of (::darkskin::WindowTemplate*);
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var frameTable : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);

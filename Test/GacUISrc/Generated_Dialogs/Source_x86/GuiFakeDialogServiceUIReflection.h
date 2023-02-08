@@ -12,7 +12,7 @@ https://github.com/vczh-libraries
 
 #include "GuiFakeDialogServiceUIIncludes.h"
 #ifndef VCZH_DEBUG_NO_REFLECTION
-#include "../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#include "../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h"
 #endif
 
 #if defined( _MSC_VER)
