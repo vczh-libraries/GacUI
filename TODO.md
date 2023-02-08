@@ -20,9 +20,9 @@
     - ~~A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.~~
     - ~~`GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.~~
   - Predefined reflectable view models for dialogs, with predefined implementations.
-    - In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.
+    - ~~In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.~~
   - Predefined windows implemented in XML.
-    - In `GacUI_Utilities_Controls` and `GacUI_Utilities_Reflection`.
+    - ~~In `GacUI_Utilities_Controls` and `GacUI_Utilities_Reflection`.~~
     - With `GuiFakeDialogService` that gives predefined windows to `GuiFakeDialogService`.
   - A way to subsitute services.
     - ~~Rename `SetCurrentController` to `SetNativeController`.~~

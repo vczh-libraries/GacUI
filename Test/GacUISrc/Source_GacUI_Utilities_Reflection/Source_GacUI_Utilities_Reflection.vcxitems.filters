@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{e58e58b6-c902-439b-8166-5a88e5ee3648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\FakeServices">
+      <UniqueIdentifier>{1761f506-48a2-4aef-b02e-6ff2d4cace2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\FakeServices\Dialogs">
+      <UniqueIdentifier>{c11232d5-0316-40d2-9c5b-17084274fbde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\FakeServices\Dialogs\Source">
+      <UniqueIdentifier>{1bad6aee-8f07-4610-ad6b-ea534f3e7162}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIReflection.h">
+      <Filter>Utilities\FakeServices\Dialogs\Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIReflection.cpp">
+      <Filter>Utilities\FakeServices\Dialogs\Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
