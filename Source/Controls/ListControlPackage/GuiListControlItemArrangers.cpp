@@ -737,7 +737,11 @@ FixedHeightItemArranger
 							}
 
 							Point location = viewBounds.LeftTop();
-							if (top < viewBounds.Top())
+							if (viewBounds.y1 >= top && viewBounds.y2 <= bottom)
+							{
+								break;
+							}
+							else if (top < viewBounds.Top())
 							{
 								location.y = top;
 							}
