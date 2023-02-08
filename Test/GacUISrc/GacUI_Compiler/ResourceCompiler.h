@@ -35,6 +35,9 @@ public:
 extern FilePath CompileResources(
 	GuiResourceCpuArchitecture targetCpuArchitecture,
 	const WString& name,
+	const WString& cppComment,
+	const WString& cppNormalInclude,
+	const WString& cppReflectionInclude,
 	collections::List<WString>& dependencies,
 	FilePath resourcePath,
 	FilePath outputBinaryFolder,

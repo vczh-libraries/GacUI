@@ -171,6 +171,9 @@ void GuiMain()
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"GuiFakeDialogServiceUI",
+		L"GacUI::Native Window::Default Service Implementation",
+		L"../../../GacUI.h",
+		L"../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
 		dependencies,
 		(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Resource.xml"),
 		(GetResourcePath() / DIALOGS_BINARY_FOLDER()),
@@ -180,6 +183,9 @@ void GuiMain()
 	//LoadResource(CompileResources(
 	//	targetCpuArchitecture,
 	//	L"DarkSkin",
+	//	L"Source: Generated_DarkSkin.vcxitems",
+	//	L"../../../../Source/GacUI.h",
+	//	L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
 	//	dependencies,
 	//	(GetResourcePath() / L"App/DarkSkin/Resource.xml"),
 	//	(GetResourcePath() / DARKSKIN_BINARY_FOLDER()),
@@ -189,6 +195,9 @@ void GuiMain()
 	//LoadResource(CompileResources(
 	//	targetCpuArchitecture,
 	//	L"Demo",
+	//	L"Source: Generated_FullControlTest",
+	//	L"../../../../Source/GacUI.h",
+	//	L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
 	//	dependencies,
 	//	(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
 	//	(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),

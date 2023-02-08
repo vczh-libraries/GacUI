@@ -87,6 +87,9 @@ CompileResources
 FilePath CompileResources(
 	GuiResourceCpuArchitecture targetCpuArchitecture,
 	const WString& name,
+	const WString& cppComment,
+	const WString& cppNormalInclude,
+	const WString& cppReflectionInclude,
 	collections::List<WString>& dependencies,
 	FilePath resourcePath,
 	FilePath outputBinaryFolder,
@@ -150,9 +153,9 @@ FilePath CompileResources(
 		auto input = Ptr(new WfCppInput(name));
 		input->multiFile = WfCppFileSwitch::Enabled;
 		input->reflection = WfCppFileSwitch::Enabled;
-		input->comment = L"Source: Host.sln";
-		input->normalIncludes.Add(L"../../../../Source/GacUI.h");
-		input->reflectionIncludes.Add(L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h");
+		input->comment = cppComment;
+		input->normalIncludes.Add(cppNormalInclude);
+		input->reflectionIncludes.Add(cppReflectionInclude);
 
 		FilePath cppFolder = outputCppFolder;
 		auto output = WriteCppCodesToFile(resource, compiled, input, cppFolder, errors);
