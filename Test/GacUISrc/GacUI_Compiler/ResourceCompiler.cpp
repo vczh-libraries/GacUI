@@ -176,3 +176,62 @@ void LoadResource(FilePath binaryPath)
 	FileStream fileStream(binaryPath.GetFullPath(), FileStream::ReadOnly);
 	GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);
 }
+
+/***********************************************************************
+MergeCppFiles
+***********************************************************************/
+
+void MergeCppFiles(
+	FilePath input32Path,
+	FilePath input64Path,
+	FilePath outputCppFolder
+)
+{
+	Console::WriteLine(L"Merging to: " + outputCppFolder.GetFullPath());
+	SortedList<WString> fileNames32;
+	SortedList<WString> fileNames64;
+	{
+		List<File> files;
+		Folder(input32Path).GetFiles(files);
+		for (auto file : files)
+		{
+			fileNames32.Add(file.GetFilePath().GetName());
+		}
+	}
+	{
+		List<File> files;
+		Folder(input64Path).GetFiles(files);
+		for (auto file : files)
+		{
+			fileNames64.Add(file.GetFilePath().GetName());
+		}
+	}
+	CHECK_ERROR(CompareEnumerable(fileNames32, fileNames64) == 0, L"File names in x64 and x86 folder are different.");
+
+	for (auto fileName : fileNames32)
+	{
+		console::Console::WriteLine(L"    " + fileName);
+		auto file32 = (input32Path / fileName).GetFullPath();
+		auto file64 = (input64Path / fileName).GetFullPath();
+		auto fileOutput = (outputCppFolder / fileName).GetFullPath();
+
+		auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
+
+		File file(fileOutput);
+		if (file.Exists())
+		{
+			code = MergeCppFileContent(file.ReadAllTextByBom(), code);
+		}
+
+		if (file.Exists())
+		{
+			auto originalCode = file.ReadAllTextByBom();
+			if (originalCode == code)
+			{
+				continue;
+			}
+		}
+
+		file.WriteAllText(code, false, BomEncoder::Mbcs);
+	}
+}

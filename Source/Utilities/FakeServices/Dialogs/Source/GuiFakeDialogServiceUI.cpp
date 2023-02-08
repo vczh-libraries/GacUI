@@ -1,4 +1,4 @@
-﻿/***********************************************************************
+/***********************************************************************
 !!!!!! DO NOT MODIFY !!!!!!
 
 GacGen.exe Resource.xml
@@ -67,7 +67,7 @@ namespace vl
 				{
 					(this->self = __vwsn_this_);
 					{
-						::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(240L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(120L); return __vwsn_temp__; }());
+						::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(240); __vwsn_temp__.y = static_cast<::vl::vint>(120); return __vwsn_temp__; }());
 					}
 					{
 						::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"MessageBox"));

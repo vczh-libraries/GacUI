@@ -18,9 +18,14 @@ namespace vl
 	}
 }
 
+FilePath GetResourcePath();
 extern void UnitTestInGuiMain();
 
 GuiResourceCpuArchitecture targetCpuArchitecture = GuiResourceCpuArchitecture::Unspecified;
+
+/***********************************************************************
+Paths
+***********************************************************************/
 
 const wchar_t* REFLECTION_BIN()
 {
@@ -92,47 +97,9 @@ const wchar_t* DIALOGS_SOURCE_FOLDER()
 	}
 }
 
-#if defined VCZH_MSVC
-
-int wmain(vint argc, wchar_t* argv[])
-{
-	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
-	SetupGacGenNativeController();
-
-	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
-	SetupGacGenNativeController();
-
-#if VCZH_CHECK_MEMORY_LEAKS
-	_CrtDumpMemoryLeaks();
-#endif
-	return 0;
-}
-
-FilePath GetResourcePath()
-{
-	Array<wchar_t> buffer(65536);
-	GetModuleFileName(NULL, &buffer[0], (DWORD)buffer.Count());
-	auto folder = FilePath(WString::Unmanaged(&buffer[0])).GetFolder();
-#ifdef _WIN64
-	return folder / L"../../../Resources";
-#else
-	return folder / L"../../Resources";
-#endif
-}
-
-#elif defined VCZH_GCC
-
-int main(int argc, char* argv[])
-{
-	return SetupGacGenNativeController();
-}
-
-FilePath GetResourcePath()
-{
-	return FilePath(WString::Unmanaged(L"../../Resources"));
-}
-
-#endif
+/***********************************************************************
+Metadata
+***********************************************************************/
 
 class GuiReflectionPlugin : public Object, public IGuiPlugin
 {
@@ -163,6 +130,10 @@ public:
 };
 GUI_REGISTER_PLUGIN(GuiReflectionPlugin)
 
+/***********************************************************************
+Compiler
+***********************************************************************/
+
 void GuiMain()
 {
 	UnitTestInGuiMain();
@@ -171,7 +142,7 @@ void GuiMain()
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"GuiFakeDialogServiceUI",
-		L"GacUI::Native Window::Default Service Implementation",
+		L"GacGen.exe Resource.xml",
 		L"../../../../GacUI.h",
 		L"../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
 		dependencies,
@@ -205,3 +176,64 @@ void GuiMain()
 	//	false
 	//));
 }
+
+/***********************************************************************
+main
+***********************************************************************/
+
+void CompilerMain()
+{
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+	SetupGacGenNativeController();
+
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+	SetupGacGenNativeController();
+
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x86;
+	auto input32Path = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	targetCpuArchitecture = GuiResourceCpuArchitecture::x64;
+	auto input64Path = GetResourcePath() / DIALOGS_SOURCE_FOLDER();
+	MergeCppFiles(
+		input32Path,
+		input64Path,
+		(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Source")
+		);
+}
+
+#if defined VCZH_MSVC
+
+int wmain(vint argc, wchar_t* argv[])
+{
+	CompilerMain();
+#if VCZH_CHECK_MEMORY_LEAKS
+	_CrtDumpMemoryLeaks();
+#endif
+	return 0;
+}
+
+FilePath GetResourcePath()
+{
+	Array<wchar_t> buffer(65536);
+	GetModuleFileName(NULL, &buffer[0], (DWORD)buffer.Count());
+	auto folder = FilePath(WString::Unmanaged(&buffer[0])).GetFolder();
+#ifdef _WIN64
+	return folder / L"../../../Resources";
+#else
+	return folder / L"../../Resources";
+#endif
+}
+
+#elif defined VCZH_GCC
+
+int main(int argc, char* argv[])
+{
+	CompilerMain();
+	return 0;
+}
+
+FilePath GetResourcePath()
+{
+	return FilePath(WString::Unmanaged(L"../../Resources"));
+}
+
+#endif
