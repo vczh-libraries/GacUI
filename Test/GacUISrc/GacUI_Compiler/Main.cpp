@@ -72,6 +72,26 @@ const wchar_t* FULLCONTROLTEST_SOURCE_FOLDER()
 	}
 }
 
+const wchar_t* DIALOGS_BINARY_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_Dialogs/Resource_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_Dialogs/Resource_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
+const wchar_t* DIALOGS_SOURCE_FOLDER()
+{
+	switch (targetCpuArchitecture)
+	{
+	case GuiResourceCpuArchitecture::x86: return L"../GacUISrc/Generated_Dialogs/Source_x86/";
+	case GuiResourceCpuArchitecture::x64: return L"../GacUISrc/Generated_Dialogs/Source_x64/";
+	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
+	}
+}
+
 #if defined VCZH_MSVC
 
 int wmain(vint argc, wchar_t* argv[])
@@ -150,20 +170,29 @@ void GuiMain()
 	List<WString> dependencies;
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
-		L"DarkSkin",
+		L"GuiFakeDialogServiceUI",
 		dependencies,
-		(GetResourcePath() / L"App/DarkSkin/Resource.xml"),
-		(GetResourcePath() / DARKSKIN_BINARY_FOLDER()),
-		(GetResourcePath() / DARKSKIN_SOURCE_FOLDER()),
-		true
-	));
-	LoadResource(CompileResources(
-		targetCpuArchitecture,
-		L"Demo",
-		dependencies,
-		(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
-		(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),
-		(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER()),
+		(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Resource.xml"),
+		(GetResourcePath() / DIALOGS_BINARY_FOLDER()),
+		(GetResourcePath() / DIALOGS_SOURCE_FOLDER()),
 		false
 	));
+	//LoadResource(CompileResources(
+	//	targetCpuArchitecture,
+	//	L"DarkSkin",
+	//	dependencies,
+	//	(GetResourcePath() / L"App/DarkSkin/Resource.xml"),
+	//	(GetResourcePath() / DARKSKIN_BINARY_FOLDER()),
+	//	(GetResourcePath() / DARKSKIN_SOURCE_FOLDER()),
+	//	true
+	//));
+	//LoadResource(CompileResources(
+	//	targetCpuArchitecture,
+	//	L"Demo",
+	//	dependencies,
+	//	(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
+	//	(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),
+	//	(GetResourcePath() / FULLCONTROLTEST_SOURCE_FOLDER()),
+	//	false
+	//));
 }

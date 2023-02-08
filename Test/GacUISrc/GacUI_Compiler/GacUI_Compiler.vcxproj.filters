@@ -25,6 +25,9 @@
     <Filter Include="Resource Files\FullControlTest\ToolbarImages">
       <UniqueIdentifier>{2c355127-a093-4987-961f-e4eb28646fcd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Dialogs">
+      <UniqueIdentifier>{04c2bed1-669a-4109-b5e0-517d87d838b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -161,6 +164,12 @@
     </Xml>
     <Xml Include="..\..\Resources\App\FullControlTest\ToolbarImages\Images.xml">
       <Filter>Resource Files\FullControlTest\ToolbarImages</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\Resource.xml">
+      <Filter>Resource Files\Dialogs</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\MessageBox.xml">
+      <Filter>Resource Files\Dialogs</Filter>
     </Xml>
   </ItemGroup>
 </Project>

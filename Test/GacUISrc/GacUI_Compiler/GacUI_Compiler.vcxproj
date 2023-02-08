@@ -180,6 +180,8 @@
     <Image Include="..\..\Resources\App\Gaclib.png" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\MessageBox.xml" />
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\Resource.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\DarkSkin.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Index.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\Resource.xml" />

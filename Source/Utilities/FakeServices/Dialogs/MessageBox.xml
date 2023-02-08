@@ -1,0 +1,8 @@
+<Folder>
+  <Instance name="MessageBoxWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow">
+      <Window ref.Name="self" Text="MessageBox" ClientSize="x:240 y:120">
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>
