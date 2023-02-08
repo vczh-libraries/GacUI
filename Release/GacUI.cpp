@@ -11653,7 +11653,12 @@ FreeHeightItemArranger
 							vint height = viewBounds.Height();
 
 							Point location = viewBounds.LeftTop();
-							if (offset > top)
+
+							if (offset >= top && offset + height <= bottom)
+							{
+								break;
+							}
+							else if (offset > top)
 							{
 								location.y = top;
 							}
@@ -11829,7 +11834,11 @@ FixedHeightItemArranger
 							}
 
 							Point location = viewBounds.LeftTop();
-							if (top < viewBounds.Top())
+							if (viewBounds.y1 >= top && viewBounds.y2 <= bottom)
+							{
+								break;
+							}
+							else if (top < viewBounds.Top())
 							{
 								location.y = top;
 							}
