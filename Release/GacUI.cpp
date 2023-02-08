@@ -43825,6 +43825,7 @@ Utilities Registration
 ***********************************************************************/
 
 		FakeClipboardService* fakeClipboardService = nullptr;
+		FakeDialogService* fakeDialogService = nullptr;
 
 		void GuiInitializeUtilities()
 		{
@@ -43832,6 +43833,12 @@ Utilities Registration
 			{
 				fakeClipboardService = new FakeClipboardService;
 				GetNativeServiceSubstitution()->Substitute(fakeClipboardService, true);
+			}
+
+			if (!fakeDialogService)
+			{
+				fakeDialogService = new FakeDialogService;
+				GetNativeServiceSubstitution()->Substitute(fakeDialogService, true);
 			}
 		}
 
@@ -43842,6 +43849,13 @@ Utilities Registration
 				GetNativeServiceSubstitution()->Unsubstitute(fakeClipboardService);
 				delete fakeClipboardService;
 				fakeClipboardService = nullptr;
+			}
+
+			if (fakeDialogService)
+			{
+				GetNativeServiceSubstitution()->Unsubstitute(fakeDialogService);
+				delete fakeDialogService;
+				fakeDialogService = nullptr;
 			}
 		}
 	}
@@ -43947,6 +43961,10 @@ FakeClipboardService
 		{
 		}
 
+		FakeClipboardService::~FakeClipboardService()
+		{
+		}
+
 		Ptr<INativeClipboardReader> FakeClipboardService::ReadClipboard()
 		{
 			return reader;
@@ -43973,6 +43991,10 @@ FakeDialogServiceBase
 ***********************************************************************/
 
 		FakeDialogServiceBase::FakeDialogServiceBase()
+		{
+		}
+
+		FakeDialogServiceBase::~FakeDialogServiceBase()
 		{
 		}
 
@@ -44026,6 +44048,29 @@ FakeDialogServiceBase
 		)
 		{
 			CHECK_FAIL(L"Not Implemented!");
+		}
+	}
+}
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\DIALOGS\GUIFAKEDIALOGSERVICE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+FakeDialogService
+***********************************************************************/
+
+		FakeDialogService::FakeDialogService()
+		{
+		}
+
+		FakeDialogService::~FakeDialogService()
+		{
 		}
 	}
 }
@@ -44431,6 +44476,10 @@ SharedCallbackService
 ***********************************************************************/
 
 		SharedCallbackService::SharedCallbackService()
+		{
+		}
+
+		SharedCallbackService::~SharedCallbackService()
 		{
 		}
 

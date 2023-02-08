@@ -94,6 +94,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\GacUI.h"
 #include "..\..\Source\Utilities\FakeServices\GuiFakeClipboardService.h"
 #include "..\..\Source\Utilities\FakeServices\GuiFakeDialogServiceBase.h"
+#include "..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.h"
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.h"
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIIncludes.h"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.h"

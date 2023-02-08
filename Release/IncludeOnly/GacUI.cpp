@@ -104,6 +104,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Utilities\GuiUtilitiesRegistration.cpp"
 #include "..\..\Source\Utilities\FakeServices\GuiFakeClipboardService.cpp"
 #include "..\..\Source\Utilities\FakeServices\GuiFakeDialogServiceBase.cpp"
+#include "..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.cpp"
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.cpp"
 #include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIResource.cpp"
 #include "..\..\Source\Utilities\SharedServices\GuiSharedAsyncService.cpp"

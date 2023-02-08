@@ -21140,8 +21140,8 @@ GacUI::Native Window::Default Service Implementation
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKECLIPBOARDSERVICE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKECLIPBOARDSERVICE
 
 
 namespace vl
@@ -21162,6 +21162,7 @@ namespace vl
 
 		public:
 			FakeClipboardService();
+			~FakeClipboardService();
 
 			Ptr<INativeClipboardReader>		ReadClipboard() override;
 			Ptr<INativeClipboardWriter>		WriteClipboard() override;
@@ -21182,8 +21183,8 @@ GacUI::Native Window::Default Service Implementation
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
-#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICEBASE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICEBASE
 
 
 namespace vl
@@ -21196,6 +21197,7 @@ namespace vl
 		{
 		public:
 			FakeDialogServiceBase();
+			~FakeDialogServiceBase();
 
 			MessageBoxButtonsOutput	ShowMessageBox(
 										INativeWindow* window,
@@ -21236,6 +21238,36 @@ namespace vl
 										const WString& filter,
 										FileDialogOptions options
 										) override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\DIALOGS\GUIFAKEDIALOGSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICE
+#define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class FakeDialogService : public FakeDialogServiceBase
+		{
+		public:
+			FakeDialogService();
+			~FakeDialogService();
 		};
 	}
 }
@@ -21449,6 +21481,7 @@ namespace vl
 
 		public:
 			SharedCallbackService();
+			~SharedCallbackService();
 
 			bool											InstallListener(INativeControllerListener* listener) override;
 			bool											UninstallListener(INativeControllerListener* listener) override;
