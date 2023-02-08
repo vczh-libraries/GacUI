@@ -1822,9 +1822,9 @@ WindowsController
 				WindowsForm*						mainWindow = nullptr;
 				HWND								mainWindowHandle = 0;
 
-				WindowsCallbackService				callbackService;
-				WindowsResourceService				resourceService;
+				SharedCallbackService				callbackService;
 				SharedAsyncService					asyncService;
+				WindowsResourceService				resourceService;
 				WindowsClipboardService				clipboardService;
 				WindowsImageService					imageService;
 				WindowsScreenService				screenService;
@@ -1955,7 +1955,7 @@ WindowsController
 					windowsForm->InvokeDestroying();
 					if (windowsForm != 0 && windows.Keys().Contains(windowsForm->GetWindowHandle()))
 					{
-						callbackService.InvokeNativeWindowDestroyed(window);
+						callbackService.InvokeNativeWindowDestroying(window);
 						windows.Remove(windowsForm->GetWindowHandle());
 						if (mainWindow == windowsForm)
 						{
@@ -2807,7 +2807,7 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 	StartWindowsNativeController(hInstance);
 	auto nativeController = GetWindowsNativeController();
 	if (hosted) hostedController = new GuiHostedController(nativeController);
-	SetCurrentController(hostedController ? hostedController : nativeController);
+	SetNativeController(hostedController ? hostedController : nativeController);
 
 	{
 		// install listener
@@ -2822,7 +2822,7 @@ int SetupWindowsDirect2DRendererInternal(bool hosted)
 	}
 
 	// destroy controller
-	SetCurrentController(nullptr);
+	SetNativeController(nullptr);
 	if (hostedController) delete hostedController;
 	StopWindowsNativeController();
 	return 0;
@@ -8398,8 +8398,7 @@ namespace vl
 					if (needPaintAfterResize)
 					{
 						needPaintAfterResize = false;
-						auto callbackService = GetWindowsNativeController()->CallbackService();
-						dynamic_cast<WindowsCallbackService*>(callbackService)->InvokeGlobalTimer();
+						GetWindowsNativeController()->CallbackService()->Invoker()->InvokeGlobalTimer();
 					}
 					IWindowsForm* form=GetWindowsForm(window);
 					WinControlDC controlDC(form->GetWindowHandle());
@@ -8534,7 +8533,7 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 	StartWindowsNativeController(hInstance);
 	auto nativeController = GetWindowsNativeController();
 	if (hosted) hostedController = new GuiHostedController(nativeController);
-	SetCurrentController(hostedController ? hostedController : nativeController);
+	SetNativeController(hostedController ? hostedController : nativeController);
 
 	{
 		// install listener
@@ -8549,7 +8548,7 @@ int SetupWindowsGDIRendererInternal(bool hosted)
 	}
 
 	// destroy controller
-	SetCurrentController(nullptr);
+	SetNativeController(nullptr);
 	if (hostedController) delete hostedController;
 	StopWindowsNativeController();
 	return 0;
@@ -12964,86 +12963,6 @@ void RendererMainGDI(GuiHostedController* hostedController)
 
 	windows::GetWindowsNativeController()->CallbackService()->UninstallListener(&resourceManager);
 	elements_windows_gdi::SetWindowsGDIResourceManager(nullptr);
-}
-
-/***********************************************************************
-.\SERVICESIMPL\WINDOWSCALLBACKSERVICE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		namespace windows
-		{
-
-/***********************************************************************
-WindowsCallbackService
-***********************************************************************/
-
-			WindowsCallbackService::WindowsCallbackService()
-			{
-			}
-
-			bool WindowsCallbackService::InstallListener(INativeControllerListener* listener)
-			{
-				if(listeners.Contains(listener))
-				{
-					return false;
-				}
-				else
-				{
-					listeners.Add(listener);
-					return true;
-				}
-			}
-
-			bool WindowsCallbackService::UninstallListener(INativeControllerListener* listener)
-			{
-				if(listeners.Contains(listener))
-				{
-					listeners.Remove(listener);
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void WindowsCallbackService::InvokeGlobalTimer()
-			{
-				for(vint i=0;i<listeners.Count();i++)
-				{
-					listeners[i]->GlobalTimer();
-				}
-			}
-
-			void WindowsCallbackService::InvokeClipboardUpdated()
-			{
-				for(vint i=0;i<listeners.Count();i++)
-				{
-					listeners[i]->ClipboardUpdated();
-				}
-			}
-
-			void WindowsCallbackService::InvokeNativeWindowCreated(INativeWindow* window)
-			{
-				for(vint i=0;i<listeners.Count();i++)
-				{
-					listeners[i]->NativeWindowCreated(window);
-				}
-			}
-
-			void WindowsCallbackService::InvokeNativeWindowDestroyed(INativeWindow* window)
-			{
-				for(vint i=0;i<listeners.Count();i++)
-				{
-					listeners[i]->NativeWindowDestroying(window);
-				}
-			}
-		}
-	}
 }
 
 /***********************************************************************

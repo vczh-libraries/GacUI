@@ -2953,6 +2953,32 @@ INativeCallbackService
 ***********************************************************************/
 
 		class INativeControllerListener;
+
+		/// <summary>
+		/// Callback invoker.
+		/// </summary>
+		class INativeCallbackInvoker : public virtual Interface
+		{
+		public:
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::GlobalTimer"/> of all installed listeners. 
+			/// </summary>
+			virtual void					InvokeGlobalTimer()=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::ClipboardUpdated"/> of all installed listeners.
+			/// </summary>
+			virtual void					InvokeClipboardUpdated()=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::NativeWindowCreated"/> of all installed listeners.
+			/// </summary>
+			/// <param name="window">The argument to the callback.</param>
+			virtual void					InvokeNativeWindowCreated(INativeWindow* window)=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::NativeWindowDestroying"/> of all installed listeners.
+			/// </summary>
+			/// <param name="window">The argument to the callback.</param>
+			virtual void					InvokeNativeWindowDestroying(INativeWindow* window)=0;
+		};
 		
 		/// <summary>
 		/// Callback service. To access this service, use [M:vl.presentation.INativeController.CallbackService].
@@ -2972,6 +2998,11 @@ INativeCallbackService
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="listener">The global message listener to uninstall.</param>
 			virtual bool					UninstallListener(INativeControllerListener* listener)=0;
+			/// <summary>
+			/// Get the invoker that invoke all listeners.
+			/// </summary>
+			/// <returns>The invoker.</returns>
+			virtual INativeCallbackInvoker*	Invoker()=0;
 		};
 
 /***********************************************************************
@@ -3278,7 +3309,34 @@ Native Window Controller
 		/// Set the global native system service controller.
 		/// </summary>
 		/// <param name="controller">The global native system service controller.</param>
-		extern void							SetCurrentController(INativeController* controller);
+		extern void							SetNativeController(INativeController* controller);
+
+#define GUI_SUBSTITUTABLE_SERVICES(F)	\
+		F(Clipboard)					\
+		F(Dialog)						\
+
+#define GUI_UNSUBSTITUTABLE_SERVICES(F)	\
+		F(Callback)						\
+		F(Resource)						\
+		F(Async)						\
+		F(Image)						\
+		F(Screen)						\
+		F(Window)						\
+		F(Input)						\
+
+		class INativeServiceSubstitution : public Interface
+		{
+		public:
+
+#define SUBSTITUTE_SERVICE(NAME)																			\
+			virtual void					Substitute(INative##NAME##Service* service, bool optional) = 0;	\
+			virtual void					Unsubstitute(INative##NAME##Service* service) = 0;				\
+
+			GUI_SUBSTITUTABLE_SERVICES(SUBSTITUTE_SERVICE)
+#undef SUBSTITUTE_SERVICE
+		};
+
+		extern INativeServiceSubstitution*	GetNativeServiceSubstitution();
 
 		/// <summary>
 		/// Get a cursor according to the hit test result.
@@ -6497,76 +6555,6 @@ Helpers
 #endif
 
 /***********************************************************************
-.\NATIVEWINDOW\SHAREDSERVICES\GUISHAREDASYNCSERVICE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Native Window::Default Service Implementation
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUINATIVEWINDOW_SHAREDSERVICES_SHAREDASYNCSERVICE
-#define VCZH_PRESENTATION_GUINATIVEWINDOW_SHAREDSERVICES_SHAREDASYNCSERVICE
-
-
-namespace vl
-{
-	namespace presentation
-	{
-		class SharedAsyncService : public INativeAsyncService
-		{
-		protected:
-			struct TaskItem
-			{
-				Semaphore*							semaphore;
-				Func<void()>						proc;
-
-				TaskItem();
-				TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
-				~TaskItem();
-			};
-
-			class DelayItem : public Object, public INativeDelay
-			{
-			public:
-				DelayItem(SharedAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
-				~DelayItem();
-
-				SharedAsyncService*					service;
-				Func<void()>						proc;
-				ExecuteStatus						status;
-				DateTime							executeTime;
-				bool								executeInMainThread;
-
-				ExecuteStatus						GetStatus()override;
-				bool								Delay(vint milliseconds)override;
-				bool								Cancel()override;
-			};
-		protected:
-			vint									mainThreadId;
-			SpinLock								taskListLock;
-			collections::List<TaskItem>				taskItems;
-			collections::List<Ptr<DelayItem>>		delayItems;
-		public:
-			SharedAsyncService();
-			~SharedAsyncService();
-
-			void									ExecuteAsyncTasks();
-			bool									IsInMainThread(INativeWindow* window)override;
-			void									InvokeAsync(const Func<void()>& proc)override;
-			void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
-			bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
-			Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
-			Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDGRAPHICS.H
 ***********************************************************************/
 /***********************************************************************
@@ -7471,255 +7459,6 @@ GuiHostedWindow
 			bool							InstallListener(INativeWindowListener* listener) override;
 			bool							UninstallListener(INativeWindowListener* listener) override;
 			void							RedrawContent() override;
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDCONTROLLER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-GacUI::Hosted Window
-
-Interfaces:
-  GuiHostedController
-
-***********************************************************************/
-
-#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
-#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
-
-
-namespace vl
-{
-	namespace presentation
-	{
-
-/***********************************************************************
-GuiHostedController
-***********************************************************************/
-
-		class GuiHostedController
-			: public Object
-			, protected hosted_window_manager::WindowManager<GuiHostedWindow*>
-			, protected INativeWindowListener
-			, protected INativeControllerListener
-			, public INativeController
-			, protected INativeCallbackService
-			, protected INativeAsyncService
-			, protected INativeDialogService
-			, protected INativeScreenService
-			, protected INativeScreen
-			, protected INativeWindowService
-		{
-			friend class GuiHostedWindow;
-			friend class elements::GuiHostedGraphicsResourceManager;
-		protected:
-			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
-			INativeController*											nativeController = nullptr;
-			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
-			collections::List<INativeControllerListener*>				listeners;
-			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
-
-			INativeWindow*												nativeWindow = nullptr;
-			bool														nativeWindowDestroyed = false;
-
-			GuiHostedWindow*											mainWindow = nullptr;
-			GuiHostedWindow*											capturingWindow = nullptr;
-			GuiHostedWindow*											enteringWindow = nullptr;
-
-			NativePoint													hoveringLocation{ -1,-1 };
-			GuiHostedWindow*											hoveringWindow = nullptr;
-			GuiHostedWindow*											lastFocusedWindow = nullptr;
-
-			enum class WindowManagerOperation
-			{
-				None,
-				Title,
-				BorderLeft,
-				BorderRight,
-				BorderTop,
-				BorderBottom,
-				BorderLeftTop,
-				BorderRightTop,
-				BorderLeftBottom,
-				BorderRightBottom,
-			};
-			WindowManagerOperation										wmOperation = WindowManagerOperation::None;
-			GuiHostedWindow*											wmWindow = nullptr;
-			NativePoint													wmRelative;
-
-			NativePoint						GetPointInClientSpace(NativePoint location);
-			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
-			void							UpdateHoveringWindow(Nullable<NativePoint> location);
-			void							UpdateEnteringWindow(GuiHostedWindow* window);
-
-			// =============================================================
-			// WindowManager<GuiHostedWindow*>
-			// =============================================================
-
-			void							OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-			void							OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
-
-			// =============================================================
-			// INativeWindowListener
-			// =============================================================
-
-			HitTestResult					HitTest(NativePoint location) override;
-			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
-			void							Moved() override;
-			void							DpiChanged(bool preparing) override;
-			void							GotFocus() override;
-			void							LostFocus() override;
-			void							BeforeClosing(bool& cancel) override;
-			void							AfterClosing() override;
-			void							Paint() override;
-			
-			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
-			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
-			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
-
-			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
-			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
-			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
-			void							PreAction_Other(const NativeWindowMouseInfo& info);
-
-			void							PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
-			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
-
-			template<
-				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
-				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
-				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
-				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
-				>
-			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
-
-			template<
-				typename TInfo,
-				void (INativeWindowListener::* Callback)(const TInfo&)
-			>
-			void							HandleKeyboardCallback(const TInfo& info);
-
-			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
-			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
-			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
-			void							RightButtonDown(const NativeWindowMouseInfo& info) override;
-			void							RightButtonUp(const NativeWindowMouseInfo& info) override;
-			void							RightButtonDoubleClick(const NativeWindowMouseInfo& info) override;
-			void							MiddleButtonDown(const NativeWindowMouseInfo& info) override;
-			void							MiddleButtonUp(const NativeWindowMouseInfo& info) override;
-			void							MiddleButtonDoubleClick(const NativeWindowMouseInfo& info) override;
-			void							HorizontalWheel(const NativeWindowMouseInfo& info) override;
-			void							VerticalWheel(const NativeWindowMouseInfo& info) override;
-			void							MouseMoving(const NativeWindowMouseInfo& info) override;
-			void							MouseEntered() override;
-			void							MouseLeaved() override;
-
-			void							KeyDown(const NativeWindowKeyInfo& info) override;
-			void							KeyUp(const NativeWindowKeyInfo& info) override;
-			void							SysKeyDown(const NativeWindowKeyInfo& info) override;
-			void							SysKeyUp(const NativeWindowKeyInfo& info) override;
-			void							Char(const NativeWindowCharInfo& info) override;
-
-			// =============================================================
-			// INativeControllerListener
-			// =============================================================
-
-			void							GlobalTimer() override;
-			void							ClipboardUpdated() override;
-			void							NativeWindowDestroying(INativeWindow* window) override;
-
-			// =============================================================
-			// INativeController
-			// =============================================================
-
-			INativeCallbackService*			CallbackService() override;
-			INativeResourceService*			ResourceService() override;
-			INativeAsyncService*			AsyncService() override;
-			INativeClipboardService*		ClipboardService() override;
-			INativeImageService*			ImageService() override;
-			INativeInputService*			InputService() override;
-			INativeDialogService*			DialogService() override;
-			WString							GetExecutablePath() override;
-			
-			INativeScreenService*			ScreenService() override;
-			INativeWindowService*			WindowService() override;
-
-			// =============================================================
-			// INativeCallbackService
-			// =============================================================
-
-			bool							InstallListener(INativeControllerListener* listener) override;
-			bool							UninstallListener(INativeControllerListener* listener) override;
-
-			// =============================================================
-			// INativeAsyncService
-			// =============================================================
-
-			bool							IsInMainThread(INativeWindow* window) override;
-			void							InvokeAsync(const Func<void()>& proc) override;
-			void							InvokeInMainThread(INativeWindow* window, const Func<void()>& proc) override;
-			bool							InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds) override;
-			Ptr<INativeDelay>				DelayExecute(const Func<void()>& proc, vint milliseconds) override;
-			Ptr<INativeDelay>				DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds) override;
-
-			// =============================================================
-			// INativeDialogService
-			// =============================================================
-
-			MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal) override;
-			bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors) override;
-			bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist) override;
-			bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options) override;
-
-			// =============================================================
-			// INativeScreenService
-			// =============================================================
-
-			vint							GetScreenCount() override;
-			INativeScreen*					GetScreen(vint index) override;
-			INativeScreen*					GetScreen(INativeWindow* window) override;
-
-			// =============================================================
-			// INativeScreen
-			// =============================================================
-
-			NativeRect						GetBounds() override;
-			NativeRect						GetClientBounds() override;
-			WString							GetName() override;
-			bool							IsPrimary() override;
-			double							GetScalingX() override;
-			double							GetScalingY() override;
-
-			// =============================================================
-			// INativeWindowService
-			// =============================================================
-
-			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
-			void							DestroyNativeWindow(INativeWindow* window) override;
-			INativeWindow*					GetMainWindow() override;
-			INativeWindow*					GetWindow(NativePoint location) override;
-
-			void							SettingHostedWindowsBeforeRunning();
-			void							DestroyHostedWindowsAfterRunning();
-			void							Run(INativeWindow* window) override;
-		public:
-			GuiHostedController(INativeController* _nativeController);
-			~GuiHostedController();
-
-			void							Initialize();
-			void							Finalize();
 		};
 	}
 }
@@ -21387,5 +21126,581 @@ extern int SetupGtkRenderer();
 
 // macOS
 extern int SetupOSXCoreGraphicsRenderer();
+
+#endif
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\GUIFAKECLIPBOARDSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class FakeClipboardReader;
+		class FakeClipboardWriter;
+
+		class FakeClipboardService
+			: public Object
+			, public INativeClipboardService
+		{
+			friend class FakeClipboardReader;
+			friend class FakeClipboardWriter;
+		protected:
+			Ptr<INativeClipboardReader>		reader;
+
+		public:
+			FakeClipboardService();
+
+			Ptr<INativeClipboardReader>		ReadClipboard() override;
+			Ptr<INativeClipboardWriter>		WriteClipboard() override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\GUIFAKEDIALOGSERVICEBASE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_FAKECLIPBOARDSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class FakeDialogServiceBase
+			: public Object
+			, public INativeDialogService
+		{
+		public:
+			FakeDialogServiceBase();
+
+			MessageBoxButtonsOutput	ShowMessageBox(
+										INativeWindow* window,
+										const WString& text,
+										const WString& title,
+										MessageBoxButtonsInput buttons,
+										MessageBoxDefaultButton defaultButton,
+										MessageBoxIcons icon,
+										MessageBoxModalOptions modal
+										) override;
+
+			bool					ShowColorDialog(
+										INativeWindow* window,
+										Color& selection,
+										bool selected,
+										ColorDialogCustomColorOptions customColorOptions,
+										Color* customColors
+										) override;
+
+			bool					ShowFontDialog(
+										INativeWindow* window,
+										FontProperties& selectionFont,
+										Color& selectionColor,
+										bool selected,
+										bool showEffect,
+										bool forceFontExist
+										) override;
+
+			bool					ShowFileDialog(
+										INativeWindow* window,
+										collections::List<WString>& selectionFileNames,
+										vint& selectionFilterIndex,
+										FileDialogTypes dialogType,
+										const WString& title,
+										const WString& initialFileName,
+										const WString& initialDirectory,
+										const WString& defaultExtension,
+										const WString& filter,
+										FileDialogOptions options
+										) override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\DIALOGS\SOURCE\GUIFAKEDIALOGSERVICEUI.H
+***********************************************************************/
+/***********************************************************************
+!!!!!! DO NOT MODIFY !!!!!!
+
+GacGen.exe Resource.xml
+
+This file is generated by Workflow compiler
+https://github.com/vczh-libraries
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_COMPILER_GENERATED_GUIFAKEDIALOGSERVICEUI
+#define VCZH_WORKFLOW_COMPILER_GENERATED_GUIFAKEDIALOGSERVICEUI
+
+
+#if defined( _MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#endif
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			namespace fake_dialog_service
+			{
+				class GuiMessageBoxWindowConstructor;
+				class GuiMessageBoxWindow;
+
+				class GuiMessageBoxWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<GuiMessageBoxWindowConstructor>
+				{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GuiMessageBoxWindowConstructor>;
+#endif
+				protected:
+					::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow* self;
+					void __vwsn_vl_presentation_controls_fake_dialog_service_GuiMessageBoxWindow_Initialize(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow* __vwsn_this_);
+				public:
+					GuiMessageBoxWindowConstructor();
+				};
+
+				class GuiMessageBoxWindow : public ::vl::presentation::controls::GuiWindow, public ::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor, public ::vl::reflection::Description<GuiMessageBoxWindow>
+				{
+					friend class ::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GuiMessageBoxWindow>;
+#endif
+				public:
+					GuiMessageBoxWindow();
+					~GuiMessageBoxWindow();
+				};
+
+			}
+		}
+	}
+}
+/***********************************************************************
+Global Variables and Functions
+***********************************************************************/
+
+namespace vl_workflow_global
+{
+	class GuiFakeDialogServiceUI
+	{
+	public:
+
+		static GuiFakeDialogServiceUI& Instance();
+	};
+}
+
+#if defined( _MSC_VER)
+#pragma warning(pop)
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\DIALOGS\SOURCE\GUIFAKEDIALOGSERVICEUIINCLUDES.H
+***********************************************************************/
+/***********************************************************************
+!!!!!! DO NOT MODIFY !!!!!!
+
+GacGen.exe Resource.xml
+
+This file is generated by Workflow compiler
+https://github.com/vczh-libraries
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_COMPILER_GENERATED_GUIFAKEDIALOGSERVICEUIINCLUDES
+#define VCZH_WORKFLOW_COMPILER_GENERATED_GUIFAKEDIALOGSERVICEUIINCLUDES
+
+
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDASYNCSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDASYNCSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDASYNCSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class SharedAsyncService : public INativeAsyncService
+		{
+		protected:
+			struct TaskItem
+			{
+				Semaphore*							semaphore;
+				Func<void()>						proc;
+
+				TaskItem();
+				TaskItem(Semaphore* _semaphore, const Func<void()>& _proc);
+				~TaskItem();
+			};
+
+			class DelayItem : public Object, public INativeDelay
+			{
+			public:
+				DelayItem(SharedAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds);
+				~DelayItem();
+
+				SharedAsyncService*					service;
+				Func<void()>						proc;
+				ExecuteStatus						status;
+				DateTime							executeTime;
+				bool								executeInMainThread;
+
+				ExecuteStatus						GetStatus()override;
+				bool								Delay(vint milliseconds)override;
+				bool								Cancel()override;
+			};
+		protected:
+			vint									mainThreadId;
+			SpinLock								taskListLock;
+			collections::List<TaskItem>				taskItems;
+			collections::List<Ptr<DelayItem>>		delayItems;
+		public:
+			SharedAsyncService();
+			~SharedAsyncService();
+
+			void									ExecuteAsyncTasks();
+			bool									IsInMainThread(INativeWindow* window)override;
+			void									InvokeAsync(const Func<void()>& proc)override;
+			void									InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)override;
+			bool									InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)override;
+			Ptr<INativeDelay>						DelayExecute(const Func<void()>& proc, vint milliseconds)override;
+			Ptr<INativeDelay>						DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDCALLBACKSERVICE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Native Window::Default Service Implementation
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDCALLBACKSERVICE
+#define VCZH_PRESENTATION_UTILITIES_SHAREDSERVICES_SHAREDCALLBACKSERVICE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		class SharedCallbackService
+			: public Object
+			, public INativeCallbackService
+			, public INativeCallbackInvoker
+		{
+		protected:
+			collections::List<INativeControllerListener*>	listeners;
+
+		public:
+			SharedCallbackService();
+
+			bool											InstallListener(INativeControllerListener* listener) override;
+			bool											UninstallListener(INativeControllerListener* listener) override;
+			INativeCallbackInvoker*							Invoker() override;
+
+			void											InvokeGlobalTimer() override;
+			void											InvokeClipboardUpdated() override;
+			void											InvokeNativeWindowCreated(INativeWindow* window) override;
+			void											InvokeNativeWindowDestroying(INativeWindow* window) override;
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\PLATFORMPROVIDERS\HOSTED\GUIHOSTEDCONTROLLER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Hosted Window
+
+Interfaces:
+  GuiHostedController
+
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
+#define VCZH_PRESENTATION_GUIHOSTEDCONTROLLER
+
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+GuiHostedController
+***********************************************************************/
+
+		class GuiHostedController
+			: public Object
+			, protected hosted_window_manager::WindowManager<GuiHostedWindow*>
+			, protected INativeWindowListener
+			, protected INativeControllerListener
+			, public INativeController
+			, protected INativeAsyncService
+			, protected INativeDialogService
+			, protected INativeScreenService
+			, protected INativeScreen
+			, protected INativeWindowService
+		{
+			friend class GuiHostedWindow;
+			friend class elements::GuiHostedGraphicsResourceManager;
+		protected:
+			SharedCallbackService										callbackService;
+			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
+			INativeController*											nativeController = nullptr;
+			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
+			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;
+
+			INativeWindow*												nativeWindow = nullptr;
+			bool														nativeWindowDestroyed = false;
+
+			GuiHostedWindow*											mainWindow = nullptr;
+			GuiHostedWindow*											capturingWindow = nullptr;
+			GuiHostedWindow*											enteringWindow = nullptr;
+
+			NativePoint													hoveringLocation{ -1,-1 };
+			GuiHostedWindow*											hoveringWindow = nullptr;
+			GuiHostedWindow*											lastFocusedWindow = nullptr;
+
+			enum class WindowManagerOperation
+			{
+				None,
+				Title,
+				BorderLeft,
+				BorderRight,
+				BorderTop,
+				BorderBottom,
+				BorderLeftTop,
+				BorderRightTop,
+				BorderLeftBottom,
+				BorderRightBottom,
+			};
+			WindowManagerOperation										wmOperation = WindowManagerOperation::None;
+			GuiHostedWindow*											wmWindow = nullptr;
+			NativePoint													wmRelative;
+
+			NativePoint						GetPointInClientSpace(NativePoint location);
+			GuiHostedWindow*				HitTestInClientSpace(NativePoint location);
+			void							UpdateHoveringWindow(Nullable<NativePoint> location);
+			void							UpdateEnteringWindow(GuiHostedWindow* window);
+
+			// =============================================================
+			// WindowManager<GuiHostedWindow*>
+			// =============================================================
+
+			void							OnOpened(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnClosed(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnEnabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDisabled(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnGotFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnLostFocus(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnActivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+			void							OnDeactivated(hosted_window_manager::Window<GuiHostedWindow*>* window) override;
+
+			// =============================================================
+			// INativeWindowListener
+			// =============================================================
+
+			HitTestResult					HitTest(NativePoint location) override;
+			void							Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder) override;
+			void							Moved() override;
+			void							DpiChanged(bool preparing) override;
+			void							GotFocus() override;
+			void							LostFocus() override;
+			void							BeforeClosing(bool& cancel) override;
+			void							AfterClosing() override;
+			void							Paint() override;
+			
+			GuiHostedWindow*				GetSelectedWindow_MouseDown(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_MouseMoving(const NativeWindowMouseInfo& info);
+			GuiHostedWindow*				GetSelectedWindow_Other(const NativeWindowMouseInfo& info);
+
+			void							PreAction_LeftButtonDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseDown(const NativeWindowMouseInfo& info);
+			void							PreAction_MouseMoving(const NativeWindowMouseInfo& info);
+			void							PreAction_Other(const NativeWindowMouseInfo& info);
+
+			void							PostAction_LeftButtonUp(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+			void							PostAction_Other(GuiHostedWindow* selectedWindow, const NativeWindowMouseInfo& info);
+
+			template<
+				void (GuiHostedController::* PreAction)(const NativeWindowMouseInfo&),
+				GuiHostedWindow* (GuiHostedController::* GetSelectedWindow)(const NativeWindowMouseInfo&),
+				void (GuiHostedController::* PostAction)(GuiHostedWindow*, const NativeWindowMouseInfo&),
+				void (INativeWindowListener::* Callback)(const NativeWindowMouseInfo&)
+				>
+			void							HandleMouseCallback(const NativeWindowMouseInfo& info);
+
+			template<
+				typename TInfo,
+				void (INativeWindowListener::* Callback)(const TInfo&)
+			>
+			void							HandleKeyboardCallback(const TInfo& info);
+
+			void							LeftButtonDown(const NativeWindowMouseInfo& info) override;
+			void							LeftButtonUp(const NativeWindowMouseInfo& info) override;
+			void							LeftButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							RightButtonDown(const NativeWindowMouseInfo& info) override;
+			void							RightButtonUp(const NativeWindowMouseInfo& info) override;
+			void							RightButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonDown(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonUp(const NativeWindowMouseInfo& info) override;
+			void							MiddleButtonDoubleClick(const NativeWindowMouseInfo& info) override;
+			void							HorizontalWheel(const NativeWindowMouseInfo& info) override;
+			void							VerticalWheel(const NativeWindowMouseInfo& info) override;
+			void							MouseMoving(const NativeWindowMouseInfo& info) override;
+			void							MouseEntered() override;
+			void							MouseLeaved() override;
+
+			void							KeyDown(const NativeWindowKeyInfo& info) override;
+			void							KeyUp(const NativeWindowKeyInfo& info) override;
+			void							SysKeyDown(const NativeWindowKeyInfo& info) override;
+			void							SysKeyUp(const NativeWindowKeyInfo& info) override;
+			void							Char(const NativeWindowCharInfo& info) override;
+
+			// =============================================================
+			// INativeControllerListener
+			// =============================================================
+
+			void							GlobalTimer() override;
+			void							ClipboardUpdated() override;
+			void							NativeWindowDestroying(INativeWindow* window) override;
+
+			// =============================================================
+			// INativeController
+			// =============================================================
+
+			INativeCallbackService*			CallbackService() override;
+			INativeResourceService*			ResourceService() override;
+			INativeAsyncService*			AsyncService() override;
+			INativeClipboardService*		ClipboardService() override;
+			INativeImageService*			ImageService() override;
+			INativeInputService*			InputService() override;
+			INativeDialogService*			DialogService() override;
+			WString							GetExecutablePath() override;
+			
+			INativeScreenService*			ScreenService() override;
+			INativeWindowService*			WindowService() override;
+
+			// =============================================================
+			// INativeAsyncService
+			// =============================================================
+
+			bool							IsInMainThread(INativeWindow* window) override;
+			void							InvokeAsync(const Func<void()>& proc) override;
+			void							InvokeInMainThread(INativeWindow* window, const Func<void()>& proc) override;
+			bool							InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecute(const Func<void()>& proc, vint milliseconds) override;
+			Ptr<INativeDelay>				DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds) override;
+
+			// =============================================================
+			// INativeDialogService
+			// =============================================================
+
+			MessageBoxButtonsOutput			ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal) override;
+			bool							ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors) override;
+			bool							ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist) override;
+			bool							ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options) override;
+
+			// =============================================================
+			// INativeScreenService
+			// =============================================================
+
+			vint							GetScreenCount() override;
+			INativeScreen*					GetScreen(vint index) override;
+			INativeScreen*					GetScreen(INativeWindow* window) override;
+
+			// =============================================================
+			// INativeScreen
+			// =============================================================
+
+			NativeRect						GetBounds() override;
+			NativeRect						GetClientBounds() override;
+			WString							GetName() override;
+			bool							IsPrimary() override;
+			double							GetScalingX() override;
+			double							GetScalingY() override;
+
+			// =============================================================
+			// INativeWindowService
+			// =============================================================
+
+			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
+			void							DestroyNativeWindow(INativeWindow* window) override;
+			INativeWindow*					GetMainWindow() override;
+			INativeWindow*					GetWindow(NativePoint location) override;
+
+			void							SettingHostedWindowsBeforeRunning();
+			void							DestroyHostedWindowsAfterRunning();
+			void							Run(INativeWindow* window) override;
+		public:
+			GuiHostedController(INativeController* _nativeController);
+			~GuiHostedController();
+
+			void							Initialize();
+			void							Finalize();
+		};
+	}
+}
 
 #endif

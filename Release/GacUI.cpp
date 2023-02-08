@@ -174,6 +174,9 @@ namespace vl
 {
 	namespace presentation
 	{
+		extern void GuiInitializeUtilities();
+		extern void GuiFinalizeUtilities();
+
 		namespace controls
 		{
 			using namespace collections;
@@ -507,7 +510,9 @@ GuiApplicationMain
 					application = &app;
 					IAsyncScheduler::RegisterSchedulerForCurrentThread(Ptr(new UIThreadAsyncScheduler));
 					IAsyncScheduler::RegisterDefaultScheduler(Ptr(new OtherThreadAsyncScheduler));
+					GuiInitializeUtilities();
 					GuiMain();
+					GuiFinalizeUtilities();
 					IAsyncScheduler::UnregisterDefaultScheduler();
 					IAsyncScheduler::UnregisterSchedulerForCurrentThread();
 				}
@@ -33507,16 +33512,156 @@ INativeControllerListener
 Native Window Provider
 ***********************************************************************/
 
-		INativeController* currentController=0;
+		class SubstitutableController;
+		INativeController* nativeController = nullptr;
+		SubstitutableController* substitutableController = nullptr;
+
+		class SubstitutableController
+			: public Object
+			, public INativeController
+			, public INativeServiceSubstitution
+		{
+		public:
+			WString GetExecutablePath() override
+			{
+				return nativeController->GetExecutablePath();
+			}
+
+			// Substitutable Service
+
+			template<typename T, T* (INativeController::* Getter)()>
+			struct Substitution
+			{
+				T*					service = nullptr;
+				bool				optional = false;
+				bool				requested = false;
+				bool				unsubstituted = false;
+
+				void Substitute(T* _service, bool _optional)
+				{
+					CHECK_ERROR(
+						!requested,
+						L"The service cannot be substituted because it has been used."
+						);
+					service = _service;
+					optional = _optional;
+				}
+
+				void Unsubstitute(T* _service)
+				{
+					if (service == _service)
+					{
+						if (requested)
+						{
+							unsubstituted = true;
+						}
+						service = nullptr;
+					}
+				}
+
+				T* GetService()
+				{
+					CHECK_ERROR(
+						!unsubstituted,
+						L"The service cannot be used because it has been unsubstituted."
+						);
+					requested = true;
+
+					auto nativeService = (nativeController->*Getter)();
+					if (service && (!nativeService || !optional))
+					{
+						return service;
+					}
+
+					CHECK_ERROR(
+						nativeService != nullptr,
+						L"Required service does not exist."
+						);
+					return nativeService;
+				}
+			};
+
+			// Unsubstitutable Service
+
+			template<typename T, T* (INativeController::* Getter)()>
+			T* GetUnsubstitutableService()
+			{
+				auto nativeService = (nativeController->*Getter)();
+				CHECK_ERROR(
+					nativeService != nullptr,
+					L"Required service does not exist."
+				);
+				return nativeService;
+			}
+
+			// INativeServiceSubstitution and INativeController
+
+#define GET_SUBSTITUTABLE_SERVICE(NAME)														\
+			Substitution<																	\
+				INative##NAME##Service,														\
+				&INativeController::NAME##Service											\
+				> substituted##NAME;														\
+																							\
+			void Substitute(INative##NAME##Service* service, bool optional) override		\
+			{																				\
+				substituted##NAME.Substitute(service, optional);							\
+			}																				\
+																							\
+			void Unsubstitute(INative##NAME##Service* service) override						\
+			{																				\
+				substituted##NAME.Unsubstitute(service);									\
+			}																				\
+																							\
+			INative##NAME##Service* NAME##Service() override								\
+			{																				\
+				return substituted##NAME.GetService();										\
+			}																				\
+
+			GUI_SUBSTITUTABLE_SERVICES(GET_SUBSTITUTABLE_SERVICE)
+#undef GET_SUBSTITUTABLE_SERVICE
+
+#define GET_UNSUBSTITUTABLE_SERVICE(NAME)													\
+			INative##NAME##Service* NAME##Service() override								\
+			{																				\
+				return GetUnsubstitutableService<											\
+					INative##NAME##Service,													\
+					&INativeController::NAME##Service										\
+					>();																	\
+			}																				\
+
+			GUI_UNSUBSTITUTABLE_SERVICES(GET_UNSUBSTITUTABLE_SERVICE)
+#undef GET_UNSUBSTITUTABLE_SERVICE
+		};
+
+		INativeServiceSubstitution* GetNativeServiceSubstitution()
+		{
+			return substitutableController;
+		}
 
 		INativeController* GetCurrentController()
 		{
-			return currentController;
+			return substitutableController;
 		}
 
-		void SetCurrentController(INativeController* controller)
+		void SetNativeController(INativeController* controller)
 		{
-			currentController=controller;
+			nativeController = controller;
+
+			if (nativeController)
+			{
+				if (!substitutableController)
+				{
+					substitutableController = new SubstitutableController();
+				}
+			}
+			else
+			{
+				if (substitutableController)
+				{
+					delete substitutableController;
+					substitutableController = 0;
+				}
+			}
 		}
 
 /***********************************************************************
@@ -33542,215 +33687,6 @@ Helper Functions
 			default:
 				return nullptr;
 			}
-		}
-	}
-}
-
-/***********************************************************************
-.\NATIVEWINDOW\SHAREDSERVICES\GUISHAREDASYNCSERVICE.CPP
-***********************************************************************/
-
-namespace vl
-{
-	namespace presentation
-	{
-		using namespace collections;
-
-/***********************************************************************
-SharedAsyncService::TaskItem
-***********************************************************************/
-
-		SharedAsyncService::TaskItem::TaskItem()
-			:semaphore(0)
-		{
-		}
-
-		SharedAsyncService::TaskItem::TaskItem(Semaphore* _semaphore, const Func<void()>& _proc)
-			:semaphore(_semaphore)
-			,proc(_proc)
-		{
-		}
-
-		SharedAsyncService::TaskItem::~TaskItem()
-		{
-		}
-
-/***********************************************************************
-SharedAsyncService::DelayItem
-***********************************************************************/
-
-		SharedAsyncService::DelayItem::DelayItem(SharedAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds)
-			:service(_service)
-			,proc(_proc)
-			,status(INativeDelay::Pending)
-			,executeTime(DateTime::LocalTime().Forward(milliseconds))
-			,executeInMainThread(_executeInMainThread)
-		{
-		}
-
-		SharedAsyncService::DelayItem::~DelayItem()
-		{
-		}
-
-		INativeDelay::ExecuteStatus SharedAsyncService::DelayItem::GetStatus()
-		{
-			return status;
-		}
-
-		bool SharedAsyncService::DelayItem::Delay(vint milliseconds)
-		{
-			SPIN_LOCK(service->taskListLock)
-			{
-				if(status==INativeDelay::Pending)
-				{
-					executeTime=DateTime::LocalTime().Forward(milliseconds);
-					return true;
-				}
-			}
-			return false;
-		}
-
-		bool SharedAsyncService::DelayItem::Cancel()
-		{
-			SPIN_LOCK(service->taskListLock)
-			{
-				if(status==INativeDelay::Pending)
-				{
-					if(service->delayItems.Remove(this))
-					{
-						status=INativeDelay::Canceled;
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-/***********************************************************************
-SharedAsyncService
-***********************************************************************/
-
-		SharedAsyncService::SharedAsyncService()
-			:mainThreadId(Thread::GetCurrentThreadId())
-		{
-		}
-
-		SharedAsyncService::~SharedAsyncService()
-		{
-		}
-
-		void SharedAsyncService::ExecuteAsyncTasks()
-		{
-			DateTime now=DateTime::LocalTime();
-			Array<TaskItem> items;
-			List<Ptr<DelayItem>> executableDelayItems;
-
-			SPIN_LOCK(taskListLock)
-			{
-				CopyFrom(items, taskItems);
-				taskItems.RemoveRange(0, items.Count());
-				for(vint i=delayItems.Count()-1;i>=0;i--)
-				{
-					Ptr<DelayItem> item=delayItems[i];
-					if(now.filetime>=item->executeTime.filetime)
-					{
-						item->status=INativeDelay::Executing;
-						executableDelayItems.Add(item);
-						delayItems.RemoveAt(i);
-					}
-				}
-			}
-
-			for (auto item : items)
-			{
-				item.proc();
-				if(item.semaphore)
-				{
-					item.semaphore->Release();
-				}
-			}
-			for (auto item : executableDelayItems)
-			{
-				if(item->executeInMainThread)
-				{
-					item->proc();
-					item->status=INativeDelay::Executed;
-				}
-				else
-				{
-					InvokeAsync([=]()
-					{
-						item->proc();
-						item->status=INativeDelay::Executed;
-					});
-				}
-			}
-		}
-
-		bool SharedAsyncService::IsInMainThread(INativeWindow* window)
-		{
-			return Thread::GetCurrentThreadId()==mainThreadId;
-		}
-
-		void SharedAsyncService::InvokeAsync(const Func<void()>& proc)
-		{
-			ThreadPoolLite::Queue(proc);
-		}
-
-		void SharedAsyncService::InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)
-		{
-			SPIN_LOCK(taskListLock)
-			{
-				TaskItem item(0, proc);
-				taskItems.Add(item);
-			}
-		}
-
-		bool SharedAsyncService::InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)
-		{
-			Semaphore semaphore;
-			semaphore.Create(0, 1);
-
-			SPIN_LOCK(taskListLock)
-			{
-				TaskItem item(&semaphore, proc);
-				taskItems.Add(item);
-			}
-
-#ifdef VCZH_MSVC
-			if(milliseconds<0)
-			{
-				return semaphore.Wait();
-			}
-			else
-			{
-				return semaphore.WaitForTime(milliseconds);
-			}
-#else
-			return semaphore.Wait();
-#endif
-		}
-
-		Ptr<INativeDelay> SharedAsyncService::DelayExecute(const Func<void()>& proc, vint milliseconds)
-		{
-			Ptr<DelayItem> delay;
-			SPIN_LOCK(taskListLock)
-			{
-				delay=Ptr(new DelayItem(this, proc, false, milliseconds));
-				delayItems.Add(delay);
-			}
-			return delay;
-		}
-
-		Ptr<INativeDelay> SharedAsyncService::DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)
-		{
-			Ptr<DelayItem> delay;
-			SPIN_LOCK(taskListLock)
-			{
-				delay=Ptr(new DelayItem(this, proc, true, milliseconds));
-				delayItems.Add(delay);
-			}
-			return delay;
 		}
 	}
 }
@@ -33835,6 +33771,11 @@ public:
 	bool UninstallListener(INativeControllerListener* listener) override
 	{
 		return true;
+	}
+
+	INativeCallbackInvoker* Invoker() override
+	{
+		CHECK_FAIL(L"Not implemented!");
 	}
 
 	////////////////////////////////////////////////////////////////////
@@ -33975,9 +33916,9 @@ extern void GuiApplicationMain();
 int SetupGacGenNativeController()
 {
 	GacGenNativeController controller;
-	SetCurrentController(&controller);
+	SetNativeController(&controller);
 	GuiApplicationMain();
-	SetCurrentController(nullptr);
+	SetNativeController(nullptr);
 	return 0;
 }
 
@@ -34636,10 +34577,7 @@ GuiHostedController::INativeControllerListener
 
 		void GuiHostedController::GlobalTimer()
 		{
-			for (auto listener : listeners)
-			{
-				listener->GlobalTimer();
-			}
+			callbackService.InvokeGlobalTimer();
 
 			if (hostedResourceManager && nativeWindow && nativeWindow->IsVisible())
 			{
@@ -34730,10 +34668,7 @@ GuiHostedController::INativeControllerListener
 
 		void GuiHostedController::ClipboardUpdated()
 		{
-			for (auto listener : listeners)
-			{
-				listener->ClipboardUpdated();
-			}
+			callbackService.InvokeClipboardUpdated();
 		}
 
 		void GuiHostedController::NativeWindowDestroying(INativeWindow* window)
@@ -34752,7 +34687,7 @@ GuiHostedController::INativeController
 
 		INativeCallbackService* GuiHostedController::CallbackService()
 		{
-			return this;
+			return &callbackService;
 		}
 
 		INativeResourceService* GuiHostedController::ResourceService()
@@ -34798,36 +34733,6 @@ GuiHostedController::INativeController
 		INativeWindowService* GuiHostedController::WindowService()
 		{
 			return this;
-		}
-
-/***********************************************************************
-GuiHostedController::INativeCallbackService
-***********************************************************************/
-
-		bool GuiHostedController::InstallListener(INativeControllerListener* listener)
-		{
-			if (listeners.Contains(listener))
-			{
-				return false;
-			}
-			else
-			{
-				listeners.Add(listener);
-				return true;
-			}
-		}
-
-		bool GuiHostedController::UninstallListener(INativeControllerListener* listener)
-		{
-			if (listeners.Contains(listener))
-			{
-				listeners.Remove(listener);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
 		}
 
 /***********************************************************************
@@ -34959,11 +34864,7 @@ GuiHostedController::INativeWindowService
 			createdWindows.Add(hostedWindow);
 			wmManager->RegisterWindow(&hostedWindow->wmWindow);
 
-			for (auto listener : listeners)
-			{
-				listener->NativeWindowCreated(hostedWindow.Obj());
-			}
-
+			callbackService.InvokeNativeWindowCreated(hostedWindow.Obj());
 			if (mainWindow)
 			{
 				hostedWindow->BecomeNonMainWindow();
@@ -34997,11 +34898,8 @@ GuiHostedController::INativeWindowService
 			{
 				listener->Destroying();
 			}
-			for (auto listener : listeners)
-			{
-				listener->NativeWindowDestroying(hostedWindow);
-			}
 
+			callbackService.InvokeNativeWindowDestroying(hostedWindow);
 			wmManager->UnregisterWindow(&hostedWindow->wmWindow);
 			createdWindows.RemoveAt(index);
 
@@ -43912,3 +43810,691 @@ Type Resolver Plugin
 	}
 }
 
+
+/***********************************************************************
+.\UTILITIES\GUIUTILITIESREGISTRATION.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+Utilities Registration
+***********************************************************************/
+
+		FakeClipboardService* fakeClipboardService = nullptr;
+
+		void GuiInitializeUtilities()
+		{
+			if (!fakeClipboardService)
+			{
+				fakeClipboardService = new FakeClipboardService;
+				GetNativeServiceSubstitution()->Substitute(fakeClipboardService, true);
+			}
+		}
+
+		void GuiFinalizeUtilities()
+		{
+			if (fakeClipboardService)
+			{
+				GetNativeServiceSubstitution()->Unsubstitute(fakeClipboardService);
+				delete fakeClipboardService;
+				fakeClipboardService = nullptr;
+			}
+		}
+	}
+}
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\GUIFAKECLIPBOARDSERVICE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+FakeClipboardReader
+***********************************************************************/
+
+		class FakeClipboardReader : public Object, public INativeClipboardReader
+		{
+		public:
+			Nullable<WString>			text;
+			Ptr<DocumentModel>			document;
+			Ptr<INativeImage>			image;
+
+			bool ContainsText() override
+			{
+				return text;
+			}
+
+			WString GetText() override
+			{
+				return text ? text.Value() : WString();
+			}
+
+			bool ContainsDocument() override
+			{
+				return document;
+			}
+
+			Ptr<DocumentModel> GetDocument() override
+			{
+				return document;
+			}
+
+			bool ContainsImage() override
+			{
+				return image;
+			}
+
+			Ptr<INativeImage> GetImage() override
+			{
+				return image;
+			}
+		};
+
+/***********************************************************************
+FakeClipboardWriter
+***********************************************************************/
+
+		class FakeClipboardWriter : public Object, public INativeClipboardWriter
+		{
+		public:
+			FakeClipboardService*		service;
+			Ptr<FakeClipboardReader>	reader;
+
+			FakeClipboardWriter(FakeClipboardService* _service)
+				: service(_service)
+			{
+			}
+
+			void SetText(const WString& value) override
+			{
+				if (reader) reader->text = value;
+			}
+
+			void SetDocument(Ptr<DocumentModel> value) override
+			{
+				if (reader) reader->document = value;
+			}
+
+			void SetImage(Ptr<INativeImage> value) override
+			{
+				if (reader) reader->image = value;
+			}
+
+			bool Submit() override
+			{
+				if (!reader) return false;
+				service->reader = reader;
+				reader = nullptr;
+				service = nullptr;
+				return true;
+			}
+		};
+
+/***********************************************************************
+FakeClipboardService
+***********************************************************************/
+
+		FakeClipboardService::FakeClipboardService()
+			: reader(Ptr(new FakeClipboardReader))
+		{
+		}
+
+		Ptr<INativeClipboardReader> FakeClipboardService::ReadClipboard()
+		{
+			return reader;
+		}
+
+		Ptr<INativeClipboardWriter> FakeClipboardService::WriteClipboard()
+		{
+			return Ptr(new FakeClipboardWriter(this));
+		}
+	}
+}
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\GUIFAKEDIALOGSERVICEBASE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+FakeDialogServiceBase
+***********************************************************************/
+
+		FakeDialogServiceBase::FakeDialogServiceBase()
+		{
+		}
+
+		FakeDialogServiceBase::MessageBoxButtonsOutput	FakeDialogServiceBase::ShowMessageBox(
+			INativeWindow* window,
+			const WString& text,
+			const WString& title,
+			MessageBoxButtonsInput buttons,
+			MessageBoxDefaultButton defaultButton,
+			MessageBoxIcons icon,
+			MessageBoxModalOptions modal
+		)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		bool FakeDialogServiceBase::ShowColorDialog(
+			INativeWindow* window,
+			Color& selection,
+			bool selected,
+			ColorDialogCustomColorOptions customColorOptions,
+			Color* customColors
+		)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		bool FakeDialogServiceBase::ShowFontDialog(
+			INativeWindow* window,
+			FontProperties& selectionFont,
+			Color& selectionColor,
+			bool selected,
+			bool showEffect,
+			bool forceFontExist
+		)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		bool FakeDialogServiceBase::ShowFileDialog(
+			INativeWindow* window,
+			collections::List<WString>& selectionFileNames,
+			vint& selectionFilterIndex,
+			FileDialogTypes dialogType,
+			const WString& title,
+			const WString& initialFileName,
+			const WString& initialDirectory,
+			const WString& defaultExtension,
+			const WString& filter,
+			FileDialogOptions options
+		)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+	}
+}
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\DIALOGS\SOURCE\GUIFAKEDIALOGSERVICEUI.CPP
+***********************************************************************/
+/***********************************************************************
+!!!!!! DO NOT MODIFY !!!!!!
+
+GacGen.exe Resource.xml
+
+This file is generated by Workflow compiler
+https://github.com/vczh-libraries
+***********************************************************************/
+
+
+#if defined( _MSC_VER)
+#pragma warning(push)
+#pragma warning(disable:4250)
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wparentheses-equality"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#endif
+
+#define GLOBAL_SYMBOL ::vl_workflow_global::GuiFakeDialogServiceUI::
+#define GLOBAL_NAME ::vl_workflow_global::GuiFakeDialogServiceUI::Instance().
+#define GLOBAL_OBJ &::vl_workflow_global::GuiFakeDialogServiceUI::Instance()
+
+/***********************************************************************
+Global Variables
+***********************************************************************/
+
+BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_GuiFakeDialogServiceUI)
+	vl_workflow_global::GuiFakeDialogServiceUI instance;
+	INITIALIZE_GLOBAL_STORAGE_CLASS
+	FINALIZE_GLOBAL_STORAGE_CLASS
+END_GLOBAL_STORAGE_CLASS(vl_workflow_global_GuiFakeDialogServiceUI)
+
+namespace vl_workflow_global
+{
+/***********************************************************************
+Global Functions
+***********************************************************************/
+
+	GuiFakeDialogServiceUI& GuiFakeDialogServiceUI::Instance()
+	{
+		return Getvl_workflow_global_GuiFakeDialogServiceUI().instance;
+	}
+}
+
+/***********************************************************************
+Class (::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace controls
+		{
+			namespace fake_dialog_service
+			{
+				void GuiMessageBoxWindowConstructor::__vwsn_vl_presentation_controls_fake_dialog_service_GuiMessageBoxWindow_Initialize(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow* __vwsn_this_)
+				{
+					(this->self = __vwsn_this_);
+					{
+						::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint>(240); __vwsn_temp__.y = static_cast<::vl::vint>(120); return __vwsn_temp__; }());
+					}
+					{
+						::vl::__vwsn::This(this->self)->SetText(::vl::WString::Unmanaged(L"MessageBox"));
+					}
+				}
+
+				GuiMessageBoxWindowConstructor::GuiMessageBoxWindowConstructor()
+					: self(static_cast<::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow*>(nullptr))
+				{
+				}
+
+/***********************************************************************
+Class (::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
+***********************************************************************/
+
+				GuiMessageBoxWindow::GuiMessageBoxWindow()
+					: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+				{
+					auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow"));
+					auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+					::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+					::vl::__vwsn::This(this)->__vwsn_vl_presentation_controls_fake_dialog_service_GuiMessageBoxWindow_Initialize(this);
+				}
+
+				GuiMessageBoxWindow::~GuiMessageBoxWindow()
+				{
+					this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
+				}
+
+			}
+		}
+	}
+}
+#undef GLOBAL_SYMBOL
+#undef GLOBAL_NAME
+#undef GLOBAL_OBJ
+
+#if defined( _MSC_VER)
+#pragma warning(pop)
+#elif defined(__clang__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+
+
+/***********************************************************************
+.\UTILITIES\FAKESERVICES\DIALOGS\SOURCE\GUIFAKEDIALOGSERVICEUIRESOURCE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace user_resource
+		{
+			using namespace collections;
+			using namespace stream;
+			using namespace controls;
+
+			class GuiFakeDialogServiceUIResourceReader
+			{
+			public:
+				static const vint parserBufferLength = 860; // 860 bytes before compressing
+				static const vint parserBufferBlock = 1024;
+				static const vint parserBufferRemain = 860;
+				static const vint parserBufferRows = 1;
+				static const char* parserBuffer[1];
+
+				static void ReadToStream(vl::stream::MemoryStream& stream)
+				{
+					DecompressStream(parserBuffer, false, parserBufferRows, parserBufferBlock, parserBufferRemain, stream);
+				}
+			};
+
+			const char* GuiFakeDialogServiceUIResourceReader::parserBuffer[] = {
+				"\x60\x00\x00\x00\x00\x00\x00\x00\x60\x00\x00\x00\x3C\x52\x65\x73\x6F\x75\x72\x63\x65\x4D\x65\x74\x61\x64\x61\x74\x61\x20\x4E\x61\x6D\x65\x3D\x22\x47\x75\x69\x46\x61\x6B\x65\x44\x69\x61\x6C\x6F\x67\x53\x65\x72\x76\x69\x63\x65\x55\x49\x22\x20\x56\x65\x72\x73\x69\x6F\x6E\x3D\x22\x31\x2E\x30\x22\x3E\x3C\x44\x65\x70\x65\x6E\x64\x65\x6E\x63\x69\x65\x73\x2F\x3E\x3C\x2F\x52\x65\x73\x6F\x75\x72\x63\x65\x4D\x65\x74\x61\x64\x61\x74\x61\x3E\x03\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x54\x65\x78\x74\x08\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x49\x6E\x73\x74\x61\x6E\x63\x65\x0F\x00\x00\x00\x00\x00\x00\x00\x0F\x00\x00\x00\x43\x6C\x61\x73\x73\x4E\x61\x6D\x65\x52\x65\x63\x6F\x72\x64\x00\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x47\x61\x63\x47\x65\x6E\x43\x6F\x6E\x66\x69\x67\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x43\x70\x70\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x43\x70\x70\x43\x6F\x6D\x70\x72\x65\x73\x73\x65\x64\x1A\x00\x00\x00\x00\x00\x00\x00\x1A\x00\x00\x00\x47\x75\x69\x46\x61\x6B\x65\x44\x69\x61\x6C\x6F\x67\x53\x65\x72\x76\x69\x63\x65\x55\x49\x2E\x63\x70\x70\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00\x4E\x61\x6D\x65\x16\x00\x00\x00\x00\x00\x00\x00\x16\x00\x00\x00\x47\x75\x69\x46\x61\x6B\x65\x44\x69\x61\x6C\x6F\x67\x53\x65\x72\x76\x69\x63\x65\x55\x49\x00\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x00\x00\x00\x00\x0D\x00\x00\x00\x4E\x6F\x72\x6D\x61\x6C\x49\x6E\x63\x6C\x75\x64\x65\x13\x00\x00\x00\x00\x00\x00\x00\x13\x00\x00\x00\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x47\x61\x63\x55\x49\x2E\x68\x00\x00\x00\x00\x00\x00\x00\x00\x11\x00\x00\x00\x00\x00\x00\x00\x11\x00\x00\x00\x52\x65\x66\x6C\x65\x63\x74\x69\x6F\x6E\x49\x6E\x63\x6C\x75\x64\x65\x3C\x00\x00\x00\x00\x00\x00\x00\x3C\x00\x00\x00\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x2E\x2E\x2F\x52\x65\x66\x6C\x65\x63\x74\x69\x6F\x6E\x2F\x54\x79\x70\x65\x44\x65\x73\x63\x72\x69\x70\x74\x6F\x72\x73\x2F\x47\x75\x69\x52\x65\x66\x6C\x65\x63\x74\x69\x6F\x6E\x50\x6C\x75\x67\x69\x6E\x2E\x68\x00\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x00\x00\x00\x00\x0C\x00\x00\x00\x53\x6F\x75\x72\x63\x65\x46\x6F\x6C\x64\x65\x72\x06\x00\x00\x00\x00\x00\x00\x00\x06\x00\x00\x00\x53\x6F\x75\x72\x63\x65\x00\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x00\x00\x00\x00\x14\x00\x00\x00\x4D\x65\x73\x73\x61\x67\x65\x42\x6F\x78\x43\x6F\x6D\x70\x6F\x6E\x65\x6E\x74\x73\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0B\x00\x00\x00\x00\x00\x00\x00\x0B\x00\x00\x00\x50\x72\x65\x63\x6F\x6D\x70\x69\x6C\x65\x64\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x0F\x00\x00\x00\x00\x00\x00\x00\x0F\x00\x00\x00\x43\x6C\x61\x73\x73\x4E\x61\x6D\x65\x52\x65\x63\x6F\x72\x64\x01\x00\x00\x00\x00\x00\x00\x00\x44\x00\x00\x00\x00\x00\x00\x00\x44\x00\x00\x00\x76\x6C\x3A\x3A\x70\x72\x65\x73\x65\x6E\x74\x61\x74\x69\x6F\x6E\x3A\x3A\x63\x6F\x6E\x74\x72\x6F\x6C\x73\x3A\x3A\x66\x61\x6B\x65\x5F\x64\x69\x61\x6C\x6F\x67\x5F\x73\x65\x72\x76\x69\x63\x65\x3A\x3A\x47\x75\x69\x4D\x65\x73\x73\x61\x67\x65\x42\x6F\x78\x57\x69\x6E\x64\x6F\x77\x00\x00\x00\x00\x00\x00\x00\x00",
+				};
+
+			class GuiFakeDialogServiceUIResourceLoaderPlugin : public Object, public IGuiPlugin
+			{
+			public:
+
+				GUI_PLUGIN_NAME(GacGen_GuiFakeDialogServiceUIResourceLoader)
+				{
+					GUI_PLUGIN_DEPEND(GacUI_Res_Resource);
+					GUI_PLUGIN_DEPEND(GacUI_Res_TypeResolvers);
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+					GUI_PLUGIN_DEPEND(GacUI_Instance_Reflection);
+					GUI_PLUGIN_DEPEND(GacUI_Compiler_WorkflowTypeResolvers);
+#endif
+				}
+
+				void Load()override
+				{
+					List<GuiResourceError> errors;
+					MemoryStream resourceStream;
+					GuiFakeDialogServiceUIResourceReader::ReadToStream(resourceStream);
+					resourceStream.SeekFromBegin(0);
+					GetResourceManager()->LoadResourceOrPending(resourceStream, GuiResourceUsage::InstanceClass);
+				}
+
+				void Unload()override
+				{
+				}
+			};
+			GUI_REGISTER_PLUGIN(GuiFakeDialogServiceUIResourceLoaderPlugin)
+		}
+	}
+}
+
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDASYNCSERVICE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+		using namespace collections;
+
+/***********************************************************************
+SharedAsyncService::TaskItem
+***********************************************************************/
+
+		SharedAsyncService::TaskItem::TaskItem()
+			:semaphore(0)
+		{
+		}
+
+		SharedAsyncService::TaskItem::TaskItem(Semaphore* _semaphore, const Func<void()>& _proc)
+			:semaphore(_semaphore)
+			,proc(_proc)
+		{
+		}
+
+		SharedAsyncService::TaskItem::~TaskItem()
+		{
+		}
+
+/***********************************************************************
+SharedAsyncService::DelayItem
+***********************************************************************/
+
+		SharedAsyncService::DelayItem::DelayItem(SharedAsyncService* _service, const Func<void()>& _proc, bool _executeInMainThread, vint milliseconds)
+			:service(_service)
+			,proc(_proc)
+			,status(INativeDelay::Pending)
+			,executeTime(DateTime::LocalTime().Forward(milliseconds))
+			,executeInMainThread(_executeInMainThread)
+		{
+		}
+
+		SharedAsyncService::DelayItem::~DelayItem()
+		{
+		}
+
+		INativeDelay::ExecuteStatus SharedAsyncService::DelayItem::GetStatus()
+		{
+			return status;
+		}
+
+		bool SharedAsyncService::DelayItem::Delay(vint milliseconds)
+		{
+			SPIN_LOCK(service->taskListLock)
+			{
+				if(status==INativeDelay::Pending)
+				{
+					executeTime=DateTime::LocalTime().Forward(milliseconds);
+					return true;
+				}
+			}
+			return false;
+		}
+
+		bool SharedAsyncService::DelayItem::Cancel()
+		{
+			SPIN_LOCK(service->taskListLock)
+			{
+				if(status==INativeDelay::Pending)
+				{
+					if(service->delayItems.Remove(this))
+					{
+						status=INativeDelay::Canceled;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+/***********************************************************************
+SharedAsyncService
+***********************************************************************/
+
+		SharedAsyncService::SharedAsyncService()
+			:mainThreadId(Thread::GetCurrentThreadId())
+		{
+		}
+
+		SharedAsyncService::~SharedAsyncService()
+		{
+		}
+
+		void SharedAsyncService::ExecuteAsyncTasks()
+		{
+			DateTime now=DateTime::LocalTime();
+			Array<TaskItem> items;
+			List<Ptr<DelayItem>> executableDelayItems;
+
+			SPIN_LOCK(taskListLock)
+			{
+				CopyFrom(items, taskItems);
+				taskItems.RemoveRange(0, items.Count());
+				for(vint i=delayItems.Count()-1;i>=0;i--)
+				{
+					Ptr<DelayItem> item=delayItems[i];
+					if(now.filetime>=item->executeTime.filetime)
+					{
+						item->status=INativeDelay::Executing;
+						executableDelayItems.Add(item);
+						delayItems.RemoveAt(i);
+					}
+				}
+			}
+
+			for (auto item : items)
+			{
+				item.proc();
+				if(item.semaphore)
+				{
+					item.semaphore->Release();
+				}
+			}
+			for (auto item : executableDelayItems)
+			{
+				if(item->executeInMainThread)
+				{
+					item->proc();
+					item->status=INativeDelay::Executed;
+				}
+				else
+				{
+					InvokeAsync([=]()
+					{
+						item->proc();
+						item->status=INativeDelay::Executed;
+					});
+				}
+			}
+		}
+
+		bool SharedAsyncService::IsInMainThread(INativeWindow* window)
+		{
+			return Thread::GetCurrentThreadId()==mainThreadId;
+		}
+
+		void SharedAsyncService::InvokeAsync(const Func<void()>& proc)
+		{
+			ThreadPoolLite::Queue(proc);
+		}
+
+		void SharedAsyncService::InvokeInMainThread(INativeWindow* window, const Func<void()>& proc)
+		{
+			SPIN_LOCK(taskListLock)
+			{
+				TaskItem item(0, proc);
+				taskItems.Add(item);
+			}
+		}
+
+		bool SharedAsyncService::InvokeInMainThreadAndWait(INativeWindow* window, const Func<void()>& proc, vint milliseconds)
+		{
+			Semaphore semaphore;
+			semaphore.Create(0, 1);
+
+			SPIN_LOCK(taskListLock)
+			{
+				TaskItem item(&semaphore, proc);
+				taskItems.Add(item);
+			}
+
+#ifdef VCZH_MSVC
+			if(milliseconds<0)
+			{
+				return semaphore.Wait();
+			}
+			else
+			{
+				return semaphore.WaitForTime(milliseconds);
+			}
+#else
+			return semaphore.Wait();
+#endif
+		}
+
+		Ptr<INativeDelay> SharedAsyncService::DelayExecute(const Func<void()>& proc, vint milliseconds)
+		{
+			Ptr<DelayItem> delay;
+			SPIN_LOCK(taskListLock)
+			{
+				delay=Ptr(new DelayItem(this, proc, false, milliseconds));
+				delayItems.Add(delay);
+			}
+			return delay;
+		}
+
+		Ptr<INativeDelay> SharedAsyncService::DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)
+		{
+			Ptr<DelayItem> delay;
+			SPIN_LOCK(taskListLock)
+			{
+				delay=Ptr(new DelayItem(this, proc, true, milliseconds));
+				delayItems.Add(delay);
+			}
+			return delay;
+		}
+	}
+}
+
+/***********************************************************************
+.\UTILITIES\SHAREDSERVICES\GUISHAREDCALLBACKSERVICE.CPP
+***********************************************************************/
+
+namespace vl
+{
+	namespace presentation
+	{
+
+/***********************************************************************
+SharedCallbackService
+***********************************************************************/
+
+		SharedCallbackService::SharedCallbackService()
+		{
+		}
+
+		bool SharedCallbackService::InstallListener(INativeControllerListener* listener)
+		{
+			if(listeners.Contains(listener))
+			{
+				return false;
+			}
+			else
+			{
+				listeners.Add(listener);
+				return true;
+			}
+		}
+
+		bool SharedCallbackService::UninstallListener(INativeControllerListener* listener)
+		{
+			if(listeners.Contains(listener))
+			{
+				listeners.Remove(listener);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		INativeCallbackInvoker* SharedCallbackService::Invoker()
+		{
+			return this;
+		}
+
+		void SharedCallbackService::InvokeGlobalTimer()
+		{
+			for(vint i=0;i<listeners.Count();i++)
+			{
+				listeners[i]->GlobalTimer();
+			}
+		}
+
+		void SharedCallbackService::InvokeClipboardUpdated()
+		{
+			for(vint i=0;i<listeners.Count();i++)
+			{
+				listeners[i]->ClipboardUpdated();
+			}
+		}
+
+		void SharedCallbackService::InvokeNativeWindowCreated(INativeWindow* window)
+		{
+			for(vint i=0;i<listeners.Count();i++)
+			{
+				listeners[i]->NativeWindowCreated(window);
+			}
+		}
+
+		void SharedCallbackService::InvokeNativeWindowDestroying(INativeWindow* window)
+		{
+			for(vint i=0;i<listeners.Count();i++)
+			{
+				listeners[i]->NativeWindowDestroying(window);
+			}
+		}
+	}
+}

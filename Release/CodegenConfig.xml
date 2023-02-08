@@ -21,9 +21,11 @@
       <except pattern="\Reflection\" />
       <except pattern="\Compiler\" />
       <except pattern="\Skins\" />
+      <except pattern="GuiFakeDialogServiceUIReflection" />
     </category>
     <category name="windows" pattern="\Source\PlatformProviders\Windows\" />
     <category name="reflection" pattern="\Source\Reflection\" />
+    <category name="reflection" pattern="GuiFakeDialogServiceUIReflection" />
     <category name="compiler" pattern="\Source\Compiler\" />
     <category name="darkskin" pattern="\Skins\DarkSkin\Source\">
       <except pattern="Reflection"/>

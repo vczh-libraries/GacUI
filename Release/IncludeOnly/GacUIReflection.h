@@ -14,3 +14,4 @@ DEVELOPER: Zihan Chen(vczh)
 
 #include "..\..\Source\Reflection\GuiInstanceCompiledWorkflow.h"
 #include "..\..\Source\Reflection\TypeDescriptors\GuiReflectionPlugin.h"
+#include "..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIReflection.h"

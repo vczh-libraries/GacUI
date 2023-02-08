@@ -16,7 +16,6 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsRenderersWindowsGDI.cpp"
 #include "..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsUniscribe.cpp"
 #include "..\..\Source\PlatformProviders\Windows\GDI\Renderers\GuiGraphicsWindowsGDI.cpp"
-#include "..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsCallbackService.cpp"
 #include "..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsClipboardService.cpp"
 #include "..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsDialogService.cpp"
 #include "..\..\Source\PlatformProviders\Windows\ServicesImpl\WindowsImageService.cpp"
