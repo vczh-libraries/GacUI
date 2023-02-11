@@ -37,9 +37,9 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::gaclib_controls::DialogStrings)
-			DECL_TYPE_INFO(::gaclib_controls::GuiMessageBoxWindow)
-			DECL_TYPE_INFO(::gaclib_controls::GuiMessageBoxWindowConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
+			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindow)
+			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindowConstructor)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 

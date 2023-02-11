@@ -1,5 +1,5 @@
 ﻿================================(1/2)================================
-module <instance>gaclib_controls::GuiMessageBoxWindow;
+module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -21,7 +21,7 @@ using presentation::theme::*;
 
 namespace gaclib_controls
 {
-    class GuiMessageBoxWindow : ::presentation::controls::GuiWindow
+    class MessageBoxWindow : ::presentation::controls::GuiWindow
     {
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));

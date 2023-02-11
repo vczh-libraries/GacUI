@@ -1,6 +1,6 @@
 <Folder>
   <Instance name="MessageBoxWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::GuiMessageBoxWindow">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxWindow">
       <ref.Parameter Name="ViewModel" Class="presentation::IMessageBoxDialogViewModel"/>
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <Window ref.Name="self" Text-eval="ViewModel.Title" ClientSize="x:240 y:120">

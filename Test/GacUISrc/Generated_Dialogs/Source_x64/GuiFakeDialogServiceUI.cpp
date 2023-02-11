@@ -56,12 +56,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_(::gaclib_controls::GuiMessageBoxWindowConstructor* __vwsnctorthis_0)
+	__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -74,7 +74,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::GuiMessageBoxWindowConstructor* __vwsnctorthis_0)
+	__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
@@ -83,30 +83,30 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -116,7 +116,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -218,10 +218,14 @@ namespace gaclib_controls
 	}
 
 /***********************************************************************
-Class (::gaclib_controls::GuiMessageBoxWindowConstructor)
+Class (::gaclib_controls::IDialogStringsStrings)
 ***********************************************************************/
 
-	void GuiMessageBoxWindowConstructor::__vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize(::gaclib_controls::GuiMessageBoxWindow* __vwsn_this_)
+/***********************************************************************
+Class (::gaclib_controls::MessageBoxWindowConstructor)
+***********************************************************************/
+
+	void MessageBoxWindowConstructor::__vwsn_gaclib_controls_MessageBoxWindow_Initialize(::gaclib_controls::MessageBoxWindow* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
 		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
@@ -287,15 +291,15 @@ Class (::gaclib_controls::GuiMessageBoxWindowConstructor)
 			::vl::__vwsn::This(this->self)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetTitle());
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
-	GuiMessageBoxWindowConstructor::GuiMessageBoxWindowConstructor()
+	MessageBoxWindowConstructor::MessageBoxWindowConstructor()
 		: ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
-		, self(static_cast<::gaclib_controls::GuiMessageBoxWindow*>(nullptr))
+		, self(static_cast<::gaclib_controls::MessageBoxWindow*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
@@ -306,14 +310,14 @@ Class (::gaclib_controls::GuiMessageBoxWindowConstructor)
 	}
 
 /***********************************************************************
-Class (::gaclib_controls::GuiMessageBoxWindow)
+Class (::gaclib_controls::MessageBoxWindow)
 ***********************************************************************/
 
-	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GuiMessageBoxWindow::GetStrings()
+	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> MessageBoxWindow::GetStrings()
 	{
 		return this->__vwsn_prop_Strings;
 	}
-	void GuiMessageBoxWindow::SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_)
+	void MessageBoxWindow::SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_)
 	{
 		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
 		{
@@ -322,31 +326,27 @@ Class (::gaclib_controls::GuiMessageBoxWindow)
 		}
 	}
 
-	::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> GuiMessageBoxWindow::GetViewModel()
+	::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> MessageBoxWindow::GetViewModel()
 	{
 		return this->__vwsn_parameter_ViewModel;
 	}
 
-	GuiMessageBoxWindow::GuiMessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+	MessageBoxWindow::MessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel)
 		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
 		, __vwsn_prop_Strings(::gaclib_controls::DialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
 		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
 	{
 		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
-		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"gaclib_controls::GuiMessageBoxWindow"));
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"gaclib_controls::MessageBoxWindow"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
-		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize(this);
+		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_MessageBoxWindow_Initialize(this);
 	}
 
-	GuiMessageBoxWindow::~GuiMessageBoxWindow()
+	MessageBoxWindow::~MessageBoxWindow()
 	{
 		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
 	}
-
-/***********************************************************************
-Class (::gaclib_controls::IDialogStringsStrings)
-***********************************************************************/
 
 }
 #undef GLOBAL_SYMBOL
