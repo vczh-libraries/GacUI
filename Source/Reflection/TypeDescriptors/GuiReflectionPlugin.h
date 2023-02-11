@@ -14,6 +14,7 @@ static_assert(false, "Don't use GacUIReflection.(h|cpp) if VCZH_DEBUG_NO_REFLECT
 #define VCZH_PRESENTATION_REFLECTION_GUIREFLECTIONPLUGIN
 
 #include "../../GacUIReflectionHelper.h"
+#include "../../Utilities/FakeServices/GuiFakeDialogServiceBase.h"
 
 namespace vl
 {
@@ -74,6 +75,7 @@ Type List (Basic)
 			F(presentation::INativeDialogService::ColorDialogCustomColorOptions)\
 			F(presentation::INativeDialogService::FileDialogTypes)\
 			F(presentation::INativeDialogService::FileDialogOptions)\
+			F(presentation::INativeWindowListener::HitTestResult)\
 			F(presentation::INativeController)\
 			F(presentation::GuiImageData)\
 			F(presentation::GuiTextData)\
@@ -103,7 +105,7 @@ Type List (Basic)
 			F(presentation::GuiResourcePathResolver)\
 			F(presentation::GuiResourceUsage)\
 			F(presentation::IGuiResourceManager)\
-			F(presentation::INativeWindowListener::HitTestResult)\
+			F(presentation::IMessageBoxDialogViewModel)\
 
 /***********************************************************************
 Type List (Elements)
