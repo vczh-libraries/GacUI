@@ -65,11 +65,15 @@ GuiApplication
 
 			void GuiApplication::RegisterWindow(GuiWindow* window)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiApplication::RegisterWindow(GuiWindow*)#"
 				windows.Add(window);
 				if (auto nativeWindow = window->GetNativeWindow())
 				{
-					windowMap.Add(nativeWindow, window);
+					vint index = windowMap.Keys().IndexOf(nativeWindow);
+					CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"NotifyNativeWindowChanged() has not been called.");
+					CHECK_ERROR(windowMap.Values()[index] == window, ERROR_MESSAGE_PREFIX L"The native window has been used.");
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiApplication::UnregisterWindow(GuiWindow* window)
@@ -83,11 +87,12 @@ GuiApplication
 
 			void GuiApplication::NotifyNativeWindowChanged(GuiControlHost* controlHost, INativeWindow* previousNativeWindow)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiApplication::NotifyNativeWindowChanged(GuiControlsHost*, INativeWindow*)#"
 				if (auto window = dynamic_cast<GuiWindow*>(controlHost))
 				{
 					if (previousNativeWindow)
 					{
-						CHECK_ERROR(windowMap[previousNativeWindow] == window, L"vl::presentation::controls::GuiApplication::NotifyNativeWindowChanged(GuiControlsHost*, INativeWindow*)#Unpaired arguments.");
+						CHECK_ERROR(windowMap[previousNativeWindow] == window, ERROR_MESSAGE_PREFIX L"Unpaired arguments.");
 						windowMap.Remove(previousNativeWindow);
 					}
 					if (auto nativeWindow = window->GetNativeWindow())
@@ -95,6 +100,7 @@ GuiApplication
 						windowMap.Add(nativeWindow, window);
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiApplication::RegisterPopupOpened(GuiPopup* popup)
