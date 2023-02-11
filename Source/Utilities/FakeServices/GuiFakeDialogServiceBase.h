@@ -49,7 +49,9 @@ FakeDialogServiceBase
 			, public INativeDialogService
 		{
 		protected:
-			virtual controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) = 0;
+
+			virtual controls::GuiWindow*	CreateMessageBoxDialog(Ptr<IMessageBoxDialogViewModel> viewModel) = 0;
+			void							ShowModalDialogAndDelete(controls::GuiWindow* owner, controls::GuiWindow* dialog);
 
 		public:
 			FakeDialogServiceBase();

@@ -5,6 +5,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace compositions;
 		using namespace controls;
 
 /***********************************************************************
@@ -33,6 +34,19 @@ View Model (IMessageBoxDialogViewModel)
 /***********************************************************************
 FakeDialogServiceBase
 ***********************************************************************/
+
+		void FakeDialogServiceBase::ShowModalDialogAndDelete(controls::GuiWindow* owner, controls::GuiWindow* dialog)
+		{
+			auto app = GetApplication();
+			bool exit = false;
+			dialog->WindowOpened.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			{
+				dialog->ForceCalculateSizeImmediately();
+				dialog->MoveToScreenCenter();
+			});
+			dialog->ShowModalAndDelete(owner, [&exit]() {exit = true; });
+			while (!exit && app->RunOneCycle());
+		}
 
 		FakeDialogServiceBase::FakeDialogServiceBase()
 		{
@@ -83,13 +97,9 @@ FakeDialogServiceBase
 
 			vm->result = vm->defaultButton;
 			{
-				auto app = GetApplication();
-				auto owner = app->GetWindowFromNative(window);
+				auto owner = GetApplication()->GetWindowFromNative(window);
 				auto dialog = CreateMessageBoxDialog(vm);
-				bool exit = false;
-				dialog->MoveToScreenCenter();
-				dialog->ShowModalAndDelete(owner, [&exit]() {exit = true; });
-				while (!exit && app->RunOneCycle());
+				ShowModalDialogAndDelete(owner, dialog);
 			}
 			return vm->result;
 		}
