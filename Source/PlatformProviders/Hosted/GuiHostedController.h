@@ -227,6 +227,7 @@ GuiHostedController
 			void							SettingHostedWindowsBeforeRunning();
 			void							DestroyHostedWindowsAfterRunning();
 			void							Run(INativeWindow* window) override;
+			bool							RunOneCycle() override;
 		public:
 			GuiHostedController(INativeController* _nativeController);
 			~GuiHostedController();

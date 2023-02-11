@@ -1869,19 +1869,28 @@ WindowsController
 					return mainWindow;
 				}
 
+				inline bool RunOneCycleInternal()
+				{
+					MSG message;
+					if (!GetMessage(&message, NULL, 0, 0)) return false;
+					TranslateMessage(&message);
+					DispatchMessage(&message);
+					asyncService.ExecuteAsyncTasks();
+					return true;
+				}
+
 				void Run(INativeWindow* window)override
 				{
 					mainWindow = dynamic_cast<WindowsForm*>(GetWindowsForm(window));
 					mainWindowHandle = mainWindow->GetWindowHandle();
 					mainWindow->SetIsMainWindow();
 					mainWindow->Show();
-					MSG message;
-					while(GetMessage(&message, NULL, 0, 0))
-					{
-						TranslateMessage(&message);
-						DispatchMessage(&message);
-						asyncService.ExecuteAsyncTasks();
-					}
+					while (RunOneCycleInternal());
+				}
+
+				bool RunOneCycle()override
+				{
+					return RunOneCycleInternal();
 				}
 
 				INativeWindow* GetWindow(NativePoint location)override

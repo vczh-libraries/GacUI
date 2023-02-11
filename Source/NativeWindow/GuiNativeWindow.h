@@ -1293,10 +1293,15 @@ INativeWindowService
 			/// <param name="location">The specified position in screen space.</param>
 			virtual INativeWindow*			GetWindow(NativePoint location) = 0;
 			/// <summary>
-			/// Make the specified window a main window, show that window, and wait until the windows is closed.
+			/// Make the specified window a main window, show that window, process events, and wait until the windows is closed.
 			/// </summary>
 			/// <param name="window">The specified window.</param>
 			virtual void					Run(INativeWindow* window) = 0;
+			/// <summary>
+			/// Process minimum necessary events and execute some async tasks.
+			/// </summary>
+			/// <returns>Return false when the main window has been closed and all finalizing are done.</returns>
+			virtual bool					RunOneCycle() = 0;
 		};
 
 /***********************************************************************

@@ -1064,6 +1064,11 @@ GuiHostedController::INativeWindowService
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+		bool GuiHostedController::RunOneCycle()
+		{
+			return nativeController->WindowService()->RunOneCycle();
+		}
+
 /***********************************************************************
 GuiHostedController
 ***********************************************************************/
