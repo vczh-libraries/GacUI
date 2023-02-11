@@ -17,6 +17,7 @@ GacUI Reflection Helper
 #include "Controls/Templates/GuiAnimation.h"
 #include "Controls/Templates/GuiCommonTemplates.h"
 #include "Controls/Templates/GuiThemeStyleFactory.h"
+#include "Utilities/FakeServices/GuiFakeDialogServiceBase.h"
 
 namespace vl
 {

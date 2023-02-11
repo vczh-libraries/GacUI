@@ -1,4 +1,5 @@
 #include "GuiFakeDialogService.h"
+#include "Source/GuiFakeDialogServiceUIIncludes.h"
 
 namespace vl
 {
@@ -12,7 +13,7 @@ FakeDialogService
 
 		controls::GuiWindow* FakeDialogService::CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return new gaclib_controls::MessageBoxWindow(viewModel);
 		}
 
 		FakeDialogService::FakeDialogService()
