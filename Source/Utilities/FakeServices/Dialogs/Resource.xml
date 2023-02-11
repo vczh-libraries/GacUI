@@ -9,5 +9,13 @@
     </Folder>
   </Folder>
 
+  <Folder name="Images">
+    <Image name="None" content="File">Images/None.png</Image>
+    <Image name="Error" content="File">Images/Error.png</Image>
+    <Image name="Question" content="File">Images/Question.png</Image>
+    <Image name="Warning" content="File">Images/Warning.png</Image>
+    <Image name="Information" content="File">Images/Information.png</Image>
+  </Folder>
+
   <Folder name="MessageBoxComponents" content="Link">MessageBox.xml</Folder>
 </Resource>
