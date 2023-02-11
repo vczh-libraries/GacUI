@@ -49,10 +49,66 @@ Global Functions
 	{
 		return Getvl_workflow_global_GuiFakeDialogServiceUI().instance;
 	}
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::__vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings()
+	{
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::Abort()
+	{
+		return ::vl::WString::Unmanaged(L"Abort");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::Cancel()
+	{
+		return ::vl::WString::Unmanaged(L"Cancel");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::Continue()
+	{
+		return ::vl::WString::Unmanaged(L"Continue");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::Ignore()
+	{
+		return ::vl::WString::Unmanaged(L"Ignore");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::No()
+	{
+		return ::vl::WString::Unmanaged(L"No");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::OK()
+	{
+		return ::vl::WString::Unmanaged(L"OK");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::Retry()
+	{
+		return ::vl::WString::Unmanaged(L"Retry");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::TryAgain()
+	{
+		return ::vl::WString::Unmanaged(L"Try Again");
+	}
+
+	::vl::WString __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings::Yes()
+	{
+		return ::vl::WString::Unmanaged(L"Yes");
+	}
+
 }
 
 /***********************************************************************
-Class (::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+Class (::vl::presentation::controls::fake_dialog_service::DialogStrings)
 ***********************************************************************/
 
 namespace vl
@@ -63,6 +119,35 @@ namespace vl
 		{
 			namespace fake_dialog_service
 			{
+				::vl::WString DialogStrings::__vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats)
+				{
+					{
+						auto __vwsn_for_enumerable_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueEnumerable>(__vwsn_ls_formats);
+						auto __vwsn_for_enumerator_ = ::vl::__vwsn::This(__vwsn_for_enumerable_.Obj())->CreateEnumerator();
+						while (::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->Next())
+						{
+							auto __vwsn_ls_format = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(__vwsn_for_enumerator_.Obj())->GetCurrent());
+							{
+								return __vwsn_ls_format;
+							}
+						}
+					}
+					return ::vl::WString::Unmanaged(L"");
+				}
+
+				::vl::Ptr<::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings> DialogStrings::Get(::vl::Locale __vwsn_ls_locale)
+				{
+					return ::vl::Ptr<::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings>(new ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings());
+				}
+
+				DialogStrings::DialogStrings()
+				{
+				}
+
+/***********************************************************************
+Class (::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+***********************************************************************/
+
 				void GuiMessageBoxWindowConstructor::__vwsn_vl_presentation_controls_fake_dialog_service_GuiMessageBoxWindow_Initialize(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow* __vwsn_this_)
 				{
 					(this->self = __vwsn_this_);
@@ -96,6 +181,10 @@ Class (::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
 				{
 					this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
 				}
+
+/***********************************************************************
+Class (::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+***********************************************************************/
 
 			}
 		}

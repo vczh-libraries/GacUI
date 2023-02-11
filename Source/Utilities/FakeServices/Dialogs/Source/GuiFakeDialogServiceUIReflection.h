@@ -36,8 +36,52 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::DialogStrings)
 			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
 			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+				::vl::WString Abort() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Abort);
+				}
+				::vl::WString Cancel() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Cancel);
+				}
+				::vl::WString Continue() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Continue);
+				}
+				::vl::WString Ignore() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Ignore);
+				}
+				::vl::WString No() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(No);
+				}
+				::vl::WString OK() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(OK);
+				}
+				::vl::WString Retry() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Retry);
+				}
+				::vl::WString TryAgain() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(TryAgain);
+				}
+				::vl::WString Yes() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Yes);
+				}
+			END_INTERFACE_PROXY(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+#endif
 #endif
 
 			extern bool LoadGuiFakeDialogServiceUITypes();

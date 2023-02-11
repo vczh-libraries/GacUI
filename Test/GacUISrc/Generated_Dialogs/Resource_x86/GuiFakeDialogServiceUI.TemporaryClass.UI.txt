@@ -1,4 +1,4 @@
-﻿================================(1/1)================================
+﻿================================(1/2)================================
 module <instance>vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38,6 +38,128 @@ namespace vl
                     delete
                     {
                         FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+                    }
+                }
+            }
+        }
+    }
+}
+
+================================(2/2)================================
+module <localized-strings>vl::presentation::controls::fake_dialog_service::DialogStrings;
+
+namespace vl
+{
+    namespace presentation
+    {
+        namespace controls
+        {
+            namespace fake_dialog_service
+            {
+                interface IDialogStringsStrings
+                {
+                    func Abort() : (::system::String);
+
+                    func Cancel() : (::system::String);
+
+                    func Continue() : (::system::String);
+
+                    func Ignore() : (::system::String);
+
+                    func No() : (::system::String);
+
+                    func OK() : (::system::String);
+
+                    func Retry() : (::system::String);
+
+                    func TryAgain() : (::system::String);
+
+                    func Yes() : (::system::String);
+                }
+            }
+        }
+    }
+}
+
+namespace vl
+{
+    namespace presentation
+    {
+        namespace controls
+        {
+            namespace fake_dialog_service
+            {
+                class DialogStrings
+                {
+                    static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
+                    {
+                        {
+                            var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
+                            var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
+                            while (<for-enumerator><ls>format.Next())
+                            {
+                                var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
+                                {
+                                    return <ls>format;
+                                }
+                            }
+                        }
+                        return "";
+                    }
+
+                    static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+                    {
+                        return new (IDialogStringsStrings^)
+                        {
+                            override func Abort() : (::system::String)
+                            {
+                                return "Abort";
+                            }
+
+                            override func Cancel() : (::system::String)
+                            {
+                                return "Cancel";
+                            }
+
+                            override func Continue() : (::system::String)
+                            {
+                                return "Continue";
+                            }
+
+                            override func Ignore() : (::system::String)
+                            {
+                                return "Ignore";
+                            }
+
+                            override func No() : (::system::String)
+                            {
+                                return "No";
+                            }
+
+                            override func OK() : (::system::String)
+                            {
+                                return "OK";
+                            }
+
+                            override func Retry() : (::system::String)
+                            {
+                                return "Retry";
+                            }
+
+                            override func TryAgain() : (::system::String)
+                            {
+                                return "Try Again";
+                            }
+
+                            override func Yes() : (::system::String)
+                            {
+                                return "Yes";
+                            }
+                        };
+                    }
+
+                    new ()
+                    {
                     }
                 }
             }

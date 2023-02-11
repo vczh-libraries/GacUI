@@ -17,5 +17,21 @@
     <Image name="Information" content="File">Images/Information.png</Image>
   </Folder>
 
+  <LocalizedStrings name="DialogStrings">
+    <LocalizedStrings ref.Class="vl::presentation::controls::fake_dialog_service::DialogStrings" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="OK" Text="OK"/>
+        <String Name="Cancel" Text="Cancel"/>
+        <String Name="Yes" Text="Yes"/>
+        <String Name="No" Text="No"/>
+        <String Name="Retry" Text="Retry"/>
+        <String Name="Abort" Text="Abort"/>
+        <String Name="Ignore" Text="Ignore"/>
+        <String Name="TryAgain" Text="Try Again"/>
+        <String Name="Continue" Text="Continue"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+
   <Folder name="MessageBoxComponents" content="Link">MessageBox.xml</Folder>
 </Resource>

@@ -30,11 +30,20 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::DialogStrings)
 			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
 			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
+			BEGIN_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::DialogStrings)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::vl::presentation::controls::fake_dialog_service::DialogStrings>(), NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_First, { L"__vwsn_ls_formats" })
+				CLASS_MEMBER_STATIC_METHOD(Get, { L"__vwsn_ls_locale" })
+			END_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::DialogStrings)
+
 			BEGIN_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
@@ -48,14 +57,29 @@ namespace vl
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
 
+			BEGIN_INTERFACE_MEMBER(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(Abort, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Cancel, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Continue, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Ignore, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(No, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(OK, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Retry, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(TryAgain, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Yes, NO_PARAMETER)
+			END_INTERFACE_MEMBER(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+
 #undef _
 			class GuiFakeDialogServiceUITypeLoader : public Object, public ITypeLoader
 			{
 			public:
 				void Load(ITypeManager* manager)
 				{
+					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::DialogStrings)
 					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
 					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
 				}
 
 				void Unload(ITypeManager* manager)

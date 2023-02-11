@@ -22,6 +22,11 @@ https://github.com/vczh-libraries
 #pragma GCC diagnostic push
 #endif
 
+namespace vl_workflow_global
+{
+	class __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings;
+}
+
 namespace vl
 {
 	namespace presentation
@@ -30,8 +35,22 @@ namespace vl
 		{
 			namespace fake_dialog_service
 			{
+				class DialogStrings;
 				class GuiMessageBoxWindowConstructor;
 				class GuiMessageBoxWindow;
+				class IDialogStringsStrings;
+
+				class DialogStrings : public ::vl::Object, public ::vl::reflection::Description<DialogStrings>
+				{
+					friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStrings>;
+#endif
+				public:
+					static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
+					static ::vl::Ptr<::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings> Get(::vl::Locale __vwsn_ls_locale);
+					DialogStrings();
+				};
 
 				class GuiMessageBoxWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<GuiMessageBoxWindowConstructor>
 				{
@@ -56,6 +75,23 @@ namespace vl
 					~GuiMessageBoxWindow();
 				};
 
+				class IDialogStringsStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IDialogStringsStrings>
+				{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IDialogStringsStrings>;
+#endif
+				public:
+					virtual ::vl::WString Abort() = 0;
+					virtual ::vl::WString Cancel() = 0;
+					virtual ::vl::WString Continue() = 0;
+					virtual ::vl::WString Ignore() = 0;
+					virtual ::vl::WString No() = 0;
+					virtual ::vl::WString OK() = 0;
+					virtual ::vl::WString Retry() = 0;
+					virtual ::vl::WString TryAgain() = 0;
+					virtual ::vl::WString Yes() = 0;
+				};
+
 			}
 		}
 	}
@@ -71,6 +107,26 @@ namespace vl_workflow_global
 	public:
 
 		static GuiFakeDialogServiceUI& Instance();
+	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	class __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings : public ::vl::Object, public virtual ::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings
+	{
+	public:
+		__vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings();
+
+		::vl::WString Abort() override;
+		::vl::WString Cancel() override;
+		::vl::WString Continue() override;
+		::vl::WString Ignore() override;
+		::vl::WString No() override;
+		::vl::WString OK() override;
+		::vl::WString Retry() override;
+		::vl::WString TryAgain() override;
+		::vl::WString Yes() override;
 	};
 }
 
