@@ -205,8 +205,9 @@ GuiGraphicsHost
 				}
 			}
 
-			void GuiGraphicsHost::OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
+			void GuiGraphicsHost::OnMouseInput(const NativeWindowMouseInfo& info, bool capture, bool release, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent)
 			{
+				if (capture) MouseCapture(info);
 				GuiGraphicsComposition* composition = 0;
 				if (mouseCaptureComposition)
 				{
@@ -217,6 +218,8 @@ GuiGraphicsHost
 					auto point = hostRecord.nativeWindow->Convert(NativePoint(info.x, info.y));
 					composition = windowComposition->FindComposition(point, true);
 				}
+				if (release) MouseUncapture(info);
+
 				if (composition)
 				{
 					Rect bounds = composition->GetGlobalBounds();
@@ -346,68 +349,62 @@ GuiGraphicsHost
 			void GuiGraphicsHost::LeftButtonDown(const NativeWindowMouseInfo& info)
 			{
 				altActionManager->CloseAltHost();
-				MouseCapture(info);
-				OnMouseInput(info, &GuiGraphicsEventReceiver::leftButtonDown);
+				OnMouseInput(info, true, false, &GuiGraphicsEventReceiver::leftButtonDown);
 			}
 
 			void GuiGraphicsHost::LeftButtonUp(const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, &GuiGraphicsEventReceiver::leftButtonUp);
-				MouseUncapture(info);
+				OnMouseInput(info, false, true, &GuiGraphicsEventReceiver::leftButtonUp);
 			}
 
 			void GuiGraphicsHost::LeftButtonDoubleClick(const NativeWindowMouseInfo& info)
 			{
 				LeftButtonDown(info);
-				OnMouseInput(info, &GuiGraphicsEventReceiver::leftButtonDoubleClick);
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::leftButtonDoubleClick);
 			}
 
 			void GuiGraphicsHost::RightButtonDown(const NativeWindowMouseInfo& info)
 			{
 				altActionManager->CloseAltHost();
-				MouseCapture(info);
-				OnMouseInput(info, &GuiGraphicsEventReceiver::rightButtonDown);
+				OnMouseInput(info, true, false, &GuiGraphicsEventReceiver::rightButtonDown);
 			}
 
 			void GuiGraphicsHost::RightButtonUp(const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, &GuiGraphicsEventReceiver::rightButtonUp);
-				MouseUncapture(info);
+				OnMouseInput(info, false, true, &GuiGraphicsEventReceiver::rightButtonUp);
 			}
 
 			void GuiGraphicsHost::RightButtonDoubleClick(const NativeWindowMouseInfo& info)
 			{
 				RightButtonDown(info);
-				OnMouseInput(info, &GuiGraphicsEventReceiver::rightButtonDoubleClick);
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::rightButtonDoubleClick);
 			}
 
 			void GuiGraphicsHost::MiddleButtonDown(const NativeWindowMouseInfo& info)
 			{
 				altActionManager->CloseAltHost();
-				MouseCapture(info);
-				OnMouseInput(info, &GuiGraphicsEventReceiver::middleButtonDown);
+				OnMouseInput(info, true, false, &GuiGraphicsEventReceiver::middleButtonDown);
 			}
 
 			void GuiGraphicsHost::MiddleButtonUp(const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, &GuiGraphicsEventReceiver::middleButtonUp);
-				MouseUncapture(info);
+				OnMouseInput(info, false, true, &GuiGraphicsEventReceiver::middleButtonUp);
 			}
 
 			void GuiGraphicsHost::MiddleButtonDoubleClick(const NativeWindowMouseInfo& info)
 			{
 				MiddleButtonDown(info);
-				OnMouseInput(info, &GuiGraphicsEventReceiver::middleButtonDoubleClick);
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::middleButtonDoubleClick);
 			}
 
 			void GuiGraphicsHost::HorizontalWheel(const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, &GuiGraphicsEventReceiver::horizontalWheel);
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::horizontalWheel);
 			}
 
 			void GuiGraphicsHost::VerticalWheel(const NativeWindowMouseInfo& info)
 			{
-				OnMouseInput(info, &GuiGraphicsEventReceiver::verticalWheel);
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::verticalWheel);
 			}
 
 			void GuiGraphicsHost::MouseMoving(const NativeWindowMouseInfo& info)
@@ -471,7 +468,7 @@ GuiGraphicsHost
 					hostRecord.nativeWindow->SetWindowCursor(GetCurrentController()->ResourceService()->GetDefaultSystemCursor());
 				}
 
-				OnMouseInput(info, &GuiGraphicsEventReceiver::mouseMove);
+				OnMouseInput(info, false, false, &GuiGraphicsEventReceiver::mouseMove);
 			}
 
 			void GuiGraphicsHost::MouseEntered()

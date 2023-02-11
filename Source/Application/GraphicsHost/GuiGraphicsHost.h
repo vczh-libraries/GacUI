@@ -108,7 +108,7 @@ Host
 				void									OnCharInput(const NativeWindowCharInfo& info, GuiGraphicsComposition* composition, GuiCharEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									OnKeyInput(const NativeWindowKeyInfo& info, GuiGraphicsComposition* composition, GuiKeyEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 				void									RaiseMouseEvent(GuiMouseEventArgs& arguments, GuiGraphicsComposition* composition, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
-				void									OnMouseInput(const NativeWindowMouseInfo& info, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
+				void									OnMouseInput(const NativeWindowMouseInfo& info, bool capture, bool release, GuiMouseEvent GuiGraphicsEventReceiver::* eventReceiverEvent);
 
 				void									ResetRenderTarget();
 				void									CreateRenderTarget();
