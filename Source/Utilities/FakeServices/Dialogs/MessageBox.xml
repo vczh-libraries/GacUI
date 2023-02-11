@@ -1,10 +1,39 @@
 <Folder>
+  <Instance name="MessageBoxButtonResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxButton">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="Action" Class="presentation::IMessageBoxDialogAction"/>
+      <ref.Members>
+        <![CDATA[
+        func GetButtonText(button: INativeDialogService::MessageBoxButtonsOutput, strings: DialogStrings^) : string
+        {
+          switch (button)
+          {
+          case SelectOK:        { return strings.OK(); }
+          case SelectCancel:    { return strings.Cancel(); }
+          case SelectYes:       { return strings.Yes(); }
+          case SelectNo:        { return strings.No(); }
+          case SelectRetry:     { return strings.Retry(); }
+          case SelectAbort:     { return strings.Abort(); }
+          case SelectIgnore:    { return strings.Ignore(); }
+          case SelectTryAgain:  { return strings.TryAgain(); }
+          case SelectContinue:  { return strings.Continue(); }
+          }
+        }
+      ]]></ref.Members>
+      <Template ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Button Text-bind="self.GetButtonText(Action.Button, self.Strings)">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <ev.Clicked-eval><![CDATA[{Action.PerformAction();}]]></ev.Clicked-eval>
+        </Button>
+      </Template>
+    </Instance>
+  </Instance>
+
   <Instance name="MessageBoxWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxWindow">
       <ref.Parameter Name="ViewModel" Class="presentation::IMessageBoxDialogViewModel"/>
-      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <Window
-          ref.Name="self"
           Text-eval="ViewModel.Title"
           ClientSize="x:240 y:120"
           ShowInTaskBar="false"
