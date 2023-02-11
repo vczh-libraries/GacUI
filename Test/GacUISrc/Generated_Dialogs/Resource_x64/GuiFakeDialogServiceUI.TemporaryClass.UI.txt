@@ -1,5 +1,5 @@
 ﻿================================(1/3)================================
-module <instance>gaclib_controls::MessageBoxButton;
+module <instance>gaclib_controls::MessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -21,7 +21,7 @@ using presentation::theme::*;
 
 namespace gaclib_controls
 {
-    class MessageBoxButton : ::presentation::templates::GuiControlTemplate
+    class MessageBoxButtonTemplate : ::presentation::templates::GuiControlTemplate
     {
         func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
         {

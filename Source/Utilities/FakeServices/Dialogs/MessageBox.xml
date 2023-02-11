@@ -1,6 +1,6 @@
 <Folder>
-  <Instance name="MessageBoxButtonResource">
-    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxButton">
+  <Instance name="MessageBoxButtonTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxButtonTemplate">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="Action" Class="presentation::IMessageBoxDialogAction"/>
       <ref.Members>
@@ -64,6 +64,26 @@
             <Label Text-eval="ViewModel.Text">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Label>
+          </Cell>
+
+          <Cell Site="row:2 column:0 columnSpan:2">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <_>composeType:MinSize</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Columns>
+
+              <Cell Site="row:0 column:1">
+                <RepeatStack Direction="Horizontal"  AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <att.ItemTemplate>gaclib_controls::MessageBoxButtonTemplate</att.ItemTemplate>
+                  <att.ItemSource-eval>ViewModel.Buttons</att.ItemSource-eval>
+                </RepeatStack>
+              </Cell>
+            </Table>
           </Cell>
         </Table>
       </Window>

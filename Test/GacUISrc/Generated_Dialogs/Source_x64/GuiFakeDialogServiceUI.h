@@ -24,11 +24,12 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
-	struct __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
-	struct __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
-	class __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription;
+	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+	struct __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+	struct __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+	struct __vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
+	class __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings;
 }
 
@@ -36,8 +37,8 @@ namespace gaclib_controls
 {
 	class DialogStrings;
 	class IDialogStringsStrings;
-	class MessageBoxButtonConstructor;
-	class MessageBoxButton;
+	class MessageBoxButtonTemplateConstructor;
+	class MessageBoxButtonTemplate;
 	class MessageBoxWindowConstructor;
 	class MessageBoxWindow;
 
@@ -70,36 +71,36 @@ namespace gaclib_controls
 		virtual ::vl::WString Yes() = 0;
 	};
 
-	class MessageBoxButtonConstructor : public ::vl::Object, public ::vl::reflection::Description<MessageBoxButtonConstructor>
+	class MessageBoxButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MessageBoxButtonTemplateConstructor>
 	{
-		friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
+		friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButtonConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButtonTemplateConstructor>;
 #endif
 	protected:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> Action;
-		::gaclib_controls::MessageBoxButton* self;
+		::gaclib_controls::MessageBoxButtonTemplate* self;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		void __vwsn_gaclib_controls_MessageBoxButton_Initialize(::gaclib_controls::MessageBoxButton* __vwsn_this_);
+		void __vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize(::gaclib_controls::MessageBoxButtonTemplate* __vwsn_this_);
 	public:
-		MessageBoxButtonConstructor();
+		MessageBoxButtonTemplateConstructor();
 	};
 
-	class MessageBoxButton : public ::vl::presentation::templates::GuiControlTemplate, public ::gaclib_controls::MessageBoxButtonConstructor, public ::vl::reflection::Description<MessageBoxButton>
+	class MessageBoxButtonTemplate : public ::vl::presentation::templates::GuiControlTemplate, public ::gaclib_controls::MessageBoxButtonTemplateConstructor, public ::vl::reflection::Description<MessageBoxButtonTemplate>
 	{
-		friend class ::gaclib_controls::MessageBoxButtonConstructor;
-		friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription;
-		friend class ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription;
-		friend struct ::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_;
+		friend class ::gaclib_controls::MessageBoxButtonTemplateConstructor;
+		friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButton>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButtonTemplate>;
 #endif
 	public:
 		::vl::WString GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> strings);
@@ -109,12 +110,13 @@ namespace gaclib_controls
 		::vl::Event<void()> StringsChanged;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_parameter_Action;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> GetAction();
-		MessageBoxButton(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action);
-		~MessageBoxButton();
+		MessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action);
+		~MessageBoxButtonTemplate();
 	};
 
 	class MessageBoxWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MessageBoxWindowConstructor>
 	{
+		friend struct ::vl_workflow_global::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxWindowConstructor>;
 #endif
@@ -129,6 +131,10 @@ namespace gaclib_controls
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_7;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiRepeatStackComposition* __vwsn_precompile_12;
 		void __vwsn_gaclib_controls_MessageBoxWindow_Initialize(::gaclib_controls::MessageBoxWindow* __vwsn_this_);
 	public:
 		MessageBoxWindowConstructor();
@@ -137,6 +143,7 @@ namespace gaclib_controls
 	class MessageBoxWindow : public ::vl::presentation::controls::GuiWindow, public ::gaclib_controls::MessageBoxWindowConstructor, public ::vl::reflection::Description<MessageBoxWindow>
 	{
 		friend class ::gaclib_controls::MessageBoxWindowConstructor;
+		friend struct ::vl_workflow_global::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxWindow>;
 #endif
@@ -165,41 +172,50 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_
+	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_
 	{
-		::gaclib_controls::MessageBoxButtonConstructor* __vwsnthis_0;
+		::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0);
+		__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_
+	struct __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_
 	{
-		::gaclib_controls::MessageBoxButtonConstructor* __vwsnthis_0;
+		::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0);
+		__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
 		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_
+	struct __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_
 	{
-		::gaclib_controls::MessageBoxButtonConstructor* __vwsnthis_0;
+		::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0);
+		__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	class __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	struct __vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_
+	{
+		::gaclib_controls::MessageBoxWindowConstructor* __vwsnthis_0;
+
+		__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::templates::GuiTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
+	};
+
+	class __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::gaclib_controls::MessageBoxButtonConstructor* __vwsnthis_0;
+		::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0);
+		__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
-		::gaclib_controls::MessageBoxButton* __vwsn_bind_cache_0 = nullptr;
+		::gaclib_controls::MessageBoxButtonTemplate* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
@@ -210,12 +226,12 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	class __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		::gaclib_controls::MessageBoxButtonConstructor* __vwsnthis_0;
+		::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnthis_0;
 
-		__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0);
+		__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
