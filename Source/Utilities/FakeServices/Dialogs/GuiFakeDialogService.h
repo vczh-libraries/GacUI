@@ -17,6 +17,10 @@ namespace vl
 	{
 		class FakeDialogService : public FakeDialogServiceBase
 		{
+		protected:
+
+			Ptr<controls::GuiWindow>		CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
+
 		public:
 			FakeDialogService();
 			~FakeDialogService();

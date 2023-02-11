@@ -791,7 +791,8 @@ GuiHostedController::INativeController
 
 		INativeDialogService* GuiHostedController::DialogService()
 		{
-			return this;
+			// Use FakeDialogServiceBase
+			return nullptr;
 		}
 
 		WString GuiHostedController::GetExecutablePath()
@@ -841,30 +842,6 @@ GuiHostedController::INativeAsyncService
 		Ptr<INativeDelay> GuiHostedController::DelayExecuteInMainThread(const Func<void()>& proc, vint milliseconds)
 		{
 			return nativeController->AsyncService()->DelayExecuteInMainThread(proc, milliseconds);
-		}
-
-/***********************************************************************
-GuiHostedController::INativeDialogService
-***********************************************************************/
-
-		INativeDialogService::MessageBoxButtonsOutput GuiHostedController::ShowMessageBox(INativeWindow* window, const WString& text, const WString& title, MessageBoxButtonsInput buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcons icon, MessageBoxModalOptions modal)
-		{
-			return nativeController->DialogService()->ShowMessageBox(nativeWindow, text, title, buttons, defaultButton, icon, modal);
-		}
-
-		bool GuiHostedController::ShowColorDialog(INativeWindow* window, Color& selection, bool selected, ColorDialogCustomColorOptions customColorOptions, Color* customColors)
-		{
-			return nativeController->DialogService()->ShowColorDialog(nativeWindow, selection, selected, customColorOptions, customColors);
-		}
-
-		bool GuiHostedController::ShowFontDialog(INativeWindow* window, FontProperties& selectionFont, Color& selectionColor, bool selected, bool showEffect, bool forceFontExist)
-		{
-			return nativeController->DialogService()->ShowFontDialog(nativeWindow, selectionFont, selectionColor, selected, showEffect, forceFontExist);
-		}
-
-		bool GuiHostedController::ShowFileDialog(INativeWindow* window, collections::List<WString>& selectionFileNames, vint& selectionFilterIndex, FileDialogTypes dialogType, const WString& title, const WString& initialFileName, const WString& initialDirectory, const WString& defaultExtension, const WString& filter, FileDialogOptions options)
-		{
-			return nativeController->DialogService()->ShowFileDialog(nativeWindow, selectionFileNames, selectionFilterIndex, dialogType, title, initialFileName, initialDirectory, defaultExtension, filter, options);
 		}
 
 /***********************************************************************

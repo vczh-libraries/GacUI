@@ -4,6 +4,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace controls;
 
 /***********************************************************************
 FakeDialogServiceBase
