@@ -2,6 +2,7 @@
 
 ## Progressing
 
+- `FakeDialogServiceBase::ShowModalDialogAndDelete` while loop causes `GuiHostedController` not properly handling wmOperation.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
