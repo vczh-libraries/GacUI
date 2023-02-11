@@ -289,21 +289,28 @@ interface presentation::IGuiResourceManager : system::Interface {
 
 }
 
+interface presentation::IMessageBoxDialogAction : system::Interface {
+    property Button : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetButton }
+
+    function GetButton() : presentation::INativeDialogService::MessageBoxButtonsOutput;
+    function PerformAction() : system::Void;
+
+}
+
 interface presentation::IMessageBoxDialogViewModel : system::Interface {
-    property Buttons : system::ReadonlyList<presentation::INativeDialogService::MessageBoxButtonsOutput>^ { get:GetButtons }
+    property Buttons : system::ReadonlyList<presentation::IMessageBoxDialogAction^>^ { get:GetButtons }
     property DefaultButton : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetDefaultButton }
     property Icon : presentation::INativeDialogService::MessageBoxIcons { get:GetIcon }
-    property Result : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetResult set:SetResult }
+    property Result : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetResult }
     property Text : system::String { get:GetText }
     property Title : system::String { get:GetTitle }
 
-    function GetButtons() : system::ReadonlyList<presentation::INativeDialogService::MessageBoxButtonsOutput>^;
+    function GetButtons() : system::ReadonlyList<presentation::IMessageBoxDialogAction^>^;
     function GetDefaultButton() : presentation::INativeDialogService::MessageBoxButtonsOutput;
     function GetIcon() : presentation::INativeDialogService::MessageBoxIcons;
     function GetResult() : presentation::INativeDialogService::MessageBoxButtonsOutput;
     function GetText() : system::String;
     function GetTitle() : system::String;
-    function SetResult(value : presentation::INativeDialogService::MessageBoxButtonsOutput) : system::Void;
 
 }
 

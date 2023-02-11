@@ -105,6 +105,7 @@ Type List (Basic)
 			F(presentation::GuiResourcePathResolver)\
 			F(presentation::GuiResourceUsage)\
 			F(presentation::IGuiResourceManager)\
+			F(presentation::IMessageBoxDialogAction)\
 			F(presentation::IMessageBoxDialogViewModel)\
 
 /***********************************************************************

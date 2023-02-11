@@ -15,6 +15,22 @@ View Model (IMessageBoxDialogViewModel)
 		class FakeMessageBoxDialogViewModel : public Object, public virtual IMessageBoxDialogViewModel
 		{
 		public:
+			class Action : public Object, public virtual IMessageBoxDialogAction
+			{
+			public:
+				FakeMessageBoxDialogViewModel*	viewModel;
+				ButtonItem						button;
+
+				Action(FakeMessageBoxDialogViewModel* _viewModel, ButtonItem _button)
+					: viewModel(_viewModel)
+					, button(_button)
+				{
+				}
+
+				ButtonItem			GetButton() override					{ return button; }
+				void				PerformAction() override				{ viewModel->result = button; }
+			};
+
 			WString					text;
 			WString					title;
 			Icon					icon;
@@ -22,13 +38,12 @@ View Model (IMessageBoxDialogViewModel)
 			ButtonItem				defaultButton;
 			ButtonItem				result;
 
-			WString					GetText() { return text; }
-			WString					GetTitle() { return title; }
-			Icon					GetIcon() { return icon; }
-			const ButtonItemList&	GetButtons() { return buttons; }
-			ButtonItem				GetDefaultButton() { return defaultButton; }
-			ButtonItem				GetResult() { return result; }
-			void					SetResult(ButtonItem value) { result = value; }
+			WString					GetText() override						{ return text; }
+			WString					GetTitle() override						{ return title; }
+			Icon					GetIcon() override						{ return icon; }
+			const ButtonItemList&	GetButtons() override					{ return buttons; }
+			ButtonItem				GetDefaultButton() override				{ return defaultButton; }
+			ButtonItem				GetResult() override					{ return result; }
 		};
 
 /***********************************************************************
@@ -71,7 +86,7 @@ FakeDialogServiceBase
 			vm->title = title;
 			vm->icon = icon;
 
-#define USE_BUTTON(NAME) vm->buttons.Add(INativeDialogService::Select##NAME)
+#define USE_BUTTON(NAME) vm->buttons.Add(Ptr(new FakeMessageBoxDialogViewModel::Action(vm.Obj(), INativeDialogService::Select##NAME)))
 			switch (buttons)
 			{
 			case DisplayOK:						USE_BUTTON(OK);														break;
@@ -85,7 +100,7 @@ FakeDialogServiceBase
 			}
 #undef USE_BUTTON
 
-#define USE_DEFAULT_BUTTON(INDEX) if (vm->buttons.Count() > INDEX) vm->defaultButton = vm->buttons[INDEX]
+#define USE_DEFAULT_BUTTON(INDEX) if (vm->buttons.Count() > INDEX) vm->defaultButton = vm->buttons[INDEX]->GetButton()
 			USE_DEFAULT_BUTTON(0);
 			switch (defaultButton)
 			{

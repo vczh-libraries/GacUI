@@ -24,12 +24,21 @@ namespace vl
 View Models (MessageBox)
 ***********************************************************************/
 
+		class IMessageBoxDialogAction : public virtual IDescriptable
+		{
+		public:
+			using ButtonItem = INativeDialogService::MessageBoxButtonsOutput;
+
+			virtual ButtonItem				GetButton() = 0;
+			virtual void					PerformAction() = 0;
+		};
+
 		class IMessageBoxDialogViewModel : public virtual IDescriptable
 		{
 		public:
 			using Icon = INativeDialogService::MessageBoxIcons;
 			using ButtonItem = INativeDialogService::MessageBoxButtonsOutput;
-			using ButtonItemList = collections::List<ButtonItem>;
+			using ButtonItemList = collections::List<Ptr<IMessageBoxDialogAction>>;
 
 			virtual WString					GetText() = 0;
 			virtual WString					GetTitle() = 0;
@@ -37,7 +46,6 @@ View Models (MessageBox)
 			virtual const ButtonItemList&	GetButtons() = 0;
 			virtual ButtonItem				GetDefaultButton() = 0;
 			virtual ButtonItem				GetResult() = 0;
-			virtual void					SetResult(ButtonItem value) = 0;
 		};
 
 /***********************************************************************
