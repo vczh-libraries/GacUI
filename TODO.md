@@ -2,6 +2,10 @@
 
 ## Progressing
 
+- Issue on dialog service
+  - message box default button.
+  - message box `ENTER` and `ESC` operation.
+  - message box is not shown at the center.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
@@ -11,35 +15,35 @@
     - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
     - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
     - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
-- Add default dialog service, will be use in hosted mode.
+- ~~Add default dialog service, will be use in hosted mode.~~
   - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
-    - ~~Move `GuiSharedAsyncService` here.~~
+    - Move `GuiSharedAsyncService` here.
     - A `GuiFakeDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
-    - ~~A `GuiSharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.~~
-      - ~~Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.~~
-    - ~~A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.~~
-    - ~~`GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.~~
+    - A `GuiSharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.
+      - Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.
+    - A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.
+    - `GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.
   - Predefined reflectable view models for dialogs, with predefined implementations.
-    - ~~In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.~~
+    - In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.
   - Predefined windows implemented in XML.
-    - ~~In `GacUI_Utilities_Controls` and `GacUI_Utilities_Reflection`.~~
+    - In `GacUI_Utilities_Controls` and `GacUI_Utilities_Reflection`.
     - With `GuiFakeDialogService` that gives predefined windows to `GuiFakeDialogService`.
   - A way to subsitute services.
-    - ~~Rename `SetCurrentController` to `SetNativeController`.~~
-    - ~~`GetCurrentController` returns a `INativeController` implementation that allow subsituting services.~~
-      - ~~If a service is not provided, and there is also no substitution, it crashes.~~
-      - ~~If a service is used, substituting crashes.~~
-    - ~~`GetNativeServiceSubstitution` returns an object to~~
-      - ~~Config how services are substituted (force activated, or only activate when it is not provided).~~
-    - ~~Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`~~.
-  - ~~Substitutable services:~~
-    - ~~Clipboard~~
-    - ~~Dialog~~
+    - Rename `SetCurrentController` to `SetNativeController`.
+    - `GetCurrentController` returns a `INativeController` implementation that allow subsituting services.
+      - If a service is not provided, and there is also no substitution, it crashes.
+      - If a service is used, substituting crashes.
+    - `GetNativeServiceSubstitution` returns an object to
+      - Config how services are substituted (force activated, or only activate when it is not provided).
+    - Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`.
+  - Substitutable services:
+    - Clipboard
+    - Dialog
 - Remove SysKey callbacks, merge into Key callbacks.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
-- Remove exe in Release/Tools, add CodePack.exe, add vcxproj/.ps1 + makefile/.bash and let users build by themselves
+  - Write maketools.sh
 - Rewrite GacBuild.ps1 in C++ (optional)
 - Add DarkSkin and Dialog in Reflection(32|64).bin (optional)
 
