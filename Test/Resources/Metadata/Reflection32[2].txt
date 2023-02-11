@@ -289,6 +289,24 @@ interface presentation::IGuiResourceManager : system::Interface {
 
 }
 
+interface presentation::IMessageBoxDialogViewModel : system::Interface {
+    property Buttons : system::ReadonlyList<presentation::INativeDialogService::MessageBoxButtonsOutput>^ { get:GetButtons }
+    property DefaultButton : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetDefaultButton }
+    property Icon : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetIcon }
+    property Result : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetResult set:SetResult }
+    property Text : system::String { get:GetText }
+    property Title : system::String { get:GetTitle }
+
+    function GetButtons() : system::ReadonlyList<presentation::INativeDialogService::MessageBoxButtonsOutput>^;
+    function GetDefaultButton() : presentation::INativeDialogService::MessageBoxButtonsOutput;
+    function GetIcon() : presentation::INativeDialogService::MessageBoxButtonsOutput;
+    function GetResult() : presentation::INativeDialogService::MessageBoxButtonsOutput;
+    function GetText() : system::String;
+    function GetTitle() : system::String;
+    function SetResult(value : presentation::INativeDialogService::MessageBoxButtonsOutput) : system::Void;
+
+}
+
 interface presentation::INativeAsyncService : system::Interface {
     function DelayExecute(proc : system::Function<system::Void>^, milliseconds : system::Int32) : presentation::INativeDelay^;
     function DelayExecuteInMainThread(proc : system::Function<system::Void>^, milliseconds : system::Int32) : presentation::INativeDelay^;
