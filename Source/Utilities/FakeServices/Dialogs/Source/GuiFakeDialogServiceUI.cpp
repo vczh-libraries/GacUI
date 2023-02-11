@@ -419,6 +419,10 @@ Class (::gaclib_controls::MessageBoxButtonTemplate)
 			{
 				return ::vl::__vwsn::This(strings.Obj())->Continue();
 			}
+			else
+			{
+				return ::vl::WString::Unmanaged(L"");
+			}
 		}
 	}
 
@@ -576,6 +580,9 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		(this->__vwsn_precompile_12 = new ::vl::presentation::compositions::GuiRepeatStackComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetPadding(static_cast<::vl::vint>(5));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Horizontal);

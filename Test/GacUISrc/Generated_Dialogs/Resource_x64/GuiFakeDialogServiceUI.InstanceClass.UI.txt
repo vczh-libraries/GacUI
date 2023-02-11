@@ -280,6 +280,10 @@ namespace gaclib_controls
                 {
                     return strings.Continue();
                 }
+                else
+                {
+                    return "";
+                }
             }
         }
 
@@ -522,6 +526,9 @@ namespace gaclib_controls
                     }
                     raise "Cannot find a matched control template to create.";
                 });
+            }
+            {
+                (<precompile>12.Padding = 5 of (::system::Int64));
             }
             {
                 (<precompile>12.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));

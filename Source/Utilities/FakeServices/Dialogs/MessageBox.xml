@@ -18,6 +18,7 @@
           case SelectIgnore:    { return strings.Ignore(); }
           case SelectTryAgain:  { return strings.TryAgain(); }
           case SelectContinue:  { return strings.Continue(); }
+          default:              { return ""; }
           }
         }
       ]]></ref.Members>
@@ -78,7 +79,7 @@
               </att.Columns>
 
               <Cell Site="row:0 column:1">
-                <RepeatStack Direction="Horizontal"  AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                <RepeatStack Direction="Horizontal" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                   <att.ItemTemplate>gaclib_controls::MessageBoxButtonTemplate</att.ItemTemplate>
                   <att.ItemSource-eval>ViewModel.Buttons</att.ItemSource-eval>
                 </RepeatStack>
