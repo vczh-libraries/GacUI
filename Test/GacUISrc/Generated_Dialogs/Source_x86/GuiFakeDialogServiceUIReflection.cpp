@@ -81,6 +81,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
 				CLASS_MEMBER_FIELD(ViewModel)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::gaclib_controls::MessageBoxWindowConstructor)

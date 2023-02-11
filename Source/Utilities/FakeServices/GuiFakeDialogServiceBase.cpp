@@ -87,6 +87,7 @@ FakeDialogServiceBase
 				auto owner = app->GetWindowFromNative(window);
 				auto dialog = CreateMessageBoxDialog(vm);
 				bool exit = false;
+				dialog->MoveToScreenCenter();
 				dialog->ShowModalAndDelete(owner, [&exit]() {exit = true; });
 				while (!exit && app->RunOneCycle());
 			}

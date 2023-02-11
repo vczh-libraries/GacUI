@@ -3,7 +3,16 @@
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxWindow">
       <ref.Parameter Name="ViewModel" Class="presentation::IMessageBoxDialogViewModel"/>
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
-      <Window ref.Name="self" Text-eval="ViewModel.Title" ClientSize="x:240 y:120">
+      <Window
+          ref.Name="self"
+          Text-eval="ViewModel.Title"
+          ClientSize="x:240 y:120"
+          ShowInTaskBar="false"
+          MaximizedBox="false"
+          MinimizedBox="false"
+          SizeBox="false"
+          IconVisible="false"
+          >
         <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -16,7 +25,10 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <ImageFrame Image-uri="res://Images/None"/>
+            <SolidBackground Color="#FFFFFF"/>
+            <Bounds PreferredMinSize="x:48 y:48" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <ImageFrame Stretch="true" Image-uri="res://Images/None"/>
+            </Bounds>
           </Cell>
 
           <Cell Site="row:0 column:1">

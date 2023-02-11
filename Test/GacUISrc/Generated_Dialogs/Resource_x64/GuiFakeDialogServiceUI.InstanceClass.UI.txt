@@ -36,22 +36,43 @@ namespace gaclib_controls
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+        var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>4 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gaclib_controls-MessageBoxWindow>Initialize(<this> : ::gaclib_controls::MessageBoxWindow*) : (::system::Void)
         {
             (self = <this>);
             (ViewModel = <this>.ViewModel);
+            {
+                (self.IconVisible = false);
+            }
+            {
+                (self.SizeBox = false);
+            }
+            {
+                (self.MinimizedBox = false);
+            }
+            {
+                (self.MaximizedBox = false);
+            }
+            {
+                (self.ShowInTaskBar = false);
+            }
             {
                 (self.ClientSize = {x : 240; y : 120;} of (::presentation::Size));
             }
@@ -77,38 +98,61 @@ namespace gaclib_controls
             {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
-            (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
+            (<precompile>2 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>2.Color = (cast (::presentation::Color) "#FFFFFF"));
+            }
             {
                 (<precompile>1.OwnedElement = <precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>3.PreferredMinSize = {x : 48; y : 48;} of (::presentation::Size));
+            }
+            {
+                (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>4 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>4.Stretch = true);
+            }
+            {
+                (<precompile>3.OwnedElement = <precompile>4);
+            }
+            {
+                <precompile>1.AddChild(<precompile>3);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(0, 1, 1, 1);
+                <precompile>5.SetSite(0, 1, 1, 1);
             }
             {
-                (<precompile>4 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>6 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
-            (<precompile>5 = <precompile>4.BoundsComposition);
+            (<precompile>7 = <precompile>6.BoundsComposition);
             {
-                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>3.AddChild(<precompile>4.BoundsComposition);
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>0.AddChild(<precompile>3);
+                <precompile>5.AddChild(<precompile>6.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>5);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             {
-                (<precompile>2.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "Images/None", true)).Image);
+                (<precompile>4.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "Images/None", true)).Image);
             }
             {
-                (<precompile>4.Text = ViewModel.Text);
+                (<precompile>6.Text = ViewModel.Text);
             }
             {
                 (self.Text = ViewModel.Title);
