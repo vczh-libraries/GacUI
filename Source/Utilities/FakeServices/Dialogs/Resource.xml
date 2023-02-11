@@ -18,7 +18,7 @@
   </Folder>
 
   <LocalizedStrings name="DialogStrings">
-    <LocalizedStrings ref.Class="vl::presentation::controls::fake_dialog_service::DialogStrings" DefaultLocale="en-US">
+    <LocalizedStrings ref.Class="gaclib_controls::DialogStrings" DefaultLocale="en-US">
       <Strings Locales="en-US">
         <String Name="OK" Text="OK"/>
         <String Name="Cancel" Text="Cancel"/>

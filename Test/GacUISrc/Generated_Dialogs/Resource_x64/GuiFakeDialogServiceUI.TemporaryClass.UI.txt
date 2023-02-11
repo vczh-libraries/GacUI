@@ -1,5 +1,5 @@
 ﻿================================(1/2)================================
-module <instance>vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow;
+module <instance>gaclib_controls::GuiMessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -19,150 +19,151 @@ using presentation::compositions::*;
 using presentation::templates::*;
 using presentation::theme::*;
 
-namespace vl
+namespace gaclib_controls
 {
-    namespace presentation
+    class GuiMessageBoxWindow : ::presentation::controls::GuiWindow
     {
-        namespace controls
-        {
-            namespace fake_dialog_service
-            {
-                class GuiMessageBoxWindow : ::presentation::controls::GuiWindow
-                {
-                    new* ()
-                        :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
-                    {
-                        raise "Not Implemented";
-                    }
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
 
-                    delete
-                    {
-                        FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
-                    }
-                }
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
             }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IMessageBoxDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IMessageBoxDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IMessageBoxDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
         }
     }
 }
 
 ================================(2/2)================================
-module <localized-strings>vl::presentation::controls::fake_dialog_service::DialogStrings;
+module <localized-strings>gaclib_controls::DialogStrings;
 
-namespace vl
+namespace gaclib_controls
 {
-    namespace presentation
+    interface IDialogStringsStrings
     {
-        namespace controls
-        {
-            namespace fake_dialog_service
-            {
-                interface IDialogStringsStrings
-                {
-                    func Abort() : (::system::String);
+        func Abort() : (::system::String);
 
-                    func Cancel() : (::system::String);
+        func Cancel() : (::system::String);
 
-                    func Continue() : (::system::String);
+        func Continue() : (::system::String);
 
-                    func Ignore() : (::system::String);
+        func Ignore() : (::system::String);
 
-                    func No() : (::system::String);
+        func No() : (::system::String);
 
-                    func OK() : (::system::String);
+        func OK() : (::system::String);
 
-                    func Retry() : (::system::String);
+        func Retry() : (::system::String);
 
-                    func TryAgain() : (::system::String);
+        func TryAgain() : (::system::String);
 
-                    func Yes() : (::system::String);
-                }
-            }
-        }
+        func Yes() : (::system::String);
     }
 }
 
-namespace vl
+namespace gaclib_controls
 {
-    namespace presentation
+    class DialogStrings
     {
-        namespace controls
+        static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
         {
-            namespace fake_dialog_service
             {
-                class DialogStrings
+                var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
+                var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
+                while (<for-enumerator><ls>format.Next())
                 {
-                    static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
+                    var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
                     {
-                        {
-                            var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
-                            var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
-                            while (<for-enumerator><ls>format.Next())
-                            {
-                                var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
-                                {
-                                    return <ls>format;
-                                }
-                            }
-                        }
-                        return "";
-                    }
-
-                    static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
-                    {
-                        return new (IDialogStringsStrings^)
-                        {
-                            override func Abort() : (::system::String)
-                            {
-                                return "Abort";
-                            }
-
-                            override func Cancel() : (::system::String)
-                            {
-                                return "Cancel";
-                            }
-
-                            override func Continue() : (::system::String)
-                            {
-                                return "Continue";
-                            }
-
-                            override func Ignore() : (::system::String)
-                            {
-                                return "Ignore";
-                            }
-
-                            override func No() : (::system::String)
-                            {
-                                return "No";
-                            }
-
-                            override func OK() : (::system::String)
-                            {
-                                return "OK";
-                            }
-
-                            override func Retry() : (::system::String)
-                            {
-                                return "Retry";
-                            }
-
-                            override func TryAgain() : (::system::String)
-                            {
-                                return "Try Again";
-                            }
-
-                            override func Yes() : (::system::String)
-                            {
-                                return "Yes";
-                            }
-                        };
-                    }
-
-                    new ()
-                    {
+                        return <ls>format;
                     }
                 }
             }
+            return "";
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+        {
+            return new (IDialogStringsStrings^)
+            {
+                override func Abort() : (::system::String)
+                {
+                    return "Abort";
+                }
+
+                override func Cancel() : (::system::String)
+                {
+                    return "Cancel";
+                }
+
+                override func Continue() : (::system::String)
+                {
+                    return "Continue";
+                }
+
+                override func Ignore() : (::system::String)
+                {
+                    return "Ignore";
+                }
+
+                override func No() : (::system::String)
+                {
+                    return "No";
+                }
+
+                override func OK() : (::system::String)
+                {
+                    return "OK";
+                }
+
+                override func Retry() : (::system::String)
+                {
+                    return "Retry";
+                }
+
+                override func TryAgain() : (::system::String)
+                {
+                    return "Try Again";
+                }
+
+                override func Yes() : (::system::String)
+                {
+                    return "Yes";
+                }
+            };
+        }
+
+        new ()
+        {
         }
     }
 }

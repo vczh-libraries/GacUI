@@ -24,77 +24,87 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	class __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings;
+	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_;
+	class __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings;
 }
 
-namespace vl
+namespace gaclib_controls
 {
-	namespace presentation
+	class DialogStrings;
+	class GuiMessageBoxWindowConstructor;
+	class GuiMessageBoxWindow;
+	class IDialogStringsStrings;
+
+	class DialogStrings : public ::vl::Object, public ::vl::reflection::Description<DialogStrings>
 	{
-		namespace controls
-		{
-			namespace fake_dialog_service
-			{
-				class DialogStrings;
-				class GuiMessageBoxWindowConstructor;
-				class GuiMessageBoxWindow;
-				class IDialogStringsStrings;
-
-				class DialogStrings : public ::vl::Object, public ::vl::reflection::Description<DialogStrings>
-				{
-					friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings;
+		friend class ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStrings>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStrings>;
 #endif
-				public:
-					static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
-					static ::vl::Ptr<::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings> Get(::vl::Locale __vwsn_ls_locale);
-					DialogStrings();
-				};
+	public:
+		static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
+		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> Get(::vl::Locale __vwsn_ls_locale);
+		DialogStrings();
+	};
 
-				class GuiMessageBoxWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<GuiMessageBoxWindowConstructor>
-				{
+	class GuiMessageBoxWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<GuiMessageBoxWindowConstructor>
+	{
+		friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GuiMessageBoxWindowConstructor>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GuiMessageBoxWindowConstructor>;
 #endif
-				protected:
-					::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow* self;
-					void __vwsn_vl_presentation_controls_fake_dialog_service_GuiMessageBoxWindow_Initialize(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow* __vwsn_this_);
-				public:
-					GuiMessageBoxWindowConstructor();
-				};
+	protected:
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> ViewModel;
+		::gaclib_controls::GuiMessageBoxWindow* self;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		void __vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize(::gaclib_controls::GuiMessageBoxWindow* __vwsn_this_);
+	public:
+		GuiMessageBoxWindowConstructor();
+	};
 
-				class GuiMessageBoxWindow : public ::vl::presentation::controls::GuiWindow, public ::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor, public ::vl::reflection::Description<GuiMessageBoxWindow>
-				{
-					friend class ::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor;
+	class GuiMessageBoxWindow : public ::vl::presentation::controls::GuiWindow, public ::gaclib_controls::GuiMessageBoxWindowConstructor, public ::vl::reflection::Description<GuiMessageBoxWindow>
+	{
+		friend class ::gaclib_controls::GuiMessageBoxWindowConstructor;
+		friend class ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GuiMessageBoxWindow>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<GuiMessageBoxWindow>;
 #endif
-				public:
-					GuiMessageBoxWindow();
-					~GuiMessageBoxWindow();
-				};
+	public:
+		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
+		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
+		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
+		::vl::Event<void()> StringsChanged;
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_parameter_ViewModel;
+		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> GetViewModel();
+		GuiMessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		~GuiMessageBoxWindow();
+	};
 
-				class IDialogStringsStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IDialogStringsStrings>
-				{
+	class IDialogStringsStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IDialogStringsStrings>
+	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IDialogStringsStrings>;
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IDialogStringsStrings>;
 #endif
-				public:
-					virtual ::vl::WString Abort() = 0;
-					virtual ::vl::WString Cancel() = 0;
-					virtual ::vl::WString Continue() = 0;
-					virtual ::vl::WString Ignore() = 0;
-					virtual ::vl::WString No() = 0;
-					virtual ::vl::WString OK() = 0;
-					virtual ::vl::WString Retry() = 0;
-					virtual ::vl::WString TryAgain() = 0;
-					virtual ::vl::WString Yes() = 0;
-				};
+	public:
+		virtual ::vl::WString Abort() = 0;
+		virtual ::vl::WString Cancel() = 0;
+		virtual ::vl::WString Continue() = 0;
+		virtual ::vl::WString Ignore() = 0;
+		virtual ::vl::WString No() = 0;
+		virtual ::vl::WString OK() = 0;
+		virtual ::vl::WString Retry() = 0;
+		virtual ::vl::WString TryAgain() = 0;
+		virtual ::vl::WString Yes() = 0;
+	};
 
-			}
-		}
-	}
 }
 /***********************************************************************
 Global Variables and Functions
@@ -113,10 +123,37 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	class __vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings : public ::vl::Object, public virtual ::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings
+	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_
+	{
+		::gaclib_controls::GuiMessageBoxWindowConstructor* __vwsnthis_0;
+
+		__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize_(::gaclib_controls::GuiMessageBoxWindowConstructor* __vwsnctorthis_0);
+
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	class __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
 	{
 	public:
-		__vwsnc1_GuiFakeDialogServiceUI_vl_presentation_controls_fake_dialog_service_DialogStrings_Get__vl_presentation_controls_fake_dialog_service_IDialogStringsStrings();
+		::gaclib_controls::GuiMessageBoxWindowConstructor* __vwsnthis_0;
+
+		__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_GuiMessageBoxWindowConstructor___vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::GuiMessageBoxWindowConstructor* __vwsnctorthis_0);
+
+		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
+	{
+	public:
+		__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings();
 
 		::vl::WString Abort() override;
 		::vl::WString Cancel() override;

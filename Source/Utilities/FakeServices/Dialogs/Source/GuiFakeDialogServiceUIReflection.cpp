@@ -30,34 +30,49 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::DialogStrings)
-			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
-			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
-			IMPL_CPP_TYPE_INFO(vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::DialogStrings)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::GuiMessageBoxWindow)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::GuiMessageBoxWindowConstructor)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::IDialogStringsStrings)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
-			BEGIN_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::DialogStrings)
+			BEGIN_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::vl::presentation::controls::fake_dialog_service::DialogStrings>(), NO_PARAMETER)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::DialogStrings>(), NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_First, { L"__vwsn_ls_formats" })
 				CLASS_MEMBER_STATIC_METHOD(Get, { L"__vwsn_ls_locale" })
-			END_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::DialogStrings)
+			END_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 
-			BEGIN_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
+			BEGIN_CLASS_MEMBER(::gaclib_controls::GuiMessageBoxWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
-				CLASS_MEMBER_BASE(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow*(), NO_PARAMETER)
-			END_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
+				CLASS_MEMBER_BASE(::gaclib_controls::GuiMessageBoxWindowConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::GuiMessageBoxWindow*(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetStrings, { L"__vwsn_value_" })
+				CLASS_MEMBER_EVENT(StringsChanged)
+				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
+				CLASS_MEMBER_FIELD(__vwsn_prop_Strings)
+				CLASS_MEMBER_PROPERTY_EVENT(Strings, GetStrings, SetStrings, StringsChanged)
+				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
+			END_CLASS_MEMBER(::gaclib_controls::GuiMessageBoxWindow)
 
-			BEGIN_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+			BEGIN_CLASS_MEMBER(::gaclib_controls::GuiMessageBoxWindowConstructor)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
-				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor>(), NO_PARAMETER)
-				CLASS_MEMBER_METHOD(__vwsn_vl_presentation_controls_fake_dialog_service_GuiMessageBoxWindow_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::GuiMessageBoxWindowConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_gaclib_controls_GuiMessageBoxWindow_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
+				CLASS_MEMBER_FIELD(ViewModel)
 				CLASS_MEMBER_FIELD(self)
-			END_CLASS_MEMBER(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
+			END_CLASS_MEMBER(::gaclib_controls::GuiMessageBoxWindowConstructor)
 
-			BEGIN_INTERFACE_MEMBER(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+			BEGIN_INTERFACE_MEMBER(::gaclib_controls::IDialogStringsStrings)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(Abort, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Cancel, NO_PARAMETER)
@@ -68,7 +83,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(Retry, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(TryAgain, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Yes, NO_PARAMETER)
-			END_INTERFACE_MEMBER(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+			END_INTERFACE_MEMBER(::gaclib_controls::IDialogStringsStrings)
 
 #undef _
 			class GuiFakeDialogServiceUITypeLoader : public Object, public ITypeLoader
@@ -76,10 +91,10 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::DialogStrings)
-					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
-					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
-					ADD_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+					ADD_TYPE_INFO(::gaclib_controls::DialogStrings)
+					ADD_TYPE_INFO(::gaclib_controls::GuiMessageBoxWindow)
+					ADD_TYPE_INFO(::gaclib_controls::GuiMessageBoxWindowConstructor)
+					ADD_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
 				}
 
 				void Unload(ITypeManager* manager)

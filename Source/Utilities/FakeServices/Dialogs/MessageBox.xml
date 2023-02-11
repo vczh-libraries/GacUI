@@ -1,7 +1,30 @@
 <Folder>
   <Instance name="MessageBoxWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow">
-      <Window ref.Name="self" Text="MessageBox" ClientSize="x:240 y:120">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::GuiMessageBoxWindow">
+      <ref.Parameter Name="ViewModel" Class="presentation::IMessageBoxDialogViewModel"/>
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <Window ref.Name="self" Text-eval="ViewModel.Title" ClientSize="x:240 y:120">
+        <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <ImageFrame Image-uri="res://Images/None"/>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <Label Text-eval="ViewModel.Text">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Label>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>

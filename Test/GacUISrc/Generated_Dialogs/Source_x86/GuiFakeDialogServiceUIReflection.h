@@ -36,14 +36,14 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::DialogStrings)
-			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindow)
-			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::GuiMessageBoxWindowConstructor)
-			DECL_TYPE_INFO(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+			DECL_TYPE_INFO(::gaclib_controls::DialogStrings)
+			DECL_TYPE_INFO(::gaclib_controls::GuiMessageBoxWindow)
+			DECL_TYPE_INFO(::gaclib_controls::GuiMessageBoxWindowConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::gaclib_controls::IDialogStringsStrings)
 				::vl::WString Abort() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Abort);
@@ -80,7 +80,7 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Yes);
 				}
-			END_INTERFACE_PROXY(::vl::presentation::controls::fake_dialog_service::IDialogStringsStrings)
+			END_INTERFACE_PROXY(::gaclib_controls::IDialogStringsStrings)
 #endif
 #endif
 
