@@ -243,7 +243,10 @@ GuiControlHost
 				else
 				{
 					deleteWhenDestroyed = true;
-					GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+					GetApplication()->InvokeInMainThread(this, [window]()
+					{
+						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
+					});
 				}
 			}
 

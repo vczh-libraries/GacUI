@@ -236,6 +236,9 @@ Window
 				GUI_SPECIFY_CONTROL_TEMPLATE_TYPE(WindowTemplate, GuiControlHost)
 				friend class GuiApplication;
 			protected:
+				bool									registeredInApplication = false;
+
+			protected:
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
 				bool									hasMaximizedBox = true;
 				bool									hasMinimizedBox = true;

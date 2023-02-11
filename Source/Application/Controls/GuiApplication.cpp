@@ -66,23 +66,27 @@ GuiApplication
 			void GuiApplication::RegisterWindow(GuiWindow* window)
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiApplication::RegisterWindow(GuiWindow*)#"
+				CHECK_ERROR(!window->registeredInApplication, ERROR_MESSAGE_PREFIX L"The window has been registered");
+				window->registeredInApplication = true;
 				windows.Add(window);
 				if (auto nativeWindow = window->GetNativeWindow())
 				{
-					vint index = windowMap.Keys().IndexOf(nativeWindow);
-					CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"NotifyNativeWindowChanged() has not been called.");
-					CHECK_ERROR(windowMap.Values()[index] == window, ERROR_MESSAGE_PREFIX L"The native window has been used.");
+					windowMap.Add(nativeWindow, window);
 				}
 #undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiApplication::UnregisterWindow(GuiWindow* window)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiApplication::UnregisterWindow(GuiWindow*)#"
+				CHECK_ERROR(window->registeredInApplication, ERROR_MESSAGE_PREFIX L"The window has not been registered");
+				window->registeredInApplication = false;
 				if (auto nativeWindow = window->GetNativeWindow())
 				{
 					windowMap.Remove(nativeWindow);
 				}
 				windows.Remove(window);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiApplication::NotifyNativeWindowChanged(GuiControlHost* controlHost, INativeWindow* previousNativeWindow)
@@ -90,6 +94,7 @@ GuiApplication
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiApplication::NotifyNativeWindowChanged(GuiControlsHost*, INativeWindow*)#"
 				if (auto window = dynamic_cast<GuiWindow*>(controlHost))
 				{
+					if (!window->registeredInApplication) return;
 					if (previousNativeWindow)
 					{
 						CHECK_ERROR(windowMap[previousNativeWindow] == window, ERROR_MESSAGE_PREFIX L"Unpaired arguments.");
