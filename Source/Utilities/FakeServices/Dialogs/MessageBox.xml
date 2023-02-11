@@ -3,8 +3,7 @@
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxButtonTemplate">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="Action" Class="presentation::IMessageBoxDialogAction"/>
-      <ref.Members>
-        <![CDATA[
+      <ref.Members><![CDATA[
         func GetButtonText(button: INativeDialogService::MessageBoxButtonsOutput, strings: IDialogStringsStrings^) : string
         {
           switch (button)
@@ -22,10 +21,15 @@
           }
         }
       ]]></ref.Members>
-      <ControlTemplate ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+      <ControlTemplate ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
         <Button Text-bind="self.GetButtonText(Action.Button, self.Strings)">
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <ev.Clicked-eval><![CDATA[{Action.PerformAction();}]]></ev.Clicked-eval>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
+          <ev.Clicked-eval><![CDATA[
+            {
+              Action.PerformAction();
+              self.RelatedControlHost.Close();
+            }
+          ]]></ev.Clicked-eval>
         </Button>
       </ControlTemplate>
     </Instance>
@@ -43,7 +47,7 @@
           SizeBox="false"
           IconVisible="false"
           >
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
@@ -55,16 +59,42 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SolidBackground Color="#FFFFFF"/>
-            <Bounds PreferredMinSize="x:48 y:48" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-              <ImageFrame Stretch="true" Image-uri="res://Images/None"/>
-            </Bounds>
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+              </att.Columns>
+
+              <Cell Site="row:1 column:0">
+                <SolidBackground Color="#FFFFFF"/>
+                <Bounds PreferredMinSize="x:48 y:48" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                  <ImageFrame Stretch="true" Image-uri="res://Images/None"/>
+                </Bounds>
+              </Cell>
+            </Table>
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <Label Text-eval="ViewModel.Text">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </Label>
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+              </att.Columns>
+
+              <Cell Site="row:1 column:0">
+                <Label Text-eval="ViewModel.Text">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </Label>
+              </Cell>
+            </Table>
           </Cell>
 
           <Cell Site="row:2 column:0 columnSpan:2">
