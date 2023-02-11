@@ -38,6 +38,8 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::gaclib_controls::DialogStrings)
 			DECL_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
+			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButton)
+			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButtonConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindow)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindowConstructor)
 

@@ -32,6 +32,8 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(gaclib_controls::DialogStrings)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::IDialogStringsStrings)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::MessageBoxButton)
+			IMPL_CPP_TYPE_INFO(gaclib_controls::MessageBoxButtonConstructor)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::MessageBoxWindow)
 			IMPL_CPP_TYPE_INFO(gaclib_controls::MessageBoxWindowConstructor)
 
@@ -57,17 +59,37 @@ namespace vl
 				CLASS_MEMBER_METHOD(Yes, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::gaclib_controls::IDialogStringsStrings)
 
+			BEGIN_CLASS_MEMBER(::gaclib_controls::MessageBoxButton)
+				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
+				CLASS_MEMBER_BASE(::gaclib_controls::MessageBoxButtonConstructor)
+				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::MessageBoxButton*(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>), { L"__vwsn_ctor_parameter_Action" })
+				CLASS_MEMBER_METHOD(GetAction, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetButtonText, { L"button" _ L"strings" })
+				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetStrings, { L"__vwsn_value_" })
+				CLASS_MEMBER_EVENT(StringsChanged)
+				CLASS_MEMBER_FIELD(__vwsn_parameter_Action)
+				CLASS_MEMBER_FIELD(__vwsn_prop_Strings)
+				CLASS_MEMBER_PROPERTY_READONLY(Action, GetAction)
+				CLASS_MEMBER_PROPERTY_EVENT(Strings, GetStrings, SetStrings, StringsChanged)
+			END_CLASS_MEMBER(::gaclib_controls::MessageBoxButton)
+
+			BEGIN_CLASS_MEMBER(::gaclib_controls::MessageBoxButtonConstructor)
+				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
+				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::MessageBoxButtonConstructor>(), NO_PARAMETER)
+				CLASS_MEMBER_METHOD(__vwsn_gaclib_controls_MessageBoxButton_Initialize, { L"__vwsn_this_" })
+				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
+				CLASS_MEMBER_FIELD(Action)
+				CLASS_MEMBER_FIELD(self)
+			END_CLASS_MEMBER(::gaclib_controls::MessageBoxButtonConstructor)
+
 			BEGIN_CLASS_MEMBER(::gaclib_controls::MessageBoxWindow)
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::gaclib_controls::MessageBoxWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::MessageBoxWindow*(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
-				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(SetStrings, { L"__vwsn_value_" })
-				CLASS_MEMBER_EVENT(StringsChanged)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
-				CLASS_MEMBER_FIELD(__vwsn_prop_Strings)
-				CLASS_MEMBER_PROPERTY_EVENT(Strings, GetStrings, SetStrings, StringsChanged)
 				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
 			END_CLASS_MEMBER(::gaclib_controls::MessageBoxWindow)
 
@@ -83,8 +105,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_5)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_6)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_7)
+				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(ViewModel)
-				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::gaclib_controls::MessageBoxWindowConstructor)
 
 #undef _
@@ -95,6 +117,8 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::gaclib_controls::DialogStrings)
 					ADD_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
+					ADD_TYPE_INFO(::gaclib_controls::MessageBoxButton)
+					ADD_TYPE_INFO(::gaclib_controls::MessageBoxButtonConstructor)
 					ADD_TYPE_INFO(::gaclib_controls::MessageBoxWindow)
 					ADD_TYPE_INFO(::gaclib_controls::MessageBoxWindowConstructor)
 				}

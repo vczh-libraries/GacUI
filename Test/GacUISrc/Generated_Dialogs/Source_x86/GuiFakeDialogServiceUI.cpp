@@ -56,12 +56,42 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
+	__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->PerformAction();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -74,39 +104,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
+	__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButton*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetButtonText(::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->GetButton(), ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::MessageBoxButton*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -116,7 +146,68 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButton*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -135,51 +226,51 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings()
+	__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings()
 	{
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Abort()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Abort()
 	{
 		return ::vl::WString::Unmanaged(L"Abort");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Cancel()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Cancel()
 	{
 		return ::vl::WString::Unmanaged(L"Cancel");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Continue()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Continue()
 	{
 		return ::vl::WString::Unmanaged(L"Continue");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Ignore()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Ignore()
 	{
 		return ::vl::WString::Unmanaged(L"Ignore");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::No()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::No()
 	{
 		return ::vl::WString::Unmanaged(L"No");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::OK()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::OK()
 	{
 		return ::vl::WString::Unmanaged(L"OK");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Retry()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Retry()
 	{
 		return ::vl::WString::Unmanaged(L"Retry");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::TryAgain()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::TryAgain()
 	{
 		return ::vl::WString::Unmanaged(L"Try Again");
 	}
 
-	::vl::WString __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Yes()
+	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Yes()
 	{
 		return ::vl::WString::Unmanaged(L"Yes");
 	}
@@ -210,7 +301,7 @@ namespace gaclib_controls
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> DialogStrings::Get(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::vl::Ptr<::gaclib_controls::IDialogStringsStrings>(new ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings());
+		return ::vl::Ptr<::gaclib_controls::IDialogStringsStrings>(new ::vl_workflow_global::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings());
 	}
 
 	DialogStrings::DialogStrings()
@@ -222,142 +313,102 @@ Class (::gaclib_controls::IDialogStringsStrings)
 ***********************************************************************/
 
 /***********************************************************************
-Class (::gaclib_controls::MessageBoxWindowConstructor)
+Class (::gaclib_controls::MessageBoxButtonConstructor)
 ***********************************************************************/
 
-	void MessageBoxWindowConstructor::__vwsn_gaclib_controls_MessageBoxWindow_Initialize(::gaclib_controls::MessageBoxWindow* __vwsn_this_)
+	void MessageBoxButtonConstructor::__vwsn_gaclib_controls_MessageBoxButton_Initialize(::gaclib_controls::MessageBoxButton* __vwsn_this_)
 	{
 		(this->self = __vwsn_this_);
-		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		(this->Action = ::vl::__vwsn::This(__vwsn_this_)->GetAction());
 		{
-			::vl::__vwsn::This(this->self)->SetIconVisible(false);
+			::vl::__vwsn::This(this->self)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetSizeBox(false);
+			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetMinimizedBox(false);
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetMaximizedBox(false);
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetShowInTaskBar(false);
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(240); __vwsn_temp__.y = static_cast<::vl::vint32_t>(120); return __vwsn_temp__; }());
-		}
-		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(2));
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
-		}
-		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
-		}
-		(this->__vwsn_precompile_2 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_2.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_2));
-		}
-		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(48); __vwsn_temp__.y = static_cast<::vl::vint32_t>(48); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		(this->__vwsn_precompile_4 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetStretch(true);
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_4));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
-		}
-		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
-		}
-		{
-			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
-		}
-		(this->__vwsn_precompile_7 = ::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition());
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
-		}
-		{
-			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_4.Obj())->SetImage(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"Images/None"), true).Obj())).Obj())->GetImage());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetText());
-		}
-		{
-			::vl::__vwsn::This(this->self)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetTitle());
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonConstructor___vwsn_gaclib_controls_MessageBoxButton_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
 
-	MessageBoxWindowConstructor::MessageBoxWindowConstructor()
-		: ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
-		, self(static_cast<::gaclib_controls::MessageBoxWindow*>(nullptr))
-		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
-		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
-		, __vwsn_precompile_2(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
-		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
-		, __vwsn_precompile_4(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
-		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
-		, __vwsn_precompile_6(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
-		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	MessageBoxButtonConstructor::MessageBoxButtonConstructor()
+		: Action(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>())
+		, self(static_cast<::gaclib_controls::MessageBoxButton*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
 /***********************************************************************
-Class (::gaclib_controls::MessageBoxWindow)
+Class (::gaclib_controls::MessageBoxButton)
 ***********************************************************************/
 
-	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> MessageBoxWindow::GetStrings()
+	::vl::WString MessageBoxButton::GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> strings)
+	{
+		{
+			auto __vwsn_switch_0 = button;
+			if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectOK))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->OK();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectCancel))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Cancel();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectYes))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Yes();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectNo))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->No();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectRetry))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Retry();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectAbort))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Abort();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectIgnore))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Ignore();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectTryAgain))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->TryAgain();
+			}
+			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectContinue))
+			{
+				return ::vl::__vwsn::This(strings.Obj())->Continue();
+			}
+		}
+	}
+
+	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> MessageBoxButton::GetStrings()
 	{
 		return this->__vwsn_prop_Strings;
 	}
-	void MessageBoxWindow::SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_)
+	void MessageBoxButton::SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_)
 	{
 		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
 		{
@@ -366,6 +417,154 @@ Class (::gaclib_controls::MessageBoxWindow)
 		}
 	}
 
+	::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> MessageBoxButton::GetAction()
+	{
+		return this->__vwsn_parameter_Action;
+	}
+
+	MessageBoxButton::MessageBoxButton(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action)
+		: __vwsn_prop_Strings(::gaclib_controls::DialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_Action(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>())
+	{
+		(this->__vwsn_parameter_Action = __vwsn_ctor_parameter_Action);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"gaclib_controls::MessageBoxButton"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_MessageBoxButton_Initialize(this);
+	}
+
+	MessageBoxButton::~MessageBoxButton()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::templates::GuiTemplate*>(this));
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::MessageBoxWindowConstructor)
+***********************************************************************/
+
+	void MessageBoxWindowConstructor::__vwsn_gaclib_controls_MessageBoxWindow_Initialize(::gaclib_controls::MessageBoxWindow* __vwsn_this_)
+	{
+		(this->__vwsn_precompile_0 = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetIconVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetSizeBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinimizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMaximizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetShowInTaskBar(false);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(240); __vwsn_temp__.y = static_cast<::vl::vint32_t>(120); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetCellPadding(static_cast<::vl::vint32_t>(5));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetRowsAndColumns(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(2));
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetRowOption(static_cast<::vl::vint32_t>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetColumnOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_2 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		(this->__vwsn_precompile_3 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3.Obj())->SetColor(::vl::__vwsn::Parse<::vl::presentation::Color>(::vl::WString::Unmanaged(L"#FFFFFF")));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_4 = new ::vl::presentation::compositions::GuiBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(48); __vwsn_temp__.y = static_cast<::vl::vint32_t>(48); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_5 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetStretch(true);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_5));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_4));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_2));
+		}
+		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5.Obj())->SetImage(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(__vwsn_this_)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"Images/None"), true).Obj())).Obj())->GetImage());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetText());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetTitle());
+		}
+	}
+
+	MessageBoxWindowConstructor::MessageBoxWindowConstructor()
+		: ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
+		, __vwsn_precompile_0(static_cast<::gaclib_controls::MessageBoxWindow*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_3(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>())
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::MessageBoxWindow)
+***********************************************************************/
+
 	::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> MessageBoxWindow::GetViewModel()
 	{
 		return this->__vwsn_parameter_ViewModel;
@@ -373,7 +572,6 @@ Class (::gaclib_controls::MessageBoxWindow)
 
 	MessageBoxWindow::MessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel)
 		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
-		, __vwsn_prop_Strings(::gaclib_controls::DialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
 		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
 	{
 		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);

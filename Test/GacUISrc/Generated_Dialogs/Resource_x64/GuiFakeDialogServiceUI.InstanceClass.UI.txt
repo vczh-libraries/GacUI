@@ -1,5 +1,5 @@
-﻿================================(1/3)================================
-module <constructor>gaclib_controls::MessageBoxWindow;
+﻿================================(1/5)================================
+module <constructor>gaclib_controls::MessageBoxButton;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -21,141 +21,117 @@ using presentation::theme::*;
 
 namespace gaclib_controls
 {
-    class MessageBoxWindowConstructor
+    class MessageBoxButtonConstructor
     {
         @cpp:Protected
-        var ViewModel : ::presentation::IMessageBoxDialogViewModel^ = null of (::presentation::IMessageBoxDialogViewModel^);
+        var Action : ::presentation::IMessageBoxDialogAction^ = null of (::presentation::IMessageBoxDialogAction^);
 
         @cpp:Protected
-        var self : ::gaclib_controls::MessageBoxWindow* = null of (::gaclib_controls::MessageBoxWindow*);
+        var self : ::gaclib_controls::MessageBoxButton* = null of (::gaclib_controls::MessageBoxButton*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>0 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
-
-        @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>6 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
-
-        @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        func <gaclib_controls-MessageBoxWindow>Initialize(<this> : ::gaclib_controls::MessageBoxWindow*) : (::system::Void)
+        func <gaclib_controls-MessageBoxButton>Initialize(<this> : ::gaclib_controls::MessageBoxButton*) : (::system::Void)
         {
             (self = <this>);
-            (ViewModel = <this>.ViewModel);
+            (Action = <this>.Action);
             {
-                (self.IconVisible = false);
+                (self.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (self.SizeBox = false);
+                (<precompile>0 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>1 = <precompile>0.BoundsComposition);
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (self.MinimizedBox = false);
+                self.AddChild(<precompile>0.BoundsComposition);
             }
             {
-                (self.MaximizedBox = false);
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gaclib_controls::MessageBoxButton* = null of (::gaclib_controls::MessageBoxButton*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = self.GetButtonText(Action.Button, <bind-cache>0.Strings) of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gaclib_controls::MessageBoxButton*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gaclib_controls::MessageBoxButton*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>0.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>0.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
-                (self.ShowInTaskBar = false);
-            }
-            {
-                (self.ClientSize = {x : 240; y : 120;} of (::presentation::Size));
-            }
-            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>0.SetRowsAndColumns(3, 2);
-                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>1.SetSite(0, 0, 1, 1);
-            }
-            (<precompile>2 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>2.Color = (cast (::presentation::Color) "#FFFFFF"));
-            }
-            {
-                (<precompile>1.OwnedElement = <precompile>2);
-            }
-            (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (<precompile>3.PreferredMinSize = {x : 48; y : 48;} of (::presentation::Size));
-            }
-            {
-                (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            (<precompile>4 = new (::presentation::elements::GuiImageFrameElement^)());
-            {
-                (<precompile>4.Stretch = true);
-            }
-            {
-                (<precompile>3.OwnedElement = <precompile>4);
-            }
-            {
-                <precompile>1.AddChild(<precompile>3);
-            }
-            {
-                <precompile>0.AddChild(<precompile>1);
-            }
-            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>5.SetSite(0, 1, 1, 1);
-            }
-            {
-                (<precompile>6 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            (<precompile>7 = <precompile>6.BoundsComposition);
-            {
-                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>5.AddChild(<precompile>6.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>5);
-            }
-            {
-                self.ContainerComposition.AddChild(<precompile>0);
-            }
-            {
-                (<precompile>4.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "Images/None", true)).Image);
-            }
-            {
-                (<precompile>6.Text = ViewModel.Text);
-            }
-            {
-                (self.Text = ViewModel.Title);
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    Action.PerformAction();
+                };
+                attach(<precompile>0.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -238,7 +214,289 @@ namespace gaclib_controls
     }
 }
 
-================================(2/3)================================
+================================(2/5)================================
+module <instance>gaclib_controls::MessageBoxButton;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    @cpp:Friend(typeof(MessageBoxButtonConstructor))
+    class MessageBoxButton : ::presentation::templates::GuiControlTemplate, MessageBoxButtonConstructor
+    {
+        func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
+        {
+            {
+                var <switch>0 : ::presentation::INativeDialogService::MessageBoxButtonsOutput = button;
+                if ((<switch>0 == SelectOK of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.OK();
+                }
+                else if ((<switch>0 == SelectCancel of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.Cancel();
+                }
+                else if ((<switch>0 == SelectYes of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.Yes();
+                }
+                else if ((<switch>0 == SelectNo of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.No();
+                }
+                else if ((<switch>0 == SelectRetry of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.Retry();
+                }
+                else if ((<switch>0 == SelectAbort of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.Abort();
+                }
+                else if ((<switch>0 == SelectIgnore of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.Ignore();
+                }
+                else if ((<switch>0 == SelectTryAgain of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.TryAgain();
+                }
+                else if ((<switch>0 == SelectContinue of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return strings.Continue();
+                }
+            }
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        var <parameter>Action : presentation::IMessageBoxDialogAction^ = null of (::presentation::IMessageBoxDialogAction^);
+
+        func GetAction() : (presentation::IMessageBoxDialogAction^)
+        {
+            return <parameter>Action;
+        }
+
+        prop Action : presentation::IMessageBoxDialogAction^{GetAction}
+
+        new* (<ctor-parameter>Action : presentation::IMessageBoxDialogAction^)
+        {
+            (<parameter>Action = <ctor-parameter>Action);
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gaclib_controls::MessageBoxButton");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gaclib_controls-MessageBoxButton>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(3/5)================================
+module <constructor>gaclib_controls::MessageBoxWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class MessageBoxWindowConstructor
+    {
+        @cpp:Protected
+        var ViewModel : ::presentation::IMessageBoxDialogViewModel^ = null of (::presentation::IMessageBoxDialogViewModel^);
+
+        @cpp:Protected
+        var <precompile>0 : ::gaclib_controls::MessageBoxWindow* = null of (::gaclib_controls::MessageBoxWindow*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <gaclib_controls-MessageBoxWindow>Initialize(<this> : ::gaclib_controls::MessageBoxWindow*) : (::system::Void)
+        {
+            (<precompile>0 = <this>);
+            (ViewModel = <this>.ViewModel);
+            {
+                (<precompile>0.IconVisible = false);
+            }
+            {
+                (<precompile>0.SizeBox = false);
+            }
+            {
+                (<precompile>0.MinimizedBox = false);
+            }
+            {
+                (<precompile>0.MaximizedBox = false);
+            }
+            {
+                (<precompile>0.ShowInTaskBar = false);
+            }
+            {
+                (<precompile>0.ClientSize = {x : 240; y : 120;} of (::presentation::Size));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>1.CellPadding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>1.SetRowsAndColumns(3, 2);
+                <precompile>1.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>2.SetSite(0, 0, 1, 1);
+            }
+            (<precompile>3 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>3.Color = (cast (::presentation::Color) "#FFFFFF"));
+            }
+            {
+                (<precompile>2.OwnedElement = <precompile>3);
+            }
+            (<precompile>4 = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (<precompile>4.PreferredMinSize = {x : 48; y : 48;} of (::presentation::Size));
+            }
+            {
+                (<precompile>4.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>5 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>5.Stretch = true);
+            }
+            {
+                (<precompile>4.OwnedElement = <precompile>5);
+            }
+            {
+                <precompile>2.AddChild(<precompile>4);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
+            }
+            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>6.SetSite(0, 1, 1, 1);
+            }
+            {
+                (<precompile>7 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>8 = <precompile>7.BoundsComposition);
+            {
+                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>6.AddChild(<precompile>7.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>6);
+            }
+            {
+                <precompile>0.ContainerComposition.AddChild(<precompile>1);
+            }
+            {
+                (<precompile>5.Image = (cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "Images/None", true)).Image);
+            }
+            {
+                (<precompile>7.Text = ViewModel.Text);
+            }
+            {
+                (<precompile>0.Text = ViewModel.Title);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(4/5)================================
 module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -264,27 +522,6 @@ namespace gaclib_controls
     @cpp:Friend(typeof(MessageBoxWindowConstructor))
     class MessageBoxWindow : ::presentation::controls::GuiWindow, MessageBoxWindowConstructor
     {
-        @cpp:Private
-        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
-
-        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
-        {
-            return <prop>Strings;
-        }
-
-        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
-        {
-            if ((<prop>Strings != <value>))
-            {
-                (<prop>Strings = <value>);
-                StringsChanged();
-            }
-        }
-
-        event StringsChanged();
-
-        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
         var <parameter>ViewModel : presentation::IMessageBoxDialogViewModel^ = null of (::presentation::IMessageBoxDialogViewModel^);
 
         func GetViewModel() : (presentation::IMessageBoxDialogViewModel^)
@@ -311,7 +548,7 @@ namespace gaclib_controls
     }
 }
 
-================================(3/3)================================
+================================(5/5)================================
 module <localized-strings>gaclib_controls::DialogStrings;
 
 namespace gaclib_controls

@@ -5,7 +5,7 @@
       <ref.Parameter Name="Action" Class="presentation::IMessageBoxDialogAction"/>
       <ref.Members>
         <![CDATA[
-        func GetButtonText(button: INativeDialogService::MessageBoxButtonsOutput, strings: DialogStrings^) : string
+        func GetButtonText(button: INativeDialogService::MessageBoxButtonsOutput, strings: IDialogStringsStrings^) : string
         {
           switch (button)
           {
@@ -21,12 +21,12 @@
           }
         }
       ]]></ref.Members>
-      <Template ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+      <ControlTemplate ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0">
         <Button Text-bind="self.GetButtonText(Action.Button, self.Strings)">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <ev.Clicked-eval><![CDATA[{Action.PerformAction();}]]></ev.Clicked-eval>
         </Button>
-      </Template>
+      </ControlTemplate>
     </Instance>
   </Instance>
 

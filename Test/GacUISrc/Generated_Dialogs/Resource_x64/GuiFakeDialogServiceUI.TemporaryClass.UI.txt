@@ -1,4 +1,74 @@
-﻿================================(1/2)================================
+﻿================================(1/3)================================
+module <instance>gaclib_controls::MessageBoxButton;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class MessageBoxButton : ::presentation::templates::GuiControlTemplate
+    {
+        func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetAction() : (presentation::IMessageBoxDialogAction^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop Action : presentation::IMessageBoxDialogAction^{GetAction}
+
+        new* (<ctor-parameter>Action : presentation::IMessageBoxDialogAction^)
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
+        }
+    }
+}
+
+================================(2/3)================================
 module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23,27 +93,6 @@ namespace gaclib_controls
 {
     class MessageBoxWindow : ::presentation::controls::GuiWindow
     {
-        @cpp:Private
-        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
-
-        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
-        {
-            return <prop>Strings;
-        }
-
-        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
-        {
-            if ((<prop>Strings != <value>))
-            {
-                (<prop>Strings = <value>);
-                StringsChanged();
-            }
-        }
-
-        event StringsChanged();
-
-        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
         func GetViewModel() : (presentation::IMessageBoxDialogViewModel^)
         {
             raise "Not Implemented";
@@ -64,7 +113,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/2)================================
+================================(3/3)================================
 module <localized-strings>gaclib_controls::DialogStrings;
 
 namespace gaclib_controls
