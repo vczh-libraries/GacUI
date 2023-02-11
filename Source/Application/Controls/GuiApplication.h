@@ -26,13 +26,18 @@ Application
 			class GuiApplication : public Object, private INativeControllerListener, public Description<GuiApplication>
 			{
 				friend void GuiApplicationInitialize();
+				friend class GuiControlHost;
 				friend class GuiWindow;
 				friend class GuiPopup;
 				friend class Ptr<GuiApplication>;
 			private:
+
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 				void											ClipboardUpdated()override;
+
 			protected:
+				using WindowMap = collections::Dictionary<INativeWindow*, GuiWindow*>;
+
 				Locale											locale;
 				GuiWindow*										mainWindow = nullptr;
 				GuiWindow*										sharedTooltipOwnerWindow = nullptr;
@@ -41,6 +46,7 @@ Application
 				bool											sharedTooltipHovering = false;
 				bool											sharedTooltipClosing = false;
 				collections::List<GuiWindow*>					windows;
+				WindowMap										windowMap;
 				collections::SortedList<GuiPopup*>				openingPopups;
 
 				GuiApplication();
@@ -49,6 +55,7 @@ Application
 				INativeWindow*									GetThreadContextNativeWindow(GuiControlHost* controlHost);
 				void											RegisterWindow(GuiWindow* window);
 				void											UnregisterWindow(GuiWindow* window);
+				void											NotifyNativeWindowChanged(GuiControlHost* controlHost, INativeWindow* previousNativeWindow);
 				void											RegisterPopupOpened(GuiPopup* popup);
 				void											RegisterPopupClosed(GuiPopup* popup);
 				void											TooltipMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -67,6 +74,11 @@ Application
 				/// <summary>Run a <see cref="GuiWindow"/> as the main window and show it. This function can only be called once in the entry point. When the main window is closed or hiden, the Run function will finished, and the application should prepare for finalization.</summary>
 				/// <param name="_mainWindow">The main window.</param>
 				void											Run(GuiWindow* _mainWindow);
+				/// <summary>
+				/// Process minimum necessary events and execute some async tasks.
+				/// </summary>
+				/// <returns>Return false when the main window has been closed and all finalizing are done.</returns>
+				bool											RunOneCycle();
 				/// <summary>Get the main window.</summary>
 				/// <returns>The main window.</returns>
 				GuiWindow*										GetMainWindow();
@@ -77,6 +89,10 @@ Application
 				/// <returns>The <see cref="GuiWindow"/> instance that the mouse cursor are directly in.</returns>
 				/// <param name="location">The mouse cursor.</param>
 				GuiWindow*										GetWindow(NativePoint location);
+				/// <summary>Get the <see cref="GuiWindow"/> instance that associated with the specified native window.</summary>
+				/// <returns>The <see cref="GuiWindow"/> instance that associated with the specified native window.</returns>
+				/// <param name="nativeWindow">The native window.</param>
+				GuiWindow*										GetWindowFromNative(INativeWindow* nativeWindow);
 				/// <summary>Show a tooltip.</summary>
 				/// <param name="owner">The control that owns this tooltip temporary.</param>
 				/// <param name="tooltip">The control as the tooltip content. This control is not owned by the tooltip. User should manually release this control if no longer needed (usually when the application exit).</param>

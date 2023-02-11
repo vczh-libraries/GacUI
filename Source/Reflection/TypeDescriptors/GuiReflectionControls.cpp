@@ -57,7 +57,9 @@ Type Declaration (Extra)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ExecutableFolder)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Windows)
 				
-				CLASS_MEMBER_METHOD(Run, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Run, {L"mainWindow"})
+				CLASS_MEMBER_METHOD(RunOneCycle, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetWindowFromNative, {L"nativeWindow"});
 				CLASS_MEMBER_METHOD(ShowTooltip, {L"owner" _ L"tooltip" _ L"preferredContentWidth" _ L"location"})
 				CLASS_MEMBER_METHOD(CloseTooltip, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(IsInMainThread, NO_PARAMETER)

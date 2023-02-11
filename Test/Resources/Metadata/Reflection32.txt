@@ -1756,13 +1756,15 @@ class presentation::controls::GuiApplication : system::ReferenceType {
     function GetLocale() : system::Locale;
     function GetMainWindow() : presentation::controls::GuiWindow*;
     function GetTooltipOwner() : presentation::controls::GuiControl*;
+    function GetWindowFromNative(nativeWindow : presentation::INativeWindow*) : presentation::controls::GuiWindow*;
     function GetWindows() : system::ReadonlyList<presentation::controls::GuiWindow*>^;
     function InvokeAsync(proc : system::Function<system::Void>^) : system::Void;
     function InvokeInMainThread(controlHost : presentation::controls::GuiControlHost*, proc : system::Function<system::Void>^) : system::Void;
     function InvokeInMainThreadAndWait(controlHost : presentation::controls::GuiControlHost*, proc : system::Function<system::Void>^, milliseconds : system::Int32) : system::Boolean;
     function IsInMainThread( : presentation::controls::GuiControlHost*) : system::Boolean;
-    function Run( : presentation::controls::GuiWindow*) : system::Void;
+    function Run(mainWindow : presentation::controls::GuiWindow*) : system::Void;
     function RunGuiTask(controlHost : presentation::controls::GuiControlHost*, proc : system::Function<system::Void>^) : system::Void;
+    function RunOneCycle() : system::Boolean;
     function SetLocale(value : system::Locale) : system::Void;
     function ShowTooltip(owner : presentation::controls::GuiControl*, tooltip : presentation::controls::GuiControl*, preferredContentWidth : system::Int32, location : presentation::Point) : system::Void;
 

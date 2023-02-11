@@ -4,12 +4,13 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace controls;
 
 /***********************************************************************
 FakeDialogService
 ***********************************************************************/
 
-		Ptr<controls::GuiWindow> FakeDialogService::CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel)
+		controls::GuiWindow* FakeDialogService::CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}

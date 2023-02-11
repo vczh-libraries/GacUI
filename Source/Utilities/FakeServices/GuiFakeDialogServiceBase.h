@@ -10,12 +10,15 @@ Interfaces:
 #define VCZH_PRESENTATION_UTILITIES_FAKESERVICES_FAKEDIALOGSERVICEBASE
 
 #include "../../NativeWindow/GuiNativeWindow.h"
-#include "../../Application/Controls/GuiWindowControls.h"
 
 namespace vl
 {
 	namespace presentation
 	{
+		namespace controls
+		{
+			class GuiWindow;
+		}
 
 /***********************************************************************
 View Models (MessageBox)
@@ -46,7 +49,7 @@ FakeDialogServiceBase
 			, public INativeDialogService
 		{
 		protected:
-			virtual Ptr<controls::GuiWindow>		CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) = 0;
 
 		public:
 			FakeDialogServiceBase();

@@ -15,11 +15,16 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace controls
+		{
+			class GuiWindow;
+		}
+
 		class FakeDialogService : public FakeDialogServiceBase
 		{
 		protected:
 
-			Ptr<controls::GuiWindow>		CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
 
 		public:
 			FakeDialogService();

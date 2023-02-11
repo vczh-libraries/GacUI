@@ -66,11 +66,35 @@ GuiApplication
 			void GuiApplication::RegisterWindow(GuiWindow* window)
 			{
 				windows.Add(window);
+				if (auto nativeWindow = window->GetNativeWindow())
+				{
+					windowMap.Add(nativeWindow, window);
+				}
 			}
 
 			void GuiApplication::UnregisterWindow(GuiWindow* window)
 			{
+				if (auto nativeWindow = window->GetNativeWindow())
+				{
+					windowMap.Remove(nativeWindow);
+				}
 				windows.Remove(window);
+			}
+
+			void GuiApplication::NotifyNativeWindowChanged(GuiControlHost* controlHost, INativeWindow* previousNativeWindow)
+			{
+				if (auto window = dynamic_cast<GuiWindow*>(controlHost))
+				{
+					if (previousNativeWindow)
+					{
+						CHECK_ERROR(windowMap[previousNativeWindow] == window, L"vl::presentation::controls::GuiApplication::NotifyNativeWindowChanged(GuiControlsHost*, INativeWindow*)#Unpaired arguments.");
+						windowMap.Remove(previousNativeWindow);
+					}
+					if (auto nativeWindow = window->GetNativeWindow())
+					{
+						windowMap.Add(nativeWindow, window);
+					}
+				}
 			}
 
 			void GuiApplication::RegisterPopupOpened(GuiPopup* popup)
@@ -127,6 +151,11 @@ GuiApplication
 				}
 			}
 
+			bool GuiApplication::RunOneCycle()
+			{
+				return GetCurrentController()->WindowService()->RunOneCycle();
+			}
+
 			GuiWindow* GuiApplication::GetMainWindow()
 			{
 				return mainWindow;
@@ -152,6 +181,12 @@ GuiApplication
 					}
 				}
 				return 0;
+			}
+
+			GuiWindow* GuiApplication::GetWindowFromNative(INativeWindow* nativeWindow)
+			{
+				vint index = windowMap.Keys().IndexOf(nativeWindow);
+				return index == -1 ? nullptr : windowMap.Values()[index];
 			}
 
 			void GuiApplication::ShowTooltip(GuiControl* owner, GuiControl* tooltip, vint preferredContentWidth, Point location)

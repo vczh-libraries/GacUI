@@ -264,7 +264,8 @@ GuiControlHost
 
 			void GuiControlHost::SetNativeWindow(INativeWindow* window)
 			{
-				if(host->GetNativeWindow())
+				auto previousNativeWindow = host->GetNativeWindow();
+				if(previousNativeWindow)
 				{
 					host->GetNativeWindow()->UninstallListener(this);
 				}
@@ -280,6 +281,7 @@ GuiControlHost
 				{
 					host->GetNativeWindow()->InstallListener(this);
 				}
+				GetApplication()->NotifyNativeWindowChanged(this, previousNativeWindow);
 				OnNativeWindowChanged();
 			}
 

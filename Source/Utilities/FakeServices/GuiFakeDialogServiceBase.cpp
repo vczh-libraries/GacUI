@@ -1,4 +1,5 @@
 #include "GuiFakeDialogServiceBase.h"
+#include "../../Application/Controls/GuiApplication.h"
 
 namespace vl
 {
@@ -81,6 +82,14 @@ FakeDialogServiceBase
 #undef USE_DEFAULT_BUTTON
 
 			vm->result = vm->defaultButton;
+			{
+				auto app = GetApplication();
+				auto owner = app->GetWindowFromNative(window);
+				auto dialog = CreateMessageBoxDialog(vm);
+				bool exit = false;
+				dialog->ShowModalAndDelete(owner, [&exit]() {exit = true; });
+				while (!exit && app->RunOneCycle());
+			}
 			return vm->result;
 		}
 
