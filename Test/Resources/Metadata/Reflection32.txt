@@ -292,14 +292,14 @@ interface presentation::IGuiResourceManager : system::Interface {
 interface presentation::IMessageBoxDialogViewModel : system::Interface {
     property Buttons : system::ReadonlyList<presentation::INativeDialogService::MessageBoxButtonsOutput>^ { get:GetButtons }
     property DefaultButton : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetDefaultButton }
-    property Icon : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetIcon }
+    property Icon : presentation::INativeDialogService::MessageBoxIcons { get:GetIcon }
     property Result : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetResult set:SetResult }
     property Text : system::String { get:GetText }
     property Title : system::String { get:GetTitle }
 
     function GetButtons() : system::ReadonlyList<presentation::INativeDialogService::MessageBoxButtonsOutput>^;
     function GetDefaultButton() : presentation::INativeDialogService::MessageBoxButtonsOutput;
-    function GetIcon() : presentation::INativeDialogService::MessageBoxButtonsOutput;
+    function GetIcon() : presentation::INativeDialogService::MessageBoxIcons;
     function GetResult() : presentation::INativeDialogService::MessageBoxButtonsOutput;
     function GetText() : system::String;
     function GetTitle() : system::String;

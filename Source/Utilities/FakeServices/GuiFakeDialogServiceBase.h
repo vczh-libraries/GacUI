@@ -24,12 +24,13 @@ View Models (MessageBox)
 		class IMessageBoxDialogViewModel : public virtual IDescriptable
 		{
 		public:
+			using Icon = INativeDialogService::MessageBoxIcons;
 			using ButtonItem = INativeDialogService::MessageBoxButtonsOutput;
 			using ButtonItemList = collections::List<ButtonItem>;
 
 			virtual WString					GetText() = 0;
 			virtual WString					GetTitle() = 0;
-			virtual ButtonItem				GetIcon() = 0;
+			virtual Icon					GetIcon() = 0;
 			virtual const ButtonItemList&	GetButtons() = 0;
 			virtual ButtonItem				GetDefaultButton() = 0;
 			virtual ButtonItem				GetResult() = 0;
