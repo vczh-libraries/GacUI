@@ -280,9 +280,10 @@ class presentation::GuiTextData : system::ReferenceType {
 }
 
 interface presentation::IColorDialogViewModel : presentation::IDialogConfirmation {
-    property Color : presentation::Color { get:GetColor }
+    property Color : presentation::Color { get:GetColor set:SetColor }
 
     function GetColor() : presentation::Color;
+    function SetColor(value : presentation::Color) : system::Void;
 
 }
 
@@ -294,16 +295,18 @@ interface presentation::ICommonFontDialogViewModel : system::Interface {
 }
 
 interface presentation::IDialogConfirmation : system::Interface {
-    property Confirmed : system::Boolean { get:GetConfirmed }
+    property Confirmed : system::Boolean { get:GetConfirmed set:SetConfirmed }
 
     function GetConfirmed() : system::Boolean;
+    function SetConfirmed(value : system::Boolean) : system::Void;
 
 }
 
 interface presentation::IFullFontDialogViewModel : presentation::ICommonFontDialogViewModel, presentation::IColorDialogViewModel {
-    property Font : presentation::FontProperties { get:GetFont }
+    property Font : presentation::FontProperties { get:GetFont set:SetFont }
 
     function GetFont() : presentation::FontProperties;
+    function SetFont(value : presentation::FontProperties) : system::Void;
 
 }
 
@@ -707,9 +710,10 @@ enum presentation::INativeWindowListener::HitTestResult {
 }
 
 interface presentation::ISimpleFontDialogViewModel : presentation::ICommonFontDialogViewModel, presentation::IDialogConfirmation {
-    property FontFamily : system::String { get:GetFontFamily }
+    property FontFamily : system::String { get:GetFontFamily set:SetFontFamily }
 
     function GetFontFamily() : system::String;
+    function SetFontFamily(value : system::String) : system::Void;
 
 }
 

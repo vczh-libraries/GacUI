@@ -18,7 +18,7 @@ FakeDialogService
 
 		controls::GuiWindow* FakeDialogService::CreateColorDialog(Ptr<IColorDialogViewModel> viewModel)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return new gaclib_controls::ColorDialogWindow(viewModel);
 		}
 
 		controls::GuiWindow* FakeDialogService::CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel)
