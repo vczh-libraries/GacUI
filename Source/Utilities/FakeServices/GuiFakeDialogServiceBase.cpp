@@ -145,11 +145,13 @@ FakeDialogServiceBase
 		)
 		{
 			auto vm = Ptr(new FakeColorDialogViewModel);
+			vm->color = selection;
 			{
 				auto owner = GetApplication()->GetWindowFromNative(window);
 				auto dialog = CreateColorDialog(vm);
 				ShowModalDialogAndDelete(owner, dialog);
 			}
+			if (vm->confirmed) selection = vm->color;
 			return vm->confirmed;
 		}
 

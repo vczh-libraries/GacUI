@@ -247,29 +247,22 @@ Closures
 
 	void __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		try
+		auto value = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText()); } catch(...){ return (- static_cast<::vl::vint32_t>(1)); } }();
+		if ((value == (- static_cast<::vl::vint32_t>(1))))
 		{
-			{
-				auto value = ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText());
-				if ((value < static_cast<::vl::vint32_t>(0)))
-				{
-					::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(static_cast<::vl::vint32_t>(0));
-				}
-				else if ((value > static_cast<::vl::vint32_t>(255)))
-				{
-					::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(static_cast<::vl::vint32_t>(255));
-				}
-				else
-				{
-					::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(value);
-				}
-			}
+			return;
 		}
-		catch(const ::vl::Exception& __vwsne_0)
+		else if ((value < static_cast<::vl::vint32_t>(0)))
 		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-			{
-			}
+			::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(static_cast<::vl::vint32_t>(0));
+		}
+		else if ((value > static_cast<::vl::vint32_t>(255)))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(static_cast<::vl::vint32_t>(255));
+		}
+		else
+		{
+			::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(value);
 		}
 	}
 

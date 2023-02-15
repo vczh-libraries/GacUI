@@ -203,24 +203,22 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    try
+                    var value = ((cast (int) textBox.Text) ?? (-1));
+                    if ((value == (-1)))
                     {
-                        var value = (cast (int) textBox.Text);
-                        if ((value < 0))
-                        {
-                            (tracker.Position = 0);
-                        }
-                        else if ((value > 255))
-                        {
-                            (tracker.Position = 255);
-                        }
-                        else
-                        {
-                            (tracker.Position = value);
-                        }
+                        return;
                     }
-                    catch (ex)
+                    else if ((value < 0))
                     {
+                        (tracker.Position = 0);
+                    }
+                    else if ((value > 255))
+                    {
+                        (tracker.Position = 255);
+                    }
+                    else
+                    {
+                        (tracker.Position = value);
                     }
                 };
                 attach(textBox.TextChanged, <event-handler>);

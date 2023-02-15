@@ -21,16 +21,11 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.TextChanged-eval><![CDATA[
                 {
-                  try
-                  {
-                    var value = cast int textBox.Text;
-                    if (value < 0)        { tracker.Position = 0;     }
-                    else if (value > 255) { tracker.Position = 255;   }
-                    else                  { tracker.Position = value; }
-                  }
-                  catch(ex)
-                  {
-                  }
+                  var value = cast int textBox.Text ?? -1;
+                  if (value == -1)      { return;                   }
+                  else if (value < 0)   { tracker.Position = 0;     }
+                  else if (value > 255) { tracker.Position = 255;   }
+                  else                  { tracker.Position = value; }
                 }
               ]]></ev.TextChanged-eval>
             </SinglelineTextBox>
