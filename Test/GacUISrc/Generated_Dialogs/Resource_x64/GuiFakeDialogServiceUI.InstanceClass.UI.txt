@@ -906,14 +906,37 @@ namespace gaclib_controls
             {
                 var <created-subscription> = new (::system::Subscription^)
                 {
+                    var <bind-cache>0 : ::gaclib_controls::ColorDialogControl* = null of (::gaclib_controls::ColorDialogControl*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>0_1 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-handler>0_2 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
                     var <bind-opened> : ::system::Boolean = false;
 
                     var <bind-closed> : ::system::Boolean = false;
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = ViewModel.Color of (::presentation::Color);
+                        var <bind-activator-result> = <bind-cache>0.ReadColor() of (::presentation::Color);
                         ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>0_1() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    func <bind-callback>0_2() : (::system::Void)
+                    {
+                        <bind-activator>();
                     }
 
                     override func Open() : (::system::Boolean)
@@ -921,6 +944,10 @@ namespace gaclib_controls
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gaclib_controls::ColorDialogControl*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.colorRed.ValueChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>0_1 = (attach(<bind-cache>0.colorGreen.ValueChanged, <bind-callback>0_1) ?? null));
+                            (<bind-handler>0_2 = (attach(<bind-cache>0.colorBlue.ValueChanged, <bind-callback>0_2) ?? null));
                             return true;
                         }
                         return false;
@@ -941,6 +968,25 @@ namespace gaclib_controls
                         if ((!<bind-closed>))
                         {
                             (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.colorRed.ValueChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            if (<bind-handler>0_1 is not null)
+                            {
+                                detach(<bind-cache>0.colorGreen.ValueChanged, <bind-handler>0_1);
+                                (<bind-handler>0_1 = null);
+                            }
+                            if (<bind-handler>0_2 is not null)
+                            {
+                                detach(<bind-cache>0.colorBlue.ValueChanged, <bind-handler>0_2);
+                                (<bind-handler>0_2 = null);
+                            }
+                            (<bind-cache>0 = null of (::gaclib_controls::ColorDialogControl*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>0_1 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>0_2 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;

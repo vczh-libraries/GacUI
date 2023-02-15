@@ -105,7 +105,7 @@
           </Cell>
 
           <Cell Site="row:3 column:1" PreferredMinSize="x:128">
-            <SolidBackground Color-bind="ViewModel.Color"/>
+            <SolidBackground Color-bind="self.observe as c(c.ReadColor() on c.colorRed.ValueChanged, c.colorGreen.ValueChanged, c.colorBlue.ValueChanged)"/>
           </Cell>
         </Table>
       </CustomControl>

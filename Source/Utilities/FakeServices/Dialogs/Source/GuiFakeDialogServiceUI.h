@@ -798,9 +798,16 @@ Closures
 
 		__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0);
 
+		::gaclib_controls::ColorDialogControl* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_1;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_2;
 		bool __vwsn_bind_opened_ = false;
 		bool __vwsn_bind_closed_ = false;
 		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		void __vwsn_bind_callback_0_1();
+		void __vwsn_bind_callback_0_2();
 		bool Open() override;
 		bool Update() override;
 		bool Close() override;

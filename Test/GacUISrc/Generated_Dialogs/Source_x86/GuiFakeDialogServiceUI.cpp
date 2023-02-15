@@ -1157,14 +1157,33 @@ Closures
 	__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetColor();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->ReadColor();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2()
+	{
+		this->__vwsn_bind_activator_();
 	}
 
 	bool __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
@@ -1172,6 +1191,10 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorRed)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_1 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorGreen)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_2 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorBlue)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1192,6 +1215,25 @@ Closures
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorRed)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_0_1))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorGreen)->ValueChanged, __vwsn_bind_handler_0_1);
+				(__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			if (static_cast<bool>(__vwsn_bind_handler_0_2))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorBlue)->ValueChanged, __vwsn_bind_handler_0_2);
+				(__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
