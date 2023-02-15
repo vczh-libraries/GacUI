@@ -107,9 +107,9 @@ FakeDialogServiceBase
 		protected:
 
 			virtual controls::GuiWindow*	CreateMessageBoxDialog(Ptr<IMessageBoxDialogViewModel> viewModel) = 0;
-			virtual controls::GuiWindow*	CreateColorDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) = 0;
-			virtual controls::GuiWindow*	CreateSimpleFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) = 0;
-			virtual controls::GuiWindow*	CreateFullFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) = 0;
+			virtual controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) = 0;
 
 			void							ShowModalDialogAndDelete(controls::GuiWindow* owner, controls::GuiWindow* dialog);
 

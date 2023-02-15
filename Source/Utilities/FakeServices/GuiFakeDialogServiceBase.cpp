@@ -47,6 +47,23 @@ View Model (IMessageBoxDialogViewModel)
 		};
 
 /***********************************************************************
+View Model (IColorDialogViewModel)
+***********************************************************************/
+
+		class FakeColorDialogViewModel : public Object, public virtual IColorDialogViewModel
+		{
+		public:
+			bool					confirmed = false;
+			Color					color;
+
+			bool					GetConfirmed() override					{ return confirmed; }
+			void					SetConfirmed(bool value) override		{ confirmed = value; }
+
+			Color					GetColor() override						{ return color; }
+			void					SetColor(Color value) override			{ color = value; }
+		};
+
+/***********************************************************************
 FakeDialogServiceBase
 ***********************************************************************/
 
@@ -127,7 +144,13 @@ FakeDialogServiceBase
 			Color* customColors
 		)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto vm = Ptr(new FakeColorDialogViewModel);
+			{
+				auto owner = GetApplication()->GetWindowFromNative(window);
+				auto dialog = CreateColorDialog(vm);
+				ShowModalDialogAndDelete(owner, dialog);
+			}
+			return vm->confirmed;
 		}
 
 		bool FakeDialogServiceBase::ShowFontDialog(

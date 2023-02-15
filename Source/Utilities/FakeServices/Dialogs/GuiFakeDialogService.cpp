@@ -16,17 +16,17 @@ FakeDialogService
 			return new gaclib_controls::MessageBoxWindow(viewModel);
 		}
 
-		controls::GuiWindow* CreateColorDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation)
+		controls::GuiWindow* FakeDialogService::CreateColorDialog(Ptr<IColorDialogViewModel> viewModel)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
-		controls::GuiWindow* CreateSimpleFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation)
+		controls::GuiWindow* FakeDialogService::CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
 
-		controls::GuiWindow* CreateFullFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation)
+		controls::GuiWindow* FakeDialogService::CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}
