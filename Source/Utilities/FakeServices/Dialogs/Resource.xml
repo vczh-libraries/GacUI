@@ -40,4 +40,5 @@
   </LocalizedStrings>
 
   <Folder name="MessageBoxComponents" content="Link">MessageBox.xml</Folder>
+  <Folder name="ColorDialogComponents" content="Link">ColorDialog.xml</Folder>
 </Resource>

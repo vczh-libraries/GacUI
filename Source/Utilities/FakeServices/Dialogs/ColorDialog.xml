@@ -1,10 +1,10 @@
 <Folder>
-  <Instance name="FakeColorComponentControlResource">
-    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FakeColorComponentControl">
+  <Instance name="ColorComponentControlResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::ColorComponentControl">
       <ref.Members><![CDATA[
         prop Value : int = 0 {}
       ]]></ref.Members>
-      <CustomControl ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" Value-bind="tracker.Position">
+      <CustomControl ref.Name="self" Value-bind="tracker.Position">
         <att.BoundsComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
@@ -24,9 +24,9 @@
                   try
                   {
                     var value = cast int textBox.Text;
-                    if (value < 0)        tracker.Position = 0;
-                    else if (value > 255) tracker.Position = 255;
-                    else                  tracker.Position = value;
+                    if (value < 0)        { tracker.Position = 0;     }
+                    else if (value > 255) { tracker.Position = 255;   }
+                    else                  { tracker.Position = value; }
                   }
                   catch(ex)
                   {
@@ -46,11 +46,21 @@
     </Instance>
   </Instance>
   
-  <Instance name="FakeColorDialogControlResource">
-    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FakeColorDialogControl" xmlns:g="gaclib_controls::*">
+  <Instance name="ColorDialogControlResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::ColorDialogControl" xmlns:g="gaclib_controls::*">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
-      <CustomControl ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+      <ref.Members><![CDATA[
+        func ReadColor() : Color
+        {
+          return {
+            r: (cast UInt8 colorRed.Value)
+            g: (cast UInt8 colorGreen.Value)
+            b: (cast UInt8 colorBlue.Value)
+          };
+        }
+      ]]></ref.Members>
+      <CustomControl ref.Name="self">
         <att.BoundsComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
 
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
@@ -79,22 +89,22 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <g:FakeColorComponentControl ref.Name="colorRed" Value-eval="ViewModel.Color.r">
+            <g:ColorComponentControl ref.Name="colorRed" Value-eval="cast int ViewModel.Color.r">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </g:FakeColorComponentControl>
+            </g:ColorComponentControl>
           </Cell>
           <Cell Site="row:1 column:1">
-            <g:FakeColorComponentControl ref.Name="colorGreen" Value-eval="ViewModel.Color.g">
+            <g:ColorComponentControl ref.Name="colorGreen" Value-eval="cast int ViewModel.Color.g">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </g:FakeColorComponentControl>
+            </g:ColorComponentControl>
           </Cell>
           <Cell Site="row:2 column:1">
-            <g:FakeColorComponentControl ref.Name="colorBlue" Value-eval="ViewModel.Color.b">
+            <g:ColorComponentControl ref.Name="colorBlue" Value-eval="cast int ViewModel.Color.b">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </g:FakeColorComponentControl>
+            </g:ColorComponentControl>
           </Cell>
 
-          <Cell Site="row:3 column:1" PreferredSize="x:128">
+          <Cell Site="row:3 column:1" PreferredMinSize="x:128">
             <SolidBackground Color-bind="ViewModel.Color"/>
           </Cell>
         </Table>
@@ -102,11 +112,12 @@
     </Instance>
   </Instance>
 
-  <Instance name="FakeColorDialogWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FakeColorDialogWindow" xmlns:g="gaclib_controls::*">
+  <Instance name="ColorDialogWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::ColorDialogWindow" xmlns:g="gaclib_controls::*">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
       <Window
+          ref.Name = "self"
           Text-str="ColorDialogTitle()"
           ClientSize="x:240 y:120"
           ShowInTaskBar="false"
@@ -126,22 +137,35 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0 rowSpan:1 columnSpan:3">
-            <g:FakeColorDialogControl ViewModel-ref="ViewModel">
+            <g:ColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-            </g:FakeColorDialogControl>
+            </g:ColorDialogControl>
           </Cell>
 
           <Cell Site="row:1 column:1">
             <Button Text-str="OK()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.Clicked-eval><![CDATA[{ViewModel.Result = true; self.Close();}]]></ev.Clicked-eval>
+              <ev.Clicked-eval><![CDATA[
+                {
+                  ViewModel.Confirmed = true;
+                  ViewModel.Color = colorControl.ReadColor();
+                  self.Close();
+                }
+              ]]></ev.Clicked-eval>
             </Button>
           </Cell>
 
           <Cell Site="row:1 column:2">
             <Button Text-str="Cancel()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <ev.Clicked-eval><![CDATA[{ViewModel.Result = false; self.Close();}]]></ev.Clicked-eval>
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  ViewModel.Confirmed = false;
+                  self.Close();
+                }
+              ]]>
+              </ev.Clicked-eval>
             </Button>
           </Cell>
         </Table>
