@@ -7,12 +7,12 @@
       <CustomControl ref.Name="self" Value-bind="tracker.Position">
         <att.BoundsComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
 
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
+            <_>composeType:Absolute absolute:48</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
 
@@ -36,7 +36,7 @@
             </SinglelineTextBox>
           </Cell>
           
-          <Cell Site="row:1 column:0">
+          <Cell Site="row:0 column:1">
             <HTracker ref.Name="tracker" TotalSize="256" PageSize="1" SmallMove="1" BigMove="16">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </HTracker>
@@ -63,14 +63,14 @@
       <CustomControl ref.Name="self">
         <att.BoundsComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
 
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Rows>
           <att.Columns>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
@@ -104,7 +104,7 @@
             </g:ColorComponentControl>
           </Cell>
 
-          <Cell Site="row:3 column:1" PreferredMinSize="x:128">
+          <Cell Site="row:3 column:1" PreferredMinSize="x:256">
             <SolidBackground Color-bind="self.observe as c(c.ReadColor() on c.colorRed.ValueChanged, c.colorGreen.ValueChanged, c.colorBlue.ValueChanged)"/>
           </Cell>
         </Table>
@@ -125,7 +125,7 @@
           MinimizedBox="false"
           IconVisible="false"
           >
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:10 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
             <_>composeType:MinSize</_>
@@ -144,7 +144,7 @@
 
           <Cell Site="row:1 column:1">
             <Button Text-str="OK()">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {
                   ViewModel.Confirmed = true;
@@ -157,7 +157,7 @@
 
           <Cell Site="row:1 column:2">
             <Button Text-str="Cancel()">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval>
                 <![CDATA[
                 {

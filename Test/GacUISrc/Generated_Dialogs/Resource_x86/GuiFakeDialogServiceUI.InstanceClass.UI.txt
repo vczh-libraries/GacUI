@@ -63,16 +63,19 @@ namespace gaclib_controls
                 (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
+                (<precompile>0.BorderVisible = false);
+            }
+            {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 1);
-                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowsAndColumns(1, 2);
+                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Absolute; absolute : 48;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -93,7 +96,7 @@ namespace gaclib_controls
             }
             (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(1, 0, 1, 1);
+                <precompile>3.SetSite(0, 1, 1, 1);
             }
             {
                 (tracker = new (::presentation::controls::GuiScroll*)(::presentation::theme::ThemeName::HTracker));
@@ -474,19 +477,22 @@ namespace gaclib_controls
                 (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
+                (<precompile>0.BorderVisible = false);
+            }
+            {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 4);
+                <precompile>0.SetRowsAndColumns(4, 2);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(3, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -587,7 +593,7 @@ namespace gaclib_controls
             }
             (<precompile>15 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>15.PreferredMinSize = {x : 128;} of (::presentation::Size));
+                (<precompile>15.PreferredMinSize = {x : 256;} of (::presentation::Size));
             }
             {
                 <precompile>15.SetSite(3, 1, 1, 1);
@@ -1249,7 +1255,10 @@ namespace gaclib_controls
                 (<precompile>0.CellPadding = 10 of (::system::Int32));
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.BorderVisible = false);
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 10; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -1286,6 +1295,9 @@ namespace gaclib_controls
             }
             (<precompile>5 = <precompile>4.BoundsComposition);
             {
+                (<precompile>5.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
+            }
+            {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -1302,6 +1314,9 @@ namespace gaclib_controls
                 (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             (<precompile>8 = <precompile>7.BoundsComposition);
+            {
+                (<precompile>8.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
+            }
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -2150,7 +2165,10 @@ namespace gaclib_controls
                 (<precompile>1.CellPadding = 10 of (::system::Int32));
             }
             {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.BorderVisible = false);
+            }
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 10; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -2168,6 +2186,9 @@ namespace gaclib_controls
                 <precompile>2.SetSite(0, 0, 1, 1);
             }
             (<precompile>3 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>3.BorderVisible = false);
+            }
             {
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
@@ -2227,6 +2248,9 @@ namespace gaclib_controls
             }
             (<precompile>9 = new (::presentation::compositions::GuiTableComposition*)());
             {
+                (<precompile>9.BorderVisible = false);
+            }
+            {
                 (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -2267,6 +2291,9 @@ namespace gaclib_controls
                 <precompile>13.SetSite(2, 0, 1, 2);
             }
             (<precompile>14 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>14.BorderVisible = false);
+            }
             {
                 (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }

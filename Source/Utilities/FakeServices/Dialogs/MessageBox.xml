@@ -47,7 +47,7 @@
           SizeBox="false"
           IconVisible="false"
           >
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:10 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
@@ -59,7 +59,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
               <att.Rows>
                 <_>composeType:Percentage percentage:1.0</_>
                 <_>composeType:MinSize</_>
@@ -79,7 +79,7 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
               <att.Rows>
                 <_>composeType:Percentage percentage:1.0</_>
                 <_>composeType:MinSize</_>
@@ -98,7 +98,7 @@
           </Cell>
 
           <Cell Site="row:2 column:0 columnSpan:2">
-            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
               <att.Rows>
                 <_>composeType:MinSize</_>
               </att.Rows>
