@@ -56,43 +56,93 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
 		{
 			return;
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->PerformAction();
-		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())->Close();
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetColor(::vl::__vwsn::This(__vwsnthis_0->colorControl)->ReadColor());
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(false);
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -105,12 +155,61 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
+	__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::presentation::templates::GuiTemplate* __vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	void __vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->PerformAction();
+		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
 	{
 		{
 			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::IMessageBoxDialogAction>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
@@ -123,39 +222,219 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr);
+	}
+
+	void __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		try
+		{
+			{
+				auto value = ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText());
+				if ((value < static_cast<::vl::vint32_t>(0)))
+				{
+					::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(static_cast<::vl::vint32_t>(0));
+				}
+				else if ((value > static_cast<::vl::vint32_t>(255)))
+				{
+					::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(static_cast<::vl::vint32_t>(255));
+				}
+				else
+				{
+					::vl::__vwsn::This(__vwsnthis_0->tracker)->SetPosition(value);
+				}
+			}
+		}
+		catch(const ::vl::Exception& __vwsne_0)
+		{
+			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+			{
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint32_t>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetColor();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->SetColor(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetButtonText(::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->GetButton(), ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -165,7 +444,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -175,7 +454,7 @@ Closures
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -184,39 +463,40 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->ColorDialogTitle();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -226,7 +506,68 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -245,63 +586,1321 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings()
+	__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetButtonText(::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->GetButton(), ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings()
 	{
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Abort()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Abort()
 	{
 		return ::vl::WString::Unmanaged(L"Abort");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Cancel()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Blue()
+	{
+		return ::vl::WString::Unmanaged(L"Blue:");
+	}
+
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Cancel()
 	{
 		return ::vl::WString::Unmanaged(L"Cancel");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Continue()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Color()
+	{
+		return ::vl::WString::Unmanaged(L"Color:");
+	}
+
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::ColorDialogTitle()
+	{
+		return ::vl::WString::Unmanaged(L"Choose Color");
+	}
+
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Continue()
 	{
 		return ::vl::WString::Unmanaged(L"Continue");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Ignore()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Green()
+	{
+		return ::vl::WString::Unmanaged(L"Green:");
+	}
+
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Ignore()
 	{
 		return ::vl::WString::Unmanaged(L"Ignore");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::No()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::No()
 	{
 		return ::vl::WString::Unmanaged(L"No");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::OK()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::OK()
 	{
 		return ::vl::WString::Unmanaged(L"OK");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Retry()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Red()
+	{
+		return ::vl::WString::Unmanaged(L"Red:");
+	}
+
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Retry()
 	{
 		return ::vl::WString::Unmanaged(L"Retry");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::TryAgain()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::TryAgain()
 	{
 		return ::vl::WString::Unmanaged(L"Try Again");
 	}
 
-	::vl::WString __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Yes()
+	::vl::WString __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::Yes()
 	{
 		return ::vl::WString::Unmanaged(L"Yes");
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorComponentControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::ColorComponentControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorComponentControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->tracker; } catch(...){ return static_cast<::vl::presentation::controls::GuiScroll*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControl* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Red();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControl* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Green();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControl* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Blue();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControl* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Color();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetColor();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	bool __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
 	}
 
 }
 
 /***********************************************************************
-Class (::gaclib_controls::DialogStrings)
+Class (::gaclib_controls::ColorComponentControlConstructor)
 ***********************************************************************/
 
 namespace gaclib_controls
 {
+	void ColorComponentControlConstructor::__vwsn_gaclib_controls_ColorComponentControl_Initialize(::gaclib_controls::ColorComponentControl* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->__vwsn_precompile_5 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->textBox = new ::vl::presentation::controls::GuiSinglelineTextBox(::vl::presentation::theme::ThemeName::SinglelineTextBox));
+		}
+		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->textBox)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBox)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->tracker = new ::vl::presentation::controls::GuiScroll(::vl::presentation::theme::ThemeName::HTracker));
+			::vl::__vwsn::This(this->tracker)->SetPageSize(static_cast<::vl::vint32_t>(0));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetBigMove(static_cast<::vl::vint32_t>(16));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetSmallMove(static_cast<::vl::vint32_t>(1));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetPageSize(static_cast<::vl::vint32_t>(1));
+		}
+		{
+			::vl::__vwsn::This(this->tracker)->SetTotalSize(static_cast<::vl::vint32_t>(256));
+		}
+		(this->__vwsn_precompile_4 = ::vl::__vwsn::This(this->tracker)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->tracker)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textBox)->TextChanged, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	ColorComponentControlConstructor::ColorComponentControlConstructor()
+		: self(static_cast<::gaclib_controls::ColorComponentControl*>(nullptr))
+		, textBox(static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr))
+		, tracker(static_cast<::vl::presentation::controls::GuiScroll*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::ColorComponentControl)
+***********************************************************************/
+
+	::vl::vint32_t ColorComponentControl::GetValue()
+	{
+		return this->__vwsn_prop_Value;
+	}
+	void ColorComponentControl::SetValue(::vl::vint32_t __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Value != __vwsn_value_))
+		{
+			(this->__vwsn_prop_Value = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->ValueChanged)();
+		}
+	}
+
+	ColorComponentControl::ColorComponentControl()
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Value(static_cast<::vl::vint32_t>(0))
+	{
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"gaclib_controls::ColorComponentControl"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_ColorComponentControl_Initialize(this);
+	}
+
+	ColorComponentControl::~ColorComponentControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::ColorDialogControlConstructor)
+***********************************************************************/
+
+	void ColorDialogControlConstructor::__vwsn_gaclib_controls_ColorDialogControl_Initialize(::gaclib_controls::ColorDialogControl* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		(this->__vwsn_precompile_17 = ::vl::__vwsn::This(this->self)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_17)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(5));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(4));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(3), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->__vwsn_precompile_2 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_2)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_5 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetSite(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->__vwsn_precompile_6 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_5));
+		}
+		(this->__vwsn_precompile_7 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetSite(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->__vwsn_precompile_8 = new ::vl::presentation::controls::GuiLabel(::vl::presentation::theme::ThemeName::Label));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_8)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_7));
+		}
+		(this->__vwsn_precompile_9 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		(this->colorRed = new ::gaclib_controls::ColorComponentControl());
+		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->colorRed)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorRed)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_9));
+		}
+		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		(this->colorGreen = new ::gaclib_controls::ColorComponentControl());
+		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->colorGreen)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorGreen)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_11));
+		}
+		(this->__vwsn_precompile_13 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetSite(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		(this->colorBlue = new ::gaclib_controls::ColorComponentControl());
+		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->colorBlue)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorBlue)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_13));
+		}
+		(this->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(128); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetSite(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		(this->__vwsn_precompile_16 = ::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiSolidBackgroundElement>()));
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetOwnedElement(::vl::Ptr<::vl::presentation::elements::IGuiGraphicsElement>(this->__vwsn_precompile_16));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_15));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			::vl::__vwsn::This(this->colorRed)->SetValue(static_cast<::vl::vint32_t>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().r));
+		}
+		{
+			::vl::__vwsn::This(this->colorGreen)->SetValue(static_cast<::vl::vint32_t>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().g));
+		}
+		{
+			::vl::__vwsn::This(this->colorBlue)->SetValue(static_cast<::vl::vint32_t>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().b));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	ColorDialogControlConstructor::ColorDialogControlConstructor()
+		: self(static_cast<::gaclib_controls::ColorDialogControl*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+		, colorRed(static_cast<::gaclib_controls::ColorComponentControl*>(nullptr))
+		, colorGreen(static_cast<::gaclib_controls::ColorComponentControl*>(nullptr))
+		, colorBlue(static_cast<::gaclib_controls::ColorComponentControl*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::controls::GuiLabel*>(nullptr))
+		, __vwsn_precompile_9(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_10(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_11(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_15(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_16(::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement>())
+		, __vwsn_precompile_17(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::ColorDialogControl)
+***********************************************************************/
+
+	::vl::presentation::Color ColorDialogControl::ReadColor()
+	{
+		return [&](){ ::vl::presentation::Color __vwsn_temp__; __vwsn_temp__.r = static_cast<::vl::vuint8_t>(::vl::__vwsn::This(this->colorRed)->GetValue()); __vwsn_temp__.g = static_cast<::vl::vuint8_t>(::vl::__vwsn::This(this->colorGreen)->GetValue()); __vwsn_temp__.b = static_cast<::vl::vuint8_t>(::vl::__vwsn::This(this->colorBlue)->GetValue()); return __vwsn_temp__; }();
+	}
+
+	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> ColorDialogControl::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void ColorDialogControl::SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IColorDialogViewModel> ColorDialogControl::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	ColorDialogControl::ColorDialogControl(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
+		, __vwsn_prop_Strings(::gaclib_controls::DialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"gaclib_controls::ColorDialogControl"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_ColorDialogControl_Initialize(this);
+	}
+
+	ColorDialogControl::~ColorDialogControl()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiCustomControl*>(this));
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::ColorDialogWindowConstructor)
+***********************************************************************/
+
+	void ColorDialogWindowConstructor::__vwsn_gaclib_controls_ColorDialogWindow_Initialize(::gaclib_controls::ColorDialogWindow* __vwsn_this_)
+	{
+		(this->self = __vwsn_this_);
+		(this->ViewModel = ::vl::__vwsn::This(__vwsn_this_)->GetViewModel());
+		{
+			::vl::__vwsn::This(this->self)->SetIconVisible(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMinimizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetMaximizedBox(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetShowInTaskBar(false);
+		}
+		{
+			::vl::__vwsn::This(this->self)->SetClientSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(240); __vwsn_temp__.y = static_cast<::vl::vint32_t>(120); return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_0 = new ::vl::presentation::compositions::GuiTableComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetCellPadding(static_cast<::vl::vint32_t>(10));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowsAndColumns(static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(3));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetRowOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(0), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::Percentage; __vwsn_temp__.percentage = static_cast<double>(1.0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(1), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetColumnOption(static_cast<::vl::vint32_t>(2), [&](){ ::vl::presentation::compositions::GuiCellOption __vwsn_temp__; __vwsn_temp__.composeType = ::vl::presentation::compositions::GuiCellOption::ComposeType::MinSize; return __vwsn_temp__; }());
+		}
+		(this->__vwsn_precompile_1 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetSite(static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(0), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(3));
+		}
+		(this->colorControl = new ::gaclib_controls::ColorDialogControl(this->ViewModel));
+		(this->__vwsn_precompile_2 = ::vl::__vwsn::This(this->colorControl)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_2)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->colorControl)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_1));
+		}
+		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->__vwsn_precompile_4 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_5 = ::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_3));
+		}
+		(this->__vwsn_precompile_6 = new ::vl::presentation::compositions::GuiCellComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetSite(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(2), static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(1));
+		}
+		{
+			(this->__vwsn_precompile_7 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+		}
+		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition());
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_6));
+		}
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_7)->Clicked, __vwsn_event_handler_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+	}
+
+	ColorDialogWindowConstructor::ColorDialogWindowConstructor()
+		: self(static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr))
+		, ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+		, colorControl(static_cast<::gaclib_controls::ColorDialogControl*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
+		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_3(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_4(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_5(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, __vwsn_precompile_6(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
+		, __vwsn_precompile_7(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_8(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+	{
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::ColorDialogWindow)
+***********************************************************************/
+
+	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> ColorDialogWindow::GetStrings()
+	{
+		return this->__vwsn_prop_Strings;
+	}
+	void ColorDialogWindow::SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_Strings.Obj() != __vwsn_value_.Obj()))
+		{
+			(this->__vwsn_prop_Strings = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->StringsChanged)();
+		}
+	}
+
+	::vl::Ptr<::vl::presentation::IColorDialogViewModel> ColorDialogWindow::GetViewModel()
+	{
+		return this->__vwsn_parameter_ViewModel;
+	}
+
+	ColorDialogWindow::ColorDialogWindow(::vl::Ptr<::vl::presentation::IColorDialogViewModel> __vwsn_ctor_parameter_ViewModel)
+		: ::vl::presentation::controls::GuiWindow(::vl::presentation::theme::ThemeName::Window)
+		, __vwsn_prop_Strings(::gaclib_controls::DialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		, __vwsn_parameter_ViewModel(::vl::Ptr<::vl::presentation::IColorDialogViewModel>())
+	{
+		(this->__vwsn_parameter_ViewModel = __vwsn_ctor_parameter_ViewModel);
+		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"gaclib_controls::ColorDialogWindow"));
+		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
+		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
+		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_ColorDialogWindow_Initialize(this);
+	}
+
+	ColorDialogWindow::~ColorDialogWindow()
+	{
+		this->FinalizeInstanceRecursively(static_cast<::vl::presentation::controls::GuiControlHost*>(this));
+	}
+
+/***********************************************************************
+Class (::gaclib_controls::DialogStrings)
+***********************************************************************/
+
 	::vl::WString DialogStrings::__vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats)
 	{
 		{
@@ -320,7 +1919,7 @@ namespace gaclib_controls
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> DialogStrings::Get(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::vl::Ptr<::gaclib_controls::IDialogStringsStrings>(new ::vl_workflow_global::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings());
+		return ::vl::Ptr<::gaclib_controls::IDialogStringsStrings>(new ::vl_workflow_global::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings());
 	}
 
 	DialogStrings::DialogStrings()
@@ -343,9 +1942,6 @@ Class (::gaclib_controls::MessageBoxButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->self)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
-		}
-		{
 			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
 		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
@@ -359,17 +1955,17 @@ Class (::gaclib_controls::MessageBoxButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition()));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -498,10 +2094,10 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetCellPadding(static_cast<::vl::vint32_t>(10));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetRowsAndColumns(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(2));
@@ -517,10 +2113,10 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		}
 		(this->__vwsn_precompile_3 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetRowsAndColumns(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(1));
@@ -545,10 +2141,10 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(48); __vwsn_temp__.y = static_cast<::vl::vint32_t>(48); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		(this->__vwsn_precompile_7 = ::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement>(::vl::reflection::description::Element_Constructor<::vl::presentation::elements::GuiImageFrameElement>()));
 		{
@@ -575,10 +2171,10 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		}
 		(this->__vwsn_precompile_9 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetRowsAndColumns(static_cast<::vl::vint32_t>(3), static_cast<::vl::vint32_t>(1));
@@ -616,10 +2212,10 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		}
 		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::GuiTableComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetRowsAndColumns(static_cast<::vl::vint32_t>(1), static_cast<::vl::vint32_t>(3));
@@ -634,7 +2230,7 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		}
 		(this->__vwsn_precompile_16 = new ::vl::presentation::compositions::GuiRepeatStackComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetPadding(static_cast<::vl::vint32_t>(5));
@@ -643,10 +2239,10 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Horizontal);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint32_t>(0); __vwsn_temp__.top = static_cast<::vl::vint32_t>(0); __vwsn_temp__.right = static_cast<::vl::vint32_t>(0); __vwsn_temp__.bottom = static_cast<::vl::vint32_t>(0); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_15)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_16));

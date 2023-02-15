@@ -36,6 +36,12 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
+			DECL_TYPE_INFO(::gaclib_controls::ColorComponentControl)
+			DECL_TYPE_INFO(::gaclib_controls::ColorComponentControlConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::ColorDialogControl)
+			DECL_TYPE_INFO(::gaclib_controls::ColorDialogControlConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::ColorDialogWindow)
+			DECL_TYPE_INFO(::gaclib_controls::ColorDialogWindowConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::DialogStrings)
 			DECL_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButtonTemplate)
@@ -50,13 +56,29 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Abort);
 				}
+				::vl::WString Blue() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Blue);
+				}
 				::vl::WString Cancel() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Cancel);
 				}
+				::vl::WString Color() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Color);
+				}
+				::vl::WString ColorDialogTitle() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(ColorDialogTitle);
+				}
 				::vl::WString Continue() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Continue);
+				}
+				::vl::WString Green() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Green);
 				}
 				::vl::WString Ignore() override
 				{
@@ -69,6 +91,10 @@ namespace vl
 				::vl::WString OK() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(OK);
+				}
+				::vl::WString Red() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Red);
 				}
 				::vl::WString Retry() override
 				{

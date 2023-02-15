@@ -1,4 +1,200 @@
-﻿================================(1/3)================================
+﻿================================(1/6)================================
+module <instance>gaclib_controls::ColorComponentControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class ColorComponentControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Value : int = 0;
+
+        func GetValue() : (int)
+        {
+            return <prop>Value;
+        }
+
+        func SetValue(<value> : int) : (void)
+        {
+            if ((<prop>Value != <value>))
+            {
+                (<prop>Value = <value>);
+                ValueChanged();
+            }
+        }
+
+        event ValueChanged();
+
+        prop Value : int{GetValue, SetValue : ValueChanged}
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(2/6)================================
+module <instance>gaclib_controls::ColorDialogControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class ColorDialogControl : ::presentation::controls::GuiCustomControl
+    {
+        func ReadColor() : (Color)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IColorDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IColorDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IColorDialogViewModel^)
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(3/6)================================
+module <instance>gaclib_controls::ColorDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class ColorDialogWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IColorDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IColorDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IColorDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(4/6)================================
 module <instance>gaclib_controls::MessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -68,7 +264,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/3)================================
+================================(5/6)================================
 module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -113,7 +309,7 @@ namespace gaclib_controls
     }
 }
 
-================================(3/3)================================
+================================(6/6)================================
 module <localized-strings>gaclib_controls::DialogStrings;
 
 namespace gaclib_controls
@@ -122,15 +318,25 @@ namespace gaclib_controls
     {
         func Abort() : (::system::String);
 
+        func Blue() : (::system::String);
+
         func Cancel() : (::system::String);
 
+        func Color() : (::system::String);
+
+        func ColorDialogTitle() : (::system::String);
+
         func Continue() : (::system::String);
+
+        func Green() : (::system::String);
 
         func Ignore() : (::system::String);
 
         func No() : (::system::String);
 
         func OK() : (::system::String);
+
+        func Red() : (::system::String);
 
         func Retry() : (::system::String);
 
@@ -169,14 +375,34 @@ namespace gaclib_controls
                     return "Abort";
                 }
 
+                override func Blue() : (::system::String)
+                {
+                    return "Blue:";
+                }
+
                 override func Cancel() : (::system::String)
                 {
                     return "Cancel";
                 }
 
+                override func Color() : (::system::String)
+                {
+                    return "Color:";
+                }
+
+                override func ColorDialogTitle() : (::system::String)
+                {
+                    return "Choose Color";
+                }
+
                 override func Continue() : (::system::String)
                 {
                     return "Continue";
+                }
+
+                override func Green() : (::system::String)
+                {
+                    return "Green:";
                 }
 
                 override func Ignore() : (::system::String)
@@ -192,6 +418,11 @@ namespace gaclib_controls
                 override func OK() : (::system::String)
                 {
                     return "OK";
+                }
+
+                override func Red() : (::system::String)
+                {
+                    return "Red:";
                 }
 
                 override func Retry() : (::system::String)

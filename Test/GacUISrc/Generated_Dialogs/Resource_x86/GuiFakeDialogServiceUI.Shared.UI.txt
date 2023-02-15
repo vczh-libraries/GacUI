@@ -7,15 +7,25 @@ namespace gaclib_controls
     {
         func Abort() : (::system::String);
 
+        func Blue() : (::system::String);
+
         func Cancel() : (::system::String);
 
+        func Color() : (::system::String);
+
+        func ColorDialogTitle() : (::system::String);
+
         func Continue() : (::system::String);
+
+        func Green() : (::system::String);
 
         func Ignore() : (::system::String);
 
         func No() : (::system::String);
 
         func OK() : (::system::String);
+
+        func Red() : (::system::String);
 
         func Retry() : (::system::String);
 
@@ -54,14 +64,34 @@ namespace gaclib_controls
                     return "Abort";
                 }
 
+                override func Blue() : (::system::String)
+                {
+                    return "Blue:";
+                }
+
                 override func Cancel() : (::system::String)
                 {
                     return "Cancel";
                 }
 
+                override func Color() : (::system::String)
+                {
+                    return "Color:";
+                }
+
+                override func ColorDialogTitle() : (::system::String)
+                {
+                    return "Choose Color";
+                }
+
                 override func Continue() : (::system::String)
                 {
                     return "Continue";
+                }
+
+                override func Green() : (::system::String)
+                {
+                    return "Green:";
                 }
 
                 override func Ignore() : (::system::String)
@@ -77,6 +107,11 @@ namespace gaclib_controls
                 override func OK() : (::system::String)
                 {
                     return "OK";
+                }
+
+                override func Red() : (::system::String)
+                {
+                    return "Red:";
                 }
 
                 override func Retry() : (::system::String)
