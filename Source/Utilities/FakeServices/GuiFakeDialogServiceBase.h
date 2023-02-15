@@ -49,6 +49,54 @@ View Models (MessageBox)
 		};
 
 /***********************************************************************
+View Models (Confirmation)
+***********************************************************************/
+
+		class IDialogConfirmation : public virtual IDescriptable
+		{
+		public:
+			virtual bool					GetConfirmed() = 0;
+			virtual void					SetConfirmed(bool value) = 0;
+		};
+
+/***********************************************************************
+View Models (ColorDialog)
+***********************************************************************/
+
+		class IColorDialogViewModel : public virtual IDialogConfirmation
+		{
+		public:
+			virtual Color					GetColor() = 0;
+			virtual void					SetColor(Color value) = 0;
+		};
+
+/***********************************************************************
+View Models (FontDialog)
+***********************************************************************/
+
+		class ICommonFontDialogViewModel : public virtual IDescriptable
+		{
+		public:
+			using FontList = collections::List<WString>;
+
+			virtual const FontList&			GetFontList() = 0;
+		};
+
+		class ISimpleFontDialogViewModel : public virtual ICommonFontDialogViewModel, public virtual IDialogConfirmation
+		{
+		public:
+			virtual WString					GetFontFamily() = 0;
+			virtual void					SetFontFamily(const WString& fontface) = 0;
+		};
+
+		class IFullFontDialogViewModel : public virtual ICommonFontDialogViewModel, public virtual IColorDialogViewModel
+		{
+		public:
+			virtual FontProperties			GetFont() = 0;
+			virtual void					SetFont(const FontProperties& value) = 0;
+		};
+
+/***********************************************************************
 FakeDialogServiceBase
 ***********************************************************************/
 
@@ -59,6 +107,10 @@ FakeDialogServiceBase
 		protected:
 
 			virtual controls::GuiWindow*	CreateMessageBoxDialog(Ptr<IMessageBoxDialogViewModel> viewModel) = 0;
+			virtual controls::GuiWindow*	CreateColorDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) = 0;
+			virtual controls::GuiWindow*	CreateSimpleFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) = 0;
+			virtual controls::GuiWindow*	CreateFullFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) = 0;
+
 			void							ShowModalDialogAndDelete(controls::GuiWindow* owner, controls::GuiWindow* dialog);
 
 		public:

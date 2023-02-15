@@ -25,6 +25,9 @@ namespace vl
 		protected:
 
 			controls::GuiWindow*	CreateMessageBoxDialog(Ptr< IMessageBoxDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateColorDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) override;
+			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) override;
+			controls::GuiWindow*	CreateFullFontDialog(Ptr<IMessageBoxDialogViewModel> viewModel, Ptr<IDialogConfirmation> confirmation) override;
 
 		public:
 			FakeDialogService();

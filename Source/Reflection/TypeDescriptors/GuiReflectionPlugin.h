@@ -107,6 +107,11 @@ Type List (Basic)
 			F(presentation::IGuiResourceManager)\
 			F(presentation::IMessageBoxDialogAction)\
 			F(presentation::IMessageBoxDialogViewModel)\
+			F(presentation::IDialogConfirmation)\
+			F(presentation::IColorDialogViewModel)\
+			F(presentation::ICommonFontDialogViewModel)\
+			F(presentation::ISimpleFontDialogViewModel)\
+			F(presentation::IFullFontDialogViewModel)\
 
 /***********************************************************************
 Type List (Elements)
