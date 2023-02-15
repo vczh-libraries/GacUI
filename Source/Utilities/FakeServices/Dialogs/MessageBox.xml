@@ -21,7 +21,7 @@
           }
         }
       ]]></ref.Members>
-      <ControlTemplate ref.Name="self" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+      <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
         <Button Text-bind="self.GetButtonText(Action.Button, self.Strings)">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
           <ev.Clicked-eval><![CDATA[

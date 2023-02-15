@@ -29,6 +29,12 @@
         <String Name="Ignore" Text="Ignore"/>
         <String Name="TryAgain" Text="Try Again"/>
         <String Name="Continue" Text="Continue"/>
+
+        <String Name="ColorDialogTitle" Text="Choose Color"/>
+        <String Name="Red" Text="Red:"/>
+        <String Name="Green" Text="Green:"/>
+        <String Name="Blue" Text="Blue:"/>
+        <String Name="Color" Text="Color:"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>

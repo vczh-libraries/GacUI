@@ -1,0 +1,151 @@
+<Folder>
+  <Instance name="FakeColorComponentControlResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FakeColorComponentControl">
+      <ref.Members><![CDATA[
+        prop Value : int = 0 {}
+      ]]></ref.Members>
+      <CustomControl ref.Name="self" MinSizeLimitation="LimitToElementAndChildren" Value-bind="tracker.Position">
+        <att.BoundsComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
+
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <SinglelineTextBox ref.Name="textBox" Text-bind="cast string self.Value">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.TextChanged-eval><![CDATA[
+                {
+                  try
+                  {
+                    var value = cast int textBox.Text;
+                    if (value < 0)        tracker.Position = 0;
+                    else if (value > 255) tracker.Position = 255;
+                    else                  tracker.Position = value;
+                  }
+                  catch(ex)
+                  {
+                  }
+                }
+              ]]></ev.TextChanged-eval>
+            </SinglelineTextBox>
+          </Cell>
+          
+          <Cell Site="row:1 column:0">
+            <HTracker ref.Name="tracker" TotalSize="256" PageSize="1" SmallMove="1" BigMove="16">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </HTracker>
+          </Cell>
+        </Table>
+      </CustomControl>
+    </Instance>
+  </Instance>
+  
+  <Instance name="FakeColorDialogControlResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FakeColorDialogControl" xmlns:g="gaclib_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
+      <CustomControl ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
+        <att.BoundsComposition-set MinSizeLimitation="LimitToElementAndChildren"/>
+
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <Label Text-str="Red()"/>
+          </Cell>
+          <Cell Site="row:1 column:0">
+            <Label Text-str="Green()"/>
+          </Cell>
+          <Cell Site="row:2 column:0">
+            <Label Text-str="Blue()"/>
+          </Cell>
+          <Cell Site="row:3 column:0">
+            <Label Text-str="Color()"/>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <g:FakeColorComponentControl ref.Name="colorRed" Value-eval="ViewModel.Color.r">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </g:FakeColorComponentControl>
+          </Cell>
+          <Cell Site="row:1 column:1">
+            <g:FakeColorComponentControl ref.Name="colorGreen" Value-eval="ViewModel.Color.g">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </g:FakeColorComponentControl>
+          </Cell>
+          <Cell Site="row:2 column:1">
+            <g:FakeColorComponentControl ref.Name="colorBlue" Value-eval="ViewModel.Color.b">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </g:FakeColorComponentControl>
+          </Cell>
+
+          <Cell Site="row:3 column:1" PreferredSize="x:128">
+            <SolidBackground Color-bind="ViewModel.Color"/>
+          </Cell>
+        </Table>
+      </CustomControl>
+    </Instance>
+  </Instance>
+
+  <Instance name="FakeColorDialogWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FakeColorDialogWindow" xmlns:g="gaclib_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
+      <Window
+          Text-str="ColorDialogTitle()"
+          ClientSize="x:240 y:120"
+          ShowInTaskBar="false"
+          MaximizedBox="false"
+          MinimizedBox="false"
+          IconVisible="false"
+          >
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0 rowSpan:1 columnSpan:3">
+            <g:FakeColorDialogControl ViewModel-ref="ViewModel">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </g:FakeColorDialogControl>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <Button Text-str="OK()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{ViewModel.Result = true; self.Close();}]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:1 column:2">
+            <Button Text-str="Cancel()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <ev.Clicked-eval><![CDATA[{ViewModel.Result = false; self.Close();}]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>

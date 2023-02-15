@@ -2,6 +2,8 @@
 
 ## Progressing
 
+- Issue on `<LocalizedStrings/>`
+  - Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
 - Issue on dialog service
   - message box default button.
   - message box `ENTER` and `ESC` operation.
