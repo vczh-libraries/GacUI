@@ -3319,7 +3319,12 @@ Class (::gaclib_controls::FontNameControl)
 	void FontNameControl::InitValue(const ::vl::WString& value)
 	{
 		::vl::__vwsn::This(this->textBox)->SetText(value);
-		::vl::__vwsn::This(this->textList)->SetSelected(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFontList()).Obj())->IndexOf(::vl::__vwsn::Box(value)), true);
+		auto index = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFontList()).Obj())->IndexOf(::vl::__vwsn::Box(value));
+		if ((index > (- static_cast<::vl::vint32_t>(1))))
+		{
+			::vl::__vwsn::This(this->textList)->SetSelected(index, true);
+			::vl::__vwsn::This(this->textList)->EnsureItemVisible(index);
+		}
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> FontNameControl::GetStrings()
@@ -3530,7 +3535,12 @@ Class (::gaclib_controls::FontSizeControl)
 	void FontSizeControl::InitValue(::vl::vint32_t value)
 	{
 		::vl::__vwsn::This(this->textBox)->SetText(::vl::__vwsn::ToString(value));
-		::vl::__vwsn::This(this->textList)->SetSelected(::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetSizeList().Obj())->IndexOf(::vl::__vwsn::Box(value)), true);
+		auto index = ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetSizeList().Obj())->IndexOf(::vl::__vwsn::Box(value));
+		if ((index > (- static_cast<::vl::vint32_t>(1))))
+		{
+			::vl::__vwsn::This(this->textList)->SetSelected(index, true);
+			::vl::__vwsn::This(this->textList)->EnsureItemVisible(index);
+		}
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> FontSizeControl::GetStrings()

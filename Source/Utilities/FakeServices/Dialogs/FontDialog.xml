@@ -10,7 +10,12 @@
         func InitValue(value: string) : void
         {
           textBox.Text = value;
-          textList.SetSelected(ViewModel.FontList.IndexOf(value), true);
+          var index = ViewModel.FontList.IndexOf(value);
+          if (index > -1)
+          {
+            textList.SetSelected(index, true);
+            textList.EnsureItemVisible(index);
+          }
         }
       ]]></ref.Members>
       <CustomControl ref.Name="self" Value-bind="textBox.Text" Legal-bind="not ViewModel.FontMustExist or ViewModel.FontList.IndexOf(textBox.Text) != -1">
@@ -61,7 +66,12 @@
         func InitValue(value: int) : void
         {
           textBox.Text = cast string value;
-          textList.SetSelected(self.SizeList.IndexOf(value), true);
+          var index = self.SizeList.IndexOf(value);
+          if (index > -1)
+          {
+            textList.SetSelected(index, true);
+            textList.EnsureItemVisible(index);
+          }
         }
       ]]></ref.Members>
       <CustomControl ref.Name="self" Value-bind="cast int textBox.Text ?? -1" Legal-bind="self.Value &gt; 0">
