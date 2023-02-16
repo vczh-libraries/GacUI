@@ -9,6 +9,8 @@
   - message box `ENTER` and `ESC` operation.
   - message box is not shown at the center.
   - test different message box options.
+  - simple font dialog miss preview.
+  - simple font dialog change size in text box cause caret jumps to the left.
   - unnecessary comments at the bottom in `GuiFakeDialogServiceUI.(h|cpp)`.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
