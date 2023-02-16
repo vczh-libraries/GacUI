@@ -714,9 +714,12 @@ enum presentation::INativeWindowListener::HitTestResult {
 
 interface presentation::ISimpleFontDialogViewModel : presentation::ICommonFontDialogViewModel, presentation::IDialogConfirmation {
     property FontFamily : system::String { get:GetFontFamily set:SetFontFamily }
+    property FontSize : system::Int32 { get:GetFontSize set:SetFontSize }
 
     function GetFontFamily() : system::String;
+    function GetFontSize() : system::Int32;
     function SetFontFamily(value : system::String) : system::Void;
+    function SetFontSize(value : system::Int32) : system::Void;
 
 }
 

@@ -89,9 +89,13 @@ View Model (ISimpleFontDialogViewModel and IFullFontDialogViewModel)
 		{
 		public:
 			WString					fontFamily;
+			vint					fontSize = 0;
 
 			WString					GetFontFamily() override						{ return fontFamily; }
 			void					SetFontFamily(const WString& value) override	{ fontFamily = value; }
+
+			vint					GetFontSize() override							{ return fontSize; }
+			void					SetFontSize(vint value) override				{ fontSize = value; }
 		};
 
 		class FakeFullFontDialogViewModel : public FakeFontDialogViewModel<IFullFontDialogViewModel>
@@ -250,6 +254,7 @@ FakeDialogServiceBase
 				initVm(vm);
 
 				vm->fontFamily = selectionFont.fontFamily;
+				vm->fontSize = selectionFont.size;
 				{
 					auto owner = GetApplication()->GetWindowFromNative(window);
 					auto dialog = CreateSimpleFontDialog(vm);
@@ -258,6 +263,7 @@ FakeDialogServiceBase
 				if (vm->confirmed)
 				{
 					selectionFont.fontFamily = vm->fontFamily;
+					selectionFont.size = vm->fontSize;
 				}
 				return vm->confirmed;
 			}

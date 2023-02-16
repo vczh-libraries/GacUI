@@ -702,6 +702,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(ICommonFontDialogViewModel)
 				CLASS_MEMBER_BASE(IDialogConfirmation)
 				CLASS_MEMBER_PROPERTY_FAST(FontFamily)
+				CLASS_MEMBER_PROPERTY_FAST(FontSize)
 			END_INTERFACE_MEMBER(ISimpleFontDialogViewModel)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IFullFontDialogViewModel)

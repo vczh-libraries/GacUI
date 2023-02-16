@@ -88,6 +88,8 @@ View Models (FontDialog)
 		public:
 			virtual WString					GetFontFamily() = 0;
 			virtual void					SetFontFamily(const WString& fontface) = 0;
+			virtual vint					GetFontSize() = 0;
+			virtual void					SetFontSize(vint value) = 0;
 		};
 
 		class IFullFontDialogViewModel : public virtual ICommonFontDialogViewModel, public virtual IColorDialogViewModel
