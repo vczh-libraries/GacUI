@@ -60,6 +60,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Blue);
 				}
+				::vl::WString Bold() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Bold);
+				}
 				::vl::WString Cancel() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Cancel);
@@ -76,13 +80,33 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Continue);
 				}
+				::vl::WString FontDialogTitle() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontDialogTitle);
+				}
+				::vl::WString FontName() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontName);
+				}
+				::vl::WString FontSize() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontSize);
+				}
 				::vl::WString Green() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Green);
 				}
+				::vl::WString HAA() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(HAA);
+				}
 				::vl::WString Ignore() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Ignore);
+				}
+				::vl::WString Italic() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Italic);
 				}
 				::vl::WString No() override
 				{
@@ -103,6 +127,14 @@ namespace vl
 				::vl::WString TryAgain() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(TryAgain);
+				}
+				::vl::WString Underline() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Underline);
+				}
+				::vl::WString VAA() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(VAA);
 				}
 				::vl::WString Yes() override
 				{

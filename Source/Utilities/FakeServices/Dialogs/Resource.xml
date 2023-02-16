@@ -35,6 +35,15 @@
         <String Name="Green" Text="Green:"/>
         <String Name="Blue" Text="Blue:"/>
         <String Name="Color" Text="Color:"/>
+
+        <String Name="FontDialogTitle" Text="Choose Font"/>
+        <String Name="FontName" Text="Font:"/>
+        <String Name="FontSize" Text="Size:"/>
+        <String Name="Bold" Text="Bold"/>
+        <String Name="Italic" Text="Italic"/>
+        <String Name="Underline" Text="Underline"/>
+        <String Name="VAA" Text="Vertically Antialias"/>
+        <String Name="HAA" Text="Horizontally Antialias"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>

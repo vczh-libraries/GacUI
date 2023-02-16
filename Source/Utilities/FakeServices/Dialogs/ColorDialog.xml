@@ -156,7 +156,6 @@
               <ev.Clicked-eval>
                 <![CDATA[
                 {
-                  ViewModel.Confirmed = false;
                   self.Close();
                 }
               ]]>

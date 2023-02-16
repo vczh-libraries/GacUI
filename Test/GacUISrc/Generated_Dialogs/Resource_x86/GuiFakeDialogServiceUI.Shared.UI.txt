@@ -9,6 +9,8 @@ namespace gaclib_controls
 
         func Blue() : (::system::String);
 
+        func Bold() : (::system::String);
+
         func Cancel() : (::system::String);
 
         func Color() : (::system::String);
@@ -17,9 +19,19 @@ namespace gaclib_controls
 
         func Continue() : (::system::String);
 
+        func FontDialogTitle() : (::system::String);
+
+        func FontName() : (::system::String);
+
+        func FontSize() : (::system::String);
+
         func Green() : (::system::String);
 
+        func HAA() : (::system::String);
+
         func Ignore() : (::system::String);
+
+        func Italic() : (::system::String);
 
         func No() : (::system::String);
 
@@ -30,6 +42,10 @@ namespace gaclib_controls
         func Retry() : (::system::String);
 
         func TryAgain() : (::system::String);
+
+        func Underline() : (::system::String);
+
+        func VAA() : (::system::String);
 
         func Yes() : (::system::String);
     }
@@ -69,6 +85,11 @@ namespace gaclib_controls
                     return "Blue:";
                 }
 
+                override func Bold() : (::system::String)
+                {
+                    return "Bold";
+                }
+
                 override func Cancel() : (::system::String)
                 {
                     return "Cancel";
@@ -89,14 +110,39 @@ namespace gaclib_controls
                     return "Continue";
                 }
 
+                override func FontDialogTitle() : (::system::String)
+                {
+                    return "Choose Font";
+                }
+
+                override func FontName() : (::system::String)
+                {
+                    return "Font:";
+                }
+
+                override func FontSize() : (::system::String)
+                {
+                    return "Size:";
+                }
+
                 override func Green() : (::system::String)
                 {
                     return "Green:";
                 }
 
+                override func HAA() : (::system::String)
+                {
+                    return "Horizontally Antialias";
+                }
+
                 override func Ignore() : (::system::String)
                 {
                     return "Ignore";
+                }
+
+                override func Italic() : (::system::String)
+                {
+                    return "Italic";
                 }
 
                 override func No() : (::system::String)
@@ -122,6 +168,16 @@ namespace gaclib_controls
                 override func TryAgain() : (::system::String)
                 {
                     return "Try Again";
+                }
+
+                override func Underline() : (::system::String)
+                {
+                    return "Underline";
+                }
+
+                override func VAA() : (::system::String)
+                {
+                    return "Vertically Antialias";
                 }
 
                 override func Yes() : (::system::String)

@@ -276,17 +276,25 @@ namespace gaclib_controls
 	public:
 		virtual ::vl::WString Abort() = 0;
 		virtual ::vl::WString Blue() = 0;
+		virtual ::vl::WString Bold() = 0;
 		virtual ::vl::WString Cancel() = 0;
 		virtual ::vl::WString Color() = 0;
 		virtual ::vl::WString ColorDialogTitle() = 0;
 		virtual ::vl::WString Continue() = 0;
+		virtual ::vl::WString FontDialogTitle() = 0;
+		virtual ::vl::WString FontName() = 0;
+		virtual ::vl::WString FontSize() = 0;
 		virtual ::vl::WString Green() = 0;
+		virtual ::vl::WString HAA() = 0;
 		virtual ::vl::WString Ignore() = 0;
+		virtual ::vl::WString Italic() = 0;
 		virtual ::vl::WString No() = 0;
 		virtual ::vl::WString OK() = 0;
 		virtual ::vl::WString Red() = 0;
 		virtual ::vl::WString Retry() = 0;
 		virtual ::vl::WString TryAgain() = 0;
+		virtual ::vl::WString Underline() = 0;
+		virtual ::vl::WString VAA() = 0;
 		virtual ::vl::WString Yes() = 0;
 	};
 
@@ -665,17 +673,25 @@ Closures
 
 		::vl::WString Abort() override;
 		::vl::WString Blue() override;
+		::vl::WString Bold() override;
 		::vl::WString Cancel() override;
 		::vl::WString Color() override;
 		::vl::WString ColorDialogTitle() override;
 		::vl::WString Continue() override;
+		::vl::WString FontDialogTitle() override;
+		::vl::WString FontName() override;
+		::vl::WString FontSize() override;
 		::vl::WString Green() override;
+		::vl::WString HAA() override;
 		::vl::WString Ignore() override;
+		::vl::WString Italic() override;
 		::vl::WString No() override;
 		::vl::WString OK() override;
 		::vl::WString Red() override;
 		::vl::WString Retry() override;
 		::vl::WString TryAgain() override;
+		::vl::WString Underline() override;
+		::vl::WString VAA() override;
 		::vl::WString Yes() override;
 	};
 
