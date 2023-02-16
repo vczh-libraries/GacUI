@@ -563,6 +563,7 @@ interface presentation::INativeResourceService : system::Interface {
     property DefaultFont : presentation::FontProperties { get:GetDefaultFont set:SetDefaultFont }
     property DefaultSystemCursor : presentation::INativeCursor* { get:GetDefaultSystemCursor }
 
+    function EnumerateFonts(fonts : system::List<system::String>^) : system::Void;
     function GetDefaultFont() : presentation::FontProperties;
     function GetDefaultSystemCursor() : presentation::INativeCursor*;
     function GetSystemCursor(type : presentation::INativeCursor::SystemCursorType) : presentation::INativeCursor*;

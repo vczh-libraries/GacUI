@@ -286,6 +286,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(DefaultFont)
 
 				CLASS_MEMBER_METHOD(GetSystemCursor, {L"type"})
+				CLASS_MEMBER_METHOD(EnumerateFonts, {L"fonts"})
 			END_INTERFACE_MEMBER(INativeResourceService)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeAsyncService)

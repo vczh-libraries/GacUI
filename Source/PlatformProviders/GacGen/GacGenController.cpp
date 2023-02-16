@@ -116,6 +116,11 @@ public:
 		CHECK_FAIL(L"Not implemented!");
 	}
 
+	void EnumerateFonts(collections::List<WString>& fonts) override
+	{
+		CHECK_FAIL(L"Not implemented!");
+	}
+
 	////////////////////////////////////////////////////////////////////
 	// INativeImageService
 	////////////////////////////////////////////////////////////////////
