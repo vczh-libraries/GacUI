@@ -1841,6 +1841,9 @@ namespace gaclib_controls
                 (textList.ItemSource = ViewModel.FontList);
             }
             {
+                (textList.TextProperty = [(cast (string) $1)]);
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     if ((textList.SelectedItemIndex != (-1)))
@@ -2404,6 +2407,9 @@ namespace gaclib_controls
             }
             {
                 (textList.ItemSource = self.SizeList);
+            }
+            {
+                (textList.TextProperty = [(cast (string) (cast (int) $1))]);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)

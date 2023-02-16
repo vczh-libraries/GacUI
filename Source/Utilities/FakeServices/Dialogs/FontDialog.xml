@@ -32,7 +32,7 @@
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <BindableTextList ref.Name="textList" ItemSource-eval="ViewModel.FontList" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+              <BindableTextList ref.Name="textList" env.ItemType="string" ItemSource-eval="ViewModel.FontList" TextProperty-eval="[cast string $1]" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <ev.SelectionChanged-eval><![CDATA[
                   {
@@ -92,7 +92,7 @@
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <BindableTextList ref.Name="textList" ItemSource-eval="self.SizeList" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+              <BindableTextList ref.Name="textList" env.ItemType="int" ItemSource-eval="self.SizeList" TextProperty-eval="[cast string (cast int $1)]" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <ev.SelectionChanged-eval><![CDATA[
                   {
