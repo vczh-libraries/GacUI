@@ -12,58 +12,58 @@ WindowsCursor
 ***********************************************************************/
 
 			WindowsCursor::WindowsCursor(HCURSOR _handle)
-				:handle(_handle)
-				,isSystemCursor(false)
-				,systemCursorType(INativeCursor::Arrow)
+				: handle(_handle)
+				, isSystemCursor(false)
+				, systemCursorType(INativeCursor::Arrow)
 			{
 			}
 
 			WindowsCursor::WindowsCursor(SystemCursorType type)
 				:handle(NULL)
-				,isSystemCursor(true)
-				,systemCursorType(type)
+				, isSystemCursor(true)
+				, systemCursorType(type)
 			{
-				LPWSTR id=NULL;
-				switch(type)
+				LPWSTR id = NULL;
+				switch (type)
 				{
 				case SmallWaiting:
-					id=IDC_APPSTARTING;
+					id = IDC_APPSTARTING;
 					break;
 				case LargeWaiting:
-					id=IDC_WAIT;
+					id = IDC_WAIT;
 					break;
 				case Arrow:
-					id=IDC_ARROW;
+					id = IDC_ARROW;
 					break;
 				case Cross:
-					id=IDC_CROSS;
+					id = IDC_CROSS;
 					break;
 				case Hand:
-					id=IDC_HAND;
+					id = IDC_HAND;
 					break;
 				case Help:
-					id=IDC_HELP;
+					id = IDC_HELP;
 					break;
 				case IBeam:
-					id=IDC_IBEAM;
+					id = IDC_IBEAM;
 					break;
 				case SizeAll:
-					id=IDC_SIZEALL;
+					id = IDC_SIZEALL;
 					break;
 				case SizeNESW:
-					id=IDC_SIZENESW;
+					id = IDC_SIZENESW;
 					break;
 				case SizeNS:
-					id=IDC_SIZENS;
+					id = IDC_SIZENS;
 					break;
 				case SizeNWSE:
-					id=IDC_SIZENWSE;
+					id = IDC_SIZENWSE;
 					break;
 				case SizeWE:
-					id=IDC_SIZEWE;
+					id = IDC_SIZEWE;
 					break;
 				}
-				handle=(HCURSOR)LoadImage(NULL, id, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE|LR_SHARED);
+				handle = (HCURSOR)LoadImage(NULL, id, IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
 			}
 				
 			bool WindowsCursor::IsSystemCursor()
@@ -89,33 +89,33 @@ WindowsResourceService
 			{
 				{
 					systemCursors.Resize(INativeCursor::SystemCursorCount);
-					for(vint i=0;i<systemCursors.Count();i++)
+					for (vint i = 0; i < systemCursors.Count(); i++)
 					{
-						systemCursors[i]=Ptr(new WindowsCursor((INativeCursor::SystemCursorType)i));
+						systemCursors[i] = Ptr(new WindowsCursor((INativeCursor::SystemCursorType)i));
 					}
 				}
 				{
 					NONCLIENTMETRICS metrics;
-					metrics.cbSize=sizeof(NONCLIENTMETRICS);
+					metrics.cbSize = sizeof(NONCLIENTMETRICS);
 					SystemParametersInfo(SPI_GETNONCLIENTMETRICS, metrics.cbSize, &metrics, 0);
-					if(!*metrics.lfMessageFont.lfFaceName)
+					if (!*metrics.lfMessageFont.lfFaceName)
 					{
-						metrics.cbSize=sizeof(NONCLIENTMETRICS)-sizeof(metrics.iPaddedBorderWidth);
+						metrics.cbSize = sizeof(NONCLIENTMETRICS) - sizeof(metrics.iPaddedBorderWidth);
 						SystemParametersInfo(SPI_GETNONCLIENTMETRICS, metrics.cbSize, &metrics, 0);
 					}
-					defaultFont.fontFamily=metrics.lfMessageFont.lfFaceName;
-					defaultFont.size=metrics.lfMessageFont.lfHeight;
-					if(defaultFont.size<0)
+					defaultFont.fontFamily = metrics.lfMessageFont.lfFaceName;
+					defaultFont.size = metrics.lfMessageFont.lfHeight;
+					if (defaultFont.size < 0)
 					{
-						defaultFont.size=-defaultFont.size;
+						defaultFont.size = -defaultFont.size;
 					}
 				}
 			}
 
 			INativeCursor* WindowsResourceService::GetSystemCursor(INativeCursor::SystemCursorType type)
 			{
-				vint index=(vint)type;
-				if(0<=index && index<systemCursors.Count())
+				vint index = (vint)type;
+				if (0 <= index && index < systemCursors.Count())
 				{
 					return systemCursors[index].Obj();
 				}
@@ -137,7 +137,12 @@ WindowsResourceService
 
 			void WindowsResourceService::SetDefaultFont(const FontProperties& value)
 			{
-				defaultFont=value;
+				defaultFont = value;
+			}
+
+			void WindowsResourceService::EnumerateFonts(collections::List<WString>& fonts)
+			{
+				CHECK_FAIL(L"Not Implemented!");
 			}
 		}
 	}

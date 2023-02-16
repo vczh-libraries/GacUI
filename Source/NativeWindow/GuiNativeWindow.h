@@ -1036,6 +1036,11 @@ INativeResourceService
 			/// </summary>
 			/// <param name="value">The font configuration to override.</param>
 			virtual void					SetDefaultFont(const FontProperties& value)=0;
+			/// <summary>
+			/// Enumerate all system fonts.
+			/// </summary>
+			/// <param name="fonts">The collection to receive all fonts.</param>
+			virtual void					EnumerateFonts(collections::List<WString>& fonts)=0;
 		};
 
 /***********************************************************************

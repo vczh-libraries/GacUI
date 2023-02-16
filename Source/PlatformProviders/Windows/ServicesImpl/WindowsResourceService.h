@@ -45,6 +45,7 @@ namespace vl
 				INativeCursor*								GetDefaultSystemCursor()override;
 				FontProperties								GetDefaultFont()override;
 				void										SetDefaultFont(const FontProperties& value)override;
+				void										EnumerateFonts(collections::List<WString>& fonts)override;
 			};
 		}
 	}
