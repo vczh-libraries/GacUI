@@ -142,7 +142,16 @@ WindowsResourceService
 
 			void WindowsResourceService::EnumerateFonts(collections::List<WString>& fonts)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				auto proc = [](const LOGFONTW* lpelf, const TEXTMETRICW* lpntm, DWORD fontType, LPARAM lParam) -> int
+				{
+					auto&& fonts = *(collections::List<WString>*)lParam;
+					fonts.Add(lpelf->lfFaceName);
+					return 1;
+				};
+
+				HDC refHdc = GetDC(NULL);
+				EnumFontFamilies(refHdc, NULL, proc, (LPARAM)&fonts);
+				ReleaseDC(NULL, refHdc);
 			}
 		}
 	}

@@ -5,6 +5,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		using namespace collections;
 		using namespace compositions;
 		using namespace controls;
 
@@ -210,11 +211,24 @@ FakeDialogServiceBase
 			bool forceFontExist
 		)
 		{
+			auto initVm = [=](auto vm)
+			{
+				vm->fontMustExist = forceFontExist;
+				GetCurrentController()->ResourceService()->EnumerateFonts(vm->fontList);
+				if (vm->fontList.Count() > 0)
+				{
+					Sort(
+						&vm->fontList[0],
+						vm->fontList.Count(),
+						Func([](WString a, WString b) {return WString::Compare(a, b); })
+						);
+				}
+			};
+
 			if (showEffect)
 			{
 				auto vm = Ptr(new FakeFullFontDialogViewModel);
-				vm->fontMustExist = forceFontExist;
-				GetCurrentController()->ResourceService()->EnumerateFonts(vm->fontList);
+				initVm(vm);
 
 				vm->font = selectionFont;
 				vm->color = selectionColor;
@@ -233,8 +247,7 @@ FakeDialogServiceBase
 			else
 			{
 				auto vm = Ptr(new FakeSimpleFontDialogViewModel);
-				vm->fontMustExist = forceFontExist;
-				GetCurrentController()->ResourceService()->EnumerateFonts(vm->fontList);
+				initVm(vm);
 
 				vm->fontFamily = selectionFont.fontFamily;
 				{
