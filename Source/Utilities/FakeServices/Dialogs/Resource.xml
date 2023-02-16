@@ -37,8 +37,10 @@
         <String Name="Color" Text="Color:"/>
 
         <String Name="FontDialogTitle" Text="Choose Font"/>
-        <String Name="FontName" Text="Font:"/>
-        <String Name="FontSize" Text="Size:"/>
+        <String Name="FontNameGroup" Text="Font:"/>
+        <String Name="FontSizeGroup" Text="Size:"/>
+        <String Name="FontEffectGroup" Text="Effect:"/>
+        <String Name="FontColorGroup" Text="Color:"/>
         <String Name="Bold" Text="Bold"/>
         <String Name="Italic" Text="Italic"/>
         <String Name="Underline" Text="Underline"/>
@@ -50,4 +52,5 @@
 
   <Folder name="MessageBoxComponents" content="Link">MessageBox.xml</Folder>
   <Folder name="ColorDialogComponents" content="Link">ColorDialog.xml</Folder>
+  <Folder name="FontDialogComponents" content="Link">FontDialog.xml</Folder>
 </Resource>

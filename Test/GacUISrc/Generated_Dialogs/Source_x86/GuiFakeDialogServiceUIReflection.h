@@ -43,11 +43,17 @@ namespace vl
 			DECL_TYPE_INFO(::gaclib_controls::ColorDialogWindow)
 			DECL_TYPE_INFO(::gaclib_controls::ColorDialogWindowConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::DialogStrings)
+			DECL_TYPE_INFO(::gaclib_controls::FontNameControl)
+			DECL_TYPE_INFO(::gaclib_controls::FontNameControlConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::FontSizeControl)
+			DECL_TYPE_INFO(::gaclib_controls::FontSizeControlConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButtonTemplate)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButtonTemplateConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindow)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindowConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::SimpleFontDialogWindow)
+			DECL_TYPE_INFO(::gaclib_controls::SimpleFontDialogWindowConstructor)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -80,17 +86,25 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Continue);
 				}
+				::vl::WString FontColorGroup() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontColorGroup);
+				}
 				::vl::WString FontDialogTitle() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontDialogTitle);
 				}
-				::vl::WString FontName() override
+				::vl::WString FontEffectGroup() override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontName);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontEffectGroup);
 				}
-				::vl::WString FontSize() override
+				::vl::WString FontNameGroup() override
 				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontSize);
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontNameGroup);
+				}
+				::vl::WString FontSizeGroup() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontSizeGroup);
 				}
 				::vl::WString Green() override
 				{

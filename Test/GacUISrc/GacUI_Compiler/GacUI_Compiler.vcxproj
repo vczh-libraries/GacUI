@@ -181,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\ColorDialog.xml" />
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\FontDialog.xml" />
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\MessageBox.xml" />
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\Resource.xml" />
     <Xml Include="..\..\Resources\App\DarkSkin\DarkSkin.xml" />

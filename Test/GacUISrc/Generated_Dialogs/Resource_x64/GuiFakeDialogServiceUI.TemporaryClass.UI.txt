@@ -1,4 +1,4 @@
-﻿================================(1/6)================================
+﻿================================(1/9)================================
 module <instance>gaclib_controls::ColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -57,7 +57,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/6)================================
+================================(2/9)================================
 module <instance>gaclib_controls::ColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -128,7 +128,7 @@ namespace gaclib_controls
     }
 }
 
-================================(3/6)================================
+================================(3/9)================================
 module <instance>gaclib_controls::ColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -194,7 +194,336 @@ namespace gaclib_controls
     }
 }
 
-================================(4/6)================================
+================================(4/9)================================
+module <instance>gaclib_controls::FontNameControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class FontNameControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Value : string = "";
+
+        func GetValue() : (string)
+        {
+            return <prop>Value;
+        }
+
+        func SetValue(<value> : string) : (void)
+        {
+            if ((<prop>Value != <value>))
+            {
+                (<prop>Value = <value>);
+                ValueChanged();
+            }
+        }
+
+        event ValueChanged();
+
+        prop Value : string{GetValue, SetValue : ValueChanged}
+
+        @cpp:Private
+        var <prop>Legal : bool = false;
+
+        func GetLegal() : (bool)
+        {
+            return <prop>Legal;
+        }
+
+        func SetLegal(<value> : bool) : (void)
+        {
+            if ((<prop>Legal != <value>))
+            {
+                (<prop>Legal = <value>);
+                LegalChanged();
+            }
+        }
+
+        event LegalChanged();
+
+        prop Legal : bool{GetLegal, SetLegal : LegalChanged}
+
+        func InitValue(value : string) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::ICommonFontDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::ICommonFontDialogViewModel^{GetViewModel}
+
+        @cpp:Protected
+        @cpp:UserImpl
+        func 
+                  {
+                    if (textList.SelectedItemIndex != -1)
+                    {
+                      textBox.Text = textList.SelectedItemText;
+                    }
+                  }
+                (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+        {
+            raise "Not Implemented: \r\n                  {\r\n                    if (textList.SelectedItemIndex != -1)\r\n                    {\r\n                      textBox.Text = textList.SelectedItemText;\r\n                    }\r\n                  }\r\n                ";
+        }
+
+        new* (<ctor-parameter>ViewModel : presentation::ICommonFontDialogViewModel^)
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(5/9)================================
+module <instance>gaclib_controls::FontSizeControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class FontSizeControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>SizeList : int[] = {8; 9; 10; 11; 12; 14; 16; 18; 20; 22; 24; 26; 28; 36; 48; 72;};
+
+        func GetSizeList() : (int[])
+        {
+            return <prop>SizeList;
+        }
+
+        @cpp:Protected
+        func SetSizeList(<value> : int[]) : (void)
+        {
+            (<prop>SizeList = <value>);
+        }
+
+        prop SizeList : int[]{GetSizeList}
+
+        @cpp:Private
+        var <prop>Value : int = 0;
+
+        func GetValue() : (int)
+        {
+            return <prop>Value;
+        }
+
+        func SetValue(<value> : int) : (void)
+        {
+            if ((<prop>Value != <value>))
+            {
+                (<prop>Value = <value>);
+                ValueChanged();
+            }
+        }
+
+        event ValueChanged();
+
+        prop Value : int{GetValue, SetValue : ValueChanged}
+
+        @cpp:Private
+        var <prop>Legal : bool = false;
+
+        func GetLegal() : (bool)
+        {
+            return <prop>Legal;
+        }
+
+        func SetLegal(<value> : bool) : (void)
+        {
+            if ((<prop>Legal != <value>))
+            {
+                (<prop>Legal = <value>);
+                LegalChanged();
+            }
+        }
+
+        event LegalChanged();
+
+        prop Legal : bool{GetLegal, SetLegal : LegalChanged}
+
+        func InitValue(value : int) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        @cpp:Protected
+        @cpp:UserImpl
+        func 
+                  {
+                    if (textList.SelectedItemIndex != -1)
+                    {
+                      textBox.Text = textList.SelectedItemText;
+                    }
+                  }
+                (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+        {
+            raise "Not Implemented: \r\n                  {\r\n                    if (textList.SelectedItemIndex != -1)\r\n                    {\r\n                      textBox.Text = textList.SelectedItemText;\r\n                    }\r\n                  }\r\n                ";
+        }
+
+        new* ()
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(6/9)================================
+module <instance>gaclib_controls::SimpleFontDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class SimpleFontDialogWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::ISimpleFontDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::ISimpleFontDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::ISimpleFontDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(7/9)================================
 module <instance>gaclib_controls::MessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -264,7 +593,7 @@ namespace gaclib_controls
     }
 }
 
-================================(5/6)================================
+================================(8/9)================================
 module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -309,7 +638,7 @@ namespace gaclib_controls
     }
 }
 
-================================(6/6)================================
+================================(9/9)================================
 module <localized-strings>gaclib_controls::DialogStrings;
 
 namespace gaclib_controls
@@ -330,11 +659,15 @@ namespace gaclib_controls
 
         func Continue() : (::system::String);
 
+        func FontColorGroup() : (::system::String);
+
         func FontDialogTitle() : (::system::String);
 
-        func FontName() : (::system::String);
+        func FontEffectGroup() : (::system::String);
 
-        func FontSize() : (::system::String);
+        func FontNameGroup() : (::system::String);
+
+        func FontSizeGroup() : (::system::String);
 
         func Green() : (::system::String);
 
@@ -421,17 +754,27 @@ namespace gaclib_controls
                     return "Continue";
                 }
 
+                override func FontColorGroup() : (::system::String)
+                {
+                    return "Color:";
+                }
+
                 override func FontDialogTitle() : (::system::String)
                 {
                     return "Choose Font";
                 }
 
-                override func FontName() : (::system::String)
+                override func FontEffectGroup() : (::system::String)
+                {
+                    return "Effect:";
+                }
+
+                override func FontNameGroup() : (::system::String)
                 {
                     return "Font:";
                 }
 
-                override func FontSize() : (::system::String)
+                override func FontSizeGroup() : (::system::String)
                 {
                     return "Size:";
                 }

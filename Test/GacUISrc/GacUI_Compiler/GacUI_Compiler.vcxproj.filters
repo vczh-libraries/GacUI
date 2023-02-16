@@ -174,5 +174,8 @@
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\ColorDialog.xml">
       <Filter>Resource Files\Dialogs</Filter>
     </Xml>
+    <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\FontDialog.xml">
+      <Filter>Resource Files\Dialogs</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

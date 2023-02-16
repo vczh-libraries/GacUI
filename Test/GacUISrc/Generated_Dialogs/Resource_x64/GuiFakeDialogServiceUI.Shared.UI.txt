@@ -19,11 +19,15 @@ namespace gaclib_controls
 
         func Continue() : (::system::String);
 
+        func FontColorGroup() : (::system::String);
+
         func FontDialogTitle() : (::system::String);
 
-        func FontName() : (::system::String);
+        func FontEffectGroup() : (::system::String);
 
-        func FontSize() : (::system::String);
+        func FontNameGroup() : (::system::String);
+
+        func FontSizeGroup() : (::system::String);
 
         func Green() : (::system::String);
 
@@ -110,17 +114,27 @@ namespace gaclib_controls
                     return "Continue";
                 }
 
+                override func FontColorGroup() : (::system::String)
+                {
+                    return "Color:";
+                }
+
                 override func FontDialogTitle() : (::system::String)
                 {
                     return "Choose Font";
                 }
 
-                override func FontName() : (::system::String)
+                override func FontEffectGroup() : (::system::String)
+                {
+                    return "Effect:";
+                }
+
+                override func FontNameGroup() : (::system::String)
                 {
                     return "Font:";
                 }
 
-                override func FontSize() : (::system::String)
+                override func FontSizeGroup() : (::system::String)
                 {
                     return "Size:";
                 }
