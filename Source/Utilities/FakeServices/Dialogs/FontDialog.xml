@@ -33,16 +33,14 @@
             <Cell Site="row:1 column:0">
               <BindableTextList ref.Name="textList" ItemSource-eval="ViewModel.FontList" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <ev.SelectionChanged>
-                  <![CDATA[
+                <ev.SelectionChanged-eval><![CDATA[
                   {
                     if (textList.SelectedItemIndex != -1)
                     {
                       textBox.Text = textList.SelectedItemText;
                     }
                   }
-                ]]>
-                </ev.SelectionChanged>
+                ]]></ev.SelectionChanged-eval>
               </BindableTextList>
             </Cell>
           </Table>
@@ -94,14 +92,14 @@
             <Cell Site="row:1 column:0">
               <BindableTextList ref.Name="textList" ItemSource-eval="self.SizeList" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <ev.SelectionChanged><![CDATA[
+                <ev.SelectionChanged-eval><![CDATA[
                   {
                     if (textList.SelectedItemIndex != -1)
                     {
                       textBox.Text = textList.SelectedItemText;
                     }
                   }
-                ]]></ev.SelectionChanged>
+                ]]></ev.SelectionChanged-eval>
               </BindableTextList>
             </Cell>
           </Table>

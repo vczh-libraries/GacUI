@@ -1834,14 +1834,14 @@ namespace gaclib_controls
                 (textList.ItemSource = ViewModel.FontList);
             }
             {
-                attach(textList.SelectionChanged, [<this>.
-                  {
-                    if (textList.SelectedItemIndex != -1)
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((textList.SelectedItemIndex != (-1)))
                     {
-                      textBox.Text = textList.SelectedItemText;
+                        (textBox.Text = textList.SelectedItemText);
                     }
-                  }
-                ($1, $2)]);
+                };
+                attach(textList.SelectionChanged, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -2247,20 +2247,6 @@ namespace gaclib_controls
 
         prop ViewModel : presentation::ICommonFontDialogViewModel^{GetViewModel}
 
-        @cpp:Protected
-        @cpp:UserImpl
-        func 
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: \r\n                  {\r\n                    if (textList.SelectedItemIndex != -1)\r\n                    {\r\n                      textBox.Text = textList.SelectedItemText;\r\n                    }\r\n                  }\r\n                ";
-        }
-
         new* (<ctor-parameter>ViewModel : presentation::ICommonFontDialogViewModel^)
             :::presentation::controls::GuiCustomControl(::presentation::theme::ThemeName::CustomControl)
         {
@@ -2406,14 +2392,14 @@ namespace gaclib_controls
                 (textList.ItemSource = self.SizeList);
             }
             {
-                attach(textList.SelectionChanged, [<this>.
-                  {
-                    if (textList.SelectedItemIndex != -1)
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    if ((textList.SelectedItemIndex != (-1)))
                     {
-                      textBox.Text = textList.SelectedItemText;
+                        (textBox.Text = textList.SelectedItemText);
                     }
-                  }
-                ($1, $2)]);
+                };
+                attach(textList.SelectionChanged, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -2835,20 +2821,6 @@ namespace gaclib_controls
         event StringsChanged();
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
-        @cpp:Protected
-        @cpp:UserImpl
-        func 
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: \r\n                  {\r\n                    if (textList.SelectedItemIndex != -1)\r\n                    {\r\n                      textBox.Text = textList.SelectedItemText;\r\n                    }\r\n                  }\r\n                ";
-        }
 
         new* ()
             :::presentation::controls::GuiCustomControl(::presentation::theme::ThemeName::CustomControl)

@@ -162,14 +162,6 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
 				CLASS_MEMBER_BASE(::gaclib_controls::FontNameControlConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::FontNameControl*(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
-				CLASS_MEMBER_METHOD(
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                , { L"sender" _ L"arguments" })
 				CLASS_MEMBER_METHOD(GetLegal, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetValue, NO_PARAMETER)
@@ -211,14 +203,6 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiCustomControl)
 				CLASS_MEMBER_BASE(::gaclib_controls::FontSizeControlConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::FontSizeControl*(), NO_PARAMETER)
-				CLASS_MEMBER_METHOD(
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                , { L"sender" _ L"arguments" })
 				CLASS_MEMBER_METHOD(GetLegal, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetSizeList, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)

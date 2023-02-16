@@ -154,6 +154,21 @@ Closures
 
 	//-------------------------------------------------------------------
 
+	__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		if ((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint32_t>(1))))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
 	__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -240,6 +255,21 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		if ((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint32_t>(1))))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -665,46 +695,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const
-	{
-		return ::vl::__vwsn::This(__vwsn_this_)->
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (__vwsno_1, __vwsno_2);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const
-	{
-		return ::vl::__vwsn::This(__vwsn_this_)->
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (__vwsno_1, __vwsno_2);
 	}
 
 	//-------------------------------------------------------------------
@@ -3225,7 +3215,8 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetFontList())));
 		}
 		{
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textList)->SelectionChanged, vl::Func(::vl_workflow_global::__vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(__vwsn_this_, this)));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textList)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
@@ -3316,18 +3307,6 @@ Class (::gaclib_controls::FontNameControl)
 	{
 		return this->__vwsn_parameter_ViewModel;
 	}
-
-	void FontNameControl::
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
-	{/* USER_CONTENT_BEGIN(::gaclib_controls::FontNameControl) */
-		throw ::vl::Exception(L"You should implement this function.");
-	}/* USER_CONTENT_END() */
 
 	FontNameControl::FontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_ctor_parameter_ViewModel)
 		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
@@ -3427,7 +3406,8 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->GetSizeList()));
 		}
 		{
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textList)->SelectionChanged, vl::Func(::vl_workflow_global::__vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(__vwsn_this_, this)));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textList)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
@@ -3525,18 +3505,6 @@ Class (::gaclib_controls::FontSizeControl)
 			::vl::__vwsn::EventInvoke(this->StringsChanged)();
 		}
 	}
-
-	void FontSizeControl::
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments)
-	{/* USER_CONTENT_BEGIN(::gaclib_controls::FontSizeControl) */
-		throw ::vl::Exception(L"You should implement this function.");
-	}/* USER_CONTENT_END() */
 
 	FontSizeControl::FontSizeControl()
 		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
@@ -4222,3 +4190,10 @@ Class (::gaclib_controls::SimpleFontDialogWindow)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
+// UNUSED_USER_CONTENT:
+//	{/* USER_CONTENT_BEGIN(::gaclib_controls::FontNameControl) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */
+//	{/* USER_CONTENT_BEGIN(::gaclib_controls::FontSizeControl) */
+//		throw ::vl::Exception(L"You should implement this function.");
+//	}/* USER_CONTENT_END() */

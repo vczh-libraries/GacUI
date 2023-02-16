@@ -294,20 +294,6 @@ namespace gaclib_controls
 
         prop ViewModel : presentation::ICommonFontDialogViewModel^{GetViewModel}
 
-        @cpp:Protected
-        @cpp:UserImpl
-        func 
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: \r\n                  {\r\n                    if (textList.SelectedItemIndex != -1)\r\n                    {\r\n                      textBox.Text = textList.SelectedItemText;\r\n                    }\r\n                  }\r\n                ";
-        }
-
         new* (<ctor-parameter>ViewModel : presentation::ICommonFontDialogViewModel^)
             :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {
@@ -429,20 +415,6 @@ namespace gaclib_controls
         event StringsChanged();
 
         prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
-        @cpp:Protected
-        @cpp:UserImpl
-        func 
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-        {
-            raise "Not Implemented: \r\n                  {\r\n                    if (textList.SelectedItemIndex != -1)\r\n                    {\r\n                      textBox.Text = textList.SelectedItemText;\r\n                    }\r\n                  }\r\n                ";
-        }
 
         new* ()
             :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))

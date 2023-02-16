@@ -30,11 +30,13 @@ namespace vl_workflow_global
 	struct __vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_;
 	struct __vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_;
 	struct __vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_;
+	struct __vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 	struct __vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 	struct __vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 	struct __vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_;
 	struct __vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
+	struct __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 	struct __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 	struct __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 	struct __vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
@@ -59,8 +61,6 @@ namespace vl_workflow_global
 	struct __vwsnf7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_;
 	struct __vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_;
 	struct __vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_;
-	struct __vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
-	struct __vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 	class __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -309,11 +309,11 @@ namespace gaclib_controls
 		friend class ::vl_workflow_global::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
-		friend struct ::vl_workflow_global::__vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FontNameControlConstructor>;
 #endif
@@ -340,11 +340,11 @@ namespace gaclib_controls
 		friend class ::vl_workflow_global::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
-		friend struct ::vl_workflow_global::__vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FontNameControl>;
 #endif
@@ -364,21 +364,8 @@ namespace gaclib_controls
 		::vl::Event<void()> StringsChanged;
 		::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_parameter_ViewModel;
 		::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> GetViewModel();
-	protected:
-		void 
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments);
-	public:
 		FontNameControl(::vl::Ptr<::vl::presentation::ICommonFontDialogViewModel> __vwsn_ctor_parameter_ViewModel);
 		~FontNameControl();
-
-	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontNameControl) */
-	/* USER_CONTENT_END() */
 	};
 
 	class FontSizeControlConstructor : public ::vl::Object, public ::vl::reflection::Description<FontSizeControlConstructor>
@@ -387,12 +374,12 @@ namespace gaclib_controls
 		friend class ::vl_workflow_global::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
-		friend struct ::vl_workflow_global::__vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FontSizeControlConstructor>;
 #endif
@@ -418,12 +405,12 @@ namespace gaclib_controls
 		friend class ::vl_workflow_global::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription;
+		friend struct ::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
-		friend struct ::vl_workflow_global::__vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FontSizeControl>;
 #endif
@@ -444,21 +431,8 @@ namespace gaclib_controls
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);
 		::vl::Event<void()> StringsChanged;
-	protected:
-		void 
-                  {
-                    if (textList.SelectedItemIndex != -1)
-                    {
-                      textBox.Text = textList.SelectedItemText;
-                    }
-                  }
-                (::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments);
-	public:
 		FontSizeControl();
 		~FontSizeControl();
-
-	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontSizeControl) */
-	/* USER_CONTENT_END() */
 	};
 
 	class IDialogStringsStrings : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IDialogStringsStrings>
@@ -722,6 +696,15 @@ Closures
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
+	struct __vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_
+	{
+		::gaclib_controls::FontNameControlConstructor* __vwsnthis_0;
+
+		__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
 	struct __vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_
 	{
 		::gaclib_controls::FontNameControlConstructor* __vwsnthis_0;
@@ -765,6 +748,15 @@ Closures
 		__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+	};
+
+	struct __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_
+	{
+		::gaclib_controls::FontSizeControlConstructor* __vwsnthis_0;
+
+		__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0);
+
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_
@@ -981,26 +973,6 @@ Closures
 		__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0);
 
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
-	};
-
-	struct __vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_
-	{
-		::gaclib_controls::FontNameControl* __vwsn_this_;
-		::gaclib_controls::FontNameControlConstructor* __vwsnthis_0;
-
-		__vwsno16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const;
-	};
-
-	struct __vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_
-	{
-		::gaclib_controls::FontSizeControl* __vwsn_this_;
-		::gaclib_controls::FontSizeControlConstructor* __vwsnthis_0;
-
-		__vwsno21_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0);
-
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* __vwsno_1, ::vl::presentation::compositions::GuiEventArgs* __vwsno_2) const;
 	};
 
 	class __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
@@ -1549,3 +1521,13 @@ Closures
 #endif
 
 #endif
+// UNUSED_USER_CONTENT:
+//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontNameControl) */
+//	/* USER_CONTENT_END() */
+//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontSizeControl) */
+//	/* USER_CONTENT_END() */
+// UNUSED_USER_CONTENT:
+//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontNameControl) */
+//	/* USER_CONTENT_END() */
+//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontSizeControl) */
+//	/* USER_CONTENT_END() */
