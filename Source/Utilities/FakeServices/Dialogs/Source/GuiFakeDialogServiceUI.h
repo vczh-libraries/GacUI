@@ -328,6 +328,7 @@ namespace gaclib_controls
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		void __vwsn_gaclib_controls_FontNameControl_Initialize(::gaclib_controls::FontNameControl* __vwsn_this_);
 	public:
 		FontNameControlConstructor();
@@ -393,6 +394,7 @@ namespace gaclib_controls
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		void __vwsn_gaclib_controls_FontSizeControl_Initialize(::gaclib_controls::FontSizeControl* __vwsn_this_);
 	public:
 		FontSizeControlConstructor();
@@ -1521,11 +1523,6 @@ Closures
 #endif
 
 #endif
-// UNUSED_USER_CONTENT:
-//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontNameControl) */
-//	/* USER_CONTENT_END() */
-//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontSizeControl) */
-//	/* USER_CONTENT_END() */
 // UNUSED_USER_CONTENT:
 //	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontNameControl) */
 //	/* USER_CONTENT_END() */

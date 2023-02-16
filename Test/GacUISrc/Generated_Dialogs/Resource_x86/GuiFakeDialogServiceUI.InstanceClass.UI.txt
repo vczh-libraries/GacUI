@@ -1758,12 +1758,19 @@ namespace gaclib_controls
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         func <gaclib_controls-FontNameControl>Initialize(<this> : ::gaclib_controls::FontNameControl*) : (::system::Void)
         {
             (self = <this>);
             (ViewModel = <this>.ViewModel);
             {
                 (<precompile>0 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
+            }
+            (<precompile>6 = <precompile>0.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
             {
@@ -1773,7 +1780,7 @@ namespace gaclib_controls
                 (<precompile>1.BorderVisible = false);
             }
             {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -2317,11 +2324,18 @@ namespace gaclib_controls
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         func <gaclib_controls-FontSizeControl>Initialize(<this> : ::gaclib_controls::FontSizeControl*) : (::system::Void)
         {
             (self = <this>);
             {
                 (<precompile>0 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
+            }
+            (<precompile>6 = <precompile>0.BoundsComposition);
+            {
+                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
             {
@@ -2331,7 +2345,7 @@ namespace gaclib_controls
                 (<precompile>1.BorderVisible = false);
             }
             {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -2942,7 +2956,7 @@ namespace gaclib_controls
                 (<precompile>0.BorderVisible = false);
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 10; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));

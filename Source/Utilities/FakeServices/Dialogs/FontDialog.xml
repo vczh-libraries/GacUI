@@ -15,7 +15,8 @@
       ]]></ref.Members>
       <CustomControl ref.Name="self" Value-bind="textBox.Text" Legal-bind="not ViewModel.FontMustExist or ViewModel.FontList.IndexOf(textBox.Text) != -1">
         <GroupBox Text-str="FontNameGroup()">
-          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
               <_>composeType:MinSize</_>
               <_>composeType:Percentage percentage:1.0</_>
@@ -74,7 +75,8 @@
         ]]></ev.ValueChanged-eval>
 
         <GroupBox Text-str="FontSizeGroup()">
-          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <Table AlignmentToParent="left:5 top:5 right:5 bottom:5" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
             <att.Rows>
               <_>composeType:MinSize</_>
               <_>composeType:Percentage percentage:1.0</_>
@@ -127,7 +129,7 @@
           MinimizedBox="false"
           IconVisible="false"
           >
-        <Table AlignmentToParent="left:0 top:10 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
             <_>composeType:MinSize</_>

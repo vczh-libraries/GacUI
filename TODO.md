@@ -9,6 +9,7 @@
   - message box `ENTER` and `ESC` operation.
   - message box is not shown at the center.
   - test different message box options.
+  - unnecessary comments at the bottom in `GuiFakeDialogServiceUI.(h|cpp)`.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
