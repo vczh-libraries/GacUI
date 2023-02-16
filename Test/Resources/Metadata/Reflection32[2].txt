@@ -289,8 +289,10 @@ interface presentation::IColorDialogViewModel : presentation::IDialogConfirmatio
 
 interface presentation::ICommonFontDialogViewModel : system::Interface {
     property FontList : system::ReadonlyList<system::String>^ { get:GetFontList }
+    property FontMustExist : system::Boolean { get:GetFontMustExist }
 
     function GetFontList() : system::ReadonlyList<system::String>^;
+    function GetFontMustExist() : system::Boolean;
 
 }
 

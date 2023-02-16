@@ -79,6 +79,7 @@ View Models (FontDialog)
 		public:
 			using FontList = collections::List<WString>;
 
+			virtual bool					GetFontMustExist() = 0;
 			virtual const FontList&			GetFontList() = 0;
 		};
 
