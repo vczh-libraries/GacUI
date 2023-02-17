@@ -1547,8 +1547,3 @@ Closures
 #endif
 
 #endif
-// UNUSED_USER_CONTENT:
-//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontNameControl) */
-//	/* USER_CONTENT_END() */
-//	/* USER_CONTENT_BEGIN(custom members of ::gaclib_controls::FontSizeControl) */
-//	/* USER_CONTENT_END() */

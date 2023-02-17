@@ -11,7 +11,6 @@
   - test different message box options.
   - simple font dialog miss preview.
   - simple font dialog change size in text box cause caret jumps to the left.
-  - unnecessary comments at the bottom in `GuiFakeDialogServiceUI.(h|cpp)`.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.

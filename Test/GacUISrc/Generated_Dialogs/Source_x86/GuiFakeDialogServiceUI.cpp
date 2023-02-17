@@ -4240,10 +4240,3 @@ Class (::gaclib_controls::SimpleFontDialogWindow)
 #elif defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
-// UNUSED_USER_CONTENT:
-//	{/* USER_CONTENT_BEGIN(::gaclib_controls::FontNameControl) */
-//		throw ::vl::Exception(L"You should implement this function.");
-//	}/* USER_CONTENT_END() */
-//	{/* USER_CONTENT_BEGIN(::gaclib_controls::FontSizeControl) */
-//		throw ::vl::Exception(L"You should implement this function.");
-//	}/* USER_CONTENT_END() */
