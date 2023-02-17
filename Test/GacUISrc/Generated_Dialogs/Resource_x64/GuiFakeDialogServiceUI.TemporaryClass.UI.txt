@@ -261,6 +261,11 @@ namespace gaclib_controls
 
         prop Legal : bool{GetLegal, SetLegal : LegalChanged}
 
+        func UpdateSelectedIndex() : (void)
+        {
+            raise "Not Implemented";
+        }
+
         func InitValue(value : string) : (void)
         {
             raise "Not Implemented";
@@ -389,6 +394,11 @@ namespace gaclib_controls
         event LegalChanged();
 
         prop Legal : bool{GetLegal, SetLegal : LegalChanged}
+
+        func UpdateSelectedIndex() : (void)
+        {
+            raise "Not Implemented";
+        }
 
         func InitValue(value : int) : (void)
         {

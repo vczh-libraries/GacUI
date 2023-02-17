@@ -1838,6 +1838,9 @@ namespace gaclib_controls
                 self.AddChild(<precompile>0);
             }
             {
+                (textBox.Readonly = ViewModel.FontMustExist);
+            }
+            {
                 (textList.ItemSource = ViewModel.FontList);
             }
             {
@@ -1846,7 +1849,7 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    if ((textList.SelectedItemIndex != (-1)))
+                    if (((textList.SelectedItemIndex != (-1)) and (textBox.Text != textList.SelectedItemText)))
                     {
                         (textBox.Text = textList.SelectedItemText);
                     }
@@ -2073,6 +2076,13 @@ namespace gaclib_controls
                 <this>.AddSubscription(<created-subscription>);
             }
             {
+                var <event-handler> = func () : (::system::Void)
+                {
+                    self.UpdateSelectedIndex();
+                };
+                attach(self.ValueChanged, <event-handler>);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);
@@ -2221,15 +2231,21 @@ namespace gaclib_controls
 
         prop Legal : bool{GetLegal, SetLegal : LegalChanged}
 
-        func InitValue(value : string) : (void)
+        func UpdateSelectedIndex() : (void)
         {
-            (textBox.Text = value);
-            var index = ViewModel.FontList.IndexOf(value);
+            var index = ViewModel.FontList.IndexOf(Value);
             if ((index > (-1)))
             {
                 textList.SetSelected(index, true);
                 textList.EnsureItemVisible(index);
             }
+        }
+
+        func InitValue(value : string) : (void)
+        {
+            (textBox.Text = value);
+            textBox.Select({row : 0; column : 0;}, {row : 0; column : 0;});
+            UpdateSelectedIndex();
         }
 
         @cpp:Private
@@ -2419,7 +2435,7 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    if ((textList.SelectedItemIndex != (-1)))
+                    if (((textList.SelectedItemIndex != (-1)) and (textBox.Text != textList.SelectedItemText)))
                     {
                         (textBox.Text = textList.SelectedItemText);
                     }
@@ -2648,10 +2664,7 @@ namespace gaclib_controls
             {
                 var <event-handler> = func () : (::system::Void)
                 {
-                    if ((self.Value > 0))
-                    {
-                        (textBox.Text = (cast (string) self.Value));
-                    }
+                    self.UpdateSelectedIndex();
                 };
                 attach(self.ValueChanged, <event-handler>);
             }
@@ -2820,15 +2833,21 @@ namespace gaclib_controls
 
         prop Legal : bool{GetLegal, SetLegal : LegalChanged}
 
-        func InitValue(value : int) : (void)
+        func UpdateSelectedIndex() : (void)
         {
-            (textBox.Text = (cast (string) value));
-            var index = self.SizeList.IndexOf(value);
+            var index = self.SizeList.IndexOf(Value);
             if ((index > (-1)))
             {
                 textList.SetSelected(index, true);
                 textList.EnsureItemVisible(index);
             }
+        }
+
+        func InitValue(value : int) : (void)
+        {
+            (textBox.Text = (cast (string) value));
+            textBox.Select({row : 0; column : 0;}, {row : 0; column : 0;});
+            UpdateSelectedIndex();
         }
 
         @cpp:Private

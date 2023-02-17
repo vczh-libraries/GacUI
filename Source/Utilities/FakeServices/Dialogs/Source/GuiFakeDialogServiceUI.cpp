@@ -161,7 +161,7 @@ Closures
 
 	void __vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		if ((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))))
+		if (((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))) && (::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText() != ::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText())))
 		{
 			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
 		}
@@ -246,7 +246,19 @@ Closures
 	{
 	}
 
-	void __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateSelectedIndex();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -259,14 +271,14 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		if ((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))))
+		if (((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))) && (::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText() != ::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText())))
 		{
 			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
 		}
@@ -274,12 +286,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -292,12 +304,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
@@ -310,12 +322,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetLegal();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -328,27 +340,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()() const
-	{
-		if ((::vl::__vwsn::This(__vwsnthis_0->self)->GetValue() > static_cast<::vl::vint>(0)))
-		{
-			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::ToString(::vl::__vwsn::This(__vwsnthis_0->self)->GetValue()));
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()() const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateSelectedIndex();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -357,24 +366,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -414,6 +405,24 @@ Closures
 
 	void __vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -425,12 +434,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetFontFamily(::vl::__vwsn::This(__vwsnthis_0->nameControl)->GetValue());
@@ -440,12 +449,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -458,24 +467,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -488,12 +497,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -506,12 +515,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -524,12 +533,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->PerformAction();
 		::vl::__vwsn::This(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())->Close();
@@ -537,12 +546,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -551,24 +560,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::presentation::templates::GuiTemplate* __vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
-	{
-		{
-			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::IMessageBoxDialogAction>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
-			{
-				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::gaclib_controls::MessageBoxButtonTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>>(__vwsn_viewModel_)));
-			}
-		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
 	}
 
 	//-------------------------------------------------------------------
@@ -587,6 +578,24 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::presentation::templates::GuiTemplate* __vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const
+	{
+		{
+			if ([&](){ auto __vwsn_temp__ = __vwsn_viewModel_; return __vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::vl::presentation::IMessageBoxDialogAction>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			{
+				return static_cast<::vl::presentation::templates::GuiTemplate*>(new ::gaclib_controls::MessageBoxButtonTemplate(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>>(__vwsn_viewModel_)));
+			}
+		}
+		throw ::vl::Exception(::vl::WString::Unmanaged(L"Cannot find a matched control template to create."));
 	}
 
 	//-------------------------------------------------------------------
@@ -711,12 +720,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsno22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsno22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsno23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsno23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsno22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	::vl::WString __vwsno23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
 		return ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(__vwsno_1));
 	}
@@ -3240,6 +3249,9 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(this->__vwsn_precompile_0);
 		}
 		{
+			::vl::__vwsn::This(this->textBox)->SetReadonly(::vl::__vwsn::This(this->ViewModel.Obj())->GetFontMustExist());
+		}
+		{
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetFontList())));
 		}
 		{
@@ -3265,8 +3277,12 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->ValueChanged, __vwsn_event_handler_);
+		}
+		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -3316,15 +3332,21 @@ Class (::gaclib_controls::FontNameControl)
 		}
 	}
 
-	void FontNameControl::InitValue(const ::vl::WString& value)
+	void FontNameControl::UpdateSelectedIndex()
 	{
-		::vl::__vwsn::This(this->textBox)->SetText(value);
-		auto index = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFontList()).Obj())->IndexOf(::vl::__vwsn::Box(value));
+		auto index = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFontList()).Obj())->IndexOf(::vl::__vwsn::Box(this->GetValue()));
 		if ((index > (- static_cast<::vl::vint>(1))))
 		{
 			::vl::__vwsn::This(this->textList)->SetSelected(index, true);
 			::vl::__vwsn::This(this->textList)->EnsureItemVisible(index);
 		}
+	}
+
+	void FontNameControl::InitValue(const ::vl::WString& value)
+	{
+		::vl::__vwsn::This(this->textBox)->SetText(value);
+		::vl::__vwsn::This(this->textBox)->Select([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		this->UpdateSelectedIndex();
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> FontNameControl::GetStrings()
@@ -3447,34 +3469,34 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->GetSizeList()));
 		}
 		{
-			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno22_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textList)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->ValueChanged, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -3532,15 +3554,21 @@ Class (::gaclib_controls::FontSizeControl)
 		}
 	}
 
-	void FontSizeControl::InitValue(::vl::vint value)
+	void FontSizeControl::UpdateSelectedIndex()
 	{
-		::vl::__vwsn::This(this->textBox)->SetText(::vl::__vwsn::ToString(value));
-		auto index = ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetSizeList().Obj())->IndexOf(::vl::__vwsn::Box(value));
+		auto index = ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetSizeList().Obj())->IndexOf(::vl::__vwsn::Box(this->GetValue()));
 		if ((index > (- static_cast<::vl::vint>(1))))
 		{
 			::vl::__vwsn::This(this->textList)->SetSelected(index, true);
 			::vl::__vwsn::This(this->textList)->EnsureItemVisible(index);
 		}
+	}
+
+	void FontSizeControl::InitValue(::vl::vint value)
+	{
+		::vl::__vwsn::This(this->textBox)->SetText(::vl::__vwsn::ToString(value));
+		::vl::__vwsn::This(this->textBox)->Select([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		this->UpdateSelectedIndex();
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> FontSizeControl::GetStrings()
@@ -3604,16 +3632,16 @@ Class (::gaclib_controls::MessageBoxButtonTemplateConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -3890,7 +3918,7 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		}
 		(this->__vwsn_precompile_16 = new ::vl::presentation::compositions::GuiRepeatStackComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetPadding(static_cast<::vl::vint>(5));
@@ -4128,35 +4156,35 @@ Class (::gaclib_controls::SimpleFontDialogWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_8)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_11)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc24_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
