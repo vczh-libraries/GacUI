@@ -9,7 +9,7 @@
   - message box `ENTER` and `ESC` operation.
   - message box is not shown at the center.
   - test different message box options.
-  - simple font dialog miss preview.
+  - test different file dialog options.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.

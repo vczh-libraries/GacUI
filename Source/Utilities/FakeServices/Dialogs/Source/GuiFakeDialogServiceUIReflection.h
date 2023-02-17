@@ -102,6 +102,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontNameGroup);
 				}
+				::vl::WString FontPreviewGroup() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontPreviewGroup);
+				}
 				::vl::WString FontSizeGroup() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontSizeGroup);

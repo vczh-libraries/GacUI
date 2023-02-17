@@ -146,7 +146,7 @@
       <Window
           ref.Name = "self"
           Text-str="FontDialogTitle()"
-          ClientSize="x:360 y:240"
+          ClientSize="x:360 y:360"
           ShowInTaskBar="false"
           MaximizedBox="false"
           MinimizedBox="false"
@@ -155,6 +155,7 @@
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
@@ -187,7 +188,45 @@
             </Table>
           </Cell>
 
-          <Cell Site="row:1 column:1">
+          <Cell Site="row:1 column:0 rowSpan:1 columnSpan:3" PreferredMinSize="y:48">
+            <GroupBox Text-str="FontPreviewGroup()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Columns>
+            
+                <Cell Site="row:1 column:1">
+                  <Label Text="ABCxyz">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    <att.Font-bind><![CDATA[
+                      let defaultFont = INativeController::GetCurrentController().ResourceService().DefaultFont in ({
+                        fontFamily:        ( ViewModel.FontList.Contains(nameControl.Value)
+                                             ? nameControl.Value
+                                             : defaultFont.fontFamily
+                                           )
+                        size:              ( sizeControl.Value > 0
+                                             ? sizeControl.Value
+                                             : defaultFont.size
+                                           )
+                        antialias:         true
+                        verticalAntialias: true
+                      })
+                    ]]></att.Font-bind>
+                  </Label>
+                </Cell>
+              </Table>
+            </GroupBox>
+          </Cell>
+
+          <Cell Site="row:2 column:1">
             <Button Text-str="OK()" Enabled-bind="nameControl.Legal and sizeControl.Legal">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
@@ -201,7 +240,7 @@
             </Button>
           </Cell>
 
-          <Cell Site="row:1 column:2">
+          <Cell Site="row:2 column:2">
             <Button Text-str="Cancel()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval>

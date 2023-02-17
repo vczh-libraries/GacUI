@@ -27,6 +27,8 @@ namespace gaclib_controls
 
         func FontNameGroup() : (::system::String);
 
+        func FontPreviewGroup() : (::system::String);
+
         func FontSizeGroup() : (::system::String);
 
         func Green() : (::system::String);
@@ -132,6 +134,11 @@ namespace gaclib_controls
                 override func FontNameGroup() : (::system::String)
                 {
                     return "Font:";
+                }
+
+                override func FontPreviewGroup() : (::system::String)
+                {
+                    return "Preview:";
                 }
 
                 override func FontSizeGroup() : (::system::String)
