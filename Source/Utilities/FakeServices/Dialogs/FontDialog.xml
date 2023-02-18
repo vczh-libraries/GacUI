@@ -286,7 +286,6 @@
             <_>composeType:Percentage percentage:1.0</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
             <_>composeType:Percentage percentage:1.0</_>
@@ -298,6 +297,7 @@
             <Table AlignmentToParent="left:0 top:10 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
               <att.Rows>
                 <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
                 <_>composeType:MinSize</_>
               </att.Rows>
               <att.Columns>
@@ -329,19 +329,26 @@
                   </Stack>
                 </GroupBox>
               </Cell>
+
+              <Cell Site="row:2 column:1">
+                <GroupBox Text-str="FontColorGroup()">
+                  <ComboButton ref.Name="comboColor">
+                    <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5" PreferredMinSize="x:80 y:30"/>
+                    <att.ContainerComposition-set>
+                      <SolidBackground Color-bind="colorControl.Value"/>
+                    </att.ContainerComposition-set>
+                    <att.DropdownControl>
+                      <g:ColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
+                        <att.BoundsComposition-set PreferredMinSize="x:320 y:64"/>
+                      </g:ColorDialogControl>
+                    </att.DropdownControl>
+                  </ComboButton>
+                </GroupBox>
+              </Cell>
             </Table>
           </Cell>
 
           <Cell Site="row:1 column:0 rowSpan:1 columnSpan:3" PreferredMinSize="y:48">
-            <GroupBox Text-str="FontColorGroup()">
-              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <g:ColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
-                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-              </g:ColorDialogControl>
-            </GroupBox>
-          </Cell>
-
-          <Cell Site="row:2 column:0 rowSpan:1 columnSpan:3" PreferredMinSize="y:48">
             <GroupBox Text-str="FontPreviewGroup()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
@@ -382,7 +389,7 @@
             </GroupBox>
           </Cell>
 
-          <Cell Site="row:3 column:1">
+          <Cell Site="row:2 column:1">
             <Button Text-str="OK()" Enabled-bind="nameControl.Legal and sizeControl.Legal">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
@@ -404,7 +411,7 @@
             </Button>
           </Cell>
 
-          <Cell Site="row:3 column:2">
+          <Cell Site="row:2 column:2">
             <Button Text-str="Cancel()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval>
