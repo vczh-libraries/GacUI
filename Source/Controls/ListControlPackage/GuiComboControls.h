@@ -49,10 +49,6 @@ ComboBox with GuiControl
 			{
 			protected:
 				GuiControl*									dropdownControl = nullptr;
-				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
-
-				void										AdoptSubMenuSize();
-				void										OnDropdownControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 
 			public:
 				/// <summary>Create a control with a specified default theme and a control that will be put in the popup control.</summary>

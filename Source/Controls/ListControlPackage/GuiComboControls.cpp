@@ -49,49 +49,16 @@ GuiComboBoxBase
 GuiComboButton
 ***********************************************************************/
 
-			void GuiComboButton::AdoptSubMenuSize()
-			{
-				//if (auto subMenu = GetSubMenu())
-				//{
-				//	Size expectedSize(0, GetDisplayFont().size * 20);
-				//	Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
-				//
-				//	Size clientSize = GetPreferredMenuClientSize();
-				//	clientSize.y = adoptedSize.y + subMenu->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
-				//	SetPreferredMenuClientSize(clientSize);
-				//
-				//	if (GetSubMenuOpening())
-				//	{
-				//		subMenu->SetClientSize(clientSize);
-				//	}
-				//}
-			}
-
-			void GuiComboButton::OnDropdownControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				//auto flag = GetDisposedFlag();
-				//GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
-				//{
-				//	if (!flag->IsDisposed())
-				//	{
-				//		AdoptSubMenuSize();
-				//	}
-				//});
-			}
-
 			GuiComboButton::GuiComboButton(theme::ThemeName themeName, GuiControl* _dropdownControl)
 				:GuiComboBoxBase(themeName)
 				, dropdownControl(_dropdownControl)
 			{
-				boundsChangedHandler = dropdownControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboButton::OnDropdownControlBoundsChanged);
 				dropdownControl->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				GetSubMenu()->GetContainerComposition()->AddChild(dropdownControl->GetBoundsComposition());
 			}
 
 			GuiComboButton::~GuiComboButton()
 			{
-				dropdownControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
-				boundsChangedHandler = nullptr;
 			}
 
 /***********************************************************************
