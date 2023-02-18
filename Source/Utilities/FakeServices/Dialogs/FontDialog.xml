@@ -275,7 +275,7 @@
       <Window
           ref.Name = "self"
           Text-str="FontDialogTitle()"
-          ClientSize="x:360 y:360"
+          ClientSize="x:360 y:480"
           ShowInTaskBar="false"
           MaximizedBox="false"
           MinimizedBox="false"
@@ -336,7 +336,7 @@
             <GroupBox Text-str="FontColorGroup()">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <g:ColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
               </g:ColorDialogControl>
             </GroupBox>
           </Cell>

@@ -3153,7 +3153,7 @@ namespace gaclib_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 360; y : 360;} of (::presentation::Size));
+                (self.ClientSize = {x : 360; y : 480;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
@@ -3335,7 +3335,7 @@ namespace gaclib_controls
             (colorControl = new (::gaclib_controls::ColorDialogControl*)(ViewModel));
             (<precompile>18 = colorControl.BoundsComposition);
             {
-                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>18.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 <precompile>17.AddChild(colorControl);
