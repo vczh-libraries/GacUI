@@ -15,6 +15,9 @@ namespace vl
 {
 	namespace presentation
 	{
+		/// <summary>
+		/// A general <see cref="INativeCallbackService/> implementation.
+		/// </summary>
 		class SharedCallbackService
 			: public Object
 			, public INativeCallbackService

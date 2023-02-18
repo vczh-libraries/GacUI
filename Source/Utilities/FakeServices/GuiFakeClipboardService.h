@@ -18,6 +18,9 @@ namespace vl
 		class FakeClipboardReader;
 		class FakeClipboardWriter;
 
+		/// <summary>
+		/// An <see cref="INativeClipboardService"/> implementation that interchange objects only in the current process.
+		/// </summary>
 		class FakeClipboardService
 			: public Object
 			, public INativeClipboardService

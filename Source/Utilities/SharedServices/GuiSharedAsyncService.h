@@ -15,6 +15,9 @@ namespace vl
 {
 	namespace presentation
 	{
+		/// <summary>
+		/// A general <see cref="INativeAsyncService/> implementation.
+		/// </summary>
 		class SharedAsyncService : public INativeAsyncService
 		{
 		protected:
