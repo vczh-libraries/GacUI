@@ -382,6 +382,7 @@ Type List (Controls)
 			F(presentation::controls::GuiVirtualTreeView)\
 			F(presentation::controls::GuiTreeView)\
 			F(presentation::controls::GuiComboBoxBase)\
+			F(presentation::controls::GuiComboButton)\
 			F(presentation::controls::GuiComboBoxListControl)\
 			F(presentation::controls::GuiToolstripMenu)\
 			F(presentation::controls::GuiToolstripMenuBar)\

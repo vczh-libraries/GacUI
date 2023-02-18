@@ -34,6 +34,59 @@ namespace vl
 			}
 
 /***********************************************************************
+GuiComboButtonInstanceLoader
+***********************************************************************/
+
+#define BASE_TYPE GuiTemplateControlInstanceLoader<GuiComboButton>
+			class GuiComboButtonInstanceLoader : public BASE_TYPE
+			{
+			protected:
+				GlobalStringKey						_DropdownControl;
+
+				void AddAdditionalArguments(types::ResolvingResult& resolvingResult, const TypeInfo& typeInfo, GlobalStringKey variableName, ArgumentMap& arguments, GuiResourceError::List& errors, Ptr<WfNewClassExpression> createControl)override
+				{
+					vint indexListControl = arguments.Keys().IndexOf(_DropdownControl);
+					if (indexListControl != -1)
+					{
+						createControl->arguments.Add(arguments.GetByIndex(indexListControl)[0].expression);
+					}
+				}
+			public:
+				GuiComboButtonInstanceLoader()
+					:BASE_TYPE(L"presentation::controls::GuiComboButton", theme::ThemeName::ComboBox)
+				{
+					_DropdownControl = GlobalStringKey::Get(L"DropdownControl");
+				}
+
+				void GetRequiredPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					if (CanCreate(typeInfo))
+					{
+						propertyNames.Add(_DropdownControl);
+					}
+					BASE_TYPE::GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
+				}
+
+				void GetPropertyNames(GuiResourcePrecompileContext& precompileContext, const TypeInfo& typeInfo, collections::List<GlobalStringKey>& propertyNames)override
+				{
+					GetRequiredPropertyNames(precompileContext, typeInfo, propertyNames);
+					BASE_TYPE::GetPropertyNames(precompileContext, typeInfo, propertyNames);
+				}
+
+				Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
+				{
+					if (propertyInfo.propertyName == _DropdownControl)
+					{
+						auto info = GuiInstancePropertyInfo::Assign(TypeInfoRetriver<GuiControl*>::CreateTypeInfo());
+						info->usage = GuiInstancePropertyInfo::ConstructorArgument;
+						return info;
+					}
+					return BASE_TYPE::GetPropertyType(precompileContext, propertyInfo);
+				}
+			};
+#undef BASE_TYPE
+
+/***********************************************************************
 GuiComboBoxInstanceLoader
 ***********************************************************************/
 
@@ -421,6 +474,7 @@ Initialization
 					Ptr(new GuiComboBoxInstanceLoader)
 					);
 
+				manager->SetLoader(Ptr(new GuiComboButtonInstanceLoader));
 				manager->SetLoader(Ptr(new GuiTreeViewInstanceLoader));
 				manager->SetLoader(Ptr(new GuiBindableTreeViewInstanceLoader));
 				manager->SetLoader(Ptr(new GuiBindableDataGridInstanceLoader));

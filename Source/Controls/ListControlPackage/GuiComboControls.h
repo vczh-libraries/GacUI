@@ -39,6 +39,30 @@ ComboBox Base
 			};
 
 /***********************************************************************
+ComboBox with GuiControl
+***********************************************************************/
+
+			/// <summary>Combo box control. This control is a combo box with a control in its popup.</summary>
+			class GuiComboButton
+				: public GuiComboBoxBase
+				, public Description<GuiComboButton>
+			{
+			protected:
+				GuiControl*									dropdownControl = nullptr;
+				Ptr<compositions::IGuiGraphicsEventHandler>	boundsChangedHandler;
+
+				void										AdoptSubMenuSize();
+				void										OnDropdownControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+
+			public:
+				/// <summary>Create a control with a specified default theme and a control that will be put in the popup control.</summary>
+				/// <param name="themeName">The theme name for retriving a default control template.</param>
+				/// <param name="_dropdownControl">The contained control.</param>
+				GuiComboButton(theme::ThemeName themeName, GuiControl* _dropdownControl);
+				~GuiComboButton();
+			};
+
+/***********************************************************************
 ComboBox with GuiListControl
 ***********************************************************************/
 
@@ -82,7 +106,7 @@ ComboBox with GuiListControl
 			public:
 				/// <summary>Create a control with a specified default theme and a list control that will be put in the popup control to show all items.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
-				/// <param name="_containedListControl">The list controller.</param>
+				/// <param name="_containedListControl">The list control.</param>
 				GuiComboBoxListControl(theme::ThemeName themeName, GuiSelectableListControl* _containedListControl);
 				~GuiComboBoxListControl();
 				

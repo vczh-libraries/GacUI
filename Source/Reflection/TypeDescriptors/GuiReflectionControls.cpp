@@ -1093,6 +1093,11 @@ Type Declaration (Class)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiComboBoxBase)
 			END_CLASS_MEMBER(GuiComboBoxBase)
 
+			BEGIN_CLASS_MEMBER(GuiComboButton)
+				CLASS_MEMBER_BASE(GuiComboBoxBase)
+				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiComboButton, GuiControl*, dropdownControl)
+			END_CLASS_MEMBER(GuiComboButton)
+
 			BEGIN_CLASS_MEMBER(GuiComboBoxListControl)
 				CLASS_MEMBER_BASE(GuiComboBoxBase)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE_INHERITANCE_2(GuiComboBoxListControl, GuiSelectableListControl*, containedListControl)

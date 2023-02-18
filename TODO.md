@@ -13,6 +13,8 @@
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
+- ~~<ComboButton/>~~
+- Add document for `<ComboButton/>` and its `DropdownControl` property.
 - Theme
   - Add HostedWindow theme.
   - `INativeWindow` add callback for state changing.
