@@ -44,6 +44,8 @@
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
       <ref.Members><![CDATA[
+        prop Value : Color = cast Color #FFFFFF {}
+
         func ReadColor() : Color
         {
           return {
@@ -53,7 +55,7 @@
           };
         }
       ]]></ref.Members>
-      <CustomControl ref.Name="self">
+      <CustomControl ref.Name="self" Value-bind="self.observe as c(c.ReadColor() on c.colorRed.ValueChanged, c.colorGreen.ValueChanged, c.colorBlue.ValueChanged)">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -96,7 +98,7 @@
           </Cell>
 
           <Cell Site="row:3 column:1" PreferredMinSize="x:256">
-            <SolidBackground Color-bind="self.observe as c(c.ReadColor() on c.colorRed.ValueChanged, c.colorGreen.ValueChanged, c.colorBlue.ValueChanged)"/>
+            <SolidBackground Color-bind="self.Value"/>
           </Cell>
         </Table>
       </CustomControl>
@@ -139,7 +141,7 @@
               <ev.Clicked-eval><![CDATA[
                 {
                   ViewModel.Confirmed = true;
-                  ViewModel.Color = colorControl.ReadColor();
+                  ViewModel.Color = colorControl.Value;
                   self.Close();
                 }
               ]]></ev.Clicked-eval>

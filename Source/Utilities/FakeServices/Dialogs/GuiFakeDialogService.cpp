@@ -28,7 +28,7 @@ FakeDialogService
 
 		controls::GuiWindow* FakeDialogService::CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return new gaclib_controls::FullFontDialogWindow(viewModel);
 		}
 
 

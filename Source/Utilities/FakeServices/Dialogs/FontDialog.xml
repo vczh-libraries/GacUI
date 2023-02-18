@@ -256,4 +256,168 @@
       </Window>
     </Instance>
   </Instance>
+
+  <Instance name="FullFontDialogWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FullFontDialogWindow" xmlns:g="gaclib_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IFullFontDialogViewModel"/>
+      <ref.Ctor><![CDATA[
+        {
+          nameControl.InitValue(ViewModel.Font.fontFamily);
+          sizeControl.InitValue(ViewModel.Font.fontSize);
+          checkBold.Selected = ViewModel.Font.bold;
+          checkItalic.Selected = ViewModel.Font.italic;
+          checkUnderline.Selected = ViewModel.Font.underline;
+          checkHAA.Selected = ViewModel.Font.antialias;
+          checkVAA.Selected = ViewModel.Font.verticalAntialias;
+        }
+      ]]></ref.Ctor>
+      <Window
+          ref.Name = "self"
+          Text-str="FontDialogTitle()"
+          ClientSize="x:360 y:360"
+          ShowInTaskBar="false"
+          MaximizedBox="false"
+          MinimizedBox="false"
+          IconVisible="false"
+          >
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0 rowSpan:1 columnSpan:3">
+            <Table AlignmentToParent="left:0 top:10 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:MinSize</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Percentage percentage:0.5</_>
+                <_>composeType:Percentage percentage:0.5</_>
+              </att.Columns>
+            
+              <Cell Site="row:0 column:0 rowSpan:2 columnSpan:1">
+                <g:FontNameControl ref.Name="nameControl" ViewModel-eval="ViewModel">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </g:FontNameControl>
+              </Cell>
+
+              <Cell Site="row:0 column:1">
+                <g:FontSizeControl ref.Name="sizeControl">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </g:FontSizeControl>
+              </Cell>
+
+              <Cell Site="row:1 column:1">
+                <GroupBox Text-str="FontEffectGroup()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                    <StackItem><CheckBox ref.Name="checkBold" Text-str="Bold()"/></StackItem>
+                    <StackItem><CheckBox ref.Name="checkItalic" Text-str="Italic()"/></StackItem>
+                    <StackItem><CheckBox ref.Name="checkUnderline" Text-str="Underline()"/></StackItem>
+                    <StackItem><CheckBox ref.Name="checkHAA" Text-str="HAA()"/></StackItem>
+                    <StackItem><CheckBox ref.Name="checkVAA" Text-str="VAA()"/></StackItem>
+                  </Stack>
+                </GroupBox>
+              </Cell>
+            </Table>
+          </Cell>
+
+          <Cell Site="row:1 column:0 rowSpan:1 columnSpan:3" PreferredMinSize="y:48">
+            <GroupBox Text-str="FontColorGroup()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <g:ColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              </g:ColorDialogControl>
+            </GroupBox>
+          </Cell>
+
+          <Cell Site="row:2 column:0 rowSpan:1 columnSpan:3" PreferredMinSize="y:48">
+            <GroupBox Text-str="FontPreviewGroup()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren">
+                <att.Rows>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Rows>
+                <att.Columns>
+                  <_>composeType:Percentage percentage:1.0</_>
+                  <_>composeType:MinSize</_>
+                  <_>composeType:Percentage percentage:1.0</_>
+                </att.Columns>
+            
+                <Cell Site="row:1 column:1">
+                  <Label Text="ABCxyz">
+                    <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                    <att.Font-bind><![CDATA[
+                      let defaultFont = INativeController::GetCurrentController().ResourceService().DefaultFont in ({
+                        fontFamily:        ( ViewModel.FontList.Contains(nameControl.Value)
+                                             ? nameControl.Value
+                                             : defaultFont.fontFamily
+                                           )
+                        size:              ( sizeControl.Value > 0
+                                             ? sizeControl.Value
+                                             : defaultFont.size
+                                           )
+                        bold:              checkBold.Selected
+                        italic:            checkItalic.Selected
+                        underline:         checkUnderline.Selected
+                        antialias:         checkHAA.Selected
+                        verticalAntialias: checkVAA.Selected
+                      })
+                    ]]></att.Font-bind>
+                  </Label>
+                </Cell>
+              </Table>
+            </GroupBox>
+          </Cell>
+
+          <Cell Site="row:3 column:1">
+            <Button Text-str="OK()" Enabled-bind="nameControl.Legal and sizeControl.Legal">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
+              <ev.Clicked-eval><![CDATA[
+                {
+                  ViewModel.Confirmed = true;
+                  ViewModel.Font = {
+                    fontFamily:        nameControl.Value
+                    size:              sizeControl.Value
+                    bold:              checkBold.Selected
+                    italic:            checkItalic.Selected
+                    underline:         checkUnderline.Selected
+                    antialias:         checkHAA.Selected
+                    verticalAntialias: checkVAA.Selected
+                  };
+                  ViewModel.Color = colorControl.Value;
+                  self.Close();
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:3 column:2">
+            <Button Text-str="Cancel()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  self.Close();
+                }
+              ]]>
+              </ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
 </Folder>
