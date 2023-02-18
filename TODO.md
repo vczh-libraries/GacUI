@@ -10,6 +10,7 @@
   - message box is not shown at the center.
   - test different message box options.
   - test different file dialog options.
+  - full font dialog crashes if it is closed before using the color picker.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
@@ -47,6 +48,8 @@
     - Dialog
 - Remove SysKey callbacks, merge into Key callbacks.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
+- Add new tutorial to use `FakeDialogService`.
+- Add new tutorial to use `FakeDialogServiceBase`.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh

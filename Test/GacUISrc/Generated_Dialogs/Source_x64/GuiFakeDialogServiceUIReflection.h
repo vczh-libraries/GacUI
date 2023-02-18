@@ -92,6 +92,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontColorGroup);
 				}
+				::vl::WString FontColorGroup2() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontColorGroup2);
+				}
 				::vl::WString FontDialogTitle() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FontDialogTitle);

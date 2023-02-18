@@ -41,6 +41,7 @@
         <String Name="FontSizeGroup" Text="Size:"/>
         <String Name="FontEffectGroup" Text="Effect:"/>
         <String Name="FontColorGroup" Text="Color:"/>
+        <String Name="FontColorGroup2" Text="Pick a Color:"/>
         <String Name="FontPreviewGroup" Text="Preview:"/>
         <String Name="Bold" Text="Bold"/>
         <String Name="Italic" Text="Italic"/>

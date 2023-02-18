@@ -305,7 +305,7 @@
                 <_>composeType:Percentage percentage:0.5</_>
               </att.Columns>
             
-              <Cell Site="row:0 column:0 rowSpan:2 columnSpan:1">
+              <Cell Site="row:0 column:0 rowSpan:3 columnSpan:1">
                 <g:FontNameControl ref.Name="nameControl" ViewModel-eval="ViewModel">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 </g:FontNameControl>
@@ -332,15 +332,20 @@
 
               <Cell Site="row:2 column:1">
                 <GroupBox Text-str="FontColorGroup()">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <ComboButton ref.Name="comboColor">
-                    <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5" PreferredMinSize="x:80 y:30"/>
+                    <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5" PreferredMinSize="x:80 y:24"/>
                     <att.ContainerComposition-set>
-                      <SolidBackground Color-bind="colorControl.Value"/>
+                      <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
+                        <SolidBackground Color-bind="colorControl.Value"/>
+                      </Bounds>
                     </att.ContainerComposition-set>
                     <att.DropdownControl>
-                      <g:ColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
-                        <att.BoundsComposition-set PreferredMinSize="x:320 y:64"/>
-                      </g:ColorDialogControl>
+                      <GroupBox Text-str="FontColorGroup2()">
+                        <g:ColorDialogControl ref.Name="colorControl" ViewModel-eval="ViewModel">
+                          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:320 y:64"/>
+                        </g:ColorDialogControl>
+                      </GroupBox>
                     </att.DropdownControl>
                   </ComboButton>
                 </GroupBox>

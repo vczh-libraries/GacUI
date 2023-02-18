@@ -21,6 +21,8 @@ namespace gaclib_controls
 
         func FontColorGroup() : (::system::String);
 
+        func FontColorGroup2() : (::system::String);
+
         func FontDialogTitle() : (::system::String);
 
         func FontEffectGroup() : (::system::String);
@@ -119,6 +121,11 @@ namespace gaclib_controls
                 override func FontColorGroup() : (::system::String)
                 {
                     return "Color:";
+                }
+
+                override func FontColorGroup2() : (::system::String)
+                {
+                    return "Pick a Color:";
                 }
 
                 override func FontDialogTitle() : (::system::String)
