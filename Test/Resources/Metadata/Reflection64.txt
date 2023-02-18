@@ -2021,6 +2021,10 @@ class presentation::controls::GuiComboBoxListControl : presentation::controls::G
     constructor (themeName : presentation::theme::ThemeName, containedListControl : presentation::controls::GuiSelectableListControl*) : presentation::controls::GuiComboBoxListControl*;
 }
 
+class presentation::controls::GuiComboButton : presentation::controls::GuiComboBoxBase {
+    constructor (themeName : presentation::theme::ThemeName, dropdownControl : presentation::controls::GuiControl*) : presentation::controls::GuiComboButton*;
+}
+
 class presentation::controls::GuiComponent : system::ReferenceType {
 }
 
