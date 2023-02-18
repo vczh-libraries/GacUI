@@ -8,9 +8,7 @@
   - message box default button.
   - message box `ENTER` and `ESC` operation.
   - message box is not shown at the center.
-  - test different message box options.
-  - test different file dialog options.
-  - full font dialog crashes if it is closed before using the color picker.
+  - New tab on `FullControlTest` to show options of dialogs.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
@@ -48,8 +46,8 @@
     - Dialog
 - Remove SysKey callbacks, merge into Key callbacks.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
-- Add new tutorial to use `FakeDialogService`.
-- Add new tutorial to use `FakeDialogServiceBase`.
+- Add new tutorial to use `FakeDialogService` based on `FullControlTest`'s new tab.
+- Add new tutorial to use `FakeDialogServiceBase` based on `FullControlTest`'s new tab.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh

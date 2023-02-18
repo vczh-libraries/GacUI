@@ -566,8 +566,11 @@ WindowManager
 							child->parent = parent;
 						}
 
-						CopyFrom(parent->children, window->children, true);
-						parent->children.Remove(window);
+						if (parent)
+						{
+							CopyFrom(parent->children, window->children, true);
+							parent->children.Remove(window);
+						}
 						window->parent = nullptr;
 						window->children.Clear();
 					}
