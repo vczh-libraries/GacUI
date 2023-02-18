@@ -153,7 +153,7 @@ namespace gaclib_controls
 
                 override func HAA() : (::system::String)
                 {
-                    return "Horizontally Antialias";
+                    return "Horizontal Antialias";
                 }
 
                 override func Ignore() : (::system::String)
@@ -198,7 +198,7 @@ namespace gaclib_controls
 
                 override func VAA() : (::system::String)
                 {
-                    return "Vertically Antialias";
+                    return "Vertical Antialias";
                 }
 
                 override func Yes() : (::system::String)

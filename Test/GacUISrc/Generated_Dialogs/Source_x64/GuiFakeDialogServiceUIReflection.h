@@ -47,6 +47,8 @@ namespace vl
 			DECL_TYPE_INFO(::gaclib_controls::FontNameControlConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::FontSizeControl)
 			DECL_TYPE_INFO(::gaclib_controls::FontSizeControlConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::FullFontDialogWindow)
+			DECL_TYPE_INFO(::gaclib_controls::FullFontDialogWindowConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::IDialogStringsStrings)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButtonTemplate)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButtonTemplateConstructor)

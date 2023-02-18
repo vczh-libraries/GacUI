@@ -44,7 +44,7 @@
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="ViewModel" Class="presentation::IColorDialogViewModel"/>
       <ref.Members><![CDATA[
-        prop Value : Color = cast Color #FFFFFF {}
+        prop Value : Color = cast Color "#FFFFFF" {}
 
         func ReadColor() : Color
         {

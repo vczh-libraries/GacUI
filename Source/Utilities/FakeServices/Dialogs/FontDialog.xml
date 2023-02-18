@@ -264,7 +264,7 @@
       <ref.Ctor><![CDATA[
         {
           nameControl.InitValue(ViewModel.Font.fontFamily);
-          sizeControl.InitValue(ViewModel.Font.fontSize);
+          sizeControl.InitValue(ViewModel.Font.size);
           checkBold.Selected = ViewModel.Font.bold;
           checkItalic.Selected = ViewModel.Font.italic;
           checkUnderline.Selected = ViewModel.Font.underline;
