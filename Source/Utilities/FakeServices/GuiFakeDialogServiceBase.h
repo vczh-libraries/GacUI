@@ -274,7 +274,7 @@ View Models (FileDialog)
 			/// Get all sub folders of this folder.
 			/// </summary>
 			/// <returns>All sub folders.</returns>
-			virtual const Folders&			GetFolders() = 0;
+			virtual Folders&				GetFolders() = 0;
 		};
 
 		/// <summary>
@@ -397,7 +397,7 @@ View Models (FileDialog)
 			/// Get all folders and files in the selected folder.
 			/// </summary>
 			/// <returns>All folders and files to display.</returns>
-			virtual const Files&			GetFiles() = 0;
+			virtual Files&					GetFiles() = 0;
 			/// <summary>
 			/// Refresh the folders and files list.
 			/// </summary>

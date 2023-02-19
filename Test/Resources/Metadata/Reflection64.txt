@@ -148,6 +148,20 @@ class presentation::DocumentTextRun : presentation::DocumentContentRun {
 }
 
 @ValueType
+enum presentation::FileDialogFileType {
+    File = 2,
+    Folder = 1,
+    Placeholder = 0,
+}
+
+@ValueType
+enum presentation::FileDialogFolderType {
+    Folder = 2,
+    Placeholder = 1,
+    Root = 0,
+}
+
+@ValueType
 struct presentation::FontProperties {
     property antialias : system::Boolean;
     property bold : system::Boolean;
@@ -301,6 +315,69 @@ interface presentation::IDialogConfirmation : system::Interface {
 
     function GetConfirmed() : system::Boolean;
     function SetConfirmed(value : system::Boolean) : system::Void;
+
+}
+
+interface presentation::IFileDialogFile : system::Interface {
+    property AssociatedFolder : presentation::IFileDialogFolder^ { get:GetAssociatedFolder }
+    property Name : system::String { get:GetName }
+    property Type : presentation::FileDialogFileType { get:GetType }
+
+    function GetAssociatedFolder() : presentation::IFileDialogFolder^;
+    function GetName() : system::String;
+    function GetType() : presentation::FileDialogFileType;
+
+}
+
+interface presentation::IFileDialogFilter : system::Interface {
+    property Filter : system::String { get:GetFilter }
+    property Name : system::String { get:GetName }
+
+    function GetFilter() : system::String;
+    function GetName() : system::String;
+
+}
+
+interface presentation::IFileDialogFolder : system::Interface {
+    property Folders : system::ObservableList<presentation::IFileDialogFolder^>^ { get:GetFolders }
+    property FullPath : system::String { get:GetFullPath }
+    property Name : system::String { get:GetName }
+    property Parent : presentation::IFileDialogFolder^ { get:GetParent }
+    property Type : presentation::FileDialogFolderType { get:GetType }
+
+    function GetFolders() : system::ObservableList<presentation::IFileDialogFolder^>^;
+    function GetFullPath() : system::String;
+    function GetName() : system::String;
+    function GetParent() : presentation::IFileDialogFolder^;
+    function GetType() : presentation::FileDialogFolderType;
+
+}
+
+interface presentation::IFileDialogViewModel : system::Interface {
+    property DefaultExtension : system::String { get:GetDefaultExtension }
+    property EnabledMultipleSelection : system::Boolean { get:GetEnabledMultipleSelection }
+    property Files : system::ObservableList<presentation::IFileDialogFile^>^ { get:GetFiles }
+    property Filters : system::ReadonlyList<presentation::IFileDialogFilter^>^ { get:GetFilters }
+    property IsLoadingFiles : system::Boolean { get:GetIsLoadingFiles }
+    property RootFolder : presentation::IFileDialogFolder^ { get:GetRootFolder }
+    property SelectedFilter : presentation::IFileDialogFilter^ { get:GetSelectedFilter set:SetSelectedFilter }
+    property SelectedFolder : presentation::IFileDialogFolder^ { get:GetSelectedFolder set:SetSelectedFolder }
+    property Title : system::String { get:GetTitle }
+
+    function GetDefaultExtension() : system::String;
+    function GetEnabledMultipleSelection() : system::Boolean;
+    function GetFiles() : system::ObservableList<presentation::IFileDialogFile^>^;
+    function GetFilters() : system::ReadonlyList<presentation::IFileDialogFilter^>^;
+    function GetIsLoadingFiles() : system::Boolean;
+    function GetRootFolder() : presentation::IFileDialogFolder^;
+    function GetSelectedFilter() : presentation::IFileDialogFilter^;
+    function GetSelectedFolder() : presentation::IFileDialogFolder^;
+    function GetTitle() : system::String;
+    function InitLocalizedText(textLoadingFolders : system::String, textLoadingFiles : system::String, dialogErrorFileNotExist : system::String, dialogErrorFileExpected : system::String, dialogErrorFolderNotExist : system::String, dialogErrorMultipleSelectionNotEnabled : system::String, dialogAskCreateFile : system::String, dialogAskOverrideFile : system::String) : system::Void;
+    function RefreshFiles() : system::Void;
+    function SetSelectedFilter(value : presentation::IFileDialogFilter^) : system::Void;
+    function SetSelectedFolder(value : presentation::IFileDialogFolder^) : system::Void;
+    function TryConfirm(selectedFiles : system::ReadonlyList<system::String>^) : system::Boolean;
 
 }
 
