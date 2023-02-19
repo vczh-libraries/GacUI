@@ -200,6 +200,240 @@ View Models (FontDialog)
 		};
 
 /***********************************************************************
+View Models (FileDialog)
+***********************************************************************/
+
+		/// <summary>
+		/// The view model for a filter in a file dialog. It is implemented by <see cref="FakeDialogServiceBase"/>.
+		/// </summary>
+		class IFileDialogFilter : public virtual IDescriptable
+		{
+		public:
+			using Filters = collections::List<Ptr<IFileDialogFilter>>;
+
+			/// <summary>
+			/// Get the name of this filter.
+			/// </summary>
+			/// <returns>The name.</returns>
+			virtual WString					GetName() = 0;
+			/// <summary>
+			/// Get the wildcard of this filter.
+			/// </summary>
+			/// <returns>The wildcard.</returns>
+			virtual WString					GetFilter() = 0;
+		};
+
+		/// <summary>
+		/// Type of a folder in a file dialog.
+		/// </summary>
+		enum class FileDialogFolderType
+		{
+			/// <summary>
+			/// The root folder, it does not render in the dialog.
+			/// </summary>
+			Root,
+			/// <summary>
+			/// A placeolder item, it means folders are being loaded.
+			/// </summary>
+			Placeholder,
+			/// <summary>
+			/// A folder.
+			/// </summary>
+			Folder,
+		};
+
+		/// <summary>
+		/// The view model for a folder in a file dialog. It is implemented by <see cref="FakeDialogServiceBase"/>.
+		/// </summary>
+		class IFileDialogFolder : public virtual IDescriptable
+		{
+		public:
+			using Folders = collections::ObservableList<Ptr<IFileDialogFolder>>;
+
+			/// <summary>
+			/// Get the parent folder of this folder.
+			/// </summary>
+			/// <returns>The parent folder. It returns null for the root folder.</returns>
+			virtual Ptr<IFileDialogFolder>	GetParent() = 0;
+			/// <summary>
+			/// Get the type of this folder.
+			/// </summary>
+			/// <returns>The type.</returns>
+			virtual FileDialogFolderType	GetType() = 0;
+			/// <summary>
+			/// Get the full path of this folder.
+			/// </summary>
+			/// <returns>The full path. It returns an empty string for root or placeholder.</returns>
+			virtual WString					GetFullPath() = 0;
+			/// <summary>
+			/// Get the name of this folder.
+			/// </summary>
+			/// <returns>The name. It returns an empty string for root.</returns>
+			virtual WString					GetName() = 0;
+			/// <summary>
+			/// Get all sub folders of this folder.
+			/// </summary>
+			/// <returns>All sub folders.</returns>
+			virtual const Folders&			GetFolders() = 0;
+		};
+
+		/// <summary>
+		/// Type of a file in a file dialog.
+		/// </summary>
+		enum class FileDialogFileType
+		{
+			/// <summary>
+			/// A placeholder item, it means files and folders are being loaded.
+			/// </summary>
+			Placeholder,
+			/// <summary>
+			/// A folder.
+			/// </summary>
+			Folder,
+			/// <summary>
+			/// A file.
+			/// </summary>
+			File,
+		};
+
+		/// <summary>
+		/// The view model for a file in a file dialog. It is implemented by <see cref="FakeDialogServiceBase"/>.
+		/// </summary>
+		class IFileDialogFile : public virtual IDescriptable
+		{
+		public:
+			using Files = collections::ObservableList<Ptr<IFileDialogFile>>;
+
+			/// <summary>
+			/// Get the type of this file.
+			/// </summary>
+			/// <returns></returns>
+			virtual FileDialogFileType		GetType() = 0;
+			/// <summary>
+			/// Get the associated folder of this file.
+			/// </summary>
+			/// <returns>The associated folder. It returns null for placeholder or file.</returns>
+			virtual Ptr<IFileDialogFolder>	GetAssociatedFolder() = 0;
+			/// <summary>
+			/// Get the name of this file.
+			/// </summary>
+			/// <returns>The name.</returns>
+			virtual WString					GetName() = 0;
+		};
+
+		/// <summary>
+		/// The view model for file dialog. It is implemented by <see cref="FakeDialogServiceBase"/>.
+		/// </summary>
+		class IFileDialogViewModel : public virtual IDescriptable
+		{
+		public:
+			using Filters = IFileDialogFilter::Filters;
+			using Folders = IFileDialogFolder::Folders;
+			using Files = IFileDialogFile::Files;
+
+			/// <summary>
+			/// Raised when the <see cref="GetSelectedFolder"/> is changed.
+			/// </summary>
+			Event<void()>					SelectedFolderChanged;
+			/// <summary>
+			/// Raised when the <see cref="GetIsLoadingFiles"/> property is changed.
+			/// </summary>
+			Event<void()>					IsLoadingFilesChanged;
+
+			/// <summary>
+			/// Get the title of this dialog.
+			/// </summary>
+			/// <returns></returns>
+			virtual WString					GetTitle() = 0;
+			/// <summary>
+			/// Test if multiple selection is allowed.
+			/// </summary>
+			/// <returns>Returns true if multiple selection is allowed.</returns>
+			virtual bool					GetEnabledMultipleSelection() = 0;
+
+			/// <summary>
+			/// Get the default extension.
+			/// </summary>
+			/// <returns>The default extension.</returns>
+			virtual WString					GetDefaultExtension() = 0;
+			/// <summary>
+			/// Get all filters of this dialog.
+			/// </summary>
+			/// <returns>All filters.</returns>
+			virtual const Filters&			GetFilters() = 0;
+			/// <summary>
+			/// Get the selected filter of this dialog.
+			/// </summary>
+			/// <returns>The selected filter of this dialog.</returns>
+			virtual Ptr<IFileDialogFilter>	GetSelectedFilter() = 0;
+			/// <summary>
+			/// Set the selected filter of this dialog. It could cause folders and files to be refreshed.
+			/// </summary>
+			/// <param name="value">The selected filter of this dialog.</param>
+			virtual void					SetSelectedFilter(Ptr<IFileDialogFilter> value) = 0;
+
+			/// <summary>
+			/// Get the root folder.
+			/// </summary>
+			/// <returns>The root folder.</returns>
+			virtual Ptr<IFileDialogFolder>	GetRootFolder() = 0;
+			/// <summary>
+			/// Get the selected folder.
+			/// </summary>
+			/// <returns>The selected folder.</returns>
+			virtual Ptr<IFileDialogFolder>	GetSelectedFolder() = 0;
+			/// <summary>
+			/// Set the selected folder.
+			/// </summary>
+			/// <param name="value">The selected folder.</param>
+			virtual void					SetSelectedFolder(Ptr<IFileDialogFolder> value) = 0;
+
+			/// <summary>
+			/// Test if folders and files are being loaded.
+			/// </summary>
+			/// <returns>Returns true if folders and files are being loaded.</returns>
+			virtual bool					GetIsLoadingFiles() = 0;
+			/// <summary>
+			/// Get all folders and files in the selected folder.
+			/// </summary>
+			/// <returns>All folders and files to display.</returns>
+			virtual const Files&			GetFiles() = 0;
+			/// <summary>
+			/// Refresh the folders and files list.
+			/// </summary>
+			virtual void					RefreshFiles() = 0;
+
+			/// <summary>
+			/// Test if the selection is valid. Dialogs could be displayed and ask for input accordingly.
+			/// </summary>
+			/// <param name="selectedPaths">All selected items in string format. Each of them could be either full path, relative path or file name.</param>
+			/// <returns>Returns true if the selection is valid.</returns>
+			virtual bool					TryConfirm(const collections::List<WString>& selectedPaths) = 0;
+
+			/// <summary>
+			/// Initialize the view model with localized texts.
+			/// </summary>
+			/// <param name="textLoadingFolders">The name for placeholder folder.</param>
+			/// <param name="textLoadingFiles">The name for placeholder file.</param>
+			/// <param name="dialogErrorFileNotExist">The message saying selected files do not exist.</param>
+			/// <param name="dialogErrorFileExpected">The message saying selected files are expected but they are folders.</param>
+			/// <param name="dialogErrorFolderNotExist">The message saying the selected folder do not exist.</param>
+			/// <param name="dialogErrorMultipleSelectionNotEnabled">The message saying multiple selection is not allowed.</param>
+			/// <param name="dialogAskCreateFile">The message asking if user wants to create a file.</param>
+			/// <param name="dialogAskOverrideFile">The message asking if user wants to override a file.</param>
+			virtual void					InitLocalizedText(
+												const WString& textLoadingFolders,
+												const WString& textLoadingFiles,
+												const WString& dialogErrorFileNotExist,
+												const WString& dialogErrorFileExpected,
+												const WString& dialogErrorFolderNotExist,
+												const WString& dialogErrorMultipleSelectionNotEnabled,
+												const WString& dialogAskCreateFile,
+												const WString& dialogAskOverrideFile
+											) = 0;
+		};
+
+/***********************************************************************
 FakeDialogServiceBase
 ***********************************************************************/
 
