@@ -20,6 +20,9 @@ namespace vl
 			class GuiWindow;
 		}
 
+		/// <summary>
+		/// UI implementations for <see cref="INativeDialogService"/>.
+		/// </summary>
 		class FakeDialogService : public FakeDialogServiceBase
 		{
 		protected:

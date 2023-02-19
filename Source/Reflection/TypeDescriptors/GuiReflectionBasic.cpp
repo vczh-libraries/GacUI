@@ -711,6 +711,61 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_FAST(Font)
 			END_INTERFACE_MEMBER(IFullFontDialogViewModel)
 
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IFileDialogFilter)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Filter)
+			END_INTERFACE_MEMBER(IFileDialogFilter)
+
+			BEGIN_ENUM_ITEM(FileDialogFolderType)
+				ENUM_CLASS_ITEM(Root)
+				ENUM_CLASS_ITEM(Placeholder)
+				ENUM_CLASS_ITEM(Folder)
+			END_ENUM_ITEM(FileDialogFolderType)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IFileDialogFolder)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Type)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(FullPath)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Folders)
+			END_INTERFACE_MEMBER(IFileDialogFolder)
+
+			BEGIN_ENUM_ITEM(FileDialogFileType)
+				ENUM_CLASS_ITEM(Placeholder)
+				ENUM_CLASS_ITEM(Folder)
+				ENUM_CLASS_ITEM(File)
+			END_ENUM_ITEM(FileDialogFileType)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IFileDialogFile)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Type)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(AssociatedFolder)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Name)
+			END_INTERFACE_MEMBER(IFileDialogFile)
+
+			BEGIN_INTERFACE_MEMBER_NOPROXY(IFileDialogViewModel)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Title)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(EnabledMultipleSelection)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(DefaultExtension)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Filters)
+				CLASS_MEMBER_PROPERTY_FAST(SelectedFilter)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(RootFolder)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(SelectedFolder, SelectedFolderChanged)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(IsLoadingFiles, IsLoadingFilesChanged)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Files)
+				CLASS_MEMBER_METHOD(RefreshFiles, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(TryConfirm, { L"selectedFiles" })
+				CLASS_MEMBER_METHOD(InitLocalizedText,
+					{	L"textLoadingFolders"
+					_	L"textLoadingFiles"
+					_	L"dialogErrorFileNotExist"
+					_	L"dialogErrorFileExpected"
+					_	L"dialogErrorFolderNotExist"
+					_	L"dialogErrorMultipleSelectionNotEnabled"
+					_	L"dialogAskCreateFile"
+					_	L"dialogAskOverrideFile"
+					})
+			END_INTERFACE_MEMBER(IFileDialogViewModel)
+
 #undef GUI_TEMPLATE_PROPERTY_REFLECTION
 #undef _
 

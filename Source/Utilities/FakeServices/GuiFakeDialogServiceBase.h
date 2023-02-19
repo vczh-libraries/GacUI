@@ -438,7 +438,7 @@ FakeDialogServiceBase
 ***********************************************************************/
 
 		/// <summary>
-		/// A general <see cref="INativeDialogService"/> implementation.
+		/// View model implementations for <see cref="INativeDialogService"/>.
 		/// </summary>
 		class FakeDialogServiceBase
 			: public Object
