@@ -112,6 +112,188 @@ View Model (ISimpleFontDialogViewModel and IFullFontDialogViewModel)
 		};
 
 /***********************************************************************
+View Model (IFileDialogViewModel)
+***********************************************************************/
+
+		class FileDialogFilter : public Object, public virtual IFileDialogFilter
+		{
+		public:
+			WString						name;
+			WString						filter;
+
+			WString GetName() override
+			{
+				return name;
+			}
+
+			WString GetFilter() override
+			{
+				return filter;
+			}
+		};
+
+		class FileDialogFolder : public Object, public virtual IFileDialogFolder
+		{
+		public:
+			FileDialogFolder*			parent = nullptr;
+			FileDialogFolderType		type = FileDialogFolderType::Root;
+			filesystem::Folder			folder;
+			Folders						children;
+
+			Ptr<IFileDialogFolder> GetParent() override
+			{
+				return Ptr(static_cast<IFileDialogFolder*>(parent));
+			}
+
+			FileDialogFolderType GetType() override
+			{
+				return type;
+			}
+
+			WString GetFullPath() override
+			{
+				return folder.GetFilePath().GetFullPath();
+			}
+
+			WString GetName() override
+			{
+				return folder.GetFilePath().GetName();
+			}
+
+			Folders& GetFolders() override
+			{
+				return children;
+			}
+		};
+
+		class FileDialogViewModel : public Object, public virtual IFileDialogViewModel
+		{
+		protected:
+			WString						textLoadingFolders;
+			WString						textLoadingFiles;
+			WString						dialogErrorFileNotExist;
+			WString						dialogErrorFileExpected;
+			WString						dialogErrorFolderNotExist;
+			WString						dialogErrorMultipleSelectionNotEnabled;
+			WString						dialogAskCreateFile;
+			WString						dialogAskOverrideFile;
+
+		public:
+			WString						title;
+			bool						enabledMultipleSelection = false;
+			WString						defaultExtension;
+
+			Filters						filters;
+			Ptr<FileDialogFilter>		selectedFilter;
+
+			Ptr<FileDialogFolder>		rootFolder;
+			Ptr<FileDialogFolder>		selectedFolder;
+
+			bool						isLoadingFile = false;
+			Files						files;
+
+			WString GetTitle() override
+			{
+				return title;
+			}
+
+			bool GetEnabledMultipleSelection() override
+			{
+				return enabledMultipleSelection;
+			}
+
+			WString GetDefaultExtension() override
+			{
+				return defaultExtension;
+			}
+
+			const Filters& GetFilters() override
+			{
+				return filters;
+			}
+
+			Ptr<IFileDialogFilter> GetSelectedFilter() override
+			{
+				return selectedFilter;
+			}
+
+			void SetSelectedFilter(Ptr<IFileDialogFilter> value) override
+			{
+				if (auto filter = value.Cast<FileDialogFilter>())
+				{
+					if (selectedFilter != filter && filters.Contains(value.Obj()))
+					{
+						selectedFilter = filter;
+						RefreshFiles();
+					}
+				}
+			}
+
+			Ptr<IFileDialogFolder> GetRootFolder() override
+			{
+				return rootFolder;
+			}
+
+			Ptr<IFileDialogFolder> GetSelectedFolder() override
+			{
+				return selectedFolder;
+			}
+
+			void SetSelectedFolder(Ptr<IFileDialogFolder> value) override
+			{
+				if (auto folder = value.Cast<FileDialogFolder>())
+				{
+					if (selectedFolder != folder)
+					{
+						selectedFolder = folder;
+						SelectedFolderChanged();
+						RefreshFiles();
+					}
+				}
+			}
+
+			bool GetIsLoadingFiles() override
+			{
+				return isLoadingFile;
+			}
+
+			Files& GetFiles() override
+			{
+				return files;
+			}
+
+			void RefreshFiles() override
+			{
+			}
+
+			bool TryConfirm(const collections::List<WString>& selectedPaths) override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			void InitLocalizedText(
+				const WString& _textLoadingFolders,
+				const WString& _textLoadingFiles,
+				const WString& _dialogErrorFileNotExist,
+				const WString& _dialogErrorFileExpected,
+				const WString& _dialogErrorFolderNotExist,
+				const WString& _dialogErrorMultipleSelectionNotEnabled,
+				const WString& _dialogAskCreateFile,
+				const WString& _dialogAskOverrideFile
+			) override
+			{
+				textLoadingFolders = _textLoadingFolders;
+				textLoadingFiles = _textLoadingFiles;
+				dialogErrorFileNotExist = _dialogErrorFileNotExist;
+				dialogErrorFileExpected = _dialogErrorFileExpected;
+				dialogErrorFolderNotExist = _dialogErrorFolderNotExist;
+				dialogErrorMultipleSelectionNotEnabled = _dialogErrorMultipleSelectionNotEnabled;
+				dialogAskCreateFile = _dialogAskCreateFile;
+				dialogAskOverrideFile = _dialogAskOverrideFile;
+			}
+		};
+
+/***********************************************************************
 FakeDialogServiceBase
 ***********************************************************************/
 

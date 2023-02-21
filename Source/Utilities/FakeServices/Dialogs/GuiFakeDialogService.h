@@ -31,6 +31,8 @@ namespace vl
 			controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) override;
 			controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) override;
 			controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
+			controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) override;
 
 		public:
 			FakeDialogService();

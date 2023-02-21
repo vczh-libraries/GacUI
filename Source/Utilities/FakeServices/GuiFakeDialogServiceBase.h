@@ -447,32 +447,46 @@ FakeDialogServiceBase
 		protected:
 
 			/// <summary>
-			/// A callback to be overrided by the sub class to create a message box from the given view model.
+			/// A callback to create a message box from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
 			/// <returns>The created window to be displayed.</returns>
 			virtual controls::GuiWindow*	CreateMessageBoxDialog(Ptr<IMessageBoxDialogViewModel> viewModel) = 0;
 
 			/// <summary>
-			/// A callback to be overrided by the sub class to create a color dialog from the given view model.
+			/// A callback to create a color dialog from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
 			/// <returns>The created window to be displayed.</returns>
 			virtual controls::GuiWindow*	CreateColorDialog(Ptr<IColorDialogViewModel> viewModel) = 0;
 
 			/// <summary>
-			/// A callback to be overrided by the sub class to create a simple font dialog from the given view model.
+			/// A callback to create a simple font dialog from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
 			/// <returns>The created window to be displayed.</returns>
 			virtual controls::GuiWindow*	CreateSimpleFontDialog(Ptr<ISimpleFontDialogViewModel> viewModel) = 0;
 
 			/// <summary>
-			/// A callback to be overrided by the sub class to create a full font dialog from the given view model.
+			/// A callback to create a full font dialog from the given view model.
 			/// </summary>
 			/// <param name="viewModel">The given view model.</param>
 			/// <returns>The created window to be displayed.</returns>
 			virtual controls::GuiWindow*	CreateFullFontDialog(Ptr<IFullFontDialogViewModel> viewModel) = 0;
+
+			/// <summary>
+			/// A callback to create a open file dialog from the given view model.
+			/// </summary>
+			/// <param name="viewModel">The given view model.</param>
+			/// <returns>The created window to be displayed.</returns>
+			virtual controls::GuiWindow*	CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel) = 0;
+
+			/// <summary>
+			/// A callback to create a save file dialog from the given view model.
+			/// </summary>
+			/// <param name="viewModel">The given view model.</param>
+			/// <returns>The created window to be displayed.</returns>
+			virtual controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) = 0;
 
 			void							ShowModalDialogAndDelete(controls::GuiWindow* owner, controls::GuiWindow* dialog);
 

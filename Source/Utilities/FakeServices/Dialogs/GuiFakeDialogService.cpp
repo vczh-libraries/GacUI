@@ -31,6 +31,15 @@ FakeDialogService
 			return new gaclib_controls::FullFontDialogWindow(viewModel);
 		}
 
+		controls::GuiWindow* FakeDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		controls::GuiWindow* FakeDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
 
 		FakeDialogService::FakeDialogService()
 		{
