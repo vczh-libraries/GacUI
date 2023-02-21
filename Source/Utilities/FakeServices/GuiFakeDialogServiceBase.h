@@ -488,7 +488,7 @@ FakeDialogServiceBase
 			/// <returns>The created window to be displayed.</returns>
 			virtual controls::GuiWindow*	CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel) = 0;
 
-			void							ShowModalDialogAndDelete(controls::GuiWindow* owner, controls::GuiWindow* dialog);
+			void							ShowModalDialogAndDelete(Ptr<IDescriptable> viewModel, controls::GuiWindow* owner, controls::GuiWindow* dialog);
 
 		public:
 			FakeDialogServiceBase();

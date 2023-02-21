@@ -17,6 +17,16 @@ namespace vl
 GuiControlHost
 ***********************************************************************/
 
+			void GuiControlHost::DeleteThis()
+			{
+				auto callback = callbackAfterDeleteThis;
+				delete this;
+				if (callback)
+				{
+					callback();
+				}
+			}
+
 			void GuiControlHost::OnNativeWindowChanged()
 			{
 			}
@@ -191,7 +201,7 @@ GuiControlHost
 				{
 					GetApplication()->InvokeInMainThread(this, [=]()
 					{
-						delete this;
+						DeleteThis();
 					});
 				}
 				SetNativeWindow(nullptr);
@@ -233,16 +243,19 @@ GuiControlHost
 				delete host;
 			}
 
-			void GuiControlHost::DeleteAfterProcessingAllEvents()
+			void GuiControlHost::DeleteAfterProcessingAllEvents(const Func<void()>& callback)
 			{
+				CHECK_ERROR(!deleteWhenDestroyed, L"vl::presentation::controls::GuiControlHost::DeleteAfterProcessingAllEvents()#This function cannot be called twice.");
+				deleteWhenDestroyed = true;
+				callbackAfterDeleteThis = callback;
+
 				auto window = host->GetNativeWindow();
 				if (calledDestroyed || !window)
 				{
-					delete this;
+					DeleteThis();
 				}
 				else
 				{
-					deleteWhenDestroyed = true;
 					GetApplication()->InvokeInMainThread(this, [window]()
 					{
 						GetCurrentController()->WindowService()->DestroyNativeWindow(window);
@@ -943,7 +956,16 @@ GuiWindow
 				ShowModal(owner, [=]()
 				{
 					callback();
-					DeleteAfterProcessingAllEvents();
+					DeleteAfterProcessingAllEvents({});
+				});
+			}
+
+			void GuiWindow::ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callbackClosed, const Func<void()>& callbackDeleted)
+			{
+				ShowModal(owner, [=]()
+				{
+					callbackClosed();
+					DeleteAfterProcessingAllEvents(callbackDeleted);
 				});
 			}
 

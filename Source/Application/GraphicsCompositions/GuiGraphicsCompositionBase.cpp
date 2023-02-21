@@ -765,7 +765,7 @@ Helper Functions
 			{
 				if (auto controlHost = dynamic_cast<controls::GuiControlHost*>(value))
 				{
-					controlHost->DeleteAfterProcessingAllEvents();
+					controlHost->DeleteAfterProcessingAllEvents({});
 				}
 				else
 				{

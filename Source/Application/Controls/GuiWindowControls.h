@@ -35,9 +35,11 @@ Control Host
 			{
 				friend class compositions::GuiGraphicsHost;
 			protected:
+				Func<void()>									callbackAfterDeleteThis;
 				compositions::GuiGraphicsHost*					host;
 				INativeWindow::WindowMode						windowMode = INativeWindow::Normal;
 
+				void											DeleteThis();
 				virtual void									OnNativeWindowChanged();
 				virtual void									OnVisualStatusChanged();
 			protected:
@@ -98,7 +100,8 @@ Control Host
 				compositions::GuiNotifyEvent					WindowDestroying;
 
 				/// <summary>Delete this control host after processing all events.</summary>
-				void											DeleteAfterProcessingAllEvents();
+				/// <param name="callback">The callback to call after the window is deleted.</param>
+				void											DeleteAfterProcessingAllEvents(const Func<void()>& callback);
 
 				/// <summary>Get the internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</summary>
 				/// <returns>The internal <see cref="compositions::GuiGraphicsHost"/> object to host the window content.</returns>
@@ -370,6 +373,13 @@ Window
 				/// <param name="owner">The window to disable as a parent window.</param>
 				/// <param name="callback">The callback to call after the window is closed.</param>
 				void									ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callback);
+				/// <summary>
+				/// Show a model window, get a callback when the window is closed, and then delete itself.
+				/// </summary>
+				/// <param name="owner">The window to disable as a parent window.</param>
+				/// <param name="callbackClosed">The callback to call after the window is closed.</param>
+				/// <param name="callbackDeleted">The callback to call after the window is closed.</param>
+				void									ShowModalAndDelete(GuiWindow* owner, const Func<void()>& callbackClosed, const Func<void()>& callbackDeleted);
 				/// <summary>
 				/// Show a model window as an async operation, which ends when the window is closed.
 				/// </summary>

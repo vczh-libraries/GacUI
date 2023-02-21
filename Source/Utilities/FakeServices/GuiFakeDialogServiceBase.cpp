@@ -351,7 +351,7 @@ View Model (IFileDialogViewModel)
 FakeDialogServiceBase
 ***********************************************************************/
 
-		void FakeDialogServiceBase::ShowModalDialogAndDelete(controls::GuiWindow* owner, controls::GuiWindow* dialog)
+		void FakeDialogServiceBase::ShowModalDialogAndDelete(Ptr<IDescriptable> viewModel, controls::GuiWindow* owner, controls::GuiWindow* dialog)
 		{
 			auto app = GetApplication();
 			bool exit = false;
@@ -360,7 +360,7 @@ FakeDialogServiceBase
 				dialog->ForceCalculateSizeImmediately();
 				dialog->MoveToScreenCenter();
 			});
-			dialog->ShowModalAndDelete(owner, [&exit]() {exit = true; });
+			dialog->ShowModalAndDelete(owner, [&exit]() { exit = true; }, [viewModel]() { (void)viewModel; });
 			while (!exit && app->RunOneCycle());
 		}
 
@@ -415,7 +415,7 @@ FakeDialogServiceBase
 			{
 				auto owner = GetApplication()->GetWindowFromNative(window);
 				auto dialog = CreateMessageBoxDialog(vm);
-				ShowModalDialogAndDelete(owner, dialog);
+				ShowModalDialogAndDelete(vm, owner, dialog);
 			}
 			return vm->result;
 		}
@@ -433,7 +433,7 @@ FakeDialogServiceBase
 			{
 				auto owner = GetApplication()->GetWindowFromNative(window);
 				auto dialog = CreateColorDialog(vm);
-				ShowModalDialogAndDelete(owner, dialog);
+				ShowModalDialogAndDelete(vm, owner, dialog);
 			}
 			if (vm->confirmed)
 			{
@@ -475,7 +475,7 @@ FakeDialogServiceBase
 				{
 					auto owner = GetApplication()->GetWindowFromNative(window);
 					auto dialog = CreateFullFontDialog(vm);
-					ShowModalDialogAndDelete(owner, dialog);
+					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				if (vm->confirmed)
 				{
@@ -494,7 +494,7 @@ FakeDialogServiceBase
 				{
 					auto owner = GetApplication()->GetWindowFromNative(window);
 					auto dialog = CreateSimpleFontDialog(vm);
-					ShowModalDialogAndDelete(owner, dialog);
+					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				if (vm->confirmed)
 				{
@@ -582,7 +582,7 @@ FakeDialogServiceBase
 				{
 					auto owner = GetApplication()->GetWindowFromNative(window);
 					auto dialog = CreateOpenFileDialog(vm);
-					ShowModalDialogAndDelete(owner, dialog);
+					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				break;
 			case INativeDialogService::FileDialogSave:
@@ -590,7 +590,7 @@ FakeDialogServiceBase
 				{
 					auto owner = GetApplication()->GetWindowFromNative(window);
 					auto dialog = CreateSaveFileDialog(vm);
-					ShowModalDialogAndDelete(owner, dialog);
+					ShowModalDialogAndDelete(vm, owner, dialog);
 				}
 				break;
 			}
