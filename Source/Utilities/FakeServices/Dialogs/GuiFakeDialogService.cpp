@@ -33,12 +33,12 @@ FakeDialogService
 
 		controls::GuiWindow* FakeDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return new gaclib_controls::OpenFileDialogWindow(viewModel);
 		}
 
 		controls::GuiWindow* FakeDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			return new gaclib_controls::SaveFileDialogWindow(viewModel);
 		}
 
 		FakeDialogService::FakeDialogService()
