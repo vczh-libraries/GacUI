@@ -1,4 +1,4 @@
-﻿================================(1/13)================================
+﻿================================(1/12)================================
 module <instance>gaclib_controls::ColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -57,7 +57,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/13)================================
+================================(2/12)================================
 module <instance>gaclib_controls::ColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -149,7 +149,7 @@ namespace gaclib_controls
     }
 }
 
-================================(3/13)================================
+================================(3/12)================================
 module <instance>gaclib_controls::ColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -215,7 +215,83 @@ namespace gaclib_controls
     }
 }
 
-================================(4/13)================================
+================================(4/12)================================
+module <instance>gaclib_controls::FileDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class FileDialogWindow : ::presentation::controls::GuiWindow
+    {
+        func MakeOpenFileDialog() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        func MakeSaveFileDialog() : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(5/12)================================
 module <instance>gaclib_controls::FilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -281,139 +357,7 @@ namespace gaclib_controls
     }
 }
 
-================================(5/13)================================
-module <instance>gaclib_controls::OpenFileDialogWindow;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gaclib_controls
-{
-    class OpenFileDialogWindow : ::presentation::controls::GuiWindow
-    {
-        @cpp:Private
-        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
-
-        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
-        {
-            return <prop>Strings;
-        }
-
-        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
-        {
-            if ((<prop>Strings != <value>))
-            {
-                (<prop>Strings = <value>);
-                StringsChanged();
-            }
-        }
-
-        event StringsChanged();
-
-        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
-        func GetViewModel() : (presentation::IFileDialogViewModel^)
-        {
-            raise "Not Implemented";
-        }
-
-        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
-
-        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
-            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
-        {
-            raise "Not Implemented";
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
-        }
-    }
-}
-
-================================(6/13)================================
-module <instance>gaclib_controls::SaveFileDialogWindow;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gaclib_controls
-{
-    class SaveFileDialogWindow : ::presentation::controls::GuiWindow
-    {
-        @cpp:Private
-        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
-
-        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
-        {
-            return <prop>Strings;
-        }
-
-        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
-        {
-            if ((<prop>Strings != <value>))
-            {
-                (<prop>Strings = <value>);
-                StringsChanged();
-            }
-        }
-
-        event StringsChanged();
-
-        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
-        func GetViewModel() : (presentation::IFileDialogViewModel^)
-        {
-            raise "Not Implemented";
-        }
-
-        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
-
-        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
-            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
-        {
-            raise "Not Implemented";
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
-        }
-    }
-}
-
-================================(7/13)================================
+================================(6/12)================================
 module <instance>gaclib_controls::FontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -531,7 +475,7 @@ namespace gaclib_controls
     }
 }
 
-================================(8/13)================================
+================================(7/12)================================
 module <instance>gaclib_controls::FontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -658,7 +602,7 @@ namespace gaclib_controls
     }
 }
 
-================================(9/13)================================
+================================(8/12)================================
 module <instance>gaclib_controls::FullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -724,7 +668,7 @@ namespace gaclib_controls
     }
 }
 
-================================(10/13)================================
+================================(9/12)================================
 module <instance>gaclib_controls::SimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -790,7 +734,7 @@ namespace gaclib_controls
     }
 }
 
-================================(11/13)================================
+================================(10/12)================================
 module <instance>gaclib_controls::MessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -860,7 +804,7 @@ namespace gaclib_controls
     }
 }
 
-================================(12/13)================================
+================================(11/12)================================
 module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -905,7 +849,7 @@ namespace gaclib_controls
     }
 }
 
-================================(13/13)================================
+================================(12/12)================================
 module <localized-strings>gaclib_controls::DialogStrings;
 
 namespace gaclib_controls

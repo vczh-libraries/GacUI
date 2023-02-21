@@ -541,7 +541,6 @@ FakeDialogServiceBase
 			vm->rootFolder->type = FileDialogFolderType::Root;
 			// TODO: initialDirectory -> selectedFolder
 
-			vm->RefreshFiles();
 			switch (dialogType)
 			{
 			case INativeDialogService::FileDialogOpen:

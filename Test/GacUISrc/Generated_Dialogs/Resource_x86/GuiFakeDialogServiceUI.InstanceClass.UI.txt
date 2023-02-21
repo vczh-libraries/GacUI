@@ -1,4 +1,4 @@
-﻿================================(1/25)================================
+﻿================================(1/23)================================
 module <constructor>gaclib_controls::ColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -297,7 +297,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/25)================================
+================================(2/23)================================
 module <instance>gaclib_controls::ColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -360,7 +360,7 @@ namespace gaclib_controls
     }
 }
 
-================================(3/25)================================
+================================(3/23)================================
 module <constructor>gaclib_controls::ColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1148,7 +1148,7 @@ namespace gaclib_controls
     }
 }
 
-================================(4/25)================================
+================================(4/23)================================
 module <instance>gaclib_controls::ColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1247,7 +1247,7 @@ namespace gaclib_controls
     }
 }
 
-================================(5/25)================================
+================================(5/23)================================
 module <constructor>gaclib_controls::ColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1723,7 +1723,7 @@ namespace gaclib_controls
     }
 }
 
-================================(6/25)================================
+================================(6/23)================================
 module <instance>gaclib_controls::ColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1796,8 +1796,8 @@ namespace gaclib_controls
     }
 }
 
-================================(7/25)================================
-module <constructor>gaclib_controls::FilePickerControl;
+================================(7/23)================================
+module <constructor>gaclib_controls::FileDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
 using presentation::compositions::Gui*Composition;
@@ -1819,28 +1819,31 @@ using presentation::theme::*;
 
 namespace gaclib_controls
 {
-    class FilePickerControlConstructor
+    class FileDialogWindowConstructor
     {
         @cpp:Protected
-        var self : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);
+        var self : ::gaclib_controls::FileDialogWindow* = null of (::gaclib_controls::FileDialogWindow*);
 
         @cpp:Protected
         var ViewModel : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
 
         @cpp:Protected
+        var buttonOK : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiColumnSplitterComposition* = null of (::presentation::compositions::GuiColumnSplitterComposition*);
+        var <precompile>2 : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
+        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -1849,19 +1852,31 @@ namespace gaclib_controls
         var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+        var <precompile>7 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>8 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+        var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        func <gaclib_controls-FilePickerControl>Initialize(<this> : ::gaclib_controls::FilePickerControl*) : (::system::Void)
+        func <gaclib_controls-FileDialogWindow>Initialize(<this> : ::gaclib_controls::FileDialogWindow*) : (::system::Void)
         {
             (self = <this>);
             (ViewModel = <this>.ViewModel);
+            {
+                (self.IconVisible = false);
+            }
+            {
+                (self.MinimizedBox = false);
+            }
+            {
+                (self.MaximizedBox = false);
+            }
+            {
+                (self.ShowInTaskBar = false);
+            }
+            {
+                (self.ClientSize = {x : 480; y : 360;} of (::presentation::Size));
+            }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.CellPadding = 5 of (::system::Int32));
@@ -1870,119 +1885,73 @@ namespace gaclib_controls
                 (<precompile>0.BorderVisible = false);
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(1, 1);
+                <precompile>0.SetRowsAndColumns(2, 3);
                 <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
             }
-            (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
+            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>1.CellPadding = 5 of (::system::Int32));
+                <precompile>1.SetSite(0, 0, 1, 3);
             }
+            (<precompile>2 = new (::gaclib_controls::FilePickerControl*)(ViewModel));
+            (<precompile>3 = <precompile>2.BoundsComposition);
             {
-                (<precompile>1.BorderVisible = false);
-            }
-            {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>1.SetRowsAndColumns(1, 2);
-                <precompile>1.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>1.SetColumnOption(0, {composeType : Absolute; absolute : 192;} of (::presentation::compositions::GuiCellOption));
-                <precompile>1.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>2 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
-            {
-                (<precompile>2.ColumnsToTheLeft = 1 of (::system::Int32));
+                <precompile>1.AddChild(<precompile>2.BoundsComposition);
             }
             {
-                <precompile>1.AddChild(<precompile>2);
+                <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>3.SetSite(0, 0, 1, 1);
-            }
-            {
-                (<precompile>4 = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
+                <precompile>4.SetSite(1, 1, 1, 1);
             }
             {
-                (<precompile>4.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
-                {
-                    var item = (cast (IFileDialogFolder^) <item>);
-                    return item.Folders;
-                });
+                (buttonOK = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            (<precompile>5 = buttonOK.BoundsComposition);
             {
-                (<precompile>4.HorizontalAlwaysVisible = false);
+                (<precompile>5.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
             }
-            {
-                (<precompile>4.VerticalAlwaysVisible = false);
-            }
-            {
-                (<precompile>4.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (IFileDialogFolder^) <item>);
-                    return item.Name;
-                });
-            }
-            (<precompile>5 = <precompile>4.BoundsComposition);
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>3.AddChild(<precompile>4.BoundsComposition);
+                <precompile>4.AddChild(buttonOK.BoundsComposition);
             }
             {
-                <precompile>1.AddChild(<precompile>3);
+                <precompile>0.AddChild(<precompile>4);
             }
             (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>6.SetSite(0, 1, 1, 1);
+                <precompile>6.SetSite(1, 2, 1, 1);
             }
             {
-                (<precompile>7 = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                (<precompile>7 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>8 = <precompile>7.BoundsComposition);
+            {
+                (<precompile>8.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
             }
             {
-                (<precompile>7.View = ListViewView::List of (::presentation::controls::ListViewView));
-            }
-            {
-                (<precompile>7.HorizontalAlwaysVisible = false);
-            }
-            {
-                (<precompile>7.VerticalAlwaysVisible = false);
-            }
-            (<precompile>9 = <precompile>7.BoundsComposition);
-            {
-                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            (<precompile>8 = new (::presentation::controls::list::ListViewColumn^)());
-            {
-                (<precompile>8.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (IFileDialogFile^) <item>);
-                    return item.Name;
-                });
-            }
-            {
-                var <collection> = <precompile>7.Columns;
-                <collection>.Add(<precompile>8);
+                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 <precompile>6.AddChild(<precompile>7.BoundsComposition);
             }
             {
-                <precompile>1.AddChild(<precompile>6);
-            }
-            {
-                <precompile>0.AddChild(<precompile>1);
+                <precompile>0.AddChild(<precompile>6);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -1996,7 +1965,7 @@ namespace gaclib_controls
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = ViewModel.RootFolder of (::system::Object);
+                        var <bind-activator-result> = (!ViewModel.IsLoadingFiles) of (::system::Boolean);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -2032,27 +2001,43 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>4.ItemSource;
-                    var <new> = (cast (::system::Object) <value>);
+                    var <old> = buttonOK.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>4.ItemSource = <new>);
+                    (buttonOK.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.Close();
+                };
+                attach(buttonOK.Clicked, <event-handler>);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
+                    var <bind-cache>0 : ::gaclib_controls::FileDialogWindow* = null of (::gaclib_controls::FileDialogWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
                     var <bind-opened> : ::system::Boolean = false;
 
                     var <bind-closed> : ::system::Boolean = false;
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = ViewModel.Files of (::system::Enumerable^);
+                        var <bind-activator-result> = <bind-cache>0.Strings.Cancel();
                         ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
                     }
 
                     override func Open() : (::system::Boolean)
@@ -2060,6 +2045,8 @@ namespace gaclib_controls
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::FileDialogWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -2080,6 +2067,13 @@ namespace gaclib_controls
                         if ((!<bind-closed>))
                         {
                             (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gaclib_controls::FileDialogWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -2087,15 +2081,25 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>7.ItemSource;
-                    var <new> = (cast (::system::Enumerable^) <value>);
+                    var <old> = <precompile>7.Text;
+                    var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>7.ItemSource = <new>);
+                    (<precompile>7.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    self.Close();
+                };
+                attach(<precompile>7.Clicked, <event-handler>);
+            }
+            {
+                (self.Text = ViewModel.Title);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -2178,7 +2182,362 @@ namespace gaclib_controls
     }
 }
 
-================================(8/25)================================
+================================(8/23)================================
+module <instance>gaclib_controls::FileDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    @cpp:Friend(typeof(FileDialogWindowConstructor))
+    class FileDialogWindow : ::presentation::controls::GuiWindow, FileDialogWindowConstructor
+    {
+        func MakeOpenFileDialog() : (void)
+        {
+            (buttonOK.Text = Strings.FileDialogOpen());
+        }
+
+        func MakeSaveFileDialog() : (void)
+        {
+            (buttonOK.Text = Strings.FileDialogSave());
+        }
+
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        var <parameter>ViewModel : presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            return <parameter>ViewModel;
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
+            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
+        {
+            (<parameter>ViewModel = <ctor-parameter>ViewModel);
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gaclib_controls::FileDialogWindow");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<gaclib_controls-FileDialogWindow>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(9/23)================================
+module <constructor>gaclib_controls::FilePickerControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class FilePickerControlConstructor
+    {
+        @cpp:Protected
+        var self : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);
+
+        @cpp:Protected
+        var ViewModel : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+        @cpp:Protected
+        var treeView : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
+
+        @cpp:Protected
+        var listView : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiColumnSplitterComposition* = null of (::presentation::compositions::GuiColumnSplitterComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        func <gaclib_controls-FilePickerControl>Initialize(<this> : ::gaclib_controls::FilePickerControl*) : (::system::Void)
+        {
+            (self = <this>);
+            (ViewModel = <this>.ViewModel);
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>0.BorderVisible = false);
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(1, 1);
+                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>1.CellPadding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>1.BorderVisible = false);
+            }
+            {
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>1.SetRowsAndColumns(1, 2);
+                <precompile>1.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(0, {composeType : Absolute; absolute : 192;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
+            {
+                (<precompile>2.ColumnsToTheLeft = 1 of (::system::Int32));
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>3.SetSite(0, 0, 1, 1);
+            }
+            {
+                (treeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
+            }
+            {
+                (treeView.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
+                {
+                    var item = (cast (IFileDialogFolder^) <item>);
+                    return item.Folders;
+                });
+            }
+            {
+                (treeView.HorizontalAlwaysVisible = false);
+            }
+            {
+                (treeView.VerticalAlwaysVisible = false);
+            }
+            {
+                (treeView.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (IFileDialogFolder^) <item>);
+                    return item.Name;
+                });
+            }
+            (<precompile>4 = treeView.BoundsComposition);
+            {
+                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>3.AddChild(treeView.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>3);
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>5.SetSite(0, 1, 1, 1);
+            }
+            {
+                (listView = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+            }
+            {
+                (listView.View = ListViewView::List of (::presentation::controls::ListViewView));
+            }
+            {
+                (listView.HorizontalAlwaysVisible = false);
+            }
+            {
+                (listView.VerticalAlwaysVisible = false);
+            }
+            (<precompile>7 = listView.BoundsComposition);
+            {
+                (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>6 = new (::presentation::controls::list::ListViewColumn^)());
+            {
+                (<precompile>6.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (IFileDialogFile^) <item>);
+                    return item.Name;
+                });
+            }
+            {
+                var <collection> = listView.Columns;
+                <collection>.Add(<precompile>6);
+            }
+            {
+                <precompile>5.AddChild(listView.BoundsComposition);
+            }
+            {
+                <precompile>1.AddChild(<precompile>5);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = gaclib_controls::DialogStrings::Get(<bind-cache>0.Locale);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (presentation::controls::GuiApplication::GetApplication() ?? null of (::presentation::controls::GuiApplication*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.LocaleChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.LocaleChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiApplication*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.Strings;
+                    var <new> = (cast (::gaclib_controls::IDialogStringsStrings^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.Strings = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(10/23)================================
 module <instance>gaclib_controls::FilePickerControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2248,6 +2607,9 @@ namespace gaclib_controls
         func <instance-ctor>() : (::system::Void)
         {
             ViewModel.InitLocalizedText(self.Strings.FileDialogTextLoadingFolders(), self.Strings.FileDialogTextLoadingFiles(), self.Strings.FileDialogErrorFileNotExist(), self.Strings.FileDialogErrorFileExpected(), self.Strings.FileDialogErrorFolderNotExist(), self.Strings.FileDialogErrorMultipleSelectionNotEnabled(), self.Strings.FileDialogAskCreateFile(), self.Strings.FileDialogAskOverrideFile());
+            (treeView.ItemSource = ViewModel.RootFolder);
+            (listView.ItemSource = ViewModel.Files);
+            ViewModel.RefreshFiles();
         }
 
         delete
@@ -2257,1101 +2619,7 @@ namespace gaclib_controls
     }
 }
 
-================================(9/25)================================
-module <constructor>gaclib_controls::OpenFileDialogWindow;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gaclib_controls
-{
-    class OpenFileDialogWindowConstructor
-    {
-        @cpp:Protected
-        var self : ::gaclib_controls::OpenFileDialogWindow* = null of (::gaclib_controls::OpenFileDialogWindow*);
-
-        @cpp:Protected
-        var ViewModel : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
-
-        @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>8 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        func <gaclib_controls-OpenFileDialogWindow>Initialize(<this> : ::gaclib_controls::OpenFileDialogWindow*) : (::system::Void)
-        {
-            (self = <this>);
-            (ViewModel = <this>.ViewModel);
-            {
-                (self.IconVisible = false);
-            }
-            {
-                (self.MinimizedBox = false);
-            }
-            {
-                (self.MaximizedBox = false);
-            }
-            {
-                (self.ShowInTaskBar = false);
-            }
-            {
-                (self.ClientSize = {x : 480; y : 360;} of (::presentation::Size));
-            }
-            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>0.CellPadding = 5 of (::system::Int32));
-            }
-            {
-                (<precompile>0.BorderVisible = false);
-            }
-            {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>0.SetRowsAndColumns(2, 3);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>1.SetSite(0, 0, 1, 3);
-            }
-            (<precompile>2 = new (::gaclib_controls::FilePickerControl*)(ViewModel));
-            (<precompile>3 = <precompile>2.BoundsComposition);
-            {
-                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>1.AddChild(<precompile>2.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>1);
-            }
-            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>4.SetSite(1, 1, 1, 1);
-            }
-            {
-                (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            (<precompile>6 = <precompile>5.BoundsComposition);
-            {
-                (<precompile>6.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
-            }
-            {
-                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>4.AddChild(<precompile>5.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>4);
-            }
-            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>7.SetSite(1, 2, 1, 1);
-            }
-            {
-                (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            (<precompile>9 = <precompile>8.BoundsComposition);
-            {
-                (<precompile>9.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
-            }
-            {
-                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>7.AddChild(<precompile>8.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>7);
-            }
-            {
-                self.ContainerComposition.AddChild(<precompile>0);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gaclib_controls::OpenFileDialogWindow* = null of (::gaclib_controls::OpenFileDialogWindow*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.FileDialogOpen();
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::OpenFileDialogWindow*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gaclib_controls::OpenFileDialogWindow*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>5.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>5.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    self.Close();
-                };
-                attach(<precompile>5.Clicked, <event-handler>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gaclib_controls::OpenFileDialogWindow* = null of (::gaclib_controls::OpenFileDialogWindow*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.Cancel();
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::OpenFileDialogWindow*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gaclib_controls::OpenFileDialogWindow*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>8.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>8.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    self.Close();
-                };
-                attach(<precompile>8.Clicked, <event-handler>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gaclib_controls::OpenFileDialogWindow* = null of (::gaclib_controls::OpenFileDialogWindow*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.FontDialogTitle();
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::OpenFileDialogWindow*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gaclib_controls::OpenFileDialogWindow*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = self.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (self.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = gaclib_controls::DialogStrings::Get(<bind-cache>0.Locale);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (presentation::controls::GuiApplication::GetApplication() ?? null of (::presentation::controls::GuiApplication*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.LocaleChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.LocaleChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiApplication*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = self.Strings;
-                    var <new> = (cast (::gaclib_controls::IDialogStringsStrings^) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (self.Strings = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(10/25)================================
-module <instance>gaclib_controls::OpenFileDialogWindow;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gaclib_controls
-{
-    @cpp:Friend(typeof(OpenFileDialogWindowConstructor))
-    class OpenFileDialogWindow : ::presentation::controls::GuiWindow, OpenFileDialogWindowConstructor
-    {
-        @cpp:Private
-        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
-
-        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
-        {
-            return <prop>Strings;
-        }
-
-        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
-        {
-            if ((<prop>Strings != <value>))
-            {
-                (<prop>Strings = <value>);
-                StringsChanged();
-            }
-        }
-
-        event StringsChanged();
-
-        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
-        var <parameter>ViewModel : presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
-
-        func GetViewModel() : (presentation::IFileDialogViewModel^)
-        {
-            return <parameter>ViewModel;
-        }
-
-        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
-
-        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
-            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
-        {
-            (<parameter>ViewModel = <ctor-parameter>ViewModel);
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gaclib_controls::OpenFileDialogWindow");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<gaclib_controls-OpenFileDialogWindow>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
-        }
-    }
-}
-
-================================(11/25)================================
-module <constructor>gaclib_controls::SaveFileDialogWindow;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gaclib_controls
-{
-    class SaveFileDialogWindowConstructor
-    {
-        @cpp:Protected
-        var self : ::gaclib_controls::SaveFileDialogWindow* = null of (::gaclib_controls::SaveFileDialogWindow*);
-
-        @cpp:Protected
-        var ViewModel : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
-
-        @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>2 : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);
-
-        @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>5 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>8 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
-
-        @cpp:Protected
-        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        func <gaclib_controls-SaveFileDialogWindow>Initialize(<this> : ::gaclib_controls::SaveFileDialogWindow*) : (::system::Void)
-        {
-            (self = <this>);
-            (ViewModel = <this>.ViewModel);
-            {
-                (self.IconVisible = false);
-            }
-            {
-                (self.MinimizedBox = false);
-            }
-            {
-                (self.MaximizedBox = false);
-            }
-            {
-                (self.ShowInTaskBar = false);
-            }
-            {
-                (self.ClientSize = {x : 480; y : 360;} of (::presentation::Size));
-            }
-            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>0.CellPadding = 5 of (::system::Int32));
-            }
-            {
-                (<precompile>0.BorderVisible = false);
-            }
-            {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>0.SetRowsAndColumns(2, 3);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetColumnOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>1.SetSite(0, 0, 1, 3);
-            }
-            (<precompile>2 = new (::gaclib_controls::FilePickerControl*)(ViewModel));
-            (<precompile>3 = <precompile>2.BoundsComposition);
-            {
-                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>1.AddChild(<precompile>2.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>1);
-            }
-            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>4.SetSite(1, 1, 1, 1);
-            }
-            {
-                (<precompile>5 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            (<precompile>6 = <precompile>5.BoundsComposition);
-            {
-                (<precompile>6.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
-            }
-            {
-                (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>4.AddChild(<precompile>5.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>4);
-            }
-            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>7.SetSite(1, 2, 1, 1);
-            }
-            {
-                (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            (<precompile>9 = <precompile>8.BoundsComposition);
-            {
-                (<precompile>9.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
-            }
-            {
-                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>7.AddChild(<precompile>8.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>7);
-            }
-            {
-                self.ContainerComposition.AddChild(<precompile>0);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gaclib_controls::SaveFileDialogWindow* = null of (::gaclib_controls::SaveFileDialogWindow*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.FileDialogSave();
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::SaveFileDialogWindow*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gaclib_controls::SaveFileDialogWindow*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>5.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>5.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    self.Close();
-                };
-                attach(<precompile>5.Clicked, <event-handler>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gaclib_controls::SaveFileDialogWindow* = null of (::gaclib_controls::SaveFileDialogWindow*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.Cancel();
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::SaveFileDialogWindow*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gaclib_controls::SaveFileDialogWindow*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>8.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>8.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                {
-                    self.Close();
-                };
-                attach(<precompile>8.Clicked, <event-handler>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gaclib_controls::SaveFileDialogWindow* = null of (::gaclib_controls::SaveFileDialogWindow*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Strings.FontDialogTitle();
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::SaveFileDialogWindow*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gaclib_controls::SaveFileDialogWindow*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = self.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (self.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = gaclib_controls::DialogStrings::Get(<bind-cache>0.Locale);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (presentation::controls::GuiApplication::GetApplication() ?? null of (::presentation::controls::GuiApplication*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.LocaleChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.LocaleChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiApplication*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = self.Strings;
-                    var <new> = (cast (::gaclib_controls::IDialogStringsStrings^) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (self.Strings = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(12/25)================================
-module <instance>gaclib_controls::SaveFileDialogWindow;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace gaclib_controls
-{
-    @cpp:Friend(typeof(SaveFileDialogWindowConstructor))
-    class SaveFileDialogWindow : ::presentation::controls::GuiWindow, SaveFileDialogWindowConstructor
-    {
-        @cpp:Private
-        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
-
-        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
-        {
-            return <prop>Strings;
-        }
-
-        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
-        {
-            if ((<prop>Strings != <value>))
-            {
-                (<prop>Strings = <value>);
-                StringsChanged();
-            }
-        }
-
-        event StringsChanged();
-
-        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
-
-        var <parameter>ViewModel : presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
-
-        func GetViewModel() : (presentation::IFileDialogViewModel^)
-        {
-            return <parameter>ViewModel;
-        }
-
-        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
-
-        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
-            :::presentation::controls::GuiWindow(::presentation::theme::ThemeName::Window)
-        {
-            (<parameter>ViewModel = <ctor-parameter>ViewModel);
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("gaclib_controls::SaveFileDialogWindow");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<gaclib_controls-SaveFileDialogWindow>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
-        }
-    }
-}
-
-================================(13/25)================================
+================================(11/23)================================
 module <constructor>gaclib_controls::FontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3812,7 +3080,7 @@ namespace gaclib_controls
     }
 }
 
-================================(14/25)================================
+================================(12/23)================================
 module <instance>gaclib_controls::FontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3944,7 +3212,7 @@ namespace gaclib_controls
     }
 }
 
-================================(15/25)================================
+================================(13/23)================================
 module <constructor>gaclib_controls::FontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4398,7 +3666,7 @@ namespace gaclib_controls
     }
 }
 
-================================(16/25)================================
+================================(14/23)================================
 module <instance>gaclib_controls::FontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4536,7 +3804,7 @@ namespace gaclib_controls
     }
 }
 
-================================(17/25)================================
+================================(15/23)================================
 module <constructor>gaclib_controls::FullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6407,7 +5675,7 @@ namespace gaclib_controls
     }
 }
 
-================================(18/25)================================
+================================(16/23)================================
 module <instance>gaclib_controls::FullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6492,7 +5760,7 @@ namespace gaclib_controls
     }
 }
 
-================================(19/25)================================
+================================(17/23)================================
 module <constructor>gaclib_controls::SimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7403,7 +6671,7 @@ namespace gaclib_controls
     }
 }
 
-================================(20/25)================================
+================================(18/23)================================
 module <instance>gaclib_controls::SimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7483,7 +6751,7 @@ namespace gaclib_controls
     }
 }
 
-================================(21/25)================================
+================================(19/23)================================
 module <constructor>gaclib_controls::MessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7703,7 +6971,7 @@ namespace gaclib_controls
     }
 }
 
-================================(22/25)================================
+================================(20/23)================================
 module <instance>gaclib_controls::MessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7822,7 +7090,7 @@ namespace gaclib_controls
     }
 }
 
-================================(23/25)================================
+================================(21/23)================================
 module <constructor>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8135,7 +7403,7 @@ namespace gaclib_controls
     }
 }
 
-================================(24/25)================================
+================================(22/23)================================
 module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8187,7 +7455,7 @@ namespace gaclib_controls
     }
 }
 
-================================(25/25)================================
+================================(23/23)================================
 module <localized-strings>gaclib_controls::DialogStrings;
 
 namespace gaclib_controls

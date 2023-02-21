@@ -33,12 +33,16 @@ FakeDialogService
 
 		controls::GuiWindow* FakeDialogService::CreateOpenFileDialog(Ptr<IFileDialogViewModel> viewModel)
 		{
-			return new gaclib_controls::OpenFileDialogWindow(viewModel);
+			auto dialog = new gaclib_controls::FileDialogWindow(viewModel);
+			dialog->MakeOpenFileDialog();
+			return dialog;
 		}
 
 		controls::GuiWindow* FakeDialogService::CreateSaveFileDialog(Ptr<IFileDialogViewModel> viewModel)
 		{
-			return new gaclib_controls::SaveFileDialogWindow(viewModel);
+			auto dialog = new gaclib_controls::FileDialogWindow(viewModel);
+			dialog->MakeSaveFileDialog();
+			return dialog;
 		}
 
 		FakeDialogService::FakeDialogService()
