@@ -22,7 +22,6 @@
         }
       ]]></ref.Ctor>
       <CustomControl ref.Name="self">
-        <att.ViewModel-set SelectedFilter-bind="cast (IFileDialogFilter^) comboBox.SelectedItem"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
@@ -95,6 +94,15 @@
                       <att.TextProperty>Name</att.TextProperty>
                     </BindableTextList>
                   </att.ListControl>
+                  <ev.SelectedIndexChanged-eval><![CDATA[
+                    {
+                      var filter = cast (IFileDialogFilter^) comboBox.SelectedItem;
+                      if (filter is not null)
+                      {
+                        ViewModel.SetSelectedFilter(filter);
+                      }
+                    }
+                  ]]></ev.SelectedIndexChanged-eval>
                 </ComboBox>
               </Cell>
             </Table>

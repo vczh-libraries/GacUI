@@ -2366,14 +2366,10 @@ namespace gaclib_controls
         var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
-
-        @cpp:Protected
         func <gaclib_controls-FilePickerControl>Initialize(<this> : ::gaclib_controls::FilePickerControl*) : (::system::Void)
         {
             (self = <this>);
             (ViewModel = <this>.ViewModel);
-            (<precompile>19 = self.ViewModel);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.CellPadding = 5 of (::system::Int32));
@@ -2684,77 +2680,15 @@ namespace gaclib_controls
                 (<precompile>17.ItemSource = ViewModel.Filters);
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
-                    var <bind-cache>0 : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
+                    var filter = (cast (IFileDialogFilter^) comboBox.SelectedItem);
+                    if (filter is not null)
                     {
-                        var <bind-activator-result> = (cast (IFileDialogFilter^) <bind-cache>0.SelectedItem) of (::presentation::IFileDialogFilter^);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (comboBox ?? null of (::presentation::controls::GuiComboBoxListControl*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedIndexChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.SelectedIndexChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiComboBoxListControl*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
+                        ViewModel.SetSelectedFilter(filter);
                     }
                 };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>19.SelectedFilter;
-                    var <new> = (cast (::presentation::IFileDialogFilter^) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>19.SelectedFilter = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
+                attach(comboBox.SelectedIndexChanged, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)

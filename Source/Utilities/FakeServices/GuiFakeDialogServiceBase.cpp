@@ -564,7 +564,7 @@ FakeDialogServiceBase
 
 			if (vm->filters.Count() > 0)
 			{
-				if (0 <= selectionFilterIndex && selectionFilterIndex < vm->filters.Count())
+				if (selectionFilterIndex < 0 || vm->filters.Count() <= selectionFilterIndex)
 				{
 					selectionFilterIndex = 0;
 				}
