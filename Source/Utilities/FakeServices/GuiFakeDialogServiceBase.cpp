@@ -527,7 +527,41 @@ FakeDialogServiceBase
 			vm->promptOverriteFile = (options | INativeDialogService::FileDialogPromptOverwriteFile) != 0;
 			vm->defaultExtension = defaultExtension;
 
-			// TODO: filter -> filters
+			vint filterStart = 0;
+			while (true)
+			{
+				vint first = -1;
+				vint second = -1;
+				vint count = filter.Length();
+
+				for (vint i = filterStart; i < count; i++)
+				{
+					if (filter[i] == L'|')
+					{
+						first = i;
+						break;
+					}
+				}
+				if (first == -1) break;
+
+				for (vint i = first + 1; i < count; i++)
+				{
+					if (filter[i] == L'|')
+					{
+						second = i;
+						break;
+					}
+				}
+
+				auto filterItem = Ptr(new FileDialogFilter);
+				filterItem->name = filter.Sub(filterStart, first - filterStart);
+				filterItem->filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
+				vm->filters.Add(filterItem);
+
+				if (second == -1) break;
+				filterStart = second + 1;
+			}
+
 			if (vm->filters.Count() > 0)
 			{
 				if (0 <= selectionFilterIndex && selectionFilterIndex < vm->filters.Count())
