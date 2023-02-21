@@ -17,46 +17,88 @@
             );
           treeView.ItemSource = ViewModel.RootFolder;
           listView.ItemSource = ViewModel.Files;
+          comboBox.SelectedIndex = ViewModel.Filters.IndexOf(ViewModel.SelectedFilter);
           ViewModel.RefreshFiles();
         }
       ]]></ref.Ctor>
       <CustomControl ref.Name="self">
+        <att.ViewModel-set SelectedFilter-bind="cast (IFileDialogFilter^) comboBox.SelectedItem"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
           </att.Rows>
           <att.Columns>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
 
-          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
-            <att.Rows>
-              <_>composeType:Percentage percentage:1.0</_>
-            </att.Rows>
-            <att.Columns>
-              <_>composeType:Absolute absolute:192</_>
-              <_>composeType:Percentage percentage:1.0</_>
-            </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:Absolute absolute:192</_>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Columns>
 
-            <ColumnSplitter ColumnsToTheLeft="1"/>
+              <ColumnSplitter ColumnsToTheLeft="1"/>
 
-            <Cell Site="row:0 column:0">
-              <BindableTreeView ref.Name="treeView" env.ItemType="IFileDialogFolder^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <att.TextProperty>Name</att.TextProperty>
-                <att.ChildrenProperty>Folders</att.ChildrenProperty>
-              </BindableTreeView>
-            </Cell>
+              <Cell Site="row:0 column:0">
+                <BindableTreeView ref.Name="treeView" env.ItemType="IFileDialogFolder^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.TextProperty>Name</att.TextProperty>
+                  <att.ChildrenProperty>Folders</att.ChildrenProperty>
+                </BindableTreeView>
+              </Cell>
 
-            <Cell Site="row:0 column:1">
-              <BindableListView ref.Name="listView" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
-                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                <att.Columns>
-                  <ListViewColumn TextProperty="Name"/>
-                </att.Columns>
-              </BindableListView>
-            </Cell>
-          </Table>
+              <Cell Site="row:0 column:1">
+                <BindableListView ref.Name="listView" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.Columns>
+                    <ListViewColumn TextProperty="Name"/>
+                  </att.Columns>
+                </BindableListView>
+              </Cell>
+            </Table>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+              <att.Rows>
+                <_>composeType:Percentage percentage:1.0</_>
+              </att.Rows>
+              <att.Columns>
+                <_>composeType:MinSize</_>
+                <_>composeType:Percentage percentage:1.0</_>
+                <_>composeType:Absolute absolute:120</_>
+              </att.Columns>
+
+              <ColumnSplitter ColumnsToTheLeft="2"/>
+
+              <Cell Site="row:0 column:0">
+                <Label Text-str="FileDialogFileName()"/>
+              </Cell>
+
+              <Cell Site="row:0 column:1">
+                <SinglelineTextBox ref.Name="textBox">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                </SinglelineTextBox>
+              </Cell>
+
+              <Cell Site="row:0 column:2">
+                <ComboBox ref.Name="comboBox">
+                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.ListControl>
+                    <BindableTextList env.ItemType="IFileDialogFilter^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                      <att.ItemSource-eval>ViewModel.Filters</att.ItemSource-eval>
+                      <att.TextProperty>Name</att.TextProperty>
+                    </BindableTextList>
+                  </att.ListControl>
+                </ComboBox>
+              </Cell>
+            </Table>
+          </Cell>
         </Table>
       </CustomControl>
     </Instance>

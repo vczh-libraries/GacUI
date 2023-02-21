@@ -9,6 +9,9 @@
   - message box `ENTER` and `ESC` operation.
   - message box is not shown at the center.
   - message box disable `X` button if `Cancel` is not in the button list.
+  - color dialog `ENTER` and `ESC` operation.
+  - font dialog `ENTER` and `ESC` operation.
+  - file dialog `ENTER` and `ESC` operation.
   - New tab on `FullControlTest` to show options of dialogs.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
