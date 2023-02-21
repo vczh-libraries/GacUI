@@ -2221,7 +2221,7 @@ class presentation::controls::GuiControlHost : presentation::controls::GuiContro
     property TopMost : system::Boolean { get:GetTopMost set:SetTopMost }
 
     function Close() : system::Void;
-    function DeleteAfterProcessingAllEvents() : system::Void;
+    function DeleteAfterProcessingAllEvents(callback : system::Function<system::Void>^) : system::Void;
     function ForceCalculateSizeImmediately() : system::Void;
     function GetClientSize() : presentation::Size;
     function GetEnabledActivate() : system::Boolean;
@@ -3277,6 +3277,7 @@ class presentation::controls::GuiWindow : presentation::controls::GuiControlHost
     function SetTitleBar(value : system::Boolean) : system::Void;
     function ShowModal(owner : presentation::controls::GuiWindow*, callback : system::Function<system::Void>^) : system::Void;
     function ShowModalAndDelete(owner : presentation::controls::GuiWindow*, callback : system::Function<system::Void>^) : system::Void;
+    function ShowModalAndDelete(owner : presentation::controls::GuiWindow*, callbackClosed : system::Function<system::Void>^, callbackDeleted : system::Function<system::Void>^) : system::Void;
     function ShowModalAsync(owner : presentation::controls::GuiWindow*) : system::Async^;
     function ShowWithOwner(owner : presentation::controls::GuiWindow*) : system::Void;
     function TypedControlTemplateObject(ensureExists : system::Boolean) : presentation::templates::GuiWindowTemplate*;
