@@ -48,6 +48,19 @@
         <String Name="Underline" Text="Underline"/>
         <String Name="HAA" Text="Horizontal Antialias"/>
         <String Name="VAA" Text="Vertical Antialias"/>
+
+        <String Name="FileDialogFileName" Text="File Name:"/>
+        <String Name="FileDialogOpen" Text="Open"/>
+        <String Name="FileDialogSave" Text="Save"/>
+
+        <String Name="FileDialogTextLoadingFolders" Text="(Loading...)"/>
+        <String Name="FileDialogTextLoadingFiles" Text="(Loading Folders and Files...)"/>
+        <String Name="FileDialogErrorFileNotExist" Text="File(s) not exist:"/>
+        <String Name="FileDialogErrorFileExpected" Text="File(s) expected but folder(s) selected:"/>
+        <String Name="FileDialogErrorFolderNotExist" Text="Folder not exist:"/>
+        <String Name="FileDialogErrorMultipleSelectionNotEnabled" Text="Multiple selection is not enabled in this dialog."/>
+        <String Name="FileDialogAskCreateFile" Text="Do you want to create the following file(s):"/>
+        <String Name="FileDialogAskOverrideFile" Text="Do you want to override the following file(s):"/>
       </Strings>
     </LocalizedStrings>
   </LocalizedStrings>
@@ -55,4 +68,5 @@
   <Folder name="MessageBoxComponents" content="Link">MessageBox.xml</Folder>
   <Folder name="ColorDialogComponents" content="Link">ColorDialog.xml</Folder>
   <Folder name="FontDialogComponents" content="Link">FontDialog.xml</Folder>
+  <Folder name="FileDialogComponents" content="Link">FileDialog.xml</Folder>
 </Resource>

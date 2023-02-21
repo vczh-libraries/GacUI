@@ -1,0 +1,173 @@
+<Folder>
+  <Instance name="FilePickerControl">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FilePickerControl">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IFileDialogViewModel"/>
+      <ref.Ctor><![CDATA[
+        {
+          ViewModel.InitLocalizedText(
+              self.Strings.FileDialogTextLoadingFolders(),
+              self.Strings.FileDialogTextLoadingFiles(),
+              self.Strings.FileDialogErrorFileNotExist(),
+              self.Strings.FileDialogErrorFileExpected(),
+              self.Strings.FileDialogErrorFolderNotExist(),
+              self.Strings.FileDialogErrorMultipleSelectionNotEnabled(),
+              self.Strings.FileDialogAskCreateFile(),
+              self.Strings.FileDialogAskOverrideFile()
+            );
+        }
+      ]]></ref.Ctor>
+      <CustomControl ref.Name="self">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+            <att.Rows>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Rows>
+            <att.Columns>
+              <_>composeType:Absolute absolute:256</_>
+              <_>composeType:Percentage percentage:1.0</_>
+            </att.Columns>
+
+            <ColumnSplitter ColumnsToTheLeft="1"/>
+
+            <Cell Site="row:0 column:0">
+              <BindableTreeView env.ItemType="IFileDialogFolder^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <att.ItemSource-bind>ViewModel.RootFolder</att.ItemSource-bind>
+                <att.TextProperty>Name</att.TextProperty>
+                <att.ChildrenProperty>Folders</att.ChildrenProperty>
+              </BindableTreeView>
+            </Cell>
+
+            <Cell Site="row:0 column:1">
+              <BindableListView env.ItemType="IFileDialogFile^" View="List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                <att.ItemSource-bind>ViewModel.Files</att.ItemSource-bind>
+                <att.TextProperty>Name</att.TextProperty>
+              </BindableListView>
+            </Cell>
+          </Table>
+        </Table>
+      </CustomControl>
+    </Instance>
+  </Instance>
+
+  <Instance name="OpenFileDialogWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::OpenFileDialogWindow" xmlns:g="gaclib_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IFileDialogViewModel"/>
+      <Window
+          ref.Name = "self"
+          Text-str="FontDialogTitle()"
+          ClientSize="x:360 y:360"
+          ShowInTaskBar="false"
+          MaximizedBox="false"
+          MinimizedBox="false"
+          IconVisible="false"
+          >
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0 rowSpan:1 columnSpan:3">
+            <g:FilePickerControl ViewModel-eval="ViewModel">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </g:FilePickerControl>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <Button Text-str="FileDialogOpen()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.Close();
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <Button Text-str="Cancel()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.Close();
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+
+  <Instance name="SaveFileDialogWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::SaveFileDialogWindow" xmlns:g="gaclib_controls::*">
+      <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
+      <ref.Parameter Name="ViewModel" Class="presentation::IFileDialogViewModel"/>
+      <Window
+          ref.Name = "self"
+          Text-str="FontDialogTitle()"
+          ClientSize="x:360 y:360"
+          ShowInTaskBar="false"
+          MaximizedBox="false"
+          MinimizedBox="false"
+          IconVisible="false"
+          >
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
+          <att.Rows>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Percentage percentage:1.0</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0 rowSpan:1 columnSpan:3">
+            <g:FilePickerControl ViewModel-eval="ViewModel">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </g:FilePickerControl>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <Button Text-str="FileDialogSave()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.Close();
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <Button Text-str="Cancel()">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.Close();
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
+      </Window>
+    </Instance>
+  </Instance>
+</Folder>
