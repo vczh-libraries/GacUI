@@ -148,12 +148,16 @@ GuiComboBoxListControl
 					Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
 
 					Size clientSize = GetPreferredMenuClientSize();
-					clientSize.y = adoptedSize.y + subMenu->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
-					SetPreferredMenuClientSize(clientSize);
-
-					if (GetSubMenuOpening())
+					vint height = adoptedSize.y + subMenu->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
+					if (clientSize.y != height)
 					{
-						subMenu->SetClientSize(clientSize);
+						clientSize.y = height;
+						SetPreferredMenuClientSize(clientSize);
+
+						if (GetSubMenuOpening())
+						{
+							subMenu->SetClientSize(clientSize);
+						}
 					}
 				}
 			}
