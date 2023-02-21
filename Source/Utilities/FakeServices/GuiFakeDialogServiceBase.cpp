@@ -140,6 +140,13 @@ View Model (IFileDialogViewModel)
 			filesystem::Folder			folder;
 			Folders						children;
 
+			FileDialogFolder() = default;
+
+			FileDialogFolder(const filesystem::FilePath& filePath)
+				: folder(filePath)
+			{
+			}
+
 			Ptr<IFileDialogFolder> GetParent() override
 			{
 				return Ptr(static_cast<IFileDialogFolder*>(parent));
@@ -179,8 +186,13 @@ View Model (IFileDialogViewModel)
 			WString						dialogAskOverrideFile;
 
 		public:
+			bool						confirmed = false;
 			WString						title;
 			bool						enabledMultipleSelection = false;
+			bool						fileMustExist = false;
+			bool						folderMustExist = false;
+			bool						promptCreateFile = false;
+			bool						promptOverriteFile = false;
 			WString						defaultExtension;
 
 			Filters						filters;
@@ -464,7 +476,54 @@ FakeDialogServiceBase
 			FileDialogOptions options
 		)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto vm = Ptr(new FileDialogViewModel);
+			vm->title = title;
+			vm->enabledMultipleSelection = (options | INativeDialogService::FileDialogAllowMultipleSelection) != 0;
+			vm->fileMustExist = (options | INativeDialogService::FileDialogFileMustExist) != 0;
+			vm->folderMustExist = (options | INativeDialogService::FileDialogDirectoryMustExist) != 0;
+			vm->promptCreateFile = (options | INativeDialogService::FileDialogPromptCreateFile) != 0;
+			vm->promptOverriteFile = (options | INativeDialogService::FileDialogPromptOverwriteFile) != 0;
+			vm->defaultExtension = defaultExtension;
+
+			// TODO: filter -> filters
+			if (vm->filters.Count() > 0)
+			{
+				if (0 <= selectionFilterIndex && selectionFilterIndex < vm->filters.Count())
+				{
+					selectionFilterIndex = 0;
+				}
+				vm->selectedFilter = vm->filters[selectionFilterIndex].Cast<FileDialogFilter>();
+			}
+
+			vm->rootFolder = Ptr(new FileDialogFolder);
+			// TODO: initialDirectory -> selectedFolder
+
+			vm->RefreshFiles();
+			switch (dialogType)
+			{
+			case INativeDialogService::FileDialogOpen:
+			case INativeDialogService::FileDialogOpenPreview:
+				{
+					auto owner = GetApplication()->GetWindowFromNative(window);
+					auto dialog = CreateOpenFileDialog(vm);
+					ShowModalDialogAndDelete(owner, dialog);
+				}
+				break;
+			case INativeDialogService::FileDialogSave:
+			case INativeDialogService::FileDialogSavePreview:
+				{
+					auto owner = GetApplication()->GetWindowFromNative(window);
+					auto dialog = CreateSaveFileDialog(vm);
+					ShowModalDialogAndDelete(owner, dialog);
+				}
+				break;
+			}
+
+			if (vm->filters.Count() > 0)
+			{
+				selectionFilterIndex = vm->filters.IndexOf(vm->selectedFilter.Obj());
+			}
+			return vm->confirmed;
 		}
 	}
 }
