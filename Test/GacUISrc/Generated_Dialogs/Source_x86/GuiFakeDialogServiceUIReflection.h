@@ -43,6 +43,8 @@ namespace vl
 			DECL_TYPE_INFO(::gaclib_controls::ColorDialogWindow)
 			DECL_TYPE_INFO(::gaclib_controls::ColorDialogWindowConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::DialogStrings)
+			DECL_TYPE_INFO(::gaclib_controls::FilePickerControl)
+			DECL_TYPE_INFO(::gaclib_controls::FilePickerControlConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::FontNameControl)
 			DECL_TYPE_INFO(::gaclib_controls::FontNameControlConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::FontSizeControl)
@@ -54,6 +56,10 @@ namespace vl
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxButtonTemplateConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindow)
 			DECL_TYPE_INFO(::gaclib_controls::MessageBoxWindowConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::OpenFileDialogWindow)
+			DECL_TYPE_INFO(::gaclib_controls::OpenFileDialogWindowConstructor)
+			DECL_TYPE_INFO(::gaclib_controls::SaveFileDialogWindow)
+			DECL_TYPE_INFO(::gaclib_controls::SaveFileDialogWindowConstructor)
 			DECL_TYPE_INFO(::gaclib_controls::SimpleFontDialogWindow)
 			DECL_TYPE_INFO(::gaclib_controls::SimpleFontDialogWindowConstructor)
 
@@ -87,6 +93,50 @@ namespace vl
 				::vl::WString Continue() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Continue);
+				}
+				::vl::WString FileDialogAskCreateFile() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogAskCreateFile);
+				}
+				::vl::WString FileDialogAskOverrideFile() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogAskOverrideFile);
+				}
+				::vl::WString FileDialogErrorFileExpected() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogErrorFileExpected);
+				}
+				::vl::WString FileDialogErrorFileNotExist() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogErrorFileNotExist);
+				}
+				::vl::WString FileDialogErrorFolderNotExist() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogErrorFolderNotExist);
+				}
+				::vl::WString FileDialogErrorMultipleSelectionNotEnabled() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogErrorMultipleSelectionNotEnabled);
+				}
+				::vl::WString FileDialogFileName() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogFileName);
+				}
+				::vl::WString FileDialogOpen() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogOpen);
+				}
+				::vl::WString FileDialogSave() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogSave);
+				}
+				::vl::WString FileDialogTextLoadingFiles() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogTextLoadingFiles);
+				}
+				::vl::WString FileDialogTextLoadingFolders() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogTextLoadingFolders);
 				}
 				::vl::WString FontColorGroup() override
 				{

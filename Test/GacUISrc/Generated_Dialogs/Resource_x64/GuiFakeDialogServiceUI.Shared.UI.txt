@@ -19,6 +19,28 @@ namespace gaclib_controls
 
         func Continue() : (::system::String);
 
+        func FileDialogAskCreateFile() : (::system::String);
+
+        func FileDialogAskOverrideFile() : (::system::String);
+
+        func FileDialogErrorFileExpected() : (::system::String);
+
+        func FileDialogErrorFileNotExist() : (::system::String);
+
+        func FileDialogErrorFolderNotExist() : (::system::String);
+
+        func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String);
+
+        func FileDialogFileName() : (::system::String);
+
+        func FileDialogOpen() : (::system::String);
+
+        func FileDialogSave() : (::system::String);
+
+        func FileDialogTextLoadingFiles() : (::system::String);
+
+        func FileDialogTextLoadingFolders() : (::system::String);
+
         func FontColorGroup() : (::system::String);
 
         func FontColorGroup2() : (::system::String);
@@ -116,6 +138,61 @@ namespace gaclib_controls
                 override func Continue() : (::system::String)
                 {
                     return "Continue";
+                }
+
+                override func FileDialogAskCreateFile() : (::system::String)
+                {
+                    return "Do you want to create the following file(s):";
+                }
+
+                override func FileDialogAskOverrideFile() : (::system::String)
+                {
+                    return "Do you want to override the following file(s):";
+                }
+
+                override func FileDialogErrorFileExpected() : (::system::String)
+                {
+                    return "File(s) expected but folder(s) selected:";
+                }
+
+                override func FileDialogErrorFileNotExist() : (::system::String)
+                {
+                    return "File(s) not exist:";
+                }
+
+                override func FileDialogErrorFolderNotExist() : (::system::String)
+                {
+                    return "Folder not exist:";
+                }
+
+                override func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String)
+                {
+                    return "Multiple selection is not enabled in this dialog.";
+                }
+
+                override func FileDialogFileName() : (::system::String)
+                {
+                    return "File Name:";
+                }
+
+                override func FileDialogOpen() : (::system::String)
+                {
+                    return "Open";
+                }
+
+                override func FileDialogSave() : (::system::String)
+                {
+                    return "Save";
+                }
+
+                override func FileDialogTextLoadingFiles() : (::system::String)
+                {
+                    return "(Loading Folders and Files...)";
+                }
+
+                override func FileDialogTextLoadingFolders() : (::system::String)
+                {
+                    return "(Loading...)";
                 }
 
                 override func FontColorGroup() : (::system::String)

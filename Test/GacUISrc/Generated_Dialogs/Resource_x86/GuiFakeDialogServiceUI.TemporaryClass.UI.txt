@@ -1,4 +1,4 @@
-﻿================================(1/10)================================
+﻿================================(1/13)================================
 module <instance>gaclib_controls::ColorComponentControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -57,7 +57,7 @@ namespace gaclib_controls
     }
 }
 
-================================(2/10)================================
+================================(2/13)================================
 module <instance>gaclib_controls::ColorDialogControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -149,7 +149,7 @@ namespace gaclib_controls
     }
 }
 
-================================(3/10)================================
+================================(3/13)================================
 module <instance>gaclib_controls::ColorDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -215,7 +215,205 @@ namespace gaclib_controls
     }
 }
 
-================================(4/10)================================
+================================(4/13)================================
+module <instance>gaclib_controls::FilePickerControl;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class FilePickerControl : ::presentation::controls::GuiCustomControl
+    {
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
+            :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(5/13)================================
+module <instance>gaclib_controls::OpenFileDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class OpenFileDialogWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(6/13)================================
+module <instance>gaclib_controls::SaveFileDialogWindow;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace gaclib_controls
+{
+    class SaveFileDialogWindow : ::presentation::controls::GuiWindow
+    {
+        @cpp:Private
+        var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
+
+        func GetStrings() : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return <prop>Strings;
+        }
+
+        func SetStrings(<value> : ::gaclib_controls::IDialogStringsStrings^) : (void)
+        {
+            if ((<prop>Strings != <value>))
+            {
+                (<prop>Strings = <value>);
+                StringsChanged();
+            }
+        }
+
+        event StringsChanged();
+
+        prop Strings : ::gaclib_controls::IDialogStringsStrings^{GetStrings, SetStrings : StringsChanged}
+
+        func GetViewModel() : (presentation::IFileDialogViewModel^)
+        {
+            raise "Not Implemented";
+        }
+
+        prop ViewModel : presentation::IFileDialogViewModel^{GetViewModel}
+
+        new* (<ctor-parameter>ViewModel : presentation::IFileDialogViewModel^)
+            :::presentation::controls::GuiWindow((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiControlHost*));
+        }
+    }
+}
+
+================================(7/13)================================
 module <instance>gaclib_controls::FontNameControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -333,7 +531,7 @@ namespace gaclib_controls
     }
 }
 
-================================(5/10)================================
+================================(8/13)================================
 module <instance>gaclib_controls::FontSizeControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -460,7 +658,7 @@ namespace gaclib_controls
     }
 }
 
-================================(6/10)================================
+================================(9/13)================================
 module <instance>gaclib_controls::FullFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -526,7 +724,7 @@ namespace gaclib_controls
     }
 }
 
-================================(7/10)================================
+================================(10/13)================================
 module <instance>gaclib_controls::SimpleFontDialogWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -592,7 +790,7 @@ namespace gaclib_controls
     }
 }
 
-================================(8/10)================================
+================================(11/13)================================
 module <instance>gaclib_controls::MessageBoxButtonTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -662,7 +860,7 @@ namespace gaclib_controls
     }
 }
 
-================================(9/10)================================
+================================(12/13)================================
 module <instance>gaclib_controls::MessageBoxWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -707,7 +905,7 @@ namespace gaclib_controls
     }
 }
 
-================================(10/10)================================
+================================(13/13)================================
 module <localized-strings>gaclib_controls::DialogStrings;
 
 namespace gaclib_controls
@@ -727,6 +925,28 @@ namespace gaclib_controls
         func ColorDialogTitle() : (::system::String);
 
         func Continue() : (::system::String);
+
+        func FileDialogAskCreateFile() : (::system::String);
+
+        func FileDialogAskOverrideFile() : (::system::String);
+
+        func FileDialogErrorFileExpected() : (::system::String);
+
+        func FileDialogErrorFileNotExist() : (::system::String);
+
+        func FileDialogErrorFolderNotExist() : (::system::String);
+
+        func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String);
+
+        func FileDialogFileName() : (::system::String);
+
+        func FileDialogOpen() : (::system::String);
+
+        func FileDialogSave() : (::system::String);
+
+        func FileDialogTextLoadingFiles() : (::system::String);
+
+        func FileDialogTextLoadingFolders() : (::system::String);
 
         func FontColorGroup() : (::system::String);
 
@@ -825,6 +1045,61 @@ namespace gaclib_controls
                 override func Continue() : (::system::String)
                 {
                     return "Continue";
+                }
+
+                override func FileDialogAskCreateFile() : (::system::String)
+                {
+                    return "Do you want to create the following file(s):";
+                }
+
+                override func FileDialogAskOverrideFile() : (::system::String)
+                {
+                    return "Do you want to override the following file(s):";
+                }
+
+                override func FileDialogErrorFileExpected() : (::system::String)
+                {
+                    return "File(s) expected but folder(s) selected:";
+                }
+
+                override func FileDialogErrorFileNotExist() : (::system::String)
+                {
+                    return "File(s) not exist:";
+                }
+
+                override func FileDialogErrorFolderNotExist() : (::system::String)
+                {
+                    return "Folder not exist:";
+                }
+
+                override func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String)
+                {
+                    return "Multiple selection is not enabled in this dialog.";
+                }
+
+                override func FileDialogFileName() : (::system::String)
+                {
+                    return "File Name:";
+                }
+
+                override func FileDialogOpen() : (::system::String)
+                {
+                    return "Open";
+                }
+
+                override func FileDialogSave() : (::system::String)
+                {
+                    return "Save";
+                }
+
+                override func FileDialogTextLoadingFiles() : (::system::String)
+                {
+                    return "(Loading Folders and Files...)";
+                }
+
+                override func FileDialogTextLoadingFolders() : (::system::String)
+                {
+                    return "(Loading...)";
                 }
 
                 override func FontColorGroup() : (::system::String)
