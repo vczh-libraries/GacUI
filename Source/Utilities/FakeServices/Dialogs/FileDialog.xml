@@ -31,7 +31,7 @@
               <_>composeType:Percentage percentage:1.0</_>
             </att.Rows>
             <att.Columns>
-              <_>composeType:Absolute absolute:256</_>
+              <_>composeType:Absolute absolute:192</_>
               <_>composeType:Percentage percentage:1.0</_>
             </att.Columns>
 
@@ -74,7 +74,7 @@
           MinimizedBox="false"
           IconVisible="false"
           >
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:5 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
             <_>composeType:MinSize</_>
@@ -130,7 +130,7 @@
           MinimizedBox="false"
           IconVisible="false"
           >
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
+        <Table AlignmentToParent="left:0 top:5 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Percentage percentage:1.0</_>
             <_>composeType:MinSize</_>

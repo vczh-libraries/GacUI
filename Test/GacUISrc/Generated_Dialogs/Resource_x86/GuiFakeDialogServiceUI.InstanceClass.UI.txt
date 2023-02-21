@@ -1896,7 +1896,7 @@ namespace gaclib_controls
             {
                 <precompile>1.SetRowsAndColumns(1, 2);
                 <precompile>1.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>1.SetColumnOption(0, {composeType : Absolute; absolute : 256;} of (::presentation::compositions::GuiCellOption));
+                <precompile>1.SetColumnOption(0, {composeType : Absolute; absolute : 192;} of (::presentation::compositions::GuiCellOption));
                 <precompile>1.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>2 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
@@ -2346,7 +2346,7 @@ namespace gaclib_controls
                 (<precompile>0.BorderVisible = false);
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -2893,7 +2893,7 @@ namespace gaclib_controls
                 (<precompile>0.BorderVisible = false);
             }
             {
-                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.AlignmentToParent = {left : 0; top : 5; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
