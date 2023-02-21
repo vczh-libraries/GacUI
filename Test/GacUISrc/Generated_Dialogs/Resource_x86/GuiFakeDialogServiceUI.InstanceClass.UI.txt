@@ -1864,7 +1864,7 @@ namespace gaclib_controls
             (ViewModel = <this>.ViewModel);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 10 of (::system::Int32));
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>0.BorderVisible = false);
@@ -1882,7 +1882,7 @@ namespace gaclib_controls
             }
             (<precompile>1 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>1.CellPadding = 10 of (::system::Int32));
+                (<precompile>1.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>1.BorderVisible = false);
@@ -2336,11 +2336,11 @@ namespace gaclib_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 360; y : 360;} of (::presentation::Size));
+                (self.ClientSize = {x : 480; y : 360;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 10 of (::system::Int32));
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>0.BorderVisible = false);
@@ -2396,7 +2396,7 @@ namespace gaclib_controls
             }
             (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>7.SetSite(1, 1, 1, 1);
+                <precompile>7.SetSite(1, 2, 1, 1);
             }
             {
                 (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
@@ -2883,11 +2883,11 @@ namespace gaclib_controls
                 (self.ShowInTaskBar = false);
             }
             {
-                (self.ClientSize = {x : 360; y : 360;} of (::presentation::Size));
+                (self.ClientSize = {x : 480; y : 360;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.CellPadding = 10 of (::system::Int32));
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
             }
             {
                 (<precompile>0.BorderVisible = false);
@@ -2943,7 +2943,7 @@ namespace gaclib_controls
             }
             (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>7.SetSite(1, 1, 1, 1);
+                <precompile>7.SetSite(1, 2, 1, 1);
             }
             {
                 (<precompile>8 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));

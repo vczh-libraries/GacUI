@@ -136,8 +136,9 @@ View Model (IFileDialogViewModel)
 		{
 		public:
 			FileDialogFolder*			parent = nullptr;
-			FileDialogFolderType		type = FileDialogFolderType::Root;
+			FileDialogFolderType		type = FileDialogFolderType::Placeholder;
 			filesystem::Folder			folder;
+			WString						name;
 			Folders						children;
 
 			FileDialogFolder() = default;
@@ -164,12 +165,35 @@ View Model (IFileDialogViewModel)
 
 			WString GetName() override
 			{
-				return folder.GetFilePath().GetName();
+				return name;
 			}
 
 			Folders& GetFolders() override
 			{
 				return children;
+			}
+		};
+
+		class FileDialogFile : public Object, public virtual IFileDialogFile
+		{
+		public:
+			FileDialogFileType			type = FileDialogFileType::Placeholder;
+			Ptr<FileDialogFolder>		folder;
+			WString						name;
+
+			FileDialogFileType GetType() override
+			{
+				return type;
+			}
+
+			Ptr<IFileDialogFolder> GetAssociatedFolder() override
+			{
+				return folder;
+			}
+
+			WString GetName() override
+			{
+				return name;
 			}
 		};
 
@@ -276,6 +300,24 @@ View Model (IFileDialogViewModel)
 
 			void RefreshFiles() override
 			{
+				if (!isLoadingFile)
+				{
+					isLoadingFile = true;
+					IsLoadingFilesChanged();
+
+					{
+						auto folder = Ptr(new FileDialogFolder);
+						folder->name = textLoadingFolders;
+						rootFolder->children.Clear();
+						rootFolder->children.Add(folder);
+					}
+					{
+						auto file = Ptr(new FileDialogFile);
+						file->name = textLoadingFiles;
+						files.Clear();
+						files.Add(file);
+					}
+				}
 			}
 
 			bool TryConfirm(const collections::List<WString>& selectedPaths) override
@@ -496,6 +538,7 @@ FakeDialogServiceBase
 			}
 
 			vm->rootFolder = Ptr(new FileDialogFolder);
+			vm->rootFolder->type = FileDialogFolderType::Root;
 			// TODO: initialDirectory -> selectedFolder
 
 			vm->RefreshFiles();
