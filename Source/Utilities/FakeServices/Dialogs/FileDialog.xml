@@ -3,8 +3,14 @@
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::FilePickerControl">
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="ViewModel" Class="presentation::IFileDialogViewModel"/>
+      <ref.Members><![CDATA[
+        var imageFolder : GuiImageData^ = null;
+        var imageFile   : GuiImageData^ = null;
+      ]]></ref.Members>
       <ref.Ctor><![CDATA[
         {
+          imageFolder  = (cast (GuiImageData^) self.ResolveResource("res", "Images/Folder", true));
+          imageFile    = (cast (GuiImageData^) self.ResolveResource("res", "Images/File", true));
           ViewModel.InitLocalizedText(
               self.Strings.FileDialogTextLoadingFolders(),
               self.Strings.FileDialogTextLoadingFiles(),
@@ -48,6 +54,10 @@
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.TextProperty>Name</att.TextProperty>
                   <att.ChildrenProperty>Folders</att.ChildrenProperty>
+                  <att.ImageProperty-eval>
+                    <![CDATA[
+                    [let node = cast (IFileDialogFolder^) $1 in (node.Type == FileDialogFolderType::Folder ? self.imageFolder : null)]
+                  ]]></att.ImageProperty-eval>
                 </BindableTreeView>
               </Cell>
 

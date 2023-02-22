@@ -316,6 +316,10 @@ namespace gaclib_controls
 {
     class FilePickerControl : ::presentation::controls::GuiCustomControl
     {
+        var imageFolder : GuiImageData^ = null;
+
+        var imageFile : GuiImageData^ = null;
+
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
 

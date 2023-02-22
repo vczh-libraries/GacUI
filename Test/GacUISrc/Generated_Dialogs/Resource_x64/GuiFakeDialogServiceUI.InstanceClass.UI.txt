@@ -2604,6 +2604,9 @@ namespace gaclib_controls
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             {
+                (treeView.ImageProperty = [let node = (cast (IFileDialogFolder^) $1) in ((node.Type == FileDialogFolderType::Folder) ? self.imageFolder : null)]);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);
@@ -2797,6 +2800,10 @@ namespace gaclib_controls
     @cpp:Friend(typeof(FilePickerControlConstructor))
     class FilePickerControl : ::presentation::controls::GuiCustomControl, FilePickerControlConstructor
     {
+        var imageFolder : GuiImageData^ = null;
+
+        var imageFile : GuiImageData^ = null;
+
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
 
@@ -2840,6 +2847,8 @@ namespace gaclib_controls
 
         func <instance-ctor>() : (::system::Void)
         {
+            (imageFolder = (cast (GuiImageData^) self.ResolveResource("res", "Images/Folder", true)));
+            (imageFile = (cast (GuiImageData^) self.ResolveResource("res", "Images/File", true)));
             ViewModel.InitLocalizedText(self.Strings.FileDialogTextLoadingFolders(), self.Strings.FileDialogTextLoadingFiles(), self.Strings.FileDialogErrorFileNotExist(), self.Strings.FileDialogErrorFileExpected(), self.Strings.FileDialogErrorFolderNotExist(), self.Strings.FileDialogErrorMultipleSelectionNotEnabled(), self.Strings.FileDialogAskCreateFile(), self.Strings.FileDialogAskOverrideFile());
             (treeView.ItemSource = ViewModel.RootFolder);
             (listView.ItemSource = ViewModel.Files);

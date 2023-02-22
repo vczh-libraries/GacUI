@@ -216,6 +216,8 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_prop_Strings)
 				CLASS_MEMBER_PROPERTY_EVENT(Strings, GetStrings, SetStrings, StringsChanged)
 				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
+				CLASS_MEMBER_FIELD(imageFile)
+				CLASS_MEMBER_FIELD(imageFolder)
 			END_CLASS_MEMBER(::gaclib_controls::FilePickerControl)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::FilePickerControlConstructor)

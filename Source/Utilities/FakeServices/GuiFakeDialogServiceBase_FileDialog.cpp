@@ -216,6 +216,7 @@ View Model (IFileDialogViewModel)
 
 					{
 						auto folder = Ptr(new FileDialogFolder);
+						folder->parent = rootFolder.Obj();
 						folder->name = textLoadingFolders;
 						rootFolder->children.Clear();
 						rootFolder->children.Add(folder);
