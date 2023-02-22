@@ -35,12 +35,31 @@ View Model (IFileDialogFolder)
 
 		class FileDialogFolder : public Object, public virtual IFileDialogFolder
 		{
+		protected:
+			vint						taskId = 0;
+			bool						taskFired = false;
+
 		public:
 			FileDialogFolder*			parent = nullptr;
 			FileDialogFolderType		type = FileDialogFolderType::Placeholder;
 			filesystem::Folder			folder;
 			WString						name;
+			WString						textLoadingFolders;
 			Folders						children;
+
+			void AddChild(Ptr<FileDialogFolder> child)
+			{
+				child->textLoadingFolders = textLoadingFolders;
+				child->parent = this;
+				children.Add(child);
+			}
+
+			void AddPlaceholderChild()
+			{
+				auto child = Ptr(new FileDialogFolder);
+				child->name = textLoadingFolders;
+				AddChild(child);
+			}
 
 			FileDialogFolder() = default;
 
@@ -56,6 +75,38 @@ View Model (IFileDialogFolder)
 
 			FileDialogFolderType GetType() override
 			{
+				if (type == FileDialogFolderType::Placeholder && !taskFired)
+				{
+					taskFired = true;
+					auto taskFolder = Ptr(parent);
+					vint taskFolderId = ++taskFolder->taskId;
+					GetApplication()->InvokeAsync([taskFolder, taskFolderId]()
+					{
+						auto subFolders = Ptr(new List<filesystem::Folder>);
+						if (!taskFolder->folder.GetFolders(*subFolders.Obj()))
+						{
+							subFolders->Clear();
+						}
+
+						GetApplication()->InvokeInMainThread(nullptr, [taskFolder, taskFolderId, subFolders]()
+						{
+							if (taskFolder->taskId == taskFolderId)
+							{
+								taskFolder->children.Clear();
+								for (auto subFolder : *subFolders.Obj())
+								{
+									auto child = Ptr(new FileDialogFolder);
+									child->parent = taskFolder.Obj();
+									child->type = FileDialogFolderType::Folder;
+									child->folder = subFolder;
+									child->name = subFolder.GetFilePath().GetName();
+									child->AddPlaceholderChild();
+									taskFolder->children.Add(child);
+								}
+							}
+						});
+					});
+				}
 				return type;
 			}
 
@@ -213,14 +264,6 @@ View Model (IFileDialogViewModel)
 				{
 					isLoadingFile = true;
 					IsLoadingFilesChanged();
-
-					{
-						auto folder = Ptr(new FileDialogFolder);
-						folder->parent = rootFolder.Obj();
-						folder->name = textLoadingFolders;
-						rootFolder->children.Clear();
-						rootFolder->children.Add(folder);
-					}
 					{
 						auto file = Ptr(new FileDialogFile);
 						file->name = textLoadingFiles;
@@ -254,6 +297,9 @@ View Model (IFileDialogViewModel)
 				dialogErrorMultipleSelectionNotEnabled = _dialogErrorMultipleSelectionNotEnabled;
 				dialogAskCreateFile = _dialogAskCreateFile;
 				dialogAskOverrideFile = _dialogAskOverrideFile;
+
+				rootFolder->textLoadingFolders = textLoadingFolders;
+				rootFolder->AddPlaceholderChild();
 			}
 		};
 
