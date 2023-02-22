@@ -54,8 +54,7 @@
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.TextProperty>Name</att.TextProperty>
                   <att.ChildrenProperty>Folders</att.ChildrenProperty>
-                  <att.ImageProperty-eval>
-                    <![CDATA[
+                  <att.ImageProperty-eval><![CDATA[
                     [let node = cast (IFileDialogFolder^) $1 in (node.Type == FileDialogFolderType::Folder ? self.imageFolder : null)]
                   ]]></att.ImageProperty-eval>
                 </BindableTreeView>
