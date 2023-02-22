@@ -96,12 +96,11 @@ View Model (IFileDialogFolder)
 								for (auto subFolder : *subFolders.Obj())
 								{
 									auto child = Ptr(new FileDialogFolder);
-									child->parent = taskFolder.Obj();
 									child->type = FileDialogFolderType::Folder;
 									child->folder = subFolder;
 									child->name = subFolder.GetFilePath().GetName();
 									child->AddPlaceholderChild();
-									taskFolder->children.Add(child);
+									taskFolder->AddChild(child);
 								}
 							}
 						});
