@@ -15,6 +15,8 @@
     <Image name="Question" content="File">Images/Question.png</Image>
     <Image name="Warning" content="File">Images/Warning.png</Image>
     <Image name="Information" content="File">Images/Information.png</Image>
+    <Image name="File" content="File">Images/File.png</Image>
+    <Image name="Folder" content="File">Images/Folder.png</Image>
   </Folder>
 
   <LocalizedStrings name="DialogStrings">
