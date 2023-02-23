@@ -1959,14 +1959,23 @@ namespace gaclib_controls
             {
                 var <created-subscription> = new (::system::Subscription^)
                 {
+                    var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
                     var <bind-opened> : ::system::Boolean = false;
 
                     var <bind-closed> : ::system::Boolean = false;
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (!ViewModel.IsLoadingFiles) of (::system::Boolean);
+                        var <bind-activator-result> = (!<bind-cache>0.IsLoadingFiles) of (::system::Boolean);
                         ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
                     }
 
                     override func Open() : (::system::Boolean)
@@ -1974,6 +1983,8 @@ namespace gaclib_controls
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.IsLoadingFilesChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -1994,6 +2005,13 @@ namespace gaclib_controls
                         if ((!<bind-closed>))
                         {
                             (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.IsLoadingFilesChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -2637,14 +2655,23 @@ namespace gaclib_controls
             {
                 var <created-subscription> = new (::system::Subscription^)
                 {
+                    var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
                     var <bind-opened> : ::system::Boolean = false;
 
                     var <bind-closed> : ::system::Boolean = false;
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = let folder = ViewModel.SelectedFolder in (folder is not null ? folder.FullPath : "/") of (::system::String);
+                        var <bind-activator-result> = <bind-cache>0.SelectedFolder.FullPath of (::system::String);
                         ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
                     }
 
                     override func Open() : (::system::Boolean)
@@ -2652,6 +2679,8 @@ namespace gaclib_controls
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedFolderChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -2672,6 +2701,13 @@ namespace gaclib_controls
                         if ((!<bind-closed>))
                         {
                             (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectedFolderChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;

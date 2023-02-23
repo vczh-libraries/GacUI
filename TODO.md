@@ -12,7 +12,6 @@
   - color dialog `ENTER` and `ESC` operation.
   - font dialog `ENTER` and `ESC` operation.
   - file dialog `ENTER` and `ESC` operation.
-  - file dialog show selected folder.
   - New tab on `FullControlTest` to show options of dialogs.
 - Issues on GDI
   - Big cursor of document empty line (GDI)

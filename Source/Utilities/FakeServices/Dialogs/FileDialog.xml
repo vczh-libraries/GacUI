@@ -40,7 +40,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Label Text-bind="let folder = ViewModel.SelectedFolder in (folder is not null ? folder.FullPath : '/')">
+            <Label Text-bind="ViewModel.SelectedFolder.FullPath">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Label>
           </Cell>
