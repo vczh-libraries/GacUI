@@ -2315,22 +2315,22 @@ namespace gaclib_controls
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>2 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiColumnSplitterComposition* = null of (::presentation::compositions::GuiColumnSplitterComposition*);
+        var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>5 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>6 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>6 : ::presentation::compositions::GuiColumnSplitterComposition* = null of (::presentation::compositions::GuiColumnSplitterComposition*);
 
         @cpp:Protected
-        var <precompile>7 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var <precompile>8 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -2339,37 +2339,50 @@ namespace gaclib_controls
         var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>10 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::compositions::GuiColumnSplitterComposition* = null of (::presentation::compositions::GuiColumnSplitterComposition*);
+        var <precompile>11 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>12 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>13 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>13 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>14 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>14 : ::presentation::compositions::GuiColumnSplitterComposition* = null of (::presentation::compositions::GuiColumnSplitterComposition*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>15 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>16 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+        var <precompile>17 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>19 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>20 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>22 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
 
         @cpp:Protected
         func <gaclib_controls-FilePickerControl>Initialize(<this> : ::gaclib_controls::FilePickerControl*) : (::system::Void)
         {
             (self = <this>);
             (ViewModel = <this>.ViewModel);
+            (<precompile>22 = self.ViewModel);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.CellPadding = 5 of (::system::Int64));
@@ -2384,44 +2397,62 @@ namespace gaclib_controls
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>0.SetRowsAndColumns(2, 1);
-                <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowsAndColumns(3, 1);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
-            (<precompile>2 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>2.CellPadding = 5 of (::system::Int64));
+                (<precompile>2 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>3 = <precompile>2.BoundsComposition);
+            {
+                (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>2.BorderVisible = false);
+                <precompile>1.AddChild(<precompile>2.BoundsComposition);
             }
             {
-                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>2.SetRowsAndColumns(1, 2);
-                <precompile>2.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>2.SetColumnOption(0, {composeType : Absolute; absolute : 192;} of (::presentation::compositions::GuiCellOption));
-                <precompile>2.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>3 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
-            {
-                (<precompile>3.ColumnsToTheLeft = 1 of (::system::Int64));
-            }
-            {
-                <precompile>2.AddChild(<precompile>3);
+                <precompile>0.AddChild(<precompile>1);
             }
             (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>4.SetSite(0, 0, 1, 1);
+                <precompile>4.SetSite(1, 0, 1, 1);
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>5.CellPadding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>5.BorderVisible = false);
+            }
+            {
+                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>5.SetRowsAndColumns(1, 2);
+                <precompile>5.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>5.SetColumnOption(0, {composeType : Absolute; absolute : 192;} of (::presentation::compositions::GuiCellOption));
+                <precompile>5.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>6 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
+            {
+                (<precompile>6.ColumnsToTheLeft = 1 of (::system::Int64));
+            }
+            {
+                <precompile>5.AddChild(<precompile>6);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(0, 0, 1, 1);
             }
             {
                 (treeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
@@ -2446,19 +2477,19 @@ namespace gaclib_controls
                     return item.Name;
                 });
             }
-            (<precompile>5 = treeView.BoundsComposition);
+            (<precompile>8 = treeView.BoundsComposition);
             {
-                (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>4.AddChild(treeView.BoundsComposition);
+                <precompile>7.AddChild(treeView.BoundsComposition);
             }
             {
-                <precompile>2.AddChild(<precompile>4);
+                <precompile>5.AddChild(<precompile>7);
             }
-            (<precompile>6 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>9 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>6.SetSite(0, 1, 1, 1);
+                <precompile>9.SetSite(0, 1, 1, 1);
             }
             {
                 (listView = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
@@ -2472,13 +2503,13 @@ namespace gaclib_controls
             {
                 (listView.VerticalAlwaysVisible = false);
             }
-            (<precompile>8 = listView.BoundsComposition);
+            (<precompile>11 = listView.BoundsComposition);
             {
-                (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>11.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
-            (<precompile>7 = new (::presentation::controls::list::ListViewColumn^)());
+            (<precompile>10 = new (::presentation::controls::list::ListViewColumn^)());
             {
-                (<precompile>7.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                (<precompile>10.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFile^) <item>);
                     return item.Name;
@@ -2486,122 +2517,177 @@ namespace gaclib_controls
             }
             {
                 var <collection> = listView.Columns;
-                <collection>.Add(<precompile>7);
+                <collection>.Add(<precompile>10);
             }
             {
-                <precompile>6.AddChild(listView.BoundsComposition);
+                <precompile>9.AddChild(listView.BoundsComposition);
             }
             {
-                <precompile>2.AddChild(<precompile>6);
+                <precompile>5.AddChild(<precompile>9);
             }
             {
-                <precompile>1.AddChild(<precompile>2);
+                <precompile>4.AddChild(<precompile>5);
             }
             {
-                <precompile>0.AddChild(<precompile>1);
-            }
-            (<precompile>9 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>9.SetSite(1, 0, 1, 1);
-            }
-            (<precompile>10 = new (::presentation::compositions::GuiTableComposition*)());
-            {
-                (<precompile>10.CellPadding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>10.BorderVisible = false);
-            }
-            {
-                (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>10.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>10.SetRowsAndColumns(1, 3);
-                <precompile>10.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>10.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>10.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>10.SetColumnOption(2, {composeType : Absolute; absolute : 120;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>11 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
-            {
-                (<precompile>11.ColumnsToTheLeft = 2 of (::system::Int64));
-            }
-            {
-                <precompile>10.AddChild(<precompile>11);
+                <precompile>0.AddChild(<precompile>4);
             }
             (<precompile>12 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>12.SetSite(0, 0, 1, 1);
+                <precompile>12.SetSite(2, 0, 1, 1);
+            }
+            (<precompile>13 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>13.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>13 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+                (<precompile>13.BorderVisible = false);
             }
             {
-                <precompile>12.AddChild(<precompile>13.BoundsComposition);
+                (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>10.AddChild(<precompile>12);
+                (<precompile>13.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>14 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>14.SetSite(0, 1, 1, 1);
+                <precompile>13.SetRowsAndColumns(1, 3);
+                <precompile>13.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>13.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>13.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>13.SetColumnOption(2, {composeType : Absolute; absolute : 120;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>14 = new (::presentation::compositions::GuiColumnSplitterComposition*)());
+            {
+                (<precompile>14.ColumnsToTheLeft = 2 of (::system::Int64));
+            }
+            {
+                <precompile>13.AddChild(<precompile>14);
+            }
+            (<precompile>15 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>15.SetSite(0, 0, 1, 1);
+            }
+            {
+                (<precompile>16 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            {
+                <precompile>15.AddChild(<precompile>16.BoundsComposition);
+            }
+            {
+                <precompile>13.AddChild(<precompile>15);
+            }
+            (<precompile>17 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>17.SetSite(0, 1, 1, 1);
             }
             {
                 (textBox = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            (<precompile>15 = textBox.BoundsComposition);
+            (<precompile>18 = textBox.BoundsComposition);
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>14.AddChild(textBox.BoundsComposition);
+                <precompile>17.AddChild(textBox.BoundsComposition);
             }
             {
-                <precompile>10.AddChild(<precompile>14);
+                <precompile>13.AddChild(<precompile>17);
             }
-            (<precompile>16 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>19 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>16.SetSite(0, 2, 1, 1);
-            }
-            {
-                (<precompile>17 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+                <precompile>19.SetSite(0, 2, 1, 1);
             }
             {
-                (<precompile>17.HorizontalAlwaysVisible = false);
+                (<precompile>20 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
-                (<precompile>17.VerticalAlwaysVisible = false);
+                (<precompile>20.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>17.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                (<precompile>20.VerticalAlwaysVisible = false);
+            }
+            {
+                (<precompile>20.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (IFileDialogFilter^) <item>);
                     return item.Name;
                 });
             }
             {
-                (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>17));
+                (comboBox = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>20));
             }
-            (<precompile>18 = comboBox.BoundsComposition);
+            (<precompile>21 = comboBox.BoundsComposition);
             {
-                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                <precompile>16.AddChild(comboBox.BoundsComposition);
+                (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>10.AddChild(<precompile>16);
+                <precompile>19.AddChild(comboBox.BoundsComposition);
             }
             {
-                <precompile>9.AddChild(<precompile>10);
+                <precompile>13.AddChild(<precompile>19);
             }
             {
-                <precompile>0.AddChild(<precompile>9);
+                <precompile>12.AddChild(<precompile>13);
+            }
+            {
+                <precompile>0.AddChild(<precompile>12);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = let folder = ViewModel.SelectedFolder in (folder is not null ? folder.FullPath : "/") of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 (treeView.ImageProperty = [let node = (cast (IFileDialogFolder^) $1) in ((node.Type == FileDialogFolderType::Folder) ? self.imageFolder : null)]);
@@ -2669,18 +2755,18 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>13.Text;
+                    var <old> = <precompile>16.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>13.Text = <new>);
+                    (<precompile>16.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
             {
-                (<precompile>17.ItemSource = ViewModel.Filters);
+                (<precompile>20.ItemSource = ViewModel.Filters);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -2692,6 +2778,79 @@ namespace gaclib_controls
                     }
                 };
                 attach(comboBox.SelectedIndexChanged, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (cast (IFileDialogFolder^) <bind-cache>0.SelectedItem) of (::presentation::IFileDialogFolder^);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (treeView ?? null of (::presentation::controls::GuiBindableTreeView*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectionChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectionChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiBindableTreeView*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>22.SelectedFolder;
+                    var <new> = (cast (::presentation::IFileDialogFolder^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>22.SelectedFolder = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)

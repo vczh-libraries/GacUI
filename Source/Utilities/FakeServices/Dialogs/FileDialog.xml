@@ -28,8 +28,10 @@
         }
       ]]></ref.Ctor>
       <CustomControl ref.Name="self">
+        <att.ViewModel-set SelectedFolder-bind="cast (IFileDialogFolder^) treeView.SelectedItem"/>
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
             <_>composeType:MinSize</_>
           </att.Rows>
@@ -38,6 +40,12 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
+            <Label Text-bind="let folder = ViewModel.SelectedFolder in (folder is not null ? folder.FullPath : '/')">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </Label>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
             <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
               <att.Rows>
                 <_>composeType:Percentage percentage:1.0</_>
@@ -71,7 +79,7 @@
             </Table>
           </Cell>
 
-          <Cell Site="row:1 column:0">
+          <Cell Site="row:2 column:0">
             <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
               <att.Rows>
                 <_>composeType:Percentage percentage:1.0</_>
