@@ -168,6 +168,11 @@ View Model (IFileDialogViewModel)
 			WString						dialogAskCreateFile;
 			WString						dialogAskOverrideFile;
 
+			bool						isLoadingFiles = false;
+			filesystem::FilePath		loadingPath;
+			vint						loadingTaskId = 0;
+			Files						files;
+
 		public:
 			bool						confirmed = false;
 			WString						title;
@@ -183,9 +188,6 @@ View Model (IFileDialogViewModel)
 
 			Ptr<FileDialogFolder>		rootFolder;
 			Ptr<FileDialogFolder>		selectedFolder;
-
-			bool						isLoadingFile = false;
-			Files						files;
 
 			WString GetTitle() override
 			{
@@ -242,14 +244,18 @@ View Model (IFileDialogViewModel)
 					{
 						selectedFolder = folder;
 						SelectedFolderChanged();
-						RefreshFiles();
+
+						if (loadingPath != selectedFolder->folder.GetFilePath())
+						{
+							RefreshFiles();
+						}
 					}
 				}
 			}
 
 			bool GetIsLoadingFiles() override
 			{
-				return isLoadingFile;
+				return isLoadingFiles;
 			}
 
 			Files& GetFiles() override
@@ -259,17 +265,57 @@ View Model (IFileDialogViewModel)
 
 			void RefreshFiles() override
 			{
-				if (!isLoadingFile)
+				if (!selectedFolder) return;
+
+				vint taskId = ++loadingTaskId;
+				auto taskFolder = selectedFolder;
+				auto taskPath = (loadingPath = selectedFolder->folder.GetFilePath());
+				if (!isLoadingFiles)
 				{
-					isLoadingFile = true;
+					isLoadingFiles = true;
 					IsLoadingFilesChanged();
-					{
-						auto file = Ptr(new FileDialogFile);
-						file->name = textLoadingFiles;
-						files.Clear();
-						files.Add(file);
-					}
 				}
+				files.Clear();
+
+				auto vm = Ptr(this);
+				GetApplication()->InvokeAsync([taskId, taskFolder, taskPath, vm]()
+				{
+					auto folders = Ptr(new List<filesystem::Folder>);
+					auto files = Ptr(new List<filesystem::File>);
+					filesystem::Folder loadingFolder = taskPath;
+					if (!loadingFolder.GetFolders(*folders.Obj()) || !loadingFolder.GetFiles(*files.Obj()))
+					{
+						folders->Clear();
+						files->Clear();
+					}
+
+					GetApplication()->InvokeInMainThread(nullptr, [taskId, taskFolder, folders, files, vm]()
+					{
+						if (vm->loadingTaskId == taskId)
+						{
+							for (auto folder : *folders.Obj())
+							{
+								auto item = Ptr(new FileDialogFile);
+								item->type = FileDialogFileType::Folder;
+								item->folder = taskFolder;
+								item->name = folder.GetFilePath().GetName();
+								vm->files.Add(item);
+							}
+
+							for (auto file : *files.Obj())
+							{
+								auto item = Ptr(new FileDialogFile);
+								item->type = FileDialogFileType::File;
+								item->folder = taskFolder;
+								item->name = file.GetFilePath().GetName();
+								vm->files.Add(item);
+							}
+
+							vm->isLoadingFiles = false;
+							vm->IsLoadingFilesChanged();
+						}
+					});
+				});
 			}
 
 			bool TryConfirm(const collections::List<WString>& selectedPaths) override
@@ -374,7 +420,9 @@ FakeDialogServiceBase
 
 			vm->rootFolder = Ptr(new FileDialogFolder);
 			vm->rootFolder->type = FileDialogFolderType::Root;
+
 			// TODO: initialDirectory -> selectedFolder
+			vm->SetSelectedFolder(vm->rootFolder);
 
 			switch (dialogType)
 			{
