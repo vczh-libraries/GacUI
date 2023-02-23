@@ -2729,6 +2729,9 @@ namespace gaclib_controls
                 (treeView.ImageProperty = [let node = (cast (IFileDialogFolder^) $1) in ((node.Type == FileDialogFolderType::Folder) ? self.imageFolder : null)]);
             }
             {
+                (listView.SmallImageProperty = [let node = (cast (IFileDialogFile^) $1) in ((node.Type == FileDialogFileType::Folder) ? self.imageFolder : (node.Type == FileDialogFileType::File) ? self.imageFile : null)]);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);

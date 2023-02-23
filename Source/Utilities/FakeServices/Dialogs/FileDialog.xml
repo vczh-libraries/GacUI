@@ -74,6 +74,15 @@
                   <att.Columns>
                     <ListViewColumn TextProperty="Name"/>
                   </att.Columns>
+                  <att.SmallImageProperty-eval><![CDATA[
+                    [
+                      let node = cast (IFileDialogFile^) $1 in (
+                        node.Type == FileDialogFileType::Folder ? self.imageFolder :
+                        node.Type == FileDialogFileType::File ? self.imageFile :
+                        null
+                      )
+                    ]
+                  ]]></att.SmallImageProperty-eval>
                 </BindableListView>
               </Cell>
             </Table>

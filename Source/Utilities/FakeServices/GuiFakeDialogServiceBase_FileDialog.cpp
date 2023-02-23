@@ -274,8 +274,14 @@ View Model (IFileDialogViewModel)
 				{
 					isLoadingFiles = true;
 					IsLoadingFilesChanged();
+
+					files.Clear();
+					{
+						auto item = Ptr(new FileDialogFile);
+						item->name = textLoadingFiles;
+						files.Add(item);
+					}
 				}
-				files.Clear();
 
 				auto vm = Ptr(this);
 				GetApplication()->InvokeAsync([taskId, taskFolder, taskPath, vm]()
@@ -293,6 +299,8 @@ View Model (IFileDialogViewModel)
 					{
 						if (vm->loadingTaskId == taskId)
 						{
+							vm->files.Clear();
+
 							for (auto folder : *folders.Obj())
 							{
 								auto item = Ptr(new FileDialogFile);
