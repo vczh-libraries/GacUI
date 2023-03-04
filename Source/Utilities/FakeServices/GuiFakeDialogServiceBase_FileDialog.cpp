@@ -6,6 +6,7 @@ namespace vl
 	namespace presentation
 	{
 		using namespace collections;
+		using namespace regex;
 		using namespace controls;
 
 /***********************************************************************
@@ -172,6 +173,7 @@ View Model (IFileDialogViewModel)
 			filesystem::FilePath		loadingPath;
 			vint						loadingTaskId = 0;
 			Files						files;
+			Regex						regexDisplayString{ L";" };
 
 		public:
 			bool						confirmed = false;
@@ -328,12 +330,22 @@ View Model (IFileDialogViewModel)
 
 			WString GetDisplayString(collections::LazyList<Ptr<IFileDialogFile>> files) override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				return From(files)
+					.FindType<FileDialogFile>()
+					.Where([](auto file) { return file->type != FileDialogFileType::Placeholder; })
+					.Select([](auto file) { return file->name; })
+					.Aggregate(WString::Empty, [](auto&& a, auto&& b)
+					{
+						return a == WString::Empty ? b : a + WString::Unmanaged(L";") + b;
+					});
 			}
 
 			Selection ParseDisplayString(const WString& displayString) override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				auto items = Ptr(new RegexMatch::List);
+				regexDisplayString.Split(displayString, false, *items.Obj());
+				return From(LazyList<Ptr<RegexMatch>>(items))
+					.Select([](auto item) { return item->Result().Value(); });
 			}
 
 			bool TryConfirm(controls::GuiWindow* owner, Selection selectedPaths) override
