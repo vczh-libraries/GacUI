@@ -425,6 +425,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(Continue, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(FileDialogAskCreateFile, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(FileDialogAskOverrideFile, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(FileDialogErrorEmptySelection, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(FileDialogErrorFileExpected, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(FileDialogErrorFileNotExist, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(FileDialogErrorFolderNotExist, NO_PARAMETER)

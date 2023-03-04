@@ -4718,6 +4718,11 @@ Closures
 		return ::vl::WString::Unmanaged(L"Do you want to override the following file(s):");
 	}
 
+	::vl::WString __vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::FileDialogErrorEmptySelection()
+	{
+		return ::vl::WString::Unmanaged(L"At least one file must be selected.");
+	}
+
 	::vl::WString __vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings::FileDialogErrorFileExpected()
 	{
 		return ::vl::WString::Unmanaged(L"File(s) expected but folder(s) selected:");
@@ -6386,7 +6391,7 @@ Class (::gaclib_controls::FilePickerControl)
 	{
 		(this->imageFolder = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(this->self)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"Images/Folder"), true).Obj())));
 		(this->imageFile = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(this->self)->ResolveResource(::vl::WString::Unmanaged(L"res"), ::vl::WString::Unmanaged(L"Images/File"), true).Obj())));
-		::vl::__vwsn::This(this->GetViewModel().Obj())->InitLocalizedText(::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogTextLoadingFolders(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogTextLoadingFiles(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFileNotExist(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFileExpected(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFolderNotExist(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorMultipleSelectionNotEnabled(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogAskCreateFile(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogAskOverrideFile());
+		::vl::__vwsn::This(this->GetViewModel().Obj())->InitLocalizedText(::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogTextLoadingFolders(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogTextLoadingFiles(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorEmptySelection(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFileNotExist(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFileExpected(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorFolderNotExist(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogErrorMultipleSelectionNotEnabled(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogAskCreateFile(), ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetStrings().Obj())->FileDialogAskOverrideFile());
 		::vl::__vwsn::This(this->treeView)->SetItemSource(::vl::__vwsn::Box(::vl::__vwsn::This(this->GetViewModel().Obj())->GetRootFolder()));
 		::vl::__vwsn::This(this->listView)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFiles())));
 		::vl::__vwsn::This(this->comboBox)->SetSelectedIndex(::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFilters()).Obj())->IndexOf(::vl::__vwsn::Box(::vl::__vwsn::This(this->GetViewModel().Obj())->GetSelectedFilter())));

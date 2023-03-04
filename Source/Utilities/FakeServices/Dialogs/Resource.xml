@@ -57,6 +57,7 @@
 
         <String Name="FileDialogTextLoadingFolders" Text="(Loading...)"/>
         <String Name="FileDialogTextLoadingFiles" Text="(Loading Folders and Files...)"/>
+        <String Name="FileDialogErrorEmptySelection" Text="At least one file must be selected."/>
         <String Name="FileDialogErrorFileNotExist" Text="File(s) not exist:"/>
         <String Name="FileDialogErrorFileExpected" Text="File(s) expected but folder(s) selected:"/>
         <String Name="FileDialogErrorFolderNotExist" Text="Folder not exist:"/>

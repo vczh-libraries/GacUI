@@ -843,6 +843,7 @@ namespace gaclib_controls
 		virtual ::vl::WString Continue() = 0;
 		virtual ::vl::WString FileDialogAskCreateFile() = 0;
 		virtual ::vl::WString FileDialogAskOverrideFile() = 0;
+		virtual ::vl::WString FileDialogErrorEmptySelection() = 0;
 		virtual ::vl::WString FileDialogErrorFileExpected() = 0;
 		virtual ::vl::WString FileDialogErrorFileNotExist() = 0;
 		virtual ::vl::WString FileDialogErrorFolderNotExist() = 0;
@@ -2739,6 +2740,7 @@ Closures
 		::vl::WString Continue() override;
 		::vl::WString FileDialogAskCreateFile() override;
 		::vl::WString FileDialogAskOverrideFile() override;
+		::vl::WString FileDialogErrorEmptySelection() override;
 		::vl::WString FileDialogErrorFileExpected() override;
 		::vl::WString FileDialogErrorFileNotExist() override;
 		::vl::WString FileDialogErrorFolderNotExist() override;

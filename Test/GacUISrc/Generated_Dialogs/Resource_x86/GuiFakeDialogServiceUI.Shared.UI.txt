@@ -23,6 +23,8 @@ namespace gaclib_controls
 
         func FileDialogAskOverrideFile() : (::system::String);
 
+        func FileDialogErrorEmptySelection() : (::system::String);
+
         func FileDialogErrorFileExpected() : (::system::String);
 
         func FileDialogErrorFileNotExist() : (::system::String);
@@ -148,6 +150,11 @@ namespace gaclib_controls
                 override func FileDialogAskOverrideFile() : (::system::String)
                 {
                     return "Do you want to override the following file(s):";
+                }
+
+                override func FileDialogErrorEmptySelection() : (::system::String)
+                {
+                    return "At least one file must be selected.";
                 }
 
                 override func FileDialogErrorFileExpected() : (::system::String)

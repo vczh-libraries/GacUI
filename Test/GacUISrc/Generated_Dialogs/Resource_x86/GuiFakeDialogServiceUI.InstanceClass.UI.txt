@@ -3215,7 +3215,7 @@ namespace gaclib_controls
         {
             (imageFolder = (cast (GuiImageData^) self.ResolveResource("res", "Images/Folder", true)));
             (imageFile = (cast (GuiImageData^) self.ResolveResource("res", "Images/File", true)));
-            ViewModel.InitLocalizedText(self.Strings.FileDialogTextLoadingFolders(), self.Strings.FileDialogTextLoadingFiles(), self.Strings.FileDialogErrorFileNotExist(), self.Strings.FileDialogErrorFileExpected(), self.Strings.FileDialogErrorFolderNotExist(), self.Strings.FileDialogErrorMultipleSelectionNotEnabled(), self.Strings.FileDialogAskCreateFile(), self.Strings.FileDialogAskOverrideFile());
+            ViewModel.InitLocalizedText(self.Strings.FileDialogTextLoadingFolders(), self.Strings.FileDialogTextLoadingFiles(), self.Strings.FileDialogErrorEmptySelection(), self.Strings.FileDialogErrorFileNotExist(), self.Strings.FileDialogErrorFileExpected(), self.Strings.FileDialogErrorFolderNotExist(), self.Strings.FileDialogErrorMultipleSelectionNotEnabled(), self.Strings.FileDialogAskCreateFile(), self.Strings.FileDialogAskOverrideFile());
             (treeView.ItemSource = ViewModel.RootFolder);
             (listView.ItemSource = ViewModel.Files);
             (comboBox.SelectedIndex = ViewModel.Filters.IndexOf(ViewModel.SelectedFilter));
@@ -8090,6 +8090,8 @@ namespace gaclib_controls
 
         func FileDialogAskOverrideFile() : (::system::String);
 
+        func FileDialogErrorEmptySelection() : (::system::String);
+
         func FileDialogErrorFileExpected() : (::system::String);
 
         func FileDialogErrorFileNotExist() : (::system::String);
@@ -8215,6 +8217,11 @@ namespace gaclib_controls
                 override func FileDialogAskOverrideFile() : (::system::String)
                 {
                     return "Do you want to override the following file(s):";
+                }
+
+                override func FileDialogErrorEmptySelection() : (::system::String)
+                {
+                    return "At least one file must be selected.";
                 }
 
                 override func FileDialogErrorFileExpected() : (::system::String)

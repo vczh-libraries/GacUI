@@ -100,6 +100,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogAskOverrideFile);
 				}
+				::vl::WString FileDialogErrorEmptySelection() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogErrorEmptySelection);
+				}
 				::vl::WString FileDialogErrorFileExpected() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(FileDialogErrorFileExpected);

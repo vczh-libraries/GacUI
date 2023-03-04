@@ -32,6 +32,7 @@
           ViewModel.InitLocalizedText(
               self.Strings.FileDialogTextLoadingFolders(),
               self.Strings.FileDialogTextLoadingFiles(),
+              self.Strings.FileDialogErrorEmptySelection(),
               self.Strings.FileDialogErrorFileNotExist(),
               self.Strings.FileDialogErrorFileExpected(),
               self.Strings.FileDialogErrorFolderNotExist(),
