@@ -326,7 +326,17 @@ View Model (IFileDialogViewModel)
 				});
 			}
 
-			bool TryConfirm(controls::GuiWindow* owner, const collections::List<WString>& selectedPaths) override
+			WString GetDisplayString(collections::LazyList<Ptr<IFileDialogFile>> files) override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			Selection ParseDisplayString(const WString& displayString) override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool TryConfirm(controls::GuiWindow* owner, Selection selectedPaths) override
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			}

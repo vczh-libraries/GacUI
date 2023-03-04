@@ -330,6 +330,7 @@ View Models (FileDialog)
 			using Filters = IFileDialogFilter::Filters;
 			using Folders = IFileDialogFolder::Folders;
 			using Files = IFileDialogFile::Files;
+			using Selection = collections::LazyList<WString>;
 
 			/// <summary>
 			/// Raised when the <see cref="GetSelectedFolder"/> is changed.
@@ -404,12 +405,25 @@ View Models (FileDialog)
 			virtual void					RefreshFiles() = 0;
 
 			/// <summary>
+			/// Convert files to a display string.
+			/// </summary>
+			/// <param name="files">The files.</param>
+			/// <returns>The display string, items are separated by ";".</returns>
+			virtual WString					GetDisplayString(collections::LazyList<Ptr<IFileDialogFile>> files) = 0;
+
+			/// <summary>
+			/// Split the display string to items.
+			/// </summary>
+			/// <param name="displayString">The display string.</param>
+			/// <returns>The items, each item is either a relative path or an absolute path.</returns>
+			virtual Selection				ParseDisplayString(const WString& displayString) = 0;
+			/// <summary>
 			/// Test if the selection is valid. Dialogs could be displayed and ask for input accordingly.
 			/// </summary>
 			/// <param name="owner">A owner window for displaying message boxes.</param>
 			/// <param name="selectedPaths">All selected items in string format. Each of them could be either full path, relative path or file name.</param>
 			/// <returns>Returns true if the selection is valid.</returns>
-			virtual bool					TryConfirm(controls::GuiWindow* owner, const collections::List<WString>& selectedPaths) = 0;
+			virtual bool					TryConfirm(controls::GuiWindow* owner, Selection selection) = 0;
 
 			/// <summary>
 			/// Initialize the view model with localized texts.
