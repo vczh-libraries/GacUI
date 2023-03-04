@@ -6,6 +6,18 @@
       <ref.Members><![CDATA[
         var imageFolder : GuiImageData^ = null;
         var imageFile   : GuiImageData^ = null;
+        
+        func GetSelectedFiles(): IFileDialogFile^{}
+        ${
+          for (item in listView.SelectedItems)
+          {
+            var file = ViewModel.Files[item] as IFileDialogFile^;
+            if (file is not null)
+            {
+              $Yield file;
+            }
+          }
+        }
       ]]></ref.Members>
       <ref.Ctor><![CDATA[
         {
@@ -83,6 +95,12 @@
                       )
                     ]
                   ]]></att.SmallImageProperty-eval>
+                  <ev.SelectionChanged-eval><![CDATA[
+                    {
+                      textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles());
+                      textBox.Select({row:0 column:0}, {row:0 column:0});
+                    }
+                  ]]></ev.SelectionChanged-eval>
                 </BindableListView>
               </Cell>
             </Table>

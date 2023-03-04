@@ -208,6 +208,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::gaclib_controls::FilePickerControlConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::FilePickerControl*(::vl::Ptr<::vl::presentation::IFileDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
 				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetSelectedFiles, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetStrings, { L"__vwsn_value_" })

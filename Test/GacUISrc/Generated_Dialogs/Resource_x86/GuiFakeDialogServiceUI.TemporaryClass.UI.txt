@@ -320,6 +320,11 @@ namespace gaclib_controls
 
         var imageFile : GuiImageData^ = null;
 
+        func GetSelectedFiles() : (IFileDialogFile^{})
+        {
+            raise "Not Implemented";
+        }
+
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
 

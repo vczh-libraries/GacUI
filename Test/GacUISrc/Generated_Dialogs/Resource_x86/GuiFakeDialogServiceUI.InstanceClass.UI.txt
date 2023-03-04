@@ -2732,6 +2732,14 @@ namespace gaclib_controls
                 (listView.SmallImageProperty = [let node = (cast (IFileDialogFile^) $1) in ((node.Type == FileDialogFileType::Folder) ? self.imageFolder : (node.Type == FileDialogFileType::File) ? self.imageFile : null)]);
             }
             {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles()));
+                    textBox.Select({row : 0; column : 0;}, {row : 0; column : 0;});
+                };
+                attach(listView.SelectionChanged, <event-handler>);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::gaclib_controls::FilePickerControl* = null of (::gaclib_controls::FilePickerControl*);
@@ -3001,6 +3009,153 @@ namespace gaclib_controls
         var imageFolder : GuiImageData^ = null;
 
         var imageFile : GuiImageData^ = null;
+
+        func GetSelectedFiles() : (IFileDialogFile^{})
+        {
+            return (cast (::presentation::IFileDialogFile^{}) ::system::EnumerableCoroutine::Create(func (<co-impl> : ::system::EnumerableCoroutine::IImpl*) : (::system::Coroutine^)
+            {
+                return new (::system::Coroutine^)
+                {
+                    var <co0>file : ::presentation::IFileDialogFile^ = null of (::presentation::IFileDialogFile^);
+
+                    var <co1>item : ::system::Int32 = 0 of (::system::Int32);
+
+                    var <co2-for-enumerable>item : ::system::Enumerable^ = null of (::system::Enumerable^);
+
+                    var <co3-for-enumerator>item : ::system::Enumerator^ = null of (::system::Enumerator^);
+
+                    var <co-state> : ::system::Int32 = 0;
+
+                    var <co-state-before-pause> : ::system::Int32 = (-1);
+
+                    @cpp:Private
+                    var <prop>Failure : ::system::Exception^ = null;
+
+                    override func GetFailure() : (::system::Exception^)
+                    {
+                        return <prop>Failure;
+                    }
+
+                    @cpp:Protected
+                    func SetFailure(<value> : ::system::Exception^) : (void)
+                    {
+                        (<prop>Failure = <value>);
+                    }
+
+                    @cpp:Private
+                    var <prop>Status : ::system::CoroutineStatus = Waiting;
+
+                    override func GetStatus() : (::system::CoroutineStatus)
+                    {
+                        return <prop>Status;
+                    }
+
+                    @cpp:Protected
+                    func SetStatus(<value> : ::system::CoroutineStatus) : (void)
+                    {
+                        (<prop>Status = <value>);
+                    }
+
+                    override func Resume(<raise-exception> : ::system::Boolean, <co-result> : ::system::CoroutineResult^) : (::system::Void)
+                    {
+                        if ((Status != ::system::CoroutineStatus::Waiting))
+                        {
+                            raise "Resume should be called only when the coroutine is in the waiting status.";
+                        }
+                        SetStatus(Executing);
+                        try
+                        {
+                            if ((<co-state-before-pause> != (-1)))
+                            {
+                                if (<co-result> is null)
+                                {
+                                    (<co-state-before-pause> = (-1));
+                                }
+                                else if (<co-result>.Failure is null)
+                                {
+                                    (<co-state-before-pause> = (-1));
+                                }
+                                else
+                                {
+                                    {
+                                        (<co-state-before-pause> = (-1));
+                                        raise <co-result>.Failure;
+                                    }
+                                }
+                            }
+                            while (true)
+                            {
+                                if ((<co-state> == 0))
+                                {
+                                    (<co2-for-enumerable>item = listView.SelectedItems of (::system::Enumerable^));
+                                    (<co3-for-enumerator>item = <co2-for-enumerable>item.CreateEnumerator());
+                                    if (<co3-for-enumerator>item.Next())
+                                    {
+                                        (<co-state> = 3);
+                                        continue;
+                                    }
+                                    (<co-state> = 1);
+                                    continue;
+                                }
+                                if ((<co-state> == 1))
+                                {
+                                    SetStatus(Stopped);
+                                    return;
+                                }
+                                if ((<co-state> == 2))
+                                {
+                                    if (<co3-for-enumerator>item.Next())
+                                    {
+                                        (<co-state> = 3);
+                                        continue;
+                                    }
+                                    (<co-state> = 1);
+                                    continue;
+                                }
+                                if ((<co-state> == 3))
+                                {
+                                    (<co1>item = (cast (::system::Int32) <co3-for-enumerator>item.GetCurrent()));
+                                    (<co0>file = (ViewModel.Files[<co1>item] as (IFileDialogFile^)));
+                                    if (<co0>file is not null)
+                                    {
+                                        SetStatus(Waiting);
+                                        (<co-state-before-pause> = <co-state>);
+                                        (<co-state> = 4);
+                                        {
+                                            ::system::EnumerableCoroutine::YieldAndPause(<co-impl>, <co0>file);
+                                        }
+                                        return;
+                                    }
+                                    (<co-state> = 2);
+                                    continue;
+                                }
+                                if ((<co-state> == 4))
+                                {
+                                    if (<co-result> is not null)
+                                    {
+                                        if (<co-result>.Failure is not null)
+                                        {
+                                            raise <co-result>.Failure;
+                                        }
+                                    }
+                                    (<co-state> = 2);
+                                    continue;
+                                }
+                            }
+                        }
+                        catch (<co-ex>)
+                        {
+                            SetFailure(<co-ex>);
+                            SetStatus(Stopped);
+                            if (<raise-exception>)
+                            {
+                                raise;
+                            }
+                        }
+                    }
+                };
+            }));
+        }
 
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
