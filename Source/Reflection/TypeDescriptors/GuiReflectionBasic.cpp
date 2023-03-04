@@ -755,7 +755,7 @@ Type Declaration
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(IsLoadingFiles, IsLoadingFilesChanged)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Files)
 				CLASS_MEMBER_METHOD(RefreshFiles, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(TryConfirm, { L"selectedFiles" })
+				CLASS_MEMBER_METHOD(TryConfirm, { L"owner" _ L"selectedFiles"})
 				CLASS_MEMBER_METHOD(InitLocalizedText,
 					{	L"textLoadingFolders"
 					_	L"textLoadingFiles"

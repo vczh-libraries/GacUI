@@ -326,7 +326,7 @@ View Model (IFileDialogViewModel)
 				});
 			}
 
-			bool TryConfirm(const collections::List<WString>& selectedPaths) override
+			bool TryConfirm(controls::GuiWindow* owner, const collections::List<WString>& selectedPaths) override
 			{
 				CHECK_FAIL(L"Not Implemented!");
 			}

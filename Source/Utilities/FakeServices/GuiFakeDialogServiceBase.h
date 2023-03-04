@@ -406,9 +406,10 @@ View Models (FileDialog)
 			/// <summary>
 			/// Test if the selection is valid. Dialogs could be displayed and ask for input accordingly.
 			/// </summary>
+			/// <param name="owner">A owner window for displaying message boxes.</param>
 			/// <param name="selectedPaths">All selected items in string format. Each of them could be either full path, relative path or file name.</param>
 			/// <returns>Returns true if the selection is valid.</returns>
-			virtual bool					TryConfirm(const collections::List<WString>& selectedPaths) = 0;
+			virtual bool					TryConfirm(controls::GuiWindow* owner, const collections::List<WString>& selectedPaths) = 0;
 
 			/// <summary>
 			/// Initialize the view model with localized texts.

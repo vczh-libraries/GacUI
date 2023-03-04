@@ -380,7 +380,7 @@ interface presentation::IFileDialogViewModel : system::Interface {
     function RefreshFiles() : system::Void;
     function SetSelectedFilter(value : presentation::IFileDialogFilter^) : system::Void;
     function SetSelectedFolder(value : presentation::IFileDialogFolder^) : system::Void;
-    function TryConfirm(selectedFiles : system::ReadonlyList<system::String>^) : system::Boolean;
+    function TryConfirm(owner : presentation::controls::GuiWindow*, selectedFiles : system::ReadonlyList<system::String>^) : system::Boolean;
 
 }
 
