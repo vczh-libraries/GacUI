@@ -761,6 +761,7 @@ Type Declaration
 				CLASS_MEMBER_METHOD(InitLocalizedText,
 					{	L"textLoadingFolders"
 					_	L"textLoadingFiles"
+					_	L"dialogErrorEmptySelection"
 					_	L"dialogErrorFileNotExist"
 					_	L"dialogErrorFileExpected"
 					_	L"dialogErrorFolderNotExist"

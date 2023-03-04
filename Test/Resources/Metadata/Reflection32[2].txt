@@ -377,7 +377,7 @@ interface presentation::IFileDialogViewModel : system::Interface {
     function GetSelectedFilter() : presentation::IFileDialogFilter^;
     function GetSelectedFolder() : presentation::IFileDialogFolder^;
     function GetTitle() : system::String;
-    function InitLocalizedText(textLoadingFolders : system::String, textLoadingFiles : system::String, dialogErrorFileNotExist : system::String, dialogErrorFileExpected : system::String, dialogErrorFolderNotExist : system::String, dialogErrorMultipleSelectionNotEnabled : system::String, dialogAskCreateFile : system::String, dialogAskOverrideFile : system::String) : system::Void;
+    function InitLocalizedText(textLoadingFolders : system::String, textLoadingFiles : system::String, dialogErrorEmptySelection : system::String, dialogErrorFileNotExist : system::String, dialogErrorFileExpected : system::String, dialogErrorFolderNotExist : system::String, dialogErrorMultipleSelectionNotEnabled : system::String, dialogAskCreateFile : system::String, dialogAskOverrideFile : system::String) : system::Void;
     function ParseDisplayString(displayString : system::String) : system::Enumerable<system::String>^;
     function RefreshFiles() : system::Void;
     function SetSelectedFilter(value : presentation::IFileDialogFilter^) : system::Void;

@@ -430,6 +430,7 @@ View Models (FileDialog)
 			/// </summary>
 			/// <param name="textLoadingFolders">The name for placeholder folder.</param>
 			/// <param name="textLoadingFiles">The name for placeholder file.</param>
+			/// <param name="dialogErrorEmptySelection">The message saying selection is empty.</param>
 			/// <param name="dialogErrorFileNotExist">The message saying selected files do not exist.</param>
 			/// <param name="dialogErrorFileExpected">The message saying selected files are expected but they are folders.</param>
 			/// <param name="dialogErrorFolderNotExist">The message saying the selected folder do not exist.</param>
@@ -439,6 +440,7 @@ View Models (FileDialog)
 			virtual void					InitLocalizedText(
 												const WString& textLoadingFolders,
 												const WString& textLoadingFiles,
+												const WString& dialogErrorEmptySelection,
 												const WString& dialogErrorFileNotExist,
 												const WString& dialogErrorFileExpected,
 												const WString& dialogErrorFolderNotExist,

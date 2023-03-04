@@ -162,6 +162,7 @@ View Model (IFileDialogViewModel)
 		protected:
 			WString						textLoadingFolders;
 			WString						textLoadingFiles;
+			WString						dialogErrorEmptySelection;
 			WString						dialogErrorFileNotExist;
 			WString						dialogErrorFileExpected;
 			WString						dialogErrorFolderNotExist;
@@ -333,7 +334,7 @@ View Model (IFileDialogViewModel)
 				return From(files)
 					.FindType<FileDialogFile>()
 					.Where([](auto file) { return file->type != FileDialogFileType::Placeholder; })
-					.Select([](auto file) { return file->name; })
+					.Select([](auto file) { return WString::Unmanaged(L"\"") + file->name + WString::Unmanaged(L"\""); })
 					.Aggregate(WString::Empty, [](auto&& a, auto&& b)
 					{
 						return a == WString::Empty ? b : a + WString::Unmanaged(L";") + b;
@@ -345,7 +346,18 @@ View Model (IFileDialogViewModel)
 				auto items = Ptr(new RegexMatch::List);
 				regexDisplayString.Split(displayString, false, *items.Obj());
 				return From(LazyList<Ptr<RegexMatch>>(items))
-					.Select([](auto item) { return item->Result().Value(); });
+					.Select([](auto item) { return item->Result().Value(); })
+					.Select([](auto item)
+					{
+						if (item.Length() >= 2 && item[0] == L'\"' && item[item.Length() - 1] == L'\"')
+						{
+							return item.Sub(1, item.Length() - 2);
+						}
+						else
+						{
+							return item;
+						}
+					});
 			}
 
 			bool TryConfirm(controls::GuiWindow* owner, Selection selectedPaths) override
@@ -356,6 +368,7 @@ View Model (IFileDialogViewModel)
 			void InitLocalizedText(
 				const WString& _textLoadingFolders,
 				const WString& _textLoadingFiles,
+				const WString& _dialogErrorEmptySelection,
 				const WString& _dialogErrorFileNotExist,
 				const WString& _dialogErrorFileExpected,
 				const WString& _dialogErrorFolderNotExist,
@@ -366,6 +379,7 @@ View Model (IFileDialogViewModel)
 			{
 				textLoadingFolders = _textLoadingFolders;
 				textLoadingFiles = _textLoadingFiles;
+				dialogErrorEmptySelection = _dialogErrorEmptySelection;
 				dialogErrorFileNotExist = _dialogErrorFileNotExist;
 				dialogErrorFileExpected = _dialogErrorFileExpected;
 				dialogErrorFolderNotExist = _dialogErrorFolderNotExist;
