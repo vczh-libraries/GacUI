@@ -402,16 +402,16 @@ namespace gaclib_controls
 	protected:
 		::gaclib_controls::FileDialogWindow* self;
 		::vl::Ptr<::vl::presentation::IFileDialogViewModel> ViewModel;
+		::gaclib_controls::FilePickerControl* filePickerControl;
 		::vl::presentation::controls::GuiButton* buttonOK;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::gaclib_controls::FilePickerControl* __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_5;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_6;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_7;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_8;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_6;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_7;
 		void __vwsn_gaclib_controls_FileDialogWindow_Initialize(::gaclib_controls::FileDialogWindow* __vwsn_this_);
 	public:
 		FileDialogWindowConstructor();
@@ -528,6 +528,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::GuiImageData> imageFolder;
 		::vl::Ptr<::vl::presentation::GuiImageData> imageFile;
 		::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> GetSelectedFiles();
+		::vl::collections::LazyList<::vl::WString> GetSelection();
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> GetStrings();
 		void SetStrings(::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_value_);

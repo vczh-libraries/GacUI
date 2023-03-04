@@ -6,7 +6,8 @@
       <ref.Members><![CDATA[
         var imageFolder : GuiImageData^ = null;
         var imageFile   : GuiImageData^ = null;
-        
+        prop Selection : string{} {GetSelection}
+
         func GetSelectedFiles(): IFileDialogFile^{}
         ${
           for (item in listView.SelectedItems)
@@ -17,6 +18,11 @@
               $Yield file;
             }
           }
+        }
+
+        func GetSelection(): string{}
+        {
+          return ViewModel.ParseDisplayString(textBox.Text);
         }
       ]]></ref.Members>
       <ref.Ctor><![CDATA[
@@ -81,7 +87,7 @@
               </Cell>
 
               <Cell Site="row:0 column:1">
-                <BindableListView ref.Name="listView" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                <BindableListView ref.Name="listView" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.Columns>
                     <ListViewColumn TextProperty="Name"/>
@@ -192,7 +198,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0 rowSpan:1 columnSpan:3">
-            <g:FilePickerControl ViewModel-eval="ViewModel">
+            <g:FilePickerControl ref.Name="filePickerControl" ViewModel-eval="ViewModel">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </g:FilePickerControl>
           </Cell>
@@ -202,7 +208,10 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {
-                  self.Close();
+                  if (ViewModel.TryConfirm(self, filePickerControl.Selection))
+                  {
+                    self.Close();
+                  }
                 }
               ]]></ev.Clicked-eval>
             </Button>

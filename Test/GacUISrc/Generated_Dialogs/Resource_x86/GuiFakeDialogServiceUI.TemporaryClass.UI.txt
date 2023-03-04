@@ -320,7 +320,14 @@ namespace gaclib_controls
 
         var imageFile : GuiImageData^ = null;
 
+        prop Selection : string{}{GetSelection}
+
         func GetSelectedFiles() : (IFileDialogFile^{})
+        {
+            raise "Not Implemented";
+        }
+
+        func GetSelection() : (string{})
         {
             raise "Not Implemented";
         }
