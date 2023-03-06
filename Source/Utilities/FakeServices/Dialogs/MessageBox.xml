@@ -41,13 +41,13 @@
       <ref.Members><![CDATA[
         func GetIcon(icon: INativeDialogService::MessageBoxIcons): INativeImage^
         {
-          var iconUri = "//Images/None";
+          var iconUri = "Images/None";
           switch (ViewModel.Icon)
           {
-          case IconError:       { iconUri = "//Images/Error";       }
-          case IconQuestion:    { iconUri = "//Images/Question";    }
-          case IconWarning:     { iconUri = "//Images/Warning";     }
-          case IconInformation: { iconUri = "//Images/Information"; }
+          case IconError:       { iconUri = "Images/Error";       }
+          case IconQuestion:    { iconUri = "Images/Question";    }
+          case IconWarning:     { iconUri = "Images/Warning";     }
+          case IconInformation: { iconUri = "Images/Information"; }
           }
           return (cast (GuiImageData^) self.ResolveResource("res", iconUri, true)).Image;
         }

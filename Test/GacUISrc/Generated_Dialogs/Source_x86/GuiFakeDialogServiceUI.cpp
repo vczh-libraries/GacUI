@@ -7765,24 +7765,24 @@ Class (::gaclib_controls::MessageBoxWindow)
 
 	::vl::Ptr<::vl::presentation::INativeImage> MessageBoxWindow::GetIcon(::vl::presentation::INativeDialogService::MessageBoxIcons icon)
 	{
-		auto iconUri = ::vl::WString::Unmanaged(L"//Images/None");
+		auto iconUri = ::vl::WString::Unmanaged(L"Images/None");
 		{
 			auto __vwsn_switch_1 = ::vl::__vwsn::This(this->GetViewModel().Obj())->GetIcon();
 			if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconError))
 			{
-				(iconUri = ::vl::WString::Unmanaged(L"//Images/Error"));
+				(iconUri = ::vl::WString::Unmanaged(L"Images/Error"));
 			}
 			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconQuestion))
 			{
-				(iconUri = ::vl::WString::Unmanaged(L"//Images/Question"));
+				(iconUri = ::vl::WString::Unmanaged(L"Images/Question"));
 			}
 			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconWarning))
 			{
-				(iconUri = ::vl::WString::Unmanaged(L"//Images/Warning"));
+				(iconUri = ::vl::WString::Unmanaged(L"Images/Warning"));
 			}
 			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconInformation))
 			{
-				(iconUri = ::vl::WString::Unmanaged(L"//Images/Information"));
+				(iconUri = ::vl::WString::Unmanaged(L"Images/Information"));
 			}
 		}
 		return ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::presentation::GuiImageData>(::vl::__vwsn::This(this->self)->ResolveResource(::vl::WString::Unmanaged(L"res"), iconUri, true).Obj())).Obj())->GetImage();

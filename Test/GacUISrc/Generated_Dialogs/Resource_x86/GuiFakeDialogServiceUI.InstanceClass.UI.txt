@@ -8041,24 +8041,24 @@ namespace gaclib_controls
     {
         func GetIcon(icon : INativeDialogService::MessageBoxIcons) : (INativeImage^)
         {
-            var iconUri = "//Images/None";
+            var iconUri = "Images/None";
             {
                 var <switch>1 : ::presentation::INativeDialogService::MessageBoxIcons = ViewModel.Icon;
                 if ((<switch>1 == IconError of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
-                    (iconUri = "//Images/Error");
+                    (iconUri = "Images/Error");
                 }
                 else if ((<switch>1 == IconQuestion of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
-                    (iconUri = "//Images/Question");
+                    (iconUri = "Images/Question");
                 }
                 else if ((<switch>1 == IconWarning of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
-                    (iconUri = "//Images/Warning");
+                    (iconUri = "Images/Warning");
                 }
                 else if ((<switch>1 == IconInformation of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
-                    (iconUri = "//Images/Information");
+                    (iconUri = "Images/Information");
                 }
             }
             return (cast (GuiImageData^) self.ResolveResource("res", iconUri, true)).Image;
