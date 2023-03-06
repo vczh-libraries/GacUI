@@ -159,6 +159,7 @@ View Model (IFileDialogViewModel)
 
 		class FileDialogViewModel : public Object, public virtual IFileDialogViewModel
 		{
+			using ConfirmedSelection = collections::List<WString>;
 		protected:
 			WString						textLoadingFolders;
 			WString						textLoadingFiles;
@@ -177,7 +178,10 @@ View Model (IFileDialogViewModel)
 			Regex						regexDisplayString{ L";" };
 
 		public:
+			bool						selectToSave = false;
 			bool						confirmed = false;
+			ConfirmedSelection			confirmedSelection;
+
 			WString						title;
 			bool						enabledMultipleSelection = false;
 			bool						fileMustExist = false;
@@ -362,7 +366,207 @@ View Model (IFileDialogViewModel)
 
 			bool TryConfirm(controls::GuiWindow* owner, Selection selectedPaths) override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				auto wd = selectedFolder->folder.GetFilePath();
+				List<filesystem::FilePath> paths;
+				CopyFrom(
+					paths,
+					selectedPaths.Select([this, wd](auto path) { return wd / path; })
+					);
+
+				if (paths.Count() == 0)
+				{
+					GetCurrentController()->DialogService()->ShowMessageBox(
+						owner->GetNativeWindow(),
+						dialogErrorEmptySelection,
+						owner->GetText(),
+						INativeDialogService::DisplayOK,
+						INativeDialogService::DefaultFirst,
+						INativeDialogService::IconError
+						);
+					return false;
+				}
+				else if (paths.Count() == 1)
+				{
+					auto path = paths[0];
+					{
+						auto folder = filesystem::Folder(path);
+						if (folder.Exists())
+						{
+							// TODO: jump to that folder
+							CHECK_FAIL(L"Not Implemented!");
+						}
+					}
+				}
+				else
+				{
+					if (!enabledMultipleSelection)
+					{
+						GetCurrentController()->DialogService()->ShowMessageBox(
+							owner->GetNativeWindow(),
+							dialogErrorMultipleSelectionNotEnabled,
+							owner->GetText(),
+							INativeDialogService::DisplayOK,
+							INativeDialogService::DefaultFirst,
+							INativeDialogService::IconError
+							);
+						return false;
+					}
+				}
+
+				List<vint> files, folders, unexistings;
+				for (auto [path, index] : indexed(paths))
+				{
+					if (filesystem::File(path).Exists())
+					{
+						files.Add(index);
+					}
+					else if (filesystem::Folder(path).Exists())
+					{
+						folders.Add(index);
+					}
+					else
+					{
+						unexistings.Add(index);
+					}
+				}
+
+				if (folders.Count() > 0)
+				{
+					auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
+					{
+						writer.WriteString(dialogErrorFileExpected);
+						for (vint index : folders)
+						{
+							writer.WriteLine(WString::Empty);
+							writer.WriteString(L"  ");
+							writer.WriteString(wd.GetRelativePathFor(paths[index]));
+						}
+					});
+					GetCurrentController()->DialogService()->ShowMessageBox(
+						owner->GetNativeWindow(),
+						message,
+						owner->GetText(),
+						INativeDialogService::DisplayOK,
+						INativeDialogService::DefaultFirst,
+						INativeDialogService::IconError
+						);
+					return false;
+				}
+
+				if (unexistings.Count() > 0)
+				{
+					if (fileMustExist)
+					{
+						auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
+						{
+							writer.WriteString(dialogErrorFileNotExist);
+							for (vint index : unexistings)
+							{
+								writer.WriteLine(WString::Empty);
+								writer.WriteString(L"  ");
+								writer.WriteString(wd.GetRelativePathFor(paths[index]));
+							}
+						});
+						GetCurrentController()->DialogService()->ShowMessageBox(
+							owner->GetNativeWindow(),
+							message,
+							owner->GetText(),
+							INativeDialogService::DisplayOK,
+							INativeDialogService::DefaultFirst,
+							INativeDialogService::IconError
+							);
+						return false;
+					}
+
+					if (folderMustExist)
+					{
+						SortedList<filesystem::FilePath> folderOfUnexistings;
+						for (vint index : unexistings)
+						{
+							auto path = paths[index].GetFolder();
+							if(!folderOfUnexistings.Contains(path))
+							{
+								folderOfUnexistings.Add(path);
+							}
+						}
+
+						for (vint i = folderOfUnexistings.Count() - 1; i >= 0; i--)
+						{
+							if (filesystem::Folder(folderOfUnexistings[i]).Exists())
+							{
+								folderOfUnexistings.RemoveAt(i);
+							}
+						}
+
+						if (folderOfUnexistings.Count() > 0)
+						{
+							auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
+							{
+								writer.WriteString(dialogErrorFolderNotExist);
+								for (auto path : folderOfUnexistings)
+								{
+									writer.WriteLine(WString::Empty);
+									writer.WriteString(L"  ");
+									writer.WriteString(wd.GetRelativePathFor(path));
+								}
+							});
+							GetCurrentController()->DialogService()->ShowMessageBox(
+								owner->GetNativeWindow(),
+								message,
+								owner->GetText(),
+								INativeDialogService::DisplayOK,
+								INativeDialogService::DefaultFirst,
+								INativeDialogService::IconError
+								);
+							return false;
+						}
+					}
+
+					WString question;
+					if (selectToSave && promptOverriteFile)
+					{
+						question = dialogAskOverrideFile;
+					}
+					if (!selectToSave && promptCreateFile)
+					{
+						question = dialogAskCreateFile;
+					}
+
+					if ((selectToSave && promptOverriteFile) || (!selectToSave && promptCreateFile))
+					{
+						auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
+						{
+							writer.WriteString(question);
+							for (vint index : unexistings)
+							{
+								writer.WriteLine(WString::Empty);
+								writer.WriteString(L"  ");
+								writer.WriteString(wd.GetRelativePathFor(paths[index]));
+							}
+						});
+
+						auto result = GetCurrentController()->DialogService()->ShowMessageBox(
+							owner->GetNativeWindow(),
+							message,
+							owner->GetText(),
+							INativeDialogService::DisplayOKCancel,
+							INativeDialogService::DefaultThird,
+							INativeDialogService::IconQuestion
+							);
+
+						if (result == INativeDialogService::SelectCancel)
+						{
+							return false;
+						}
+					}
+				}
+
+				CopyFrom(
+					confirmedSelection,
+					From(paths).Select([](auto path) { return path.GetFullPath(); })
+					);
+				confirmed = true;
+				return true;
 			}
 
 			void InitLocalizedText(
@@ -473,6 +677,7 @@ FakeDialogServiceBase
 			case INativeDialogService::FileDialogOpen:
 			case INativeDialogService::FileDialogOpenPreview:
 				{
+					vm->selectToSave = false;
 					auto owner = GetApplication()->GetWindowFromNative(window);
 					auto dialog = CreateOpenFileDialog(vm);
 					ShowModalDialogAndDelete(vm, owner, dialog);
@@ -481,6 +686,7 @@ FakeDialogServiceBase
 			case INativeDialogService::FileDialogSave:
 			case INativeDialogService::FileDialogSavePreview:
 				{
+					vm->selectToSave = true;
 					auto owner = GetApplication()->GetWindowFromNative(window);
 					auto dialog = CreateSaveFileDialog(vm);
 					ShowModalDialogAndDelete(vm, owner, dialog);
@@ -491,6 +697,11 @@ FakeDialogServiceBase
 			if (vm->filters.Count() > 0)
 			{
 				selectionFilterIndex = vm->filters.IndexOf(vm->selectedFilter.Obj());
+			}
+
+			if (vm->confirmed)
+			{
+				CopyFrom(selectionFileNames, vm->confirmedSelection);
 			}
 			return vm->confirmed;
 		}
