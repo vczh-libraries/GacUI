@@ -38,7 +38,22 @@
   <Instance name="MessageBoxWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::MessageBoxWindow">
       <ref.Parameter Name="ViewModel" Class="presentation::IMessageBoxDialogViewModel"/>
+      <ref.Members><![CDATA[
+        func GetIcon(icon: INativeDialogService::MessageBoxIcons): INativeImage^
+        {
+          var iconUri = "//Images/None";
+          switch (ViewModel.Icon)
+          {
+          case IconError:       { iconUri = "//Images/Error";       }
+          case IconQuestion:    { iconUri = "//Images/Question";    }
+          case IconWarning:     { iconUri = "//Images/Warning";     }
+          case IconInformation: { iconUri = "//Images/Information"; }
+          }
+          return (cast (GuiImageData^) self.ResolveResource("res", iconUri, true)).Image;
+        }
+      ]]></ref.Members>
       <Window
+          ref.Name="self"
           Text-eval="ViewModel.Title"
           ClientSize="x:240 y:120"
           ShowInTaskBar="false"
@@ -72,7 +87,7 @@
               <Cell Site="row:1 column:0">
                 <SolidBackground Color="#FFFFFF"/>
                 <Bounds PreferredMinSize="x:48 y:48" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                  <ImageFrame Stretch="true" Image-uri="res://Images/None"/>
+                  <ImageFrame Stretch="true" Image-eval="self.GetIcon(ViewModel.Icon)"/>
                 </Bounds>
               </Cell>
             </Table>

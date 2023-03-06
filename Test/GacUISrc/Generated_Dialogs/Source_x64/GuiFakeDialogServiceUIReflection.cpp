@@ -485,6 +485,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::gaclib_controls::MessageBoxWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::MessageBoxWindow*(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_METHOD(GetIcon, { L"icon" })
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
 				CLASS_MEMBER_PROPERTY_READONLY(ViewModel, GetViewModel)
@@ -502,7 +503,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_15)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_16)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
@@ -512,6 +512,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(ViewModel)
+				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::gaclib_controls::MessageBoxWindowConstructor)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::SimpleFontDialogWindow)

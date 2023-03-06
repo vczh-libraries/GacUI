@@ -845,6 +845,11 @@ namespace gaclib_controls
 {
     class MessageBoxWindow : ::presentation::controls::GuiWindow
     {
+        func GetIcon(icon : INativeDialogService::MessageBoxIcons) : (INativeImage^)
+        {
+            raise "Not Implemented";
+        }
+
         func GetViewModel() : (presentation::IMessageBoxDialogViewModel^)
         {
             raise "Not Implemented";
