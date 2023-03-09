@@ -42,13 +42,13 @@
             </att.Columns>
 
             <Cell Site="row:0 column:0">
-              <SinglelineTextBox ref.Name="textBox" Readonly-eval="ViewModel.FontMustExist">
+              <SinglelineTextBox ref.Name="textBox" Readonly-eval="ViewModel.FontMustExist" Alt="F">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               </SinglelineTextBox>
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <BindableTextList ref.Name="textList" env.ItemType="string" ItemSource-eval="ViewModel.FontList" TextProperty-eval="[cast string $1]" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+              <BindableTextList ref.Name="textList" env.ItemType="string" ItemSource-eval="ViewModel.FontList" TextProperty-eval="[cast string $1]" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="N">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <ev.SelectionChanged-eval><![CDATA[
                   {
@@ -109,13 +109,13 @@
             </att.Columns>
 
             <Cell Site="row:0 column:0">
-              <SinglelineTextBox ref.Name="textBox">
+              <SinglelineTextBox ref.Name="textBox" Alt="S">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               </SinglelineTextBox>
             </Cell>
 
             <Cell Site="row:1 column:0">
-              <BindableTextList ref.Name="textList" env.ItemType="int" ItemSource-eval="self.SizeList" TextProperty-eval="[cast string (cast int $1)]" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+              <BindableTextList ref.Name="textList" env.ItemType="int" ItemSource-eval="self.SizeList" TextProperty-eval="[cast string (cast int $1)]" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="L">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 <ev.SelectionChanged-eval><![CDATA[
                   {
@@ -227,7 +227,7 @@
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <Button Text-str="OK()" Enabled-bind="nameControl.Legal and sizeControl.Legal">
+            <Button Text-str="OK()" Enabled-bind="nameControl.Legal and sizeControl.Legal" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {
@@ -241,7 +241,7 @@
           </Cell>
 
           <Cell Site="row:2 column:2">
-            <Button Text-str="Cancel()">
+            <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval>
                 <![CDATA[
@@ -321,11 +321,11 @@
                 <GroupBox Text-str="FontEffectGroup()">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                    <StackItem><CheckBox ref.Name="checkBold" Text-str="Bold()"/></StackItem>
-                    <StackItem><CheckBox ref.Name="checkItalic" Text-str="Italic()"/></StackItem>
-                    <StackItem><CheckBox ref.Name="checkUnderline" Text-str="Underline()"/></StackItem>
-                    <StackItem><CheckBox ref.Name="checkHAA" Text-str="HAA()"/></StackItem>
-                    <StackItem><CheckBox ref.Name="checkVAA" Text-str="VAA()"/></StackItem>
+                    <StackItem><CheckBox Alt="B" ref.Name="checkBold" Text-str="Bold()"/></StackItem>
+                    <StackItem><CheckBox Alt="I" ref.Name="checkItalic" Text-str="Italic()"/></StackItem>
+                    <StackItem><CheckBox Alt="U" ref.Name="checkUnderline" Text-str="Underline()"/></StackItem>
+                    <StackItem><CheckBox Alt="H" ref.Name="checkHAA" Text-str="HAA()"/></StackItem>
+                    <StackItem><CheckBox Alt="V" ref.Name="checkVAA" Text-str="VAA()"/></StackItem>
                   </Stack>
                 </GroupBox>
               </Cell>
@@ -333,7 +333,7 @@
               <Cell Site="row:2 column:1">
                 <GroupBox Text-str="FontColorGroup()">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                  <ComboButton ref.Name="comboColor">
+                  <ComboButton ref.Name="comboColor" Alt="K">
                     <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5" PreferredMinSize="x:80 y:24"/>
                     <att.ContainerComposition-set>
                       <Bounds AlignmentToParent="left:2 top:2 right:2 bottom:2">
@@ -395,7 +395,7 @@
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <Button Text-str="OK()" Enabled-bind="nameControl.Legal and sizeControl.Legal">
+            <Button Text-str="OK()" Enabled-bind="nameControl.Legal and sizeControl.Legal" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {
@@ -417,7 +417,7 @@
           </Cell>
 
           <Cell Site="row:2 column:2">
-            <Button Text-str="Cancel()">
+            <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval>
                 <![CDATA[
