@@ -77,7 +77,7 @@
               <ColumnSplitter ColumnsToTheLeft="1"/>
 
               <Cell Site="row:0 column:0">
-                <BindableTreeView ref.Name="treeView" env.ItemType="IFileDialogFolder^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                <BindableTreeView ref.Name="treeView" env.ItemType="IFileDialogFolder^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="D">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.TextProperty>Name</att.TextProperty>
                   <att.ChildrenProperty>Folders</att.ChildrenProperty>
@@ -88,7 +88,7 @@
               </Cell>
 
               <Cell Site="row:0 column:1">
-                <BindableListView ref.Name="listView" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
+                <BindableListView ref.Name="listView" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="F">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.Columns>
                     <ListViewColumn TextProperty="Name"/>
@@ -131,13 +131,13 @@
               </Cell>
 
               <Cell Site="row:0 column:1">
-                <SinglelineTextBox ref.Name="textBox">
+                <SinglelineTextBox ref.Name="textBox" Alt="S">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                 </SinglelineTextBox>
               </Cell>
 
               <Cell Site="row:0 column:2">
-                <ComboBox ref.Name="comboBox">
+                <ComboBox ref.Name="comboBox" Alt="E">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.ListControl>
                     <BindableTextList env.ItemType="IFileDialogFilter^" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false">
@@ -205,7 +205,7 @@
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <Button ref.Name="buttonOK" Enabled-bind="not ViewModel.IsLoadingFiles">
+            <Button ref.Name="buttonOK" Enabled-bind="not ViewModel.IsLoadingFiles" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {
@@ -219,7 +219,7 @@
           </Cell>
 
           <Cell Site="row:1 column:2">
-            <Button Text-str="Cancel()">
+            <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {
