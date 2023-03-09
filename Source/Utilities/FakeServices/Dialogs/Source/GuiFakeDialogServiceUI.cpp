@@ -63,6 +63,24 @@ Closures
 
 	void __vwsnf10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
 		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
@@ -74,12 +92,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -92,12 +110,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetColor(::vl::__vwsn::This(__vwsnthis_0->colorControl)->GetValue());
@@ -106,12 +124,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_7)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -124,24 +142,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -154,12 +172,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -172,12 +190,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonOK)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -190,35 +208,17 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self), ::vl::__vwsn::This(__vwsnthis_0->filePickerControl)->GetSelection()))
-		{
-			::vl::__vwsn::This(__vwsnthis_0->self)->Close();
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
+		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self), ::vl::__vwsn::This(__vwsnthis_0->filePickerControl)->GetSelection()))
 		{
-			return;
+			::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -246,9 +246,15 @@ Closures
 	{
 	}
 
-	void __vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -258,7 +264,19 @@ Closures
 	{
 	}
 
-	void __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -271,28 +289,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
-	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_item_);
-		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(item.Obj())->GetFolders()));
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	::vl::Ptr<::vl::reflection::description::IValueEnumerable> __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
 		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_item_);
-		return ::vl::__vwsn::This(item.Obj())->GetName();
+		return ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueObservableList>(::vl::__vwsn::This(item.Obj())->GetFolders()));
 	}
 
 	//-------------------------------------------------------------------
@@ -304,7 +309,7 @@ Closures
 
 	::vl::WString __vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFile>>(__vwsn_item_);
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
 	}
 
@@ -317,7 +322,7 @@ Closures
 
 	::vl::WString __vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
 	{
-		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFilter>>(__vwsn_item_);
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFile>>(__vwsn_item_);
 		return ::vl::__vwsn::This(item.Obj())->GetName();
 	}
 
@@ -328,7 +333,20 @@ Closures
 	{
 	}
 
-	void __vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	::vl::WString __vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_item_) const
+	{
+		auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFilter>>(__vwsn_item_);
+		return ::vl::__vwsn::This(item.Obj())->GetName();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -341,12 +359,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+	__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->textBox)->GetAlt();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetAlt(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetDisplayString(::vl::__vwsn::This(__vwsnthis_0->self)->GetSelectedFiles()));
 		::vl::__vwsn::This(__vwsnthis_0->textBox)->Select([&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }(), [&](){ ::vl::presentation::TextPos __vwsn_temp__; __vwsn_temp__.row = static_cast<::vl::vint>(0); __vwsn_temp__.column = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -354,12 +390,145 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+	__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		auto filter = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFilter>>(::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedItem());
+		if (static_cast<bool>(filter))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetSelectedFilter(filter);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_22.Obj())->GetSelectedFolder();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_22.Obj())->SetSelectedFolder(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
+		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_::__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_(::gaclib_controls::FilePickerControl* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_::operator()(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsn_co_impl_) const
+	{
+		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine(__vwsn_co_impl_, __vwsnthis_0));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		if (((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))) && (::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText() != ::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText())))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		auto value = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint>(::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText()); } catch(...){ return (- static_cast<::vl::vint>(1)); } }();
 		if ((value == (- static_cast<::vl::vint>(1))))
@@ -382,145 +551,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+	__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		auto filter = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFilter>>(::vl::__vwsn::This(__vwsnthis_0->comboBox)->GetSelectedItem());
-		if (static_cast<bool>(filter))
-		{
-			::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetSelectedFilter(filter);
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_22.Obj())->GetSelectedFolder();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsn_value_);
-		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_22.Obj())->SetSelectedFolder(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
-		if ((__vwsn_old_.Obj() == __vwsn_new_.Obj()))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_(::gaclib_controls::FilePickerControl* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::reflection::description::ICoroutine> __vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_::operator()(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsn_co_impl_) const
-	{
-		return ::vl::Ptr<::vl::reflection::description::ICoroutine>(new ::vl_workflow_global::__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine(__vwsn_co_impl_, __vwsnthis_0));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		if (((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))) && (::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText() != ::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText())))
-		{
-			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf39_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetLegal();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -533,42 +569,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+	__vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()() const
+	void __vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateSelectedIndex();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+	__vwsnf42_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsnf42_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf42_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -581,35 +599,17 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
-	{
-		if (((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))) && (::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText() != ::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText())))
-		{
-			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
-		}
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnf44_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf44_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf44_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf44_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
+		if (((::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemIndex() != (- static_cast<::vl::vint>(1))) && (::vl::__vwsn::This(__vwsnthis_0->textBox)->GetText() != ::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText())))
 		{
-			return;
+			::vl::__vwsn::This(__vwsnthis_0->textBox)->SetText(::vl::__vwsn::This(__vwsnthis_0->textList)->GetSelectedItemText());
 		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -621,6 +621,24 @@ Closures
 
 	void __vwsnf45_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf46_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf46_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf46_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -632,12 +650,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf46_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf46_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf46_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetLegal();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -650,24 +668,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()() const
+	void __vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()() const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->UpdateSelectedIndex();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -680,12 +698,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::vint>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf50_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf50_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf50_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkBold)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -698,30 +734,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+	__vwsnf51_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf51_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf50_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf50_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf50_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf51_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkItalic)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -734,12 +752,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf51_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf51_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf52_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf52_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf51_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf52_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkUnderline)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -752,12 +770,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf52_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf52_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf53_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf53_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf52_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf53_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkHAA)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -770,12 +788,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf53_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf53_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf54_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf54_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf53_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf54_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->checkVAA)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -788,12 +806,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf54_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf54_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf55_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf55_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf54_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf55_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -806,12 +824,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf55_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf55_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf56_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf56_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf55_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf56_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -824,12 +842,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf56_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf56_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf57_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf57_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf56_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf57_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_23.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -842,12 +860,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf57_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf57_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf58_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf58_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf57_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf58_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_17)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -860,12 +878,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf58_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf58_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf59_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf59_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf58_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf59_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_29)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
@@ -878,12 +896,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf59_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf59_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf59_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_2)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf60_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf60_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf60_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_26)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -896,30 +932,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+	__vwsnf61_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf61_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf60_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf60_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf60_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf61_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -932,12 +950,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf61_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf61_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf61_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_33)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -950,12 +968,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetFont([&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = ::vl::__vwsn::This(__vwsnthis_0->nameControl)->GetValue(); __vwsn_temp__.size = ::vl::__vwsn::This(__vwsnthis_0->sizeControl)->GetValue(); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsnthis_0->checkBold)->GetSelected(); __vwsn_temp__.italic = ::vl::__vwsn::This(__vwsnthis_0->checkItalic)->GetSelected(); __vwsn_temp__.underline = ::vl::__vwsn::This(__vwsnthis_0->checkUnderline)->GetSelected(); __vwsn_temp__.antialias = ::vl::__vwsn::This(__vwsnthis_0->checkHAA)->GetSelected(); __vwsn_temp__.verticalAntialias = ::vl::__vwsn::This(__vwsnthis_0->checkVAA)->GetSelected(); return __vwsn_temp__; }());
@@ -965,12 +983,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_36)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -983,24 +1001,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1013,12 +1031,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -1031,12 +1049,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf68_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf68_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf68_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_11)->GetFont();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Nullable<::vl::presentation::FontProperties>>(__vwsn_value_);
@@ -1049,12 +1067,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf68_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf68_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf69_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf69_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf68_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf69_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1067,12 +1085,30 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf69_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf69_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf69_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_4)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf70_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf70_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf70_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1085,30 +1121,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+	__vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->SetText(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf70_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf70_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf70_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_15)->GetEnabled();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
@@ -1121,12 +1139,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetConfirmed(true);
 		::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->SetFontFamily(::vl::__vwsn::This(__vwsnthis_0->nameControl)->GetValue());
@@ -1136,12 +1154,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_18)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1154,24 +1172,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -1184,12 +1202,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::__vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -1198,24 +1216,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::__vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->GetText();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_0)->SetText(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -1276,6 +1276,24 @@ Closures
 
 	void __vwsnf7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
+		{
+			return;
+		}
+		::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->SetText(__vwsn_new_);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_8)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
 		if ((__vwsn_old_ == __vwsn_new_))
@@ -1287,12 +1305,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+	__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_16.Obj())->GetColor();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
@@ -1305,36 +1323,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
-	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetValue();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::presentation::Color>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->self)->SetValue(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsno27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsno27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	::vl::Ptr<::vl::presentation::GuiImageData> __vwsno27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
-	{
-		return [&](auto node){ return ((::vl::__vwsn::This(node.Obj())->GetType() == ::vl::presentation::FileDialogFolderType::Folder) ? ::vl::__vwsn::This(__vwsnthis_0->self)->imageFolder : ::vl::Ptr<::vl::presentation::GuiImageData>()); }(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsno_1));
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsno28_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsno28_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -1342,69 +1330,80 @@ Closures
 
 	::vl::Ptr<::vl::presentation::GuiImageData> __vwsno28_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
+		return [&](auto node){ return ((::vl::__vwsn::This(node.Obj())->GetType() == ::vl::presentation::FileDialogFolderType::Folder) ? ::vl::__vwsn::This(__vwsnthis_0->self)->imageFolder : ::vl::Ptr<::vl::presentation::GuiImageData>()); }(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(__vwsno_1));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsno29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::__vwsno29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	::vl::Ptr<::vl::presentation::GuiImageData> __vwsno29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	{
 		return [&](auto node){ return ((::vl::__vwsn::This(node.Obj())->GetType() == ::vl::presentation::FileDialogFileType::Folder) ? ::vl::__vwsn::This(__vwsnthis_0->self)->imageFolder : ((::vl::__vwsn::This(node.Obj())->GetType() == ::vl::presentation::FileDialogFileType::File) ? ::vl::__vwsn::This(__vwsnthis_0->self)->imageFile : ::vl::Ptr<::vl::presentation::GuiImageData>())); }(::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFile>>(__vwsno_1));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno35_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsno35_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+	__vwsno36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::__vwsno36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsno35_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	::vl::WString __vwsno36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
 		return ::vl::__vwsn::Unbox<::vl::WString>(__vwsno_1);
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsno42_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsno42_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsno43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::__vwsno43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	::vl::WString __vwsno42_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
+	::vl::WString __vwsno43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsno_1) const
 	{
 		return ::vl::__vwsn::ToString(::vl::__vwsn::Unbox<::vl::vint>(__vwsno_1));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -1414,17 +1413,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -1445,7 +1444,7 @@ Closures
 
 	void __vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1507,7 +1506,7 @@ Closures
 
 	void __vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->ColorDialogTitle();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1557,10 +1556,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -1568,7 +1568,7 @@ Closures
 
 	void __vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->ColorDialogTitle();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1582,8 +1582,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1606,6 +1606,67 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
@@ -1618,7 +1679,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>();
@@ -1627,71 +1688,9 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = (! ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetIsLoadingFiles());
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::vl::presentation::IFileDialogViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsLoadingFilesChanged, ::vl::Func<void()>(this, &__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsLoadingFilesChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>());
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FileDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FileDialogWindow*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
 	void __vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
+		auto __vwsn_bind_activator_result_ = (! ::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetIsLoadingFiles());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1705,8 +1704,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FileDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::vl::presentation::IFileDialogViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsLoadingFilesChanged, ::vl::Func<void()>(this, &__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1729,10 +1728,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->IsLoadingFilesChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FileDialogWindow*>(nullptr));
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -1741,10 +1740,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FileDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FileDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -1752,7 +1752,7 @@ Closures
 
 	void __vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1766,8 +1766,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FileDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1790,6 +1790,67 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FileDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
@@ -1802,7 +1863,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+	__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>();
@@ -1811,71 +1872,9 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSelectedFolder().Obj())->GetFullPath();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::vl::presentation::IFileDialogViewModel>(); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFolderChanged, ::vl::Func<void()>(this, &__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFolderChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>());
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FilePickerControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FilePickerControl*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
 	void __vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FileDialogFileName();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->GetSelectedFolder().Obj())->GetFullPath();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -1889,8 +1888,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FilePickerControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->ViewModel; } catch(...){ return ::vl::Ptr<::vl::presentation::IFileDialogViewModel>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFolderChanged, ::vl::Func<void()>(this, &__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1913,10 +1912,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0.Obj())->SelectedFolderChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FilePickerControl*>(nullptr));
+			(__vwsn_bind_cache_0 = ::vl::Ptr<::vl::presentation::IFileDialogViewModel>());
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -1925,10 +1924,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FilePickerControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FilePickerControl*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -1936,11 +1936,11 @@ Closures
 
 	void __vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedItem());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FileDialogFileName();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -1950,8 +1950,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->treeView; } catch(...){ return static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FilePickerControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -1974,10 +1974,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FilePickerControl*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -2050,7 +2050,7 @@ Closures
 	__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -2058,11 +2058,11 @@ Closures
 
 	void __vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetSelectedItem());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -2072,8 +2072,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->treeView; } catch(...){ return static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -2096,6 +2096,67 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->SelectionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiBindableTreeView*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FilePickerControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
@@ -2108,7 +2169,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::gaclib_controls::FilePickerControl* __vwsnctorthis_0)
+	__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine(::vl::reflection::description::EnumerableCoroutine::IImpl* __vwsnctor___vwsn_co_impl_, ::gaclib_controls::FilePickerControl* __vwsnctorthis_0)
 		:__vwsn_co_impl_(__vwsnctor___vwsn_co_impl_)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -2122,25 +2183,25 @@ Closures
 		this->__vwsn_prop_Status = ::vl::reflection::description::CoroutineStatus::Waiting;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueException> __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::GetFailure()
+	::vl::Ptr<::vl::reflection::description::IValueException> __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::GetFailure()
 	{
 		return __vwsn_prop_Failure;
 	}
-	void __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_)
+	void __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::SetFailure(::vl::Ptr<::vl::reflection::description::IValueException> __vwsn_value_)
 	{
 		(__vwsn_prop_Failure = __vwsn_value_);
 	}
 
-	::vl::reflection::description::CoroutineStatus __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::GetStatus()
+	::vl::reflection::description::CoroutineStatus __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::GetStatus()
 	{
 		return __vwsn_prop_Status;
 	}
-	void __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_)
+	void __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::SetStatus(::vl::reflection::description::CoroutineStatus __vwsn_value_)
 	{
 		(__vwsn_prop_Status = __vwsn_value_);
 	}
 
-	void __vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
+	void __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles___vl_reflection_description_ICoroutine::Resume(bool __vwsn_raise_exception_, ::vl::Ptr<::vl::reflection::description::CoroutineResult> __vwsn_co_result_)
 	{
 		if ((this->GetStatus() != ::vl::reflection::description::CoroutineStatus::Waiting))
 		{
@@ -2245,7 +2306,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontNameControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+	__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontNameControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
 		:__vwsn_this_(__vwsnctor___vwsn_this_)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -2255,74 +2316,13 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontNameGroup();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FontNameControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -2332,8 +2332,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textBox; } catch(...){ return static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FontNameControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -2356,10 +2356,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -2379,7 +2379,7 @@ Closures
 
 	void __vwsnc24_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFontMustExist()) || (::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFontList()).Obj())->IndexOf(::vl::__vwsn::Box(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText())) != (- static_cast<::vl::vint>(1))));
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -2432,7 +2432,7 @@ Closures
 	__vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -2440,11 +2440,11 @@ Closures
 
 	void __vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ((! ::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFontMustExist()) || (::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFontList()).Obj())->IndexOf(::vl::__vwsn::Box(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText())) != (- static_cast<::vl::vint>(1))));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -2454,8 +2454,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textBox; } catch(...){ return static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -2478,6 +2478,67 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontNameControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
@@ -2490,7 +2551,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontSizeControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+	__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontSizeControl* __vwsnctor___vwsn_this_, ::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsn_this_(__vwsnctor___vwsn_this_)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
@@ -2500,74 +2561,13 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontSizeGroup();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText()); } catch(...){ return (- static_cast<::vl::vint>(1)); } }();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -2577,8 +2577,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textBox; } catch(...){ return static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -2601,10 +2601,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -2616,7 +2616,7 @@ Closures
 	__vwsnc28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -2624,11 +2624,11 @@ Closures
 
 	void __vwsnc28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue() > static_cast<::vl::vint>(0));
+		auto __vwsn_bind_activator_result_ = [&](){ try{ return ::vl::__vwsn::Parse<::vl::vint>(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetText()); } catch(...){ return (- static_cast<::vl::vint>(1)); } }();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -2638,8 +2638,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->textBox; } catch(...){ return static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc28_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -2662,10 +2662,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiSinglelineTextBox*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -2677,7 +2677,7 @@ Closures
 	__vwsnc29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -2685,7 +2685,7 @@ Closures
 
 	void __vwsnc29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue() > static_cast<::vl::vint>(0));
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -2699,8 +2699,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -2723,10 +2723,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -2738,7 +2738,7 @@ Closures
 	__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorComponentControl*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -2746,11 +2746,11 @@ Closures
 
 	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetTextBoxAlt();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -2760,8 +2760,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->tracker; } catch(...){ return static_cast<::vl::presentation::controls::GuiScroll*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::ColorComponentControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAltChanged, ::vl::Func<void()>(this, &__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -2784,10 +2784,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->TextBoxAltChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorComponentControl*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -2796,40 +2796,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FontSizeControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Bold();
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -2839,17 +2838,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -2870,7 +2869,7 @@ Closures
 
 	void __vwsnc31_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Italic();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Bold();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -2932,7 +2931,7 @@ Closures
 
 	void __vwsnc32_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Underline();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Italic();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -2994,7 +2993,7 @@ Closures
 
 	void __vwsnc33_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->HAA();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Underline();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3056,7 +3055,7 @@ Closures
 
 	void __vwsnc34_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->VAA();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->HAA();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3118,7 +3117,7 @@ Closures
 
 	void __vwsnc35_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontEffectGroup();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->VAA();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3180,7 +3179,7 @@ Closures
 
 	void __vwsnc36_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontColorGroup2();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontEffectGroup();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3230,10 +3229,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -3241,7 +3241,7 @@ Closures
 
 	void __vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontColorGroup2();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3255,8 +3255,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->colorControl; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -3279,10 +3279,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -3291,11 +3291,10 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -3303,7 +3302,7 @@ Closures
 
 	void __vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontColorGroup();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3317,8 +3316,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->colorControl; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -3341,6 +3340,68 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontColorGroup();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
@@ -3353,7 +3414,68 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorComponentControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetPosition();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->tracker; } catch(...){ return static_cast<::vl::presentation::controls::GuiScroll*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->PositionChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiScroll*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr);
@@ -3378,58 +3500,58 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = [&](auto defaultFont){ return [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = (::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFontList()).Obj())->Contains(::vl::__vwsn::Box(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue())) ? ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue() : defaultFont.fontFamily); __vwsn_temp__.size = ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetValue() > static_cast<::vl::vint>(0)) ? ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetValue() : defaultFont.size); __vwsn_temp__.bold = ::vl::__vwsn::This(__vwsn_bind_cache_4)->GetSelected(); __vwsn_temp__.italic = ::vl::__vwsn::This(__vwsn_bind_cache_5)->GetSelected(); __vwsn_temp__.underline = ::vl::__vwsn::This(__vwsn_bind_cache_6)->GetSelected(); __vwsn_temp__.antialias = ::vl::__vwsn::This(__vwsn_bind_cache_7)->GetSelected(); __vwsn_temp__.verticalAntialias = ::vl::__vwsn::This(__vwsn_bind_cache_8)->GetSelected(); return __vwsn_temp__; }(); }(::vl::__vwsn::This(::vl::__vwsn::This(::vl::presentation::GetCurrentController())->ResourceService())->GetDefaultFont());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0()
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
+	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0(::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_bind_callback_argument_0, ::vl::presentation::compositions::GuiEventArgs* __vwsn_bind_callback_argument_1)
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -3443,21 +3565,21 @@ Closures
 			(__vwsn_bind_cache_6 = [&](){ try{ return __vwsnthis_0->checkUnderline; } catch(...){ return static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr); } }());
 			(__vwsn_bind_cache_7 = [&](){ try{ return __vwsnthis_0->checkHAA; } catch(...){ return static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr); } }());
 			(__vwsn_bind_cache_8 = [&](){ try{ return __vwsnthis_0->checkVAA; } catch(...){ return static_cast<::vl::presentation::controls::GuiSelectableButton*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_5_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_6_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_6)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_7_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_7)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_8_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_8)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_4_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_4)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_4_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_5_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_5)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_5_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_6_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_6)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_6_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_7_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_7)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_7_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_8_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_8)->SelectedChanged, ::vl::Func<void(::vl::presentation::compositions::GuiGraphicsComposition*, ::vl::presentation::compositions::GuiEventArgs*)>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_8_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -3467,7 +3589,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -3542,130 +3664,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControl* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Red();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontPreviewGroup();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnc41_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc41_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsn_this_(__vwsnctor___vwsn_this_)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
@@ -3678,7 +3676,7 @@ Closures
 
 	void __vwsnc41_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontPreviewGroup();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3728,29 +3726,23 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLegal() && ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetLegal());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -3760,10 +3752,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->nameControl; } catch(...){ return static_cast<::gaclib_controls::FontNameControl*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->sizeControl; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -3780,6 +3770,76 @@ Closures
 	}
 
 	bool __vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLegal() && ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetLegal());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->nameControl; } catch(...){ return static_cast<::gaclib_controls::FontNameControl*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->sizeControl; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -3805,68 +3865,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnc44_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc44_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsn_this_(__vwsnctor___vwsn_this_)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
@@ -3879,7 +3877,7 @@ Closures
 
 	void __vwsnc44_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontDialogTitle();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3929,10 +3927,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -3940,7 +3939,7 @@ Closures
 
 	void __vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontDialogTitle();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -3954,8 +3953,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -3978,6 +3977,67 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FullFontDialogWindow*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::FullFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
 				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
@@ -3990,7 +4050,7 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr);
@@ -4005,33 +4065,33 @@ Closures
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
 		auto __vwsn_bind_activator_result_ = [&](auto defaultFont){ return [&](){ ::vl::presentation::FontProperties __vwsn_temp__; __vwsn_temp__.fontFamily = (::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->GetFontList()).Obj())->Contains(::vl::__vwsn::Box(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue())) ? ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetValue() : defaultFont.fontFamily); __vwsn_temp__.size = ((::vl::__vwsn::This(__vwsn_bind_cache_2)->GetValue() > static_cast<::vl::vint>(0)) ? ::vl::__vwsn::This(__vwsn_bind_cache_3)->GetValue() : defaultFont.size); __vwsn_temp__.antialias = true; __vwsn_temp__.verticalAntialias = true; return __vwsn_temp__; }(); }(::vl::__vwsn::This(::vl::__vwsn::This(::vl::presentation::GetCurrentController())->ResourceService())->GetDefaultFont());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
+	void __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
+	void __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	void __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0()
+	void __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
@@ -4040,16 +4100,16 @@ Closures
 			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->nameControl; } catch(...){ return static_cast<::gaclib_controls::FontNameControl*>(nullptr); } }());
 			(__vwsn_bind_cache_2 = [&](){ try{ return __vwsnthis_0->sizeControl; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
 			(__vwsn_bind_cache_3 = [&](){ try{ return __vwsnthis_0->sizeControl; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_2_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_2)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_2_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_3_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_3)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_3_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -4059,7 +4119,7 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -4099,68 +4159,6 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontPreviewGroup();
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnc48_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc48_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsn_this_(__vwsnctor___vwsn_this_)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
@@ -4173,7 +4171,7 @@ Closures
 
 	void __vwsnc48_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontPreviewGroup();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4223,29 +4221,23 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr);
-		this->__vwsn_bind_cache_1 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLegal() && ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetLegal());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->OK();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -4255,10 +4247,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->nameControl; } catch(...){ return static_cast<::gaclib_controls::FontNameControl*>(nullptr); } }());
-			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->sizeControl; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4281,18 +4271,11 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LegalChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			if (static_cast<bool>(__vwsn_bind_handler_1_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->LegalChanged, __vwsn_bind_handler_1_0);
-				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr));
-			(__vwsn_bind_cache_1 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -4312,7 +4295,7 @@ Closures
 
 	void __vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Green();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Red();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4362,23 +4345,29 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsn_this_(__vwsnctor___vwsn_this_)
-		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr);
+		this->__vwsn_bind_cache_1 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
+		auto __vwsn_bind_activator_result_ = (::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLegal() && ::vl::__vwsn::This(__vwsn_bind_cache_1)->GetLegal());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -4388,8 +4377,10 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->nameControl; } catch(...){ return static_cast<::gaclib_controls::FontNameControl*>(nullptr); } }());
+			(__vwsn_bind_cache_1 = [&](){ try{ return __vwsnthis_0->sizeControl; } catch(...){ return static_cast<::gaclib_controls::FontSizeControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_1_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_1)->LegalChanged, ::vl::Func<void()>(this, &__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_1_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4412,11 +4403,18 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LegalChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr));
+			if (static_cast<bool>(__vwsn_bind_handler_1_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_1)->LegalChanged, __vwsn_bind_handler_1_0);
+				(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::FontNameControl*>(nullptr));
+			(__vwsn_bind_cache_1 = static_cast<::gaclib_controls::FontSizeControl*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			(__vwsn_bind_handler_1_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -4436,7 +4434,7 @@ Closures
 
 	void __vwsnc51_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontDialogTitle();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Cancel();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4486,10 +4484,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindow* __vwsnctor___vwsn_this_, ::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
@@ -4497,7 +4496,7 @@ Closures
 
 	void __vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->FontDialogTitle();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4511,8 +4510,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -4535,10 +4534,10 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::SimpleFontDialogWindow*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -4547,39 +4546,39 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0)
+	__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::SimpleFontDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
-		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr);
+		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
-	void __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	void __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetButtonText(::vl::__vwsn::This(__vwsnthis_0->Action.Obj())->GetButton(), ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings());
+		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
-	void __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	void __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
 	{
 		this->__vwsn_bind_activator_();
 	}
 
-	bool __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Open()
+	bool __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Open()
 	{
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
 	}
 
-	bool __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Update()
+	bool __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Update()
 	{
 		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
 		{
@@ -4589,17 +4588,17 @@ Closures
 		return false;
 	}
 
-	bool __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription::Close()
+	bool __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
-			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr));
+			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
@@ -4877,7 +4876,7 @@ Closures
 
 	void __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Blue();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Green();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4939,7 +4938,7 @@ Closures
 
 	void __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Color();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Blue();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -4989,8 +4988,9 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControl* __vwsnctor___vwsn_this_, ::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsn_this_(__vwsnctor___vwsn_this_)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
@@ -5000,7 +5000,7 @@ Closures
 
 	void __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetStrings().Obj())->Color();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
@@ -5014,8 +5014,8 @@ Closures
 		if ((! __vwsn_bind_opened_))
 		{
 			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsn_this_; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, ::vl::Func<void()>(this, &__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -5038,7 +5038,7 @@ Closures
 			(__vwsn_bind_closed_ = true);
 			if (static_cast<bool>(__vwsn_bind_handler_0_0))
 			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->StringsChanged, __vwsn_bind_handler_0_0);
 				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			}
 			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
@@ -5055,29 +5055,17 @@ Closures
 	{
 		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
 		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
 		this->__vwsn_bind_opened_ = false;
 		this->__vwsn_bind_closed_ = false;
 	}
 
 	void __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
 	{
-		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->ReadColor();
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->GetValue();
 		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
 	}
 
 	void __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	void __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2()
 	{
 		this->__vwsn_bind_activator_();
 	}
@@ -5088,9 +5076,7 @@ Closures
 		{
 			(__vwsn_bind_opened_ = true);
 			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorRed)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_0_1 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorGreen)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			(__vwsn_bind_handler_0_2 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorBlue)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
 			return true;
 		}
 		return false;
@@ -5107,6 +5093,81 @@ Closures
 	}
 
 	bool __vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
+	{
+		if ((! __vwsn_bind_closed_))
+		{
+			(__vwsn_bind_closed_ = true);
+			if (static_cast<bool>(__vwsn_bind_handler_0_0))
+			{
+				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->ValueChanged, __vwsn_bind_handler_0_0);
+				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			}
+			(__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr));
+			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
+			return true;
+		}
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+		this->__vwsn_bind_cache_0 = static_cast<::gaclib_controls::ColorDialogControl*>(nullptr);
+		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
+		this->__vwsn_bind_opened_ = false;
+		this->__vwsn_bind_closed_ = false;
+	}
+
+	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
+	{
+		auto __vwsn_bind_activator_result_ = ::vl::__vwsn::This(__vwsn_bind_cache_0)->ReadColor();
+		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
+	}
+
+	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2()
+	{
+		this->__vwsn_bind_activator_();
+	}
+
+	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
+	{
+		if ((! __vwsn_bind_opened_))
+		{
+			(__vwsn_bind_opened_ = true);
+			(__vwsn_bind_cache_0 = [&](){ try{ return __vwsnthis_0->self; } catch(...){ return static_cast<::gaclib_controls::ColorDialogControl*>(nullptr); } }());
+			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorRed)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_1 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorGreen)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_1)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			(__vwsn_bind_handler_0_2 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::This(__vwsn_bind_cache_0)->colorBlue)->ValueChanged, ::vl::Func<void()>(this, &__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_2)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
+	{
+		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
+		{
+			this->__vwsn_bind_activator_();
+			return true;
+		}
+		return false;
+	}
+
+	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
 	{
 		if ((! __vwsn_bind_closed_))
 		{
@@ -5130,67 +5191,6 @@ Closures
 			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_0_1 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			(__vwsn_bind_handler_0_2 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			return true;
-		}
-		return false;
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::ColorDialogControlConstructor* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-		this->__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr);
-		this->__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>();
-		this->__vwsn_bind_opened_ = false;
-		this->__vwsn_bind_closed_ = false;
-	}
-
-	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_activator_()
-	{
-		auto __vwsn_bind_activator_result_ = ::gaclib_controls::DialogStrings::Get(::vl::__vwsn::This(__vwsn_bind_cache_0)->GetLocale());
-		::vl::__vwsn::EventInvoke(this->ValueChanged)(::vl::__vwsn::Box(__vwsn_bind_activator_result_));
-	}
-
-	void __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0()
-	{
-		this->__vwsn_bind_activator_();
-	}
-
-	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Open()
-	{
-		if ((! __vwsn_bind_opened_))
-		{
-			(__vwsn_bind_opened_ = true);
-			(__vwsn_bind_cache_0 = [&](){ try{ return ::vl::presentation::controls::GetApplication(); } catch(...){ return static_cast<::vl::presentation::controls::GuiApplication*>(nullptr); } }());
-			(__vwsn_bind_handler_0_0 = [&](){ try{ return ::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, ::vl::Func<void()>(this, &__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::__vwsn_bind_callback_0_0)); } catch(...){ return ::vl::Ptr<::vl::reflection::description::IEventHandler>(); } }());
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Update()
-	{
-		if ((__vwsn_bind_opened_ && (! __vwsn_bind_closed_)))
-		{
-			this->__vwsn_bind_activator_();
-			return true;
-		}
-		return false;
-	}
-
-	bool __vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription::Close()
-	{
-		if ((! __vwsn_bind_closed_))
-		{
-			(__vwsn_bind_closed_ = true);
-			if (static_cast<bool>(__vwsn_bind_handler_0_0))
-			{
-				::vl::__vwsn::EventDetach(::vl::__vwsn::This(__vwsn_bind_cache_0)->LocaleChanged, __vwsn_bind_handler_0_0);
-				(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
-			}
-			(__vwsn_bind_cache_0 = static_cast<::vl::presentation::controls::GuiApplication*>(nullptr));
-			(__vwsn_bind_handler_0_0 = ::vl::Ptr<::vl::reflection::description::IEventHandler>());
 			return true;
 		}
 		return false;
@@ -5282,12 +5282,17 @@ namespace gaclib_controls
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textBox)->TextChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc2_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -5321,9 +5326,23 @@ Class (::gaclib_controls::ColorComponentControl)
 		}
 	}
 
+	::vl::WString ColorComponentControl::GetTextBoxAlt()
+	{
+		return this->__vwsn_prop_TextBoxAlt;
+	}
+	void ColorComponentControl::SetTextBoxAlt(const ::vl::WString& __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_TextBoxAlt != __vwsn_value_))
+		{
+			(this->__vwsn_prop_TextBoxAlt = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->TextBoxAltChanged)();
+		}
+	}
+
 	ColorComponentControl::ColorComponentControl()
 		: ::vl::presentation::controls::GuiCustomControl(::vl::presentation::theme::ThemeName::CustomControl)
 		, __vwsn_prop_Value(static_cast<::vl::vint>(0))
+		, __vwsn_prop_TextBoxAlt(::vl::WString::Unmanaged(L""))
 	{
 		auto __vwsn_resource_ = ::vl::__vwsn::This(::vl::presentation::GetResourceManager())->GetResourceFromClassName(::vl::WString::Unmanaged(L"gaclib_controls::ColorComponentControl"));
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
@@ -5423,6 +5442,9 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_9)->SetSite(static_cast<::vl::vint>(0), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
 		(this->colorRed = new ::gaclib_controls::ColorComponentControl());
+		{
+			::vl::__vwsn::This(this->colorRed)->SetTextBoxAlt(::vl::WString::Unmanaged(L"R"));
+		}
 		(this->__vwsn_precompile_10 = ::vl::__vwsn::This(this->colorRed)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -5438,6 +5460,9 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetSite(static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
 		(this->colorGreen = new ::gaclib_controls::ColorComponentControl());
+		{
+			::vl::__vwsn::This(this->colorGreen)->SetTextBoxAlt(::vl::WString::Unmanaged(L"G"));
+		}
 		(this->__vwsn_precompile_12 = ::vl::__vwsn::This(this->colorGreen)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -5453,6 +5478,9 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->SetSite(static_cast<::vl::vint>(2), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1), static_cast<::vl::vint>(1));
 		}
 		(this->colorBlue = new ::gaclib_controls::ColorComponentControl());
+		{
+			::vl::__vwsn::This(this->colorBlue)->SetTextBoxAlt(::vl::WString::Unmanaged(L"B"));
+		}
 		(this->__vwsn_precompile_14 = ::vl::__vwsn::This(this->colorBlue)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
@@ -5481,11 +5509,6 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc3_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc4_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
@@ -5501,6 +5524,11 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
 			::vl::__vwsn::This(this->colorRed)->SetValue(static_cast<::vl::vint>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().r));
 		}
 		{
@@ -5510,11 +5538,6 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 			::vl::__vwsn::This(this->colorBlue)->SetValue(static_cast<::vl::vint>(::vl::__vwsn::This(this->ViewModel.Obj())->GetColor().b));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
@@ -5522,6 +5545,11 @@ Class (::gaclib_controls::ColorDialogControlConstructor)
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -5684,6 +5712,9 @@ Class (::gaclib_controls::ColorDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_4)->GetBoundsComposition()));
 		}
 		{
@@ -5704,6 +5735,9 @@ Class (::gaclib_controls::ColorDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_6)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_7)->GetBoundsComposition()));
 		}
 		{
@@ -5713,31 +5747,31 @@ Class (::gaclib_controls::ColorDialogWindowConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc10_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_4)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc11_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_7)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc12_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf15_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc13_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf16_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogWindowConstructor___vwsn_gaclib_controls_ColorDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -5900,6 +5934,9 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->buttonOK)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonOK)->GetBoundsComposition()));
 		}
 		{
@@ -5920,6 +5957,9 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_6)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_6)->GetBoundsComposition()));
 		}
 		{
@@ -5929,29 +5969,29 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc14_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonOK)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetTitle());
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -6105,7 +6145,7 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 			(this->treeView = new ::vl::presentation::controls::GuiBindableTreeView(::vl::presentation::theme::ThemeName::TreeView));
 		}
 		{
-			::vl::__vwsn::This(this->treeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(this->treeView)->SetChildrenProperty(vl::Func(::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->treeView)->SetHorizontalAlwaysVisible(false);
@@ -6114,11 +6154,14 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 			::vl::__vwsn::This(this->treeView)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(this->treeView)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 		}
 		(this->__vwsn_precompile_8 = ::vl::__vwsn::This(this->treeView)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_8)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->treeView)->SetAlt(::vl::WString::Unmanaged(L"D"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_7)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->treeView)->GetBoundsComposition()));
@@ -6146,9 +6189,12 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
+		{
+			::vl::__vwsn::This(this->listView)->SetAlt(::vl::WString::Unmanaged(L"F"));
+		}
 		(this->__vwsn_precompile_10 = ::vl::Ptr<::vl::presentation::controls::list::ListViewColumn>(new ::vl::presentation::controls::list::ListViewColumn()));
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_10.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_10.Obj())->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 		}
 		{
 			auto __vwsn_collection_ = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(this->listView)->GetColumns());
@@ -6222,6 +6268,9 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->textBox)->SetAlt(::vl::WString::Unmanaged(L"S"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBox)->GetBoundsComposition()));
 		}
 		{
@@ -6241,7 +6290,7 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetVerticalAlwaysVisible(false);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 		}
 		{
 			(this->comboBox = new ::vl::presentation::controls::GuiComboBoxListControl(::vl::presentation::theme::ThemeName::ComboBox, static_cast<::vl::presentation::controls::GuiSelectableListControl*>(this->__vwsn_precompile_20)));
@@ -6249,6 +6298,9 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 		(this->__vwsn_precompile_21 = ::vl::__vwsn::This(this->comboBox)->GetBoundsComposition());
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_21)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->comboBox)->SetAlt(::vl::WString::Unmanaged(L"E"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->comboBox)->GetBoundsComposition()));
@@ -6266,43 +6318,43 @@ Class (::gaclib_controls::FilePickerControlConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			::vl::__vwsn::This(this->treeView)->SetImageProperty(vl::Func(::vl_workflow_global::__vwsno27_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(this->treeView)->SetImageProperty(vl::Func(::vl_workflow_global::__vwsno28_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 		}
 		{
 			::vl::__vwsn::This(this->listView)->SetMultiSelect(::vl::__vwsn::This(this->ViewModel.Obj())->GetEnabledMultipleSelection());
 		}
 		{
-			::vl::__vwsn::This(this->listView)->SetSmallImageProperty(vl::Func(::vl_workflow_global::__vwsno28_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(this->listView)->SetSmallImageProperty(vl::Func(::vl_workflow_global::__vwsno29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf29_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->listView)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc18_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetFilters())));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->comboBox)->SelectedIndexChanged, __vwsn_event_handler_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc19_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf32_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc20_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf33_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc21_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -6346,7 +6398,7 @@ Class (::gaclib_controls::FilePickerControl)
 
 	::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> FilePickerControl::GetSelectedFiles()
 	{
-		return ::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf34_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_(this))));
+		return ::vl::reflection::description::GetLazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>>(::vl::reflection::description::EnumerableCoroutine::Create(vl::Func(::vl_workflow_global::__vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControl_GetSelectedFiles_(this))));
 	}
 
 	::vl::collections::LazyList<::vl::WString> FilePickerControl::GetSelection()
@@ -6449,6 +6501,9 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->textBox)->SetAlt(::vl::WString::Unmanaged(L"F"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBox)->GetBoundsComposition()));
 		}
 		{
@@ -6472,6 +6527,9 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->textList)->SetAlt(::vl::WString::Unmanaged(L"N"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textList)->GetBoundsComposition()));
 		}
 		{
@@ -6490,19 +6548,14 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetFontList())));
 		}
 		{
-			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno35_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
+			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf36_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textList)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc22_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf37_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc23_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf38_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
@@ -6512,12 +6565,17 @@ Class (::gaclib_controls::FontNameControlConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf40_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->ValueChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc25_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf41_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf42_GuiFakeDialogServiceUI_gaclib_controls_FontNameControlConstructor___vwsn_gaclib_controls_FontNameControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -6666,6 +6724,9 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_3)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->textBox)->SetAlt(::vl::WString::Unmanaged(L"S"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_2)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textBox)->GetBoundsComposition()));
 		}
 		{
@@ -6689,6 +6750,9 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_5)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->textList)->SetAlt(::vl::WString::Unmanaged(L"L"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_4)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->textList)->GetBoundsComposition()));
 		}
 		{
@@ -6704,19 +6768,14 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 			::vl::__vwsn::This(this->textList)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(this->self)->GetSizeList()));
 		}
 		{
-			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno42_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(this->textList)->SetTextProperty(vl::Func(::vl_workflow_global::__vwsno43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf43_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf44_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->textList)->SelectionChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc26_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf44_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc27_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf45_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
@@ -6726,12 +6785,17 @@ Class (::gaclib_controls::FontSizeControlConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf47_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->self)->ValueChanged, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc29_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf48_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FontSizeControlConstructor___vwsn_gaclib_controls_FontSizeControl_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -6963,6 +7027,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			(this->checkBold = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 		}
 		{
+			::vl::__vwsn::This(this->checkBold)->SetAlt(::vl::WString::Unmanaged(L"B"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkBold)->GetBoundsComposition()));
 		}
 		{
@@ -6971,6 +7038,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_11 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkItalic = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+		}
+		{
+			::vl::__vwsn::This(this->checkItalic)->SetAlt(::vl::WString::Unmanaged(L"I"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_11)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkItalic)->GetBoundsComposition()));
@@ -6983,6 +7053,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			(this->checkUnderline = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 		}
 		{
+			::vl::__vwsn::This(this->checkUnderline)->SetAlt(::vl::WString::Unmanaged(L"U"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_12)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkUnderline)->GetBoundsComposition()));
 		}
 		{
@@ -6993,6 +7066,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			(this->checkHAA = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
 		}
 		{
+			::vl::__vwsn::This(this->checkHAA)->SetAlt(::vl::WString::Unmanaged(L"H"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkHAA)->GetBoundsComposition()));
 		}
 		{
@@ -7001,6 +7077,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		(this->__vwsn_precompile_14 = new ::vl::presentation::compositions::GuiStackItemComposition());
 		{
 			(this->checkVAA = new ::vl::presentation::controls::GuiSelectableButton(::vl::presentation::theme::ThemeName::CheckBox));
+		}
+		{
+			::vl::__vwsn::This(this->checkVAA)->SetAlt(::vl::WString::Unmanaged(L"V"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->checkVAA)->GetBoundsComposition()));
@@ -7063,6 +7142,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_20)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(5); __vwsn_temp__.top = static_cast<::vl::vint>(5); __vwsn_temp__.right = static_cast<::vl::vint>(5); __vwsn_temp__.bottom = static_cast<::vl::vint>(5); return __vwsn_temp__; }());
+		}
+		{
+			::vl::__vwsn::This(this->comboColor)->SetAlt(::vl::WString::Unmanaged(L"K"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17)->AddChild(static_cast<::vl::presentation::controls::GuiControl*>(this->comboColor));
@@ -7156,6 +7238,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_34)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_33)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_32)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_33)->GetBoundsComposition()));
 		}
 		{
@@ -7176,6 +7261,9 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_37)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_36)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_35)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_36)->GetBoundsComposition()));
 		}
 		{
@@ -7183,11 +7271,6 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 		}
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc30_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf49_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc31_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
@@ -7220,22 +7303,22 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc37_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf56_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc38_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf57_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc39_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf58_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc40_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf59_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
@@ -7245,31 +7328,36 @@ Class (::gaclib_controls::FullFontDialogWindowConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc42_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf61_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf62_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_33)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc43_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf63_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf64_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_36)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc44_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf65_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc45_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf66_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_FullFontDialogWindowConstructor___vwsn_gaclib_controls_FullFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -7407,9 +7495,10 @@ Class (::gaclib_controls::MessageBoxButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition()));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetText(::vl::__vwsn::This(this->self)->GetButtonText(::vl::__vwsn::This(this->Action.Obj())->GetButton(), ::vl::__vwsn::This(this->self)->GetStrings()));
+		}
+		{
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlt(::vl::__vwsn::This(this->self)->GetButtonAlt(::vl::__vwsn::This(this->Action.Obj())->GetButton()));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf77_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this));
@@ -7473,6 +7562,53 @@ Class (::gaclib_controls::MessageBoxButtonTemplate)
 			else if ((__vwsn_switch_0 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectContinue))
 			{
 				return ::vl::__vwsn::This(strings.Obj())->Continue();
+			}
+			else
+			{
+				return ::vl::WString::Unmanaged(L"");
+			}
+		}
+	}
+
+	::vl::WString MessageBoxButtonTemplate::GetButtonAlt(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button)
+	{
+		{
+			auto __vwsn_switch_1 = button;
+			if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectOK))
+			{
+				return ::vl::WString::Unmanaged(L"O");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectCancel))
+			{
+				return ::vl::WString::Unmanaged(L"C");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectYes))
+			{
+				return ::vl::WString::Unmanaged(L"Y");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectNo))
+			{
+				return ::vl::WString::Unmanaged(L"N");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectRetry))
+			{
+				return ::vl::WString::Unmanaged(L"R");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectAbort))
+			{
+				return ::vl::WString::Unmanaged(L"A");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectIgnore))
+			{
+				return ::vl::WString::Unmanaged(L"I");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectTryAgain))
+			{
+				return ::vl::WString::Unmanaged(L"T");
+			}
+			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxButtonsOutput::SelectContinue))
+			{
+				return ::vl::WString::Unmanaged(L"K");
 			}
 			else
 			{
@@ -7767,20 +7903,20 @@ Class (::gaclib_controls::MessageBoxWindow)
 	{
 		auto iconUri = ::vl::WString::Unmanaged(L"Images/None");
 		{
-			auto __vwsn_switch_1 = ::vl::__vwsn::This(this->GetViewModel().Obj())->GetIcon();
-			if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconError))
+			auto __vwsn_switch_2 = ::vl::__vwsn::This(this->GetViewModel().Obj())->GetIcon();
+			if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconError))
 			{
 				(iconUri = ::vl::WString::Unmanaged(L"Images/Error"));
 			}
-			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconQuestion))
+			else if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconQuestion))
 			{
 				(iconUri = ::vl::WString::Unmanaged(L"Images/Question"));
 			}
-			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconWarning))
+			else if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconWarning))
 			{
 				(iconUri = ::vl::WString::Unmanaged(L"Images/Warning"));
 			}
-			else if ((__vwsn_switch_1 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconInformation))
+			else if ((__vwsn_switch_2 == ::vl::presentation::INativeDialogService::MessageBoxIcons::IconInformation))
 			{
 				(iconUri = ::vl::WString::Unmanaged(L"Images/Information"));
 			}
@@ -7990,6 +8126,9 @@ Class (::gaclib_controls::SimpleFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_16)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlt(::vl::WString::Unmanaged(L"O"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_15)->GetBoundsComposition()));
 		}
 		{
@@ -8010,6 +8149,9 @@ Class (::gaclib_controls::SimpleFontDialogWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_19)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint>(0); __vwsn_temp__.top = static_cast<::vl::vint>(0); __vwsn_temp__.right = static_cast<::vl::vint>(0); __vwsn_temp__.bottom = static_cast<::vl::vint>(0); return __vwsn_temp__; }());
 		}
 		{
+			::vl::__vwsn::This(this->__vwsn_precompile_18)->SetAlt(::vl::WString::Unmanaged(L"C"));
+		}
+		{
 			::vl::__vwsn::This(this->__vwsn_precompile_17)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_18)->GetBoundsComposition()));
 		}
 		{
@@ -8019,12 +8161,7 @@ Class (::gaclib_controls::SimpleFontDialogWindowConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc46_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf67_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
-			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
-		}
-		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc47_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf68_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
@@ -8034,31 +8171,36 @@ Class (::gaclib_controls::SimpleFontDialogWindowConstructor)
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc49_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf70_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf71_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
+		}
+		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_15)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc50_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf72_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf73_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_18)->Clicked, __vwsn_event_handler_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc51_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf74_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc52_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf75_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
+			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf76_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}

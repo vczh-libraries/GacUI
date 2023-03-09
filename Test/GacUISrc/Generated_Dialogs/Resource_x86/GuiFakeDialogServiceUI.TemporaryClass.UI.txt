@@ -44,6 +44,27 @@ namespace gaclib_controls
 
         prop Value : int{GetValue, SetValue : ValueChanged}
 
+        @cpp:Private
+        var <prop>TextBoxAlt : string = "";
+
+        func GetTextBoxAlt() : (string)
+        {
+            return <prop>TextBoxAlt;
+        }
+
+        func SetTextBoxAlt(<value> : string) : (void)
+        {
+            if ((<prop>TextBoxAlt != <value>))
+            {
+                (<prop>TextBoxAlt = <value>);
+                TextBoxAltChanged();
+            }
+        }
+
+        event TextBoxAltChanged();
+
+        prop TextBoxAlt : string{GetTextBoxAlt, SetTextBoxAlt : TextBoxAltChanged}
+
         new* ()
             :::presentation::controls::GuiCustomControl((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {
@@ -776,6 +797,11 @@ namespace gaclib_controls
     class MessageBoxButtonTemplate : ::presentation::templates::GuiControlTemplate
     {
         func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
+        {
+            raise "Not Implemented";
+        }
+
+        func GetButtonAlt(button : INativeDialogService::MessageBoxButtonsOutput) : (string)
         {
             raise "Not Implemented";
         }

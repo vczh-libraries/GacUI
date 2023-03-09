@@ -194,6 +194,79 @@ namespace gaclib_controls
                 <this>.AddSubscription(<created-subscription>);
             }
             {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gaclib_controls::ColorComponentControl* = null of (::gaclib_controls::ColorComponentControl*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.TextBoxAlt of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gaclib_controls::ColorComponentControl*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.TextBoxAltChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.TextBoxAltChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gaclib_controls::ColorComponentControl*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = textBox.Alt;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (textBox.Alt = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     var value = ((cast (int) textBox.Text) ?? (-1));
@@ -343,6 +416,27 @@ namespace gaclib_controls
         event ValueChanged();
 
         prop Value : int{GetValue, SetValue : ValueChanged}
+
+        @cpp:Private
+        var <prop>TextBoxAlt : string = "";
+
+        func GetTextBoxAlt() : (string)
+        {
+            return <prop>TextBoxAlt;
+        }
+
+        func SetTextBoxAlt(<value> : string) : (void)
+        {
+            if ((<prop>TextBoxAlt != <value>))
+            {
+                (<prop>TextBoxAlt = <value>);
+                TextBoxAltChanged();
+            }
+        }
+
+        event TextBoxAltChanged();
+
+        prop TextBoxAlt : string{GetTextBoxAlt, SetTextBoxAlt : TextBoxAltChanged}
 
         new* ()
             :::presentation::controls::GuiCustomControl(::presentation::theme::ThemeName::CustomControl)
@@ -535,6 +629,9 @@ namespace gaclib_controls
                 <precompile>9.SetSite(0, 1, 1, 1);
             }
             (colorRed = new (::gaclib_controls::ColorComponentControl*)());
+            {
+                (colorRed.TextBoxAlt = "R");
+            }
             (<precompile>10 = colorRed.BoundsComposition);
             {
                 (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -550,6 +647,9 @@ namespace gaclib_controls
                 <precompile>11.SetSite(1, 1, 1, 1);
             }
             (colorGreen = new (::gaclib_controls::ColorComponentControl*)());
+            {
+                (colorGreen.TextBoxAlt = "G");
+            }
             (<precompile>12 = colorGreen.BoundsComposition);
             {
                 (<precompile>12.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -565,6 +665,9 @@ namespace gaclib_controls
                 <precompile>13.SetSite(2, 1, 1, 1);
             }
             (colorBlue = new (::gaclib_controls::ColorComponentControl*)());
+            {
+                (colorBlue.TextBoxAlt = "B");
+            }
             (<precompile>14 = colorBlue.BoundsComposition);
             {
                 (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -1379,6 +1482,9 @@ namespace gaclib_controls
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>4.Alt = "O");
+            }
+            {
                 <precompile>3.AddChild(<precompile>4.BoundsComposition);
             }
             {
@@ -1397,6 +1503,9 @@ namespace gaclib_controls
             }
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>7.Alt = "C");
             }
             {
                 <precompile>6.AddChild(<precompile>7.BoundsComposition);
@@ -1928,6 +2037,9 @@ namespace gaclib_controls
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (buttonOK.Alt = "O");
+            }
+            {
                 <precompile>3.AddChild(buttonOK.BoundsComposition);
             }
             {
@@ -1946,6 +2058,9 @@ namespace gaclib_controls
             }
             {
                 (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>6.Alt = "C");
             }
             {
                 <precompile>5.AddChild(<precompile>6.BoundsComposition);
@@ -2503,6 +2618,9 @@ namespace gaclib_controls
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (treeView.Alt = "D");
+            }
+            {
                 <precompile>7.AddChild(treeView.BoundsComposition);
             }
             {
@@ -2527,6 +2645,9 @@ namespace gaclib_controls
             (<precompile>11 = listView.BoundsComposition);
             {
                 (<precompile>11.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (listView.Alt = "F");
             }
             (<precompile>10 = new (::presentation::controls::list::ListViewColumn^)());
             {
@@ -2608,6 +2729,9 @@ namespace gaclib_controls
                 (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (textBox.Alt = "S");
+            }
+            {
                 <precompile>17.AddChild(textBox.BoundsComposition);
             }
             {
@@ -2639,6 +2763,9 @@ namespace gaclib_controls
             (<precompile>21 = comboBox.BoundsComposition);
             {
                 (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (comboBox.Alt = "E");
             }
             {
                 <precompile>19.AddChild(comboBox.BoundsComposition);
@@ -3330,6 +3457,9 @@ namespace gaclib_controls
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (textBox.Alt = "F");
+            }
+            {
                 <precompile>2.AddChild(textBox.BoundsComposition);
             }
             {
@@ -3351,6 +3481,9 @@ namespace gaclib_controls
             (<precompile>5 = textList.BoundsComposition);
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (textList.Alt = "N");
             }
             {
                 <precompile>4.AddChild(textList.BoundsComposition);
@@ -3919,6 +4052,9 @@ namespace gaclib_controls
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (textBox.Alt = "S");
+            }
+            {
                 <precompile>2.AddChild(textBox.BoundsComposition);
             }
             {
@@ -3940,6 +4076,9 @@ namespace gaclib_controls
             (<precompile>5 = textList.BoundsComposition);
             {
                 (<precompile>5.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (textList.Alt = "L");
             }
             {
                 <precompile>4.AddChild(textList.BoundsComposition);
@@ -4709,6 +4848,9 @@ namespace gaclib_controls
                 (checkBold = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
+                (checkBold.Alt = "B");
+            }
+            {
                 <precompile>10.AddChild(checkBold.BoundsComposition);
             }
             {
@@ -4717,6 +4859,9 @@ namespace gaclib_controls
             (<precompile>11 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkItalic = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+            }
+            {
+                (checkItalic.Alt = "I");
             }
             {
                 <precompile>11.AddChild(checkItalic.BoundsComposition);
@@ -4729,6 +4874,9 @@ namespace gaclib_controls
                 (checkUnderline = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
+                (checkUnderline.Alt = "U");
+            }
+            {
                 <precompile>12.AddChild(checkUnderline.BoundsComposition);
             }
             {
@@ -4739,6 +4887,9 @@ namespace gaclib_controls
                 (checkHAA = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
+                (checkHAA.Alt = "H");
+            }
+            {
                 <precompile>13.AddChild(checkHAA.BoundsComposition);
             }
             {
@@ -4747,6 +4898,9 @@ namespace gaclib_controls
             (<precompile>14 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkVAA = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+            }
+            {
+                (checkVAA.Alt = "V");
             }
             {
                 <precompile>14.AddChild(checkVAA.BoundsComposition);
@@ -4809,6 +4963,9 @@ namespace gaclib_controls
             }
             {
                 (<precompile>20.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
+                (comboColor.Alt = "K");
             }
             {
                 <precompile>17.AddChild(comboColor);
@@ -4902,6 +5059,9 @@ namespace gaclib_controls
                 (<precompile>34.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>33.Alt = "O");
+            }
+            {
                 <precompile>32.AddChild(<precompile>33.BoundsComposition);
             }
             {
@@ -4920,6 +5080,9 @@ namespace gaclib_controls
             }
             {
                 (<precompile>37.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>36.Alt = "C");
             }
             {
                 <precompile>35.AddChild(<precompile>36.BoundsComposition);
@@ -6645,6 +6808,9 @@ namespace gaclib_controls
                 (<precompile>16.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>15.Alt = "O");
+            }
+            {
                 <precompile>14.AddChild(<precompile>15.BoundsComposition);
             }
             {
@@ -6663,6 +6829,9 @@ namespace gaclib_controls
             }
             {
                 (<precompile>19.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>18.Alt = "C");
             }
             {
                 <precompile>17.AddChild(<precompile>18.BoundsComposition);
@@ -7420,77 +7589,10 @@ namespace gaclib_controls
                 self.AddChild(<precompile>0.BoundsComposition);
             }
             {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::gaclib_controls::MessageBoxButtonTemplate* = null of (::gaclib_controls::MessageBoxButtonTemplate*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = self.GetButtonText(Action.Button, <bind-cache>0.Strings) of (::system::String);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0() : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
-                            (<bind-cache>0 = (self ?? null of (::gaclib_controls::MessageBoxButtonTemplate*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::gaclib_controls::MessageBoxButtonTemplate*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = <precompile>0.Text;
-                    var <new> = (cast (::system::String) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (<precompile>0.Text = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
+                (<precompile>0.Text = self.GetButtonText(Action.Button, self.Strings));
+            }
+            {
+                (<precompile>0.Alt = self.GetButtonAlt(Action.Button));
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -7646,6 +7748,53 @@ namespace gaclib_controls
                 else if ((<switch>0 == SelectContinue of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
                 {
                     return strings.Continue();
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
+        func GetButtonAlt(button : INativeDialogService::MessageBoxButtonsOutput) : (string)
+        {
+            {
+                var <switch>1 : ::presentation::INativeDialogService::MessageBoxButtonsOutput = button;
+                if ((<switch>1 == SelectOK of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "O";
+                }
+                else if ((<switch>1 == SelectCancel of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "C";
+                }
+                else if ((<switch>1 == SelectYes of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "Y";
+                }
+                else if ((<switch>1 == SelectNo of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "N";
+                }
+                else if ((<switch>1 == SelectRetry of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "R";
+                }
+                else if ((<switch>1 == SelectAbort of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "A";
+                }
+                else if ((<switch>1 == SelectIgnore of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "I";
+                }
+                else if ((<switch>1 == SelectTryAgain of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "T";
+                }
+                else if ((<switch>1 == SelectContinue of (::presentation::INativeDialogService::MessageBoxButtonsOutput)))
+                {
+                    return "K";
                 }
                 else
                 {
@@ -8043,20 +8192,20 @@ namespace gaclib_controls
         {
             var iconUri = "Images/None";
             {
-                var <switch>1 : ::presentation::INativeDialogService::MessageBoxIcons = ViewModel.Icon;
-                if ((<switch>1 == IconError of (::presentation::INativeDialogService::MessageBoxIcons)))
+                var <switch>2 : ::presentation::INativeDialogService::MessageBoxIcons = ViewModel.Icon;
+                if ((<switch>2 == IconError of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
                     (iconUri = "Images/Error");
                 }
-                else if ((<switch>1 == IconQuestion of (::presentation::INativeDialogService::MessageBoxIcons)))
+                else if ((<switch>2 == IconQuestion of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
                     (iconUri = "Images/Question");
                 }
-                else if ((<switch>1 == IconWarning of (::presentation::INativeDialogService::MessageBoxIcons)))
+                else if ((<switch>2 == IconWarning of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
                     (iconUri = "Images/Warning");
                 }
-                else if ((<switch>1 == IconInformation of (::presentation::INativeDialogService::MessageBoxIcons)))
+                else if ((<switch>2 == IconInformation of (::presentation::INativeDialogService::MessageBoxIcons)))
                 {
                     (iconUri = "Images/Information");
                 }
