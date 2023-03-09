@@ -6,14 +6,14 @@
   - Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
 - Issue on dialog service
   - message box default button.
-  - message box `ENTER` and `ESC` operation.
   - message box is not shown at the center.
-  - message box disable `X` button if `Cancel` is not in the button list.
-  - color dialog `ENTER` and `ESC` operation.
-  - font dialog `ENTER` and `ESC` operation.
-  - file dialog `ENTER` and `ESC` operation.
-  - `Alt` for dialogs.
+  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
   - New tab on `FullControlTest` to show options of dialogs.
+  - font dialog alt to list and press UP/DOWN jumps to incorrect item.
+  - font dialog alt `K` should focus to dropdown instead of waiting for `R`, `G`, `B`.
+  - file dialog can't expand/collapse tree view by key.
+  - file dialog double click on file list should select and confirm.
+  - file dialog select single folder should jump.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
@@ -51,8 +51,7 @@
     - Dialog
 - Remove SysKey callbacks, merge into Key callbacks.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
-- Add new tutorial to use `FakeDialogService` based on `FullControlTest`'s new tab.
-- Add new tutorial to use `FakeDialogServiceBase` based on `FullControlTest`'s new tab.
+- Add new tutorial to use `FakeDialogService` based on `FullControlTest`'s new tab with localization for `zh-CN`.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh

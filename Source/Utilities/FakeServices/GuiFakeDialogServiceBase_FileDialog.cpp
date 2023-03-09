@@ -522,22 +522,25 @@ View Model (IFileDialogViewModel)
 						}
 					}
 
-					WString question;
+					WString questionMessage;
+					List<vint>* questionFiles = nullptr;
 					if (selectToSave && promptOverriteFile)
 					{
-						question = dialogAskOverrideFile;
+						questionMessage = dialogAskOverrideFile;
+						questionFiles = &files;
 					}
 					if (!selectToSave && promptCreateFile)
 					{
-						question = dialogAskCreateFile;
+						questionMessage = dialogAskCreateFile;
+						questionFiles = &unexistings;
 					}
 
-					if ((selectToSave && promptOverriteFile) || (!selectToSave && promptCreateFile))
+					if (questionFiles && questionFiles->Count() > 0)
 					{
 						auto message = stream::GenerateToStream([&](stream::TextWriter& writer)
 						{
-							writer.WriteString(question);
-							for (vint index : unexistings)
+							writer.WriteString(questionMessage);
+							for (vint index : *questionFiles)
 							{
 								writer.WriteLine(WString::Empty);
 								writer.WriteString(L"  ");
@@ -615,11 +618,11 @@ FakeDialogServiceBase
 		{
 			auto vm = Ptr(new FileDialogViewModel);
 			vm->title = title;
-			vm->enabledMultipleSelection = (options | INativeDialogService::FileDialogAllowMultipleSelection) != 0;
-			vm->fileMustExist = (options | INativeDialogService::FileDialogFileMustExist) != 0;
-			vm->folderMustExist = (options | INativeDialogService::FileDialogDirectoryMustExist) != 0;
-			vm->promptCreateFile = (options | INativeDialogService::FileDialogPromptCreateFile) != 0;
-			vm->promptOverriteFile = (options | INativeDialogService::FileDialogPromptOverwriteFile) != 0;
+			vm->enabledMultipleSelection = (options & INativeDialogService::FileDialogAllowMultipleSelection) != 0;
+			vm->fileMustExist = (options & INativeDialogService::FileDialogFileMustExist) != 0;
+			vm->folderMustExist = (options & INativeDialogService::FileDialogDirectoryMustExist) != 0;
+			vm->promptCreateFile = (options & INativeDialogService::FileDialogPromptCreateFile) != 0;
+			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
 			vm->defaultExtension = defaultExtension;
 
 			vint filterStart = 0;
