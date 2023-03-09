@@ -20,9 +20,26 @@
           default:              { return ""; }
           }
         }
+
+        func GetButtonAlt(button: INativeDialogService::MessageBoxButtonsOutput) : string
+        {
+          switch (button)
+          {
+          case SelectOK:        { return "O"; }
+          case SelectCancel:    { return "C"; }
+          case SelectYes:       { return "Y"; }
+          case SelectNo:        { return "N"; }
+          case SelectRetry:     { return "R"; }
+          case SelectAbort:     { return "A"; }
+          case SelectIgnore:    { return "I"; }
+          case SelectTryAgain:  { return "T"; }
+          case SelectContinue:  { return "K"; }
+          default:              { return ""; }
+          }
+        }
       ]]></ref.Members>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Button Text-bind="self.GetButtonText(Action.Button, self.Strings)">
+        <Button Text-eval="self.GetButtonText(Action.Button, self.Strings)" Alt-eval="self.GetButtonAlt(Action.Button)">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
           <ev.Clicked-eval><![CDATA[
             {
