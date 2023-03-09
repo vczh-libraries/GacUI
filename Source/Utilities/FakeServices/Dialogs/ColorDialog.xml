@@ -3,6 +3,7 @@
     <Instance ref.CodeBehind="false" ref.Class="gaclib_controls::ColorComponentControl">
       <ref.Members><![CDATA[
         prop Value : int = 0 {}
+        prop TextBoxAlt : string = "" {}
       ]]></ref.Members>
       <CustomControl ref.Name="self" Value-bind="tracker.Position">
         <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" BorderVisible="false" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
@@ -15,7 +16,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <SinglelineTextBox ref.Name="textBox" Text-bind="cast string self.Value">
+            <SinglelineTextBox ref.Name="textBox" Text-bind="cast string self.Value" Alt-bind="self.TextBoxAlt">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.TextChanged-eval><![CDATA[
                 {
@@ -82,17 +83,17 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <g:ColorComponentControl ref.Name="colorRed" Value-eval="cast int ViewModel.Color.r">
+            <g:ColorComponentControl ref.Name="colorRed" Value-eval="cast int ViewModel.Color.r" TextBoxAlt="R">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </g:ColorComponentControl>
           </Cell>
           <Cell Site="row:1 column:1">
-            <g:ColorComponentControl ref.Name="colorGreen" Value-eval="cast int ViewModel.Color.g">
+            <g:ColorComponentControl ref.Name="colorGreen" Value-eval="cast int ViewModel.Color.g" TextBoxAlt="G">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </g:ColorComponentControl>
           </Cell>
           <Cell Site="row:2 column:1">
-            <g:ColorComponentControl ref.Name="colorBlue" Value-eval="cast int ViewModel.Color.b">
+            <g:ColorComponentControl ref.Name="colorBlue" Value-eval="cast int ViewModel.Color.b" TextBoxAlt="B">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </g:ColorComponentControl>
           </Cell>
@@ -136,7 +137,7 @@
           </Cell>
 
           <Cell Site="row:1 column:1">
-            <Button Text-str="OK()">
+            <Button Text-str="OK()" Alt="O">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval><![CDATA[
                 {
@@ -149,7 +150,7 @@
           </Cell>
 
           <Cell Site="row:1 column:2">
-            <Button Text-str="Cancel()">
+            <Button Text-str="Cancel()" Alt="C">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
               <ev.Clicked-eval>
                 <![CDATA[
