@@ -2074,7 +2074,10 @@ namespace gaclib_controls
             {
                 var <event-handler> = func () : (::system::Void)
                 {
-                    self.Close();
+                    GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func () : (void)
+                    {
+                        self.Close();
+                    });
                 };
                 attach(filePickerControl.RequestClose, <event-handler>);
             }
@@ -2903,6 +2906,15 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiItemMouseEventArgs*) : (::system::Void)
                 {
+                    var file = ViewModel.Files[arguments.itemIndex];
+                    var selection = ViewModel.ParseDisplayString(ViewModel.GetDisplayString({file;}));
+                    GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func () : (void)
+                    {
+                        if (ViewModel.TryConfirm((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), selection))
+                        {
+                            self.RequestClose();
+                        }
+                    });
                 };
                 attach(listView.ItemLeftButtonDoubleClick, <event-handler>);
             }

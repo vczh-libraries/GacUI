@@ -147,6 +147,15 @@
                   ]]></ev.SelectionChanged-eval>
                   <ev.ItemLeftButtonDoubleClick-eval><![CDATA[
                     {
+                      var file = ViewModel.Files[arguments.itemIndex];
+                      var selection = ViewModel.ParseDisplayString(ViewModel.GetDisplayString({file}));
+                      GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func():void
+                      {
+                        if (ViewModel.TryConfirm(cast * self.RelatedControlHost, selection))
+                        {
+                          self.RequestClose();
+                        }
+                      });
                     }
                   ]]></ev.ItemLeftButtonDoubleClick-eval>
                 </BindableListView>
@@ -257,7 +266,10 @@
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <ev.RequestClose-eval><![CDATA[
                 {
-                  self.Close();
+                  GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func():void
+                  {
+                    self.Close();
+                  });
                 }
               ]]></ev.RequestClose-eval>
             </g:FilePickerControl>
