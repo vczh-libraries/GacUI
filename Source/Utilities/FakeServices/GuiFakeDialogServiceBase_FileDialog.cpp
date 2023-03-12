@@ -36,6 +36,7 @@ View Model (IFileDialogFolder)
 
 		class FileDialogFolder : public Object, public virtual IFileDialogFolder
 		{
+			using FolderMap = Dictionary<WString, Ptr<FileDialogFolder>>;
 		protected:
 			vint						taskId = 0;
 			bool						taskFired = false;
@@ -46,17 +47,24 @@ View Model (IFileDialogFolder)
 			filesystem::Folder			folder;
 			WString						name;
 			WString						textLoadingFolders;
+
 			Folders						children;
+			FolderMap					childrenByName;
 
 			void AddChild(Ptr<FileDialogFolder> child)
 			{
 				child->textLoadingFolders = textLoadingFolders;
 				child->parent = this;
+				if (child->type == FileDialogFolderType::Folder)
+				{
+					childrenByName.Add(child->name, child);
+				}
 				children.Add(child);
 			}
 
 			void AddPlaceholderChild()
 			{
+				CHECK_ERROR(textLoadingFolders.Length() > 0, L"vl::presentation::FileDialogFolder::AddPlaceholderChild()#textLoadingFolders is not initialized.");
 				auto child = Ptr(new FileDialogFolder);
 				child->name = textLoadingFolders;
 				AddChild(child);
@@ -64,8 +72,10 @@ View Model (IFileDialogFolder)
 
 			FileDialogFolder() = default;
 
-			FileDialogFolder(const filesystem::FilePath& filePath)
-				: folder(filePath)
+			FileDialogFolder(const filesystem::Folder& _folder)
+				: type(FileDialogFolderType::Folder)
+				, folder(_folder)
+				, name(_folder.GetFilePath().GetName())
 			{
 			}
 
@@ -93,15 +103,23 @@ View Model (IFileDialogFolder)
 						{
 							if (taskFolder->taskId == taskFolderId)
 							{
-								taskFolder->children.Clear();
+								for (vint i = taskFolder->children.Count() - 1; i >= 0; i--)
+								{
+									auto child = taskFolder->children[i];
+									if (child->GetType() == FileDialogFolderType::Placeholder)
+									{
+										taskFolder->children.RemoveAt(i);
+									}
+								}
+
 								for (auto subFolder : *subFolders.Obj())
 								{
-									auto child = Ptr(new FileDialogFolder);
-									child->type = FileDialogFolderType::Folder;
-									child->folder = subFolder;
-									child->name = subFolder.GetFilePath().GetName();
-									child->AddPlaceholderChild();
-									taskFolder->AddChild(child);
+									if (!taskFolder->childrenByName.Keys().Contains(subFolder.GetFilePath().GetName()))
+									{
+										auto child = Ptr(new FileDialogFolder(subFolder));
+										taskFolder->AddChild(child);
+										child->AddPlaceholderChild();
+									}
 								}
 							}
 						});
@@ -134,7 +152,7 @@ View Model (IFileDialogFile)
 		{
 		public:
 			FileDialogFileType			type = FileDialogFileType::Placeholder;
-			Ptr<FileDialogFolder>		folder;
+			Ptr<FileDialogFolder>		associatedFolder;
 			WString						name;
 
 			FileDialogFileType GetType() override
@@ -144,7 +162,7 @@ View Model (IFileDialogFile)
 
 			Ptr<IFileDialogFolder> GetAssociatedFolder() override
 			{
-				return folder;
+				return associatedFolder;
 			}
 
 			WString GetName() override
@@ -312,7 +330,6 @@ View Model (IFileDialogViewModel)
 							{
 								auto item = Ptr(new FileDialogFile);
 								item->type = FileDialogFileType::Folder;
-								item->folder = taskFolder;
 								item->name = folder.GetFilePath().GetName();
 								vm->files.Add(item);
 							}
@@ -321,7 +338,6 @@ View Model (IFileDialogViewModel)
 							{
 								auto item = Ptr(new FileDialogFile);
 								item->type = FileDialogFileType::File;
-								item->folder = taskFolder;
 								item->name = file.GetFilePath().GetName();
 								vm->files.Add(item);
 							}
