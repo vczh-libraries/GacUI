@@ -2072,6 +2072,13 @@ namespace gaclib_controls
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             {
+                var <event-handler> = func () : (::system::Void)
+                {
+                    self.Close();
+                };
+                attach(filePickerControl.RequestClose, <event-handler>);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
@@ -2392,18 +2399,6 @@ namespace gaclib_controls
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gaclib_controls-FileDialogWindow>Initialize(this);
-            <instance-ctor>();
-        }
-
-        func <instance-ctor>() : (::system::Void)
-        {
-            attach(filePickerControl.RequestConfirm, func (selection : string) : (void)
-            {
-                if (ViewModel.TryConfirm(self, ViewModel.ParseDisplayString(selection)))
-                {
-                    self.Close();
-                }
-            });
         }
 
         delete
@@ -3186,7 +3181,7 @@ namespace gaclib_controls
 
         prop Selection : string{}{GetSelection}
 
-        event RequestConfirm(string);
+        event RequestClose();
 
         func GetSelectedFiles() : (IFileDialogFile^{})
         {

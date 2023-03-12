@@ -38,7 +38,7 @@ namespace vl_workflow_global
 	struct __vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 	struct __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 	struct __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
-	struct __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__;
+	struct __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 	struct __vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_;
 	struct __vwsnf25_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_;
 	struct __vwsnf26_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_;
@@ -406,6 +406,7 @@ namespace gaclib_controls
 		friend struct ::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FileDialogWindowConstructor>;
 #endif
@@ -429,7 +430,6 @@ namespace gaclib_controls
 
 	class FileDialogWindow : public ::vl::presentation::controls::GuiWindow, public ::gaclib_controls::FileDialogWindowConstructor, public ::vl::reflection::Description<FileDialogWindow>
 	{
-		friend struct ::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__;
 		friend class ::gaclib_controls::FileDialogWindowConstructor;
 		friend class ::vl_workflow_global::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
 		friend class ::vl_workflow_global::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -439,6 +439,7 @@ namespace gaclib_controls
 		friend struct ::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<FileDialogWindow>;
 #endif
@@ -452,7 +453,6 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_parameter_ViewModel;
 		::vl::Ptr<::vl::presentation::IFileDialogViewModel> GetViewModel();
 		FileDialogWindow(::vl::Ptr<::vl::presentation::IFileDialogViewModel> __vwsn_ctor_parameter_ViewModel);
-		void __vwsn_instance_ctor_();
 		~FileDialogWindow();
 	};
 
@@ -541,7 +541,7 @@ namespace gaclib_controls
 	public:
 		::vl::Ptr<::vl::presentation::GuiImageData> imageFolder;
 		::vl::Ptr<::vl::presentation::GuiImageData> imageFile;
-		::vl::Event<void()> RequestConfirm;
+		::vl::Event<void()> RequestClose;
 		::vl::collections::LazyList<::vl::Ptr<::vl::presentation::IFileDialogFile>> GetSelectedFiles();
 		::vl::collections::LazyList<::vl::WString> GetSelection();
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
@@ -1155,7 +1155,7 @@ Closures
 
 		__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()() const;
 	};
 
 	struct __vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_
@@ -1164,7 +1164,7 @@ Closures
 
 		__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf1_GuiFakeDialogServiceUI_gaclib_controls_ColorComponentControlConstructor___vwsn_gaclib_controls_ColorComponentControl_Initialize_
@@ -1182,7 +1182,7 @@ Closures
 
 		__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
 	struct __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_
@@ -1191,7 +1191,7 @@ Closures
 
 		__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_
@@ -1200,16 +1200,16 @@ Closures
 
 		__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
 	};
 
-	struct __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__
+	struct __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_
 	{
-		::gaclib_controls::FileDialogWindow* __vwsnthis_0;
+		::gaclib_controls::FileDialogWindowConstructor* __vwsnthis_0;
 
-		__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__(::gaclib_controls::FileDialogWindow* __vwsnctorthis_0);
+		__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0);
 
-		void operator()(const ::vl::WString& selection) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf24_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_

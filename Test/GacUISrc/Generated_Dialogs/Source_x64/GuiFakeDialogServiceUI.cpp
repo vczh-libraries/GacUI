@@ -195,15 +195,9 @@ Closures
 	{
 	}
 
-	void __vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()() const
 	{
-		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonOK)->GetEnabled();
-		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
-		if ((__vwsn_old_ == __vwsn_new_))
-		{
-			return;
-		}
-		::vl::__vwsn::This(__vwsnthis_0->buttonOK)->SetEnabled(__vwsn_new_);
+		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
@@ -213,12 +207,15 @@ Closures
 	{
 	}
 
-	void __vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
-		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self), ::vl::__vwsn::This(__vwsnthis_0->filePickerControl)->GetSelection()))
+		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->buttonOK)->GetEnabled();
+		auto __vwsn_new_ = ::vl::__vwsn::Unbox<bool>(__vwsn_value_);
+		if ((__vwsn_old_ == __vwsn_new_))
 		{
-			::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+			return;
 		}
+		::vl::__vwsn::This(__vwsnthis_0->buttonOK)->SetEnabled(__vwsn_new_);
 	}
 
 	//-------------------------------------------------------------------
@@ -246,7 +243,22 @@ Closures
 	{
 	}
 
-	void __vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	{
+		if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self), ::vl::__vwsn::This(__vwsnthis_0->filePickerControl)->GetSelection()))
+		{
+			::vl::__vwsn::This(__vwsnthis_0->self)->Close();
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	void __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->__vwsn_precompile_6)->GetText();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::WString>(__vwsn_value_);
@@ -259,24 +271,24 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
+	void __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const
 	{
 		::vl::__vwsn::This(__vwsnthis_0->self)->Close();
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
+	__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(::gaclib_controls::FileDialogWindowConstructor* __vwsnctorthis_0)
 		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
-	void __vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
+	void __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_::operator()(const ::vl::reflection::description::Value& __vwsn_value_) const
 	{
 		auto __vwsn_old_ = ::vl::__vwsn::This(__vwsnthis_0->self)->GetStrings();
 		auto __vwsn_new_ = ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(__vwsn_value_);
@@ -285,21 +297,6 @@ Closures
 			return;
 		}
 		::vl::__vwsn::This(__vwsnthis_0->self)->SetStrings(__vwsn_new_);
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__(::gaclib_controls::FileDialogWindow* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__::operator()(const ::vl::WString& selection) const
-	{
-		if (::vl::__vwsn::This(__vwsnthis_0->GetViewModel().Obj())->TryConfirm(static_cast<::vl::presentation::controls::GuiWindow*>(__vwsnthis_0->self), ::vl::__vwsn::This(__vwsnthis_0->GetViewModel().Obj())->ParseDisplayString(selection)))
-		{
-			::vl::__vwsn::This(__vwsnthis_0->self)->Close();
-		}
 	}
 
 	//-------------------------------------------------------------------
@@ -6018,21 +6015,25 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 			::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetContainerComposition())->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_0));
 		}
 		{
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->filePickerControl)->RequestClose, __vwsn_event_handler_);
+		}
+		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc15_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf18_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf19_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonOK)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc16_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(__vwsn_this_, this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf20_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 		{
-			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf21_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
+			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this));
 			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_6)->Clicked, __vwsn_event_handler_);
 		}
 		{
@@ -6040,7 +6041,7 @@ Class (::gaclib_controls::FileDialogWindowConstructor)
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc17_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize__vl_reflection_description_IValueSubscription(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf22_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(__vwsn_created_subscription_.Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindowConstructor___vwsn_gaclib_controls_FileDialogWindow_Initialize_(this)));
 			::vl::__vwsn::This(__vwsn_this_)->AddSubscription(__vwsn_created_subscription_);
 		}
 	}
@@ -6103,12 +6104,6 @@ Class (::gaclib_controls::FileDialogWindow)
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_FileDialogWindow_Initialize(this);
-		this->__vwsn_instance_ctor_();
-	}
-
-	void FileDialogWindow::__vwsn_instance_ctor_()
-	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->filePickerControl)->RequestConfirm, vl::Func(::vl_workflow_global::__vwsnf23_GuiFakeDialogServiceUI_gaclib_controls_FileDialogWindow___vwsn_instance_ctor__(this)));
 	}
 
 	FileDialogWindow::~FileDialogWindow()

@@ -343,7 +343,7 @@ namespace gaclib_controls
 
         prop Selection : string{}{GetSelection}
 
-        event RequestConfirm(string);
+        event RequestClose();
 
         func GetSelectedFiles() : (IFileDialogFile^{})
         {
