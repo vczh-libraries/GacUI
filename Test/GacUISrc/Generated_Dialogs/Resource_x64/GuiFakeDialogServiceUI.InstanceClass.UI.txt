@@ -3033,6 +3033,35 @@ namespace gaclib_controls
                 <this>.AddSubscription(<created-subscription>);
             }
             {
+                var <event-handler> = func () : (::system::Void)
+                {
+                    var fragments : IFileDialogFolder^[] = {};
+                    var currentFolder = ViewModel.SelectedFolder;
+                    while ((currentFolder is not null and (currentFolder.Type == FileDialogFolderType::Folder)))
+                    {
+                        fragments.Add(currentFolder);
+                        (currentFolder = currentFolder.Parent);
+                    }
+                    var currentNode = treeView.NodeRootProvider.RootNode;
+                    {
+                        var <for-enumerable>fragment = ::system::Sys::ReverseEnumerable(fragments);
+                        var <for-enumerator>fragment = <for-enumerable>fragment.CreateEnumerator();
+                        while (<for-enumerator>fragment.Next())
+                        {
+                            var fragment = (cast (::presentation::IFileDialogFolder^) <for-enumerator>fragment.GetCurrent());
+                            {
+                                (currentNode.Expanding = true);
+                                (currentNode = currentNode.GetChild(fragment.Index));
+                            }
+                        }
+                    }
+                    var index = treeView.NodeItemView.CalculateNodeVisibilityIndex((cast (::presentation::controls::tree::INodeProvider*) currentNode));
+                    treeView.EnsureItemVisible(index);
+                    treeView.SetSelected(index, true);
+                };
+                attach(<precompile>22.SelectedFolderChanged, <event-handler>);
+            }
+            {
                 var <created-subscription> = new (::system::Subscription^)
                 {
                     var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);
