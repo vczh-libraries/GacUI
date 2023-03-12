@@ -114,6 +114,12 @@
               <Cell Site="row:0 column:1">
                 <BindableListView ref.Name="listView" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="F">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.FocusableComposition-set>
+                    <ev.keyUp-eval><![CDATA[
+                      {
+                      }
+                    ]]></ev.keyUp-eval>
+                  </att.FocusableComposition-set>
                   <att.Columns>
                     <ListViewColumn TextProperty="Name"/>
                   </att.Columns>
@@ -132,6 +138,10 @@
                       textBox.Select({row:0 column:0}, {row:0 column:0});
                     }
                   ]]></ev.SelectionChanged-eval>
+                  <ev.ItemLeftButtonDoubleClick-eval><![CDATA[
+                    {
+                    }
+                  ]]></ev.ItemLeftButtonDoubleClick-eval>
                 </BindableListView>
               </Cell>
             </Table>
@@ -157,6 +167,12 @@
               <Cell Site="row:0 column:1">
                 <SinglelineTextBox ref.Name="textBox" Alt="S">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <att.FocusableComposition-set>
+                    <ev.keyUp-eval><![CDATA[
+                      {
+                      }
+                    ]]></ev.keyUp-eval>
+                  </att.FocusableComposition-set>
                 </SinglelineTextBox>
               </Cell>
 
