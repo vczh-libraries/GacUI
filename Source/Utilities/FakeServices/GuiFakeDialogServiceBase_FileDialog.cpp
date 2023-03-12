@@ -459,6 +459,7 @@ View Model (IFileDialogViewModel)
 									auto child = Ptr(new FileDialogFolder(fragment));
 									folder->AddChild(child);
 									child->AddPlaceholderChild();
+									folder = child;
 								}
 								else
 								{
