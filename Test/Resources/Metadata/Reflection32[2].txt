@@ -341,15 +341,18 @@ interface presentation::IFileDialogFilter : system::Interface {
 interface presentation::IFileDialogFolder : system::Interface {
     property Folders : system::ObservableList<presentation::IFileDialogFolder^>^ { get:GetFolders }
     property FullPath : system::String { get:GetFullPath }
+    property Index : system::Int32 { get:GetIndex }
     property Name : system::String { get:GetName }
     property Parent : presentation::IFileDialogFolder^ { get:GetParent }
     property Type : presentation::FileDialogFolderType { get:GetType }
 
     function GetFolders() : system::ObservableList<presentation::IFileDialogFolder^>^;
     function GetFullPath() : system::String;
+    function GetIndex() : system::Int32;
     function GetName() : system::String;
     function GetParent() : presentation::IFileDialogFolder^;
     function GetType() : presentation::FileDialogFolderType;
+    function TryGetFolder(name : system::String) : presentation::IFileDialogFolder^;
 
 }
 

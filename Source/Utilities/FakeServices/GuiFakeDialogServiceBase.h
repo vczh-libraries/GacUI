@@ -271,10 +271,21 @@ View Models (FileDialog)
 			/// <returns>The name. It returns an empty string for root.</returns>
 			virtual WString					GetName() = 0;
 			/// <summary>
+			/// Get the rendering position of this folder in its parent folder.
+			/// </summary>
+			/// <returns>The rendering position.</returns>
+			virtual vint					GetIndex() = 0;
+			/// <summary>
 			/// Get all sub folders of this folder.
 			/// </summary>
 			/// <returns>All sub folders.</returns>
 			virtual Folders&				GetFolders() = 0;
+			/// <summary>
+			/// Get a sub folder by its name.
+			/// </summary>
+			/// <param name="name">The name of the sub folder.</param>
+			/// <returns>The sub folder. It returns null if the object has not been created yet, this doesn't mean the folder doesn't exist.</returns>
+			virtual Ptr<IFileDialogFolder>	TryGetFolder(const WString& name) = 0;
 		};
 
 		/// <summary>
