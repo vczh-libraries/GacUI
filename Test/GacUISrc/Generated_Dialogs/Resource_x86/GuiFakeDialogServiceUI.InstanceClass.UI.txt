@@ -2392,6 +2392,18 @@ namespace gaclib_controls
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gaclib_controls-FileDialogWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            attach(filePickerControl.RequestConfirm, func (selection : string) : (void)
+            {
+                if (ViewModel.TryConfirm(self, ViewModel.ParseDisplayString(selection)))
+                {
+                    self.Close();
+                }
+            });
         }
 
         delete
@@ -3173,6 +3185,8 @@ namespace gaclib_controls
         var imageFile : GuiImageData^ = null;
 
         prop Selection : string{}{GetSelection}
+
+        event RequestConfirm(string);
 
         func GetSelectedFiles() : (IFileDialogFile^{})
         {

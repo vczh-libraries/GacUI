@@ -7,6 +7,7 @@
         var imageFolder : GuiImageData^ = null;
         var imageFile   : GuiImageData^ = null;
         prop Selection : string{} {GetSelection}
+        event RequestConfirm(string);
 
         func GetSelectedFiles(): IFileDialogFile^{}
         ${
@@ -201,6 +202,17 @@
           buttonOK.Text = Strings.FileDialogSave();
         }
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          attach(filePickerControl.RequestConfirm, func(selection : string):void
+          {
+            if (ViewModel.TryConfirm(self, ViewModel.ParseDisplayString(selection)))
+            {
+              self.Close();
+            }
+          });
+        }
+      ]]></ref.Ctor>
       <Window
           ref.Name = "self"
           Text-eval="ViewModel.Title"

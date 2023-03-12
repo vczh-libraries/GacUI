@@ -343,6 +343,8 @@ namespace gaclib_controls
 
         prop Selection : string{}{GetSelection}
 
+        event RequestConfirm(string);
+
         func GetSelectedFiles() : (IFileDialogFile^{})
         {
             raise "Not Implemented";

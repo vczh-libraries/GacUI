@@ -4,6 +4,9 @@
 
 - Issue on `<LocalizedStrings/>`
   - Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
+- Issue on GacGen
+  - `A10: Expression of type "system::Function<system::Void, system::Object>^" cannot implicitly convert to "system::Function<system::Void, system::String>^".`
+    - When define `event RequestConfirm(string);` with `<ev.RequestConfirm-eval><![CDATA[{}]]></ev.RequestConfirm-eval>`
 - Issue on dialog service
   - message box default button.
   - message box is not shown at the center.
