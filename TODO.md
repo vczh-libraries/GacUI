@@ -13,7 +13,6 @@
   - font dialog alt `K` should focus to dropdown instead of waiting for `R`, `G`, `B`.
   - file dialog can't expand/collapse tree view by key.
   - file dialog double click on file list should select and confirm.
-  - file dialog select single folder should expand tree view.
   - file dialog append extension if file name doesn't have it.
   - file dialog should take action when pressing `ENTER` on text box or list view.
 - Issues on GDI
