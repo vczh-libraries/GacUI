@@ -396,6 +396,13 @@ Closures
 
 	void __vwsnf30_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
 	{
+		if (((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		{
+			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
+			{
+				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->RequestClose)();
+			}
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -449,6 +456,13 @@ Closures
 
 	void __vwsnf35_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_::operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiKeyEventArgs* arguments) const
 	{
+		if (((((! ::vl::__vwsn::This(arguments)->ctrl) && (! ::vl::__vwsn::This(arguments)->shift)) && (! ::vl::__vwsn::This(arguments)->alt)) && (::vl::__vwsn::This(arguments)->code == ::vl::presentation::VKEY::KEY_RETURN)))
+		{
+			if (::vl::__vwsn::This(__vwsnthis_0->ViewModel.Obj())->TryConfirm(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::vl::presentation::controls::GuiWindow>(::vl::__vwsn::This(__vwsnthis_0->self)->GetRelatedControlHost())), ::vl::__vwsn::This(__vwsnthis_0->self)->GetSelection()))
+			{
+				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(__vwsnthis_0->self)->RequestClose)();
+			}
+		}
 	}
 
 	//-------------------------------------------------------------------

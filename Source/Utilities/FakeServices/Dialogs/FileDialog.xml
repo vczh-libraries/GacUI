@@ -117,6 +117,13 @@
                   <att.FocusableComposition-set>
                     <ev.keyUp-eval><![CDATA[
                       {
+                        if (not arguments.ctrl and not arguments.shift and not arguments.alt and arguments.code == VKEY::KEY_RETURN)
+                        {
+                          if (ViewModel.TryConfirm(cast * self.RelatedControlHost, self.Selection))
+                          {
+                            self.RequestClose();
+                          }
+                        }
                       }
                     ]]></ev.keyUp-eval>
                   </att.FocusableComposition-set>
@@ -170,6 +177,13 @@
                   <att.FocusableComposition-set>
                     <ev.keyUp-eval><![CDATA[
                       {
+                        if (not arguments.ctrl and not arguments.shift and not arguments.alt and arguments.code == VKEY::KEY_RETURN)
+                        {
+                          if (ViewModel.TryConfirm(cast * self.RelatedControlHost, self.Selection))
+                          {
+                            self.RequestClose();
+                          }
+                        }
                       }
                     ]]></ev.keyUp-eval>
                   </att.FocusableComposition-set>

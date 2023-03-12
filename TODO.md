@@ -18,7 +18,6 @@
   - file dialog can't expand/collapse tree view by key.
   - file dialog double click on file list should select and confirm.
   - file dialog append extension if file name doesn't have it.
-  - file dialog should take action when pressing `ENTER` on text box or list view.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.

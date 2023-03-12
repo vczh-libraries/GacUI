@@ -2879,6 +2879,13 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
                 {
+                    if (((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (arguments.code == VKEY::KEY_RETURN)))
+                    {
+                        if (ViewModel.TryConfirm((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), self.Selection))
+                        {
+                            self.RequestClose();
+                        }
+                    }
                 };
                 attach(<precompile>12.keyUp, <event-handler>);
             }
@@ -2975,6 +2982,13 @@ namespace gaclib_controls
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
                 {
+                    if (((((!arguments.ctrl) and (!arguments.shift)) and (!arguments.alt)) and (arguments.code == VKEY::KEY_RETURN)))
+                    {
+                        if (ViewModel.TryConfirm((cast (::presentation::controls::GuiWindow*) self.RelatedControlHost), self.Selection))
+                        {
+                            self.RequestClose();
+                        }
+                    }
                 };
                 attach(<precompile>20.keyUp, <event-handler>);
             }
