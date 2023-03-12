@@ -440,11 +440,34 @@ View Model (IFileDialogViewModel)
 				{
 					auto path = paths[0];
 					{
-						auto folder = filesystem::Folder(path);
-						if (folder.Exists())
+						if (filesystem::Folder(path).Exists())
 						{
-							// TODO: jump to that folder
-							CHECK_FAIL(L"Not Implemented!");
+							List<filesystem::FilePath> fragments;
+							while (!path.IsRoot())
+							{
+								fragments.Add(path);
+								path = path.GetFolder();
+							}
+
+							auto folder = rootFolder;
+							for (vint i = fragments.Count() - 1; i >= 0; i--)
+							{
+								auto fragment = fragments[i];
+								vint index = folder->childrenByName.Keys().IndexOf(fragment.GetName());
+								if (index == -1)
+								{
+									auto child = Ptr(new FileDialogFolder(fragment));
+									folder->AddChild(child);
+									child->AddPlaceholderChild();
+								}
+								else
+								{
+									folder = folder->childrenByName.Values()[index];
+								}
+							}
+
+							SetSelectedFolder(folder);
+							return false;
 						}
 					}
 				}
