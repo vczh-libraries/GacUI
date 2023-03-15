@@ -330,9 +330,12 @@ interface presentation::IFileDialogFile : system::Interface {
 }
 
 interface presentation::IFileDialogFilter : system::Interface {
+    property DefaultExtension : system::String? { get:GetDefaultExtension }
     property Filter : system::String { get:GetFilter }
     property Name : system::String { get:GetName }
 
+    function FilterFile(file : presentation::IFileDialogFile^) : system::Boolean;
+    function GetDefaultExtension() : system::String?;
     function GetFilter() : system::String;
     function GetName() : system::String;
 

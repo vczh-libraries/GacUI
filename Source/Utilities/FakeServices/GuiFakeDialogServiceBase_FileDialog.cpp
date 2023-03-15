@@ -28,6 +28,16 @@ View Model (IFileDialogFilter)
 			{
 				return filter;
 			}
+
+			Nullable<WString> GetDefaultExtension() override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool FilterFile(Ptr<IFileDialogFile> file) override
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
 		};
 
 /***********************************************************************

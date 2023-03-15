@@ -112,11 +112,11 @@ Type List (Basic)
 			F(presentation::ICommonFontDialogViewModel)\
 			F(presentation::ISimpleFontDialogViewModel)\
 			F(presentation::IFullFontDialogViewModel)\
-			F(presentation::IFileDialogFilter)\
 			F(presentation::FileDialogFolderType)\
 			F(presentation::IFileDialogFolder)\
 			F(presentation::FileDialogFileType)\
 			F(presentation::IFileDialogFile)\
+			F(presentation::IFileDialogFilter)\
 			F(presentation::IFileDialogViewModel)\
 
 /***********************************************************************

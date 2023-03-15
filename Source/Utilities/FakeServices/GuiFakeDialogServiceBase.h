@@ -204,26 +204,6 @@ View Models (FileDialog)
 ***********************************************************************/
 
 		/// <summary>
-		/// The view model for a filter in a file dialog. It is implemented by <see cref="FakeDialogServiceBase"/>.
-		/// </summary>
-		class IFileDialogFilter : public virtual IDescriptable
-		{
-		public:
-			using Filters = collections::List<Ptr<IFileDialogFilter>>;
-
-			/// <summary>
-			/// Get the name of this filter.
-			/// </summary>
-			/// <returns>The name.</returns>
-			virtual WString					GetName() = 0;
-			/// <summary>
-			/// Get the wildcard of this filter.
-			/// </summary>
-			/// <returns>The wildcard.</returns>
-			virtual WString					GetFilter() = 0;
-		};
-
-		/// <summary>
 		/// Type of a folder in a file dialog.
 		/// </summary>
 		enum class FileDialogFolderType
@@ -330,6 +310,37 @@ View Models (FileDialog)
 			/// </summary>
 			/// <returns>The name.</returns>
 			virtual WString					GetName() = 0;
+		};
+
+		/// <summary>
+		/// The view model for a filter in a file dialog. It is implemented by <see cref="FakeDialogServiceBase"/>.
+		/// </summary>
+		class IFileDialogFilter : public virtual IDescriptable
+		{
+		public:
+			using Filters = collections::List<Ptr<IFileDialogFilter>>;
+
+			/// <summary>
+			/// Get the name of this filter.
+			/// </summary>
+			/// <returns>The name.</returns>
+			virtual WString					GetName() = 0;
+			/// <summary>
+			/// Get the wildcard of this filter.
+			/// </summary>
+			/// <returns>The wildcard.</returns>
+			virtual WString					GetFilter() = 0;
+			/// <summary>
+			/// Get the default extension for this filter.
+			/// </summary>
+			/// <returns>The default extension. It returns null if it is not defined.</returns>
+			virtual Nullable<WString>		GetDefaultExtension() = 0;
+			/// <summary>
+			/// Filter a file.
+			/// </summary>
+			/// <param name="file">The file to filter.</param>
+			/// <returns>Returns true if the file satisfies the filter.</returns>
+			virtual bool					FilterFile(Ptr<IFileDialogFile> file) = 0;
 		};
 
 		/// <summary>
