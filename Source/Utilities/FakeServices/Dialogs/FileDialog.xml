@@ -25,6 +25,37 @@
         {
           return ViewModel.ParseDisplayString(textBox.Text);
         }
+
+        func LocateSelectedFolderInTreeView(): void
+        {
+          var fragments : IFileDialogFolder^[] = {};
+          var currentFolder = ViewModel.SelectedFolder;
+          if (currentFolder is null)
+          {
+            return;
+          }
+
+          while (currentFolder is not null and currentFolder.Type == FileDialogFolderType::Folder)
+          {
+            fragments.Add(currentFolder);
+            currentFolder = currentFolder.Parent;
+          }
+
+          var currentNode = treeView.NodeRootProvider.RootNode;
+          for (fragment in reversed fragments)
+          {
+            if (currentNode is null)
+            {
+              return;
+            }
+            currentNode.Expanding = true;
+            currentNode = currentNode.GetChild(fragment.Index);
+          }
+
+          var index = treeView.NodeItemView.CalculateNodeVisibilityIndex(cast * currentNode);
+          treeView.EnsureItemVisible(index);
+          treeView.SetSelected(index, true);
+        }
       ]]></ref.Members>
       <ref.Ctor><![CDATA[
         {
@@ -51,36 +82,7 @@
         <att.ViewModel-set SelectedFolder-bind="cast (IFileDialogFolder^) treeView.SelectedItem">
           <ev.SelectedFolderChanged-eval><![CDATA[
             {
-              GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func():void
-              {
-                var fragments : IFileDialogFolder^[] = {};
-                var currentFolder = ViewModel.SelectedFolder;
-                if (currentFolder is null)
-                {
-                  return;
-                }
-
-                while (currentFolder is not null and currentFolder.Type == FileDialogFolderType::Folder)
-                {
-                  fragments.Add(currentFolder);
-                  currentFolder = currentFolder.Parent;
-                }
-
-                var currentNode = treeView.NodeRootProvider.RootNode;
-                for (fragment in reversed fragments)
-                {
-                  if (currentNode is null)
-                  {
-                    return;
-                  }
-                  currentNode.Expanding = true;
-                  currentNode = currentNode.GetChild(fragment.Index);
-                }
-
-                var index = treeView.NodeItemView.CalculateNodeVisibilityIndex(cast * currentNode);
-                treeView.EnsureItemVisible(index);
-                treeView.SetSelected(index, true);
-              });
+              self.LocateSelectedFolderInTreeView();
             }
           ]]></ev.SelectedFolderChanged-eval>
         </att.ViewModel-set>
@@ -253,6 +255,14 @@
           buttonOK.Text = Strings.FileDialogSave();
         }
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+          {
+            filePickerControl.LocateSelectedFolderInTreeView();
+          });
+        }
+      ]]></ref.Ctor>
       <Window
           ref.Name = "self"
           Text-eval="ViewModel.Title"

@@ -297,7 +297,7 @@ View Model (IFileDialogViewModel)
 				return selectedFolder;
 			}
 
-			void SetSelectedFolder(Ptr<IFileDialogFolder> value) override
+			void SetSelectedFolderInternal(Ptr<IFileDialogFolder> value, bool refreshFile)
 			{
 				if (auto folder = value.Cast<FileDialogFolder>())
 				{
@@ -306,7 +306,7 @@ View Model (IFileDialogViewModel)
 						selectedFolder = folder;
 						SelectedFolderChanged();
 
-						if (loadingPath != selectedFolder->folder.GetFilePath())
+						if (refreshFile && loadingPath != selectedFolder->folder.GetFilePath())
 						{
 							RefreshFiles();
 						}
@@ -314,7 +314,7 @@ View Model (IFileDialogViewModel)
 				}
 			}
 
-			void SetSelectedFolder(filesystem::FilePath path)
+			void SetSelectedFolderInternal(filesystem::FilePath path, bool refreshFile)
 			{
 				List<filesystem::FilePath> fragments;
 				while (!path.IsRoot())
@@ -341,7 +341,12 @@ View Model (IFileDialogViewModel)
 					}
 				}
 
-				SetSelectedFolder(folder);
+				SetSelectedFolderInternal(folder, refreshFile);
+			}
+
+			void SetSelectedFolder(Ptr<IFileDialogFolder> value) override
+			{
+				SetSelectedFolderInternal(value, true);
 			}
 
 			bool GetIsLoadingFiles() override
@@ -486,7 +491,7 @@ View Model (IFileDialogViewModel)
 					auto path = paths[0];
 					if (filesystem::Folder(path).Exists())
 					{
-						SetSelectedFolder(path);
+						SetSelectedFolderInternal(path, true);
 						return false;
 					}
 				}
@@ -723,11 +728,11 @@ View Model (IFileDialogViewModel)
 					filesystem::FilePath path = initialDirectory;
 					if (filesystem::Folder(path).Exists())
 					{
-						SetSelectedFolder(path);
+						SetSelectedFolderInternal(path, false);
 						return;
 					}
 				}
-				SetSelectedFolder(rootFolder);
+				SetSelectedFolderInternal(rootFolder, false);
 			}
 		};
 
