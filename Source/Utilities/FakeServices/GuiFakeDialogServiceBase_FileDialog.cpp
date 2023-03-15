@@ -18,6 +18,8 @@ View Model (IFileDialogFilter)
 		public:
 			WString						name;
 			WString						filter;
+			Nullable<WString>			defaultExtension;
+			Ptr<Regex>					regexFilter;
 
 			WString GetName() override
 			{
@@ -31,12 +33,14 @@ View Model (IFileDialogFilter)
 
 			Nullable<WString> GetDefaultExtension() override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				return defaultExtension;
 			}
 
 			bool FilterFile(Ptr<IFileDialogFile> file) override
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				auto name = file->GetName();
+				auto match = regexFilter->MatchHead(name);
+				return match && match->Result().Start() == 0 && match->Result().Length() == name.Length();
 			}
 		};
 
@@ -309,6 +313,36 @@ View Model (IFileDialogViewModel)
 				}
 			}
 
+			void SetSelectedFolder(filesystem::FilePath path)
+			{
+				List<filesystem::FilePath> fragments;
+				while (!path.IsRoot())
+				{
+					fragments.Add(path);
+					path = path.GetFolder();
+				}
+
+				auto folder = rootFolder;
+				for (vint i = fragments.Count() - 1; i >= 0; i--)
+				{
+					auto fragment = fragments[i];
+					vint index = folder->childrenByName.Keys().IndexOf(fragment.GetName());
+					if (index == -1)
+					{
+						auto child = Ptr(new FileDialogFolder(fragment));
+						folder->AddChild(child);
+						child->AddPlaceholderChild();
+						folder = child;
+					}
+					else
+					{
+						folder = folder->childrenByName.Values()[index];
+					}
+				}
+
+				SetSelectedFolder(folder);
+			}
+
 			bool GetIsLoadingFiles() override
 			{
 				return isLoadingFiles;
@@ -449,37 +483,10 @@ View Model (IFileDialogViewModel)
 				else if (paths.Count() == 1)
 				{
 					auto path = paths[0];
+					if (filesystem::Folder(path).Exists())
 					{
-						if (filesystem::Folder(path).Exists())
-						{
-							List<filesystem::FilePath> fragments;
-							while (!path.IsRoot())
-							{
-								fragments.Add(path);
-								path = path.GetFolder();
-							}
-
-							auto folder = rootFolder;
-							for (vint i = fragments.Count() - 1; i >= 0; i--)
-							{
-								auto fragment = fragments[i];
-								vint index = folder->childrenByName.Keys().IndexOf(fragment.GetName());
-								if (index == -1)
-								{
-									auto child = Ptr(new FileDialogFolder(fragment));
-									folder->AddChild(child);
-									child->AddPlaceholderChild();
-									folder = child;
-								}
-								else
-								{
-									folder = folder->childrenByName.Values()[index];
-								}
-							}
-
-							SetSelectedFolder(folder);
-							return false;
-						}
+						SetSelectedFolder(path);
+						return false;
 					}
 				}
 				else
@@ -653,6 +660,34 @@ View Model (IFileDialogViewModel)
 					confirmedSelection,
 					From(paths).Select([](auto path) { return path.GetFullPath(); })
 					);
+
+				Nullable<WString> extension;
+				if (selectedFilter)
+				{
+					extension = selectedFilter->GetDefaultExtension();
+				}
+
+				if (!extension && defaultExtension!=WString::Empty)
+				{
+					extension = defaultExtension;
+				}
+
+				if (extension)
+				{
+					auto&& sExt = WString::Unmanaged(L".") + extension.Value();
+					vint lExt = sExt.Length();
+
+					for (vint i = 0; i < confirmedSelection.Count(); i++)
+					{
+						WString& selection = confirmedSelection[i];
+						if (selection.Length() >= lExt && selection.Right(lExt) == sExt)
+						{
+							continue;
+						}
+						selection += sExt;
+					}
+				}
+
 				confirmed = true;
 				return true;
 			}
@@ -710,6 +745,7 @@ FakeDialogServiceBase
 			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
 			vm->defaultExtension = defaultExtension;
 
+			Regex regexFilterExt(L"/*.[^*]+");
 			vint filterStart = 0;
 			while (true)
 			{
@@ -739,6 +775,13 @@ FakeDialogServiceBase
 				auto filterItem = Ptr(new FileDialogFilter);
 				filterItem->name = filter.Sub(filterStart, first - filterStart);
 				filterItem->filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
+				if (auto match = regexFilterExt.MatchHead(filterItem->filter))
+				{
+					if (match->Result().Length() == filterItem->filter.Length())
+					{
+						filterItem->defaultExtension = filterItem->filter.Right(filterItem->filter.Length() - 2);
+					}
+				}
 				vm->filters.Add(filterItem);
 
 				if (second == -1) break;
@@ -757,8 +800,19 @@ FakeDialogServiceBase
 			vm->rootFolder = Ptr(new FileDialogFolder);
 			vm->rootFolder->type = FileDialogFolderType::Root;
 
-			// TODO: initialDirectory -> selectedFolder
-			vm->SetSelectedFolder(vm->rootFolder);
+			{
+				if (initialDirectory != WString::Empty)
+				{
+					filesystem::FilePath path = initialDirectory;
+					if (filesystem::Folder(path).Exists())
+					{
+						vm->SetSelectedFolder(path);
+						goto FOUND_SELECTED_FOLDER;
+					}
+				}
+				vm->SetSelectedFolder(vm->rootFolder);
+			FOUND_SELECTED_FOLDER:;
+			}
 
 			switch (dialogType)
 			{
