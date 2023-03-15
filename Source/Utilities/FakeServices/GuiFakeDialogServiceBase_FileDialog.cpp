@@ -246,6 +246,7 @@ View Model (IFileDialogViewModel)
 			Filters						filters;
 			Ptr<FileDialogFilter>		selectedFilter;
 
+			WString						initialDirectory;
 			Ptr<FileDialogFolder>		rootFolder;
 			Ptr<FileDialogFolder>		selectedFolder;
 
@@ -716,6 +717,17 @@ View Model (IFileDialogViewModel)
 
 				rootFolder->textLoadingFolders = textLoadingFolders;
 				rootFolder->AddPlaceholderChild();
+
+				if (initialDirectory != WString::Empty)
+				{
+					filesystem::FilePath path = initialDirectory;
+					if (filesystem::Folder(path).Exists())
+					{
+						SetSelectedFolder(path);
+						return;
+					}
+				}
+				SetSelectedFolder(rootFolder);
 			}
 		};
 
@@ -797,22 +809,9 @@ FakeDialogServiceBase
 				vm->selectedFilter = vm->filters[selectionFilterIndex].Cast<FileDialogFilter>();
 			}
 
+			vm->initialDirectory = initialDirectory;
 			vm->rootFolder = Ptr(new FileDialogFolder);
 			vm->rootFolder->type = FileDialogFolderType::Root;
-
-			{
-				if (initialDirectory != WString::Empty)
-				{
-					filesystem::FilePath path = initialDirectory;
-					if (filesystem::Folder(path).Exists())
-					{
-						vm->SetSelectedFolder(path);
-						goto FOUND_SELECTED_FOLDER;
-					}
-				}
-				vm->SetSelectedFolder(vm->rootFolder);
-			FOUND_SELECTED_FOLDER:;
-			}
 
 			switch (dialogType)
 			{

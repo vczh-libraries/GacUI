@@ -51,24 +51,36 @@
         <att.ViewModel-set SelectedFolder-bind="cast (IFileDialogFolder^) treeView.SelectedItem">
           <ev.SelectedFolderChanged-eval><![CDATA[
             {
-              var fragments : IFileDialogFolder^[] = {};
-              var currentFolder = ViewModel.SelectedFolder;
-              while (currentFolder is not null and currentFolder.Type == FileDialogFolderType::Folder)
+              GuiApplication::GetApplication().InvokeInMainThread(self.RelatedControlHost, func():void
               {
-                fragments.Add(currentFolder);
-                currentFolder = currentFolder.Parent;
-              }
+                var fragments : IFileDialogFolder^[] = {};
+                var currentFolder = ViewModel.SelectedFolder;
+                if (currentFolder is null)
+                {
+                  return;
+                }
 
-              var currentNode = treeView.NodeRootProvider.RootNode;
-              for (fragment in reversed fragments)
-              {
-                currentNode.Expanding = true;
-                currentNode = currentNode.GetChild(fragment.Index);
-              }
+                while (currentFolder is not null and currentFolder.Type == FileDialogFolderType::Folder)
+                {
+                  fragments.Add(currentFolder);
+                  currentFolder = currentFolder.Parent;
+                }
 
-              var index = treeView.NodeItemView.CalculateNodeVisibilityIndex(cast * currentNode);
-              treeView.EnsureItemVisible(index);
-              treeView.SetSelected(index, true);
+                var currentNode = treeView.NodeRootProvider.RootNode;
+                for (fragment in reversed fragments)
+                {
+                  if (currentNode is null)
+                  {
+                    return;
+                  }
+                  currentNode.Expanding = true;
+                  currentNode = currentNode.GetChild(fragment.Index);
+                }
+
+                var index = treeView.NodeItemView.CalculateNodeVisibilityIndex(cast * currentNode);
+                treeView.EnsureItemVisible(index);
+                treeView.SetSelected(index, true);
+              });
             }
           ]]></ev.SelectedFolderChanged-eval>
         </att.ViewModel-set>
@@ -83,7 +95,7 @@
           </att.Columns>
 
           <Cell Site="row:0 column:0">
-            <Label Text-bind="ViewModel.SelectedFolder.FullPath">
+            <Label Text-bind="ViewModel.SelectedFolder.FullPath ?? ''">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
             </Label>
           </Cell>
