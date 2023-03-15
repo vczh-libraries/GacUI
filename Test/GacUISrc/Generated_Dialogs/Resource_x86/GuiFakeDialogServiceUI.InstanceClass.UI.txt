@@ -2402,6 +2402,15 @@ namespace gaclib_controls
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gaclib_controls-FileDialogWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            GuiApplication::GetApplication().InvokeInMainThread(self, func () : (void)
+            {
+                filePickerControl.LocateSelectedFolderInTreeView();
+            });
         }
 
         delete
@@ -2813,7 +2822,7 @@ namespace gaclib_controls
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = <bind-cache>0.SelectedFolder.FullPath of (::system::String);
+                        var <bind-activator-result> = (<bind-cache>0.SelectedFolder.FullPath ?? "") of (::system::String);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -3094,29 +3103,7 @@ namespace gaclib_controls
             {
                 var <event-handler> = func () : (::system::Void)
                 {
-                    var fragments : IFileDialogFolder^[] = {};
-                    var currentFolder = ViewModel.SelectedFolder;
-                    while ((currentFolder is not null and (currentFolder.Type == FileDialogFolderType::Folder)))
-                    {
-                        fragments.Add(currentFolder);
-                        (currentFolder = currentFolder.Parent);
-                    }
-                    var currentNode = treeView.NodeRootProvider.RootNode;
-                    {
-                        var <for-enumerable>fragment = ::system::Sys::ReverseEnumerable(fragments);
-                        var <for-enumerator>fragment = <for-enumerable>fragment.CreateEnumerator();
-                        while (<for-enumerator>fragment.Next())
-                        {
-                            var fragment = (cast (::presentation::IFileDialogFolder^) <for-enumerator>fragment.GetCurrent());
-                            {
-                                (currentNode.Expanding = true);
-                                (currentNode = currentNode.GetChild(fragment.Index));
-                            }
-                        }
-                    }
-                    var index = treeView.NodeItemView.CalculateNodeVisibilityIndex((cast (::presentation::controls::tree::INodeProvider*) currentNode));
-                    treeView.EnsureItemVisible(index);
-                    treeView.SetSelected(index, true);
+                    self.LocateSelectedFolderInTreeView();
                 };
                 attach(<precompile>24.SelectedFolderChanged, <event-handler>);
             }
@@ -3385,6 +3372,41 @@ namespace gaclib_controls
         func GetSelection() : (string{})
         {
             return ViewModel.ParseDisplayString(textBox.Text);
+        }
+
+        func LocateSelectedFolderInTreeView() : (void)
+        {
+            var fragments : IFileDialogFolder^[] = {};
+            var currentFolder = ViewModel.SelectedFolder;
+            if (currentFolder is null)
+            {
+                return;
+            }
+            while ((currentFolder is not null and (currentFolder.Type == FileDialogFolderType::Folder)))
+            {
+                fragments.Add(currentFolder);
+                (currentFolder = currentFolder.Parent);
+            }
+            var currentNode = treeView.NodeRootProvider.RootNode;
+            {
+                var <for-enumerable>fragment = ::system::Sys::ReverseEnumerable(fragments);
+                var <for-enumerator>fragment = <for-enumerable>fragment.CreateEnumerator();
+                while (<for-enumerator>fragment.Next())
+                {
+                    var fragment = (cast (::presentation::IFileDialogFolder^) <for-enumerator>fragment.GetCurrent());
+                    {
+                        if (currentNode is null)
+                        {
+                            return;
+                        }
+                        (currentNode.Expanding = true);
+                        (currentNode = currentNode.GetChild(fragment.Index));
+                    }
+                }
+            }
+            var index = treeView.NodeItemView.CalculateNodeVisibilityIndex((cast (::presentation::controls::tree::INodeProvider*) currentNode));
+            treeView.EnsureItemVisible(index);
+            treeView.SetSelected(index, true);
         }
 
         @cpp:Private
