@@ -16,6 +16,7 @@
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
   - font dialog alt `K` should focus to dropdown instead of waiting for `R`, `G`, `B`.
   - file dialog can't expand/collapse tree view by key.
+  - file dialog filter should filter files in list view.
   - file dialog append extension if file name doesn't have it.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
