@@ -61,6 +61,14 @@ View Model (IFullFontDialogViewModel)
 
 			FontProperties			GetFont() override								{ return font; }
 			void					SetFont(const FontProperties& value) override	{ font = value; }
+
+			bool SelectColor(controls::GuiWindow* owner) override
+			{
+				return GetCurrentController()->DialogService()->ShowColorDialog(
+					owner->GetNativeWindow(),
+					color
+					);
+			}
 		};
 
 /***********************************************************************
