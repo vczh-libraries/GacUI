@@ -333,6 +333,14 @@
               <Cell Site="row:2 column:1">
                 <GroupBox Text-str="FontColorGroup()">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+                  <Bounds ref.Name="colorBounds" AlignmentToParent="left:1 top:1 right:1 bottom:1" PreferredMinSize="y:30">
+                    <att.AssociatedCursor-eval>INativeController::GetCurrentController().ResourceService().GetSystemCursor(Hand)</att.AssociatedCursor-eval>
+                    <Gui3DBorderElement Color1="#444444" Color2="#AAAAAA"/>
+                    <Bounds AlignmentToParent="left:1 top:1 right:1 bottom:1">
+                      <SolidBackground ref.Name="colorBackground" Color-eval="ViewModel.Color"/>
+                    </Bounds>
+                  </Bounds>
+                  <!--
                   <ComboButton ref.Name="comboColor" Alt="K">
                     <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5" PreferredMinSize="x:80 y:24"/>
                     <att.ContainerComposition-set>
@@ -348,6 +356,7 @@
                       </GroupBox>
                     </att.DropdownControl>
                   </ComboButton>
+                  -->
                 </GroupBox>
               </Cell>
             </Table>
@@ -409,7 +418,7 @@
                     antialias:         checkHAA.Selected
                     verticalAntialias: checkVAA.Selected
                   };
-                  ViewModel.Color = colorControl.Value;
+                  /* ViewModel.Color = colorControl.Value; */
                   self.Close();
                 }
               ]]></ev.Clicked-eval>
