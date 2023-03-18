@@ -39,8 +39,8 @@
 
 ## Done but not Released
 
-- ~~<ComboButton/>~~
-- ~~Add default dialog service, will be use in hosted mode.~~
+- `<ComboButton/>`
+- `Add default dialog service, will be use in hosted mode.`
   - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
     - Move `GuiSharedAsyncService` here.
     - A `GuiFakeDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
