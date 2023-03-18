@@ -1,9 +1,7 @@
 # TODO
 
-## Progressing
+## Known Issues
 
-- Issue on `<LocalizedStrings/>`
-  - Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
 - Issue on GacGen
   - `A10: Expression of type "system::Function<system::Void, system::Object>^" cannot implicitly convert to "system::Function<system::Void, system::String>^".`
     - When define `event RequestConfirm(string);` with `<ev.RequestConfirm-eval><![CDATA[{}]]></ev.RequestConfirm-eval>`
@@ -19,7 +17,10 @@
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
-- ~~<ComboButton/>~~
+
+## Progressing
+
+- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
 - Add document for `<ComboButton/>` and its `DropdownControl` property.
 - Theme
   - Add HostedWindow theme.
@@ -27,6 +28,18 @@
     - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
     - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
     - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
+- Remove SysKey callbacks, merge into Key callbacks.
+- Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
+- Add new tutorial to use `FakeDialogService` based on `FullControlTest`'s new tab with localization for `zh-CN`.
+- Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
+- Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
+  - Write maketools.sh
+- Rewrite GacBuild.ps1 in C++ (optional)
+- Add DarkSkin and Dialog in Reflection(32|64).bin (optional)
+
+## Done but not Released
+
+- ~~<ComboButton/>~~
 - ~~Add default dialog service, will be use in hosted mode.~~
   - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
     - Move `GuiSharedAsyncService` here.
@@ -51,14 +64,6 @@
   - Substitutable services:
     - Clipboard
     - Dialog
-- Remove SysKey callbacks, merge into Key callbacks.
-- Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
-- Add new tutorial to use `FakeDialogService` based on `FullControlTest`'s new tab with localization for `zh-CN`.
-- Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
-- Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
-  - Write maketools.sh
-- Rewrite GacBuild.ps1 in C++ (optional)
-- Add DarkSkin and Dialog in Reflection(32|64).bin (optional)
 
 ## OS Provider Features
 
