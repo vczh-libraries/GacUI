@@ -396,6 +396,7 @@ interface presentation::IFullFontDialogViewModel : presentation::ICommonFontDial
     property Font : presentation::FontProperties { get:GetFont set:SetFont }
 
     function GetFont() : presentation::FontProperties;
+    function SelectColor(owner : presentation::controls::GuiWindow*) : system::Boolean;
     function SetFont(value : presentation::FontProperties) : system::Void;
 
 }

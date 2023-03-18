@@ -197,6 +197,12 @@ View Models (FontDialog)
 			/// </summary>
 			/// <param name="value">The selected font.</param>
 			virtual void					SetFont(const FontProperties& value) = 0;
+			/// <summary>
+			/// Display a color dialog and change the Color property in <see cref="IColorDialogViewModel"/>.
+			/// </summary>
+			/// <returns>Returns true when a color is selected.</returns>
+			/// <param name="owner">A owner window for displaying color dialogs.</param>
+			virtual bool					SelectColor(controls::GuiWindow* owner) = 0;
 		};
 
 /***********************************************************************

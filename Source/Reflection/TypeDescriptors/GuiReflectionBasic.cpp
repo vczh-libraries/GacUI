@@ -709,6 +709,7 @@ Type Declaration
 				CLASS_MEMBER_BASE(ICommonFontDialogViewModel)
 				CLASS_MEMBER_BASE(IColorDialogViewModel)
 				CLASS_MEMBER_PROPERTY_FAST(Font)
+				CLASS_MEMBER_METHOD(SelectColor, {L"owner"})
 			END_INTERFACE_MEMBER(IFullFontDialogViewModel)
 
 			BEGIN_ENUM_ITEM(FileDialogFolderType)
