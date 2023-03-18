@@ -14,7 +14,6 @@
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
   - New tab on `FullControlTest` to show options of dialogs.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
-  - font dialog alt `K` should focus to dropdown instead of waiting for `R`, `G`, `B`.
   - file dialog can't expand/collapse tree view by key.
   - file dialog filter should filter files in list view.
 - Issues on GDI
