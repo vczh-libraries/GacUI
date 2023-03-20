@@ -57,7 +57,8 @@
           treeView.SetSelected(index, true);
         }
       ]]></ref.Members>
-      <ref.Ctor><![CDATA[
+      <ref.Ctor>
+            <![CDATA[
         {
           imageFolder  = (cast (GuiImageData^) self.ResolveResource("res", "Images/Folder", true));
           imageFile    = (cast (GuiImageData^) self.ResolveResource("res", "Images/File", true));
@@ -73,13 +74,33 @@
               self.Strings.FileDialogAskOverrideFile()
             );
           treeView.ItemSource = ViewModel.RootFolder;
-          listView.ItemSource = ViewModel.Files;
+          dataGrid.ItemSource = ViewModel.Files;
           comboBox.SelectedIndex = ViewModel.Filters.IndexOf(ViewModel.SelectedFilter);
           ViewModel.RefreshFiles();
         }
       ]]></ref.Ctor>
       <CustomControl ref.Name="self">
         <att.ViewModel-set SelectedFolder-bind="cast (IFileDialogFolder^) treeView.SelectedItem">
+          <ev.SelectedFilterChanged-eval><![CDATA[
+            {
+              var filter = ViewModel.SelectedFilter;
+              if (filter is null)
+              {
+                dataGrid.AdditionalFilter = null;
+              }
+              else
+              {
+                dataGrid.AdditionalFilter = new IDataFilter^
+                {
+                  func SetCallback(value: IDataProcessorCallback*): void {}
+                  func Filter(row: object): bool
+                  {
+                    return filter.FilterFile(cast (IFileDialogFile^) row);
+                  }
+                };
+              }
+            }
+          ]]></ev.SelectedFilterChanged-eval>
           <ev.SelectedFolderChanged-eval><![CDATA[
             {
               self.LocateSelectedFolderInTreeView();
@@ -126,7 +147,7 @@
               </Cell>
 
               <Cell Site="row:0 column:1">
-                <BindableDataGrid ref.Name="listView" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="F">
+                <BindableDataGrid ref.Name="dataGrid" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="F">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.FocusableComposition-set>
                     <ev.keyUp-eval><![CDATA[
