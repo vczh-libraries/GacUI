@@ -282,6 +282,8 @@ View Model (IFileDialogViewModel)
 					if (selectedFilter != filter && filters.Contains(value.Obj()))
 					{
 						selectedFilter = filter;
+						SelectedFilterChanged();
+
 						RefreshFiles();
 					}
 				}

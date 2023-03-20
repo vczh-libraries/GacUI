@@ -361,6 +361,10 @@ View Models (FileDialog)
 			using Selection = collections::LazyList<WString>;
 
 			/// <summary>
+			/// Raised when the <see cref="GetSelectedFilter"/> is changed.
+			/// </summary>
+			Event<void()>					SelectedFilterChanged;
+			/// <summary>
 			/// Raised when the <see cref="GetSelectedFolder"/> is changed.
 			/// </summary>
 			Event<void()>					SelectedFolderChanged;
