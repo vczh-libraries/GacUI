@@ -38,6 +38,7 @@ View Model (IFileDialogFilter)
 
 			bool FilterFile(Ptr<IFileDialogFile> file) override
 			{
+				if (file->GetType() != FileDialogFileType::File) return true;
 				auto name = file->GetName();
 				auto match = regexFilter->MatchHead(name);
 				return match && match->Result().Length() == name.Length();
@@ -283,8 +284,6 @@ View Model (IFileDialogViewModel)
 					{
 						selectedFilter = filter;
 						SelectedFilterChanged();
-
-						RefreshFiles();
 					}
 				}
 			}
