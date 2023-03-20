@@ -13,7 +13,6 @@
   - New tab on `FullControlTest` to show options of dialogs.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
   - file dialog can't expand/collapse tree view by key.
-  - file dialog filter should filter files in list view.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - Non main window doesn't shrink when moving back to low DPI monitor.
