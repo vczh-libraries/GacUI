@@ -126,7 +126,7 @@
               </Cell>
 
               <Cell Site="row:0 column:1">
-                <BindableListView ref.Name="listView" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="F">
+                <BindableDataGrid ref.Name="listView" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="F">
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.FocusableComposition-set>
                     <ev.keyUp-eval><![CDATA[
@@ -142,7 +142,7 @@
                     ]]></ev.keyUp-eval>
                   </att.FocusableComposition-set>
                   <att.Columns>
-                    <ListViewColumn TextProperty="Name"/>
+                    <_ TextProperty="Name"/>
                   </att.Columns>
                   <att.SmallImageProperty-eval><![CDATA[
                     [
@@ -172,7 +172,7 @@
                       });
                     }
                   ]]></ev.ItemLeftButtonDoubleClick-eval>
-                </BindableListView>
+                </BindableDataGrid>
               </Cell>
             </Table>
           </Cell>
