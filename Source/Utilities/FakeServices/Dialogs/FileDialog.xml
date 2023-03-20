@@ -11,7 +11,7 @@
 
         func GetSelectedFiles(): IFileDialogFile^{}
         ${
-          for (item in listView.SelectedItems)
+          for (item in dataGrid.SelectedItems)
           {
             var file = ViewModel.Files[item] as IFileDialogFile^;
             if (file is not null)
@@ -80,7 +80,10 @@
         }
       ]]></ref.Ctor>
       <CustomControl ref.Name="self">
-        <att.ViewModel-set SelectedFolder-bind="cast (IFileDialogFolder^) treeView.SelectedItem">
+        <att.ViewModel-set
+            SelectedFilter-bind="comboBox.SelectedItem as *"
+            SelectedFolder-bind="treeView.SelectedItem as *"
+            >
           <ev.SelectedFilterChanged-eval><![CDATA[
             {
               var filter = ViewModel.SelectedFilter;
@@ -92,8 +95,8 @@
               {
                 dataGrid.AdditionalFilter = new IDataFilter^
                 {
-                  func SetCallback(value: IDataProcessorCallback*): void {}
-                  func Filter(row: object): bool
+                  override func SetCallback(value: IDataProcessorCallback*): void {}
+                  override func Filter(row: object): bool
                   {
                     return filter.FilterFile(cast (IFileDialogFile^) row);
                   }
@@ -243,15 +246,6 @@
                       <att.TextProperty>Name</att.TextProperty>
                     </BindableTextList>
                   </att.ListControl>
-                  <ev.SelectedIndexChanged-eval><![CDATA[
-                    {
-                      var filter = cast (IFileDialogFilter^) comboBox.SelectedItem;
-                      if (filter is not null)
-                      {
-                        ViewModel.SetSelectedFilter(filter);
-                      }
-                    }
-                  ]]></ev.SelectedIndexChanged-eval>
                 </ComboBox>
               </Cell>
             </Table>
