@@ -10,31 +10,37 @@
   - message box default button.
   - message box is not shown at the center.
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
-  - New tab on `FullControlTest` to show options of dialogs.
+  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
   - file dialog can't expand/collapse tree view by key.
-- Issues on GDI
-  - Big cursor of document empty line (GDI)
-  - Non main window doesn't shrink when moving back to low DPI monitor.
 
 ## Progressing
 
 - Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
-- Add document for `<ComboButton/>` and its `DropdownControl` property.
 - Theme
   - Add HostedWindow theme.
-  - `INativeWindow` add callback for state changing.
-    - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
-    - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
-    - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
+- `INativeWindow` add callback for state changing.
+  - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
+  - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
+  - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Remove SysKey callbacks, merge into Key callbacks.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
-- Add new tutorial to use `FakeDialogService` based on `FullControlTest`'s new tab with localization for `zh-CN`.
+
+## Optional
+
+- Issues on GDI
+  - Big cursor of document empty line (GDI)
+  - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh
-- Rewrite GacBuild.ps1 in C++ (optional)
-- Add DarkSkin and Dialog in Reflection(32|64).bin (optional)
+- Rewrite GacBuild.ps1 in C++
+- Add DarkSkin and Dialog in Reflection(32|64).bin
+
+## Document
+
+- Add document for `<ComboButton/>` and its `DropdownControl` property.
+- Add document for `<LocalizedStringsInjection/>` external injection.
 
 ## Done but not Released
 
