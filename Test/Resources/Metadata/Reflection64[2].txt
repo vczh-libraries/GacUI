@@ -361,6 +361,7 @@ interface presentation::IFileDialogFolder : system::Interface {
 
 interface presentation::IFileDialogViewModel : system::Interface {
     event IsLoadingFilesChanged : system::Function<system::Void>^ observing {        IsLoadingFiles,
+}    event SelectedFilterChanged : system::Function<system::Void>^ observing {        SelectedFilter,
 }    event SelectedFolderChanged : system::Function<system::Void>^ observing {        SelectedFolder,
 }
     property DefaultExtension : system::String { get:GetDefaultExtension }
@@ -369,7 +370,7 @@ interface presentation::IFileDialogViewModel : system::Interface {
     property Filters : system::ReadonlyList<presentation::IFileDialogFilter^>^ { get:GetFilters }
     property IsLoadingFiles : system::Boolean { get:GetIsLoadingFiles event:IsLoadingFilesChanged }
     property RootFolder : presentation::IFileDialogFolder^ { get:GetRootFolder }
-    property SelectedFilter : presentation::IFileDialogFilter^ { get:GetSelectedFilter set:SetSelectedFilter }
+    property SelectedFilter : presentation::IFileDialogFilter^ { get:GetSelectedFilter set:SetSelectedFilter event:SelectedFilterChanged }
     property SelectedFolder : presentation::IFileDialogFolder^ { get:GetSelectedFolder set:SetSelectedFolder event:SelectedFolderChanged }
     property Title : system::String { get:GetTitle }
 
