@@ -56,9 +56,27 @@
           treeView.EnsureItemVisible(index);
           treeView.SetSelected(index, true);
         }
+
+        func CreateFileFilter(filter: IFileDialogFilter^): IDataFilter^
+        {
+          if (filter is null)
+          {
+            return null;
+          }
+          else
+          {
+            return new IDataFilter^
+            {
+              override func SetCallback(value: IDataProcessorCallback*): void {}
+              override func Filter(row: object): bool
+              {
+                return filter.FilterFile(cast (IFileDialogFile^) row);
+              }
+            };
+          }
+        }
       ]]></ref.Members>
-      <ref.Ctor>
-            <![CDATA[
+      <ref.Ctor><![CDATA[
         {
           imageFolder  = (cast (GuiImageData^) self.ResolveResource("res", "Images/Folder", true));
           imageFile    = (cast (GuiImageData^) self.ResolveResource("res", "Images/File", true));
@@ -84,26 +102,6 @@
             SelectedFilter-bind="comboBox.SelectedItem as *"
             SelectedFolder-bind="treeView.SelectedItem as *"
             >
-          <ev.SelectedFilterChanged-eval><![CDATA[
-            {
-              var filter = ViewModel.SelectedFilter;
-              if (filter is null)
-              {
-                dataGrid.AdditionalFilter = null;
-              }
-              else
-              {
-                dataGrid.AdditionalFilter = new IDataFilter^
-                {
-                  override func SetCallback(value: IDataProcessorCallback*): void {}
-                  override func Filter(row: object): bool
-                  {
-                    return filter.FilterFile(cast (IFileDialogFile^) row);
-                  }
-                };
-              }
-            }
-          ]]></ev.SelectedFilterChanged-eval>
           <ev.SelectedFolderChanged-eval><![CDATA[
             {
               self.LocateSelectedFolderInTreeView();
@@ -151,6 +149,7 @@
 
               <Cell Site="row:0 column:1">
                 <BindableDataGrid ref.Name="dataGrid" MultiSelect-eval="ViewModel.EnabledMultipleSelection" env.ItemType="IFileDialogFile^" View="ListViewView::List" VerticalAlwaysVisible="false" HorizontalAlwaysVisible="false" Alt="F">
+                  <att.AdditionalFilter-bind>self.CreateFileFilter(ViewModel.SelectedFilter)</att.AdditionalFilter-bind>
                   <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
                   <att.FocusableComposition-set>
                     <ev.keyUp-eval><![CDATA[
