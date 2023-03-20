@@ -2458,7 +2458,7 @@ namespace gaclib_controls
         var treeView : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
 
         @cpp:Protected
-        var listView : ::presentation::controls::GuiBindableListView* = null of (::presentation::controls::GuiBindableListView*);
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
 
         @cpp:Protected
         var comboBox : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
@@ -2494,7 +2494,7 @@ namespace gaclib_controls
         var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::controls::list::ListViewColumn^ = null of (::presentation::controls::list::ListViewColumn^);
+        var <precompile>10 : ::presentation::controls::list::DataColumn^ = null of (::presentation::controls::list::DataColumn^);
 
         @cpp:Protected
         var <precompile>11 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -2656,26 +2656,26 @@ namespace gaclib_controls
                 <precompile>9.SetSite(0, 1, 1, 1);
             }
             {
-                (listView = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
+                (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
             }
-            (<precompile>12 = listView.FocusableComposition);
+            (<precompile>12 = dataGrid.FocusableComposition);
             {
-                (listView.View = ListViewView::List of (::presentation::controls::ListViewView));
-            }
-            {
-                (listView.HorizontalAlwaysVisible = false);
+                (dataGrid.View = ListViewView::List of (::presentation::controls::ListViewView));
             }
             {
-                (listView.VerticalAlwaysVisible = false);
+                (dataGrid.HorizontalAlwaysVisible = false);
             }
-            (<precompile>11 = listView.BoundsComposition);
+            {
+                (dataGrid.VerticalAlwaysVisible = false);
+            }
+            (<precompile>11 = dataGrid.BoundsComposition);
             {
                 (<precompile>11.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (listView.Alt = "F");
+                (dataGrid.Alt = "F");
             }
-            (<precompile>10 = new (::presentation::controls::list::ListViewColumn^)());
+            (<precompile>10 = new (::presentation::controls::list::DataColumn^)());
             {
                 (<precompile>10.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
@@ -2684,11 +2684,11 @@ namespace gaclib_controls
                 });
             }
             {
-                var <collection> = listView.Columns;
+                var <collection> = dataGrid.Columns;
                 <collection>.Add(<precompile>10);
             }
             {
-                <precompile>9.AddChild(listView.BoundsComposition);
+                <precompile>9.AddChild(dataGrid.BoundsComposition);
             }
             {
                 <precompile>5.AddChild(<precompile>9);
@@ -2886,7 +2886,80 @@ namespace gaclib_controls
                 (treeView.ImageProperty = [let node = (cast (IFileDialogFolder^) $1) in ((node.Type == FileDialogFolderType::Folder) ? self.imageFolder : null)]);
             }
             {
-                (listView.MultiSelect = ViewModel.EnabledMultipleSelection);
+                (dataGrid.MultiSelect = ViewModel.EnabledMultipleSelection);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::IFileDialogViewModel^ = null of (::presentation::IFileDialogViewModel^);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = self.CreateFileFilter(<bind-cache>0.SelectedFilter) of (::presentation::controls::list::IDataFilter^);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (ViewModel ?? null of (::presentation::IFileDialogViewModel^)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedFilterChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectedFilterChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::IFileDialogViewModel^));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = dataGrid.AdditionalFilter;
+                    var <new> = (cast (::presentation::controls::list::IDataFilter^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (dataGrid.AdditionalFilter = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiKeyEventArgs*) : (::system::Void)
@@ -2902,7 +2975,7 @@ namespace gaclib_controls
                 attach(<precompile>12.keyUp, <event-handler>);
             }
             {
-                (listView.SmallImageProperty = [let node = (cast (IFileDialogFile^) $1) in ((node.Type == FileDialogFileType::Folder) ? self.imageFolder : (node.Type == FileDialogFileType::File) ? self.imageFile : null)]);
+                (dataGrid.SmallImageProperty = [let node = (cast (IFileDialogFile^) $1) in ((node.Type == FileDialogFileType::Folder) ? self.imageFolder : (node.Type == FileDialogFileType::File) ? self.imageFile : null)]);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -2910,7 +2983,7 @@ namespace gaclib_controls
                     (textBox.Text = ViewModel.GetDisplayString(self.GetSelectedFiles()));
                     textBox.Select({row : 0; column : 0;}, {row : 0; column : 0;});
                 };
-                attach(listView.SelectionChanged, <event-handler>);
+                attach(dataGrid.SelectionChanged, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiItemMouseEventArgs*) : (::system::Void)
@@ -2925,7 +2998,7 @@ namespace gaclib_controls
                         }
                     });
                 };
-                attach(listView.ItemLeftButtonDoubleClick, <event-handler>);
+                attach(dataGrid.ItemLeftButtonDoubleClick, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3017,15 +3090,77 @@ namespace gaclib_controls
                 (<precompile>22.ItemSource = ViewModel.Filters);
             }
             {
-                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                var <created-subscription> = new (::system::Subscription^)
                 {
-                    var filter = (cast (IFileDialogFilter^) comboBox.SelectedItem);
-                    if (filter is not null)
+                    var <bind-cache>0 : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
                     {
-                        ViewModel.SetSelectedFilter(filter);
+                        var <bind-activator-result> = (<bind-cache>0.SelectedItem as (::presentation::IFileDialogFilter^)) of (::presentation::IFileDialogFilter^);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (comboBox ?? null of (::presentation::controls::GuiComboBoxListControl*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedIndexChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectedIndexChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiComboBoxListControl*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
                     }
                 };
-                attach(comboBox.SelectedIndexChanged, <event-handler>);
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>24.SelectedFilter;
+                    var <new> = (cast (::presentation::IFileDialogFilter^) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>24.SelectedFilter = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3040,7 +3175,7 @@ namespace gaclib_controls
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = (cast (IFileDialogFolder^) <bind-cache>0.SelectedItem) of (::presentation::IFileDialogFolder^);
+                        var <bind-activator-result> = (<bind-cache>0.SelectedItem as (::presentation::IFileDialogFolder^)) of (::presentation::IFileDialogFolder^);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -3299,7 +3434,7 @@ namespace gaclib_controls
                             {
                                 if ((<co-state> == 0))
                                 {
-                                    (<co2-for-enumerable>item = listView.SelectedItems of (::system::Enumerable^));
+                                    (<co2-for-enumerable>item = dataGrid.SelectedItems of (::system::Enumerable^));
                                     (<co3-for-enumerator>item = <co2-for-enumerable>item.CreateEnumerator());
                                     if (<co3-for-enumerator>item.Next())
                                     {
@@ -3409,6 +3544,28 @@ namespace gaclib_controls
             treeView.SetSelected(index, true);
         }
 
+        func CreateFileFilter(filter : IFileDialogFilter^) : (IDataFilter^)
+        {
+            if (filter is null)
+            {
+                return null;
+            }
+            else
+            {
+                return new (IDataFilter^)
+                {
+                    override func SetCallback(value : IDataProcessorCallback*) : (void)
+                    {
+                    }
+
+                    override func Filter(row : object) : (bool)
+                    {
+                        return filter.FilterFile((cast (IFileDialogFile^) row));
+                    }
+                };
+            }
+        }
+
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
 
@@ -3456,7 +3613,7 @@ namespace gaclib_controls
             (imageFile = (cast (GuiImageData^) self.ResolveResource("res", "Images/File", true)));
             ViewModel.InitLocalizedText(self.Strings.FileDialogTextLoadingFolders(), self.Strings.FileDialogTextLoadingFiles(), self.Strings.FileDialogErrorEmptySelection(), self.Strings.FileDialogErrorFileNotExist(), self.Strings.FileDialogErrorFileExpected(), self.Strings.FileDialogErrorFolderNotExist(), self.Strings.FileDialogErrorMultipleSelectionNotEnabled(), self.Strings.FileDialogAskCreateFile(), self.Strings.FileDialogAskOverrideFile());
             (treeView.ItemSource = ViewModel.RootFolder);
-            (listView.ItemSource = ViewModel.Files);
+            (dataGrid.ItemSource = ViewModel.Files);
             (comboBox.SelectedIndex = ViewModel.Filters.IndexOf(ViewModel.SelectedFilter));
             ViewModel.RefreshFiles();
         }

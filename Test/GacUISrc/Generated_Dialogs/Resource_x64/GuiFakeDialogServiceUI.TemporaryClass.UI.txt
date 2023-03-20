@@ -360,6 +360,11 @@ namespace gaclib_controls
             raise "Not Implemented";
         }
 
+        func CreateFileFilter(filter : IFileDialogFilter^) : (IDataFilter^)
+        {
+            raise "Not Implemented";
+        }
+
         @cpp:Private
         var <prop>Strings : ::gaclib_controls::IDialogStringsStrings^ = ::gaclib_controls::DialogStrings::Get((cast (::system::Locale) "en-US"));
 
