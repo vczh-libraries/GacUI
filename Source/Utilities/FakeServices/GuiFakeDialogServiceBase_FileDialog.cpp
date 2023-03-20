@@ -40,7 +40,7 @@ View Model (IFileDialogFilter)
 			{
 				auto name = file->GetName();
 				auto match = regexFilter->MatchHead(name);
-				return match && match->Result().Start() == 0 && match->Result().Length() == name.Length();
+				return match && match->Result().Length() == name.Length();
 			}
 		};
 
@@ -762,7 +762,8 @@ FakeDialogServiceBase
 			vm->promptOverriteFile = (options & INativeDialogService::FileDialogPromptOverwriteFile) != 0;
 			vm->defaultExtension = defaultExtension;
 
-			Regex regexFilterExt(L"/*.[^*]+");
+			Regex regexFilterExt(L"/*.[^*?]+");
+			Regex regexWildcard(L"[*? ]");
 			vint filterStart = 0;
 			while (true)
 			{
@@ -792,6 +793,7 @@ FakeDialogServiceBase
 				auto filterItem = Ptr(new FileDialogFilter);
 				filterItem->name = filter.Sub(filterStart, first - filterStart);
 				filterItem->filter = filter.Sub(first + 1, (second == -1 ? count : second) - first - 1);
+
 				if (auto match = regexFilterExt.MatchHead(filterItem->filter))
 				{
 					if (match->Result().Length() == filterItem->filter.Length())
@@ -799,6 +801,34 @@ FakeDialogServiceBase
 						filterItem->defaultExtension = filterItem->filter.Right(filterItem->filter.Length() - 2);
 					}
 				}
+
+				auto regexFilter = stream::GenerateToStream([&](stream::TextWriter& writer)
+				{
+					writer.WriteChar(L'^');
+					List<Ptr<RegexMatch>> matches;
+					regexWildcard.Cut(filterItem->filter, false, matches);
+					for (auto match : matches)
+					{
+						if (match->Success())
+						{
+							if (match->Result().Value() == WString::Unmanaged(L"*"))
+							{
+								writer.WriteString(WString::Unmanaged(L"/.*"));
+							}
+							else
+							{
+								writer.WriteString(WString::Unmanaged(L"/."));
+							}
+						}
+						else
+						{
+							writer.WriteString(u32tow(regex_internal::EscapeTextForRegex(wtou32(match->Result().Value()))));
+						}
+					}
+					writer.WriteChar(L'$');
+				});
+				filterItem->regexFilter = Ptr(new Regex(regexFilter));
+
 				vm->filters.Add(filterItem);
 
 				if (second == -1) break;
