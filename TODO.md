@@ -21,6 +21,7 @@
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Remove SysKey callbacks, merge into Key callbacks.
 - Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
+- Add `<ComboButton>` tutorial as a second color picker.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 
