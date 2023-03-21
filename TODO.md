@@ -5,7 +5,6 @@
 - Issue on GacGen
   - `A10: Expression of type "system::Function<system::Void, system::Object>^" cannot implicitly convert to "system::Function<system::Void, system::String>^".`
     - When define `event RequestConfirm(string);` with `<ev.RequestConfirm-eval><![CDATA[{}]]></ev.RequestConfirm-eval>`
-  - `event RequestConfirm(string{});` generates `::vl::Event<void()> RequestConfirm;`
 - Issue on dialog service
   - message box default button.
   - message box is not shown at the center.
@@ -44,6 +43,8 @@
 
 ## Done but not Released
 
+- Issue on GacGen
+  - `event RequestConfirm(string{});` generates `::vl::Event<void()> RequestConfirm;`
 - `<ComboButton/>`
 - `Add default dialog service, will be use in hosted mode.`
   - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
