@@ -67,12 +67,27 @@
 
   <Instance name="MainWindow2Resource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow2">
+      <ref.Members><![CDATA[
+        event RequestConfirm(string);
+      ]]></ref.Members>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:400 y:300">
+        <ev.RequestConfirm-eval><![CDATA[{
+          self.Text = $"RequestConfirm($(arg1))";
+        }]]></ev.RequestConfirm-eval>
         <att.ContainerComposition-set PreferredMinSize="x:400 y:300" />
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Pages>
-            <TabPage Text="Something"/>
+            <TabPage Text="Something">
+              <Button Text="Click Me!">
+                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
+                <ev.Clicked-eval><![CDATA[
+                  {
+                    self.RequestConfirm(Sys::LoremIpsumTitle(20));
+                  }
+                ]]></ev.Clicked-eval>
+              </Button>
+            </TabPage>
           </att.Pages>
         </Tab>
       </Window>

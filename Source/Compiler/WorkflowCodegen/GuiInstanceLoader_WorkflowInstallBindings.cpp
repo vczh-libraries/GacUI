@@ -402,12 +402,11 @@ Workflow_GenerateEventHandler
 			}
 			else
 			{
-				auto type = TypeInfoRetriver<Value>::CreateTypeInfo();
 				for (vint i = 0; i < count; i++)
 				{
 					auto arg = Ptr(new WfFunctionArgument);
 					arg->name.value = L"arg" + itow(i + 1);
-					arg->type = GetTypeFromTypeInfo(type.Obj());
+					arg->type = GetTypeFromTypeInfo(eventInfo->GetHandlerType()->GetElementType()->GetGenericArgument(i + 1));
 					func->arguments.Add(arg);
 				}
 			}
