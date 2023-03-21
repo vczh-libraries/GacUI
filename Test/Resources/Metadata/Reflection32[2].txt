@@ -360,10 +360,16 @@ interface presentation::IFileDialogFolder : system::Interface {
 }
 
 interface presentation::IFileDialogViewModel : system::Interface {
-    event IsLoadingFilesChanged : system::Function<system::Void>^ observing {        IsLoadingFiles,
-}    event SelectedFilterChanged : system::Function<system::Void>^ observing {        SelectedFilter,
-}    event SelectedFolderChanged : system::Function<system::Void>^ observing {        SelectedFolder,
-}
+    event IsLoadingFilesChanged : system::Function<system::Void>^ observing {
+        IsLoadingFiles,
+    }
+    event SelectedFilterChanged : system::Function<system::Void>^ observing {
+        SelectedFilter,
+    }
+    event SelectedFolderChanged : system::Function<system::Void>^ observing {
+        SelectedFolder,
+    }
+
     property DefaultExtension : system::String { get:GetDefaultExtension }
     property EnabledMultipleSelection : system::Boolean { get:GetEnabledMultipleSelection }
     property Files : system::ObservableList<presentation::IFileDialogFile^>^ { get:GetFiles }
@@ -1428,11 +1434,13 @@ enum presentation::compositions::GuiGraphicsComposition::MinSizeLimitation {
 }
 
 class presentation::compositions::GuiGraphicsSite : presentation::compositions::GuiGraphicsComposition {
-    event BoundsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Bounds,
+    event BoundsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         Bounds,
         Bounds,
         Bounds,
-}
+        Bounds,
+    }
+
     property Bounds : presentation::Rect { get:GetBounds event:BoundsChanged }
     property PreviousCalculatedBounds : presentation::Rect { get:GetPreviousCalculatedBounds }
 
@@ -1544,9 +1552,13 @@ class presentation::compositions::GuiRequestEventArgs : presentation::compositio
 }
 
 class presentation::compositions::GuiResponsiveCompositionBase : presentation::compositions::GuiBoundsComposition {
-    event CurrentLevelChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CurrentLevel,
-}    event LevelCountChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LevelCount,
-}
+    event CurrentLevelChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CurrentLevel,
+    }
+    event LevelCountChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LevelCount,
+    }
+
     property CurrentLevel : system::Int32 { get:GetCurrentLevel event:CurrentLevelChanged }
     property Direction : presentation::compositions::ResponsiveDirection { get:GetDirection set:SetDirection }
     property LevelCount : system::Int32 { get:GetLevelCount event:LevelCountChanged }
@@ -1878,8 +1890,10 @@ struct presentation::controls::GalleryPos {
 }
 
 class presentation::controls::GuiApplication : system::ReferenceType {
-    event LocaleChanged : system::Function<system::Void>^ observing {        Locale,
-}
+    event LocaleChanged : system::Function<system::Void>^ observing {
+        Locale,
+    }
+
     property ExecutableFolder : system::String { get:GetExecutableFolder }
     property ExecutablePath : system::String { get:GetExecutablePath }
     property Locale : system::Locale { get:GetLocale set:SetLocale event:LocaleChanged }
@@ -1913,9 +1927,13 @@ class presentation::controls::GuiApplication : system::ReferenceType {
 }
 
 class presentation::controls::GuiBindableDataGrid : presentation::controls::GuiVirtualDataGrid {
-    event LargeImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeImageProperty,
-}    event SmallImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallImageProperty,
-}
+    event LargeImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeImageProperty,
+    }
+    event SmallImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallImageProperty,
+    }
+
     property AdditionalFilter : presentation::controls::list::IDataFilter^ { get:GetAdditionalFilter set:SetAdditionalFilter }
     property Columns : system::List<presentation::controls::list::DataColumn^>^ { get:GetColumns }
     property DataColumns : system::List<system::Int32>^ { get:GetDataColumns }
@@ -1942,9 +1960,13 @@ class presentation::controls::GuiBindableDataGrid : presentation::controls::GuiV
 }
 
 class presentation::controls::GuiBindableListView : presentation::controls::GuiVirtualListView {
-    event LargeImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeImageProperty,
-}    event SmallImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallImageProperty,
-}
+    event LargeImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeImageProperty,
+    }
+    event SmallImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallImageProperty,
+    }
+
     property Columns : system::List<presentation::controls::list::ListViewColumn^>^ { get:GetColumns }
     property DataColumns : system::List<system::Int32>^ { get:GetDataColumns }
     property ItemSource : system::Enumerable^ { get:GetItemSource set:SetItemSource }
@@ -1967,12 +1989,16 @@ class presentation::controls::GuiBindableListView : presentation::controls::GuiV
 
 class presentation::controls::GuiBindableRibbonGalleryList : presentation::controls::GuiRibbonGallery, presentation::controls::list::GroupedDataSource {
     event ItemApplied : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
-    event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ItemTemplate,
-}    event PreviewStarted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
+    event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ItemTemplate,
+    }
+    event PreviewStarted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
     event PreviewStopped : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
-    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedIndex,
+    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedIndex,
         SelectedItem,
-}
+    }
+
     property ItemTemplate : system::Function<presentation::templates::GuiListItemTemplate*, system::Object>^ { get:GetItemTemplate set:SetItemTemplate event:ItemTemplateChanged }
     property MaxCount : system::Int32 { get:GetMaxCount set:SetMaxCount }
     property MinCount : system::Int32 { get:GetMinCount set:SetMinCount }
@@ -2002,9 +2028,13 @@ class presentation::controls::GuiBindableRibbonGalleryList : presentation::contr
 }
 
 class presentation::controls::GuiBindableTextList : presentation::controls::GuiVirtualTextList {
-    event CheckedPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CheckedProperty,
-}    event TextPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextProperty,
-}
+    event CheckedPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CheckedProperty,
+    }
+    event TextPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextProperty,
+    }
+
     property CheckedProperty : system::Function<system::Boolean, system::Object, system::Boolean, system::Boolean>^ { get:GetCheckedProperty set:SetCheckedProperty event:CheckedPropertyChanged }
     property ItemSource : system::Enumerable^ { get:GetItemSource set:SetItemSource }
     property SelectedItem : system::Object { get:GetSelectedItem event:SelectionChanged }
@@ -2022,10 +2052,16 @@ class presentation::controls::GuiBindableTextList : presentation::controls::GuiV
 }
 
 class presentation::controls::GuiBindableTreeView : presentation::controls::GuiVirtualTreeView {
-    event ChildrenPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ChildrenProperty,
-}    event ImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ImageProperty,
-}    event TextPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextProperty,
-}
+    event ChildrenPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ChildrenProperty,
+    }
+    event ImagePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ImageProperty,
+    }
+    event TextPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextProperty,
+    }
+
     property ChildrenProperty : system::Function<system::Enumerable^, system::Object>^ { get:GetChildrenProperty set:SetChildrenProperty event:ChildrenPropertyChanged }
     property ImageProperty : system::Function<presentation::GuiImageData^, system::Object>^ { get:GetImageProperty set:SetImageProperty event:ImagePropertyChanged }
     property ItemSource : system::Object { get:GetItemSource set:SetItemSource }
@@ -2064,8 +2100,10 @@ class presentation::controls::GuiButton : presentation::controls::GuiControl {
 }
 
 class presentation::controls::GuiColorDialog : presentation::controls::GuiDialogBase {
-    event SelectedColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedColor,
-}
+    event SelectedColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedColor,
+    }
+
     property CustomColors : system::List<presentation::Color>^ { get:GetCustomColors }
     property EnabledCustomColor : system::Boolean { get:GetEnabledCustomColor set:SetEnabledCustomColor }
     property OpenedCustomColor : system::Boolean { get:GetOpenedCustomColor set:SetOpenedCustomColor }
@@ -2090,10 +2128,14 @@ class presentation::controls::GuiComboBoxBase : presentation::controls::GuiMenuB
 }
 
 class presentation::controls::GuiComboBoxListControl : presentation::controls::GuiComboBoxBase {
-    event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ItemTemplate,
-}    event SelectedIndexChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedIndex,
+    event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ItemTemplate,
+    }
+    event SelectedIndexChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedIndex,
         SelectedItem,
-}
+    }
+
     property ContainedListControl : presentation::controls::GuiSelectableListControl* { get:GetContainedListControl }
     property ItemProvider : presentation::controls::GuiListControl::IItemProvider* { get:GetItemProvider }
     property ItemTemplate : system::Function<presentation::templates::GuiTemplate*, system::Object>^ { get:GetItemTemplate set:SetItemTemplate event:ItemTemplateChanged }
@@ -2119,19 +2161,41 @@ class presentation::controls::GuiComponent : system::ReferenceType {
 }
 
 class presentation::controls::GuiControl : system::ReferenceType {
-    event AltChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Alt,
-}    event ContextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Context,
-}    event ControlSignalTrigerred : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiControlSignalEventArgs*>^;
-    event ControlTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ControlTemplate,
-}    event ControlThemeNameChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ControlThemeName,
-}    event DisplayFontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        DisplayFont,
-}    event EnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Enabled,
-}    event FocusedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Focused,
-}    event FontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Font,
-}    event TextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Text,
-}    event VisibleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Visible,
-}    event VisuallyEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        VisuallyEnabled,
-}
+    event AltChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Alt,
+    }
+    event ContextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Context,
+    }
+    event ControlSignalTrigerred : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiControlSignalEventArgs*>^;
+    event ControlTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ControlTemplate,
+    }
+    event ControlThemeNameChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ControlThemeName,
+    }
+    event DisplayFontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        DisplayFont,
+    }
+    event EnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Enabled,
+    }
+    event FocusedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Focused,
+    }
+    event FontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Font,
+    }
+    event TextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Text,
+    }
+    event VisibleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Visible,
+    }
+    event VisuallyEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        VisuallyEnabled,
+    }
+
     property AcceptTabInput : system::Boolean { get:GetAcceptTabInput set:SetAcceptTabInput }
     property Alt : system::String { get:GetAlt set:SetAlt event:AltChanged }
     property BoundsComposition : presentation::compositions::GuiBoundsComposition* { get:GetBoundsComposition }
@@ -2268,8 +2332,10 @@ class presentation::controls::GuiCustomControl : presentation::controls::GuiCont
 }
 
 class presentation::controls::GuiDateComboBox : presentation::controls::GuiComboBoxBase {
-    event SelectedDateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedDate,
-}
+    event SelectedDateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedDate,
+    }
+
     property DatePicker : presentation::controls::GuiDatePicker* { get:GetDatePicker }
     property SelectedDate : system::DateTime { get:GetSelectedDate set:SetSelectedDate event:SelectedDateChanged }
 
@@ -2281,10 +2347,16 @@ class presentation::controls::GuiDateComboBox : presentation::controls::GuiCombo
 }
 
 class presentation::controls::GuiDatePicker : presentation::controls::GuiControl {
-    event DateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Date,
-}    event DateFormatChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        DateFormat,
-}    event DateLocaleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        DateLocale,
-}    event DateNavigated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event DateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Date,
+    }
+    event DateFormatChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        DateFormat,
+    }
+    event DateLocaleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        DateLocale,
+    }
+    event DateNavigated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event DateSelected : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
     property Date : system::DateTime { get:GetDate set:SetDate event:DateChanged }
@@ -2313,10 +2385,14 @@ class presentation::controls::GuiDisposedFlag : system::ReferenceType {
 class presentation::controls::GuiDocumentCommonInterface : system::ReferenceType {
     event ActiveHyperlinkChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event ActiveHyperlinkExecuted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
-    event ModifiedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Modified,
-}    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectionText,
+    event ModifiedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Modified,
+    }
+    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectionText,
         SelectionModel,
-}    event UndoRedoChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    }
+    event UndoRedoChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
     property ActiveHyperlinkReference : system::String { get:GetActiveHyperlinkReference }
     property CaretBegin : presentation::TextPos { get:GetCaretBegin }
@@ -2408,9 +2484,13 @@ class presentation::controls::GuiDocumentViewer : presentation::controls::GuiScr
 }
 
 class presentation::controls::GuiFileDialogBase : presentation::controls::GuiDialogBase {
-    event FileNameChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        FileName,
-}    event FilterIndexChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        FilterIndex,
-}
+    event FileNameChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        FileName,
+    }
+    event FilterIndexChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        FilterIndex,
+    }
+
     property DefaultExtension : system::String { get:GetDefaultExtension set:SetDefaultExtension }
     property Directory : system::String { get:GetDirectory set:SetDirectory }
     property EnabledPreview : system::Boolean { get:GetEnabledPreview set:SetEnabledPreview }
@@ -2440,9 +2520,13 @@ class presentation::controls::GuiFileDialogBase : presentation::controls::GuiDia
 }
 
 class presentation::controls::GuiFontDialog : presentation::controls::GuiDialogBase {
-    event SelectedColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedColor,
-}    event SelectedFontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedFont,
-}
+    event SelectedColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedColor,
+    }
+    event SelectedFontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedFont,
+    }
+
     property ForceFontExist : system::Boolean { get:GetForceFontExist set:SetForceFontExist }
     property SelectedColor : presentation::Color { get:GetSelectedColor set:SetSelectedColor event:SelectedColorChanged }
     property SelectedFont : presentation::FontProperties { get:GetSelectedFont set:SetSelectedFont event:SelectedFontChanged }
@@ -2492,9 +2576,13 @@ class presentation::controls::GuiLabel : presentation::controls::GuiControl {
 
 class presentation::controls::GuiListControl : presentation::controls::GuiScrollView {
     event AdoptedSizeInvalidated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
-    event ArrangerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Arranger,
-}    event AxisChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Axis,
-}    event ItemLeftButtonDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
+    event ArrangerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Arranger,
+    }
+    event AxisChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Axis,
+    }
+    event ItemLeftButtonDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
     event ItemLeftButtonDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
     event ItemLeftButtonUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
     event ItemMiddleButtonDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
@@ -2506,8 +2594,10 @@ class presentation::controls::GuiListControl : presentation::controls::GuiScroll
     event ItemRightButtonDoubleClick : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
     event ItemRightButtonDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
     event ItemRightButtonUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemMouseEventArgs*>^;
-    event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ItemTemplate,
-}
+    event ItemTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ItemTemplate,
+    }
+
     property Arranger : presentation::controls::GuiListControl::IItemArranger* { get:GetArranger set:SetArranger event:ArrangerChanged }
     property Axis : presentation::compositions::IGuiAxis* { get:GetAxis set:SetAxis event:AxisChanged }
     property DisplayItemBackground : system::Boolean { get:GetDisplayItemBackground set:SetDisplayItemBackground }
@@ -2648,11 +2738,19 @@ class presentation::controls::GuiMenuBar : presentation::controls::GuiControl {
 class presentation::controls::GuiMenuButton : presentation::controls::GuiSelectableButton {
     event AfterSubMenuOpening : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event BeforeSubMenuOpening : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
-    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Image,
-}    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeImage,
-}    event ShortcutTextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ShortcutText,
-}    event SubMenuOpeningChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SubMenuOpening,
-}
+    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Image,
+    }
+    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeImage,
+    }
+    event ShortcutTextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ShortcutText,
+    }
+    event SubMenuOpeningChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SubMenuOpening,
+    }
+
     property CascadeAction : system::Boolean { get:GetCascadeAction set:SetCascadeAction }
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:ImageChanged }
     property LargeImage : presentation::GuiImageData^ { get:GetLargeImage set:SetLargeImage event:LargeImageChanged }
@@ -2747,9 +2845,13 @@ class presentation::controls::GuiRibbonGallery : presentation::controls::GuiCont
     event RequestedDropdown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event RequestedScrollDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
     event RequestedScrollUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
-    event ScrollDownEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ScrollDownEnabled,
-}    event ScrollUpEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ScrollUpEnabled,
-}
+    event ScrollDownEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ScrollDownEnabled,
+    }
+    event ScrollUpEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ScrollUpEnabled,
+    }
+
     property ScrollDownEnabled : system::Boolean { get:GetScrollDownEnabled set:SetScrollDownEnabled event:ScrollDownEnabledChanged }
     property ScrollUpEnabled : system::Boolean { get:GetScrollUpEnabled set:SetScrollUpEnabled event:ScrollUpEnabledChanged }
 
@@ -2764,9 +2866,13 @@ class presentation::controls::GuiRibbonGallery : presentation::controls::GuiCont
 
 class presentation::controls::GuiRibbonGroup : presentation::controls::GuiControl {
     event ExpandButtonClicked : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
-    event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Expandable,
-}    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeImage,
-}
+    event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Expandable,
+    }
+    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeImage,
+    }
+
     property Expandable : system::Boolean { get:GetExpandable set:SetExpandable event:ExpandableChanged }
     property Items : system::List<presentation::controls::GuiControl*>^ { get:GetItems }
     property LargeImage : presentation::GuiImageData^ { get:GetLargeImage set:SetLargeImage event:LargeImageChanged }
@@ -2782,8 +2888,10 @@ class presentation::controls::GuiRibbonGroup : presentation::controls::GuiContro
 }
 
 class presentation::controls::GuiRibbonIconLabel : presentation::controls::GuiControl {
-    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Image,
-}
+    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Image,
+    }
+
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:ImageChanged }
 
     function GetImage() : presentation::GuiImageData^;
@@ -2805,8 +2913,10 @@ class presentation::controls::GuiRibbonTab : presentation::controls::GuiTab {
 }
 
 class presentation::controls::GuiRibbonTabPage : presentation::controls::GuiTabPage {
-    event HighlightedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Highlighted,
-}
+    event HighlightedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Highlighted,
+    }
+
     property Groups : system::List<presentation::controls::GuiRibbonGroup*>^ { get:GetGroups }
     property Highlighted : system::Boolean { get:GetHighlighted set:SetHighlighted event:HighlightedChanged }
 
@@ -2841,12 +2951,22 @@ class presentation::controls::GuiSaveFileDialog : presentation::controls::GuiFil
 }
 
 class presentation::controls::GuiScroll : presentation::controls::GuiControl {
-    event BigMoveChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        BigMove,
-}    event PageSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        PageSize,
-}    event PositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Position,
-}    event SmallMoveChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallMove,
-}    event TotalSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TotalSize,
-}
+    event BigMoveChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        BigMove,
+    }
+    event PageSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        PageSize,
+    }
+    event PositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Position,
+    }
+    event SmallMoveChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallMove,
+    }
+    event TotalSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TotalSize,
+    }
+
     property AutoFocus : system::Boolean { get:GetAutoFocus set:SetAutoFocus }
     property BigMove : system::Int32 { get:GetBigMove set:SetBigMove event:BigMoveChanged }
     property MaxPosition : system::Int32 { get:GetMaxPosition }
@@ -2911,10 +3031,16 @@ class presentation::controls::GuiScrollView : presentation::controls::GuiControl
 }
 
 class presentation::controls::GuiSelectableButton : presentation::controls::GuiButton {
-    event AutoSelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        AutoSelection,
-}    event GroupControllerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        GroupController,
-}    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Selected,
-}
+    event AutoSelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        AutoSelection,
+    }
+    event GroupControllerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        GroupController,
+    }
+    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Selected,
+    }
+
     property AutoSelection : system::Boolean { get:GetAutoSelection set:SetAutoSelection event:AutoSelectionChanged }
     property GroupController : presentation::controls::GuiSelectableButton::GroupController* { get:GetGroupController set:SetGroupController event:GroupControllerChanged }
     property Selected : system::Boolean { get:GetSelected set:SetSelected event:SelectedChanged }
@@ -2942,7 +3068,8 @@ class presentation::controls::GuiSelectableButton::MutexGroupController : presen
 }
 
 class presentation::controls::GuiSelectableListControl : presentation::controls::GuiListControl {
-    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedItems,
+    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedItems,
         SelectedItemIndex,
         SelectedItemText,
         SelectedItem,
@@ -2951,7 +3078,8 @@ class presentation::controls::GuiSelectableListControl : presentation::controls:
         SelectedItem,
         SelectedItem,
         SelectedItem,
-}
+    }
+
     property MultiSelect : system::Boolean { get:GetMultiSelect set:SetMultiSelect }
     property SelectedItemIndex : system::Int32 { get:GetSelectedItemIndex event:SelectionChanged }
     property SelectedItemText : system::String { get:GetSelectedItemText event:SelectionChanged }
@@ -2982,8 +3110,10 @@ class presentation::controls::GuiSinglelineTextBox : presentation::controls::Gui
 }
 
 class presentation::controls::GuiTab : presentation::controls::GuiControl {
-    event SelectedPageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedPage,
-}
+    event SelectedPageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedPage,
+    }
+
     property Pages : system::ObservableList<presentation::controls::GuiTabPage*>^ { get:GetPages }
     property SelectedPage : presentation::controls::GuiTabPage* { get:GetSelectedPage set:SetSelectedPage event:SelectedPageChanged }
 
@@ -3004,13 +3134,17 @@ class presentation::controls::GuiTabPage : presentation::controls::GuiCustomCont
 }
 
 class presentation::controls::GuiTextBoxCommonInterface : system::ReferenceType {
-    event ModifiedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Modified,
-}    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectionText,
+    event ModifiedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Modified,
+    }
+    event SelectionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectionText,
         CaretBegin,
         CaretEnd,
         CaretSmall,
         CaretLarge,
-}    event UndoRedoChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    }
+    event UndoRedoChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
     property CaretBegin : presentation::TextPos { get:GetCaretBegin event:SelectionChanged }
     property CaretEnd : presentation::TextPos { get:GetCaretEnd event:SelectionChanged }
@@ -3088,14 +3222,16 @@ class presentation::controls::GuiToolstripButton : presentation::controls::GuiMe
 }
 
 class presentation::controls::GuiToolstripCommand : presentation::controls::GuiComponent {
-    event DescriptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeImage,
+    event DescriptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeImage,
         Image,
         Text,
         Shortcut,
         ShortcutBuilder,
         Enabled,
         Selected,
-}    event Executed : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    }
+    event Executed : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
 
     property Enabled : system::Boolean { get:GetEnabled set:SetEnabled event:DescriptionChanged }
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:DescriptionChanged }
@@ -3195,10 +3331,12 @@ class presentation::controls::GuiTreeView : presentation::controls::GuiVirtualTr
 }
 
 class presentation::controls::GuiVirtualDataGrid : presentation::controls::GuiVirtualListView {
-    event SelectedCellChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedCell,
+    event SelectedCellChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedCell,
         SelectedRowValue,
         SelectedCellValue,
-}
+    }
+
     property ItemProvider : presentation::controls::GuiListControl::IItemProvider* { get:GetItemProvider }
     property SelectedCell : presentation::GridPos { get:GetSelectedCell event:SelectedCellChanged }
 
@@ -3440,9 +3578,13 @@ class presentation::controls::list::DataAndFilter : presentation::controls::list
 }
 
 class presentation::controls::list::DataColumn : system::ReferenceType {
-    event TextPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextProperty,
-}    event ValuePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ValueProperty,
-}
+    event TextPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextProperty,
+    }
+    event ValuePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ValueProperty,
+    }
+
     property EditorFactory : presentation::controls::list::IDataEditorFactory^ { get:GetEditorFactory set:SetEditorFactory }
     property Filter : presentation::controls::list::IDataFilter^ { get:GetFilter set:SetFilter }
     property OwnPopup : system::Boolean { get:GetOwnPopup set:SetOwnPopup }
@@ -3563,10 +3705,16 @@ class presentation::controls::list::GalleryGroup : system::ReferenceType {
 }
 
 class presentation::controls::list::GroupedDataSource : system::ReferenceType {
-    event GroupChildrenPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        GroupChildrenProperty,
-}    event GroupEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        GroupEnabled,
-}    event GroupTitlePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        GroupTitleProperty,
-}
+    event GroupChildrenPropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        GroupChildrenProperty,
+    }
+    event GroupEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        GroupEnabled,
+    }
+    event GroupTitlePropertyChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        GroupTitleProperty,
+    }
+
     property GroupChildrenProperty : system::Function<system::Enumerable^, system::Object>^ { get:GetGroupChildrenProperty set:SetGroupChildrenProperty event:GroupChildrenPropertyChanged }
     property GroupEnabled : system::Boolean { get:GetGroupEnabled event:GroupEnabledChanged }
     property GroupTitleProperty : system::Function<system::String, system::Object>^ { get:GetGroupTitleProperty set:SetGroupTitleProperty event:GroupTitlePropertyChanged }
@@ -4316,8 +4464,10 @@ enum presentation::templates::BoolOption {
 }
 
 class presentation::templates::GuiButtonTemplate : presentation::templates::GuiControlTemplate {
-    event StateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        State,
-}
+    event StateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        State,
+    }
+
     property State : presentation::controls::ButtonState { get:GetState set:SetState event:StateChanged }
 
     function GetState() : presentation::controls::ButtonState;
@@ -4327,8 +4477,10 @@ class presentation::templates::GuiButtonTemplate : presentation::templates::GuiC
 }
 
 class presentation::templates::GuiComboBoxTemplate : presentation::templates::GuiToolstripButtonTemplate {
-    event TextVisibleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextVisible,
-}
+    event TextVisibleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextVisible,
+    }
+
     property TextVisible : system::Boolean { get:GetTextVisible set:SetTextVisible event:TextVisibleChanged }
 
     function GetTextVisible() : system::Boolean;
@@ -4338,8 +4490,10 @@ class presentation::templates::GuiComboBoxTemplate : presentation::templates::Gu
 }
 
 class presentation::templates::GuiCommonDatePickerLook : presentation::templates::GuiTemplate {
-    event DateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Date,
-}
+    event DateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Date,
+    }
+
     property Commands : presentation::controls::IDatePickerCommandExecutor* { get:GetCommands set:SetCommands }
     property Date : system::DateTime { get:GetDate set:SetDate event:DateChanged }
     property DateButtonTemplate : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^ { get:GetDateButtonTemplate set:SetDateButtonTemplate }
@@ -4399,10 +4553,16 @@ class presentation::templates::GuiCommonScrollViewLook : presentation::templates
 }
 
 class presentation::templates::GuiControlTemplate : presentation::templates::GuiTemplate {
-    event ContainerCompositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ContainerComposition,
-}    event FocusableCompositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        FocusableComposition,
-}    event FocusedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Focused,
-}
+    event ContainerCompositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ContainerComposition,
+    }
+    event FocusableCompositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        FocusableComposition,
+    }
+    event FocusedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Focused,
+    }
+
     property ContainerComposition : presentation::compositions::GuiGraphicsComposition* { get:GetContainerComposition set:SetContainerComposition event:ContainerCompositionChanged }
     property FocusableComposition : presentation::compositions::GuiGraphicsComposition* { get:GetFocusableComposition set:SetFocusableComposition event:FocusableCompositionChanged }
     property Focused : system::Boolean { get:GetFocused set:SetFocused event:FocusedChanged }
@@ -4418,8 +4578,10 @@ class presentation::templates::GuiControlTemplate : presentation::templates::Gui
 }
 
 class presentation::templates::GuiDateComboBoxTemplate : presentation::templates::GuiComboBoxTemplate {
-    event DatePickerTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        DatePickerTemplate,
-}
+    event DatePickerTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        DatePickerTemplate,
+    }
+
     property DatePickerTemplate : system::Function<presentation::templates::GuiDatePickerTemplate*, system::Object>^ { get:GetDatePickerTemplate set:SetDatePickerTemplate event:DatePickerTemplateChanged }
 
     function GetDatePickerTemplate() : system::Function<presentation::templates::GuiDatePickerTemplate*, system::Object>^;
@@ -4429,10 +4591,16 @@ class presentation::templates::GuiDateComboBoxTemplate : presentation::templates
 }
 
 class presentation::templates::GuiDatePickerTemplate : presentation::templates::GuiControlTemplate {
-    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Commands,
-}    event DateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Date,
-}    event DateLocaleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        DateLocale,
-}
+    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Commands,
+    }
+    event DateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Date,
+    }
+    event DateLocaleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        DateLocale,
+    }
+
     property Commands : presentation::controls::IDatePickerCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property Date : system::DateTime { get:GetDate set:SetDate event:DateChanged }
     property DateLocale : system::Locale { get:GetDateLocale set:SetDateLocale event:DateLocaleChanged }
@@ -4448,9 +4616,13 @@ class presentation::templates::GuiDatePickerTemplate : presentation::templates::
 }
 
 class presentation::templates::GuiDocumentLabelTemplate : presentation::templates::GuiControlTemplate {
-    event BaselineDocumentChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        BaselineDocument,
-}    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CaretColor,
-}
+    event BaselineDocumentChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        BaselineDocument,
+    }
+    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CaretColor,
+    }
+
     property BaselineDocument : presentation::DocumentModel^ { get:GetBaselineDocument set:SetBaselineDocument event:BaselineDocumentChanged }
     property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor event:CaretColorChanged }
 
@@ -4463,9 +4635,13 @@ class presentation::templates::GuiDocumentLabelTemplate : presentation::template
 }
 
 class presentation::templates::GuiDocumentViewerTemplate : presentation::templates::GuiScrollViewTemplate {
-    event BaselineDocumentChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        BaselineDocument,
-}    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CaretColor,
-}
+    event BaselineDocumentChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        BaselineDocument,
+    }
+    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CaretColor,
+    }
+
     property BaselineDocument : presentation::DocumentModel^ { get:GetBaselineDocument set:SetBaselineDocument event:BaselineDocumentChanged }
     property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor event:CaretColorChanged }
 
@@ -4478,12 +4654,22 @@ class presentation::templates::GuiDocumentViewerTemplate : presentation::templat
 }
 
 class presentation::templates::GuiGridCellTemplate : presentation::templates::GuiControlTemplate {
-    event ItemSeparatorColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ItemSeparatorColor,
-}    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeImage,
-}    event PrimaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        PrimaryTextColor,
-}    event SecondaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SecondaryTextColor,
-}    event SmallImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallImage,
-}
+    event ItemSeparatorColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ItemSeparatorColor,
+    }
+    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeImage,
+    }
+    event PrimaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        PrimaryTextColor,
+    }
+    event SecondaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SecondaryTextColor,
+    }
+    event SmallImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallImage,
+    }
+
     property ItemSeparatorColor : presentation::Color { get:GetItemSeparatorColor set:SetItemSeparatorColor event:ItemSeparatorColorChanged }
     property LargeImage : presentation::GuiImageData^ { get:GetLargeImage set:SetLargeImage event:LargeImageChanged }
     property PrimaryTextColor : presentation::Color { get:GetPrimaryTextColor set:SetPrimaryTextColor event:PrimaryTextColorChanged }
@@ -4505,11 +4691,19 @@ class presentation::templates::GuiGridCellTemplate : presentation::templates::Gu
 }
 
 class presentation::templates::GuiGridEditorTemplate : presentation::templates::GuiGridCellTemplate {
-    event CellValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CellValue,
-}    event CellValueSavedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CellValueSaved,
-}    event FocusControlChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        FocusControl,
-}    event RowValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        RowValue,
-}
+    event CellValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CellValue,
+    }
+    event CellValueSavedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CellValueSaved,
+    }
+    event FocusControlChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        FocusControl,
+    }
+    event RowValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        RowValue,
+    }
+
     property CellValue : system::Object { get:GetCellValue set:SetCellValue event:CellValueChanged }
     property CellValueSaved : system::Boolean { get:GetCellValueSaved set:SetCellValueSaved event:CellValueSavedChanged }
     property FocusControl : presentation::controls::GuiControl* { get:GetFocusControl set:SetFocusControl event:FocusControlChanged }
@@ -4528,10 +4722,16 @@ class presentation::templates::GuiGridEditorTemplate : presentation::templates::
 }
 
 class presentation::templates::GuiGridVisualizerTemplate : presentation::templates::GuiGridCellTemplate {
-    event CellValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CellValue,
-}    event RowValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        RowValue,
-}    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Selected,
-}
+    event CellValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CellValue,
+    }
+    event RowValueChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        RowValue,
+    }
+    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Selected,
+    }
+
     property CellValue : system::Object { get:GetCellValue set:SetCellValue event:CellValueChanged }
     property RowValue : system::Object { get:GetRowValue set:SetRowValue event:RowValueChanged }
     property Selected : system::Boolean { get:GetSelected set:SetSelected event:SelectedChanged }
@@ -4547,9 +4747,13 @@ class presentation::templates::GuiGridVisualizerTemplate : presentation::templat
 }
 
 class presentation::templates::GuiLabelTemplate : presentation::templates::GuiControlTemplate {
-    event DefaultTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        DefaultTextColor,
-}    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextColor,
-}
+    event DefaultTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        DefaultTextColor,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
     property DefaultTextColor : presentation::Color { get:GetDefaultTextColor set:SetDefaultTextColor event:DefaultTextColorChanged }
     property TextColor : presentation::Color { get:GetTextColor set:SetTextColor event:TextColorChanged }
 
@@ -4562,8 +4766,10 @@ class presentation::templates::GuiLabelTemplate : presentation::templates::GuiCo
 }
 
 class presentation::templates::GuiListControlTemplate : presentation::templates::GuiScrollViewTemplate {
-    event BackgroundTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        BackgroundTemplate,
-}
+    event BackgroundTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        BackgroundTemplate,
+    }
+
     property BackgroundTemplate : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^ { get:GetBackgroundTemplate set:SetBackgroundTemplate event:BackgroundTemplateChanged }
 
     function GetBackgroundTemplate() : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
@@ -4573,9 +4779,13 @@ class presentation::templates::GuiListControlTemplate : presentation::templates:
 }
 
 class presentation::templates::GuiListItemTemplate : presentation::templates::GuiTemplate {
-    event IndexChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Index,
-}    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Selected,
-}
+    event IndexChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Index,
+    }
+    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Selected,
+    }
+
     property Index : system::Int32 { get:GetIndex set:SetIndex event:IndexChanged }
     property Selected : system::Boolean { get:GetSelected set:SetSelected event:SelectedChanged }
 
@@ -4588,8 +4798,10 @@ class presentation::templates::GuiListItemTemplate : presentation::templates::Gu
 }
 
 class presentation::templates::GuiListViewColumnHeaderTemplate : presentation::templates::GuiToolstripButtonTemplate {
-    event SortingStateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SortingState,
-}
+    event SortingStateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SortingState,
+    }
+
     property SortingState : presentation::controls::ColumnSortingState { get:GetSortingState set:SetSortingState event:SortingStateChanged }
 
     function GetSortingState() : presentation::controls::ColumnSortingState;
@@ -4599,11 +4811,19 @@ class presentation::templates::GuiListViewColumnHeaderTemplate : presentation::t
 }
 
 class presentation::templates::GuiListViewTemplate : presentation::templates::GuiListControlTemplate {
-    event ColumnHeaderTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ColumnHeaderTemplate,
-}    event ItemSeparatorColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ItemSeparatorColor,
-}    event PrimaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        PrimaryTextColor,
-}    event SecondaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SecondaryTextColor,
-}
+    event ColumnHeaderTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ColumnHeaderTemplate,
+    }
+    event ItemSeparatorColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ItemSeparatorColor,
+    }
+    event PrimaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        PrimaryTextColor,
+    }
+    event SecondaryTextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SecondaryTextColor,
+    }
+
     property ColumnHeaderTemplate : system::Function<presentation::templates::GuiListViewColumnHeaderTemplate*, system::Object>^ { get:GetColumnHeaderTemplate set:SetColumnHeaderTemplate event:ColumnHeaderTemplateChanged }
     property ItemSeparatorColor : presentation::Color { get:GetItemSeparatorColor set:SetItemSeparatorColor event:ItemSeparatorColorChanged }
     property PrimaryTextColor : presentation::Color { get:GetPrimaryTextColor set:SetPrimaryTextColor event:PrimaryTextColorChanged }
@@ -4626,10 +4846,16 @@ class presentation::templates::GuiMenuTemplate : presentation::templates::GuiWin
 }
 
 class presentation::templates::GuiMultilineTextBoxTemplate : presentation::templates::GuiScrollViewTemplate {
-    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CaretColor,
-}    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Commands,
-}    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextColor,
-}
+    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CaretColor,
+    }
+    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Commands,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
     property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor event:CaretColorChanged }
     property Commands : presentation::controls::ITextBoxCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property TextColor : presentation::elements::text::ColorEntry { get:GetTextColor set:SetTextColor event:TextColorChanged }
@@ -4645,18 +4871,40 @@ class presentation::templates::GuiMultilineTextBoxTemplate : presentation::templ
 }
 
 class presentation::templates::GuiRibbonButtonsTemplate : presentation::templates::GuiControlTemplate {
-    event IconButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        IconButtonTemplate,
-}    event IconDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        IconDropdownButtonTemplate,
-}    event IconLabelTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        IconLabelTemplate,
-}    event IconSplitButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        IconSplitButtonTemplate,
-}    event LargeButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeButtonTemplate,
-}    event LargeDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeDropdownButtonTemplate,
-}    event LargeSplitButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeSplitButtonTemplate,
-}    event SmallButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallButtonTemplate,
-}    event SmallDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallDropdownButtonTemplate,
-}    event SmallIconLabelTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallIconLabelTemplate,
-}    event SmallSplitButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SmallSplitButtonTemplate,
-}
+    event IconButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        IconButtonTemplate,
+    }
+    event IconDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        IconDropdownButtonTemplate,
+    }
+    event IconLabelTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        IconLabelTemplate,
+    }
+    event IconSplitButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        IconSplitButtonTemplate,
+    }
+    event LargeButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeButtonTemplate,
+    }
+    event LargeDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeDropdownButtonTemplate,
+    }
+    event LargeSplitButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeSplitButtonTemplate,
+    }
+    event SmallButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallButtonTemplate,
+    }
+    event SmallDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallDropdownButtonTemplate,
+    }
+    event SmallIconLabelTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallIconLabelTemplate,
+    }
+    event SmallSplitButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SmallSplitButtonTemplate,
+    }
+
     property IconButtonTemplate : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^ { get:GetIconButtonTemplate set:SetIconButtonTemplate event:IconButtonTemplateChanged }
     property IconDropdownButtonTemplate : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^ { get:GetIconDropdownButtonTemplate set:SetIconDropdownButtonTemplate event:IconDropdownButtonTemplateChanged }
     property IconLabelTemplate : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^ { get:GetIconLabelTemplate set:SetIconLabelTemplate event:IconLabelTemplateChanged }
@@ -4696,12 +4944,22 @@ class presentation::templates::GuiRibbonButtonsTemplate : presentation::template
 }
 
 class presentation::templates::GuiRibbonGalleryListTemplate : presentation::templates::GuiRibbonGalleryTemplate {
-    event BackgroundTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        BackgroundTemplate,
-}    event GroupContainerTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        GroupContainerTemplate,
-}    event HeaderTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        HeaderTemplate,
-}    event ItemListTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ItemListTemplate,
-}    event MenuTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        MenuTemplate,
-}
+    event BackgroundTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        BackgroundTemplate,
+    }
+    event GroupContainerTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        GroupContainerTemplate,
+    }
+    event HeaderTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        HeaderTemplate,
+    }
+    event ItemListTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ItemListTemplate,
+    }
+    event MenuTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        MenuTemplate,
+    }
+
     property BackgroundTemplate : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^ { get:GetBackgroundTemplate set:SetBackgroundTemplate event:BackgroundTemplateChanged }
     property GroupContainerTemplate : system::Function<presentation::templates::GuiScrollViewTemplate*, system::Object>^ { get:GetGroupContainerTemplate set:SetGroupContainerTemplate event:GroupContainerTemplateChanged }
     property HeaderTemplate : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^ { get:GetHeaderTemplate set:SetHeaderTemplate event:HeaderTemplateChanged }
@@ -4723,10 +4981,16 @@ class presentation::templates::GuiRibbonGalleryListTemplate : presentation::temp
 }
 
 class presentation::templates::GuiRibbonGalleryTemplate : presentation::templates::GuiControlTemplate {
-    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Commands,
-}    event ScrollDownEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ScrollDownEnabled,
-}    event ScrollUpEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ScrollUpEnabled,
-}
+    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Commands,
+    }
+    event ScrollDownEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ScrollDownEnabled,
+    }
+    event ScrollUpEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ScrollUpEnabled,
+    }
+
     property Commands : presentation::controls::IRibbonGalleryCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property ScrollDownEnabled : system::Boolean { get:GetScrollDownEnabled set:SetScrollDownEnabled event:ScrollDownEnabledChanged }
     property ScrollUpEnabled : system::Boolean { get:GetScrollUpEnabled set:SetScrollUpEnabled event:ScrollUpEnabledChanged }
@@ -4742,12 +5006,22 @@ class presentation::templates::GuiRibbonGalleryTemplate : presentation::template
 }
 
 class presentation::templates::GuiRibbonGroupTemplate : presentation::templates::GuiControlTemplate {
-    event CollapsedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Collapsed,
-}    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Commands,
-}    event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Expandable,
-}    event LargeDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeDropdownButtonTemplate,
-}    event SubMenuTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SubMenuTemplate,
-}
+    event CollapsedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Collapsed,
+    }
+    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Commands,
+    }
+    event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Expandable,
+    }
+    event LargeDropdownButtonTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeDropdownButtonTemplate,
+    }
+    event SubMenuTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SubMenuTemplate,
+    }
+
     property Collapsed : system::Boolean { get:GetCollapsed set:SetCollapsed event:CollapsedChanged }
     property Commands : presentation::controls::IRibbonGroupCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property Expandable : system::Boolean { get:GetExpandable set:SetExpandable event:ExpandableChanged }
@@ -4769,8 +5043,10 @@ class presentation::templates::GuiRibbonGroupTemplate : presentation::templates:
 }
 
 class presentation::templates::GuiRibbonIconLabelTemplate : presentation::templates::GuiControlTemplate {
-    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Image,
-}
+    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Image,
+    }
+
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:ImageChanged }
 
     function GetImage() : presentation::GuiImageData^;
@@ -4780,9 +5056,13 @@ class presentation::templates::GuiRibbonIconLabelTemplate : presentation::templa
 }
 
 class presentation::templates::GuiRibbonTabTemplate : presentation::templates::GuiTabTemplate {
-    event AfterHeadersContainerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        AfterHeadersContainer,
-}    event BeforeHeadersContainerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        BeforeHeadersContainer,
-}
+    event AfterHeadersContainerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        AfterHeadersContainer,
+    }
+    event BeforeHeadersContainerChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        BeforeHeadersContainer,
+    }
+
     property AfterHeadersContainer : presentation::compositions::GuiGraphicsComposition* { get:GetAfterHeadersContainer set:SetAfterHeadersContainer event:AfterHeadersContainerChanged }
     property BeforeHeadersContainer : presentation::compositions::GuiGraphicsComposition* { get:GetBeforeHeadersContainer set:SetBeforeHeadersContainer event:BeforeHeadersContainerChanged }
 
@@ -4795,8 +5075,10 @@ class presentation::templates::GuiRibbonTabTemplate : presentation::templates::G
 }
 
 class presentation::templates::GuiRibbonToolstripMenuTemplate : presentation::templates::GuiMenuTemplate {
-    event ContentCompositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ContentComposition,
-}
+    event ContentCompositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ContentComposition,
+    }
+
     property ContentComposition : presentation::compositions::GuiGraphicsComposition* { get:GetContentComposition set:SetContentComposition event:ContentCompositionChanged }
 
     function GetContentComposition() : presentation::compositions::GuiGraphicsComposition*;
@@ -4806,8 +5088,10 @@ class presentation::templates::GuiRibbonToolstripMenuTemplate : presentation::te
 }
 
 class presentation::templates::GuiRibbonToolstripsTemplate : presentation::templates::GuiControlTemplate {
-    event ToolbarTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ToolbarTemplate,
-}
+    event ToolbarTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ToolbarTemplate,
+    }
+
     property ToolbarTemplate : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^ { get:GetToolbarTemplate set:SetToolbarTemplate event:ToolbarTemplateChanged }
 
     function GetToolbarTemplate() : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
@@ -4817,11 +5101,19 @@ class presentation::templates::GuiRibbonToolstripsTemplate : presentation::templ
 }
 
 class presentation::templates::GuiScrollTemplate : presentation::templates::GuiControlTemplate {
-    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Commands,
-}    event PageSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        PageSize,
-}    event PositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Position,
-}    event TotalSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TotalSize,
-}
+    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Commands,
+    }
+    event PageSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        PageSize,
+    }
+    event PositionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Position,
+    }
+    event TotalSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TotalSize,
+    }
+
     property Commands : presentation::controls::IScrollCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property PageSize : system::Int32 { get:GetPageSize set:SetPageSize event:PageSizeChanged }
     property Position : system::Int32 { get:GetPosition set:SetPosition event:PositionChanged }
@@ -4840,9 +5132,13 @@ class presentation::templates::GuiScrollTemplate : presentation::templates::GuiC
 }
 
 class presentation::templates::GuiScrollViewTemplate : presentation::templates::GuiControlTemplate {
-    event HorizontalScrollChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        HorizontalScroll,
-}    event VerticalScrollChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        VerticalScroll,
-}
+    event HorizontalScrollChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        HorizontalScroll,
+    }
+    event VerticalScrollChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        VerticalScroll,
+    }
+
     property HorizontalScroll : presentation::controls::GuiScroll* { get:GetHorizontalScroll set:SetHorizontalScroll event:HorizontalScrollChanged }
     property VerticalScroll : presentation::controls::GuiScroll* { get:GetVerticalScroll set:SetVerticalScroll event:VerticalScrollChanged }
 
@@ -4855,8 +5151,10 @@ class presentation::templates::GuiScrollViewTemplate : presentation::templates::
 }
 
 class presentation::templates::GuiSelectableButtonTemplate : presentation::templates::GuiButtonTemplate {
-    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Selected,
-}
+    event SelectedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Selected,
+    }
+
     property Selected : system::Boolean { get:GetSelected set:SetSelected event:SelectedChanged }
 
     function GetSelected() : system::Boolean;
@@ -4866,9 +5164,13 @@ class presentation::templates::GuiSelectableButtonTemplate : presentation::templ
 }
 
 class presentation::templates::GuiSinglelineTextBoxTemplate : presentation::templates::GuiControlTemplate {
-    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CaretColor,
-}    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextColor,
-}
+    event CaretColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CaretColor,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
     property CaretColor : presentation::Color { get:GetCaretColor set:SetCaretColor event:CaretColorChanged }
     property TextColor : presentation::elements::text::ColorEntry { get:GetTextColor set:SetTextColor event:TextColorChanged }
 
@@ -4881,11 +5183,19 @@ class presentation::templates::GuiSinglelineTextBoxTemplate : presentation::temp
 }
 
 class presentation::templates::GuiTabTemplate : presentation::templates::GuiControlTemplate {
-    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Commands,
-}    event SelectedTabPageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SelectedTabPage,
-}    event TabOrderChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TabOrder,
-}    event TabPagesChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TabPages,
-}
+    event CommandsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Commands,
+    }
+    event SelectedTabPageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SelectedTabPage,
+    }
+    event TabOrderChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TabOrder,
+    }
+    event TabPagesChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TabPages,
+    }
+
     property Commands : presentation::controls::ITabCommandExecutor* { get:GetCommands set:SetCommands event:CommandsChanged }
     property SelectedTabPage : presentation::controls::GuiTabPage* { get:GetSelectedTabPage set:SetSelectedTabPage event:SelectedTabPageChanged }
     property TabOrder : presentation::controls::TabPageOrder { get:GetTabOrder set:SetTabOrder event:TabOrderChanged }
@@ -4904,11 +5214,19 @@ class presentation::templates::GuiTabTemplate : presentation::templates::GuiCont
 }
 
 class presentation::templates::GuiTemplate : presentation::compositions::GuiBoundsComposition, presentation::controls::GuiInstanceRootObject {
-    event ContextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Context,
-}    event FontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Font,
-}    event TextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Text,
-}    event VisuallyEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        VisuallyEnabled,
-}
+    event ContextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Context,
+    }
+    event FontChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Font,
+    }
+    event TextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Text,
+    }
+    event VisuallyEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        VisuallyEnabled,
+    }
+
     property Context : system::Object { get:GetContext set:SetContext event:ContextChanged }
     property Font : presentation::FontProperties { get:GetFont set:SetFont event:FontChanged }
     property Text : system::String { get:GetText set:SetText event:TextChanged }
@@ -4927,9 +5245,13 @@ class presentation::templates::GuiTemplate : presentation::compositions::GuiBoun
 }
 
 class presentation::templates::GuiTextListItemTemplate : presentation::templates::GuiListItemTemplate {
-    event CheckedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Checked,
-}    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextColor,
-}
+    event CheckedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Checked,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
     property Checked : system::Boolean { get:GetChecked set:SetChecked event:CheckedChanged }
     property TextColor : presentation::Color { get:GetTextColor set:SetTextColor event:TextColorChanged }
 
@@ -4942,10 +5264,16 @@ class presentation::templates::GuiTextListItemTemplate : presentation::templates
 }
 
 class presentation::templates::GuiTextListTemplate : presentation::templates::GuiListControlTemplate {
-    event CheckBulletTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CheckBulletTemplate,
-}    event RadioBulletTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        RadioBulletTemplate,
-}    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextColor,
-}
+    event CheckBulletTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CheckBulletTemplate,
+    }
+    event RadioBulletTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        RadioBulletTemplate,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
     property CheckBulletTemplate : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^ { get:GetCheckBulletTemplate set:SetCheckBulletTemplate event:CheckBulletTemplateChanged }
     property RadioBulletTemplate : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^ { get:GetRadioBulletTemplate set:SetRadioBulletTemplate event:RadioBulletTemplateChanged }
     property TextColor : presentation::Color { get:GetTextColor set:SetTextColor event:TextColorChanged }
@@ -4961,14 +5289,28 @@ class presentation::templates::GuiTextListTemplate : presentation::templates::Gu
 }
 
 class presentation::templates::GuiToolstripButtonTemplate : presentation::templates::GuiSelectableButtonTemplate {
-    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Image,
-}    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        LargeImage,
-}    event ShortcutTextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ShortcutText,
-}    event SubMenuExistingChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SubMenuExisting,
-}    event SubMenuHostChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SubMenuHost,
-}    event SubMenuOpeningChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SubMenuOpening,
-}    event SubMenuTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SubMenuTemplate,
-}
+    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Image,
+    }
+    event LargeImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        LargeImage,
+    }
+    event ShortcutTextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ShortcutText,
+    }
+    event SubMenuExistingChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SubMenuExisting,
+    }
+    event SubMenuHostChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SubMenuHost,
+    }
+    event SubMenuOpeningChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SubMenuOpening,
+    }
+    event SubMenuTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SubMenuTemplate,
+    }
+
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:ImageChanged }
     property LargeImage : presentation::GuiImageData^ { get:GetLargeImage set:SetLargeImage event:LargeImageChanged }
     property ShortcutText : system::String { get:GetShortcutText set:SetShortcutText event:ShortcutTextChanged }
@@ -4996,11 +5338,19 @@ class presentation::templates::GuiToolstripButtonTemplate : presentation::templa
 }
 
 class presentation::templates::GuiTreeItemTemplate : presentation::templates::GuiTextListItemTemplate {
-    event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Expandable,
-}    event ExpandingChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Expanding,
-}    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Image,
-}    event LevelChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Level,
-}
+    event ExpandableChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Expandable,
+    }
+    event ExpandingChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Expanding,
+    }
+    event ImageChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Image,
+    }
+    event LevelChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Level,
+    }
+
     property Expandable : system::Boolean { get:GetExpandable set:SetExpandable event:ExpandableChanged }
     property Expanding : system::Boolean { get:GetExpanding set:SetExpanding event:ExpandingChanged }
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:ImageChanged }
@@ -5019,9 +5369,13 @@ class presentation::templates::GuiTreeItemTemplate : presentation::templates::Gu
 }
 
 class presentation::templates::GuiTreeViewTemplate : presentation::templates::GuiListControlTemplate {
-    event ExpandingDecoratorTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ExpandingDecoratorTemplate,
-}    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TextColor,
-}
+    event ExpandingDecoratorTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ExpandingDecoratorTemplate,
+    }
+    event TextColorChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TextColor,
+    }
+
     property ExpandingDecoratorTemplate : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^ { get:GetExpandingDecoratorTemplate set:SetExpandingDecoratorTemplate event:ExpandingDecoratorTemplateChanged }
     property TextColor : presentation::Color { get:GetTextColor set:SetTextColor event:TextColorChanged }
 
@@ -5034,26 +5388,64 @@ class presentation::templates::GuiTreeViewTemplate : presentation::templates::Gu
 }
 
 class presentation::templates::GuiWindowTemplate : presentation::templates::GuiControlTemplate {
-    event ActivatedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Activated,
-}    event BorderChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Border,
-}    event BorderOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        BorderOption,
-}    event CustomFrameEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CustomFrameEnabled,
-}    event CustomFramePaddingChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        CustomFramePadding,
-}    event IconChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Icon,
-}    event IconVisibleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        IconVisible,
-}    event IconVisibleOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        IconVisibleOption,
-}    event MaximizedBoxChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        MaximizedBox,
-}    event MaximizedBoxOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        MaximizedBoxOption,
-}    event MaximizedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        Maximized,
-}    event MinimizedBoxChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        MinimizedBox,
-}    event MinimizedBoxOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        MinimizedBoxOption,
-}    event ShortcutKeyTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        ShortcutKeyTemplate,
-}    event SizeBoxChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SizeBox,
-}    event SizeBoxOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        SizeBoxOption,
-}    event TitleBarChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TitleBar,
-}    event TitleBarOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TitleBarOption,
-}    event TooltipTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {        TooltipTemplate,
-}
+    event ActivatedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Activated,
+    }
+    event BorderChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Border,
+    }
+    event BorderOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        BorderOption,
+    }
+    event CustomFrameEnabledChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CustomFrameEnabled,
+    }
+    event CustomFramePaddingChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CustomFramePadding,
+    }
+    event IconChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Icon,
+    }
+    event IconVisibleChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        IconVisible,
+    }
+    event IconVisibleOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        IconVisibleOption,
+    }
+    event MaximizedBoxChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        MaximizedBox,
+    }
+    event MaximizedBoxOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        MaximizedBoxOption,
+    }
+    event MaximizedChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Maximized,
+    }
+    event MinimizedBoxChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        MinimizedBox,
+    }
+    event MinimizedBoxOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        MinimizedBoxOption,
+    }
+    event ShortcutKeyTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ShortcutKeyTemplate,
+    }
+    event SizeBoxChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SizeBox,
+    }
+    event SizeBoxOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        SizeBoxOption,
+    }
+    event TitleBarChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TitleBar,
+    }
+    event TitleBarOptionChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TitleBarOption,
+    }
+    event TooltipTemplateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TooltipTemplate,
+    }
+
     property Activated : system::Boolean { get:GetActivated set:SetActivated event:ActivatedChanged }
     property Border : system::Boolean { get:GetBorder set:SetBorder event:BorderChanged }
     property BorderOption : presentation::templates::BoolOption { get:GetBorderOption set:SetBorderOption event:BorderOptionChanged }
