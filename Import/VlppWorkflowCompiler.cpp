@@ -17783,7 +17783,7 @@ WfGenerateClassMemberDeclVisitor
 				void Visit(WfEventDeclaration* node)override
 				{
 					auto eventInfo = dynamic_cast<IEventInfo*>(config->manager->declarationMemberInfos[node].Obj());
-					auto typeInfo = eventInfo->GetHandlerType();
+					auto typeInfo = eventInfo->GetHandlerType()->GetElementType();
 					writer.WriteString(prefix);
 
 					writer.WriteString(L"::vl::Event<void(");

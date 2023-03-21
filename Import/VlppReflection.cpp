@@ -528,13 +528,13 @@ LogTypeManager (class)
 
 					if (info->GetObservingPropertyCount() > 0)
 					{
-						writer.WriteString(L" observing {");
+						writer.WriteLine(L" observing {");
 						vint count = info->GetObservingPropertyCount();
 						for (vint i = 0; i < count; i++)
 						{
 							writer.WriteLine(L"        " + info->GetObservingProperty(i)->GetName() + L",");
 						}
-						writer.WriteString(L"}");
+						writer.WriteLine(L"    }");
 					}
 					else
 					{
