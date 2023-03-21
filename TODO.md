@@ -24,6 +24,8 @@
 
 ## Optional
 
+- Issues on Templates
+  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
 - Issues on GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
