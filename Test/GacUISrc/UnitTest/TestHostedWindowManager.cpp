@@ -71,7 +71,8 @@ struct WindowManager : hosted_window_manager::WindowManager<wchar_t>
 		StreamReader reader(decoderStream);
 		for (auto [lines, snapshot] : snapshots)
 		{
-			WString baseline = GenerateToStream([&](StreamWriter& writer)
+			// "lines = lines" to workaround clang++ 13.0.0-2
+			WString baseline = GenerateToStream([&, lines = lines](StreamWriter& writer)
 				{
 					for (vint i = 0; i < lines; i++)
 					{
