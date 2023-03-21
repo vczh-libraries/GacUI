@@ -5,6 +5,8 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI_Core/Source_GacUI_Core.vcxitems"
     "../../GacUISrc/Source_GacUI_CoreApplication/Source_GacUI_CoreApplication.vcxitems"
     "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
     )
 CPP_ADDS=(
     "../../GacUISrc/Generated_DarkSkin/Source_x64/*.cpp"

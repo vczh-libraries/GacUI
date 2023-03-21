@@ -7,6 +7,9 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI_CoreApplication/Source_GacUI_CoreApplication.vcxitems"
     "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
     "../../GacUISrc/Source_GacUI_Reflection/Source_GacUI_Reflection.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Reflection/Source_GacUI_Utilities_Reflection.vcxitems"
     "../../GacUISrc/Metadata_Generate/Metadata_Generate.vcxproj"
     )
 CPP_REMOVES=(

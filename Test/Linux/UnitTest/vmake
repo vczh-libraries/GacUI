@@ -7,10 +7,12 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI_CoreApplication/Source_GacUI_CoreApplication.vcxitems"
     "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
     "../../GacUISrc/Source_GacUI_Reflection/Source_GacUI_Reflection.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Reflection/Source_GacUI_Utilities_Reflection.vcxitems"
     "../../GacUISrc/Source_GacUI_Compiler/Source_GacUI_Compiler.vcxitems"
     "../../GacUISrc/UnitTest/UnitTest.vcxproj"
     )
-CPP_ADDS=("../../../Tools/GacGen/GacGen/NativeController.cpp")
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
     "../../../Import/VlppOS.Windows.cpp"
