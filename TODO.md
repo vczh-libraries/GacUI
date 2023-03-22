@@ -9,6 +9,8 @@
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
   - file dialog can't expand/collapse tree view by key.
+- Issue on Controls
+  - GuiComboListControl: First time to dropdown, the list open open when mouse move downwards and leave the button or the window.
 
 ## Progressing
 
@@ -20,8 +22,6 @@
   - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Remove SysKey callbacks, merge into Key callbacks.
-- Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
-- Add `<ComboButton>` tutorial as a second color picker.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 
@@ -45,6 +45,8 @@
 
 ## Done but not Released
 
+- Add `<ComboButton>` tutorial as a second color picker.
+- Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
 - Issue on GacGen
   - `A10: Expression of type "system::Function<system::Void, system::Object>^" cannot implicitly convert to "system::Function<system::Void, system::String>^".`
     - When define `event RequestConfirm(string);` with `<ev.RequestConfirm-eval><![CDATA[{}]]></ev.RequestConfirm-eval>`
