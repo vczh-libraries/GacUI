@@ -153,11 +153,6 @@ GuiComboBoxListControl
 					{
 						clientSize.y = height;
 						SetPreferredMenuClientSize(clientSize);
-
-						if (GetSubMenuOpening())
-						{
-							subMenu->SetClientSize(clientSize);
-						}
 					}
 				}
 			}

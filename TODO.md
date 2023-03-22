@@ -9,8 +9,6 @@
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
   - file dialog can't expand/collapse tree view by key.
-- Issue on Controls
-  - GuiComboListControl: First time to dropdown, the list open open when mouse move downwards and leave the button or the window.
 
 ## Progressing
 
