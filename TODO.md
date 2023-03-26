@@ -34,6 +34,7 @@
   - Write maketools.sh
 - Rewrite GacBuild.ps1 in C++
 - Add DarkSkin and Dialog in Reflection(32|64).bin
+- Add `MoveToScreenCenterAfterLayouted` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
 
 ## Document
 
