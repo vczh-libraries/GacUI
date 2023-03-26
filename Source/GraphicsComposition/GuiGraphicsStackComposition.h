@@ -61,6 +61,7 @@ Stack Compositions
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiStackComposition();
 				~GuiStackComposition();
@@ -88,7 +89,6 @@ Stack Compositions
 				void								SetPadding(vint value);
 				
 				void								ForceCalculateSizeImmediately()override;
-				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 				
 				/// <summary>Get the extra margin inside the stack composition.</summary>

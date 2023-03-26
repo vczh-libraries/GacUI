@@ -31,7 +31,8 @@ Basic Compositions
 				bool								sizeAffectParent = true;
 				Rect								compositionBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
-				
+
+				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiBoundsComposition();
 				~GuiBoundsComposition();
@@ -44,7 +45,6 @@ Basic Compositions
 				void								SetSizeAffectParent(bool value);
 				
 				bool								IsSizeAffectParent()override;
-				Rect								GetPreferredBounds()override;
 				Rect								GetBounds()override;
 				/// <summary>Set the expected bounds.</summary>
 				/// <param name="value">The expected bounds.</param>

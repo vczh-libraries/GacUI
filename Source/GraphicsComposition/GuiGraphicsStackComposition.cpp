@@ -128,6 +128,36 @@ GuiStackComposition
 					UpdateStackItemBounds();
 				}
 			}
+			
+			Size GuiStackComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+			{
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
+					{
+						if (minSize.x < stackItemTotalSize.x)
+						{
+							minSize.x = stackItemTotalSize.x;
+						}
+					}
+					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
+					{
+						if (minSize.y < stackItemTotalSize.y)
+						{
+							minSize.y = stackItemTotalSize.y;
+						}
+					}
+				}
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
+			}
 
 			GuiStackComposition::GuiStackComposition()
 			{
@@ -183,36 +213,6 @@ GuiStackComposition
 			{
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
 				UpdateStackItemBounds();
-			}
-			
-			Size GuiStackComposition::GetMinPreferredClientSize()
-			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
-				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
-				{
-					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
-					{
-						if (minSize.x < stackItemTotalSize.x)
-						{
-							minSize.x = stackItemTotalSize.x;
-						}
-					}
-					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
-					{
-						if (minSize.y < stackItemTotalSize.y)
-						{
-							minSize.y = stackItemTotalSize.y;
-						}
-					}
-				}
-
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
 			}
 
 			Rect GuiStackComposition::GetBounds()
@@ -298,7 +298,7 @@ GuiStackItemComposition
 
 			Size GuiStackItemComposition::GetMinSize()
 			{
-				return GetBoundsInternal(bounds).GetSize();
+				return GetBoundsInternal(bounds, true).GetSize();
 			}
 
 			GuiStackItemComposition::GuiStackItemComposition()

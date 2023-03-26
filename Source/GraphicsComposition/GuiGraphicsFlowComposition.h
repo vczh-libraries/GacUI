@@ -60,6 +60,7 @@ Flow Compositions
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiFlowComposition();
 				~GuiFlowComposition();
@@ -109,7 +110,6 @@ Flow Compositions
 				void								SetAlignment(FlowAlignment value);
 				
 				void								ForceCalculateSizeImmediately()override;
-				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 			};
 			

@@ -54,7 +54,9 @@ Basic Construction
 
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
-				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
+				friend void InvokeOnCompositionStateChanged(GuiGraphicsComposition* composition);
+				friend Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
+				friend Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
 			public:
 				/// <summary>
 				/// Minimum size limitation.
@@ -108,6 +110,9 @@ Basic Construction
 				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
 				void										SetAssociatedControl(controls::GuiControl* control);
 				void										InvokeOnCompositionStateChanged();
+
+				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize) = 0;
+				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize) = 0;
 
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 			public:
@@ -245,16 +250,17 @@ Basic Construction
 				virtual Rect								GetClientArea();
 				/// <summary>Force to calculate layout and size immediately</summary>
 				virtual void								ForceCalculateSizeImmediately();
+
+				/// <summary>Get the preferred minimum client size.</summary>
+				/// <returns>The preferred minimum client size.</returns>
+				Size										GetMinPreferredClientSize();
+				/// <summary>Get the preferred bounds.</summary>
+				/// <returns>The preferred bounds.</returns>
+				Rect										GetPreferredBounds();
 				
 				/// <summary>Test is the size calculation affected by the parent.</summary>
 				/// <returns>Returns true if the size calculation is affected by the parent.</returns>
 				virtual bool								IsSizeAffectParent()=0;
-				/// <summary>Get the preferred minimum client size.</summary>
-				/// <returns>The preferred minimum client size.</returns>
-				virtual Size								GetMinPreferredClientSize()=0;
-				/// <summary>Get the preferred bounds.</summary>
-				/// <returns>The preferred bounds.</returns>
-				virtual Rect								GetPreferredBounds()=0;
 				/// <summary>Get the bounds.</summary>
 				/// <returns>The bounds.</returns>
 				virtual Rect								GetBounds()=0;
@@ -265,15 +271,18 @@ Basic Construction
 			/// </summary>
 			class GuiGraphicsSite : public GuiGraphicsComposition, public Description<GuiGraphicsSite>
 			{
+				friend Rect							InvokeGetBoundsInternal(GuiGraphicsSite* composition, Rect expectedBounds, bool considerPreferredMinSize);
 			protected:
 				Rect								previousBounds;
 
 				/// <summary>Calculate the final bounds from an expected bounds.</summary>
 				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
 				/// <param name="expectedBounds">The expected bounds.</param>
-				virtual Rect						GetBoundsInternal(Rect expectedBounds);
+				virtual Rect						GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
 
 				void								UpdatePreviousBounds(Rect bounds);
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiGraphicsSite();
 				~GuiGraphicsSite();
@@ -282,8 +291,6 @@ Basic Construction
 				compositions::GuiNotifyEvent		BoundsChanged;
 				
 				bool								IsSizeAffectParent()override;
-				Size								GetMinPreferredClientSize()override;
-				Rect								GetPreferredBounds()override;
 
 				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
 				/// <returns>The previous calculated bounds.</returns>

@@ -145,6 +145,7 @@ Table Compositions
 														);
 				
 				void								OnRenderContextChanged()override;
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiTableComposition();
 				~GuiTableComposition();
@@ -205,7 +206,6 @@ Table Compositions
 				void								UpdateCellBounds();
 				
 				void								ForceCalculateSizeImmediately()override;
-				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 			};
 

@@ -167,6 +167,31 @@ GuiFlowComposition
 					needUpdate = true;
 				}
 			}
+			
+			Size GuiFlowComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+			{
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
+					for (auto item : flowItems)
+					{
+						auto itemSize = InvokeGetPreferredBoundsInternal(item, considerPreferredMinSize).GetSize();
+						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
+						if (clientSize.y < itemSize.y) clientSize.y = itemSize.y;
+					}
+					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
+					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
+				}
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
+			}
 
 			GuiFlowComposition::GuiFlowComposition()
 				:axis(new GuiDefaultAxis)
@@ -279,31 +304,6 @@ GuiFlowComposition
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
 				UpdateFlowItemBounds(true);
 			}
-			
-			Size GuiFlowComposition::GetMinPreferredClientSize()
-			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
-				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
-				{
-					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
-					for (auto item : flowItems)
-					{
-						auto itemSize = item->GetPreferredBounds().GetSize();
-						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
-						if (clientSize.y < itemSize.y) clientSize.y = itemSize.y;
-					}
-					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
-					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
-				}
-
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
-			}
 
 			Rect GuiFlowComposition::GetBounds()
 			{
@@ -340,7 +340,7 @@ GuiFlowItemComposition
 
 			Size GuiFlowItemComposition::GetMinSize()
 			{
-				return GetBoundsInternal(bounds).GetSize();
+				return GetBoundsInternal(bounds, true).GetSize();
 			}
 
 			GuiFlowItemComposition::GuiFlowItemComposition()

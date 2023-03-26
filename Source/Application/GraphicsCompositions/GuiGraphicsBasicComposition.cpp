@@ -13,32 +13,9 @@ namespace vl
 GuiBoundsComposition
 ***********************************************************************/
 
-			GuiBoundsComposition::GuiBoundsComposition()
+			Rect GuiBoundsComposition::GetPreferredBoundsInternal(bool considerPreferredMinSize)
 			{
-			}
-
-			GuiBoundsComposition::~GuiBoundsComposition()
-			{
-			}
-
-			bool GuiBoundsComposition::GetSizeAffectParent()
-			{
-				return sizeAffectParent;
-			}
-
-			void GuiBoundsComposition::SetSizeAffectParent(bool value)
-			{
-				sizeAffectParent = value;
-			}
-
-			bool GuiBoundsComposition::IsSizeAffectParent()
-			{
-				return sizeAffectParent;
-			}
-
-			Rect GuiBoundsComposition::GetPreferredBounds()
-			{
-				Rect result = GetBoundsInternal(compositionBounds);
+				Rect result = GetBoundsInternal(compositionBounds, considerPreferredMinSize);
 				if (GetParent() && IsAlignedToParent())
 				{
 					if (alignmentToParent.left >= 0)
@@ -63,6 +40,29 @@ GuiBoundsComposition
 					}
 				}
 				return result;
+			}
+
+			GuiBoundsComposition::GuiBoundsComposition()
+			{
+			}
+
+			GuiBoundsComposition::~GuiBoundsComposition()
+			{
+			}
+
+			bool GuiBoundsComposition::GetSizeAffectParent()
+			{
+				return sizeAffectParent;
+			}
+
+			void GuiBoundsComposition::SetSizeAffectParent(bool value)
+			{
+				sizeAffectParent = value;
+			}
+
+			bool GuiBoundsComposition::IsSizeAffectParent()
+			{
+				return sizeAffectParent;
 			}
 
 			Rect GuiBoundsComposition::GetBounds()

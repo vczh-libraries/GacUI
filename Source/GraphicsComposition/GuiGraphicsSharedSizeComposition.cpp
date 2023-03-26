@@ -146,8 +146,7 @@ GuiSharedSizeRootComposition
 				{
 					auto group = item->GetGroup();
 					auto minSize = item->GetPreferredMinSize();
-					item->SetPreferredMinSize(Size(0, 0));
-					auto size = item->GetPreferredBounds().GetSize();
+					auto size = InvokeGetPreferredBoundsInternal(item, false).GetSize();
 
 					if (item->GetSharedWidth())
 					{

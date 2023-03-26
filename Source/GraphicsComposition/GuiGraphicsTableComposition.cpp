@@ -313,6 +313,12 @@ GuiTableComposition
 				}
 			}
 
+			Size GuiTableComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+			{
+				vint offset = (borderVisible ? 2 * cellPadding : 0);
+				return Size(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
+			}
+
 			GuiTableComposition::GuiTableComposition()
 				:rows(0)
 				, columns(0)
@@ -506,12 +512,6 @@ GuiTableComposition
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
 				UpdateCellBounds();
 				UpdateCellBounds();
-			}
-
-			Size GuiTableComposition::GetMinPreferredClientSize()
-			{
-				vint offset = (borderVisible ? 2 * cellPadding : 0);
-				return Size(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
 			}
 
 			Rect GuiTableComposition::GetBounds()

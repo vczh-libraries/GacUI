@@ -17,6 +17,21 @@ namespace vl
 				composition->InvokeOnCompositionStateChanged();
 			}
 
+			Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize)
+			{
+				return composition->GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+			}
+
+			Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize)
+			{
+				return composition->GetPreferredBoundsInternal(considerPreferredMinSize);
+			}
+
+			Rect InvokeGetBoundsInternal(GuiGraphicsSite* composition, Rect expectedBounds, bool considerPreferredMinSize)
+			{
+				return composition->GetBoundsInternal(expectedBounds, considerPreferredMinSize);
+			}
+
 /***********************************************************************
 GuiWindowComposition
 ***********************************************************************/
@@ -597,15 +612,28 @@ GuiGraphicsComposition
 				InvokeOnCompositionStateChanged();
 			}
 
+			Size GuiGraphicsComposition::GetMinPreferredClientSize()
+			{
+				return GetMinPreferredClientSizeInternal(true);
+			}
+
+			Rect GuiGraphicsComposition::GetPreferredBounds()
+			{
+				return GetPreferredBoundsInternal(true);
+			}
+
 /***********************************************************************
 GuiGraphicsSite
 ***********************************************************************/
 
-			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds)
+			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize)
 			{
-				Size minSize = GetMinPreferredClientSize();
-				if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
-				if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
+				Size minSize = GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				if (considerPreferredMinSize)
+				{
+					if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
+					if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
+				}
 
 				minSize.x += margin.left + margin.right + internalMargin.left + internalMargin.right;
 				minSize.y += margin.top + margin.bottom + internalMargin.top + internalMargin.bottom;
@@ -626,21 +654,7 @@ GuiGraphicsSite
 				}
 			}
 
-			GuiGraphicsSite::GuiGraphicsSite()
-			{
-				BoundsChanged.SetAssociatedComposition(this);
-			}
-
-			GuiGraphicsSite::~GuiGraphicsSite()
-			{
-			}
-
-			bool GuiGraphicsSite::IsSizeAffectParent()
-			{
-				return true;
-			}
-
-			Size GuiGraphicsSite::GetMinPreferredClientSize()
+			Size GuiGraphicsSite::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
 				Size minSize;
 				if (minSizeLimitation != GuiGraphicsComposition::NoLimit)
@@ -662,7 +676,7 @@ GuiGraphicsSite
 						GuiGraphicsComposition* child = children[i];
 						if (child->IsSizeAffectParent())
 						{
-							Rect childBounds = child->GetPreferredBounds();
+							Rect childBounds = InvokeGetPreferredBoundsInternal(child, considerPreferredMinSize);
 							if (minSize.x < childBounds.x2) minSize.x = childBounds.x2;
 							if (minSize.y < childBounds.y2) minSize.y = childBounds.y2;
 						}
@@ -671,9 +685,23 @@ GuiGraphicsSite
 				return minSize;
 			}
 
-			Rect GuiGraphicsSite::GetPreferredBounds()
+			Rect GuiGraphicsSite::GetPreferredBoundsInternal(bool considerPreferredMinSize)
 			{
-				return GetBoundsInternal(Rect(Point(0, 0), GetMinPreferredClientSize()));
+				return GetBoundsInternal(Rect(Point(0, 0), GetMinPreferredClientSize()), considerPreferredMinSize);
+			}
+
+			GuiGraphicsSite::GuiGraphicsSite()
+			{
+				BoundsChanged.SetAssociatedComposition(this);
+			}
+
+			GuiGraphicsSite::~GuiGraphicsSite()
+			{
+			}
+
+			bool GuiGraphicsSite::IsSizeAffectParent()
+			{
+				return true;
 			}
 
 			Rect GuiGraphicsSite::GetPreviousCalculatedBounds()
