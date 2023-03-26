@@ -289,8 +289,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetVisible(bool value)
 			{
-				visible = value;
-				InvokeOnCompositionStateChanged();
+				if (visible != value)
+				{
+					visible = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiGraphicsComposition::GetEventuallyVisible()
@@ -311,8 +314,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMinSizeLimitation(MinSizeLimitation value)
 			{
-				minSizeLimitation = value;
-				InvokeOnCompositionStateChanged();
+				if (minSizeLimitation != value)
+				{
+					minSizeLimitation = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			elements::IGuiGraphicsRenderTarget* GuiGraphicsComposition::GetRenderTarget()
@@ -535,8 +541,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMargin(Margin value)
 			{
-				margin = value;
-				InvokeOnCompositionStateChanged();
+				if (margin != value)
+				{
+					margin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiGraphicsComposition::GetInternalMargin()
@@ -546,8 +555,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetInternalMargin(Margin value)
 			{
-				internalMargin = value;
-				InvokeOnCompositionStateChanged();
+				if (internalMargin != value)
+				{
+					internalMargin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Size GuiGraphicsComposition::GetPreferredMinSize()
@@ -557,8 +569,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetPreferredMinSize(Size value)
 			{
-				preferredMinSize = value;
-				InvokeOnCompositionStateChanged();
+				if (preferredMinSize != value)
+				{
+					preferredMinSize = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Rect GuiGraphicsComposition::GetClientArea()

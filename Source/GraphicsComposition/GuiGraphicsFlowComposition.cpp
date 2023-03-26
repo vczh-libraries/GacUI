@@ -206,9 +206,12 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (extraMargin != value)
+				{
+					extraMargin = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			vint GuiFlowComposition::GetRowPadding()
@@ -218,9 +221,12 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetRowPadding(vint value)
 			{
-				rowPadding = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (rowPadding != value)
+				{
+					rowPadding = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			vint GuiFlowComposition::GetColumnPadding()
@@ -230,9 +236,12 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetColumnPadding(vint value)
 			{
-				columnPadding = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (columnPadding != value)
+				{
+					columnPadding = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Ptr<IGuiAxis> GuiFlowComposition::GetAxis()
@@ -257,9 +266,12 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetAlignment(FlowAlignment value)
 			{
-				alignment = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (alignment != value)
+				{
+					alignment = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiFlowComposition::ForceCalculateSizeImmediately()
@@ -370,8 +382,11 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::SetBounds(Rect value)
 			{
-				bounds = value;
-				InvokeOnCompositionStateChanged();
+				if (bounds != value)
+				{
+					bounds = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiFlowItemComposition::GetExtraMargin()
@@ -381,8 +396,11 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin = value;
-				InvokeOnCompositionStateChanged();
+				if (extraMargin != value)
+				{
+					extraMargin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			GuiFlowOption GuiFlowItemComposition::GetFlowOption()
@@ -392,11 +410,14 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::SetFlowOption(GuiFlowOption value)
 			{
-				option = value;
-				if (flowParent)
+				if (option != value)
 				{
-					flowParent->needUpdate = true;
-					InvokeOnCompositionStateChanged();
+					option = value;
+					if (flowParent)
+					{
+						flowParent->needUpdate = true;
+						InvokeOnCompositionStateChanged();
+					}
 				}
 			}
 		}

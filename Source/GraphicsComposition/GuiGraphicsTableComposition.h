@@ -52,8 +52,8 @@ Table Compositions
 				{
 				}
 
-				bool operator==(const GuiCellOption& value){return false;}
-				bool operator!=(const GuiCellOption& value){return true;}
+				bool operator==(const GuiCellOption& value) { return composeType == value.composeType && absolute == value.absolute && percentage == value.percentage; }
+				bool operator!=(const GuiCellOption& value) { return !operator==(value); }
 
 				/// <summary>Creates an absolute sizing option</summary>
 				/// <returns>The created option.</returns>

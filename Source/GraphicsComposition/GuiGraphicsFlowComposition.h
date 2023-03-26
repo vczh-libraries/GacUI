@@ -135,6 +135,9 @@ Flow Compositions
 				double								percentage = 0.0;
 				/// <summary>The distance value.</summary>
 				vint								distance = 0;
+
+				bool operator==(const GuiFlowOption& value) { return baseline == value.baseline && percentage == value.percentage && distance == value.distance; }
+				bool operator!=(const GuiFlowOption& value) { return !operator==(value); }
 			};
 			
 			/// <summary>

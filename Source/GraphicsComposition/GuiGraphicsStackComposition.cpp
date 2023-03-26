@@ -65,6 +65,7 @@ GuiStackComposition
 				if (itemBounds.U() <= 0)											\
 				{																	\
 					adjustment -= itemBounds.U();									\
+					InvokeOnCompositionStateChanged();								\
 				}																	\
 				else																\
 				{																	\
@@ -72,6 +73,7 @@ GuiStackComposition
 					if (overflow > 0)												\
 					{																\
 						adjustment -= overflow;										\
+						InvokeOnCompositionStateChanged();							\
 					}																\
 				}																	\
 
@@ -90,8 +92,6 @@ GuiStackComposition
 						break;
 					}
 				}
-
-				InvokeOnCompositionStateChanged();
 #undef ADJUSTMENT
 			}
 
@@ -376,8 +376,11 @@ GuiStackItemComposition
 
 			void GuiStackItemComposition::SetBounds(Rect value)
 			{
-				bounds = value;
-				InvokeOnCompositionStateChanged();
+				if (bounds != value)
+				{
+					bounds = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiStackItemComposition::GetExtraMargin()
@@ -387,8 +390,11 @@ GuiStackItemComposition
 
 			void GuiStackItemComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin = value;
-				InvokeOnCompositionStateChanged();
+				if (extraMargin != value)
+				{
+					extraMargin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 		}
 	}

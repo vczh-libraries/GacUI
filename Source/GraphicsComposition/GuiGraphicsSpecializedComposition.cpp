@@ -29,8 +29,11 @@ GuiSideAlignedComposition
 
 			void GuiSideAlignedComposition::SetDirection(Direction value)
 			{
-				direction = value;
-				InvokeOnCompositionStateChanged();
+				if (direction != value)
+				{
+					direction = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			vint GuiSideAlignedComposition::GetMaxLength()
@@ -41,8 +44,11 @@ GuiSideAlignedComposition
 			void GuiSideAlignedComposition::SetMaxLength(vint value)
 			{
 				if (value < 0) value = 0;
-				maxLength = value;
-				InvokeOnCompositionStateChanged();
+				if (maxLength != value)
+				{
+					maxLength = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			double GuiSideAlignedComposition::GetMaxRatio()
@@ -52,11 +58,12 @@ GuiSideAlignedComposition
 
 			void GuiSideAlignedComposition::SetMaxRatio(double value)
 			{
-				maxRatio =
-					value < 0 ? 0 :
-					value>1 ? 1 :
-					value;
-				InvokeOnCompositionStateChanged();
+				if (value < 0) value = 0; else if (value > 1) value = 1;
+				if (maxRatio != value)
+				{
+					maxRatio = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiSideAlignedComposition::IsSizeAffectParent()
@@ -142,26 +149,38 @@ GuiPartialViewComposition
 
 			void GuiPartialViewComposition::SetWidthRatio(double value)
 			{
-				wRatio = value;
-				InvokeOnCompositionStateChanged();
+				if (wRatio != value)
+				{
+					wRatio = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiPartialViewComposition::SetWidthPageSize(double value)
 			{
-				wPageSize = value;
-				InvokeOnCompositionStateChanged();
+				if (wPageSize != value)
+				{
+					wPageSize = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiPartialViewComposition::SetHeightRatio(double value)
 			{
-				hRatio = value;
-				InvokeOnCompositionStateChanged();
+				if (hRatio != value)
+				{
+					hRatio = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiPartialViewComposition::SetHeightPageSize(double value)
 			{
-				hPageSize = value;
-				InvokeOnCompositionStateChanged();
+				if (hPageSize != value)
+				{
+					hPageSize = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiPartialViewComposition::IsSizeAffectParent()

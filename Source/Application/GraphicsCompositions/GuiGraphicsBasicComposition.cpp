@@ -113,8 +113,11 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetBounds(Rect value)
 			{
-				compositionBounds = value;
-				InvokeOnCompositionStateChanged();
+				if (compositionBounds != value)
+				{
+					compositionBounds = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiBoundsComposition::GetAlignmentToParent()
@@ -124,8 +127,11 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetAlignmentToParent(Margin value)
 			{
-				alignmentToParent = value;
-				InvokeOnCompositionStateChanged();
+				if (alignmentToParent != value)
+				{
+					alignmentToParent = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiBoundsComposition::IsAlignedToParent()

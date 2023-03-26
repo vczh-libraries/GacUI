@@ -379,9 +379,12 @@ GuiTableComposition
 
 			void GuiTableComposition::SetRowOption(vint _row, GuiCellOption option)
 			{
-				rowOptions[_row] = option;
-				UpdateCellBounds();
-				ConfigChanged.Execute(GuiEventArgs(this));
+				if (rowOptions[_row] != option)
+				{
+					rowOptions[_row] = option;
+					UpdateCellBounds();
+					ConfigChanged.Execute(GuiEventArgs(this));
+				}
 			}
 
 			GuiCellOption GuiTableComposition::GetColumnOption(vint _column)
@@ -391,9 +394,12 @@ GuiTableComposition
 
 			void GuiTableComposition::SetColumnOption(vint _column, GuiCellOption option)
 			{
-				columnOptions[_column] = option;
-				UpdateCellBounds();
-				ConfigChanged.Execute(GuiEventArgs(this));
+				if (columnOptions[_column] != option)
+				{
+					columnOptions[_column] = option;
+					UpdateCellBounds();
+					ConfigChanged.Execute(GuiEventArgs(this));
+				}
 			}
 
 			vint GuiTableComposition::GetCellPadding()
@@ -924,8 +930,11 @@ GuiRowSplitterComposition
 
 			void GuiRowSplitterComposition::SetRowsToTheTop(vint value)
 			{
-				rowsToTheTop = value;
-				InvokeOnCompositionStateChanged();
+				if (rowsToTheTop != value)
+				{
+					rowsToTheTop = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Rect GuiRowSplitterComposition::GetBounds()
@@ -976,8 +985,11 @@ GuiColumnSplitterComposition
 
 			void GuiColumnSplitterComposition::SetColumnsToTheLeft(vint value)
 			{
-				columnsToTheLeft = value;
-				InvokeOnCompositionStateChanged();
+				if (columnsToTheLeft != value)
+				{
+					columnsToTheLeft = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Rect GuiColumnSplitterComposition::GetBounds()
