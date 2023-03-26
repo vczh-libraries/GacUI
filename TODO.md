@@ -43,38 +43,6 @@
 
 ## Done but not Released
 
-- Add `<ComboButton>` tutorial as a second color picker.
-- Add "Open New Window" button to Tutorials/ControlTemplates/WindowSkin.
-- Issue on GacGen
-  - `A10: Expression of type "system::Function<system::Void, system::Object>^" cannot implicitly convert to "system::Function<system::Void, system::String>^".`
-    - When define `event RequestConfirm(string);` with `<ev.RequestConfirm-eval><![CDATA[{}]]></ev.RequestConfirm-eval>`
-  - `event RequestConfirm(string{});` generates `::vl::Event<void()> RequestConfirm;`
-- `<ComboButton/>`
-- `Add default dialog service, will be use in hosted mode.`
-  - Create `GacUI_Utilities`, depending on `GacUI_Controls`, to store all services.
-    - Move `GuiSharedAsyncService` here.
-    - A `GuiFakeDialogServiceBase` implements `INativeDialogService`, taking windows that receives view models.
-    - A `GuiSharedCallbackService` (rename from `WindowsCallbackService`) implements `INativeCallbackService`, providing additional members to invoke callbacks.
-      - Add `Invoker()` returning `INativeCallbackInvoker` to `INativeCallbackService`.
-    - A `GuiFakeClipboardService` that transfer objects in the current process, not talking to the OS.
-    - `GuiInitializeUtilities` and `GuiFinalizeUtilities` substitute fake services by default optionally.
-  - Predefined reflectable view models for dialogs, with predefined implementations.
-    - In `GacUI_Utilities` and `GacUI_Utilities_Reflection`.
-  - Predefined windows implemented in XML.
-    - In `GacUI_Utilities_Controls` and `GacUI_Utilities_Reflection`.
-    - With `GuiFakeDialogService` that gives predefined windows to `GuiFakeDialogService`.
-  - A way to subsitute services.
-    - Rename `SetCurrentController` to `SetNativeController`.
-    - `GetCurrentController` returns a `INativeController` implementation that allow subsituting services.
-      - If a service is not provided, and there is also no substitution, it crashes.
-      - If a service is used, substituting crashes.
-    - `GetNativeServiceSubstitution` returns an object to
-      - Config how services are substituted (force activated, or only activate when it is not provided).
-    - Call `GuiInitializeUtilities` and `GuiFinalizeUtilities` around `GuiMain`.
-  - Substitutable services:
-    - Clipboard
-    - Dialog
-
 ## OS Provider Features
 
 - Drag and Drop framework.
