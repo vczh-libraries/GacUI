@@ -320,6 +320,10 @@ Predefined Events
 				ParentLineChanged,
 				/// <summary>Service added changed.</summary>
 				ServiceAdded,
+				/// <summary>The window need to update when data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
+				UpdateRequested,
+				/// <summary>The window finished all the updating works after data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
+				UpdateFullfilled,
 			};
 
 			/// <summary>Control signal event arguments.</summary>

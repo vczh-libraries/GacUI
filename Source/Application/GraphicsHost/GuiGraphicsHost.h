@@ -82,6 +82,7 @@ Host
 				HostRecord								hostRecord;
 				bool									supressPaint = false;
 				bool									needRender = true;
+				bool									renderingTriggeredInLastFrame = false;
 				ProcList								afterRenderProcs;
 				ProcMap									afterRenderKeyedProcs;
 
@@ -143,8 +144,10 @@ Host
 
 				bool									NeedRefresh()override;
 				void									ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)override;
-
 				void									GlobalTimer()override;
+
+				elements::RenderTargetFailure			Render(bool forceUpdate, bool handleFailure);
+
 			public:
 				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
 				~GuiGraphicsHost();
@@ -158,10 +161,6 @@ Host
 				/// <summary>Get the main <see cref="GuiWindowComposition"/>. If a window is associated, everything that put into the main composition will be shown in the window.</summary>
 				/// <returns>The main compositoin.</returns>
 				GuiGraphicsComposition*					GetMainComposition();
-				/// <summary>Render the main composition and all content to the associated window.</summary>
-				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				elements::RenderTargetFailure			Render(bool forceUpdate, bool handleFailure);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
 				/// <summary>Invoke a specified function after rendering.</summary>

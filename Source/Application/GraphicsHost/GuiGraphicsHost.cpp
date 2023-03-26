@@ -553,9 +553,17 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
 			{
-				auto result = Render(true, handleFailure);
-				failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
-				failureByLostDevice |= result == RenderTargetFailure::LostDevice;
+				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
+				{
+					auto result = Render(true, handleFailure);
+					failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
+					failureByLostDevice |= result == RenderTargetFailure::LostDevice;
+				}
+				else
+				{
+					failureByResized = false;
+					failureByLostDevice = false;
+				}
 			}
 
 			void GuiGraphicsHost::GlobalTimer()
@@ -572,78 +580,32 @@ GuiGraphicsHost
 					}
 				}
 
-				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsActivelyRefreshing())
+				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible() && hostRecord.nativeWindow->IsActivelyRefreshing())
 				{
 					Render(false, true);
 				}
 			}
 
-			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
-				:controlHost(_controlHost)
-			{
-				altActionManager = new GuiAltActionManager(controlHost);
-				tabActionManager = new GuiTabActionManager(controlHost);
-				hostRecord.host = this;
-				windowComposition=new GuiWindowComposition;
-				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				windowComposition->AddChild(boundsComposition);
-				RefreshRelatedHostRecord(nullptr);
-			}
-
-			GuiGraphicsHost::~GuiGraphicsHost()
-			{
-				windowComposition->RemoveChild(windowComposition->Children()[0]);
-				NotifyFinalizeInstance(windowComposition);
-
-				delete altActionManager;
-				delete tabActionManager;
-				if (shortcutKeyManager)
-				{
-					delete shortcutKeyManager;
-					shortcutKeyManager = nullptr;
-				}
-
-				delete windowComposition;
-			}
-
-			INativeWindow* GuiGraphicsHost::GetNativeWindow()
-			{
-				return hostRecord.nativeWindow;
-			}
-
-			void GuiGraphicsHost::SetNativeWindow(INativeWindow* _nativeWindow)
-			{
-				if (hostRecord.nativeWindow != _nativeWindow)
-				{
-					if (hostRecord.nativeWindow)
-					{
-						GetCurrentController()->CallbackService()->UninstallListener(this);
-						hostRecord.nativeWindow->UninstallListener(this);
-					}
-
-					if (_nativeWindow)
-					{
-						_nativeWindow->InstallListener(this);
-						GetCurrentController()->CallbackService()->InstallListener(this);
-						previousClientSize = _nativeWindow->GetClientSize();
-						minSize = windowComposition->GetPreferredBounds().GetSize();
-						_nativeWindow->SetCaretPoint(_nativeWindow->Convert(caretPoint));
-						needRender = true;
-					}
-
-					RefreshRelatedHostRecord(_nativeWindow);
-				}
-			}
-
-			GuiGraphicsComposition* GuiGraphicsHost::GetMainComposition()
-			{
-				return windowComposition;
-			}
-
 			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool handleFailure)
 			{
 				RenderTargetFailure result = RenderTargetFailure::None;
-				if (!forceUpdate && !needRender)
+				bool renderingTriggered = forceUpdate || needRender;
+
+				if (!renderingTriggeredInLastFrame && renderingTriggered)
+				{
+					GuiControlSignalEventArgs arguments(controlHost->boundsComposition);
+					arguments.controlSignal = ControlSignal::UpdateRequested;
+					controlHost->ControlSignalTrigerred.Execute(arguments);
+				}
+				else if (renderingTriggeredInLastFrame && !renderingTriggered)
+				{
+					GuiControlSignalEventArgs arguments(controlHost->boundsComposition);
+					arguments.controlSignal = ControlSignal::UpdateFullfilled;
+					controlHost->ControlSignalTrigerred.Execute(arguments);
+				}
+
+				renderingTriggeredInLastFrame = renderingTriggered;
+				if (!renderingTriggered)
 				{
 					return result;
 				}
@@ -715,6 +677,68 @@ GuiGraphicsHost
 				}
 
 				return result;
+			}
+
+			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
+				:controlHost(_controlHost)
+			{
+				altActionManager = new GuiAltActionManager(controlHost);
+				tabActionManager = new GuiTabActionManager(controlHost);
+				hostRecord.host = this;
+				windowComposition=new GuiWindowComposition;
+				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				windowComposition->AddChild(boundsComposition);
+				RefreshRelatedHostRecord(nullptr);
+			}
+
+			GuiGraphicsHost::~GuiGraphicsHost()
+			{
+				windowComposition->RemoveChild(windowComposition->Children()[0]);
+				NotifyFinalizeInstance(windowComposition);
+
+				delete altActionManager;
+				delete tabActionManager;
+				if (shortcutKeyManager)
+				{
+					delete shortcutKeyManager;
+					shortcutKeyManager = nullptr;
+				}
+
+				delete windowComposition;
+			}
+
+			INativeWindow* GuiGraphicsHost::GetNativeWindow()
+			{
+				return hostRecord.nativeWindow;
+			}
+
+			void GuiGraphicsHost::SetNativeWindow(INativeWindow* _nativeWindow)
+			{
+				if (hostRecord.nativeWindow != _nativeWindow)
+				{
+					if (hostRecord.nativeWindow)
+					{
+						GetCurrentController()->CallbackService()->UninstallListener(this);
+						hostRecord.nativeWindow->UninstallListener(this);
+					}
+
+					if (_nativeWindow)
+					{
+						_nativeWindow->InstallListener(this);
+						GetCurrentController()->CallbackService()->InstallListener(this);
+						previousClientSize = _nativeWindow->GetClientSize();
+						minSize = windowComposition->GetPreferredBounds().GetSize();
+						_nativeWindow->SetCaretPoint(_nativeWindow->Convert(caretPoint));
+						needRender = true;
+					}
+
+					RefreshRelatedHostRecord(_nativeWindow);
+				}
+			}
+
+			GuiGraphicsComposition* GuiGraphicsHost::GetMainComposition()
+			{
+				return windowComposition;
 			}
 
 			void GuiGraphicsHost::RequestRender()
