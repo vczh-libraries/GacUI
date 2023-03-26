@@ -551,16 +551,17 @@ GuiGraphicsHost
 				return needRender;
 			}
 
-			void GuiGraphicsHost::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+			void GuiGraphicsHost::ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice)
 			{
 				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
 				{
-					auto result = Render(true, handleFailure);
+					auto result = Render(true, handleFailure, updated);
 					failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
 					failureByLostDevice |= result == RenderTargetFailure::LostDevice;
 				}
 				else
 				{
+					updated = false;
 					failureByResized = false;
 					failureByLostDevice = false;
 				}
@@ -582,30 +583,32 @@ GuiGraphicsHost
 
 				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible() && hostRecord.nativeWindow->IsActivelyRefreshing())
 				{
-					Render(false, true);
+					bool updated = false;
+					Render(false, true, updated);
 				}
 			}
 
-			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool handleFailure)
+			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool handleFailure, bool& updated)
 			{
 				RenderTargetFailure result = RenderTargetFailure::None;
-				bool renderingTriggered = forceUpdate || needRender;
 
-				if (!renderingTriggeredInLastFrame && renderingTriggered)
+				if (!renderingTriggeredInLastFrame && needRender)
 				{
 					GuiControlSignalEventArgs arguments(controlHost->boundsComposition);
 					arguments.controlSignal = ControlSignal::UpdateRequested;
 					controlHost->ControlSignalTrigerred.Execute(arguments);
 				}
-				else if (renderingTriggeredInLastFrame && !renderingTriggered)
+				else if (renderingTriggeredInLastFrame && !needRender)
 				{
 					GuiControlSignalEventArgs arguments(controlHost->boundsComposition);
 					arguments.controlSignal = ControlSignal::UpdateFullfilled;
 					controlHost->ControlSignalTrigerred.Execute(arguments);
 				}
 
-				renderingTriggeredInLastFrame = renderingTriggered;
-				if (!renderingTriggered)
+				updated = needRender;
+				renderingTriggeredInLastFrame = needRender;
+
+				if (!forceUpdate && !needRender)
 				{
 					return result;
 				}

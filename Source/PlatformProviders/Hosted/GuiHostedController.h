@@ -40,6 +40,7 @@ GuiHostedController
 		protected:
 			SharedCallbackService										callbackService;
 			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
+			bool														windowsUpdatedInLastFrame = false;
 			INativeController*											nativeController = nullptr;
 			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;

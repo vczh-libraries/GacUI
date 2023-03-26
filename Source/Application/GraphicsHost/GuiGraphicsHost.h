@@ -143,10 +143,10 @@ Host
 				void									Char(const NativeWindowCharInfo& info)override;
 
 				bool									NeedRefresh()override;
-				void									ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)override;
+				void									ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice)override;
 				void									GlobalTimer()override;
 
-				elements::RenderTargetFailure			Render(bool forceUpdate, bool handleFailure);
+				elements::RenderTargetFailure			Render(bool forceUpdate, bool handleFailure, bool& updated);
 
 			public:
 				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);

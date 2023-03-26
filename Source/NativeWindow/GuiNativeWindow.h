@@ -749,7 +749,12 @@ INativeWindow
 			/// </summary>
 			/// <returns>Returns true if the window needs to be updated.</returns>
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
-			virtual void				ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice);
+			virtual void				ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice);
+			/// <summary>
+			/// Called when the window becomes a main window in hosted mode.
+			/// This callback is only called once on the main window.
+			/// </summary>
+			virtual void				BecomeMainHostedWindow();
 			/// <summary>
 			/// Called when the window becomes a non-main window in hosted mode.
 			/// It requires MaximizedBox and MinimizedBox to be disabled.

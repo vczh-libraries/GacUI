@@ -159,7 +159,11 @@ INativeWindowListener
 			return false;
 		}
 
-		void INativeWindowListener::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+		void INativeWindowListener::ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice)
+		{
+		}
+
+		void INativeWindowListener::BecomeMainHostedWindow()
 		{
 		}
 

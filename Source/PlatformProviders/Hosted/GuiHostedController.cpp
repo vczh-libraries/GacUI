@@ -245,7 +245,6 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::Paint()
 		{
-			wmManager->needRefresh = true;
 		}
 
 /***********************************************************************
@@ -658,27 +657,30 @@ GuiHostedController::INativeControllerListener
 				auto renderTarget = hostedResourceManager->nativeManager->GetRenderTarget(nativeWindow);
 				if (renderTarget->IsInHostedRendering())
 				{
-					goto SKIP_REFRESH;
+					return;
 				}
 
-				if (wmManager->needRefresh)
-				{
-					wmManager->needRefresh = false;
-					goto NEED_REFRESH;
-				}
 				for (auto hostedWindow : createdWindows)
 				{
 					for (auto listener : hostedWindow->listeners)
 					{
 						if (listener->NeedRefresh())
 						{
+							wmManager->needRefresh = true;
 							goto NEED_REFRESH;
 						}
 					}
 				}
-				return;
+
+				if (!wmManager->needRefresh && !windowsUpdatedInLastFrame)
+				{
+					return;
+				}
 
 			NEED_REFRESH:
+				wmManager->needRefresh = false;
+				windowsUpdatedInLastFrame = false;
+
 				while (true)
 				{
 					renderTarget->StartHostedRendering();
@@ -690,7 +692,9 @@ GuiHostedController::INativeControllerListener
 						auto hostedWindow = wmManager->ordinaryWindowsInOrder[i]->id;
 						for (auto listener : hostedWindow->listeners)
 						{
-							listener->ForceRefresh(false, failureByResized, failureByLostDevice);
+							bool updated = false;
+							listener->ForceRefresh(false, updated, failureByResized, failureByLostDevice);
+							windowsUpdatedInLastFrame |= updated;
 							if (failureByResized || failureByLostDevice)
 							{
 								goto STOP_RENDERING;
@@ -702,7 +706,9 @@ GuiHostedController::INativeControllerListener
 						auto hostedWindow = wmManager->topMostedWindowsInOrder[i]->id;
 						for (auto listener : hostedWindow->listeners)
 						{
-							listener->ForceRefresh(false, failureByResized, failureByLostDevice);
+							bool updated = false;
+							listener->ForceRefresh(false, updated, failureByResized, failureByLostDevice);
+							windowsUpdatedInLastFrame |= updated;
 							if (failureByResized || failureByLostDevice)
 							{
 								goto STOP_RENDERING;
@@ -725,10 +731,12 @@ GuiHostedController::INativeControllerListener
 					if (failureByLostDevice)
 					{
 						hostedResourceManager->nativeManager->RecreateRenderTarget(nativeWindow);
+						wmManager->needRefresh = true;
 					}
 					else if (failureByResized)
 					{
 						hostedResourceManager->nativeManager->ResizeRenderTarget(nativeWindow);
+						wmManager->needRefresh = true;
 					}
 					else
 					{
@@ -736,7 +744,6 @@ GuiHostedController::INativeControllerListener
 						break;
 					}
 				}
-			SKIP_REFRESH:;
 			}
 		}
 
