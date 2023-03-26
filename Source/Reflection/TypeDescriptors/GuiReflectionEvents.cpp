@@ -77,6 +77,8 @@ Type Declaration
 				ENUM_CLASS_ITEM(RenderTargetChanged)
 				ENUM_CLASS_ITEM(ParentLineChanged)
 				ENUM_CLASS_ITEM(ServiceAdded)
+				ENUM_CLASS_ITEM(UpdateRequested)
+				ENUM_CLASS_ITEM(UpdateFullfilled)
 			END_ENUM_ITEM(ControlSignal)
 
 			BEGIN_CLASS_MEMBER(GuiControlSignalEventArgs)

@@ -1097,6 +1097,8 @@ enum presentation::compositions::ControlSignal {
     ParentLineChanged = 1,
     RenderTargetChanged = 0,
     ServiceAdded = 2,
+    UpdateFullfilled = 4,
+    UpdateRequested = 3,
 }
 
 @ValueType
