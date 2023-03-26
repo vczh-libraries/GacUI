@@ -4,7 +4,6 @@
 
 - Issue on dialog service
   - message box default button.
-  - message box is not shown at the center.
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
@@ -42,6 +41,11 @@
 - Add document for `<LocalizedStringsInjection/>` external injection.
 
 ## Done but not Released
+
+- Fixed Issues:
+  - GuiSharedSizeRootComposition makes rendering non-stopped.
+  - Fake dialog service:
+    - message box is not shown at the center.
 
 ## OS Provider Features
 
