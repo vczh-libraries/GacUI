@@ -30,6 +30,6 @@ Query2
 	::= Query2 : first "-" Query1 : second as SetQuery {op=Substract}
 	;
 
-QueryRoot
+@parser QueryRoot
 	::= !Query2
 	;

@@ -9,50 +9,44 @@ Licensed under https://github.com/vczh-libraries/License
 
 #include "GuiInstanceQueryAst.h"
 
-namespace vl
+namespace vl::presentation::instancequery
 {
-	namespace presentation
+	enum class GuiInstanceQueryClasses : vl::vint32_t
 	{
-		namespace instancequery
-		{
-			enum class GuiInstanceQueryClasses : vl::vint32_t
-			{
-				CascadeQuery = 0,
-				PrimaryQuery = 1,
-				Query = 2,
-				SetQuery = 3,
-			};
+		CascadeQuery = 0,
+		PrimaryQuery = 1,
+		Query = 2,
+		SetQuery = 3,
+	};
 
-			enum class GuiInstanceQueryFields : vl::vint32_t
-			{
-				CascadeQuery_child = 0,
-				CascadeQuery_parent = 1,
-				PrimaryQuery_attributeName = 2,
-				PrimaryQuery_attributeNameOption = 3,
-				PrimaryQuery_childOption = 4,
-				PrimaryQuery_referenceName = 5,
-				PrimaryQuery_typeName = 6,
-				PrimaryQuery_typeNameOption = 7,
-				SetQuery_first = 8,
-				SetQuery_op = 9,
-				SetQuery_second = 10,
-			};
+	enum class GuiInstanceQueryFields : vl::vint32_t
+	{
+		CascadeQuery_child = 0,
+		CascadeQuery_parent = 1,
+		PrimaryQuery_attributeName = 2,
+		PrimaryQuery_attributeNameOption = 3,
+		PrimaryQuery_childOption = 4,
+		PrimaryQuery_referenceName = 5,
+		PrimaryQuery_typeName = 6,
+		PrimaryQuery_typeNameOption = 7,
+		SetQuery_first = 8,
+		SetQuery_op = 9,
+		SetQuery_second = 10,
+	};
 
-			extern const wchar_t* GuiInstanceQueryTypeName(GuiInstanceQueryClasses type);
-			extern const wchar_t* GuiInstanceQueryCppTypeName(GuiInstanceQueryClasses type);
-			extern const wchar_t* GuiInstanceQueryFieldName(GuiInstanceQueryFields field);
-			extern const wchar_t* GuiInstanceQueryCppFieldName(GuiInstanceQueryFields field);
+	extern const wchar_t* GuiInstanceQueryTypeName(GuiInstanceQueryClasses type);
+	extern const wchar_t* GuiInstanceQueryCppTypeName(GuiInstanceQueryClasses type);
+	extern const wchar_t* GuiInstanceQueryFieldName(GuiInstanceQueryFields field);
+	extern const wchar_t* GuiInstanceQueryCppFieldName(GuiInstanceQueryFields field);
 
-			class GuiInstanceQueryAstInsReceiver : public vl::glr::AstInsReceiverBase
-			{
-			protected:
-				vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
-				vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
-			};
-		}
-	}
+	class GuiInstanceQueryAstInsReceiver : public vl::glr::AstInsReceiverBase
+	{
+	protected:
+		vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
+		vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
+	};
 }
 #endif

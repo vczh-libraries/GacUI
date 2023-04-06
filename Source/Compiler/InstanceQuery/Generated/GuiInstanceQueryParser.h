@@ -10,40 +10,35 @@ Licensed under https://github.com/vczh-libraries/License
 #include "GuiInstanceQuery_Assembler.h"
 #include "GuiInstanceQuery_Lexer.h"
 
-namespace vl
+namespace vl::presentation::instancequery
 {
-	namespace presentation
+	enum class ParserStates
 	{
-		namespace instancequery
-		{
-			enum class ParserStates
-			{
-				QPrimaryFragment = 0,
-				QPrimaryAttributed = 8,
-				QPrimary = 15,
-				Query0 = 24,
-				Query1 = 29,
-				Query2 = 38,
-				QueryRoot = 47,
-			};
+		QPrimaryFragment = 0,
+		QPrimaryAttributed = 8,
+		QPrimary = 15,
+		Query0 = 24,
+		Query1 = 29,
+		Query2 = 38,
+		QueryRoot = 47,
+	};
 
-			const wchar_t* ParserRuleName(vl::vint index);
-			const wchar_t* ParserStateLabel(vl::vint index);
-			extern void GuiInstanceQueryParserData(vl::stream::IStream& outputStream);
+	const wchar_t* ParserRuleName(vl::vint index);
+	const wchar_t* ParserStateLabel(vl::vint index);
+	extern void GuiInstanceQueryParserData(vl::stream::IStream& outputStream);
 
-			class Parser
-				: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver>
-				, protected vl::glr::automaton::IExecutor::ITypeCallback
-			{
-			protected:
-				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
-			public:
-				Parser();
+	class Parser
+		: public vl::glr::ParserBase<GuiInstanceQueryTokens, ParserStates, GuiInstanceQueryAstInsReceiver>
+		, protected vl::glr::automaton::IExecutor::ITypeCallback
+	{
+	protected:
+		vl::WString GetClassName(vl::vint32_t classIndex) const override;
+		vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
+	public:
+		Parser();
 
-				vl::Ptr<vl::presentation::instancequery::GuiIqQuery> ParseQueryRoot(const vl::WString& input, vl::vint codeIndex = -1) const;
-				vl::Ptr<vl::presentation::instancequery::GuiIqQuery> ParseQueryRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
-			};
-		}
-	}
+		vl::Ptr<vl::presentation::instancequery::GuiIqQuery> ParseQueryRoot(const vl::WString& input, vl::vint codeIndex = -1) const;
+		vl::Ptr<vl::presentation::instancequery::GuiIqQuery> ParseQueryRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
+	};
 }
 #endif

@@ -865,9 +865,28 @@ Executable
 				collections::Array<WString>			ruleNames;
 				collections::Array<WString>			stateLabels;
 			};
+
 /***********************************************************************
 IExecutor
 ***********************************************************************/
+
+			class UnableToResolveAmbiguityException : public Exception
+			{
+			public:
+				vint32_t							class1 = -1;
+				vint32_t							class2 = -1;
+				vint32_t							tokenIndex1 = -1;
+				vint32_t							tokenIndex2 = -1;
+
+				UnableToResolveAmbiguityException(const WString& message, vint32_t _class1, vint32_t _class2, vint32_t _tokenIndex1, vint32_t _tokenIndex2)
+					: Exception(message)
+					, class1(_class1)
+					, class2(_class2)
+					, tokenIndex1(_tokenIndex1)
+					, tokenIndex2(_tokenIndex2)
+				{
+				}
+			};
 
 			struct Trace;
 
@@ -877,6 +896,7 @@ IExecutor
 				class ITypeCallback : public virtual Interface
 				{
 				public:
+					virtual WString					GetClassName(vint32_t classIndex) const = 0;
 					virtual vint32_t				FindCommonBaseClass(vint32_t class1, vint32_t class2) const = 0;
 				};
 
@@ -1162,148 +1182,136 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_AST_AST
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
+	class JsonArray;
+	class JsonLiteral;
+	class JsonNode;
+	class JsonNumber;
+	class JsonObject;
+	class JsonObjectField;
+	class JsonString;
+
+	enum class JsonLiteralValue
 	{
-		namespace json
+		UNDEFINED_ENUM_ITEM_VALUE = -1,
+		True = 0,
+		False = 1,
+		Null = 2,
+	};
+
+	class JsonNode abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<JsonNode>
+	{
+	public:
+		class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 		{
-			class JsonArray;
-			class JsonLiteral;
-			class JsonNode;
-			class JsonNumber;
-			class JsonObject;
-			class JsonObjectField;
-			class JsonString;
+		public:
+			virtual void Visit(JsonLiteral* node) = 0;
+			virtual void Visit(JsonString* node) = 0;
+			virtual void Visit(JsonNumber* node) = 0;
+			virtual void Visit(JsonArray* node) = 0;
+			virtual void Visit(JsonObject* node) = 0;
+		};
 
-			enum class JsonLiteralValue
-			{
-				UNDEFINED_ENUM_ITEM_VALUE = -1,
-				True = 0,
-				False = 1,
-				Null = 2,
-			};
+		virtual void Accept(JsonNode::IVisitor* visitor) = 0;
 
-			class JsonNode abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<JsonNode>
-			{
-			public:
-				class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
-				{
-				public:
-					virtual void Visit(JsonLiteral* node) = 0;
-					virtual void Visit(JsonString* node) = 0;
-					virtual void Visit(JsonNumber* node) = 0;
-					virtual void Visit(JsonArray* node) = 0;
-					virtual void Visit(JsonObject* node) = 0;
-				};
+	};
 
-				virtual void Accept(JsonNode::IVisitor* visitor) = 0;
+	class JsonLiteral : public JsonNode, vl::reflection::Description<JsonLiteral>
+	{
+	public:
+		JsonLiteralValue value = JsonLiteralValue::UNDEFINED_ENUM_ITEM_VALUE;
 
-			};
+		void Accept(JsonNode::IVisitor* visitor) override;
+	};
 
-			class JsonLiteral : public JsonNode, vl::reflection::Description<JsonLiteral>
-			{
-			public:
-				JsonLiteralValue value = JsonLiteralValue::UNDEFINED_ENUM_ITEM_VALUE;
+	class JsonString : public JsonNode, vl::reflection::Description<JsonString>
+	{
+	public:
+		vl::glr::ParsingToken content;
 
-				void Accept(JsonNode::IVisitor* visitor) override;
-			};
+		void Accept(JsonNode::IVisitor* visitor) override;
+	};
 
-			class JsonString : public JsonNode, vl::reflection::Description<JsonString>
-			{
-			public:
-				vl::glr::ParsingToken content;
+	class JsonNumber : public JsonNode, vl::reflection::Description<JsonNumber>
+	{
+	public:
+		vl::glr::ParsingToken content;
 
-				void Accept(JsonNode::IVisitor* visitor) override;
-			};
+		void Accept(JsonNode::IVisitor* visitor) override;
+	};
 
-			class JsonNumber : public JsonNode, vl::reflection::Description<JsonNumber>
-			{
-			public:
-				vl::glr::ParsingToken content;
+	class JsonArray : public JsonNode, vl::reflection::Description<JsonArray>
+	{
+	public:
+		vl::collections::List<vl::Ptr<JsonNode>> items;
 
-				void Accept(JsonNode::IVisitor* visitor) override;
-			};
+		void Accept(JsonNode::IVisitor* visitor) override;
+	};
 
-			class JsonArray : public JsonNode, vl::reflection::Description<JsonArray>
-			{
-			public:
-				vl::collections::List<vl::Ptr<JsonNode>> items;
+	class JsonObjectField : public vl::glr::ParsingAstBase, vl::reflection::Description<JsonObjectField>
+	{
+	public:
+		vl::glr::ParsingToken name;
+		vl::Ptr<JsonNode> value;
+	};
 
-				void Accept(JsonNode::IVisitor* visitor) override;
-			};
+	class JsonObject : public JsonNode, vl::reflection::Description<JsonObject>
+	{
+	public:
+		vl::collections::List<vl::Ptr<JsonObjectField>> fields;
 
-			class JsonObjectField : public vl::glr::ParsingAstBase, vl::reflection::Description<JsonObjectField>
-			{
-			public:
-				vl::glr::ParsingToken name;
-				vl::Ptr<JsonNode> value;
-			};
-
-			class JsonObject : public JsonNode, vl::reflection::Description<JsonObject>
-			{
-			public:
-				vl::collections::List<vl::Ptr<JsonObjectField>> fields;
-
-				void Accept(JsonNode::IVisitor* visitor) override;
-			};
-		}
-	}
+		void Accept(JsonNode::IVisitor* visitor) override;
+	};
 }
-namespace vl
+namespace vl::reflection::description
 {
-	namespace reflection
-	{
-		namespace description
-		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(vl::glr::json::JsonNode)
-			DECL_TYPE_INFO(vl::glr::json::JsonNode::IVisitor)
-			DECL_TYPE_INFO(vl::glr::json::JsonLiteralValue)
-			DECL_TYPE_INFO(vl::glr::json::JsonLiteral)
-			DECL_TYPE_INFO(vl::glr::json::JsonString)
-			DECL_TYPE_INFO(vl::glr::json::JsonNumber)
-			DECL_TYPE_INFO(vl::glr::json::JsonArray)
-			DECL_TYPE_INFO(vl::glr::json::JsonObjectField)
-			DECL_TYPE_INFO(vl::glr::json::JsonObject)
+	DECL_TYPE_INFO(vl::glr::json::JsonNode)
+	DECL_TYPE_INFO(vl::glr::json::JsonNode::IVisitor)
+	DECL_TYPE_INFO(vl::glr::json::JsonLiteralValue)
+	DECL_TYPE_INFO(vl::glr::json::JsonLiteral)
+	DECL_TYPE_INFO(vl::glr::json::JsonString)
+	DECL_TYPE_INFO(vl::glr::json::JsonNumber)
+	DECL_TYPE_INFO(vl::glr::json::JsonArray)
+	DECL_TYPE_INFO(vl::glr::json::JsonObjectField)
+	DECL_TYPE_INFO(vl::glr::json::JsonObject)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::json::JsonNode::IVisitor)
-				void Visit(vl::glr::json::JsonLiteral* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::json::JsonString* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::json::JsonNumber* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::json::JsonArray* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::json::JsonObject* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-			END_INTERFACE_PROXY(vl::glr::json::JsonNode::IVisitor)
-
-#endif
-#endif
-			/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			extern bool JsonAstLoadTypes();
+	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::json::JsonNode::IVisitor)
+		void Visit(vl::glr::json::JsonLiteral* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
 		}
-	}
+
+		void Visit(vl::glr::json::JsonString* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::glr::json::JsonNumber* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::glr::json::JsonArray* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::glr::json::JsonObject* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+	END_INTERFACE_PROXY(vl::glr::json::JsonNode::IVisitor)
+
+#endif
+#endif
+	/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
+	/// <returns>Returns true if this operation succeeded.</returns>
+	extern bool JsonAstLoadTypes();
 }
 #endif
 
@@ -1320,54 +1328,45 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_AST_AST_BUILDER
 
 
-namespace vl
+namespace vl::glr::json::builder
 {
-	namespace glr
+	class MakeArray : public vl::glr::ParsingAstBuilder<JsonArray>
 	{
-		namespace json
-		{
-			namespace builder
-			{
-				class MakeArray : public vl::glr::ParsingAstBuilder<JsonArray>
-				{
-				public:
-					MakeArray& items(const vl::Ptr<JsonNode>& value);
-				};
+	public:
+		MakeArray& items(const vl::Ptr<JsonNode>& value);
+	};
 
-				class MakeLiteral : public vl::glr::ParsingAstBuilder<JsonLiteral>
-				{
-				public:
-					MakeLiteral& value(JsonLiteralValue value);
-				};
+	class MakeLiteral : public vl::glr::ParsingAstBuilder<JsonLiteral>
+	{
+	public:
+		MakeLiteral& value(JsonLiteralValue value);
+	};
 
-				class MakeNumber : public vl::glr::ParsingAstBuilder<JsonNumber>
-				{
-				public:
-					MakeNumber& content(const vl::WString& value);
-				};
+	class MakeNumber : public vl::glr::ParsingAstBuilder<JsonNumber>
+	{
+	public:
+		MakeNumber& content(const vl::WString& value);
+	};
 
-				class MakeObject : public vl::glr::ParsingAstBuilder<JsonObject>
-				{
-				public:
-					MakeObject& fields(const vl::Ptr<JsonObjectField>& value);
-				};
+	class MakeObject : public vl::glr::ParsingAstBuilder<JsonObject>
+	{
+	public:
+		MakeObject& fields(const vl::Ptr<JsonObjectField>& value);
+	};
 
-				class MakeObjectField : public vl::glr::ParsingAstBuilder<JsonObjectField>
-				{
-				public:
-					MakeObjectField& name(const vl::WString& value);
-					MakeObjectField& value(const vl::Ptr<JsonNode>& value);
-				};
+	class MakeObjectField : public vl::glr::ParsingAstBuilder<JsonObjectField>
+	{
+	public:
+		MakeObjectField& name(const vl::WString& value);
+		MakeObjectField& value(const vl::Ptr<JsonNode>& value);
+	};
 
-				class MakeString : public vl::glr::ParsingAstBuilder<JsonString>
-				{
-				public:
-					MakeString& content(const vl::WString& value);
-				};
+	class MakeString : public vl::glr::ParsingAstBuilder<JsonString>
+	{
+	public:
+		MakeString& content(const vl::WString& value);
+	};
 
-			}
-		}
-	}
 }
 #endif
 
@@ -1384,50 +1383,41 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_AST_AST_COPY_VISITOR
 
 
-namespace vl
+namespace vl::glr::json::copy_visitor
 {
-	namespace glr
+	/// <summary>A copy visitor, overriding all abstract methods with AST copying code.</summary>
+	class AstVisitor
+		: public virtual vl::glr::CopyVisitorBase
+		, protected virtual JsonNode::IVisitor
 	{
-		namespace json
-		{
-			namespace copy_visitor
-			{
-				/// <summary>A copy visitor, overriding all abstract methods with AST copying code.</summary>
-				class AstVisitor
-					: public virtual vl::glr::CopyVisitorBase
-					, protected virtual JsonNode::IVisitor
-				{
-				protected:
-					void CopyFields(JsonArray* from, JsonArray* to);
-					void CopyFields(JsonLiteral* from, JsonLiteral* to);
-					void CopyFields(JsonNode* from, JsonNode* to);
-					void CopyFields(JsonNumber* from, JsonNumber* to);
-					void CopyFields(JsonObject* from, JsonObject* to);
-					void CopyFields(JsonObjectField* from, JsonObjectField* to);
-					void CopyFields(JsonString* from, JsonString* to);
+	protected:
+		void CopyFields(JsonArray* from, JsonArray* to);
+		void CopyFields(JsonLiteral* from, JsonLiteral* to);
+		void CopyFields(JsonNode* from, JsonNode* to);
+		void CopyFields(JsonNumber* from, JsonNumber* to);
+		void CopyFields(JsonObject* from, JsonObject* to);
+		void CopyFields(JsonObjectField* from, JsonObjectField* to);
+		void CopyFields(JsonString* from, JsonString* to);
 
-				protected:
-					virtual void Visit(JsonObjectField* node);
+	protected:
+		virtual void Visit(JsonObjectField* node);
 
-					void Visit(JsonLiteral* node) override;
-					void Visit(JsonString* node) override;
-					void Visit(JsonNumber* node) override;
-					void Visit(JsonArray* node) override;
-					void Visit(JsonObject* node) override;
+		void Visit(JsonLiteral* node) override;
+		void Visit(JsonString* node) override;
+		void Visit(JsonNumber* node) override;
+		void Visit(JsonArray* node) override;
+		void Visit(JsonObject* node) override;
 
-				public:
-					virtual vl::Ptr<JsonNode> CopyNode(JsonNode* node);
-					virtual vl::Ptr<JsonObjectField> CopyNode(JsonObjectField* node);
+	public:
+		virtual vl::Ptr<JsonNode> CopyNode(JsonNode* node);
+		virtual vl::Ptr<JsonObjectField> CopyNode(JsonObjectField* node);
 
-					vl::Ptr<JsonArray> CopyNode(JsonArray* node);
-					vl::Ptr<JsonLiteral> CopyNode(JsonLiteral* node);
-					vl::Ptr<JsonNumber> CopyNode(JsonNumber* node);
-					vl::Ptr<JsonObject> CopyNode(JsonObject* node);
-					vl::Ptr<JsonString> CopyNode(JsonString* node);
-				};
-			}
-		}
-	}
+		vl::Ptr<JsonArray> CopyNode(JsonArray* node);
+		vl::Ptr<JsonLiteral> CopyNode(JsonLiteral* node);
+		vl::Ptr<JsonNumber> CopyNode(JsonNumber* node);
+		vl::Ptr<JsonObject> CopyNode(JsonObject* node);
+		vl::Ptr<JsonString> CopyNode(JsonString* node);
+	};
 }
 #endif
 
@@ -1444,32 +1434,23 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_AST_AST_EMPTY_VISITOR
 
 
-namespace vl
+namespace vl::glr::json::empty_visitor
 {
-	namespace glr
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class NodeVisitor : public vl::Object, public JsonNode::IVisitor
 	{
-		namespace json
-		{
-			namespace empty_visitor
-			{
-				/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-				class NodeVisitor : public vl::Object, public JsonNode::IVisitor
-				{
-				protected:
-					// Dispatch (virtual) --------------------------------
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-				public:
-					// Visitor Members -----------------------------------
-					void Visit(JsonLiteral* node) override;
-					void Visit(JsonString* node) override;
-					void Visit(JsonNumber* node) override;
-					void Visit(JsonArray* node) override;
-					void Visit(JsonObject* node) override;
-				};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(JsonLiteral* node) override;
+		void Visit(JsonString* node) override;
+		void Visit(JsonNumber* node) override;
+		void Visit(JsonArray* node) override;
+		void Visit(JsonObject* node) override;
+	};
 
-			}
-		}
-	}
 }
 #endif
 
@@ -1486,44 +1467,35 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_AST_AST_JSON_VISITOR
 
 
-namespace vl
+namespace vl::glr::json::json_visitor
 {
-	namespace glr
+	/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
+	class AstVisitor
+		: public vl::glr::JsonVisitorBase
+		, protected virtual JsonNode::IVisitor
 	{
-		namespace json
-		{
-			namespace json_visitor
-			{
-				/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
-				class AstVisitor
-					: public vl::glr::JsonVisitorBase
-					, protected virtual JsonNode::IVisitor
-				{
-				protected:
-					virtual void PrintFields(JsonArray* node);
-					virtual void PrintFields(JsonLiteral* node);
-					virtual void PrintFields(JsonNode* node);
-					virtual void PrintFields(JsonNumber* node);
-					virtual void PrintFields(JsonObject* node);
-					virtual void PrintFields(JsonObjectField* node);
-					virtual void PrintFields(JsonString* node);
+	protected:
+		virtual void PrintFields(JsonArray* node);
+		virtual void PrintFields(JsonLiteral* node);
+		virtual void PrintFields(JsonNode* node);
+		virtual void PrintFields(JsonNumber* node);
+		virtual void PrintFields(JsonObject* node);
+		virtual void PrintFields(JsonObjectField* node);
+		virtual void PrintFields(JsonString* node);
 
-				protected:
-					void Visit(JsonLiteral* node) override;
-					void Visit(JsonString* node) override;
-					void Visit(JsonNumber* node) override;
-					void Visit(JsonArray* node) override;
-					void Visit(JsonObject* node) override;
+	protected:
+		void Visit(JsonLiteral* node) override;
+		void Visit(JsonString* node) override;
+		void Visit(JsonNumber* node) override;
+		void Visit(JsonArray* node) override;
+		void Visit(JsonObject* node) override;
 
-				public:
-					AstVisitor(vl::stream::StreamWriter& _writer);
+	public:
+		AstVisitor(vl::stream::StreamWriter& _writer);
 
-					void Print(JsonNode* node);
-					void Print(JsonObjectField* node);
-				};
-			}
-		}
-	}
+		void Print(JsonNode* node);
+		void Print(JsonObjectField* node);
+	};
 }
 #endif
 
@@ -1540,54 +1512,45 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_AST_AST_TRAVERSE_VISITOR
 
 
-namespace vl
+namespace vl::glr::json::traverse_visitor
 {
-	namespace glr
+	/// <summary>A traverse visitor, overriding all abstract methods with AST visiting code.</summary>
+	class AstVisitor
+		: public vl::Object
+		, protected virtual JsonNode::IVisitor
 	{
-		namespace json
-		{
-			namespace traverse_visitor
-			{
-				/// <summary>A traverse visitor, overriding all abstract methods with AST visiting code.</summary>
-				class AstVisitor
-					: public vl::Object
-					, protected virtual JsonNode::IVisitor
-				{
-				protected:
-					virtual void Traverse(vl::glr::ParsingToken& token);
-					virtual void Traverse(vl::glr::ParsingAstBase* node);
-					virtual void Traverse(JsonArray* node);
-					virtual void Traverse(JsonLiteral* node);
-					virtual void Traverse(JsonNode* node);
-					virtual void Traverse(JsonNumber* node);
-					virtual void Traverse(JsonObject* node);
-					virtual void Traverse(JsonObjectField* node);
-					virtual void Traverse(JsonString* node);
+	protected:
+		virtual void Traverse(vl::glr::ParsingToken& token);
+		virtual void Traverse(vl::glr::ParsingAstBase* node);
+		virtual void Traverse(JsonArray* node);
+		virtual void Traverse(JsonLiteral* node);
+		virtual void Traverse(JsonNode* node);
+		virtual void Traverse(JsonNumber* node);
+		virtual void Traverse(JsonObject* node);
+		virtual void Traverse(JsonObjectField* node);
+		virtual void Traverse(JsonString* node);
 
-				protected:
-					virtual void Finishing(vl::glr::ParsingAstBase* node);
-					virtual void Finishing(JsonArray* node);
-					virtual void Finishing(JsonLiteral* node);
-					virtual void Finishing(JsonNode* node);
-					virtual void Finishing(JsonNumber* node);
-					virtual void Finishing(JsonObject* node);
-					virtual void Finishing(JsonObjectField* node);
-					virtual void Finishing(JsonString* node);
+	protected:
+		virtual void Finishing(vl::glr::ParsingAstBase* node);
+		virtual void Finishing(JsonArray* node);
+		virtual void Finishing(JsonLiteral* node);
+		virtual void Finishing(JsonNode* node);
+		virtual void Finishing(JsonNumber* node);
+		virtual void Finishing(JsonObject* node);
+		virtual void Finishing(JsonObjectField* node);
+		virtual void Finishing(JsonString* node);
 
-				protected:
-					void Visit(JsonLiteral* node) override;
-					void Visit(JsonString* node) override;
-					void Visit(JsonNumber* node) override;
-					void Visit(JsonArray* node) override;
-					void Visit(JsonObject* node) override;
+	protected:
+		void Visit(JsonLiteral* node) override;
+		void Visit(JsonString* node) override;
+		void Visit(JsonNumber* node) override;
+		void Visit(JsonArray* node) override;
+		void Visit(JsonObject* node) override;
 
-				public:
-					void InspectInto(JsonNode* node);
-					void InspectInto(JsonObjectField* node);
-				};
-			}
-		}
-	}
+	public:
+		void InspectInto(JsonNode* node);
+		void InspectInto(JsonObjectField* node);
+	};
 }
 #endif
 
@@ -1604,50 +1567,44 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_AST_ASSEMBLER
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
+	enum class JsonClasses : vl::vint32_t
 	{
-		namespace json
-		{
-			enum class JsonClasses : vl::vint32_t
-			{
-				Array = 0,
-				Literal = 1,
-				Node = 2,
-				Number = 3,
-				Object = 4,
-				ObjectField = 5,
-				String = 6,
-			};
+		Array = 0,
+		Literal = 1,
+		Node = 2,
+		Number = 3,
+		Object = 4,
+		ObjectField = 5,
+		String = 6,
+	};
 
-			enum class JsonFields : vl::vint32_t
-			{
-				Array_items = 0,
-				Literal_value = 1,
-				Number_content = 2,
-				Object_fields = 3,
-				ObjectField_name = 4,
-				ObjectField_value = 5,
-				String_content = 6,
-			};
+	enum class JsonFields : vl::vint32_t
+	{
+		Array_items = 0,
+		Literal_value = 1,
+		Number_content = 2,
+		Object_fields = 3,
+		ObjectField_name = 4,
+		ObjectField_value = 5,
+		String_content = 6,
+	};
 
-			extern const wchar_t* JsonTypeName(JsonClasses type);
-			extern const wchar_t* JsonCppTypeName(JsonClasses type);
-			extern const wchar_t* JsonFieldName(JsonFields field);
-			extern const wchar_t* JsonCppFieldName(JsonFields field);
+	extern const wchar_t* JsonTypeName(JsonClasses type);
+	extern const wchar_t* JsonCppTypeName(JsonClasses type);
+	extern const wchar_t* JsonFieldName(JsonFields field);
+	extern const wchar_t* JsonCppFieldName(JsonFields field);
 
-			class JsonAstInsReceiver : public vl::glr::AstInsReceiverBase
-			{
-			protected:
-				vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
-				vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
-			};
-		}
-	}
+	class JsonAstInsReceiver : public vl::glr::AstInsReceiverBase
+	{
+	protected:
+		vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
+		vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
+	};
 }
 #endif
 
@@ -1664,36 +1621,30 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_LEXER
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
+	enum class JsonTokens : vl::vint32_t
 	{
-		namespace json
-		{
-			enum class JsonTokens : vl::vint32_t
-			{
-				TRUE_VALUE = 0,
-				FALSE_VALUE = 1,
-				NULL_VALUE = 2,
-				OBJOPEN = 3,
-				OBJCLOSE = 4,
-				ARROPEN = 5,
-				ARRCLOSE = 6,
-				COMMA = 7,
-				COLON = 8,
-				NUMBER = 9,
-				STRING = 10,
-				SPACE = 11,
-			};
+		TRUE_VALUE = 0,
+		FALSE_VALUE = 1,
+		NULL_VALUE = 2,
+		OBJOPEN = 3,
+		OBJCLOSE = 4,
+		ARROPEN = 5,
+		ARRCLOSE = 6,
+		COMMA = 7,
+		COLON = 8,
+		NUMBER = 9,
+		STRING = 10,
+		SPACE = 11,
+	};
 
-			constexpr vl::vint JsonTokenCount = 12;
-			extern bool JsonTokenDeleter(vl::vint token);
-			extern const wchar_t* JsonTokenId(JsonTokens token);
-			extern const wchar_t* JsonTokenDisplayText(JsonTokens token);
-			extern const wchar_t* JsonTokenRegex(JsonTokens token);
-			extern void JsonLexerData(vl::stream::IStream& outputStream);
-		}
-	}
+	constexpr vl::vint JsonTokenCount = 12;
+	extern bool JsonTokenDeleter(vl::vint token);
+	extern const wchar_t* JsonTokenId(JsonTokens token);
+	extern const wchar_t* JsonTokenDisplayText(JsonTokens token);
+	extern const wchar_t* JsonTokenRegex(JsonTokens token);
+	extern void JsonLexerData(vl::stream::IStream& outputStream);
 }
 #endif
 
@@ -1710,40 +1661,35 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_JSON_PARSER_SYNTAX
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
+	enum class ParserStates
 	{
-		namespace json
-		{
-			enum class ParserStates
-			{
-				JLiteral = 0,
-				JField = 7,
-				JObject = 12,
-				JArray = 18,
-				JValue = 24,
-				JRoot = 29,
-			};
+		JLiteral = 0,
+		JField = 7,
+		JObject = 12,
+		JArray = 18,
+		JValue = 24,
+		JRoot = 29,
+	};
 
-			const wchar_t* ParserRuleName(vl::vint index);
-			const wchar_t* ParserStateLabel(vl::vint index);
-			extern void JsonParserData(vl::stream::IStream& outputStream);
+	const wchar_t* ParserRuleName(vl::vint index);
+	const wchar_t* ParserStateLabel(vl::vint index);
+	extern void JsonParserData(vl::stream::IStream& outputStream);
 
-			class Parser
-				: public vl::glr::ParserBase<JsonTokens, ParserStates, JsonAstInsReceiver>
-				, protected vl::glr::automaton::IExecutor::ITypeCallback
-			{
-			protected:
-				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
-			public:
-				Parser();
+	class Parser
+		: public vl::glr::ParserBase<JsonTokens, ParserStates, JsonAstInsReceiver>
+		, protected vl::glr::automaton::IExecutor::ITypeCallback
+	{
+	protected:
+		vl::WString GetClassName(vl::vint32_t classIndex) const override;
+		vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
+	public:
+		Parser();
 
-				vl::Ptr<vl::glr::json::JsonNode> ParseJRoot(const vl::WString& input, vl::vint codeIndex = -1) const;
-				vl::Ptr<vl::glr::json::JsonNode> ParseJRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
-			};
-		}
-	}
+		vl::Ptr<vl::glr::json::JsonNode> ParseJRoot(const vl::WString& input, vl::vint codeIndex = -1) const;
+		vl::Ptr<vl::glr::json::JsonNode> ParseJRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
+	};
 }
 #endif
 
@@ -2041,11 +1987,16 @@ TraceManager (Data Structures -- Input/EndOfInput)
 TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
 ***********************************************************************/
 
+			struct InsRef
+			{
+				Ref<Trace>							trace;
+				vint32_t							ins = -1;
+			};
+
 			struct InsExec_InsRefLink : Allocatable<InsExec_InsRefLink>
 			{
 				Ref<InsExec_InsRefLink>				previous;
-				Ref<Trace>							trace;
-				vint32_t							ins = -1;
+				InsRef								insRef;
 			};
 
 			struct InsExec_ObjRefLink : Allocatable<InsExec_ObjRefLink>
@@ -2056,26 +2007,31 @@ TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
 
 			struct InsExec_Object : Allocatable<InsExec_Object>, WithMagicCounter
 			{
+				static const vint32_t				TokenOrEnumItemObjectId = -2;
+
 				// previous allocated object
 				Ref<InsExec_Object>					previous;
 
-				// injectObjectIds are objects it injects into by LriFetch
-				Ref<InsExec_ObjRefLink>				injectObjectIds;
+				// fieldObjectIds are object fields of this object
+				Ref<InsExec_ObjRefLink>				fieldObjectIds;
+
+				// assignedToObjectIds are objects who has at least one field that is this object
+				Ref<InsExec_ObjRefLink>				assignedToObjectIds;
 
 				// instruction that creates this object
-				Ref<Trace>							createTrace;
-				vint32_t							createIns = -1;
+				InsRef								createInsRef;
 
 				// DelayFieldAssignment instructions that associates to the current object
 				Ref<InsExec_InsRefLink>				dfaInsRefs;
 
 				// first instruction that creates this object
-				Ref<Trace>							topLocalTrace;
-				vint32_t							topLocalIns = -1;
+				InsRef								topLocalInsRef;
 
 				// first instruction that creates this object or its fields
-				Ref<Trace>							topTrace;
-				vint32_t							topIns = -1;
+				InsRef								topInsRef;
+
+				// last instructions that closes this object
+				Ref<InsExec_InsRefLink>				bottomInsRefs;
 			};
 
 			struct InsExec_ObjectStack : Allocatable<InsExec_ObjectStack>, WithMagicCounter
@@ -2096,8 +2052,9 @@ TraceManager (Data Structures -- PrepareTraceRoute/ResolveAmbiguity)
 				// InsExec_ObjRefLink assigned by BO/BOLA/RO
 				Ref<InsExec_ObjRefLink>				objectIds;
 
-				// objectIds will be added to reverseInjectObjectIds::injectObjectIds
-				Ref<InsExec_ObjRefLink>				reverseInjectObjectIds;
+				// objectIds will be added to reverseAssignedToObjectIds::assignedToObjectIds when ReopenObject happens
+				// it happens when a field is assigned to a DFA created object, the objectIds are unknown yet
+				Ref<InsExec_ObjRefLink>				reverseAssignedToObjectIds;
 			};
 
 			struct InsExec_Context
@@ -2380,12 +2337,12 @@ TraceManager
 				InsExec_Object*								NewObject();
 				vint32_t									GetStackBase(InsExec_Context& context);
 				vint32_t									GetStackTop(InsExec_Context& context);
-				void										PushInsRefLink(Ref<InsExec_InsRefLink>& link, Ref<Trace> trace, vint32_t ins);
+				void										PushInsRefLink(Ref<InsExec_InsRefLink>& link, InsRef insRef);
 				void										PushObjRefLink(Ref<InsExec_ObjRefLink>& link, Ref<InsExec_Object> id);
 				Ref<InsExec_InsRefLink>						JoinInsRefLink(Ref<InsExec_InsRefLink> first, Ref<InsExec_InsRefLink> second);
 				Ref<InsExec_ObjRefLink>						JoinObjRefLink(Ref<InsExec_ObjRefLink> first, Ref<InsExec_ObjRefLink> second);
-				void										PushInjectObjectIdsSingleWithMagic(Ref<InsExec_ObjRefLink> container, Ref<InsExec_Object> element);
-				void										PushInjectObjectIdsMultipleWithMagic(Ref<InsExec_ObjRefLink> container, Ref<InsExec_ObjRefLink> elements);
+				void										PushAssignedToObjectIdsSingleWithMagic(Ref<InsExec_ObjRefLink> fieldObjectIds, Ref<InsExec_Object> assignedToTarget);
+				void										PushAssignedToObjectIdsMultipleWithMagic(Ref<InsExec_ObjRefLink> fieldObjectIds, Ref<InsExec_ObjRefLink> assignedToTargets);
 				InsExec_ObjectStack*						PushObjectStackSingle(InsExec_Context& context, Ref<InsExec_Object> objectId);
 				InsExec_ObjectStack*						PushObjectStackMultiple(InsExec_Context& context, Ref<InsExec_ObjRefLink> linkId);
 				InsExec_CreateStack*						PushCreateStack(InsExec_Context& context);
@@ -2402,9 +2359,13 @@ TraceManager
 				void										MergeInsExecContext(Trace* mergeTrace);
 
 				// phase: PartialExecuteTraces - CalculateObjectFirstInstruction
-				bool										UpdateTopTrace(Ref<Trace>& topTrace, vint32_t& topIns, Ref<Trace> newTrace, vint32_t newIns);
-				void										InjectFirstInstruction(Ref<Trace> trace, vint32_t ins, Ref<InsExec_ObjRefLink> injectTargets, vuint64_t magicInjection);
+				bool										UpdateTopTrace(InsRef& topInsRef, InsRef newInsRef);
+				void										InjectFirstInstruction(InsRef insRef, Ref<InsExec_ObjRefLink> injectTargets, vuint64_t magicInjection);
 				void										CalculateObjectFirstInstruction();
+
+				// phase: PartialExecuteTraces - CalculateObjectLastInstruction
+				bool										IsInTheSameBranch(Trace* forward, Trace* targetForwardAtFront);
+				void										CalculateObjectLastInstruction();
 
 				// phase: PartialExecuteTraces
 				void										PartialExecuteTraces();
@@ -2430,9 +2391,9 @@ TraceManager
 
 				// phase: CheckMergeTraces
 				template<typename TCallback>
-				bool										SearchForObjects(Ref<InsExec_ObjRefLink> objRefLinkStartSet, bool withCounter, TCallback&& callback);
+				bool										EnumerateObjects(Ref<InsExec_ObjRefLink> objRefLinkStartSet, bool withCounter, TCallback&& callback);
 				template<typename TCallback>
-				bool										SearchForEndObjectInstructions(Trace* createTrace, vint32_t createIns, TCallback&& callback);
+				bool										EnumerateBottomInstructions(InsExec_Object* ieObject, TCallback&& callback);
 				bool										ComparePrefix(TraceExec* baselineTraceExec, TraceExec* commingTraceExec, vint32_t prefix);
 				bool										ComparePostfix(TraceExec* baselineTraceExec, TraceExec* commingTraceExec, vint32_t postfix);
 				template<typename TCallback>
@@ -2591,160 +2552,148 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_AST_AST
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
+	class XmlAttribute;
+	class XmlCData;
+	class XmlComment;
+	class XmlDocument;
+	class XmlElement;
+	class XmlInstruction;
+	class XmlNode;
+	class XmlText;
+
+	class XmlNode abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<XmlNode>
 	{
-		namespace xml
+	public:
+		class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
 		{
-			class XmlAttribute;
-			class XmlCData;
-			class XmlComment;
-			class XmlDocument;
-			class XmlElement;
-			class XmlInstruction;
-			class XmlNode;
-			class XmlText;
+		public:
+			virtual void Visit(XmlText* node) = 0;
+			virtual void Visit(XmlCData* node) = 0;
+			virtual void Visit(XmlComment* node) = 0;
+			virtual void Visit(XmlElement* node) = 0;
+			virtual void Visit(XmlInstruction* node) = 0;
+			virtual void Visit(XmlDocument* node) = 0;
+		};
 
-			class XmlNode abstract : public vl::glr::ParsingAstBase, vl::reflection::Description<XmlNode>
-			{
-			public:
-				class IVisitor : public virtual vl::reflection::IDescriptable, vl::reflection::Description<IVisitor>
-				{
-				public:
-					virtual void Visit(XmlText* node) = 0;
-					virtual void Visit(XmlCData* node) = 0;
-					virtual void Visit(XmlComment* node) = 0;
-					virtual void Visit(XmlElement* node) = 0;
-					virtual void Visit(XmlInstruction* node) = 0;
-					virtual void Visit(XmlDocument* node) = 0;
-				};
+		virtual void Accept(XmlNode::IVisitor* visitor) = 0;
 
-				virtual void Accept(XmlNode::IVisitor* visitor) = 0;
+	};
 
-			};
+	class XmlText : public XmlNode, vl::reflection::Description<XmlText>
+	{
+	public:
+		vl::glr::ParsingToken content;
 
-			class XmlText : public XmlNode, vl::reflection::Description<XmlText>
-			{
-			public:
-				vl::glr::ParsingToken content;
+		void Accept(XmlNode::IVisitor* visitor) override;
+	};
 
-				void Accept(XmlNode::IVisitor* visitor) override;
-			};
+	class XmlCData : public XmlNode, vl::reflection::Description<XmlCData>
+	{
+	public:
+		vl::glr::ParsingToken content;
 
-			class XmlCData : public XmlNode, vl::reflection::Description<XmlCData>
-			{
-			public:
-				vl::glr::ParsingToken content;
+		void Accept(XmlNode::IVisitor* visitor) override;
+	};
 
-				void Accept(XmlNode::IVisitor* visitor) override;
-			};
+	class XmlAttribute : public vl::glr::ParsingAstBase, vl::reflection::Description<XmlAttribute>
+	{
+	public:
+		vl::glr::ParsingToken name;
+		vl::glr::ParsingToken value;
+	};
 
-			class XmlAttribute : public vl::glr::ParsingAstBase, vl::reflection::Description<XmlAttribute>
-			{
-			public:
-				vl::glr::ParsingToken name;
-				vl::glr::ParsingToken value;
-			};
+	class XmlComment : public XmlNode, vl::reflection::Description<XmlComment>
+	{
+	public:
+		vl::glr::ParsingToken content;
 
-			class XmlComment : public XmlNode, vl::reflection::Description<XmlComment>
-			{
-			public:
-				vl::glr::ParsingToken content;
+		void Accept(XmlNode::IVisitor* visitor) override;
+	};
 
-				void Accept(XmlNode::IVisitor* visitor) override;
-			};
+	class XmlElement : public XmlNode, vl::reflection::Description<XmlElement>
+	{
+	public:
+		vl::glr::ParsingToken name;
+		vl::glr::ParsingToken closingName;
+		vl::collections::List<vl::Ptr<XmlAttribute>> attributes;
+		vl::collections::List<vl::Ptr<XmlNode>> subNodes;
 
-			class XmlElement : public XmlNode, vl::reflection::Description<XmlElement>
-			{
-			public:
-				vl::glr::ParsingToken name;
-				vl::glr::ParsingToken closingName;
-				vl::collections::List<vl::Ptr<XmlAttribute>> attributes;
-				vl::collections::List<vl::Ptr<XmlNode>> subNodes;
+		void Accept(XmlNode::IVisitor* visitor) override;
+	};
 
-				void Accept(XmlNode::IVisitor* visitor) override;
-			};
+	class XmlInstruction : public XmlNode, vl::reflection::Description<XmlInstruction>
+	{
+	public:
+		vl::glr::ParsingToken name;
+		vl::collections::List<vl::Ptr<XmlAttribute>> attributes;
 
-			class XmlInstruction : public XmlNode, vl::reflection::Description<XmlInstruction>
-			{
-			public:
-				vl::glr::ParsingToken name;
-				vl::collections::List<vl::Ptr<XmlAttribute>> attributes;
+		void Accept(XmlNode::IVisitor* visitor) override;
+	};
 
-				void Accept(XmlNode::IVisitor* visitor) override;
-			};
+	class XmlDocument : public XmlNode, vl::reflection::Description<XmlDocument>
+	{
+	public:
+		vl::collections::List<vl::Ptr<XmlNode>> prologs;
+		vl::Ptr<XmlElement> rootElement;
 
-			class XmlDocument : public XmlNode, vl::reflection::Description<XmlDocument>
-			{
-			public:
-				vl::collections::List<vl::Ptr<XmlNode>> prologs;
-				vl::Ptr<XmlElement> rootElement;
-
-				void Accept(XmlNode::IVisitor* visitor) override;
-			};
-		}
-	}
+		void Accept(XmlNode::IVisitor* visitor) override;
+	};
 }
-namespace vl
+namespace vl::reflection::description
 {
-	namespace reflection
-	{
-		namespace description
-		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			DECL_TYPE_INFO(vl::glr::xml::XmlNode)
-			DECL_TYPE_INFO(vl::glr::xml::XmlNode::IVisitor)
-			DECL_TYPE_INFO(vl::glr::xml::XmlText)
-			DECL_TYPE_INFO(vl::glr::xml::XmlCData)
-			DECL_TYPE_INFO(vl::glr::xml::XmlAttribute)
-			DECL_TYPE_INFO(vl::glr::xml::XmlComment)
-			DECL_TYPE_INFO(vl::glr::xml::XmlElement)
-			DECL_TYPE_INFO(vl::glr::xml::XmlInstruction)
-			DECL_TYPE_INFO(vl::glr::xml::XmlDocument)
+	DECL_TYPE_INFO(vl::glr::xml::XmlNode)
+	DECL_TYPE_INFO(vl::glr::xml::XmlNode::IVisitor)
+	DECL_TYPE_INFO(vl::glr::xml::XmlText)
+	DECL_TYPE_INFO(vl::glr::xml::XmlCData)
+	DECL_TYPE_INFO(vl::glr::xml::XmlAttribute)
+	DECL_TYPE_INFO(vl::glr::xml::XmlComment)
+	DECL_TYPE_INFO(vl::glr::xml::XmlElement)
+	DECL_TYPE_INFO(vl::glr::xml::XmlInstruction)
+	DECL_TYPE_INFO(vl::glr::xml::XmlDocument)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::xml::XmlNode::IVisitor)
-				void Visit(vl::glr::xml::XmlText* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::xml::XmlCData* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::xml::XmlComment* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::xml::XmlElement* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::xml::XmlInstruction* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-				void Visit(vl::glr::xml::XmlDocument* node) override
-				{
-					INVOKE_INTERFACE_PROXY(Visit, node);
-				}
-
-			END_INTERFACE_PROXY(vl::glr::xml::XmlNode::IVisitor)
-
-#endif
-#endif
-			/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
-			/// <returns>Returns true if this operation succeeded.</returns>
-			extern bool XmlAstLoadTypes();
+	BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::glr::xml::XmlNode::IVisitor)
+		void Visit(vl::glr::xml::XmlText* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
 		}
-	}
+
+		void Visit(vl::glr::xml::XmlCData* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::glr::xml::XmlComment* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::glr::xml::XmlElement* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::glr::xml::XmlInstruction* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::glr::xml::XmlDocument* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+	END_INTERFACE_PROXY(vl::glr::xml::XmlNode::IVisitor)
+
+#endif
+#endif
+	/// <summary>Load all reflectable AST types, only available when <b>VCZH_DEBUG_NO_REFLECTION</b> is off.</summary>
+	/// <returns>Returns true if this operation succeeded.</returns>
+	extern bool XmlAstLoadTypes();
 }
 #endif
 
@@ -2761,65 +2710,56 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_AST_AST_BUILDER
 
 
-namespace vl
+namespace vl::glr::xml::builder
 {
-	namespace glr
+	class MakeAttribute : public vl::glr::ParsingAstBuilder<XmlAttribute>
 	{
-		namespace xml
-		{
-			namespace builder
-			{
-				class MakeAttribute : public vl::glr::ParsingAstBuilder<XmlAttribute>
-				{
-				public:
-					MakeAttribute& name(const vl::WString& value);
-					MakeAttribute& value(const vl::WString& value);
-				};
+	public:
+		MakeAttribute& name(const vl::WString& value);
+		MakeAttribute& value(const vl::WString& value);
+	};
 
-				class MakeCData : public vl::glr::ParsingAstBuilder<XmlCData>
-				{
-				public:
-					MakeCData& content(const vl::WString& value);
-				};
+	class MakeCData : public vl::glr::ParsingAstBuilder<XmlCData>
+	{
+	public:
+		MakeCData& content(const vl::WString& value);
+	};
 
-				class MakeComment : public vl::glr::ParsingAstBuilder<XmlComment>
-				{
-				public:
-					MakeComment& content(const vl::WString& value);
-				};
+	class MakeComment : public vl::glr::ParsingAstBuilder<XmlComment>
+	{
+	public:
+		MakeComment& content(const vl::WString& value);
+	};
 
-				class MakeDocument : public vl::glr::ParsingAstBuilder<XmlDocument>
-				{
-				public:
-					MakeDocument& prologs(const vl::Ptr<XmlNode>& value);
-					MakeDocument& rootElement(const vl::Ptr<XmlElement>& value);
-				};
+	class MakeDocument : public vl::glr::ParsingAstBuilder<XmlDocument>
+	{
+	public:
+		MakeDocument& prologs(const vl::Ptr<XmlNode>& value);
+		MakeDocument& rootElement(const vl::Ptr<XmlElement>& value);
+	};
 
-				class MakeElement : public vl::glr::ParsingAstBuilder<XmlElement>
-				{
-				public:
-					MakeElement& attributes(const vl::Ptr<XmlAttribute>& value);
-					MakeElement& closingName(const vl::WString& value);
-					MakeElement& name(const vl::WString& value);
-					MakeElement& subNodes(const vl::Ptr<XmlNode>& value);
-				};
+	class MakeElement : public vl::glr::ParsingAstBuilder<XmlElement>
+	{
+	public:
+		MakeElement& attributes(const vl::Ptr<XmlAttribute>& value);
+		MakeElement& closingName(const vl::WString& value);
+		MakeElement& name(const vl::WString& value);
+		MakeElement& subNodes(const vl::Ptr<XmlNode>& value);
+	};
 
-				class MakeInstruction : public vl::glr::ParsingAstBuilder<XmlInstruction>
-				{
-				public:
-					MakeInstruction& attributes(const vl::Ptr<XmlAttribute>& value);
-					MakeInstruction& name(const vl::WString& value);
-				};
+	class MakeInstruction : public vl::glr::ParsingAstBuilder<XmlInstruction>
+	{
+	public:
+		MakeInstruction& attributes(const vl::Ptr<XmlAttribute>& value);
+		MakeInstruction& name(const vl::WString& value);
+	};
 
-				class MakeText : public vl::glr::ParsingAstBuilder<XmlText>
-				{
-				public:
-					MakeText& content(const vl::WString& value);
-				};
+	class MakeText : public vl::glr::ParsingAstBuilder<XmlText>
+	{
+	public:
+		MakeText& content(const vl::WString& value);
+	};
 
-			}
-		}
-	}
 }
 #endif
 
@@ -2836,53 +2776,44 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_AST_AST_COPY_VISITOR
 
 
-namespace vl
+namespace vl::glr::xml::copy_visitor
 {
-	namespace glr
+	/// <summary>A copy visitor, overriding all abstract methods with AST copying code.</summary>
+	class AstVisitor
+		: public virtual vl::glr::CopyVisitorBase
+		, protected virtual XmlNode::IVisitor
 	{
-		namespace xml
-		{
-			namespace copy_visitor
-			{
-				/// <summary>A copy visitor, overriding all abstract methods with AST copying code.</summary>
-				class AstVisitor
-					: public virtual vl::glr::CopyVisitorBase
-					, protected virtual XmlNode::IVisitor
-				{
-				protected:
-					void CopyFields(XmlAttribute* from, XmlAttribute* to);
-					void CopyFields(XmlCData* from, XmlCData* to);
-					void CopyFields(XmlComment* from, XmlComment* to);
-					void CopyFields(XmlDocument* from, XmlDocument* to);
-					void CopyFields(XmlElement* from, XmlElement* to);
-					void CopyFields(XmlInstruction* from, XmlInstruction* to);
-					void CopyFields(XmlNode* from, XmlNode* to);
-					void CopyFields(XmlText* from, XmlText* to);
+	protected:
+		void CopyFields(XmlAttribute* from, XmlAttribute* to);
+		void CopyFields(XmlCData* from, XmlCData* to);
+		void CopyFields(XmlComment* from, XmlComment* to);
+		void CopyFields(XmlDocument* from, XmlDocument* to);
+		void CopyFields(XmlElement* from, XmlElement* to);
+		void CopyFields(XmlInstruction* from, XmlInstruction* to);
+		void CopyFields(XmlNode* from, XmlNode* to);
+		void CopyFields(XmlText* from, XmlText* to);
 
-				protected:
-					virtual void Visit(XmlAttribute* node);
+	protected:
+		virtual void Visit(XmlAttribute* node);
 
-					void Visit(XmlText* node) override;
-					void Visit(XmlCData* node) override;
-					void Visit(XmlComment* node) override;
-					void Visit(XmlElement* node) override;
-					void Visit(XmlInstruction* node) override;
-					void Visit(XmlDocument* node) override;
+		void Visit(XmlText* node) override;
+		void Visit(XmlCData* node) override;
+		void Visit(XmlComment* node) override;
+		void Visit(XmlElement* node) override;
+		void Visit(XmlInstruction* node) override;
+		void Visit(XmlDocument* node) override;
 
-				public:
-					virtual vl::Ptr<XmlNode> CopyNode(XmlNode* node);
-					virtual vl::Ptr<XmlAttribute> CopyNode(XmlAttribute* node);
+	public:
+		virtual vl::Ptr<XmlNode> CopyNode(XmlNode* node);
+		virtual vl::Ptr<XmlAttribute> CopyNode(XmlAttribute* node);
 
-					vl::Ptr<XmlCData> CopyNode(XmlCData* node);
-					vl::Ptr<XmlComment> CopyNode(XmlComment* node);
-					vl::Ptr<XmlDocument> CopyNode(XmlDocument* node);
-					vl::Ptr<XmlElement> CopyNode(XmlElement* node);
-					vl::Ptr<XmlInstruction> CopyNode(XmlInstruction* node);
-					vl::Ptr<XmlText> CopyNode(XmlText* node);
-				};
-			}
-		}
-	}
+		vl::Ptr<XmlCData> CopyNode(XmlCData* node);
+		vl::Ptr<XmlComment> CopyNode(XmlComment* node);
+		vl::Ptr<XmlDocument> CopyNode(XmlDocument* node);
+		vl::Ptr<XmlElement> CopyNode(XmlElement* node);
+		vl::Ptr<XmlInstruction> CopyNode(XmlInstruction* node);
+		vl::Ptr<XmlText> CopyNode(XmlText* node);
+	};
 }
 #endif
 
@@ -2899,33 +2830,24 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_AST_AST_EMPTY_VISITOR
 
 
-namespace vl
+namespace vl::glr::xml::empty_visitor
 {
-	namespace glr
+	/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
+	class NodeVisitor : public vl::Object, public XmlNode::IVisitor
 	{
-		namespace xml
-		{
-			namespace empty_visitor
-			{
-				/// <summary>An empty visitor, overriding all abstract methods with empty implementations.</summary>
-				class NodeVisitor : public vl::Object, public XmlNode::IVisitor
-				{
-				protected:
-					// Dispatch (virtual) --------------------------------
+	protected:
+		// Dispatch (virtual) --------------------------------
 
-				public:
-					// Visitor Members -----------------------------------
-					void Visit(XmlText* node) override;
-					void Visit(XmlCData* node) override;
-					void Visit(XmlComment* node) override;
-					void Visit(XmlElement* node) override;
-					void Visit(XmlInstruction* node) override;
-					void Visit(XmlDocument* node) override;
-				};
+	public:
+		// Visitor Members -----------------------------------
+		void Visit(XmlText* node) override;
+		void Visit(XmlCData* node) override;
+		void Visit(XmlComment* node) override;
+		void Visit(XmlElement* node) override;
+		void Visit(XmlInstruction* node) override;
+		void Visit(XmlDocument* node) override;
+	};
 
-			}
-		}
-	}
 }
 #endif
 
@@ -2942,46 +2864,37 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_AST_AST_JSON_VISITOR
 
 
-namespace vl
+namespace vl::glr::xml::json_visitor
 {
-	namespace glr
+	/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
+	class AstVisitor
+		: public vl::glr::JsonVisitorBase
+		, protected virtual XmlNode::IVisitor
 	{
-		namespace xml
-		{
-			namespace json_visitor
-			{
-				/// <summary>A JSON visitor, overriding all abstract methods with AST to JSON serialization code.</summary>
-				class AstVisitor
-					: public vl::glr::JsonVisitorBase
-					, protected virtual XmlNode::IVisitor
-				{
-				protected:
-					virtual void PrintFields(XmlAttribute* node);
-					virtual void PrintFields(XmlCData* node);
-					virtual void PrintFields(XmlComment* node);
-					virtual void PrintFields(XmlDocument* node);
-					virtual void PrintFields(XmlElement* node);
-					virtual void PrintFields(XmlInstruction* node);
-					virtual void PrintFields(XmlNode* node);
-					virtual void PrintFields(XmlText* node);
+	protected:
+		virtual void PrintFields(XmlAttribute* node);
+		virtual void PrintFields(XmlCData* node);
+		virtual void PrintFields(XmlComment* node);
+		virtual void PrintFields(XmlDocument* node);
+		virtual void PrintFields(XmlElement* node);
+		virtual void PrintFields(XmlInstruction* node);
+		virtual void PrintFields(XmlNode* node);
+		virtual void PrintFields(XmlText* node);
 
-				protected:
-					void Visit(XmlText* node) override;
-					void Visit(XmlCData* node) override;
-					void Visit(XmlComment* node) override;
-					void Visit(XmlElement* node) override;
-					void Visit(XmlInstruction* node) override;
-					void Visit(XmlDocument* node) override;
+	protected:
+		void Visit(XmlText* node) override;
+		void Visit(XmlCData* node) override;
+		void Visit(XmlComment* node) override;
+		void Visit(XmlElement* node) override;
+		void Visit(XmlInstruction* node) override;
+		void Visit(XmlDocument* node) override;
 
-				public:
-					AstVisitor(vl::stream::StreamWriter& _writer);
+	public:
+		AstVisitor(vl::stream::StreamWriter& _writer);
 
-					void Print(XmlNode* node);
-					void Print(XmlAttribute* node);
-				};
-			}
-		}
-	}
+		void Print(XmlNode* node);
+		void Print(XmlAttribute* node);
+	};
 }
 #endif
 
@@ -2998,57 +2911,48 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_AST_AST_TRAVERSE_VISITOR
 
 
-namespace vl
+namespace vl::glr::xml::traverse_visitor
 {
-	namespace glr
+	/// <summary>A traverse visitor, overriding all abstract methods with AST visiting code.</summary>
+	class AstVisitor
+		: public vl::Object
+		, protected virtual XmlNode::IVisitor
 	{
-		namespace xml
-		{
-			namespace traverse_visitor
-			{
-				/// <summary>A traverse visitor, overriding all abstract methods with AST visiting code.</summary>
-				class AstVisitor
-					: public vl::Object
-					, protected virtual XmlNode::IVisitor
-				{
-				protected:
-					virtual void Traverse(vl::glr::ParsingToken& token);
-					virtual void Traverse(vl::glr::ParsingAstBase* node);
-					virtual void Traverse(XmlAttribute* node);
-					virtual void Traverse(XmlCData* node);
-					virtual void Traverse(XmlComment* node);
-					virtual void Traverse(XmlDocument* node);
-					virtual void Traverse(XmlElement* node);
-					virtual void Traverse(XmlInstruction* node);
-					virtual void Traverse(XmlNode* node);
-					virtual void Traverse(XmlText* node);
+	protected:
+		virtual void Traverse(vl::glr::ParsingToken& token);
+		virtual void Traverse(vl::glr::ParsingAstBase* node);
+		virtual void Traverse(XmlAttribute* node);
+		virtual void Traverse(XmlCData* node);
+		virtual void Traverse(XmlComment* node);
+		virtual void Traverse(XmlDocument* node);
+		virtual void Traverse(XmlElement* node);
+		virtual void Traverse(XmlInstruction* node);
+		virtual void Traverse(XmlNode* node);
+		virtual void Traverse(XmlText* node);
 
-				protected:
-					virtual void Finishing(vl::glr::ParsingAstBase* node);
-					virtual void Finishing(XmlAttribute* node);
-					virtual void Finishing(XmlCData* node);
-					virtual void Finishing(XmlComment* node);
-					virtual void Finishing(XmlDocument* node);
-					virtual void Finishing(XmlElement* node);
-					virtual void Finishing(XmlInstruction* node);
-					virtual void Finishing(XmlNode* node);
-					virtual void Finishing(XmlText* node);
+	protected:
+		virtual void Finishing(vl::glr::ParsingAstBase* node);
+		virtual void Finishing(XmlAttribute* node);
+		virtual void Finishing(XmlCData* node);
+		virtual void Finishing(XmlComment* node);
+		virtual void Finishing(XmlDocument* node);
+		virtual void Finishing(XmlElement* node);
+		virtual void Finishing(XmlInstruction* node);
+		virtual void Finishing(XmlNode* node);
+		virtual void Finishing(XmlText* node);
 
-				protected:
-					void Visit(XmlText* node) override;
-					void Visit(XmlCData* node) override;
-					void Visit(XmlComment* node) override;
-					void Visit(XmlElement* node) override;
-					void Visit(XmlInstruction* node) override;
-					void Visit(XmlDocument* node) override;
+	protected:
+		void Visit(XmlText* node) override;
+		void Visit(XmlCData* node) override;
+		void Visit(XmlComment* node) override;
+		void Visit(XmlElement* node) override;
+		void Visit(XmlInstruction* node) override;
+		void Visit(XmlDocument* node) override;
 
-				public:
-					void InspectInto(XmlNode* node);
-					void InspectInto(XmlAttribute* node);
-				};
-			}
-		}
-	}
+	public:
+		void InspectInto(XmlNode* node);
+		void InspectInto(XmlAttribute* node);
+	};
 }
 #endif
 
@@ -3065,57 +2969,51 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_AST_ASSEMBLER
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
+	enum class XmlClasses : vl::vint32_t
 	{
-		namespace xml
-		{
-			enum class XmlClasses : vl::vint32_t
-			{
-				Attribute = 0,
-				CData = 1,
-				Comment = 2,
-				Document = 3,
-				Element = 4,
-				Instruction = 5,
-				Node = 6,
-				Text = 7,
-			};
+		Attribute = 0,
+		CData = 1,
+		Comment = 2,
+		Document = 3,
+		Element = 4,
+		Instruction = 5,
+		Node = 6,
+		Text = 7,
+	};
 
-			enum class XmlFields : vl::vint32_t
-			{
-				Attribute_name = 0,
-				Attribute_value = 1,
-				CData_content = 2,
-				Comment_content = 3,
-				Document_prologs = 4,
-				Document_rootElement = 5,
-				Element_attributes = 6,
-				Element_closingName = 7,
-				Element_name = 8,
-				Element_subNodes = 9,
-				Instruction_attributes = 10,
-				Instruction_name = 11,
-				Text_content = 12,
-			};
+	enum class XmlFields : vl::vint32_t
+	{
+		Attribute_name = 0,
+		Attribute_value = 1,
+		CData_content = 2,
+		Comment_content = 3,
+		Document_prologs = 4,
+		Document_rootElement = 5,
+		Element_attributes = 6,
+		Element_closingName = 7,
+		Element_name = 8,
+		Element_subNodes = 9,
+		Instruction_attributes = 10,
+		Instruction_name = 11,
+		Text_content = 12,
+	};
 
-			extern const wchar_t* XmlTypeName(XmlClasses type);
-			extern const wchar_t* XmlCppTypeName(XmlClasses type);
-			extern const wchar_t* XmlFieldName(XmlFields field);
-			extern const wchar_t* XmlCppFieldName(XmlFields field);
+	extern const wchar_t* XmlTypeName(XmlClasses type);
+	extern const wchar_t* XmlCppTypeName(XmlClasses type);
+	extern const wchar_t* XmlFieldName(XmlFields field);
+	extern const wchar_t* XmlCppFieldName(XmlFields field);
 
-			class XmlAstInsReceiver : public vl::glr::AstInsReceiverBase
-			{
-			protected:
-				vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
-				void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
-				vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
-			};
-		}
-	}
+	class XmlAstInsReceiver : public vl::glr::AstInsReceiverBase
+	{
+	protected:
+		vl::Ptr<vl::glr::ParsingAstBase> CreateAstNode(vl::vint32_t type) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex) override;
+		void SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment) override;
+		vl::Ptr<vl::glr::ParsingAstBase> ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates) override;
+	};
 }
 #endif
 
@@ -3132,37 +3030,31 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_LEXER
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
+	enum class XmlTokens : vl::vint32_t
 	{
-		namespace xml
-		{
-			enum class XmlTokens : vl::vint32_t
-			{
-				INSTRUCTION_OPEN = 0,
-				INSTRUCTION_CLOSE = 1,
-				COMPLEX_ELEMENT_OPEN = 2,
-				SINGLE_ELEMENT_CLOSE = 3,
-				ELEMENT_OPEN = 4,
-				ELEMENT_CLOSE = 5,
-				EQUAL = 6,
-				NAME = 7,
-				ATTVALUE = 8,
-				COMMENT = 9,
-				CDATA = 10,
-				TEXT = 11,
-				SPACE = 12,
-			};
+		INSTRUCTION_OPEN = 0,
+		INSTRUCTION_CLOSE = 1,
+		COMPLEX_ELEMENT_OPEN = 2,
+		SINGLE_ELEMENT_CLOSE = 3,
+		ELEMENT_OPEN = 4,
+		ELEMENT_CLOSE = 5,
+		EQUAL = 6,
+		NAME = 7,
+		ATTVALUE = 8,
+		COMMENT = 9,
+		CDATA = 10,
+		TEXT = 11,
+		SPACE = 12,
+	};
 
-			constexpr vl::vint XmlTokenCount = 13;
-			extern bool XmlTokenDeleter(vl::vint token);
-			extern const wchar_t* XmlTokenId(XmlTokens token);
-			extern const wchar_t* XmlTokenDisplayText(XmlTokens token);
-			extern const wchar_t* XmlTokenRegex(XmlTokens token);
-			extern void XmlLexerData(vl::stream::IStream& outputStream);
-		}
-	}
+	constexpr vl::vint XmlTokenCount = 13;
+	extern bool XmlTokenDeleter(vl::vint token);
+	extern const wchar_t* XmlTokenId(XmlTokens token);
+	extern const wchar_t* XmlTokenDisplayText(XmlTokens token);
+	extern const wchar_t* XmlTokenRegex(XmlTokens token);
+	extern void XmlLexerData(vl::stream::IStream& outputStream);
 }
 #endif
 
@@ -3179,44 +3071,39 @@ Licensed under https://github.com/vczh-libraries/License
 #define VCZH_PARSER2_BUILTIN_XML_PARSER_SYNTAX
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
+	enum class ParserStates
 	{
-		namespace xml
-		{
-			enum class ParserStates
-			{
-				XAttribute = 0,
-				XText = 5,
-				XCData = 11,
-				XComment = 14,
-				XElement = 17,
-				XSubNode = 28,
-				XInstruction = 34,
-				XDocument = 40,
-			};
+		XAttribute = 0,
+		XText = 5,
+		XCData = 11,
+		XComment = 14,
+		XElement = 17,
+		XSubNode = 28,
+		XInstruction = 34,
+		XDocument = 40,
+	};
 
-			const wchar_t* ParserRuleName(vl::vint index);
-			const wchar_t* ParserStateLabel(vl::vint index);
-			extern void XmlParserData(vl::stream::IStream& outputStream);
+	const wchar_t* ParserRuleName(vl::vint index);
+	const wchar_t* ParserStateLabel(vl::vint index);
+	extern void XmlParserData(vl::stream::IStream& outputStream);
 
-			class Parser
-				: public vl::glr::ParserBase<XmlTokens, ParserStates, XmlAstInsReceiver>
-				, protected vl::glr::automaton::IExecutor::ITypeCallback
-			{
-			protected:
-				vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
-			public:
-				Parser();
+	class Parser
+		: public vl::glr::ParserBase<XmlTokens, ParserStates, XmlAstInsReceiver>
+		, protected vl::glr::automaton::IExecutor::ITypeCallback
+	{
+	protected:
+		vl::WString GetClassName(vl::vint32_t classIndex) const override;
+		vl::vint32_t FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const override;
+	public:
+		Parser();
 
-				vl::Ptr<vl::glr::xml::XmlElement> ParseXElement(const vl::WString& input, vl::vint codeIndex = -1) const;
-				vl::Ptr<vl::glr::xml::XmlElement> ParseXElement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
-				vl::Ptr<vl::glr::xml::XmlDocument> ParseXDocument(const vl::WString& input, vl::vint codeIndex = -1) const;
-				vl::Ptr<vl::glr::xml::XmlDocument> ParseXDocument(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
-			};
-		}
-	}
+		vl::Ptr<vl::glr::xml::XmlElement> ParseXElement(const vl::WString& input, vl::vint codeIndex = -1) const;
+		vl::Ptr<vl::glr::xml::XmlElement> ParseXElement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
+		vl::Ptr<vl::glr::xml::XmlDocument> ParseXDocument(const vl::WString& input, vl::vint codeIndex = -1) const;
+		vl::Ptr<vl::glr::xml::XmlDocument> ParseXDocument(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex = -1) const;
+	};
 }
 #endif
 

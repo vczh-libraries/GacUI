@@ -1427,170 +1427,158 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
-	{
-		namespace json
-		{
 /***********************************************************************
 Visitor Pattern Implementation
 ***********************************************************************/
 
-			void JsonLiteral::Accept(JsonNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void JsonLiteral::Accept(JsonNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void JsonString::Accept(JsonNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void JsonString::Accept(JsonNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void JsonNumber::Accept(JsonNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void JsonNumber::Accept(JsonNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void JsonArray::Accept(JsonNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void JsonArray::Accept(JsonNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void JsonObject::Accept(JsonNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
-		}
+	void JsonObject::Accept(JsonNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
 	}
 }
-namespace vl
+namespace vl::reflection::description
 {
-	namespace reflection
-	{
-		namespace description
-		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode, system::JsonNode)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode::IVisitor, system::JsonNode::IVisitor)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteralValue, system::JsonLiteralValue)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteral, system::JsonLiteral)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonString, system::JsonString)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNumber, system::JsonNumber)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonArray, system::JsonArray)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObjectField, system::JsonObjectField)
-			IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObject, system::JsonObject)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode, system::JsonNode)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNode::IVisitor, system::JsonNode::IVisitor)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteralValue, system::JsonLiteralValue)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonLiteral, system::JsonLiteral)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonString, system::JsonString)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonNumber, system::JsonNumber)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonArray, system::JsonArray)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObjectField, system::JsonObjectField)
+	IMPL_TYPE_INFO_RENAME(vl::glr::json::JsonObject, system::JsonObject)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_CLASS_MEMBER(vl::glr::json::JsonNode)
-				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+	BEGIN_CLASS_MEMBER(vl::glr::json::JsonNode)
+		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-			END_CLASS_MEMBER(vl::glr::json::JsonNode)
+	END_CLASS_MEMBER(vl::glr::json::JsonNode)
 
-			BEGIN_ENUM_ITEM(vl::glr::json::JsonLiteralValue)
-				ENUM_ITEM_NAMESPACE(vl::glr::json::JsonLiteralValue)
-				ENUM_NAMESPACE_ITEM(True)
-				ENUM_NAMESPACE_ITEM(False)
-				ENUM_NAMESPACE_ITEM(Null)
-			END_ENUM_ITEM(vl::glr::json::JsonLiteralValue)
+	BEGIN_ENUM_ITEM(vl::glr::json::JsonLiteralValue)
+		ENUM_ITEM_NAMESPACE(vl::glr::json::JsonLiteralValue)
+		ENUM_NAMESPACE_ITEM(True)
+		ENUM_NAMESPACE_ITEM(False)
+		ENUM_NAMESPACE_ITEM(Null)
+	END_ENUM_ITEM(vl::glr::json::JsonLiteralValue)
 
-			BEGIN_CLASS_MEMBER(vl::glr::json::JsonLiteral)
-				CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
+	BEGIN_CLASS_MEMBER(vl::glr::json::JsonLiteral)
+		CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonLiteral>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonLiteral>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(value)
-			END_CLASS_MEMBER(vl::glr::json::JsonLiteral)
+		CLASS_MEMBER_FIELD(value)
+	END_CLASS_MEMBER(vl::glr::json::JsonLiteral)
 
-			BEGIN_CLASS_MEMBER(vl::glr::json::JsonString)
-				CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
+	BEGIN_CLASS_MEMBER(vl::glr::json::JsonString)
+		CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonString>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonString>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(content)
-			END_CLASS_MEMBER(vl::glr::json::JsonString)
+		CLASS_MEMBER_FIELD(content)
+	END_CLASS_MEMBER(vl::glr::json::JsonString)
 
-			BEGIN_CLASS_MEMBER(vl::glr::json::JsonNumber)
-				CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
+	BEGIN_CLASS_MEMBER(vl::glr::json::JsonNumber)
+		CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonNumber>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonNumber>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(content)
-			END_CLASS_MEMBER(vl::glr::json::JsonNumber)
+		CLASS_MEMBER_FIELD(content)
+	END_CLASS_MEMBER(vl::glr::json::JsonNumber)
 
-			BEGIN_CLASS_MEMBER(vl::glr::json::JsonArray)
-				CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
+	BEGIN_CLASS_MEMBER(vl::glr::json::JsonArray)
+		CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonArray>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonArray>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(items)
-			END_CLASS_MEMBER(vl::glr::json::JsonArray)
+		CLASS_MEMBER_FIELD(items)
+	END_CLASS_MEMBER(vl::glr::json::JsonArray)
 
-			BEGIN_CLASS_MEMBER(vl::glr::json::JsonObjectField)
-				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+	BEGIN_CLASS_MEMBER(vl::glr::json::JsonObjectField)
+		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonObjectField>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonObjectField>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(value)
-			END_CLASS_MEMBER(vl::glr::json::JsonObjectField)
+		CLASS_MEMBER_FIELD(name)
+		CLASS_MEMBER_FIELD(value)
+	END_CLASS_MEMBER(vl::glr::json::JsonObjectField)
 
-			BEGIN_CLASS_MEMBER(vl::glr::json::JsonObject)
-				CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
+	BEGIN_CLASS_MEMBER(vl::glr::json::JsonObject)
+		CLASS_MEMBER_BASE(vl::glr::json::JsonNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonObject>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::json::JsonObject>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(fields)
-			END_CLASS_MEMBER(vl::glr::json::JsonObject)
+		CLASS_MEMBER_FIELD(fields)
+	END_CLASS_MEMBER(vl::glr::json::JsonObject)
 
-			BEGIN_INTERFACE_MEMBER(vl::glr::json::JsonNode::IVisitor)
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonLiteral* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonString* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonNumber* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonArray* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonObject* node))
-			END_INTERFACE_MEMBER(vl::glr::json::JsonNode)
+	BEGIN_INTERFACE_MEMBER(vl::glr::json::JsonNode::IVisitor)
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonLiteral* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonString* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonNumber* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonArray* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::json::JsonNode::IVisitor::*)(vl::glr::json::JsonObject* node))
+	END_INTERFACE_MEMBER(vl::glr::json::JsonNode)
 
 #endif
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-			class JsonAstTypeLoader : public vl::Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(vl::glr::json::JsonNode)
-					ADD_TYPE_INFO(vl::glr::json::JsonNode::IVisitor)
-					ADD_TYPE_INFO(vl::glr::json::JsonLiteralValue)
-					ADD_TYPE_INFO(vl::glr::json::JsonLiteral)
-					ADD_TYPE_INFO(vl::glr::json::JsonString)
-					ADD_TYPE_INFO(vl::glr::json::JsonNumber)
-					ADD_TYPE_INFO(vl::glr::json::JsonArray)
-					ADD_TYPE_INFO(vl::glr::json::JsonObjectField)
-					ADD_TYPE_INFO(vl::glr::json::JsonObject)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-#endif
-
-			bool JsonAstLoadTypes()
-			{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				if (auto manager = GetGlobalTypeManager())
-				{
-					auto loader = Ptr(new JsonAstTypeLoader);
-					return manager->AddTypeLoader(loader);
-				}
-#endif
-				return false;
-			}
+	class JsonAstTypeLoader : public vl::Object, public ITypeLoader
+	{
+	public:
+		void Load(ITypeManager* manager)
+		{
+			ADD_TYPE_INFO(vl::glr::json::JsonNode)
+			ADD_TYPE_INFO(vl::glr::json::JsonNode::IVisitor)
+			ADD_TYPE_INFO(vl::glr::json::JsonLiteralValue)
+			ADD_TYPE_INFO(vl::glr::json::JsonLiteral)
+			ADD_TYPE_INFO(vl::glr::json::JsonString)
+			ADD_TYPE_INFO(vl::glr::json::JsonNumber)
+			ADD_TYPE_INFO(vl::glr::json::JsonArray)
+			ADD_TYPE_INFO(vl::glr::json::JsonObjectField)
+			ADD_TYPE_INFO(vl::glr::json::JsonObject)
 		}
+
+		void Unload(ITypeManager* manager)
+		{
+		}
+	};
+#endif
+#endif
+
+	bool JsonAstLoadTypes()
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		if (auto manager = GetGlobalTypeManager())
+		{
+			auto loader = Ptr(new JsonAstTypeLoader);
+			return manager->AddTypeLoader(loader);
+		}
+#endif
+		return false;
 	}
 }
 
@@ -1605,82 +1593,73 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json::builder
 {
-	namespace glr
-	{
-		namespace json
-		{
-			namespace builder
-			{
 
 /***********************************************************************
 MakeArray
 ***********************************************************************/
 
-				MakeArray& MakeArray::items(const vl::Ptr<JsonNode>& value)
-				{
-					node->items.Add(value);
-					return *this;
-				}
+	MakeArray& MakeArray::items(const vl::Ptr<JsonNode>& value)
+	{
+		node->items.Add(value);
+		return *this;
+	}
 
 /***********************************************************************
 MakeLiteral
 ***********************************************************************/
 
-				MakeLiteral& MakeLiteral::value(JsonLiteralValue value)
-				{
-					node->value = value;
-					return *this;
-				}
+	MakeLiteral& MakeLiteral::value(JsonLiteralValue value)
+	{
+		node->value = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeNumber
 ***********************************************************************/
 
-				MakeNumber& MakeNumber::content(const vl::WString& value)
-				{
-					node->content.value = value;
-					return *this;
-				}
+	MakeNumber& MakeNumber::content(const vl::WString& value)
+	{
+		node->content.value = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeObject
 ***********************************************************************/
 
-				MakeObject& MakeObject::fields(const vl::Ptr<JsonObjectField>& value)
-				{
-					node->fields.Add(value);
-					return *this;
-				}
+	MakeObject& MakeObject::fields(const vl::Ptr<JsonObjectField>& value)
+	{
+		node->fields.Add(value);
+		return *this;
+	}
 
 /***********************************************************************
 MakeObjectField
 ***********************************************************************/
 
-				MakeObjectField& MakeObjectField::name(const vl::WString& value)
-				{
-					node->name.value = value;
-					return *this;
-				}
+	MakeObjectField& MakeObjectField::name(const vl::WString& value)
+	{
+		node->name.value = value;
+		return *this;
+	}
 
-				MakeObjectField& MakeObjectField::value(const vl::Ptr<JsonNode>& value)
-				{
-					node->value = value;
-					return *this;
-				}
+	MakeObjectField& MakeObjectField::value(const vl::Ptr<JsonNode>& value)
+	{
+		node->value = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeString
 ***********************************************************************/
 
-				MakeString& MakeString::content(const vl::WString& value)
-				{
-					node->content.value = value;
-					return *this;
-				}
-			}
-		}
+	MakeString& MakeString::content(const vl::WString& value)
+	{
+		node->content.value = value;
+		return *this;
 	}
 }
 
@@ -1695,151 +1674,142 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json::copy_visitor
 {
-	namespace glr
+	void AstVisitor::CopyFields(JsonArray* from, JsonArray* to)
 	{
-		namespace json
+		CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
+		for (auto&& listItem : from->items)
 		{
-			namespace copy_visitor
-			{
-				void AstVisitor::CopyFields(JsonArray* from, JsonArray* to)
-				{
-					CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
-					for (auto&& listItem : from->items)
-					{
-						to->items.Add(CopyNode(listItem.Obj()));
-					}
-				}
-
-				void AstVisitor::CopyFields(JsonLiteral* from, JsonLiteral* to)
-				{
-					CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
-					to->value = from->value;
-				}
-
-				void AstVisitor::CopyFields(JsonNode* from, JsonNode* to)
-				{
-				}
-
-				void AstVisitor::CopyFields(JsonNumber* from, JsonNumber* to)
-				{
-					CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
-					to->content = from->content;
-				}
-
-				void AstVisitor::CopyFields(JsonObject* from, JsonObject* to)
-				{
-					CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
-					for (auto&& listItem : from->fields)
-					{
-						to->fields.Add(CopyNode(listItem.Obj()));
-					}
-				}
-
-				void AstVisitor::CopyFields(JsonObjectField* from, JsonObjectField* to)
-				{
-					to->name = from->name;
-					to->value = CopyNode(from->value.Obj());
-				}
-
-				void AstVisitor::CopyFields(JsonString* from, JsonString* to)
-				{
-					CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
-					to->content = from->content;
-				}
-
-				void AstVisitor::Visit(JsonObjectField* node)
-				{
-					auto newNode = vl::Ptr(new JsonObjectField);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(JsonLiteral* node)
-				{
-					auto newNode = vl::Ptr(new JsonLiteral);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(JsonString* node)
-				{
-					auto newNode = vl::Ptr(new JsonString);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(JsonNumber* node)
-				{
-					auto newNode = vl::Ptr(new JsonNumber);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(JsonArray* node)
-				{
-					auto newNode = vl::Ptr(new JsonArray);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(JsonObject* node)
-				{
-					auto newNode = vl::Ptr(new JsonObject);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				vl::Ptr<JsonNode> AstVisitor::CopyNode(JsonNode* node)
-				{
-					if (!node) return nullptr;
-					node->Accept(static_cast<JsonNode::IVisitor*>(this));
-					this->result->codeRange = node->codeRange;
-					return this->result.Cast<JsonNode>();
-				}
-
-				vl::Ptr<JsonObjectField> AstVisitor::CopyNode(JsonObjectField* node)
-				{
-					if (!node) return nullptr;
-					Visit(node);
-					this->result->codeRange = node->codeRange;
-					return this->result.Cast<JsonObjectField>();
-				}
-
-				vl::Ptr<JsonArray> AstVisitor::CopyNode(JsonArray* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonArray>();
-				}
-
-				vl::Ptr<JsonLiteral> AstVisitor::CopyNode(JsonLiteral* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonLiteral>();
-				}
-
-				vl::Ptr<JsonNumber> AstVisitor::CopyNode(JsonNumber* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonNumber>();
-				}
-
-				vl::Ptr<JsonObject> AstVisitor::CopyNode(JsonObject* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonObject>();
-				}
-
-				vl::Ptr<JsonString> AstVisitor::CopyNode(JsonString* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonString>();
-				}
-
-			}
+			to->items.Add(CopyNode(listItem.Obj()));
 		}
 	}
+
+	void AstVisitor::CopyFields(JsonLiteral* from, JsonLiteral* to)
+	{
+		CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
+		to->value = from->value;
+	}
+
+	void AstVisitor::CopyFields(JsonNode* from, JsonNode* to)
+	{
+	}
+
+	void AstVisitor::CopyFields(JsonNumber* from, JsonNumber* to)
+	{
+		CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
+		to->content = from->content;
+	}
+
+	void AstVisitor::CopyFields(JsonObject* from, JsonObject* to)
+	{
+		CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
+		for (auto&& listItem : from->fields)
+		{
+			to->fields.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
+	void AstVisitor::CopyFields(JsonObjectField* from, JsonObjectField* to)
+	{
+		to->name = from->name;
+		to->value = CopyNode(from->value.Obj());
+	}
+
+	void AstVisitor::CopyFields(JsonString* from, JsonString* to)
+	{
+		CopyFields(static_cast<JsonNode*>(from), static_cast<JsonNode*>(to));
+		to->content = from->content;
+	}
+
+	void AstVisitor::Visit(JsonObjectField* node)
+	{
+		auto newNode = vl::Ptr(new JsonObjectField);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(JsonLiteral* node)
+	{
+		auto newNode = vl::Ptr(new JsonLiteral);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(JsonString* node)
+	{
+		auto newNode = vl::Ptr(new JsonString);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(JsonNumber* node)
+	{
+		auto newNode = vl::Ptr(new JsonNumber);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(JsonArray* node)
+	{
+		auto newNode = vl::Ptr(new JsonArray);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(JsonObject* node)
+	{
+		auto newNode = vl::Ptr(new JsonObject);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	vl::Ptr<JsonNode> AstVisitor::CopyNode(JsonNode* node)
+	{
+		if (!node) return nullptr;
+		node->Accept(static_cast<JsonNode::IVisitor*>(this));
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<JsonNode>();
+	}
+
+	vl::Ptr<JsonObjectField> AstVisitor::CopyNode(JsonObjectField* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<JsonObjectField>();
+	}
+
+	vl::Ptr<JsonArray> AstVisitor::CopyNode(JsonArray* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonArray>();
+	}
+
+	vl::Ptr<JsonLiteral> AstVisitor::CopyNode(JsonLiteral* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonLiteral>();
+	}
+
+	vl::Ptr<JsonNumber> AstVisitor::CopyNode(JsonNumber* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonNumber>();
+	}
+
+	vl::Ptr<JsonObject> AstVisitor::CopyNode(JsonObject* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonObject>();
+	}
+
+	vl::Ptr<JsonString> AstVisitor::CopyNode(JsonString* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<JsonNode*>(node)).Cast<JsonString>();
+	}
+
 }
 
 
@@ -1853,42 +1823,33 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json::empty_visitor
 {
-	namespace glr
-	{
-		namespace json
-		{
-			namespace empty_visitor
-			{
 
 /***********************************************************************
 NodeVisitor
 ***********************************************************************/
 
-				// Visitor Members -----------------------------------
+	// Visitor Members -----------------------------------
 
-				void NodeVisitor::Visit(JsonLiteral* node)
-				{
-				}
+	void NodeVisitor::Visit(JsonLiteral* node)
+	{
+	}
 
-				void NodeVisitor::Visit(JsonString* node)
-				{
-				}
+	void NodeVisitor::Visit(JsonString* node)
+	{
+	}
 
-				void NodeVisitor::Visit(JsonNumber* node)
-				{
-				}
+	void NodeVisitor::Visit(JsonNumber* node)
+	{
+	}
 
-				void NodeVisitor::Visit(JsonArray* node)
-				{
-				}
+	void NodeVisitor::Visit(JsonArray* node)
+	{
+	}
 
-				void NodeVisitor::Visit(JsonObject* node)
-				{
-				}
-			}
-		}
+	void NodeVisitor::Visit(JsonObject* node)
+	{
 	}
 }
 
@@ -1903,185 +1864,176 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json::json_visitor
 {
-	namespace glr
+	void AstVisitor::PrintFields(JsonArray* node)
 	{
-		namespace json
+		BeginField(L"items");
+		BeginArray();
+		for (auto&& listItem : node->items)
 		{
-			namespace json_visitor
-			{
-				void AstVisitor::PrintFields(JsonArray* node)
-				{
-					BeginField(L"items");
-					BeginArray();
-					for (auto&& listItem : node->items)
-					{
-						BeginArrayItem();
-						Print(listItem.Obj());
-						EndArrayItem();
-					}
-					EndArray();
-					EndField();
-				}
-				void AstVisitor::PrintFields(JsonLiteral* node)
-				{
-					BeginField(L"value");
-					switch (node->value)
-					{
-					case vl::glr::json::JsonLiteralValue::False:
-						WriteString(L"False");
-						break;
-					case vl::glr::json::JsonLiteralValue::Null:
-						WriteString(L"Null");
-						break;
-					case vl::glr::json::JsonLiteralValue::True:
-						WriteString(L"True");
-						break;
-					default:
-						WriteNull();
-					}
-					EndField();
-				}
-				void AstVisitor::PrintFields(JsonNode* node)
-				{
-				}
-				void AstVisitor::PrintFields(JsonNumber* node)
-				{
-					BeginField(L"content");
-					WriteToken(node->content);
-					EndField();
-				}
-				void AstVisitor::PrintFields(JsonObject* node)
-				{
-					BeginField(L"fields");
-					BeginArray();
-					for (auto&& listItem : node->fields)
-					{
-						BeginArrayItem();
-						Print(listItem.Obj());
-						EndArrayItem();
-					}
-					EndArray();
-					EndField();
-				}
-				void AstVisitor::PrintFields(JsonObjectField* node)
-				{
-					BeginField(L"name");
-					WriteToken(node->name);
-					EndField();
-					BeginField(L"value");
-					Print(node->value.Obj());
-					EndField();
-				}
-				void AstVisitor::PrintFields(JsonString* node)
-				{
-					BeginField(L"content");
-					WriteToken(node->content);
-					EndField();
-				}
-
-				void AstVisitor::Visit(JsonLiteral* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Literal", node);
-					PrintFields(static_cast<JsonNode*>(node));
-					PrintFields(static_cast<JsonLiteral*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(JsonString* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"String", node);
-					PrintFields(static_cast<JsonNode*>(node));
-					PrintFields(static_cast<JsonString*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(JsonNumber* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Number", node);
-					PrintFields(static_cast<JsonNode*>(node));
-					PrintFields(static_cast<JsonNumber*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(JsonArray* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Array", node);
-					PrintFields(static_cast<JsonNode*>(node));
-					PrintFields(static_cast<JsonArray*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(JsonObject* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Object", node);
-					PrintFields(static_cast<JsonNode*>(node));
-					PrintFields(static_cast<JsonObject*>(node));
-					EndObject();
-				}
-
-				AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
-					: vl::glr::JsonVisitorBase(_writer)
-				{
-				}
-
-				void AstVisitor::Print(JsonNode* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					node->Accept(static_cast<JsonNode::IVisitor*>(this));
-				}
-
-				void AstVisitor::Print(JsonObjectField* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"ObjectField", node);
-					PrintFields(static_cast<JsonObjectField*>(node));
-					EndObject();
-				}
-
-			}
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
 		}
+		EndArray();
+		EndField();
 	}
+	void AstVisitor::PrintFields(JsonLiteral* node)
+	{
+		BeginField(L"value");
+		switch (node->value)
+		{
+		case vl::glr::json::JsonLiteralValue::False:
+			WriteString(L"False");
+			break;
+		case vl::glr::json::JsonLiteralValue::Null:
+			WriteString(L"Null");
+			break;
+		case vl::glr::json::JsonLiteralValue::True:
+			WriteString(L"True");
+			break;
+		default:
+			WriteNull();
+		}
+		EndField();
+	}
+	void AstVisitor::PrintFields(JsonNode* node)
+	{
+	}
+	void AstVisitor::PrintFields(JsonNumber* node)
+	{
+		BeginField(L"content");
+		WriteToken(node->content);
+		EndField();
+	}
+	void AstVisitor::PrintFields(JsonObject* node)
+	{
+		BeginField(L"fields");
+		BeginArray();
+		for (auto&& listItem : node->fields)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+	}
+	void AstVisitor::PrintFields(JsonObjectField* node)
+	{
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+		BeginField(L"value");
+		Print(node->value.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(JsonString* node)
+	{
+		BeginField(L"content");
+		WriteToken(node->content);
+		EndField();
+	}
+
+	void AstVisitor::Visit(JsonLiteral* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Literal", node);
+		PrintFields(static_cast<JsonNode*>(node));
+		PrintFields(static_cast<JsonLiteral*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(JsonString* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"String", node);
+		PrintFields(static_cast<JsonNode*>(node));
+		PrintFields(static_cast<JsonString*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(JsonNumber* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Number", node);
+		PrintFields(static_cast<JsonNode*>(node));
+		PrintFields(static_cast<JsonNumber*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(JsonArray* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Array", node);
+		PrintFields(static_cast<JsonNode*>(node));
+		PrintFields(static_cast<JsonArray*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(JsonObject* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Object", node);
+		PrintFields(static_cast<JsonNode*>(node));
+		PrintFields(static_cast<JsonObject*>(node));
+		EndObject();
+	}
+
+	AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
+		: vl::glr::JsonVisitorBase(_writer)
+	{
+	}
+
+	void AstVisitor::Print(JsonNode* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		node->Accept(static_cast<JsonNode::IVisitor*>(this));
+	}
+
+	void AstVisitor::Print(JsonObjectField* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"ObjectField", node);
+		PrintFields(static_cast<JsonObjectField*>(node));
+		EndObject();
+	}
+
 }
 
 
@@ -2095,118 +2047,109 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json::traverse_visitor
 {
-	namespace glr
+	void AstVisitor::Traverse(vl::glr::ParsingToken& token) {}
+	void AstVisitor::Traverse(vl::glr::ParsingAstBase* node) {}
+	void AstVisitor::Traverse(JsonArray* node) {}
+	void AstVisitor::Traverse(JsonLiteral* node) {}
+	void AstVisitor::Traverse(JsonNode* node) {}
+	void AstVisitor::Traverse(JsonNumber* node) {}
+	void AstVisitor::Traverse(JsonObject* node) {}
+	void AstVisitor::Traverse(JsonObjectField* node) {}
+	void AstVisitor::Traverse(JsonString* node) {}
+
+	void AstVisitor::Finishing(vl::glr::ParsingAstBase* node) {}
+	void AstVisitor::Finishing(JsonArray* node) {}
+	void AstVisitor::Finishing(JsonLiteral* node) {}
+	void AstVisitor::Finishing(JsonNode* node) {}
+	void AstVisitor::Finishing(JsonNumber* node) {}
+	void AstVisitor::Finishing(JsonObject* node) {}
+	void AstVisitor::Finishing(JsonObjectField* node) {}
+	void AstVisitor::Finishing(JsonString* node) {}
+
+	void AstVisitor::Visit(JsonLiteral* node)
 	{
-		namespace json
-		{
-			namespace traverse_visitor
-			{
-				void AstVisitor::Traverse(vl::glr::ParsingToken& token) {}
-				void AstVisitor::Traverse(vl::glr::ParsingAstBase* node) {}
-				void AstVisitor::Traverse(JsonArray* node) {}
-				void AstVisitor::Traverse(JsonLiteral* node) {}
-				void AstVisitor::Traverse(JsonNode* node) {}
-				void AstVisitor::Traverse(JsonNumber* node) {}
-				void AstVisitor::Traverse(JsonObject* node) {}
-				void AstVisitor::Traverse(JsonObjectField* node) {}
-				void AstVisitor::Traverse(JsonString* node) {}
-
-				void AstVisitor::Finishing(vl::glr::ParsingAstBase* node) {}
-				void AstVisitor::Finishing(JsonArray* node) {}
-				void AstVisitor::Finishing(JsonLiteral* node) {}
-				void AstVisitor::Finishing(JsonNode* node) {}
-				void AstVisitor::Finishing(JsonNumber* node) {}
-				void AstVisitor::Finishing(JsonObject* node) {}
-				void AstVisitor::Finishing(JsonObjectField* node) {}
-				void AstVisitor::Finishing(JsonString* node) {}
-
-				void AstVisitor::Visit(JsonLiteral* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<JsonNode*>(node));
-					Traverse(static_cast<JsonLiteral*>(node));
-					Finishing(static_cast<JsonLiteral*>(node));
-					Finishing(static_cast<JsonNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(JsonString* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<JsonNode*>(node));
-					Traverse(static_cast<JsonString*>(node));
-					Traverse(node->content);
-					Finishing(static_cast<JsonString*>(node));
-					Finishing(static_cast<JsonNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(JsonNumber* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<JsonNode*>(node));
-					Traverse(static_cast<JsonNumber*>(node));
-					Traverse(node->content);
-					Finishing(static_cast<JsonNumber*>(node));
-					Finishing(static_cast<JsonNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(JsonArray* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<JsonNode*>(node));
-					Traverse(static_cast<JsonArray*>(node));
-					for (auto&& listItem : node->items)
-					{
-						InspectInto(listItem.Obj());
-					}
-					Finishing(static_cast<JsonArray*>(node));
-					Finishing(static_cast<JsonNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(JsonObject* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<JsonNode*>(node));
-					Traverse(static_cast<JsonObject*>(node));
-					for (auto&& listItem : node->fields)
-					{
-						InspectInto(listItem.Obj());
-					}
-					Finishing(static_cast<JsonObject*>(node));
-					Finishing(static_cast<JsonNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::InspectInto(JsonNode* node)
-				{
-					if (!node) return;
-					node->Accept(static_cast<JsonNode::IVisitor*>(this));
-				}
-
-				void AstVisitor::InspectInto(JsonObjectField* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<JsonObjectField*>(node));
-					Traverse(node->name);
-					InspectInto(node->value.Obj());
-					Finishing(static_cast<JsonObjectField*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-			}
-		}
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<JsonNode*>(node));
+		Traverse(static_cast<JsonLiteral*>(node));
+		Finishing(static_cast<JsonLiteral*>(node));
+		Finishing(static_cast<JsonNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 	}
+
+	void AstVisitor::Visit(JsonString* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<JsonNode*>(node));
+		Traverse(static_cast<JsonString*>(node));
+		Traverse(node->content);
+		Finishing(static_cast<JsonString*>(node));
+		Finishing(static_cast<JsonNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(JsonNumber* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<JsonNode*>(node));
+		Traverse(static_cast<JsonNumber*>(node));
+		Traverse(node->content);
+		Finishing(static_cast<JsonNumber*>(node));
+		Finishing(static_cast<JsonNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(JsonArray* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<JsonNode*>(node));
+		Traverse(static_cast<JsonArray*>(node));
+		for (auto&& listItem : node->items)
+		{
+			InspectInto(listItem.Obj());
+		}
+		Finishing(static_cast<JsonArray*>(node));
+		Finishing(static_cast<JsonNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(JsonObject* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<JsonNode*>(node));
+		Traverse(static_cast<JsonObject*>(node));
+		for (auto&& listItem : node->fields)
+		{
+			InspectInto(listItem.Obj());
+		}
+		Finishing(static_cast<JsonObject*>(node));
+		Finishing(static_cast<JsonNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::InspectInto(JsonNode* node)
+	{
+		if (!node) return;
+		node->Accept(static_cast<JsonNode::IVisitor*>(this));
+	}
+
+	void AstVisitor::InspectInto(JsonObjectField* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<JsonObjectField*>(node));
+		Traverse(node->name);
+		InspectInto(node->value.Obj());
+		Finishing(static_cast<JsonObjectField*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
 }
 
 
@@ -2220,105 +2163,104 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
+	void JsonParserData(vl::stream::IStream& outputStream)
 	{
-		namespace json
-		{
-			void JsonParserData(vl::stream::IStream& outputStream)
-			{
-				static const vl::vint dataLength = 1933; // 17265 bytes before compressing
-				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 141;
-				static const vl::vint dataSolidRows = 7;
-				static const vl::vint dataRows = 8;
-				static const char* compressed[] = {
-					"\x71\x43\x00\x00\x85\x07\x00\x00\x0C\x00\x01\x82\x80\x06\x03\x82\x81\x82\x06\x89\x82\x87\x0A\x80\x81\x84\x09\x0A\x98\x0A\x9D\x0A\x86\x65\x01\x84\xFF\x19\x9A\x99\x8A\x80\x03\x8D\x8D\x1D\x9D\x97\x89\x83\x96\x81\x93\x81\x02\x0A\xA7\x82\x8F\x8A\x8D\x8F\x96\x1C\x8A\xB0\x9F\x7F\x90\x99\x9B\x96\x37\x9F\x9D\x83\x0A\x92\x84\x03\x9E\x18\xB6\xB2\x82\xA1\xA0\x9F\xA0\xA3\x45\xBA\x87\xAA\xA9\xA0\x93\xA4\xA7\x4D\xAE\x8F\xB2\xA1\xA9\x99\xAA\x9A\x53\xD6\x86\x93\x99\x98\xAA\x83\x02\x40\xDB\x84\xA2\xB8\xA4\xB0\xA6\xB3\x5E\x83\x9C\xB9\xA8\xAF\xA9\xAE\xAA\x68\xF0\xAA\xA3\xB3\xBD\xB1\xBB\xB3\x77\xE9\x87\x81\xB9\xBA\xB8\x96\xBA\x7F\xF6\x81\xD8\xB3\xC2\xBD\x81\xB5\x6E\xEC\xAF\xBA\xAD\xBC\xC5\xC2\xBF\x87\x80\xD1\xC2\xC1\x84\x84\x92\xC5\x98\x89\xDA\xD1\xBE\xC3\xC8\xC2\xCF\x86\x9E\x92\xC2\xD4\xCC\xD3\xCE\xD3\xA1\x88\xDC\xCD\xB6\x80\x04\xBF\xC7\x9D\xA8\xD0\xD2\xD1\xDA\xD5\xC6\xD6\xB7\x8B\xF8\xD0\xDB\xD8\xD3\xD8\xDB\xBC\xBA\xC2\xEA\x89\x07\xD6\xDF\xDA\xA3\xC0\xC7\xFD\xD4\xDC\xE6\xE5\xE6\xC3\x9B\xF9\xD9\xCB\xD1\xE9\xEA\xEA\xD3\xD2\xC1\xF8",
-					"\xEB\xEA\xEF\xE4\xEB\xD9\xD7\xC9\x8A\x06\xE0\xE8\xEF\xEF\xE7\xE6\xDE\xEA\xF2\xF5\xF5\xF1\xF7\xDD\xEE\xF1\xF0\xF8\xF3\xF7\x05\xF2\x0E\xA6\x8A\x8D\x05\xF6\x05\xF3\xE7\x0F\x3F\x79\x73\x80\xA5\x50\x05\x79\x04\x02\xA5\x60\x47\x65\xEB\x4F\x7E\x80\x81\xA7\x4F\x85\x6A\x84\x11\x90\x89\x6A\x85\xBF\x58\x88\x73\x84\x1A\x8E\x7D\x84\x78\xF3\x61\x81\x43\x04\x09\x95\x8C\x87\x89\x26\xA9\x87\x84\x8A\xA1\x54\x05\x8B\x8A\x2A\x99\x8C\x8A\x8C\x31\x9B\x85\x8E\x87\x33\xB6\x80\x8F\x8E\x34\xBC\x8A\x8D\x8F\x40\xBF\x82\x90\x8E\x37\xA0\x85\x7E\x7C\x47\xB4\x70\x01\x05\x2F\x81\x94\x92\x8F\x4F\xB3\x66\x05\x93\x43\x86\x9C\x7A\x92\x14\x90\x96\x95\x96\x4E\x96\x97\x04\x95\xCC\x52\x4C\x80\x92\x57\xA2\x85\x99\x92\x66\x9C\x95\x95\x7A\x6A\x91\x9B\x99\x83\x1F\xAC\x93\x69\x06\x60\x96\x9A\x05\x9D\x72\xB9\x8E\x9B\x9E\x5B\xB1\x90\x9D\x69\x1B\x38\x9F\x9D\x91\x79\x84\xA3\xA2\x96\x85\x88\xA7\xA1\x97\x89\x8C\xAB\xA3\x9B\x06\x5C\x05\x78\x45\x63\x83\x4E\x05\x79\x1F\x02\xA6\x40\x08\xE5\x61\x0A\xA6\x92\x22\x25\x73\x0B\xA7\x69\xA3\x64\x09\x79\x25\x25\x76\x09\x79",
-					"\x27\x24\xA1\x40\x0A\xAE\xA7\x92\xAD\x0A\xE5\x6A\x01\xAF\x0A\xB1\xAD\x9D\x9E\x9E\xBB\x86\xA4\x9A\xAE\x8D\x90\xA8\x96\x9F\xBF\x84\xB3\x40\x0B\xE5\x6D\x09\xAE\xB1\xA5\xBC\xAA\x42\x0B\xE5\x6F\x05\x78\x0C\xE5\x71\x01\xAE\x0C\xCB\x8E\xB9\x43\x0C\xE5\x74\x09\xB6\xAF\xC3\x9A\xB5\xB2\xB8\xE1\xA0\xBD\xB2\xB9\x01\x75\x0F\xB6\xA2\xE3\xA8\xB2\xAC\xB0\x8F\xBC\x99\x7A\x0D\xEB\x8E\xAD\xB8\xBB\xE5\xB8\xB7\xBA\xBE\x68\x81\x47\x0D\xBD\xC2\xBB\xB6\xBD\xBE\x03\xC2\xC1\xC1\xBF\xEF\x8C\xB8\xC3\x73\x38\x31\xA9\x0C\xC0\xF2\xB1\xBD\xAC\xBF\x09\xE4\xB6\xC1\xC4\xF7\x85\xCB\xC2\xC2\x00\x3A\x00\xC7\xC4\x1A\xD5\xCE\xB8\xBC\x19\xC7\xC0\x03\x0E\x1F\xC1\xB8\xC4\xC1\x26\xE4\xCC\xCB\xCA\x02\x7D\x1A\x41\x4A\x95\xBC\x64\xCE\x7E\x57\x77\xC3\x43\x4A\xCB\x7A\xC2\x40\x4F\xF1\xB3\x45\x71\x42\x3E\xFD\xCA\x40\x42\x25\xF3\x4F\x3F\xD0\x06\x48\xD7\x6C\xCF\x00\x10\xD2\xD0\x98\x60\x57\x53\x4C\xD4\x45\xCD\x7C\xD3\xCE\x6C\x55\xDB\x6B\xD5\x21\x57\x5B\xD6\x40\x52\xF0\x4E\xD7\x6D\x33\x67\xDC\x6D\xDA\x6C\x73\x49\xD6\xDA\x1B\xCA\xDF\x47\xD8\x01\x7F\x47\x54\xD0\x5F",
-					"\xF0\x49\xD5\xD9\x2D\x78\xD8\xDA\xDE\x60\xBE\xDB\xD8\xE0\x35\xCB\x72\xE3\x72\x6E\xFE\x4C\x5B\xE1\xCD\x49\xE1\xDB\x6D\x8C\xF2\xDD\x49\xD6\x91\xDD\x83\xD4\xD1\x8B\xED\xD4\xE1\xD3\x2A\xD7\xEC\xE7\x55\x70\xCD\xEB\xE7\x40\x76\xEB\x6F\xD9\xE7\x30\x74\xD0\x01\xE9\xB7\x67\xE1\xD1\xEA\x8A\xE0\xEA\xE7\xE4\x8F\xD0\xE3\xEF\x47\x7B\xD9\xE6\xD7\xE8\x64\xFA\xE9\xDC\xED\x85\xCD\x75\xE6\xE4\x1A\x59\xDC\xE8\x6F\xC3\xC4\xFF\x3D\xD6\xBA\x49\xF4\xF0\xE5\xA8\xED\x4A\xE9\xD6\x33\x4E\xF2\xE5\xD6\x4E\xD7\xCE\xE7\x40\xD9\xC6\xE7\xEF\x46\xB9\xF7\xDF\xF5\xF1\x81\xE3\xF9\x45\xF8\xAB\x56\xF2\xDE\xF1\xBE\xFF\xD0\xF1\xED\xC2\xE6\xFB\xF2\x42\xEA\xFB\x9B\xF6\x40\xD4\xF0\x45\xFE\xE3\x9F\xC9\xD7\xFD\x40\xDD\x6D\x39\xE8\x4A\x7A\x23\xFD\x7C\x71\x20\x7C\x7F\x22\x01\xEF\x7C\x6A\xF1\x7B\x74\x81\xBD\x6E\x83\xEF\x38\x71\x77\xF4\x72\x7C\x79\xED\x63\x70\x04\x81\x25\x7E\xDD\x3F\x78\x00\xF9\x7D\x6F\x05\xC7\x61\x7B\xB9\x64\x87\x2A\xC7\x68\x72\xD9\x72\x79\x84\xD1\x6D\x23\x80\x04\x9F\x1D\x0B\xB1\x8F\x1E\x18\x84\x83\x81\x14\x89\x23\x0C\xFA\x73\x84\xF8\x4D\x3B",
-					"\x87\x04\x96\x86\xF2\x40\x8A\x78\x21\x84\x7A\x75\x46\x9A\x22\xEA\x75\x7B\x88\xB6\x2A\x72\x37\x4F\x8C\x2E\xBA\x3E\x80\x6A\x91\x3E\x81\x6A\x57\x98\x81\x42\x0C\x76\x8A\x2A\x95\x83\x20\xA1\x61\x80\xD4\x62\x87\x84\x9C\x7D\x78\x25\x65\x83\x20\xE3\x64\x89\x20\x36\x86\x26\x32\x66\x83\x20\x1C\x8D\x8F\x8D\xF2\x33\x88\x7F\x0A\x37\x8C\x07\xF9\x86\x8F\xF2\x10\x6F\x8F\x33\x74\x7E\x1F\x8A\x2E\x35\x84\x2A\x74\x3C\x3A\x8A\x20\x22\xD7\x89\x20\x3C\x25\x3D\x23\x81\x5E\x85\x07\x81\x99\x20\x49\x52\x91\x3D\x8C\x77\x4F\x25\xEB\x30\x6A\x04\x4C\x91\x21\x79\x03\x91\x42\x1E\x9F\x93\x81\x3A\x0D\x3C\x2D\x9F\x49\x29\x83\x2B\x0E\x54\x8A\x22\x95\xAB\x81\x20\x1F\x65\x39\x6A\x4E\x5B\x94\x4C\x8C\x79\x53\x2D\xCA\x4C\x07\x2B\x84\x89\x34\x8C\x89\x80\xC5\x1D\x21\x85\xD3\x1D\x89\x8E\x17\x6C\x93\x24\xBE\x88\x7D\x97\x4C\x91\x89\xB1\x3B\x26\x2B\x98\x7B\x3D\x8E\x01\x87\x39\xD6\x9D\x8C\x35\xE4\x4D\x98\x33\x5D\x25\x89\x12\x62\x91\xF0\x58\x9D\x20\x71\x89\x6D\x23\x2D\x82\x9B\x6C\x1D\x21\x41\x2D\xAA\x65\x23\xA1\x6A\x9D\x34\x8A\x2B\x40\x64\xB1\x6F\x34\x6E\x8A",
-					"\x49\x47\x24\x43\x9C\x8E\x7A\x88\x00\xF7\x35\x9A\x42\x2E\x41\x78\x26\x5B\x9A\x49\xAA\x7F\x97\x3A\xAF\x94\x92\x32\x44\x9C\x38\x0D\xBA\x9E\x42\x74\x47\xA0\x33\x59\x69\x6B\xE0\x8E\xA2\x42\x11\x96\x21\x62\xA1\x35\x85\x18\xAA\x22\x7F\x02\xA9\x20\x4A\x5D\xA1\x3D\x01\x81\xA5\x42\x04\xAA\xA3\x84\x3A\x97\xA4\xEB\x25\x90\x4C\x86\x28\x89\xF4\x1D\x26\x53\x15\xA1\x23\xA8\x39\xA0\x01\x45\xA8\x8E\x90\x69\x9E\x9A\x42\x29\x5C\xA7\x56\x7C\xA1\x3F\x3F\xA6\x22\x4F\x82\x22\xA6\x89\x89\x24\x56\xFD\x96\x61\x40\x01\xA4\xA6\x9B\xAF\x99\x3D\x48\xA2\x23\x48\xAD\xA6\x20\x5B\x51\xAE\x5D\x5B\xA3\x22\x81\x24\xA7\x9D\xF4\x21\xAA\x20\x54\xAE\xAA\x41\x38\x51\x78\x64\x7C\xA7\xAC\x08\x8A\x21\x3B\x86\x29\xAC\xA1\x89\x20\x5A\xC1\x72\x58\x4F\xF3\xA4\x8E\xB1\xBB\x3E\xAA\x09\x36\x5B\x57\x94\x64\x94\xBF\xA4\xAE\x99\xE9\x25\xB2\x40\x7C\xA6\xAF\xB2\xAB\x3D\x9E\x03\x2C\xA6\x5A\x83\x28\x5B\xC1\xA1\x62\xB2\x02\x2A\xA3\x3C\xDB\x51\xA2\x33\x63\xAB\xA6\x91\xBD\xB0\xC2\x1D\x23\x8A\xD0\xA6\x48\xB2\x78\x8B\xA6\x39\x93\xB2\x21\x7F\x7C\xA7\x39\x98\xA1\x21\xD6\x31",
-					"\xB0\x00\xB8\xB2\x55\x23\x0F\x6F\xB7\x68\x53\x4C\xA6\xDA\xB4\xB4\x9C\x09\x28\x66\x6E\xA5\x32\x4C\xD3\x81\x24\xB6\xBC\xBC\xA8\x62\xEB\x34\xB6\x68\x8C\x3D\x23\x3D\x02\xB4\x00\x3F\x02\xBA\x4D\x86\xB8\x00\xB4\xB7\x9B\x68\x1D\x21\x08\xE9\x83\x0A\xBA\x96\x97\xBA\x41\x86\x2A\xB3\xE7\x8A\x25\x08\xD2\xAF\x3B\xA5\x3C\xA3\xBD\xA4\xAC\xB1\x20\x47\x09\xBF\x68\x36\x92\xBD\xD5\x8D\xB3\x20\x49\x12\xBD\x69\x21\x5C\xBC\x91\x80\xB6\x20\x4B\x1A\xBF\x69\x27\x5D\xBE\xD5\x87\xB2\x20\x4D\x02\xC1\x68\x2B\x55\xC1\xAF\x3F\xBB\x20\x4F\x12\xB9\x14\x52\xB0\x57\x06\xDC\x7F\xC1\x02\x33\x0A\x74\xD5\x02\xBA\xAF\x97\xB9\xB9\x03\x3C\x9E\x72\x82\x27\x0B\x94\x49\x20\x96\x03\x20\xC7\x7D\xC9\x99\x3C\x14\xC2\x25\xBD\x2B\xD7\x9C\xC5\x45\xB4\x74\x0C\xC1\x20\x0B\x0A\xD3\x36\x5B\xF6\x90\x00\x1A\xE9\xB3\xC4\x01\x3A\x09\x8E\xB1\x3A\x59\xE0\x7E\xC3\x8F\x07\xC1\x20\x17\x43\xCC\x38\xBC\xBC\xC7\xC8\xB5\xB6\xC4\x00\x5E\x0C\xC9\x8E\x3A\xAF\xC9\x03\xB2\xC8\x18\x55\xCA\x20\x6A\x46\xCA\x21\xCE\xAC\x92\x18\x52\xB4\x0C\xE9\x82\xB0\xCB\x6D\x92\xCA\x19\x52\xB8\x0C\xE9",
-					"\x95\xB4\xC7\xD6\xA3\x20\x45\xC0\xC0\x00\x35\x1C\xCB\x3D\x1C\xB2\xCE\x94\xEC\x07\xCE\x32\x61\xBA\xCF\x49\xC0\x02\x1B\x7D\xCA\x48\x93\x83\x26\xB6\xC0\xA6\x20\x1C\x04\xD2\x20\x6E\x41\x7E\xD0\x02\x3F\xB7\x76\x8A\x22\x0E\x46\xC1\x26\x5B\xC1\x6F\xA6\xA5\x52\xC4\x0E\x4B\xF2\x54\xBE\x9B\xC1\xD2\x1D\x1E\xDF\x38\x9C\xB0\x78\x9B\x4A\x72\x9A\x2F\x8C\x9A\x8B\xE0\x65\x92\x9E\x34\x30\xD7\x3F\x55\x87\x98\xF8\x74\xD5\xCA\x1E\xA0\x7C\xAB\xBB\xD9\x8A\x65\x8A\x33\x7F\x5C\x8A\xD7\x2E\xB5\x71\xD9\x2F\x81\x3D\xBC\x32\x92\xBB\xEA\x0C\x99\x9C\x78\x8A\x36\xB9\x35\x8F\x91\xE8\x1F\x90",
-				};
-				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
-			}
+		static const vl::vint dataLength = 1933; // 17265 bytes before compressing
+		static const vl::vint dataBlock = 256;
+		static const vl::vint dataRemain = 141;
+		static const vl::vint dataSolidRows = 7;
+		static const vl::vint dataRows = 8;
+		static const char* compressed[] = {
+			"\x71\x43\x00\x00\x85\x07\x00\x00\x0C\x00\x01\x82\x80\x06\x03\x82\x81\x82\x06\x89\x82\x87\x0A\x80\x81\x84\x09\x0A\x98\x0A\x9D\x0A\x86\x65\x01\x84\xFF\x19\x9A\x99\x8A\x80\x03\x8D\x8D\x1D\x9D\x97\x89\x83\x96\x81\x93\x81\x02\x0A\xA7\x82\x8F\x8A\x8D\x8F\x96\x1C\x8A\xB0\x9F\x7F\x90\x99\x9B\x96\x37\x9F\x9D\x83\x0A\x92\x84\x03\x9E\x18\xB6\xB2\x82\xA1\xA0\x9F\xA0\xA3\x45\xBA\x87\xAA\xA9\xA0\x93\xA4\xA7\x4D\xAE\x8F\xB2\xA1\xA9\x99\xAA\x9A\x53\xD6\x86\x93\x99\x98\xAA\x83\x02\x40\xDB\x84\xA2\xB8\xA4\xB0\xA6\xB3\x5E\x83\x9C\xB9\xA8\xAF\xA9\xAE\xAA\x68\xF0\xAA\xA3\xB3\xBD\xB1\xBB\xB3\x77\xE9\x87\x81\xB9\xBA\xB8\x96\xBA\x7F\xF6\x81\xD8\xB3\xC2\xBD\x81\xB5\x6E\xEC\xAF\xBA\xAD\xBC\xC5\xC2\xBF\x87\x80\xD1\xC2\xC1\x84\x84\x92\xC5\x98\x89\xDA\xD1\xBE\xC3\xC8\xC2\xCF\x86\x9E\x92\xC2\xD4\xCC\xD3\xCE\xD3\xA1\x88\xDC\xCD\xB6\x80\x04\xBF\xC7\x9D\xA8\xD0\xD2\xD1\xDA\xD5\xC6\xD6\xB7\x8B\xF8\xD0\xDB\xD8\xD3\xD8\xDB\xBC\xBA\xC2\xEA\x89\x07\xD6\xDF\xDA\xA3\xC0\xC7\xFD\xD4\xDC\xE6\xE5\xE6\xC3\x9B\xF9\xD9\xCB\xD1\xE9\xEA\xEA\xD3\xD2\xC1\xF8",
+			"\xEB\xEA\xEF\xE4\xEB\xD9\xD7\xC9\x8A\x06\xE0\xE8\xEF\xEF\xE7\xE6\xDE\xEA\xF2\xF5\xF5\xF1\xF7\xDD\xEE\xF1\xF0\xF8\xF3\xF7\x05\xF2\x0E\xA6\x8A\x8D\x05\xF6\x05\xF3\xE7\x0F\x3F\x79\x73\x80\xA5\x50\x05\x79\x04\x02\xA5\x60\x47\x65\xEB\x4F\x7E\x80\x81\xA7\x4F\x85\x6A\x84\x11\x90\x89\x6A\x85\xBF\x58\x88\x73\x84\x1A\x8E\x7D\x84\x78\xF3\x61\x81\x43\x04\x09\x95\x8C\x87\x89\x26\xA9\x87\x84\x8A\xA1\x54\x05\x8B\x8A\x2A\x99\x8C\x8A\x8C\x31\x9B\x85\x8E\x87\x33\xB6\x80\x8F\x8E\x34\xBC\x8A\x8D\x8F\x40\xBF\x82\x90\x8E\x37\xA0\x85\x7E\x7C\x47\xB4\x70\x01\x05\x2F\x81\x94\x92\x8F\x4F\xB3\x66\x05\x93\x43\x86\x9C\x7A\x92\x14\x90\x96\x95\x96\x4E\x96\x97\x04\x95\xCC\x52\x4C\x80\x92\x57\xA2\x85\x99\x92\x66\x9C\x95\x95\x7A\x6A\x91\x9B\x99\x83\x1F\xAC\x93\x69\x06\x60\x96\x9A\x05\x9D\x72\xB9\x8E\x9B\x9E\x5B\xB1\x90\x9D\x69\x1B\x38\x9F\x9D\x91\x79\x84\xA3\xA2\x96\x85\x88\xA7\xA1\x97\x89\x8C\xAB\xA3\x9B\x06\x5C\x05\x78\x45\x63\x83\x4E\x05\x79\x1F\x02\xA6\x40\x08\xE5\x61\x0A\xA6\x92\x22\x25\x73\x0B\xA7\x69\xA3\x64\x09\x79\x25\x25\x76\x09\x79",
+			"\x27\x24\xA1\x40\x0A\xAE\xA7\x92\xAD\x0A\xE5\x6A\x01\xAF\x0A\xB1\xAD\x9D\x9E\x9E\xBB\x86\xA4\x9A\xAE\x8D\x90\xA8\x96\x9F\xBF\x84\xB3\x40\x0B\xE5\x6D\x09\xAE\xB1\xA5\xBC\xAA\x42\x0B\xE5\x6F\x05\x78\x0C\xE5\x71\x01\xAE\x0C\xCB\x8E\xB9\x43\x0C\xE5\x74\x09\xB6\xAF\xC3\x9A\xB5\xB2\xB8\xE1\xA0\xBD\xB2\xB9\x01\x75\x0F\xB6\xA2\xE3\xA8\xB2\xAC\xB0\x8F\xBC\x99\x7A\x0D\xEB\x8E\xAD\xB8\xBB\xE5\xB8\xB7\xBA\xBE\x68\x81\x47\x0D\xBD\xC2\xBB\xB6\xBD\xBE\x03\xC2\xC1\xC1\xBF\xEF\x8C\xB8\xC3\x73\x38\x31\xA9\x0C\xC0\xF2\xB1\xBD\xAC\xBF\x09\xE4\xB6\xC1\xC4\xF7\x85\xCB\xC2\xC2\x00\x3A\x00\xC7\xC4\x1A\xD5\xCE\xB8\xBC\x19\xC7\xC0\x03\x0E\x1F\xC1\xB8\xC4\xC1\x26\xE4\xCC\xCB\xCA\x02\x7D\x1A\x41\x4A\x95\xBC\x64\xCE\x7E\x57\x77\xC3\x43\x4A\xCB\x7A\xC2\x40\x4F\xF1\xB3\x45\x71\x42\x3E\xFD\xCA\x40\x42\x25\xF3\x4F\x3F\xD0\x06\x48\xD7\x6C\xCF\x00\x10\xD2\xD0\x98\x60\x57\x53\x4C\xD4\x45\xCD\x7C\xD3\xCE\x6C\x55\xDB\x6B\xD5\x21\x57\x5B\xD6\x40\x52\xF0\x4E\xD7\x6D\x33\x67\xDC\x6D\xDA\x6C\x73\x49\xD6\xDA\x1B\xCA\xDF\x47\xD8\x01\x7F\x47\x54\xD0\x5F",
+			"\xF0\x49\xD5\xD9\x2D\x78\xD8\xDA\xDE\x60\xBE\xDB\xD8\xE0\x35\xCB\x72\xE3\x72\x6E\xFE\x4C\x5B\xE1\xCD\x49\xE1\xDB\x6D\x8C\xF2\xDD\x49\xD6\x91\xDD\x83\xD4\xD1\x8B\xED\xD4\xE1\xD3\x2A\xD7\xEC\xE7\x55\x70\xCD\xEB\xE7\x40\x76\xEB\x6F\xD9\xE7\x30\x74\xD0\x01\xE9\xB7\x67\xE1\xD1\xEA\x8A\xE0\xEA\xE7\xE4\x8F\xD0\xE3\xEF\x47\x7B\xD9\xE6\xD7\xE8\x64\xFA\xE9\xDC\xED\x85\xCD\x75\xE6\xE4\x1A\x59\xDC\xE8\x6F\xC3\xC4\xFF\x3D\xD6\xBA\x49\xF4\xF0\xE5\xA8\xED\x4A\xE9\xD6\x33\x4E\xF2\xE5\xD6\x4E\xD7\xCE\xE7\x40\xD9\xC6\xE7\xEF\x46\xB9\xF7\xDF\xF5\xF1\x81\xE3\xF9\x45\xF8\xAB\x56\xF2\xDE\xF1\xBE\xFF\xD0\xF1\xED\xC2\xE6\xFB\xF2\x42\xEA\xFB\x9B\xF6\x40\xD4\xF0\x45\xFE\xE3\x9F\xC9\xD7\xFD\x40\xDD\x6D\x39\xE8\x4A\x7A\x23\xFD\x7C\x71\x20\x7C\x7F\x22\x01\xEF\x7C\x6A\xF1\x7B\x74\x81\xBD\x6E\x83\xEF\x38\x71\x77\xF4\x72\x7C\x79\xED\x63\x70\x04\x81\x25\x7E\xDD\x3F\x78\x00\xF9\x7D\x6F\x05\xC7\x61\x7B\xB9\x64\x87\x2A\xC7\x68\x72\xD9\x72\x79\x84\xD1\x6D\x23\x80\x04\x9F\x1D\x0B\xB1\x8F\x1E\x18\x84\x83\x81\x14\x89\x23\x0C\xFA\x73\x84\xF8\x4D\x3B",
+			"\x87\x04\x96\x86\xF2\x40\x8A\x78\x21\x84\x7A\x75\x46\x9A\x22\xEA\x75\x7B\x88\xB6\x2A\x72\x37\x4F\x8C\x2E\xBA\x3E\x80\x6A\x91\x3E\x81\x6A\x57\x98\x81\x42\x0C\x76\x8A\x2A\x95\x83\x20\xA1\x61\x80\xD4\x62\x87\x84\x9C\x7D\x78\x25\x65\x83\x20\xE3\x64\x89\x20\x36\x86\x26\x32\x66\x83\x20\x1C\x8D\x8F\x8D\xF2\x33\x88\x7F\x0A\x37\x8C\x07\xF9\x86\x8F\xF2\x10\x6F\x8F\x33\x74\x7E\x1F\x8A\x2E\x35\x84\x2A\x74\x3C\x3A\x8A\x20\x22\xD7\x89\x20\x3C\x25\x3D\x23\x81\x5E\x85\x07\x81\x99\x20\x49\x52\x91\x3D\x8C\x77\x4F\x25\xEB\x30\x6A\x04\x4C\x91\x21\x79\x03\x91\x42\x1E\x9F\x93\x81\x3A\x0D\x3C\x2D\x9F\x49\x29\x83\x2B\x0E\x54\x8A\x22\x95\xAB\x81\x20\x1F\x65\x39\x6A\x4E\x5B\x94\x4C\x8C\x79\x53\x2D\xCA\x4C\x07\x2B\x84\x89\x34\x8C\x89\x80\xC5\x1D\x21\x85\xD3\x1D\x89\x8E\x17\x6C\x93\x24\xBE\x88\x7D\x97\x4C\x91\x89\xB1\x3B\x26\x2B\x98\x7B\x3D\x8E\x01\x87\x39\xD6\x9D\x8C\x35\xE4\x4D\x98\x33\x5D\x25\x89\x12\x62\x91\xF0\x58\x9D\x20\x71\x89\x6D\x23\x2D\x82\x9B\x6C\x1D\x21\x41\x2D\xAA\x65\x23\xA1\x6A\x9D\x34\x8A\x2B\x40\x64\xB1\x6F\x34\x6E\x8A",
+			"\x49\x47\x24\x43\x9C\x8E\x7A\x88\x00\xF7\x35\x9A\x42\x2E\x41\x78\x26\x5B\x9A\x49\xAA\x7F\x97\x3A\xAF\x94\x92\x32\x44\x9C\x38\x0D\xBA\x9E\x42\x74\x47\xA0\x33\x59\x69\x6B\xE0\x8E\xA2\x42\x11\x96\x21\x62\xA1\x35\x85\x18\xAA\x22\x7F\x02\xA9\x20\x4A\x5D\xA1\x3D\x01\x81\xA5\x42\x04\xAA\xA3\x84\x3A\x97\xA4\xEB\x25\x90\x4C\x86\x28\x89\xF4\x1D\x26\x53\x15\xA1\x23\xA8\x39\xA0\x01\x45\xA8\x8E\x90\x69\x9E\x9A\x42\x29\x5C\xA7\x56\x7C\xA1\x3F\x3F\xA6\x22\x4F\x82\x22\xA6\x89\x89\x24\x56\xFD\x96\x61\x40\x01\xA4\xA6\x9B\xAF\x99\x3D\x48\xA2\x23\x48\xAD\xA6\x20\x5B\x51\xAE\x5D\x5B\xA3\x22\x81\x24\xA7\x9D\xF4\x21\xAA\x20\x54\xAE\xAA\x41\x38\x51\x78\x64\x7C\xA7\xAC\x08\x8A\x21\x3B\x86\x29\xAC\xA1\x89\x20\x5A\xC1\x72\x58\x4F\xF3\xA4\x8E\xB1\xBB\x3E\xAA\x09\x36\x5B\x57\x94\x64\x94\xBF\xA4\xAE\x99\xE9\x25\xB2\x40\x7C\xA6\xAF\xB2\xAB\x3D\x9E\x03\x2C\xA6\x5A\x83\x28\x5B\xC1\xA1\x62\xB2\x02\x2A\xA3\x3C\xDB\x51\xA2\x33\x63\xAB\xA6\x91\xBD\xB0\xC2\x1D\x23\x8A\xD0\xA6\x48\xB2\x78\x8B\xA6\x39\x93\xB2\x21\x7F\x7C\xA7\x39\x98\xA1\x21\xD6\x31",
+			"\xB0\x00\xB8\xB2\x55\x23\x0F\x6F\xB7\x68\x53\x4C\xA6\xDA\xB4\xB4\x9C\x09\x28\x66\x6E\xA5\x32\x4C\xD3\x81\x24\xB6\xBC\xBC\xA8\x62\xEB\x34\xB6\x68\x8C\x3D\x23\x3D\x02\xB4\x00\x3F\x02\xBA\x4D\x86\xB8\x00\xB4\xB7\x9B\x68\x1D\x21\x08\xE9\x83\x0A\xBA\x96\x97\xBA\x41\x86\x2A\xB3\xE7\x8A\x25\x08\xD2\xAF\x3B\xA5\x3C\xA3\xBD\xA4\xAC\xB1\x20\x47\x09\xBF\x68\x36\x92\xBD\xD5\x8D\xB3\x20\x49\x12\xBD\x69\x21\x5C\xBC\x91\x80\xB6\x20\x4B\x1A\xBF\x69\x27\x5D\xBE\xD5\x87\xB2\x20\x4D\x02\xC1\x68\x2B\x55\xC1\xAF\x3F\xBB\x20\x4F\x12\xB9\x14\x52\xB0\x57\x06\xDC\x7F\xC1\x02\x33\x0A\x74\xD5\x02\xBA\xAF\x97\xB9\xB9\x03\x3C\x9E\x72\x82\x27\x0B\x94\x49\x20\x96\x03\x20\xC7\x7D\xC9\x99\x3C\x14\xC2\x25\xBD\x2B\xD7\x9C\xC5\x45\xB4\x74\x0C\xC1\x20\x0B\x0A\xD3\x36\x5B\xF6\x90\x00\x1A\xE9\xB3\xC4\x01\x3A\x09\x8E\xB1\x3A\x59\xE0\x7E\xC3\x8F\x07\xC1\x20\x17\x43\xCC\x38\xBC\xBC\xC7\xC8\xB5\xB6\xC4\x00\x5E\x0C\xC9\x8E\x3A\xAF\xC9\x03\xB2\xC8\x18\x55\xCA\x20\x6A\x46\xCA\x21\xCE\xAC\x92\x18\x52\xB4\x0C\xE9\x82\xB0\xCB\x6D\x92\xCA\x19\x52\xB8\x0C\xE9",
+			"\x95\xB4\xC7\xD6\xA3\x20\x45\xC0\xC0\x00\x35\x1C\xCB\x3D\x1C\xB2\xCE\x94\xEC\x07\xCE\x32\x61\xBA\xCF\x49\xC0\x02\x1B\x7D\xCA\x48\x93\x83\x26\xB6\xC0\xA6\x20\x1C\x04\xD2\x20\x6E\x41\x7E\xD0\x02\x3F\xB7\x76\x8A\x22\x0E\x46\xC1\x26\x5B\xC1\x6F\xA6\xA5\x52\xC4\x0E\x4B\xF2\x54\xBE\x9B\xC1\xD2\x1D\x1E\xDF\x38\x9C\xB0\x78\x9B\x4A\x72\x9A\x2F\x8C\x9A\x8B\xE0\x65\x92\x9E\x34\x30\xD7\x3F\x55\x87\x98\xF8\x74\xD5\xCA\x1E\xA0\x7C\xAB\xBB\xD9\x8A\x65\x8A\x33\x7F\x5C\x8A\xD7\x2E\xB5\x71\xD9\x2F\x81\x3D\xBC\x32\x92\xBB\xEA\x0C\x99\x9C\x78\x8A\x36\xB9\x35\x8F\x91\xE8\x1F\x90",
+		};
+		vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
+	}
 
-			const wchar_t* ParserRuleName(vl::vint index)
-			{
-				static const wchar_t* results[] = {
-					L"JLiteral",
-					L"JField",
-					L"JObject",
-					L"JArray",
-					L"JValue",
-					L"JRoot",
-				};
-				return results[index];
-			}
+	const wchar_t* ParserRuleName(vl::vint index)
+	{
+		static const wchar_t* results[] = {
+			L"JLiteral",
+			L"JField",
+			L"JObject",
+			L"JArray",
+			L"JValue",
+			L"JRoot",
+		};
+		return results[index];
+	}
 
-			const wchar_t* ParserStateLabel(vl::vint index)
-			{
-				static const wchar_t* results[] = {
-					L"[0][JLiteral] BEGIN ",
-					L"[1][JLiteral] END [ENDING]",
-					L"[2][JLiteral]< \"false\" @ >",
-					L"[3][JLiteral]< \"null\" @ >",
-					L"[4][JLiteral]< \"true\" @ >",
-					L"[5][JLiteral]< NUMBER @ >",
-					L"[6][JLiteral]< STRING @ >",
-					L"[7][JField] BEGIN ",
-					L"[8][JField] END [ENDING]",
-					L"[9][JField]< STRING \":\" @ JValue >",
-					L"[10][JField]< STRING \":\" JValue @ >",
-					L"[11][JField]< STRING @ \":\" JValue >",
-					L"[12][JObject] BEGIN ",
-					L"[13][JObject] END [ENDING]",
-					L"[14][JObject]< \"{\" @ { JField ; \",\" } \"}\" >",
-					L"[15][JObject]< \"{\" { JField ; \",\" @ } \"}\" >",
-					L"[16][JObject]< \"{\" { JField ; \",\" } \"}\" @ >",
-					L"[17][JObject]< \"{\" { JField @ ; \",\" } \"}\" >",
-					L"[18][JArray] BEGIN ",
-					L"[19][JArray] END [ENDING]",
-					L"[20][JArray]< \"[\" @ { JValue ; \",\" } \"]\" >",
-					L"[21][JArray]< \"[\" { JValue ; \",\" @ } \"]\" >",
-					L"[22][JArray]< \"[\" { JValue ; \",\" } \"]\" @ >",
-					L"[23][JArray]< \"[\" { JValue @ ; \",\" } \"]\" >",
-					L"[24][JValue] BEGIN ",
-					L"[25][JValue] END [ENDING]",
-					L"[26][JValue]<< !JArray @ >>",
-					L"[27][JValue]<< !JLiteral @ >>",
-					L"[28][JValue]<< !JObject @ >>",
-					L"[29][JRoot] BEGIN ",
-					L"[30][JRoot] END [ENDING]",
-					L"[31][JRoot]<< !JArray @ >>",
-					L"[32][JRoot]<< !JObject @ >>",
-				};
-				return results[index];
-			}
+	const wchar_t* ParserStateLabel(vl::vint index)
+	{
+		static const wchar_t* results[] = {
+			L"[0][JLiteral] BEGIN ",
+			L"[1][JLiteral] END [ENDING]",
+			L"[2][JLiteral]< \"false\" @ >",
+			L"[3][JLiteral]< \"null\" @ >",
+			L"[4][JLiteral]< \"true\" @ >",
+			L"[5][JLiteral]< NUMBER @ >",
+			L"[6][JLiteral]< STRING @ >",
+			L"[7][JField] BEGIN ",
+			L"[8][JField] END [ENDING]",
+			L"[9][JField]< STRING \":\" @ JValue >",
+			L"[10][JField]< STRING \":\" JValue @ >",
+			L"[11][JField]< STRING @ \":\" JValue >",
+			L"[12][JObject] BEGIN ",
+			L"[13][JObject] END [ENDING]",
+			L"[14][JObject]< \"{\" @ { JField ; \",\" } \"}\" >",
+			L"[15][JObject]< \"{\" { JField ; \",\" @ } \"}\" >",
+			L"[16][JObject]< \"{\" { JField ; \",\" } \"}\" @ >",
+			L"[17][JObject]< \"{\" { JField @ ; \",\" } \"}\" >",
+			L"[18][JArray] BEGIN ",
+			L"[19][JArray] END [ENDING]",
+			L"[20][JArray]< \"[\" @ { JValue ; \",\" } \"]\" >",
+			L"[21][JArray]< \"[\" { JValue ; \",\" @ } \"]\" >",
+			L"[22][JArray]< \"[\" { JValue ; \",\" } \"]\" @ >",
+			L"[23][JArray]< \"[\" { JValue @ ; \",\" } \"]\" >",
+			L"[24][JValue] BEGIN ",
+			L"[25][JValue] END [ENDING]",
+			L"[26][JValue]<< !JArray @ >>",
+			L"[27][JValue]<< !JLiteral @ >>",
+			L"[28][JValue]<< !JObject @ >>",
+			L"[29][JRoot] BEGIN ",
+			L"[30][JRoot] END [ENDING]",
+			L"[31][JRoot]<< !JArray @ >>",
+			L"[32][JRoot]<< !JObject @ >>",
+		};
+		return results[index];
+	}
 
-			Parser::Parser()
-				: vl::glr::ParserBase<JsonTokens, ParserStates, JsonAstInsReceiver>(&JsonTokenDeleter, &JsonLexerData, &JsonParserData)
-			{
-			};
+	Parser::Parser()
+		: vl::glr::ParserBase<JsonTokens, ParserStates, JsonAstInsReceiver>(&JsonTokenDeleter, &JsonLexerData, &JsonParserData)
+	{
+	}
 
-			vl::vint32_t Parser::FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const
-			{
-				return -1;
-			};
+	vl::WString Parser::GetClassName(vl::vint32_t classIndex) const
+	{
+		return vl::WString::Unmanaged(JsonTypeName((JsonClasses)classIndex));
+	}
 
-			vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(const vl::WString& input, vl::vint codeIndex) const
-			{
-				 return ParseWithString<vl::glr::json::JsonNode, ParserStates::JRoot>(input, this, codeIndex);
-			};
+	vl::vint32_t Parser::FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const
+	{
+		return -1;
+	}
 
-			vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
-			{
-				 return ParseWithTokens<vl::glr::json::JsonNode, ParserStates::JRoot>(tokens, this, codeIndex);
-			};
-		}
+	vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(const vl::WString& input, vl::vint codeIndex) const
+	{
+		 return ParseWithString<vl::glr::json::JsonNode, ParserStates::JRoot>(input, this, codeIndex);
+	}
+
+	vl::Ptr<vl::glr::json::JsonNode> Parser::ParseJRoot(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
+	{
+		 return ParseWithTokens<vl::glr::json::JsonNode, ParserStates::JRoot>(tokens, this, codeIndex);
 	}
 }
 
@@ -2333,149 +2275,143 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
-	{
-		namespace json
-		{
 
 /***********************************************************************
 JsonAstInsReceiver : public vl::glr::AstInsReceiverBase
 ***********************************************************************/
 
-			vl::Ptr<vl::glr::ParsingAstBase> JsonAstInsReceiver::CreateAstNode(vl::vint32_t type)
-			{
-				auto cppTypeName = JsonCppTypeName((JsonClasses)type);
-				switch((JsonClasses)type)
-				{
-				case JsonClasses::Array:
-					return vl::Ptr(new vl::glr::json::JsonArray);
-				case JsonClasses::Literal:
-					return vl::Ptr(new vl::glr::json::JsonLiteral);
-				case JsonClasses::Number:
-					return vl::Ptr(new vl::glr::json::JsonNumber);
-				case JsonClasses::Object:
-					return vl::Ptr(new vl::glr::json::JsonObject);
-				case JsonClasses::ObjectField:
-					return vl::Ptr(new vl::glr::json::JsonObjectField);
-				case JsonClasses::String:
-					return vl::Ptr(new vl::glr::json::JsonString);
-				default:
-					return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
-				}
-			}
-
-			void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value)
-			{
-				auto cppFieldName = JsonCppFieldName((JsonFields)field);
-				switch((JsonFields)field)
-				{
-				case JsonFields::Array_items:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::json::JsonArray::items, object, field, value, cppFieldName);
-				case JsonFields::Object_fields:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::json::JsonObject::fields, object, field, value, cppFieldName);
-				case JsonFields::ObjectField_value:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::json::JsonObjectField::value, object, field, value, cppFieldName);
-				default:
-					return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
-				}
-			}
-
-			void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex)
-			{
-				auto cppFieldName = JsonCppFieldName((JsonFields)field);
-				switch((JsonFields)field)
-				{
-				case JsonFields::Number_content:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::json::JsonNumber::content, object, field, token, tokenIndex, cppFieldName);
-				case JsonFields::ObjectField_name:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::json::JsonObjectField::name, object, field, token, tokenIndex, cppFieldName);
-				case JsonFields::String_content:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::json::JsonString::content, object, field, token, tokenIndex, cppFieldName);
-				default:
-					return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
-				}
-			}
-
-			void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
-			{
-				auto cppFieldName = JsonCppFieldName((JsonFields)field);
-				switch((JsonFields)field)
-				{
-				case JsonFields::Literal_value:
-					return vl::glr::AssemblerSetEnumField(&vl::glr::json::JsonLiteral::value, object, field, enumItem, weakAssignment, cppFieldName);
-				default:
-					return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
-				}
-			}
-
-			const wchar_t* JsonTypeName(JsonClasses type)
-			{
-				const wchar_t* results[] = {
-					L"Array",
-					L"Literal",
-					L"Node",
-					L"Number",
-					L"Object",
-					L"ObjectField",
-					L"String",
-				};
-				vl::vint index = (vl::vint)type;
-				return 0 <= index && index < 7 ? results[index] : nullptr;
-			}
-
-			const wchar_t* JsonCppTypeName(JsonClasses type)
-			{
-				const wchar_t* results[] = {
-					L"vl::glr::json::JsonArray",
-					L"vl::glr::json::JsonLiteral",
-					L"vl::glr::json::JsonNode",
-					L"vl::glr::json::JsonNumber",
-					L"vl::glr::json::JsonObject",
-					L"vl::glr::json::JsonObjectField",
-					L"vl::glr::json::JsonString",
-				};
-				vl::vint index = (vl::vint)type;
-				return 0 <= index && index < 7 ? results[index] : nullptr;
-			}
-
-			const wchar_t* JsonFieldName(JsonFields field)
-			{
-				const wchar_t* results[] = {
-					L"Array::items",
-					L"Literal::value",
-					L"Number::content",
-					L"Object::fields",
-					L"ObjectField::name",
-					L"ObjectField::value",
-					L"String::content",
-				};
-				vl::vint index = (vl::vint)field;
-				return 0 <= index && index < 7 ? results[index] : nullptr;
-			}
-
-			const wchar_t* JsonCppFieldName(JsonFields field)
-			{
-				const wchar_t* results[] = {
-					L"vl::glr::json::JsonArray::items",
-					L"vl::glr::json::JsonLiteral::value",
-					L"vl::glr::json::JsonNumber::content",
-					L"vl::glr::json::JsonObject::fields",
-					L"vl::glr::json::JsonObjectField::name",
-					L"vl::glr::json::JsonObjectField::value",
-					L"vl::glr::json::JsonString::content",
-				};
-				vl::vint index = (vl::vint)field;
-				return 0 <= index && index < 7 ? results[index] : nullptr;
-			}
-
-			vl::Ptr<vl::glr::ParsingAstBase> JsonAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
-			{
-				auto cppTypeName = JsonCppTypeName((JsonClasses)type);
-				return vl::glr::AssemblyThrowTypeNotAllowAmbiguity(type, cppTypeName);
-			}
+	vl::Ptr<vl::glr::ParsingAstBase> JsonAstInsReceiver::CreateAstNode(vl::vint32_t type)
+	{
+		auto cppTypeName = JsonCppTypeName((JsonClasses)type);
+		switch((JsonClasses)type)
+		{
+		case JsonClasses::Array:
+			return vl::Ptr(new vl::glr::json::JsonArray);
+		case JsonClasses::Literal:
+			return vl::Ptr(new vl::glr::json::JsonLiteral);
+		case JsonClasses::Number:
+			return vl::Ptr(new vl::glr::json::JsonNumber);
+		case JsonClasses::Object:
+			return vl::Ptr(new vl::glr::json::JsonObject);
+		case JsonClasses::ObjectField:
+			return vl::Ptr(new vl::glr::json::JsonObjectField);
+		case JsonClasses::String:
+			return vl::Ptr(new vl::glr::json::JsonString);
+		default:
+			return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
 		}
+	}
+
+	void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value)
+	{
+		auto cppFieldName = JsonCppFieldName((JsonFields)field);
+		switch((JsonFields)field)
+		{
+		case JsonFields::Array_items:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::json::JsonArray::items, object, field, value, cppFieldName);
+		case JsonFields::Object_fields:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::json::JsonObject::fields, object, field, value, cppFieldName);
+		case JsonFields::ObjectField_value:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::json::JsonObjectField::value, object, field, value, cppFieldName);
+		default:
+			return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
+		}
+	}
+
+	void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex)
+	{
+		auto cppFieldName = JsonCppFieldName((JsonFields)field);
+		switch((JsonFields)field)
+		{
+		case JsonFields::Number_content:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::json::JsonNumber::content, object, field, token, tokenIndex, cppFieldName);
+		case JsonFields::ObjectField_name:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::json::JsonObjectField::name, object, field, token, tokenIndex, cppFieldName);
+		case JsonFields::String_content:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::json::JsonString::content, object, field, token, tokenIndex, cppFieldName);
+		default:
+			return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
+		}
+	}
+
+	void JsonAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
+	{
+		auto cppFieldName = JsonCppFieldName((JsonFields)field);
+		switch((JsonFields)field)
+		{
+		case JsonFields::Literal_value:
+			return vl::glr::AssemblerSetEnumField(&vl::glr::json::JsonLiteral::value, object, field, enumItem, weakAssignment, cppFieldName);
+		default:
+			return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
+		}
+	}
+
+	const wchar_t* JsonTypeName(JsonClasses type)
+	{
+		const wchar_t* results[] = {
+			L"Array",
+			L"Literal",
+			L"Node",
+			L"Number",
+			L"Object",
+			L"ObjectField",
+			L"String",
+		};
+		vl::vint index = (vl::vint)type;
+		return 0 <= index && index < 7 ? results[index] : nullptr;
+	}
+
+	const wchar_t* JsonCppTypeName(JsonClasses type)
+	{
+		const wchar_t* results[] = {
+			L"vl::glr::json::JsonArray",
+			L"vl::glr::json::JsonLiteral",
+			L"vl::glr::json::JsonNode",
+			L"vl::glr::json::JsonNumber",
+			L"vl::glr::json::JsonObject",
+			L"vl::glr::json::JsonObjectField",
+			L"vl::glr::json::JsonString",
+		};
+		vl::vint index = (vl::vint)type;
+		return 0 <= index && index < 7 ? results[index] : nullptr;
+	}
+
+	const wchar_t* JsonFieldName(JsonFields field)
+	{
+		const wchar_t* results[] = {
+			L"Array::items",
+			L"Literal::value",
+			L"Number::content",
+			L"Object::fields",
+			L"ObjectField::name",
+			L"ObjectField::value",
+			L"String::content",
+		};
+		vl::vint index = (vl::vint)field;
+		return 0 <= index && index < 7 ? results[index] : nullptr;
+	}
+
+	const wchar_t* JsonCppFieldName(JsonFields field)
+	{
+		const wchar_t* results[] = {
+			L"vl::glr::json::JsonArray::items",
+			L"vl::glr::json::JsonLiteral::value",
+			L"vl::glr::json::JsonNumber::content",
+			L"vl::glr::json::JsonObject::fields",
+			L"vl::glr::json::JsonObjectField::name",
+			L"vl::glr::json::JsonObjectField::value",
+			L"vl::glr::json::JsonString::content",
+		};
+		vl::vint index = (vl::vint)field;
+		return 0 <= index && index < 7 ? results[index] : nullptr;
+	}
+
+	vl::Ptr<vl::glr::ParsingAstBase> JsonAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
+	{
+		auto cppTypeName = JsonCppTypeName((JsonClasses)type);
+		return vl::glr::AssemblyThrowTypeNotAllowAmbiguity(type, cppTypeName);
 	}
 }
 
@@ -2490,98 +2426,92 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::json
 {
-	namespace glr
+	bool JsonTokenDeleter(vl::vint token)
 	{
-		namespace json
+		switch((JsonTokens)token)
 		{
-			bool JsonTokenDeleter(vl::vint token)
-			{
-				switch((JsonTokens)token)
-				{
-				case JsonTokens::SPACE:
-					return true;
-				default:
-					return false;
-				}
-			}
-
-			const wchar_t* JsonTokenId(JsonTokens token)
-			{
-				static const wchar_t* results[] = {
-					L"TRUE_VALUE",
-					L"FALSE_VALUE",
-					L"NULL_VALUE",
-					L"OBJOPEN",
-					L"OBJCLOSE",
-					L"ARROPEN",
-					L"ARRCLOSE",
-					L"COMMA",
-					L"COLON",
-					L"NUMBER",
-					L"STRING",
-					L"SPACE",
-				};
-				vl::vint index = (vl::vint)token;
-				return 0 <= index && index < JsonTokenCount ? results[index] : nullptr;
-			}
-
-			const wchar_t* JsonTokenDisplayText(JsonTokens token)
-			{
-				static const wchar_t* results[] = {
-					L"true",
-					L"false",
-					L"null",
-					L"{",
-					L"}",
-					L"[",
-					L"]",
-					L",",
-					L":",
-					nullptr,
-					nullptr,
-					nullptr,
-				};
-				vl::vint index = (vl::vint)token;
-				return 0 <= index && index < JsonTokenCount ? results[index] : nullptr;
-			}
-
-			const wchar_t* JsonTokenRegex(JsonTokens token)
-			{
-				static const wchar_t* results[] = {
-					L"true",
-					L"false",
-					L"null",
-					L"\\{",
-					L"\\}",
-					L"\\[",
-					L"\\]",
-					L",",
-					L":",
-					L"[\\-]?\\d+(.\\d+)?([eE][+\\-]?\\d+)?",
-					L"\"([^\\\\\"]|\\\\[^u]|\\\\u\\d{4})*\"",
-					L"\\s+",
-				};
-				vl::vint index = (vl::vint)token;
-				return 0 <= index && index < JsonTokenCount ? results[index] : nullptr;
-			}
-
-			void JsonLexerData(vl::stream::IStream& outputStream)
-			{
-				static const vl::vint dataLength = 690; // 7754 bytes before compressing
-				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 178;
-				static const vl::vint dataSolidRows = 2;
-				static const vl::vint dataRows = 3;
-				static const char* compressed[] = {
-					"\x4A\x1E\x00\x00\xAA\x02\x00\x00\x2A\x00\x01\xAB\x01\x84\x81\x80\x81\x80\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x07\x80\x03\x82\x84\x84\x15\x96\x82\x2D\x30\x84\x8E\x13\x9C\x83\x16\x9B\x04\xB0\x04\x99\x14\x82\x1D\x9E\x82\x3B\x04\x84\x24\x85\x24\xA0\x82\x23\x04\xDA\x04\x9B\x2B\xA4\x80\x2E\xA7\x04\xDD\x11\xA4\x8E\x2C\x80\x30\x82\x61\x58\x84\x82\x34\x84\x30\x83\x32\x5F\x84\xA6\x22\xB4\x87\x30\x83\x35\x04\xEC\x29\xA4\x8D\x34\xB4\x82\x37\x6F\x84\xAF\x24\x81\x3C\x82\x38\xBB\x04\xF3\x39\xA4\x84\x3C\xBC\x83\x3A\x7F\x84\xB6\x24\x8A\x3C\x83\x3C\xC3\x04\xFC\x09\xC4\x8D\x3C\xC4\x82\x3F\x04\xFF\x7F\x70\x00\x02\xCA\xC9\x8B\x01\x98\xD5\xD6\xCA\xCE\xCB\x7F\xCE\x96\x95\x81\x9E\xCE\xCB\x85\x80\x88\xA3\xA4\xD2\xD3\x81\x85\x85\xD4\xD5\x9E\x86\x11\xD6\xC7\x03\xD8\xD8\xD8\x02\x36\xF7\xDF\x73\x02\xDF\xDB\x84\xAF\xA4\xC4\x1A\xD5\x06\xDF\xDD\xE3\xC8\xC9\xCA\xEB\xEC\xE5\xE6\xE7\xE7\x1A\xC1\xCF\xF3\xE4\xED\xEA\xEB\xEB\xA4\x8F\x06\xF8",
-					"\xEC\xED\xEE\xEF\xEF\xE0\xE1\xD5\xF4\xC2\xEA\xF2\xF3\xF3\xE8\xE9\xEA\xEB\xFC\xF5\xF6\xF7\xF7\xF0\xF1\xF2\xF3\xF4\xFD\xFA\xFB\xFB\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xF4\xD6\x9B\x7E\x72\x83\x7C\x12\x3A\x61\x07\x76\xFF\x13\x08\x80\x75\x0A\xA5\x73\x80\x05\x04\x50\x81\x42\x84\x00\x14\x86\x85\x84\x18\x81\x46\x05\x86\x15\x9C\x87\x87\x84\x1E\xA1\x80\x8B\x88\x00\x15\x02\x89\x87\x24\x9F\x88\x8B\x8A\x2A\xAD\x87\x8A\x8B\x29\x88\x87\x04\x41\x33\x81\x75\x8D\x80\xFF\x37\x83\x83\x8E\x3C\xBD\x88\x7C\x06\x0B\xBE\x82\x92\x6A\x19\x01\x93\x93\x91\xE0\x5A\x06\x90\x92\xDE\x45\x81\x73\x81\x0E\x89\x8B\x91\x73\x0D\xB8\x8C\x93\x7E\x1B\x13\x97\x94\x93\x1C\x3A\x6D\x95\x94\x1D\x1A\x9B\x94\x77\x30\xAC\x8F\x88\x41\x1B\xB1\x8A\x9A\x99\x6B\xA5\x94\x86\x89\x6D\xA7\x91\x9F\x9C\x6C\xB5\x9E\x9A\x6E\x1E\x04\x49\x9D\x40\x7B\x80\x0D\x9F\x9F\x7A\x81\xAC\x9E\xA0\x7E\x84\xA0\xA3\xA0\x88\x85\xA9\xA3\xA1\x8A\x8D\xAC\xA3\xA3\x86\x91\xAB\xA2\xA4\x8D\x9C\x43\xA7\xA5\x8D\xA3\x9A\xA5\x7B\x37\xBA\x86\x66\xA7\x92\x60\xAB\xA7\xA8\xA4\x9D\x7E\x45\x94\xA5\xA9\xAF\x79\x48",
-					"\xA8\xAA\xAE\x8C\x49\xAD\xAE\xA8\x77\x49\x51\x95\x9F\x76\xAD\xB2\xB2\x71\x99\xAC\xB9\xAA\xA4\x0A\x98\xBD\x89\x77\x9C\x9D\x14\xA9\x96\x9E\x9C\xC7\xB4\x90\x9D\xB2\xCC\x83\xBD\xB0\xB2\x65\x83\x95\x08\xB0\xC1\x95\xB6\xB7\xB5\xE8\x66\x04\xB4\xB6\xDC\x9D\xBF\x70\xAD\x56\x96\x68\xAD\x77\xE3\x9E\xB6\x7B\xAF\xBC\xA6\xB8\x93\x09\xDB\xAA\xBE\xBB\xBB\xF4\x68\x0D\xB8\xBC\xFD\x69\x03\xBD\xB7\xCE\x8E\xB6\xB1\xBE\xD0\x88\xBB\xB0\xBF\xC4\xBD\xB1\xC0\x9D\x9E\x70\x3B\x0A\x30\x28\x12\x59\x49\x41\xA2\x40\x0D\xC1\xC3\xBD\x41\x43\x71\x40\xC5\x41\x42\x6D\x40\xB5\x41\x46\x6A\xC3\x0E\x41\x4D\xC0\x80\x0F\xD4\x4D\xC4\xC7\x1E\xE2\xC5\xCB\x69\x12\x66\xC4\xCB\xCA\xAE\x6C\xCA\xC9\xC3\x0C\xC4\x49\x6D\x6B\x23\xCD\xC0\x73\xCA\x21\xC1\x40",
-				};
-				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
-			}
+		case JsonTokens::SPACE:
+			return true;
+		default:
+			return false;
 		}
+	}
+
+	const wchar_t* JsonTokenId(JsonTokens token)
+	{
+		static const wchar_t* results[] = {
+			L"TRUE_VALUE",
+			L"FALSE_VALUE",
+			L"NULL_VALUE",
+			L"OBJOPEN",
+			L"OBJCLOSE",
+			L"ARROPEN",
+			L"ARRCLOSE",
+			L"COMMA",
+			L"COLON",
+			L"NUMBER",
+			L"STRING",
+			L"SPACE",
+		};
+		vl::vint index = (vl::vint)token;
+		return 0 <= index && index < JsonTokenCount ? results[index] : nullptr;
+	}
+
+	const wchar_t* JsonTokenDisplayText(JsonTokens token)
+	{
+		static const wchar_t* results[] = {
+			L"true",
+			L"false",
+			L"null",
+			L"{",
+			L"}",
+			L"[",
+			L"]",
+			L",",
+			L":",
+			nullptr,
+			nullptr,
+			nullptr,
+		};
+		vl::vint index = (vl::vint)token;
+		return 0 <= index && index < JsonTokenCount ? results[index] : nullptr;
+	}
+
+	const wchar_t* JsonTokenRegex(JsonTokens token)
+	{
+		static const wchar_t* results[] = {
+			L"true",
+			L"false",
+			L"null",
+			L"\\{",
+			L"\\}",
+			L"\\[",
+			L"\\]",
+			L",",
+			L":",
+			L"[\\-]?\\d+(.\\d+)?([eE][+\\-]?\\d+)?",
+			L"\"([^\\\\\"]|\\\\[^u]|\\\\u\\d{4})*\"",
+			L"\\s+",
+		};
+		vl::vint index = (vl::vint)token;
+		return 0 <= index && index < JsonTokenCount ? results[index] : nullptr;
+	}
+
+	void JsonLexerData(vl::stream::IStream& outputStream)
+	{
+		static const vl::vint dataLength = 690; // 7754 bytes before compressing
+		static const vl::vint dataBlock = 256;
+		static const vl::vint dataRemain = 178;
+		static const vl::vint dataSolidRows = 2;
+		static const vl::vint dataRows = 3;
+		static const char* compressed[] = {
+			"\x4A\x1E\x00\x00\xAA\x02\x00\x00\x2A\x00\x01\xAB\x01\x84\x81\x80\x81\x80\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x07\x80\x03\x82\x84\x84\x15\x96\x82\x2D\x30\x84\x8E\x13\x9C\x83\x16\x9B\x04\xB0\x04\x99\x14\x82\x1D\x9E\x82\x3B\x04\x84\x24\x85\x24\xA0\x82\x23\x04\xDA\x04\x9B\x2B\xA4\x80\x2E\xA7\x04\xDD\x11\xA4\x8E\x2C\x80\x30\x82\x61\x58\x84\x82\x34\x84\x30\x83\x32\x5F\x84\xA6\x22\xB4\x87\x30\x83\x35\x04\xEC\x29\xA4\x8D\x34\xB4\x82\x37\x6F\x84\xAF\x24\x81\x3C\x82\x38\xBB\x04\xF3\x39\xA4\x84\x3C\xBC\x83\x3A\x7F\x84\xB6\x24\x8A\x3C\x83\x3C\xC3\x04\xFC\x09\xC4\x8D\x3C\xC4\x82\x3F\x04\xFF\x7F\x70\x00\x02\xCA\xC9\x8B\x01\x98\xD5\xD6\xCA\xCE\xCB\x7F\xCE\x96\x95\x81\x9E\xCE\xCB\x85\x80\x88\xA3\xA4\xD2\xD3\x81\x85\x85\xD4\xD5\x9E\x86\x11\xD6\xC7\x03\xD8\xD8\xD8\x02\x36\xF7\xDF\x73\x02\xDF\xDB\x84\xAF\xA4\xC4\x1A\xD5\x06\xDF\xDD\xE3\xC8\xC9\xCA\xEB\xEC\xE5\xE6\xE7\xE7\x1A\xC1\xCF\xF3\xE4\xED\xEA\xEB\xEB\xA4\x8F\x06\xF8",
+			"\xEC\xED\xEE\xEF\xEF\xE0\xE1\xD5\xF4\xC2\xEA\xF2\xF3\xF3\xE8\xE9\xEA\xEB\xFC\xF5\xF6\xF7\xF7\xF0\xF1\xF2\xF3\xF4\xFD\xFA\xFB\xFB\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xF4\xD6\x9B\x7E\x72\x83\x7C\x12\x3A\x61\x07\x76\xFF\x13\x08\x80\x75\x0A\xA5\x73\x80\x05\x04\x50\x81\x42\x84\x00\x14\x86\x85\x84\x18\x81\x46\x05\x86\x15\x9C\x87\x87\x84\x1E\xA1\x80\x8B\x88\x00\x15\x02\x89\x87\x24\x9F\x88\x8B\x8A\x2A\xAD\x87\x8A\x8B\x29\x88\x87\x04\x41\x33\x81\x75\x8D\x80\xFF\x37\x83\x83\x8E\x3C\xBD\x88\x7C\x06\x0B\xBE\x82\x92\x6A\x19\x01\x93\x93\x91\xE0\x5A\x06\x90\x92\xDE\x45\x81\x73\x81\x0E\x89\x8B\x91\x73\x0D\xB8\x8C\x93\x7E\x1B\x13\x97\x94\x93\x1C\x3A\x6D\x95\x94\x1D\x1A\x9B\x94\x77\x30\xAC\x8F\x88\x41\x1B\xB1\x8A\x9A\x99\x6B\xA5\x94\x86\x89\x6D\xA7\x91\x9F\x9C\x6C\xB5\x9E\x9A\x6E\x1E\x04\x49\x9D\x40\x7B\x80\x0D\x9F\x9F\x7A\x81\xAC\x9E\xA0\x7E\x84\xA0\xA3\xA0\x88\x85\xA9\xA3\xA1\x8A\x8D\xAC\xA3\xA3\x86\x91\xAB\xA2\xA4\x8D\x9C\x43\xA7\xA5\x8D\xA3\x9A\xA5\x7B\x37\xBA\x86\x66\xA7\x92\x60\xAB\xA7\xA8\xA4\x9D\x7E\x45\x94\xA5\xA9\xAF\x79\x48",
+			"\xA8\xAA\xAE\x8C\x49\xAD\xAE\xA8\x77\x49\x51\x95\x9F\x76\xAD\xB2\xB2\x71\x99\xAC\xB9\xAA\xA4\x0A\x98\xBD\x89\x77\x9C\x9D\x14\xA9\x96\x9E\x9C\xC7\xB4\x90\x9D\xB2\xCC\x83\xBD\xB0\xB2\x65\x83\x95\x08\xB0\xC1\x95\xB6\xB7\xB5\xE8\x66\x04\xB4\xB6\xDC\x9D\xBF\x70\xAD\x56\x96\x68\xAD\x77\xE3\x9E\xB6\x7B\xAF\xBC\xA6\xB8\x93\x09\xDB\xAA\xBE\xBB\xBB\xF4\x68\x0D\xB8\xBC\xFD\x69\x03\xBD\xB7\xCE\x8E\xB6\xB1\xBE\xD0\x88\xBB\xB0\xBF\xC4\xBD\xB1\xC0\x9D\x9E\x70\x3B\x0A\x30\x28\x12\x59\x49\x41\xA2\x40\x0D\xC1\xC3\xBD\x41\x43\x71\x40\xC5\x41\x42\x6D\x40\xB5\x41\x46\x6A\xC3\x0E\x41\x4D\xC0\x80\x0F\xD4\x4D\xC4\xC7\x1E\xE2\xC5\xCB\x69\x12\x66\xC4\xCB\xCA\xAE\x6C\xCA\xC9\xC3\x0C\xC4\x49\x6D\x6B\x23\xCD\xC0\x73\xCA\x21\xC1\x40",
+		};
+		vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 	}
 }
 
@@ -3765,8 +3695,8 @@ PrepareTraceRoute
 				state = TraceManagerState::PreparedTraceRoute;
 
 				AllocateExecutionData();
-				PartialExecuteTraces();
 				BuildAmbiguityStructures();
+				PartialExecuteTraces();
 #ifdef VCZH_DO_DEBUG_CHECK
 				DebugCheckTraceExecData();
 #endif
@@ -3922,18 +3852,19 @@ BuildAmbiguityStructures
 							{
 								// find the latest forwardTrace of its commonForwardBranch and the forwardTrace of the predecessor
 								NEW_MERGE_STACK_MAGIC_COUNTER;
+								auto magicCommonForward = MergeStack_MagicCounter;
 
 								auto currentTrace = GetTrace(traceExec->branchData.commonForwardBranch);
 								while (currentTrace)
 								{
-									GetTraceExec(currentTrace->traceExecRef)->branchData.mergeCounter = MergeStack_MagicCounter;
+									GetTraceExec(currentTrace->traceExecRef)->branchData.mergeCounter = magicCommonForward;
 									currentTrace = StepForward(currentTrace);
 								}
 
 								currentTrace = GetTrace(GetTraceExec(predecessor->traceExecRef)->branchData.forwardTrace);
 								while (currentTrace)
 								{
-									if (GetTraceExec(currentTrace->traceExecRef)->branchData.mergeCounter == MergeStack_MagicCounter)
+									if (GetTraceExec(currentTrace->traceExecRef)->branchData.mergeCounter == magicCommonForward)
 									{
 										break;
 									}
@@ -3993,6 +3924,7 @@ PartialExecuteTraces
 				);
 
 				CalculateObjectFirstInstruction();
+				CalculateObjectLastInstruction();
 #undef ERROR_MESSAGE_PREFIX
 			}
 		}
@@ -4002,6 +3934,10 @@ PartialExecuteTraces
 /***********************************************************************
 .\TRACEMANAGER\TMPTR_PARTIALEXECUTETRACES_CALCULATEOBJECTFIRSTINSTRUCTION.CPP
 ***********************************************************************/
+
+#if defined VCZH_MSVC && defined _DEBUG
+#define VCZH_DO_DEBUG_CHECK
+#endif
 
 namespace vl
 {
@@ -4017,16 +3953,15 @@ namespace vl
 CalculateObjectFirstInstruction
 ***********************************************************************/
 
-			bool TraceManager::UpdateTopTrace(Ref<Trace>& topTrace, vint32_t& topIns, Ref<Trace> newTrace, vint32_t newIns)
+			bool TraceManager::UpdateTopTrace(InsRef& topInsRef, InsRef newInsRef)
 			{
 				if (
-					topTrace == nullref ||
-					topTrace > newTrace ||
-					(topTrace == newTrace && topIns > newIns)
+					topInsRef.trace == nullref ||
+					topInsRef.trace > newInsRef.trace ||
+					(topInsRef.trace == newInsRef.trace && topInsRef.ins > newInsRef.ins)
 					)
 				{
-					topTrace = newTrace;
-					topIns = newIns;
+					topInsRef = newInsRef;
 					return true;
 				}
 				else
@@ -4035,7 +3970,7 @@ CalculateObjectFirstInstruction
 				}
 			}
 
-			void TraceManager::InjectFirstInstruction(Ref<Trace> trace, vint32_t ins, Ref<InsExec_ObjRefLink> injectTargets, vuint64_t magicInjection)
+			void TraceManager::InjectFirstInstruction(InsRef insRef, Ref<InsExec_ObjRefLink> injectTargets, vuint64_t magicInjection)
 			{
 				auto objLinkRef = injectTargets;
 				while (objLinkRef != nullref)
@@ -4050,15 +3985,16 @@ CalculateObjectFirstInstruction
 					// there will be only one top create instruction per object
 					// even when object relationship is partial ordered
 					// TODO: prove it
-					if (UpdateTopTrace(ieObject->topTrace, ieObject->topIns, trace, ins))
+					if (UpdateTopTrace(ieObject->topInsRef, insRef))
 					{
-						InjectFirstInstruction(trace, ins, ieObject->injectObjectIds, magicInjection);
+						InjectFirstInstruction(insRef, ieObject->assignedToObjectIds, magicInjection);
 					}
 				}
 			}
 
 			void TraceManager::CalculateObjectFirstInstruction()
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CalculateObjectFirstInstruction()#"
 				// check all individual objects
 				{
 					auto objRef = firstObject;
@@ -4068,7 +4004,7 @@ CalculateObjectFirstInstruction
 						objRef = ieObject->previous;
 
 						// set the top local trace to its create trace
-						UpdateTopTrace(ieObject->topLocalTrace, ieObject->topLocalIns, ieObject->createTrace, ieObject->createIns);
+						UpdateTopTrace(ieObject->topLocalInsRef, ieObject->createInsRef);
 
 						// check all DFA instructions
 						auto insRefLinkId = ieObject->dfaInsRefs;
@@ -4080,15 +4016,15 @@ CalculateObjectFirstInstruction
 							// there will be only one top local create instruction per object
 							// even when object relationship is partial ordered
 							// TODO: prove it
-							UpdateTopTrace(ieObject->topLocalTrace, ieObject->topLocalIns, insRefLink->trace, insRefLink->ins);
+							UpdateTopTrace(ieObject->topLocalInsRef, insRefLink->insRef);
 						}
 
 						// set the top trace to its top local trace
-						UpdateTopTrace(ieObject->topTrace, ieObject->topIns, ieObject->topLocalTrace, ieObject->topLocalIns);
+						UpdateTopTrace(ieObject->topInsRef, ieObject->topLocalInsRef);
 					}
 				}
 
-				// check all inject into targets
+				// check all assigned to targets
 				{
 					auto objRef = firstObject;
 					while (objRef != nullref)
@@ -4099,9 +4035,179 @@ CalculateObjectFirstInstruction
 						NEW_MERGE_STACK_MAGIC_COUNTER;
 						auto magicInjection = MergeStack_MagicCounter;
 						ieObject->mergeCounter = magicInjection;
-						InjectFirstInstruction(ieObject->topTrace, ieObject->topIns, ieObject->injectObjectIds, magicInjection);
+						InjectFirstInstruction(ieObject->topInsRef, ieObject->assignedToObjectIds, magicInjection);
+
+#ifdef VCZH_DO_DEBUG_CHECK
+						{
+							auto createTrace = GetTrace(ieObject->topInsRef.trace);
+							auto traceExec = GetTraceExec(createTrace->traceExecRef);
+							auto&& ins = ReadInstruction(ieObject->topInsRef.ins, traceExec->insLists);
+							CHECK_ERROR(ins.type == AstInsType::BeginObject || ins.type == AstInsType::DelayFieldAssignment, ERROR_MESSAGE_PREFIX L"The found instruction is not a BeginObject or DelayFieldAssignment instruction.");
+						}
+#endif
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+#undef NEW_MERGE_STACK_MAGIC_COUNTER
+		}
+	}
+}
+
+/***********************************************************************
+.\TRACEMANAGER\TMPTR_PARTIALEXECUTETRACES_CALCULATEOBJECTLASTINSTRUCTION.CPP
+***********************************************************************/
+
+#if defined VCZH_MSVC && defined _DEBUG
+#define VCZH_DO_DEBUG_CHECK
+#endif
+
+namespace vl
+{
+	namespace glr
+	{
+		namespace automaton
+		{
+			using namespace collections;
+
+#define NEW_MERGE_STACK_MAGIC_COUNTER (void)(MergeStack_MagicCounter++)
+
+/***********************************************************************
+CalculateObjectLastInstruction
+***********************************************************************/
+
+			bool TraceManager::IsInTheSameBranch(Trace* forward, Trace* targetForwardAtFront)
+			{
+				while (true)
+				{
+					// if two forwards are the same
+					if (forward == targetForwardAtFront)
+					{
+						// then they are in the same branch
+						return true;
+					}
+					else if (forward->traceExecRef > targetForwardAtFront->traceExecRef)
+					{
+						// otherwise
+						auto forwardExec = GetTraceExec(forward->traceExecRef);
+						if (forwardExec->branchData.commonForwardBranch != nullref)
+						{
+							// if commonForwardBranch exists, this is a merge trace
+							auto commonForward = GetTrace(forwardExec->branchData.commonForwardBranch);
+							if (commonForward->traceExecRef < targetForwardAtFront->traceExecRef)
+							{
+								// is the merge trace is in front of the targetForwardAtFront
+								// check each branch
+								auto predecessorId = forward->predecessors.first;
+								while (predecessorId != nullref)
+								{
+									auto predecessor = GetTrace(predecessorId);
+									predecessorId = predecessor->predecessors.siblingNext;
+
+									auto predecessorExec = GetTraceExec(predecessor->traceExecRef);
+									if (IsInTheSameBranch(GetTrace(predecessorExec->branchData.forwardTrace), targetForwardAtFront))
+									{
+										return true;
+									}
+								}
+
+								// targetForwardAtFront could be among them, but could not be in front of them
+								return false;
+							}
+						}
+
+						// if commonForwardBranch doesn't contribute, look forward again
+						auto nextForward = GetTrace(forwardExec->branchData.forwardTrace);
+						if (nextForward == forward)
+						{
+							if (forward->predecessors.first == nullptr)
+							{
+								break;
+							}
+							else
+							{
+								forward = GetTrace(GetTraceExec(GetTrace(forward->predecessors.first)->traceExecRef)->branchData.forwardTrace);
+							}
+						}
+						else
+						{
+							forward = nextForward;
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+				return false;
+			}
+
+			void TraceManager::CalculateObjectLastInstruction()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CalculateObjectLastInstruction()#"
+				// check all individual objects
+				{
+					auto objRef = firstObject;
+					while (objRef != nullref)
+					{
+						auto ieObject = GetInsExec_Object(objRef);
+						objRef = ieObject->previous;
+
+						// all EndObject ending a BO/DFA are considered
+						// there is no "bottom EndObject"
+						// each EndObject should be in different branches
+						auto topLocalTrace = GetTrace(ieObject->topLocalInsRef.trace);
+						auto topLocalTraceExec = GetTraceExec(topLocalTrace->traceExecRef);
+						auto insExec = GetInsExec(topLocalTraceExec->insExecRefs.start + ieObject->topLocalInsRef.ins);
+						auto insRefLinkId = insExec->eoInsRefs;
+
+						// get the branch where BO stays
+						auto createTrace = GetTrace(ieObject->createInsRef.trace);
+						auto createTraceExec = GetTraceExec(createTrace->traceExecRef);
+						auto createTraceForward = GetTrace(createTraceExec->branchData.forwardTrace);
+
+						NEW_MERGE_STACK_MAGIC_COUNTER;
+						auto magicInsRef = MergeStack_MagicCounter;
+
+						while (insRefLinkId != nullref)
+						{
+							auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
+							insRefLinkId = insRefLink->previous;
+
+							auto bottomInsRef = insRefLink->insRef;
+							auto bottomTrace = GetTrace(bottomInsRef.trace);
+							auto bottomTraceExec = GetTraceExec(bottomTrace->traceExecRef);
+							auto bottomInsExec = GetInsExec(bottomTraceExec->insExecRefs.start + bottomInsRef.ins);
+							if (bottomInsExec->mergeCounter != magicInsRef)
+							{
+								bottomInsExec->mergeCounter = magicInsRef;
+
+								// filter out any result that does not happen after ieObject->createTrace
+								// topLocalTrace could be a DFA created object, and multiple objects could share the same DFA object
+								// in some cases its eoInsRefs could pointing to EndObject of completely unrelated objects
+								// TODO: make it accurate
+
+								if (IsInTheSameBranch(GetTrace(bottomTraceExec->branchData.forwardTrace), createTraceForward))
+								{
+									PushInsRefLink(ieObject->bottomInsRefs, bottomInsRef);
+								}
+							}
+
+#ifdef VCZH_DO_DEBUG_CHECK
+							{
+								auto eoTrace = GetTrace(bottomInsRef.trace);
+								auto traceExec = GetTraceExec(eoTrace->traceExecRef);
+								auto&& ins = ReadInstruction(bottomInsRef.ins, traceExec->insLists);
+								CHECK_ERROR(ins.type == AstInsType::EndObject, ERROR_MESSAGE_PREFIX L"The found instruction is not a EndObject instruction.");
+							}
+#endif
+						}
+
+						CHECK_ERROR(ieObject->bottomInsRefs != nullref, ERROR_MESSAGE_PREFIX L"Cannot found bottom instructions for an object.");
+					}
+				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 #undef NEW_MERGE_STACK_MAGIC_COUNTER
@@ -4187,32 +4293,34 @@ MergeInsExecContext
 
 			void TraceManager::PushInsRefLinkWithCounter(Ref<InsExec_InsRefLink>& link, Ref<InsExec_InsRefLink> comming)
 			{
+				auto magicPush = MergeStack_MagicCounter;
 				while (comming != nullref)
 				{
 					auto commingStack = GetInsExec_InsRefLink(comming);
 					comming = commingStack->previous;
 
-					auto insTrace = GetTrace(commingStack->trace);
+					auto insTrace = GetTrace(commingStack->insRef.trace);
 					auto insTraceExec = GetTraceExec(insTrace->traceExecRef);
-					auto insExec = GetInsExec(insTraceExec->insExecRefs.start + commingStack->ins);
-					if (insExec->mergeCounter == MergeStack_MagicCounter) continue;
+					auto insExec = GetInsExec(insTraceExec->insExecRefs.start + commingStack->insRef.ins);
+					if (insExec->mergeCounter == magicPush) continue;
 
-					insExec->mergeCounter = MergeStack_MagicCounter;
-					PushInsRefLink(link, commingStack->trace, commingStack->ins);
+					insExec->mergeCounter = magicPush;
+					PushInsRefLink(link, commingStack->insRef);
 				}
 			}
 
 			void TraceManager::PushObjRefLinkWithCounter(Ref<InsExec_ObjRefLink>& link, Ref<InsExec_ObjRefLink> comming)
 			{
+				auto magicPush = MergeStack_MagicCounter;
 				while (comming != nullref)
 				{
 					auto commingStack = GetInsExec_ObjRefLink(comming);
 					comming = commingStack->previous;
 
 					auto ieObject = GetInsExec_Object(commingStack->id);
-					if (ieObject->mergeCounter == MergeStack_MagicCounter) continue;
+					if (ieObject->mergeCounter == magicPush) continue;
 
-					ieObject->mergeCounter = MergeStack_MagicCounter;
+					ieObject->mergeCounter = magicPush;
 					PushObjRefLink(link, ieObject);
 				}
 			}
@@ -4264,17 +4372,20 @@ MergeInsExecContext
 					*pStackPrevious = newStack;
 					pStackPrevious = &(newStack->previous);
 
-					// call this macro to create a one-time set for InsExec*
-					NEW_MERGE_STACK_MAGIC_COUNTER;
-					for (vint index = 0; index < stacks.Count(); index++)
 					{
-						// do not visit the same stack object repeatly
-						if (stacks[index]->mergeCounter == MergeStack_MagicCounter) continue;
-						stacks[index]->mergeCounter = MergeStack_MagicCounter;
-						merge(newStack, stacks[index]);
+						// call this macro to create a one-time set for InsExec*
+						NEW_MERGE_STACK_MAGIC_COUNTER;
+						auto magicPush = MergeStack_MagicCounter;
+						for (vint index = 0; index < stacks.Count(); index++)
+						{
+							// do not visit the same stack object repeatly
+							if (stacks[index]->mergeCounter == magicPush) continue;
+							stacks[index]->mergeCounter = magicPush;
+							merge(newStack, stacks[index]);
 
-						// do not visit the same object repeatly
-						PushObjRefLinkWithCounter(newStack->objectIds, stacks[index]->objectIds);
+							// do not visit the same object repeatly
+							PushObjRefLinkWithCounter(newStack->objectIds, stacks[index]->objectIds);
+						}
 					}
 
 					// move to next level of stack objects
@@ -4385,12 +4496,11 @@ PartialExecuteOrdinaryTrace
 				}
 			}
 
-			void TraceManager::PushInsRefLink(Ref<InsExec_InsRefLink>& link, Ref<Trace> trace, vint32_t ins)
+			void TraceManager::PushInsRefLink(Ref<InsExec_InsRefLink>& link, InsRef insRef)
 			{
 				auto newLink = GetInsExec_InsRefLink(insExec_InsRefLinks.Allocate());
 				newLink->previous = link;
-				newLink->trace = trace;
-				newLink->ins = ins;
+				newLink->insRef = insRef;
 				link = newLink;
 			}
 
@@ -4413,14 +4523,14 @@ PartialExecuteOrdinaryTrace
 				{
 					auto stack = GetInsExec_InsRefLink(first);
 					first = stack->previous;
-					PushInsRefLink(newStack, stack->trace, stack->ins);
+					PushInsRefLink(newStack, stack->insRef);
 				}
 
 				while (second != nullref)
 				{
 					auto stack = GetInsExec_InsRefLink(second);
 					second = stack->previous;
-					PushInsRefLink(newStack, stack->trace, stack->ins);
+					PushInsRefLink(newStack, stack->insRef);
 				}
 
 				return newStack;
@@ -4450,40 +4560,44 @@ PartialExecuteOrdinaryTrace
 				return newStack;
 			}
 
-			void TraceManager::PushInjectObjectIdsSingleWithMagic(Ref<InsExec_ObjRefLink> container, Ref<InsExec_Object> element)
+			void TraceManager::PushAssignedToObjectIdsSingleWithMagic(Ref<InsExec_ObjRefLink> fieldObjectIds, Ref<InsExec_Object> assignedToTarget)
 			{
 				NEW_MERGE_STACK_MAGIC_COUNTER;
-				auto magicContainer = MergeStack_MagicCounter;
+				auto magicFieldObject = MergeStack_MagicCounter;
 
-				auto linkRef = container;
+				auto linkRef = fieldObjectIds;
 				while (linkRef != nullref)
 				{
 					auto link = GetInsExec_ObjRefLink(linkRef);
 					linkRef = link->previous;
 
-					auto ieContainerObject = GetInsExec_Object(link->id);
-					if (ieContainerObject->mergeCounter == magicContainer) continue;
-					ieContainerObject->mergeCounter = magicContainer;
-					PushObjRefLink(ieContainerObject->injectObjectIds, element);
+					if (link->id.handle == InsExec_Object::TokenOrEnumItemObjectId)
+					{
+						continue;
+					}
+					auto ieFieldObject = GetInsExec_Object(link->id);
+					if (ieFieldObject->mergeCounter == magicFieldObject) continue;
+					ieFieldObject->mergeCounter = magicFieldObject;
+					PushObjRefLink(ieFieldObject->assignedToObjectIds, assignedToTarget);
 				}
 			}
 
-			void TraceManager::PushInjectObjectIdsMultipleWithMagic(Ref<InsExec_ObjRefLink> container, Ref<InsExec_ObjRefLink> elements)
+			void TraceManager::PushAssignedToObjectIdsMultipleWithMagic(Ref<InsExec_ObjRefLink> fieldObjectIds, Ref<InsExec_ObjRefLink> assignedToTarget)
 			{
 				NEW_MERGE_STACK_MAGIC_COUNTER;
 				auto magicElement = MergeStack_MagicCounter;
 
-				auto linkRef = elements;
+				auto linkRef = assignedToTarget;
 				while (linkRef != nullref)
 				{
 					auto link = GetInsExec_ObjRefLink(linkRef);
 					linkRef = link->previous;
 
-					auto ieElementObject = GetInsExec_Object(link->id);
-					if (ieElementObject->mergeCounter == magicElement) return;
-					ieElementObject->mergeCounter = magicElement;
+					auto ieAssignedToObject = GetInsExec_Object(link->id);
+					if (ieAssignedToObject->mergeCounter == magicElement) return;
+					ieAssignedToObject->mergeCounter = magicElement;
 
-					PushInjectObjectIdsSingleWithMagic(container, link->id);
+					PushAssignedToObjectIdsSingleWithMagic(fieldObjectIds, link->id);
 				}
 			}
 
@@ -4539,12 +4653,11 @@ PartialExecuteOrdinaryTrace
 						{
 							// new object
 							auto ieObject = NewObject();
-							ieObject->createTrace = trace;
-							ieObject->createIns = insRef;
+							ieObject->createInsRef = { trace,insRef };
 
 							// new create stack
 							auto ieCSTop = PushCreateStack(context);
-							PushInsRefLink(ieCSTop->createInsRefs, trace, insRef);
+							PushInsRefLink(ieCSTop->createInsRefs, ieObject->createInsRef);
 							ieCSTop->stackBase = GetStackTop(context);
 							PushObjRefLink(ieCSTop->objectIds, ieObject);
 
@@ -4556,7 +4669,7 @@ PartialExecuteOrdinaryTrace
 						{
 							// new create stack
 							auto ieCSTop = PushCreateStack(context);
-							PushInsRefLink(ieCSTop->createInsRefs, trace, insRef);
+							PushInsRefLink(ieCSTop->createInsRefs, { trace, insRef });
 							ieCSTop->stackBase = GetStackTop(context);
 						}
 						break;
@@ -4571,8 +4684,8 @@ PartialExecuteOrdinaryTrace
 
 							auto ieCSTop = GetInsExec_CreateStack(context.createStack);
 
-							// InsExec_Object::injectObjectIds
-							PushInjectObjectIdsMultipleWithMagic(ieCSTop->reverseInjectObjectIds, ieCSTop->objectIds);
+							// InsExec_Object::assignedToObjectIds
+							PushAssignedToObjectIdsMultipleWithMagic(ieCSTop->reverseAssignedToObjectIds, ieCSTop->objectIds);
 
 							// reopen an object
 							// ReopenObject in different branches could write to the same InsExec_CreateStack
@@ -4585,27 +4698,30 @@ PartialExecuteOrdinaryTrace
 							// the successor trace will be a merge trace taking all of the information
 							NEW_MERGE_STACK_MAGIC_COUNTER;
 							{
-								auto ref = ieCSTop->objectIds;
-								while (ref != nullref)
+								auto magicReopen = MergeStack_MagicCounter;
 								{
-									auto link = GetInsExec_ObjRefLink(ref);
-									auto ieObject = GetInsExec_Object(link->id);
-									ieObject->mergeCounter = MergeStack_MagicCounter;
-									ref = link->previous;
-								}
-							}
-							{
-								auto ref = ieOSTop->objectIds;
-								while (ref != nullref)
-								{
-									auto link = GetInsExec_ObjRefLink(ref);
-									auto ieObject = GetInsExec_Object(link->id);
-									if (ieObject->mergeCounter != MergeStack_MagicCounter)
+									auto ref = ieCSTop->objectIds;
+									while (ref != nullref)
 									{
-										ieObject->mergeCounter = MergeStack_MagicCounter;
-										PushObjRefLink(ieCSTop->objectIds, link->id);
+										auto link = GetInsExec_ObjRefLink(ref);
+										auto ieObject = GetInsExec_Object(link->id);
+										ieObject->mergeCounter = magicReopen;
+										ref = link->previous;
 									}
-									ref = link->previous;
+								}
+								{
+									auto ref = ieOSTop->objectIds;
+									while (ref != nullref)
+									{
+										auto link = GetInsExec_ObjRefLink(ref);
+										auto ieObject = GetInsExec_Object(link->id);
+										if (ieObject->mergeCounter != magicReopen)
+										{
+											ieObject->mergeCounter = magicReopen;
+											PushObjRefLink(ieCSTop->objectIds, link->id);
+										}
+										ref = link->previous;
+									}
 								}
 							}
 
@@ -4616,18 +4732,18 @@ PartialExecuteOrdinaryTrace
 								insRefLinkId = insRefLink->previous;
 
 								// check if the top create stack is from DFA
-								auto traceCSTop = GetTrace(insRefLink->trace);
+								auto traceCSTop = GetTrace(insRefLink->insRef.trace);
 								auto traceExecCSTop = GetTraceExec(traceCSTop->traceExecRef);
-								CHECK_ERROR(ReadInstruction(insRefLink->ins, traceExecCSTop->insLists).type == AstInsType::DelayFieldAssignment, ERROR_MESSAGE_PREFIX L"DelayFieldAssignment is not submitted before ReopenObject.");
+								CHECK_ERROR(ReadInstruction(insRefLink->insRef.ins, traceExecCSTop->insLists).type == AstInsType::DelayFieldAssignment, ERROR_MESSAGE_PREFIX L"DelayFieldAssignment is not submitted before ReopenObject.");
 
-								auto insExecDfa = GetInsExec(traceExecCSTop->insExecRefs.start + insRefLink->ins);
+								auto insExecDfa = GetInsExec(traceExecCSTop->insExecRefs.start + insRefLink->insRef.ins);
 								auto ref = ieOSTop->objectIds;
 								while (ref != nullref)
 								{
 									auto link = GetInsExec_ObjRefLink(ref);
 									auto ieObject = GetInsExec_Object(link->id);
 									// InsExec_Object::dfaInsRefs
-									PushInsRefLink(ieObject->dfaInsRefs, insRefLink->trace, insRefLink->ins);
+									PushInsRefLink(ieObject->dfaInsRefs, insRefLink->insRef);
 									// InsExec::objRefs
 									PushObjRefLink(insExecDfa->objRefs, ieObject);
 									ref = link->previous;
@@ -4657,10 +4773,10 @@ PartialExecuteOrdinaryTrace
 								auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
 								insRefLinkId = insRefLink->previous;
 
-								auto traceCSTop = GetTrace(insRefLink->trace);
+								auto traceCSTop = GetTrace(insRefLink->insRef.trace);
 								auto traceExecCSTop = GetTraceExec(traceCSTop->traceExecRef);
-								auto insExecCreate = GetInsExec(traceExecCSTop->insExecRefs.start + insRefLink->ins);
-								PushInsRefLink(insExecCreate->eoInsRefs, trace, insRef);
+								auto insExecCreate = GetInsExec(traceExecCSTop->insExecRefs.start + insRefLink->insRef.ins);
+								PushInsRefLink(insExecCreate->eoInsRefs, { trace, insRef });
 							}
 						}
 						break;
@@ -4672,6 +4788,20 @@ PartialExecuteOrdinaryTrace
 
 							auto ieObjTop = GetInsExec_ObjectStack(context.objectStack);
 							context.objectStack = ieObjTop->previous;
+
+							// InsExec_Object::assignedToObjectIds
+							if (context.createStack != nullref)
+							{
+								auto ieCSTop = GetInsExec_CreateStack(context.createStack);
+								if (ieCSTop->objectIds == nullref)
+								{
+									ieCSTop->reverseAssignedToObjectIds = JoinObjRefLink(ieCSTop->reverseAssignedToObjectIds, ieObjTop->objectIds);
+								}
+								else
+								{
+									PushAssignedToObjectIdsMultipleWithMagic(ieObjTop->objectIds, ieCSTop->objectIds);
+								}
+							}
 						}
 						break;
 					case AstInsType::LriStore:
@@ -4687,21 +4817,6 @@ PartialExecuteOrdinaryTrace
 					case AstInsType::LriFetch:
 						{
 							CHECK_ERROR(context.lriStoredObjects != nullref, ERROR_MESSAGE_PREFIX L"LriStore is not executed before the next LriFetch.");
-
-							// InsExec_Object::injectObjectIds
-							if (context.createStack != nullref)
-							{
-								auto ieCSTop = GetInsExec_CreateStack(context.createStack);
-								if (ieCSTop->objectIds == nullref)
-								{
-									ieCSTop->reverseInjectObjectIds = JoinObjRefLink(ieCSTop->reverseInjectObjectIds, context.lriStoredObjects);
-								}
-								else
-								{
-									PushInjectObjectIdsMultipleWithMagic(context.lriStoredObjects, ieCSTop->objectIds);
-								}
-							}
-
 							PushObjectStackMultiple(context, context.lriStoredObjects);
 							context.lriStoredObjects = nullref;
 						}
@@ -4709,7 +4824,7 @@ PartialExecuteOrdinaryTrace
 					case AstInsType::Token:
 					case AstInsType::EnumItem:
 						{
-							PushObjectStackSingle(context, Ref<InsExec_Object>(-2));
+							PushObjectStackSingle(context, Ref<InsExec_Object>(InsExec_Object::TokenOrEnumItemObjectId));
 						}
 						break;
 					case AstInsType::ResolveAmbiguity:
@@ -5233,7 +5348,7 @@ BuildAmbiguousStepLink
 
 			void TraceManager::BuildAmbiguousStepLink(TraceAmbiguity* ta, bool checkCoveredMark, ExecutionStep*& first, ExecutionStep*& last)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CheckMergeTraces()#"
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::BuildAmbiguousStepLink()#"
 				auto taFirst = GetTrace(ta->firstTrace);
 				auto taFirstExec = GetTraceExec(taFirst->traceExecRef);
 				auto taLast = GetTrace(ta->lastTrace);
@@ -5323,18 +5438,32 @@ BuildAmbiguousStepLink
 						linkRef = link->previous;
 
 						auto ieObject = GetInsExec_Object(link->id);
-						auto ieTrace = GetTrace(ieObject->createTrace);
+						auto ieTrace = GetTrace(ieObject->createInsRef.trace);
 						auto ieTraceExec = GetTraceExec(ieTrace->traceExecRef);
 
-						auto&& ins = ReadInstruction(ieObject->createIns, ieTraceExec->insLists);
+						auto&& ins = ReadInstruction(ieObject->createInsRef.ins, ieTraceExec->insLists);
 						if (stepRA->et_ra.type == -1)
 						{
 							stepRA->et_ra.type = ins.param;
 						}
 						else if (stepRA->et_ra.type != ins.param)
 						{
-							stepRA->et_ra.type = typeCallback->FindCommonBaseClass(stepRA->et_ra.type, ins.param);
-							CHECK_ERROR(stepRA->et_ra.type != -1, ERROR_MESSAGE_PREFIX L"Unable to resolve the type from multiple objects.");
+							vint32_t baseClass = typeCallback->FindCommonBaseClass(stepRA->et_ra.type, ins.param);
+							if (baseClass == -1)
+							{
+								throw UnableToResolveAmbiguityException(
+									WString::Unmanaged(L"Unable to resolve ambiguity from ") +
+									typeCallback->GetClassName(stepRA->et_ra.type) +
+									WString::Unmanaged(L" and ") +
+									typeCallback->GetClassName(ins.param) +
+									WString::Unmanaged(L"."),
+									stepRA->et_ra.type,
+									ins.param,
+									EnsureTraceWithValidStates(taFirst)->currentTokenIndex,
+									EnsureTraceWithValidStates(taLast)->currentTokenIndex
+									);
+							}
+							stepRA->et_ra.type = baseClass;
 						}
 					}
 				}
@@ -5362,7 +5491,7 @@ BuildExecutionOrder
 
 			void TraceManager::BuildExecutionOrder()
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::CheckMergeTraces()#"
+#define ERROR_MESSAGE_PREFIX L"vl::glr::automaton::TraceManager::BuildExecutionOrder()#"
 				// get the instruction range
 				auto startTrace = initialTrace;
 				vint32_t startIns = 0;
@@ -5416,9 +5545,10 @@ CheckMergeTrace
 ***********************************************************************/
 
 			template<typename TCallback>
-			bool TraceManager::SearchForObjects(Ref<InsExec_ObjRefLink> objRefLinkStartSet, bool withCounter, TCallback&& callback)
+			bool TraceManager::EnumerateObjects(Ref<InsExec_ObjRefLink> objRefLinkStartSet, bool withCounter, TCallback&& callback)
 			{
 				// check every object in the link
+				auto magicIterating = MergeStack_MagicCounter;
 				auto linkId = objRefLinkStartSet;
 				while (linkId != nullref)
 				{
@@ -5429,8 +5559,8 @@ CheckMergeTrace
 					if (withCounter)
 					{
 						// skip if it has been searched
-						if (ieObject->mergeCounter == MergeStack_MagicCounter) goto CHECK_NEXT_OBJECT;
-						ieObject->mergeCounter = MergeStack_MagicCounter;
+						if (ieObject->mergeCounter == magicIterating) goto CHECK_NEXT_OBJECT;
+						ieObject->mergeCounter = magicIterating;
 					}
 
 					if (!callback(ieObject)) return false;
@@ -5440,19 +5570,14 @@ CheckMergeTrace
 			}
 
 			template<typename TCallback>
-			bool TraceManager::SearchForEndObjectInstructions(Trace* createTrace, vint32_t createIns, TCallback&& callback)
+			bool TraceManager::EnumerateBottomInstructions(InsExec_Object* ieObject, TCallback&& callback)
 			{
-				// all EndObject ending a BO/DFA are considered
-				// there is no "bottom EndObject"
-				// each EndObject should be in different branches
-				auto traceExec = GetTraceExec(createTrace->traceExecRef);
-				auto insExec = GetInsExec(traceExec->insExecRefs.start + createIns);
-				auto insRefLinkId = insExec->eoInsRefs;
+				auto insRefLinkId = ieObject->bottomInsRefs;
 				while (insRefLinkId != nullref)
 				{
 					auto insRefLink = GetInsExec_InsRefLink(insRefLinkId);
 					insRefLinkId = insRefLink->previous;
-					if (!callback(GetTrace(insRefLink->trace), insRefLink->ins)) return false;
+					if (!callback(GetTrace(insRefLink->insRef.trace), insRefLink->insRef.ins)) return false;
 				}
 				return true;
 			}
@@ -5515,28 +5640,20 @@ CheckMergeTrace
 				// iterate all top objects
 				succeeded = callback([&](Ref<InsExec_ObjRefLink> objRefLink)
 				{
-					return SearchForObjects(objRefLink, false, [&](InsExec_Object* ieObject)
+					return EnumerateObjects(objRefLink, false, [&](InsExec_Object* ieObject)
 					{
-						auto createTrace = GetTrace(ieObject->topTrace);
-#ifdef VCZH_DO_DEBUG_CHECK
-						{
-							auto traceExec = GetTraceExec(createTrace->traceExecRef);
-							auto&& ins = ReadInstruction(ieObject->topIns, traceExec->insLists);
-							CHECK_ERROR(ins.type == AstInsType::BeginObject || ins.type == AstInsType::DelayFieldAssignment, ERROR_MESSAGE_PREFIX L"The found instruction is not a BeginObject or DelayFieldAssignment instruction.");
-						}
-#endif
-
+						auto createTrace = GetTrace(ieObject->topInsRef.trace);
 						if (!first)
 						{
 							first = createTrace;
 							firstTraceExec = GetTraceExec(first->traceExecRef);
 							ta->firstTrace = createTrace;
-							ta->prefix = ieObject->topIns;
+							ta->prefix = ieObject->topInsRef.ins;
 						}
 						else if (first == createTrace)
 						{
 							// check if two instruction is the same
-							if (ta->prefix != ieObject->topIns) return false;
+							if (ta->prefix != ieObject->topInsRef.ins) return false;
 							foundBeginSame = true;
 						}
 						else
@@ -5553,51 +5670,121 @@ CheckMergeTrace
 				});
 				if (!succeeded) return false;
 
-				// iterate all bottom objects
-				NEW_MERGE_STACK_MAGIC_COUNTER;
-				succeeded = callback([&](Ref<InsExec_ObjRefLink> objRefLink)
+				// iterate all bottom instructions
 				{
-					return SearchForObjects(objRefLink, true, [&](InsExec_Object* ieObject)
+					// bottomInsRefs need to be filtered again
+					// because the object from the first branch could be a field in the object from the second branch
+					// in this case, that object could have multiple incompatible bottomInsRefs
+					// so we try eoTrace and the unique and existing eoTrace->successors.first
+					// see which wins
+					Group<Trace*, InsRef> postfixesAtSelf, postfixesAtSuccessor;
+
+					NEW_MERGE_STACK_MAGIC_COUNTER;
+					callback([&](Ref<InsExec_ObjRefLink> objRefLink)
 					{
-						PushObjRefLink(ta->bottomObjectIds, ieObject);
-
-						// check if EO satisfies the condition
-						return SearchForEndObjectInstructions(GetTrace(ieObject->topLocalTrace), ieObject->topLocalIns, [&](Trace* eoTrace, vint32_t eoIns)
+						return EnumerateObjects(objRefLink, true, [&](InsExec_Object* ieObject)
 						{
-#ifdef VCZH_DO_DEBUG_CHECK
-							{
-								auto traceExec = GetTraceExec(eoTrace->traceExecRef);
-								auto&& ins = ReadInstruction(eoIns, traceExec->insLists);
-								CHECK_ERROR(ins.type == AstInsType::EndObject, ERROR_MESSAGE_PREFIX L"The found instruction is not a EndObject instruction.");
-							}
-#endif
+							PushObjRefLink(ta->bottomObjectIds, ieObject);
 
-							if (!last)
+							// check if EO satisfies the condition
+							return EnumerateBottomInstructions(ieObject, [&](Trace* eoTrace, vint32_t eoIns)
 							{
-								last = eoTrace;
-								lastTraceExec = GetTraceExec(last->traceExecRef);
-								ta->lastTrace = eoTrace;
-								ta->postfix = lastTraceExec->insLists.c3 - eoIns - 1;
-							}
-							else if (last == eoTrace)
-							{
-								// check if two instruction is the same
 								auto eoTraceExec = GetTraceExec(eoTrace->traceExecRef);
-								if (ta->postfix != eoTraceExec->insLists.c3 - eoIns - 1) return false;
-								foundEndSame = true;
+								InsRef insRef{ eoTrace,eoTraceExec->insLists.c3 - eoIns - 1 };
+								postfixesAtSelf.Add(eoTrace, insRef);
+
+								Trace* successorTrace = nullptr;
+								if (eoTrace->successorCount == 1)
+								{
+									successorTrace = GetTrace(eoTrace->successors.first);
+								}
+								postfixesAtSuccessor.Add(successorTrace, insRef);
+								return true;
+							});
+						});
+					});
+
+					// find the most possible answer from postfixesAtSelf and postfixesAtSuccessor
+					// bottom bottomInsRefs are splitted into multiple group
+					// find the unique one that has the maximum capacity
+					vint maxOccurences = -1;
+					for (vint i = 0; i < postfixesAtSelf.Count(); i++)
+					{
+						vint count = postfixesAtSelf.GetByIndex(i).Count();
+						if (count > maxOccurences)
+						{
+							maxOccurences = count;
+						}
+					}
+					for (vint i = 0; i < postfixesAtSuccessor.Count(); i++)
+					{
+						vint count = postfixesAtSuccessor.GetByIndex(i).Count();
+						if (count > maxOccurences)
+						{
+							maxOccurences = count;
+						}
+					}
+
+					vint uniqueAtSelf = -1;
+					for (vint i = 0; i < postfixesAtSelf.Count(); i++)
+					{
+						vint count = postfixesAtSelf.GetByIndex(i).Count();
+						if (count == maxOccurences)
+						{
+							if (uniqueAtSelf == -1)
+							{
+								uniqueAtSelf = i;
 							}
 							else
 							{
-								// check if two instruction shares the same postfix
-								if (last->successors.first != eoTrace->successors.first) return false;
-								auto eoTraceExec = GetTraceExec(eoTrace->traceExecRef);
-								if (!ComparePostfix(lastTraceExec, eoTraceExec, ta->postfix + 1)) return false;
-								foundEndPostfix = true;
+								uniqueAtSelf = -2;
+								break;
 							}
-							return true;
-						});
-					});
-				});
+						}
+					}
+
+					vint uniqueAtSuccessor = -1;
+					for (vint i = 0; i < postfixesAtSuccessor.Count(); i++)
+					{
+						vint count = postfixesAtSuccessor.GetByIndex(i).Count();
+						if (count == maxOccurences)
+						{
+							if (uniqueAtSuccessor == -1)
+							{
+								uniqueAtSuccessor = i;
+							}
+							else
+							{
+								uniqueAtSuccessor = -2;
+								break;
+							}
+						}
+					}
+
+					InsRef lastPostfix;
+					if (uniqueAtSelf >= 0)
+					{
+						// if all bottom traces are the same, their first successors are also the same
+						lastPostfix = postfixesAtSelf.GetByIndex(uniqueAtSelf)[0];
+					}
+					else if (uniqueAtSuccessor >= 0)
+					{
+						lastPostfix = postfixesAtSuccessor.GetByIndex(uniqueAtSuccessor)[0];
+						foundEndPostfix = true;
+					}
+
+					if (lastPostfix.trace == nullref)
+					{
+						succeeded = false;
+					}
+					else
+					{
+						last = GetTrace(lastPostfix.trace);
+						ta->lastTrace = last;
+						ta->postfix = lastPostfix.ins;
+						succeeded = true;
+					}
+				}
 				if (!succeeded) return false;
 
 				// ensure the statistics result is compatible
@@ -5625,7 +5812,43 @@ CheckMergeTrace
 					ta->lastTrace = last;
 				}
 
-				return true;
+				// ensure firstTrace and lastTrace are in the same branch
+				auto firstForward = GetTrace(GetTraceExec(GetTrace(ta->firstTrace)->traceExecRef)->branchData.forwardTrace);
+				auto lastForward = GetTrace(GetTraceExec(GetTrace(ta->lastTrace)->traceExecRef)->branchData.forwardTrace);
+				auto currentForward = lastForward;
+				while (true)
+				{
+					if (currentForward->traceExecRef < firstForward->traceExecRef)
+					{
+						return false;
+					}
+					if (currentForward == firstForward)
+					{
+						return true;
+					}
+
+					auto currentExec = GetTraceExec(currentForward->traceExecRef);
+					auto nextForwardRef = currentExec->branchData.commonForwardBranch;
+					if (nextForwardRef == nullptr)
+					{
+						nextForwardRef = currentExec->branchData.forwardTrace;
+					}
+
+					auto nextForward = GetTrace(currentExec->branchData.forwardTrace);
+					if (currentForward != nextForward)
+					{
+						currentForward = nextForward;
+					}
+					else if (currentForward->predecessorCount > 0)
+					{
+						currentForward = GetTrace(GetTraceExec(GetTrace(currentForward->predecessors.first)->traceExecRef)->branchData.forwardTrace);
+					}
+					else
+					{
+						break;
+					}
+				}
+				return false;
 #undef ERROR_MESSAGE_PREFIX
 			}
 
@@ -5722,7 +5945,6 @@ CheckMergeTrace
 						});
 						if (succeeded) return true;
 					}
-
 				}
 			CHECK_OBJECTS_IN_TOP_CREATE_STACK:
 				auto ieCSTop = GetInsExec_CreateStack(traceExec->context.createStack);
@@ -7129,182 +7351,170 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
-	{
-		namespace xml
-		{
 /***********************************************************************
 Visitor Pattern Implementation
 ***********************************************************************/
 
-			void XmlText::Accept(XmlNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void XmlText::Accept(XmlNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void XmlCData::Accept(XmlNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void XmlCData::Accept(XmlNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void XmlComment::Accept(XmlNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void XmlComment::Accept(XmlNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void XmlElement::Accept(XmlNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void XmlElement::Accept(XmlNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void XmlInstruction::Accept(XmlNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
+	void XmlInstruction::Accept(XmlNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
+	}
 
-			void XmlDocument::Accept(XmlNode::IVisitor* visitor)
-			{
-				visitor->Visit(this);
-			}
-		}
+	void XmlDocument::Accept(XmlNode::IVisitor* visitor)
+	{
+		visitor->Visit(this);
 	}
 }
-namespace vl
+namespace vl::reflection::description
 {
-	namespace reflection
-	{
-		namespace description
-		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode, system::XmlNode)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode::IVisitor, system::XmlNode::IVisitor)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlText, system::XmlText)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlCData, system::XmlCData)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlAttribute, system::XmlAttribute)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlComment, system::XmlComment)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlElement, system::XmlElement)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlInstruction, system::XmlInstruction)
-			IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlDocument, system::XmlDocument)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode, system::XmlNode)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlNode::IVisitor, system::XmlNode::IVisitor)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlText, system::XmlText)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlCData, system::XmlCData)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlAttribute, system::XmlAttribute)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlComment, system::XmlComment)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlElement, system::XmlElement)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlInstruction, system::XmlInstruction)
+	IMPL_TYPE_INFO_RENAME(vl::glr::xml::XmlDocument, system::XmlDocument)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlNode)
-				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlNode)
+		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-			END_CLASS_MEMBER(vl::glr::xml::XmlNode)
+	END_CLASS_MEMBER(vl::glr::xml::XmlNode)
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlText)
-				CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlText)
+		CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlText>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlText>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(content)
-			END_CLASS_MEMBER(vl::glr::xml::XmlText)
+		CLASS_MEMBER_FIELD(content)
+	END_CLASS_MEMBER(vl::glr::xml::XmlText)
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlCData)
-				CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlCData)
+		CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlCData>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlCData>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(content)
-			END_CLASS_MEMBER(vl::glr::xml::XmlCData)
+		CLASS_MEMBER_FIELD(content)
+	END_CLASS_MEMBER(vl::glr::xml::XmlCData)
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlAttribute)
-				CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlAttribute)
+		CLASS_MEMBER_BASE(vl::glr::ParsingAstBase)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlAttribute>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlAttribute>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(value)
-			END_CLASS_MEMBER(vl::glr::xml::XmlAttribute)
+		CLASS_MEMBER_FIELD(name)
+		CLASS_MEMBER_FIELD(value)
+	END_CLASS_MEMBER(vl::glr::xml::XmlAttribute)
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlComment)
-				CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlComment)
+		CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlComment>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlComment>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(content)
-			END_CLASS_MEMBER(vl::glr::xml::XmlComment)
+		CLASS_MEMBER_FIELD(content)
+	END_CLASS_MEMBER(vl::glr::xml::XmlComment)
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlElement)
-				CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlElement)
+		CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlElement>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlElement>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(closingName)
-				CLASS_MEMBER_FIELD(attributes)
-				CLASS_MEMBER_FIELD(subNodes)
-			END_CLASS_MEMBER(vl::glr::xml::XmlElement)
+		CLASS_MEMBER_FIELD(name)
+		CLASS_MEMBER_FIELD(closingName)
+		CLASS_MEMBER_FIELD(attributes)
+		CLASS_MEMBER_FIELD(subNodes)
+	END_CLASS_MEMBER(vl::glr::xml::XmlElement)
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlInstruction)
-				CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlInstruction)
+		CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlInstruction>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlInstruction>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(name)
-				CLASS_MEMBER_FIELD(attributes)
-			END_CLASS_MEMBER(vl::glr::xml::XmlInstruction)
+		CLASS_MEMBER_FIELD(name)
+		CLASS_MEMBER_FIELD(attributes)
+	END_CLASS_MEMBER(vl::glr::xml::XmlInstruction)
 
-			BEGIN_CLASS_MEMBER(vl::glr::xml::XmlDocument)
-				CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
+	BEGIN_CLASS_MEMBER(vl::glr::xml::XmlDocument)
+		CLASS_MEMBER_BASE(vl::glr::xml::XmlNode)
 
-				CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlDocument>(), NO_PARAMETER)
+		CLASS_MEMBER_CONSTRUCTOR(vl::Ptr<vl::glr::xml::XmlDocument>(), NO_PARAMETER)
 
-				CLASS_MEMBER_FIELD(prologs)
-				CLASS_MEMBER_FIELD(rootElement)
-			END_CLASS_MEMBER(vl::glr::xml::XmlDocument)
+		CLASS_MEMBER_FIELD(prologs)
+		CLASS_MEMBER_FIELD(rootElement)
+	END_CLASS_MEMBER(vl::glr::xml::XmlDocument)
 
-			BEGIN_INTERFACE_MEMBER(vl::glr::xml::XmlNode::IVisitor)
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlText* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlCData* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlComment* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlElement* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlInstruction* node))
-				CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlDocument* node))
-			END_INTERFACE_MEMBER(vl::glr::xml::XmlNode)
+	BEGIN_INTERFACE_MEMBER(vl::glr::xml::XmlNode::IVisitor)
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlText* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlCData* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlComment* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlElement* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlInstruction* node))
+		CLASS_MEMBER_METHOD_OVERLOAD(Visit, {L"node"}, void(vl::glr::xml::XmlNode::IVisitor::*)(vl::glr::xml::XmlDocument* node))
+	END_INTERFACE_MEMBER(vl::glr::xml::XmlNode)
 
 #endif
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-			class XmlAstTypeLoader : public vl::Object, public ITypeLoader
-			{
-			public:
-				void Load(ITypeManager* manager)
-				{
-					ADD_TYPE_INFO(vl::glr::xml::XmlNode)
-					ADD_TYPE_INFO(vl::glr::xml::XmlNode::IVisitor)
-					ADD_TYPE_INFO(vl::glr::xml::XmlText)
-					ADD_TYPE_INFO(vl::glr::xml::XmlCData)
-					ADD_TYPE_INFO(vl::glr::xml::XmlAttribute)
-					ADD_TYPE_INFO(vl::glr::xml::XmlComment)
-					ADD_TYPE_INFO(vl::glr::xml::XmlElement)
-					ADD_TYPE_INFO(vl::glr::xml::XmlInstruction)
-					ADD_TYPE_INFO(vl::glr::xml::XmlDocument)
-				}
-
-				void Unload(ITypeManager* manager)
-				{
-				}
-			};
-#endif
-#endif
-
-			bool XmlAstLoadTypes()
-			{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				if (auto manager = GetGlobalTypeManager())
-				{
-					auto loader = Ptr(new XmlAstTypeLoader);
-					return manager->AddTypeLoader(loader);
-				}
-#endif
-				return false;
-			}
+	class XmlAstTypeLoader : public vl::Object, public ITypeLoader
+	{
+	public:
+		void Load(ITypeManager* manager)
+		{
+			ADD_TYPE_INFO(vl::glr::xml::XmlNode)
+			ADD_TYPE_INFO(vl::glr::xml::XmlNode::IVisitor)
+			ADD_TYPE_INFO(vl::glr::xml::XmlText)
+			ADD_TYPE_INFO(vl::glr::xml::XmlCData)
+			ADD_TYPE_INFO(vl::glr::xml::XmlAttribute)
+			ADD_TYPE_INFO(vl::glr::xml::XmlComment)
+			ADD_TYPE_INFO(vl::glr::xml::XmlElement)
+			ADD_TYPE_INFO(vl::glr::xml::XmlInstruction)
+			ADD_TYPE_INFO(vl::glr::xml::XmlDocument)
 		}
+
+		void Unload(ITypeManager* manager)
+		{
+		}
+	};
+#endif
+#endif
+
+	bool XmlAstLoadTypes()
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		if (auto manager = GetGlobalTypeManager())
+		{
+			auto loader = Ptr(new XmlAstTypeLoader);
+			return manager->AddTypeLoader(loader);
+		}
+#endif
+		return false;
 	}
 }
 
@@ -7319,122 +7529,113 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml::builder
 {
-	namespace glr
-	{
-		namespace xml
-		{
-			namespace builder
-			{
 
 /***********************************************************************
 MakeAttribute
 ***********************************************************************/
 
-				MakeAttribute& MakeAttribute::name(const vl::WString& value)
-				{
-					node->name.value = value;
-					return *this;
-				}
+	MakeAttribute& MakeAttribute::name(const vl::WString& value)
+	{
+		node->name.value = value;
+		return *this;
+	}
 
-				MakeAttribute& MakeAttribute::value(const vl::WString& value)
-				{
-					node->value.value = value;
-					return *this;
-				}
+	MakeAttribute& MakeAttribute::value(const vl::WString& value)
+	{
+		node->value.value = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeCData
 ***********************************************************************/
 
-				MakeCData& MakeCData::content(const vl::WString& value)
-				{
-					node->content.value = value;
-					return *this;
-				}
+	MakeCData& MakeCData::content(const vl::WString& value)
+	{
+		node->content.value = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeComment
 ***********************************************************************/
 
-				MakeComment& MakeComment::content(const vl::WString& value)
-				{
-					node->content.value = value;
-					return *this;
-				}
+	MakeComment& MakeComment::content(const vl::WString& value)
+	{
+		node->content.value = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeDocument
 ***********************************************************************/
 
-				MakeDocument& MakeDocument::prologs(const vl::Ptr<XmlNode>& value)
-				{
-					node->prologs.Add(value);
-					return *this;
-				}
+	MakeDocument& MakeDocument::prologs(const vl::Ptr<XmlNode>& value)
+	{
+		node->prologs.Add(value);
+		return *this;
+	}
 
-				MakeDocument& MakeDocument::rootElement(const vl::Ptr<XmlElement>& value)
-				{
-					node->rootElement = value;
-					return *this;
-				}
+	MakeDocument& MakeDocument::rootElement(const vl::Ptr<XmlElement>& value)
+	{
+		node->rootElement = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeElement
 ***********************************************************************/
 
-				MakeElement& MakeElement::attributes(const vl::Ptr<XmlAttribute>& value)
-				{
-					node->attributes.Add(value);
-					return *this;
-				}
+	MakeElement& MakeElement::attributes(const vl::Ptr<XmlAttribute>& value)
+	{
+		node->attributes.Add(value);
+		return *this;
+	}
 
-				MakeElement& MakeElement::closingName(const vl::WString& value)
-				{
-					node->closingName.value = value;
-					return *this;
-				}
+	MakeElement& MakeElement::closingName(const vl::WString& value)
+	{
+		node->closingName.value = value;
+		return *this;
+	}
 
-				MakeElement& MakeElement::name(const vl::WString& value)
-				{
-					node->name.value = value;
-					return *this;
-				}
+	MakeElement& MakeElement::name(const vl::WString& value)
+	{
+		node->name.value = value;
+		return *this;
+	}
 
-				MakeElement& MakeElement::subNodes(const vl::Ptr<XmlNode>& value)
-				{
-					node->subNodes.Add(value);
-					return *this;
-				}
+	MakeElement& MakeElement::subNodes(const vl::Ptr<XmlNode>& value)
+	{
+		node->subNodes.Add(value);
+		return *this;
+	}
 
 /***********************************************************************
 MakeInstruction
 ***********************************************************************/
 
-				MakeInstruction& MakeInstruction::attributes(const vl::Ptr<XmlAttribute>& value)
-				{
-					node->attributes.Add(value);
-					return *this;
-				}
+	MakeInstruction& MakeInstruction::attributes(const vl::Ptr<XmlAttribute>& value)
+	{
+		node->attributes.Add(value);
+		return *this;
+	}
 
-				MakeInstruction& MakeInstruction::name(const vl::WString& value)
-				{
-					node->name.value = value;
-					return *this;
-				}
+	MakeInstruction& MakeInstruction::name(const vl::WString& value)
+	{
+		node->name.value = value;
+		return *this;
+	}
 
 /***********************************************************************
 MakeText
 ***********************************************************************/
 
-				MakeText& MakeText::content(const vl::WString& value)
-				{
-					node->content.value = value;
-					return *this;
-				}
-			}
-		}
+	MakeText& MakeText::content(const vl::WString& value)
+	{
+		node->content.value = value;
+		return *this;
 	}
 }
 
@@ -7449,181 +7650,172 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml::copy_visitor
 {
-	namespace glr
+	void AstVisitor::CopyFields(XmlAttribute* from, XmlAttribute* to)
 	{
-		namespace xml
+		to->name = from->name;
+		to->value = from->value;
+	}
+
+	void AstVisitor::CopyFields(XmlCData* from, XmlCData* to)
+	{
+		CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
+		to->content = from->content;
+	}
+
+	void AstVisitor::CopyFields(XmlComment* from, XmlComment* to)
+	{
+		CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
+		to->content = from->content;
+	}
+
+	void AstVisitor::CopyFields(XmlDocument* from, XmlDocument* to)
+	{
+		CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
+		for (auto&& listItem : from->prologs)
 		{
-			namespace copy_visitor
-			{
-				void AstVisitor::CopyFields(XmlAttribute* from, XmlAttribute* to)
-				{
-					to->name = from->name;
-					to->value = from->value;
-				}
+			to->prologs.Add(CopyNode(listItem.Obj()));
+		}
+		to->rootElement = CopyNode(from->rootElement.Obj());
+	}
 
-				void AstVisitor::CopyFields(XmlCData* from, XmlCData* to)
-				{
-					CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
-					to->content = from->content;
-				}
-
-				void AstVisitor::CopyFields(XmlComment* from, XmlComment* to)
-				{
-					CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
-					to->content = from->content;
-				}
-
-				void AstVisitor::CopyFields(XmlDocument* from, XmlDocument* to)
-				{
-					CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
-					for (auto&& listItem : from->prologs)
-					{
-						to->prologs.Add(CopyNode(listItem.Obj()));
-					}
-					to->rootElement = CopyNode(from->rootElement.Obj());
-				}
-
-				void AstVisitor::CopyFields(XmlElement* from, XmlElement* to)
-				{
-					CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
-					for (auto&& listItem : from->attributes)
-					{
-						to->attributes.Add(CopyNode(listItem.Obj()));
-					}
-					to->closingName = from->closingName;
-					to->name = from->name;
-					for (auto&& listItem : from->subNodes)
-					{
-						to->subNodes.Add(CopyNode(listItem.Obj()));
-					}
-				}
-
-				void AstVisitor::CopyFields(XmlInstruction* from, XmlInstruction* to)
-				{
-					CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
-					for (auto&& listItem : from->attributes)
-					{
-						to->attributes.Add(CopyNode(listItem.Obj()));
-					}
-					to->name = from->name;
-				}
-
-				void AstVisitor::CopyFields(XmlNode* from, XmlNode* to)
-				{
-				}
-
-				void AstVisitor::CopyFields(XmlText* from, XmlText* to)
-				{
-					CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
-					to->content = from->content;
-				}
-
-				void AstVisitor::Visit(XmlAttribute* node)
-				{
-					auto newNode = vl::Ptr(new XmlAttribute);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(XmlText* node)
-				{
-					auto newNode = vl::Ptr(new XmlText);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(XmlCData* node)
-				{
-					auto newNode = vl::Ptr(new XmlCData);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(XmlComment* node)
-				{
-					auto newNode = vl::Ptr(new XmlComment);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(XmlElement* node)
-				{
-					auto newNode = vl::Ptr(new XmlElement);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(XmlInstruction* node)
-				{
-					auto newNode = vl::Ptr(new XmlInstruction);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				void AstVisitor::Visit(XmlDocument* node)
-				{
-					auto newNode = vl::Ptr(new XmlDocument);
-					CopyFields(node, newNode.Obj());
-					this->result = newNode;
-				}
-
-				vl::Ptr<XmlNode> AstVisitor::CopyNode(XmlNode* node)
-				{
-					if (!node) return nullptr;
-					node->Accept(static_cast<XmlNode::IVisitor*>(this));
-					this->result->codeRange = node->codeRange;
-					return this->result.Cast<XmlNode>();
-				}
-
-				vl::Ptr<XmlAttribute> AstVisitor::CopyNode(XmlAttribute* node)
-				{
-					if (!node) return nullptr;
-					Visit(node);
-					this->result->codeRange = node->codeRange;
-					return this->result.Cast<XmlAttribute>();
-				}
-
-				vl::Ptr<XmlCData> AstVisitor::CopyNode(XmlCData* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlCData>();
-				}
-
-				vl::Ptr<XmlComment> AstVisitor::CopyNode(XmlComment* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlComment>();
-				}
-
-				vl::Ptr<XmlDocument> AstVisitor::CopyNode(XmlDocument* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlDocument>();
-				}
-
-				vl::Ptr<XmlElement> AstVisitor::CopyNode(XmlElement* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlElement>();
-				}
-
-				vl::Ptr<XmlInstruction> AstVisitor::CopyNode(XmlInstruction* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlInstruction>();
-				}
-
-				vl::Ptr<XmlText> AstVisitor::CopyNode(XmlText* node)
-				{
-					if (!node) return nullptr;
-					return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlText>();
-				}
-
-			}
+	void AstVisitor::CopyFields(XmlElement* from, XmlElement* to)
+	{
+		CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
+		for (auto&& listItem : from->attributes)
+		{
+			to->attributes.Add(CopyNode(listItem.Obj()));
+		}
+		to->closingName = from->closingName;
+		to->name = from->name;
+		for (auto&& listItem : from->subNodes)
+		{
+			to->subNodes.Add(CopyNode(listItem.Obj()));
 		}
 	}
+
+	void AstVisitor::CopyFields(XmlInstruction* from, XmlInstruction* to)
+	{
+		CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
+		for (auto&& listItem : from->attributes)
+		{
+			to->attributes.Add(CopyNode(listItem.Obj()));
+		}
+		to->name = from->name;
+	}
+
+	void AstVisitor::CopyFields(XmlNode* from, XmlNode* to)
+	{
+	}
+
+	void AstVisitor::CopyFields(XmlText* from, XmlText* to)
+	{
+		CopyFields(static_cast<XmlNode*>(from), static_cast<XmlNode*>(to));
+		to->content = from->content;
+	}
+
+	void AstVisitor::Visit(XmlAttribute* node)
+	{
+		auto newNode = vl::Ptr(new XmlAttribute);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(XmlText* node)
+	{
+		auto newNode = vl::Ptr(new XmlText);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(XmlCData* node)
+	{
+		auto newNode = vl::Ptr(new XmlCData);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(XmlComment* node)
+	{
+		auto newNode = vl::Ptr(new XmlComment);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(XmlElement* node)
+	{
+		auto newNode = vl::Ptr(new XmlElement);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(XmlInstruction* node)
+	{
+		auto newNode = vl::Ptr(new XmlInstruction);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(XmlDocument* node)
+	{
+		auto newNode = vl::Ptr(new XmlDocument);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	vl::Ptr<XmlNode> AstVisitor::CopyNode(XmlNode* node)
+	{
+		if (!node) return nullptr;
+		node->Accept(static_cast<XmlNode::IVisitor*>(this));
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<XmlNode>();
+	}
+
+	vl::Ptr<XmlAttribute> AstVisitor::CopyNode(XmlAttribute* node)
+	{
+		if (!node) return nullptr;
+		Visit(node);
+		this->result->codeRange = node->codeRange;
+		return this->result.Cast<XmlAttribute>();
+	}
+
+	vl::Ptr<XmlCData> AstVisitor::CopyNode(XmlCData* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlCData>();
+	}
+
+	vl::Ptr<XmlComment> AstVisitor::CopyNode(XmlComment* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlComment>();
+	}
+
+	vl::Ptr<XmlDocument> AstVisitor::CopyNode(XmlDocument* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlDocument>();
+	}
+
+	vl::Ptr<XmlElement> AstVisitor::CopyNode(XmlElement* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlElement>();
+	}
+
+	vl::Ptr<XmlInstruction> AstVisitor::CopyNode(XmlInstruction* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlInstruction>();
+	}
+
+	vl::Ptr<XmlText> AstVisitor::CopyNode(XmlText* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<XmlNode*>(node)).Cast<XmlText>();
+	}
+
 }
 
 
@@ -7637,46 +7829,37 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml::empty_visitor
 {
-	namespace glr
-	{
-		namespace xml
-		{
-			namespace empty_visitor
-			{
 
 /***********************************************************************
 NodeVisitor
 ***********************************************************************/
 
-				// Visitor Members -----------------------------------
+	// Visitor Members -----------------------------------
 
-				void NodeVisitor::Visit(XmlText* node)
-				{
-				}
+	void NodeVisitor::Visit(XmlText* node)
+	{
+	}
 
-				void NodeVisitor::Visit(XmlCData* node)
-				{
-				}
+	void NodeVisitor::Visit(XmlCData* node)
+	{
+	}
 
-				void NodeVisitor::Visit(XmlComment* node)
-				{
-				}
+	void NodeVisitor::Visit(XmlComment* node)
+	{
+	}
 
-				void NodeVisitor::Visit(XmlElement* node)
-				{
-				}
+	void NodeVisitor::Visit(XmlElement* node)
+	{
+	}
 
-				void NodeVisitor::Visit(XmlInstruction* node)
-				{
-				}
+	void NodeVisitor::Visit(XmlInstruction* node)
+	{
+	}
 
-				void NodeVisitor::Visit(XmlDocument* node)
-				{
-				}
-			}
-		}
+	void NodeVisitor::Visit(XmlDocument* node)
+	{
 	}
 }
 
@@ -7691,221 +7874,212 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml::json_visitor
 {
-	namespace glr
+	void AstVisitor::PrintFields(XmlAttribute* node)
 	{
-		namespace xml
-		{
-			namespace json_visitor
-			{
-				void AstVisitor::PrintFields(XmlAttribute* node)
-				{
-					BeginField(L"name");
-					WriteToken(node->name);
-					EndField();
-					BeginField(L"value");
-					WriteToken(node->value);
-					EndField();
-				}
-				void AstVisitor::PrintFields(XmlCData* node)
-				{
-					BeginField(L"content");
-					WriteToken(node->content);
-					EndField();
-				}
-				void AstVisitor::PrintFields(XmlComment* node)
-				{
-					BeginField(L"content");
-					WriteToken(node->content);
-					EndField();
-				}
-				void AstVisitor::PrintFields(XmlDocument* node)
-				{
-					BeginField(L"prologs");
-					BeginArray();
-					for (auto&& listItem : node->prologs)
-					{
-						BeginArrayItem();
-						Print(listItem.Obj());
-						EndArrayItem();
-					}
-					EndArray();
-					EndField();
-					BeginField(L"rootElement");
-					Print(node->rootElement.Obj());
-					EndField();
-				}
-				void AstVisitor::PrintFields(XmlElement* node)
-				{
-					BeginField(L"attributes");
-					BeginArray();
-					for (auto&& listItem : node->attributes)
-					{
-						BeginArrayItem();
-						Print(listItem.Obj());
-						EndArrayItem();
-					}
-					EndArray();
-					EndField();
-					BeginField(L"closingName");
-					WriteToken(node->closingName);
-					EndField();
-					BeginField(L"name");
-					WriteToken(node->name);
-					EndField();
-					BeginField(L"subNodes");
-					BeginArray();
-					for (auto&& listItem : node->subNodes)
-					{
-						BeginArrayItem();
-						Print(listItem.Obj());
-						EndArrayItem();
-					}
-					EndArray();
-					EndField();
-				}
-				void AstVisitor::PrintFields(XmlInstruction* node)
-				{
-					BeginField(L"attributes");
-					BeginArray();
-					for (auto&& listItem : node->attributes)
-					{
-						BeginArrayItem();
-						Print(listItem.Obj());
-						EndArrayItem();
-					}
-					EndArray();
-					EndField();
-					BeginField(L"name");
-					WriteToken(node->name);
-					EndField();
-				}
-				void AstVisitor::PrintFields(XmlNode* node)
-				{
-				}
-				void AstVisitor::PrintFields(XmlText* node)
-				{
-					BeginField(L"content");
-					WriteToken(node->content);
-					EndField();
-				}
-
-				void AstVisitor::Visit(XmlText* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Text", node);
-					PrintFields(static_cast<XmlNode*>(node));
-					PrintFields(static_cast<XmlText*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(XmlCData* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"CData", node);
-					PrintFields(static_cast<XmlNode*>(node));
-					PrintFields(static_cast<XmlCData*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(XmlComment* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Comment", node);
-					PrintFields(static_cast<XmlNode*>(node));
-					PrintFields(static_cast<XmlComment*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(XmlElement* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Element", node);
-					PrintFields(static_cast<XmlNode*>(node));
-					PrintFields(static_cast<XmlElement*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(XmlInstruction* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Instruction", node);
-					PrintFields(static_cast<XmlNode*>(node));
-					PrintFields(static_cast<XmlInstruction*>(node));
-					EndObject();
-				}
-
-				void AstVisitor::Visit(XmlDocument* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Document", node);
-					PrintFields(static_cast<XmlNode*>(node));
-					PrintFields(static_cast<XmlDocument*>(node));
-					EndObject();
-				}
-
-				AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
-					: vl::glr::JsonVisitorBase(_writer)
-				{
-				}
-
-				void AstVisitor::Print(XmlNode* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					node->Accept(static_cast<XmlNode::IVisitor*>(this));
-				}
-
-				void AstVisitor::Print(XmlAttribute* node)
-				{
-					if (!node)
-					{
-						WriteNull();
-						return;
-					}
-					BeginObject();
-					WriteType(L"Attribute", node);
-					PrintFields(static_cast<XmlAttribute*>(node));
-					EndObject();
-				}
-
-			}
-		}
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+		BeginField(L"value");
+		WriteToken(node->value);
+		EndField();
 	}
+	void AstVisitor::PrintFields(XmlCData* node)
+	{
+		BeginField(L"content");
+		WriteToken(node->content);
+		EndField();
+	}
+	void AstVisitor::PrintFields(XmlComment* node)
+	{
+		BeginField(L"content");
+		WriteToken(node->content);
+		EndField();
+	}
+	void AstVisitor::PrintFields(XmlDocument* node)
+	{
+		BeginField(L"prologs");
+		BeginArray();
+		for (auto&& listItem : node->prologs)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+		BeginField(L"rootElement");
+		Print(node->rootElement.Obj());
+		EndField();
+	}
+	void AstVisitor::PrintFields(XmlElement* node)
+	{
+		BeginField(L"attributes");
+		BeginArray();
+		for (auto&& listItem : node->attributes)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+		BeginField(L"closingName");
+		WriteToken(node->closingName);
+		EndField();
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+		BeginField(L"subNodes");
+		BeginArray();
+		for (auto&& listItem : node->subNodes)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+	}
+	void AstVisitor::PrintFields(XmlInstruction* node)
+	{
+		BeginField(L"attributes");
+		BeginArray();
+		for (auto&& listItem : node->attributes)
+		{
+			BeginArrayItem();
+			Print(listItem.Obj());
+			EndArrayItem();
+		}
+		EndArray();
+		EndField();
+		BeginField(L"name");
+		WriteToken(node->name);
+		EndField();
+	}
+	void AstVisitor::PrintFields(XmlNode* node)
+	{
+	}
+	void AstVisitor::PrintFields(XmlText* node)
+	{
+		BeginField(L"content");
+		WriteToken(node->content);
+		EndField();
+	}
+
+	void AstVisitor::Visit(XmlText* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Text", node);
+		PrintFields(static_cast<XmlNode*>(node));
+		PrintFields(static_cast<XmlText*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(XmlCData* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"CData", node);
+		PrintFields(static_cast<XmlNode*>(node));
+		PrintFields(static_cast<XmlCData*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(XmlComment* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Comment", node);
+		PrintFields(static_cast<XmlNode*>(node));
+		PrintFields(static_cast<XmlComment*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(XmlElement* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Element", node);
+		PrintFields(static_cast<XmlNode*>(node));
+		PrintFields(static_cast<XmlElement*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(XmlInstruction* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Instruction", node);
+		PrintFields(static_cast<XmlNode*>(node));
+		PrintFields(static_cast<XmlInstruction*>(node));
+		EndObject();
+	}
+
+	void AstVisitor::Visit(XmlDocument* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Document", node);
+		PrintFields(static_cast<XmlNode*>(node));
+		PrintFields(static_cast<XmlDocument*>(node));
+		EndObject();
+	}
+
+	AstVisitor::AstVisitor(vl::stream::StreamWriter& _writer)
+		: vl::glr::JsonVisitorBase(_writer)
+	{
+	}
+
+	void AstVisitor::Print(XmlNode* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		node->Accept(static_cast<XmlNode::IVisitor*>(this));
+	}
+
+	void AstVisitor::Print(XmlAttribute* node)
+	{
+		if (!node)
+		{
+			WriteNull();
+			return;
+		}
+		BeginObject();
+		WriteType(L"Attribute", node);
+		PrintFields(static_cast<XmlAttribute*>(node));
+		EndObject();
+	}
+
 }
 
 
@@ -7919,144 +8093,135 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml::traverse_visitor
 {
-	namespace glr
+	void AstVisitor::Traverse(vl::glr::ParsingToken& token) {}
+	void AstVisitor::Traverse(vl::glr::ParsingAstBase* node) {}
+	void AstVisitor::Traverse(XmlAttribute* node) {}
+	void AstVisitor::Traverse(XmlCData* node) {}
+	void AstVisitor::Traverse(XmlComment* node) {}
+	void AstVisitor::Traverse(XmlDocument* node) {}
+	void AstVisitor::Traverse(XmlElement* node) {}
+	void AstVisitor::Traverse(XmlInstruction* node) {}
+	void AstVisitor::Traverse(XmlNode* node) {}
+	void AstVisitor::Traverse(XmlText* node) {}
+
+	void AstVisitor::Finishing(vl::glr::ParsingAstBase* node) {}
+	void AstVisitor::Finishing(XmlAttribute* node) {}
+	void AstVisitor::Finishing(XmlCData* node) {}
+	void AstVisitor::Finishing(XmlComment* node) {}
+	void AstVisitor::Finishing(XmlDocument* node) {}
+	void AstVisitor::Finishing(XmlElement* node) {}
+	void AstVisitor::Finishing(XmlInstruction* node) {}
+	void AstVisitor::Finishing(XmlNode* node) {}
+	void AstVisitor::Finishing(XmlText* node) {}
+
+	void AstVisitor::Visit(XmlText* node)
 	{
-		namespace xml
-		{
-			namespace traverse_visitor
-			{
-				void AstVisitor::Traverse(vl::glr::ParsingToken& token) {}
-				void AstVisitor::Traverse(vl::glr::ParsingAstBase* node) {}
-				void AstVisitor::Traverse(XmlAttribute* node) {}
-				void AstVisitor::Traverse(XmlCData* node) {}
-				void AstVisitor::Traverse(XmlComment* node) {}
-				void AstVisitor::Traverse(XmlDocument* node) {}
-				void AstVisitor::Traverse(XmlElement* node) {}
-				void AstVisitor::Traverse(XmlInstruction* node) {}
-				void AstVisitor::Traverse(XmlNode* node) {}
-				void AstVisitor::Traverse(XmlText* node) {}
-
-				void AstVisitor::Finishing(vl::glr::ParsingAstBase* node) {}
-				void AstVisitor::Finishing(XmlAttribute* node) {}
-				void AstVisitor::Finishing(XmlCData* node) {}
-				void AstVisitor::Finishing(XmlComment* node) {}
-				void AstVisitor::Finishing(XmlDocument* node) {}
-				void AstVisitor::Finishing(XmlElement* node) {}
-				void AstVisitor::Finishing(XmlInstruction* node) {}
-				void AstVisitor::Finishing(XmlNode* node) {}
-				void AstVisitor::Finishing(XmlText* node) {}
-
-				void AstVisitor::Visit(XmlText* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<XmlNode*>(node));
-					Traverse(static_cast<XmlText*>(node));
-					Traverse(node->content);
-					Finishing(static_cast<XmlText*>(node));
-					Finishing(static_cast<XmlNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(XmlCData* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<XmlNode*>(node));
-					Traverse(static_cast<XmlCData*>(node));
-					Traverse(node->content);
-					Finishing(static_cast<XmlCData*>(node));
-					Finishing(static_cast<XmlNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(XmlComment* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<XmlNode*>(node));
-					Traverse(static_cast<XmlComment*>(node));
-					Traverse(node->content);
-					Finishing(static_cast<XmlComment*>(node));
-					Finishing(static_cast<XmlNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(XmlElement* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<XmlNode*>(node));
-					Traverse(static_cast<XmlElement*>(node));
-					for (auto&& listItem : node->attributes)
-					{
-						InspectInto(listItem.Obj());
-					}
-					Traverse(node->closingName);
-					Traverse(node->name);
-					for (auto&& listItem : node->subNodes)
-					{
-						InspectInto(listItem.Obj());
-					}
-					Finishing(static_cast<XmlElement*>(node));
-					Finishing(static_cast<XmlNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(XmlInstruction* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<XmlNode*>(node));
-					Traverse(static_cast<XmlInstruction*>(node));
-					for (auto&& listItem : node->attributes)
-					{
-						InspectInto(listItem.Obj());
-					}
-					Traverse(node->name);
-					Finishing(static_cast<XmlInstruction*>(node));
-					Finishing(static_cast<XmlNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::Visit(XmlDocument* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<XmlNode*>(node));
-					Traverse(static_cast<XmlDocument*>(node));
-					for (auto&& listItem : node->prologs)
-					{
-						InspectInto(listItem.Obj());
-					}
-					InspectInto(node->rootElement.Obj());
-					Finishing(static_cast<XmlDocument*>(node));
-					Finishing(static_cast<XmlNode*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-				void AstVisitor::InspectInto(XmlNode* node)
-				{
-					if (!node) return;
-					node->Accept(static_cast<XmlNode::IVisitor*>(this));
-				}
-
-				void AstVisitor::InspectInto(XmlAttribute* node)
-				{
-					if (!node) return;
-					Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
-					Traverse(static_cast<XmlAttribute*>(node));
-					Traverse(node->name);
-					Traverse(node->value);
-					Finishing(static_cast<XmlAttribute*>(node));
-					Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
-				}
-
-			}
-		}
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<XmlNode*>(node));
+		Traverse(static_cast<XmlText*>(node));
+		Traverse(node->content);
+		Finishing(static_cast<XmlText*>(node));
+		Finishing(static_cast<XmlNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
 	}
+
+	void AstVisitor::Visit(XmlCData* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<XmlNode*>(node));
+		Traverse(static_cast<XmlCData*>(node));
+		Traverse(node->content);
+		Finishing(static_cast<XmlCData*>(node));
+		Finishing(static_cast<XmlNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(XmlComment* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<XmlNode*>(node));
+		Traverse(static_cast<XmlComment*>(node));
+		Traverse(node->content);
+		Finishing(static_cast<XmlComment*>(node));
+		Finishing(static_cast<XmlNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(XmlElement* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<XmlNode*>(node));
+		Traverse(static_cast<XmlElement*>(node));
+		for (auto&& listItem : node->attributes)
+		{
+			InspectInto(listItem.Obj());
+		}
+		Traverse(node->closingName);
+		Traverse(node->name);
+		for (auto&& listItem : node->subNodes)
+		{
+			InspectInto(listItem.Obj());
+		}
+		Finishing(static_cast<XmlElement*>(node));
+		Finishing(static_cast<XmlNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(XmlInstruction* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<XmlNode*>(node));
+		Traverse(static_cast<XmlInstruction*>(node));
+		for (auto&& listItem : node->attributes)
+		{
+			InspectInto(listItem.Obj());
+		}
+		Traverse(node->name);
+		Finishing(static_cast<XmlInstruction*>(node));
+		Finishing(static_cast<XmlNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::Visit(XmlDocument* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<XmlNode*>(node));
+		Traverse(static_cast<XmlDocument*>(node));
+		for (auto&& listItem : node->prologs)
+		{
+			InspectInto(listItem.Obj());
+		}
+		InspectInto(node->rootElement.Obj());
+		Finishing(static_cast<XmlDocument*>(node));
+		Finishing(static_cast<XmlNode*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
+	void AstVisitor::InspectInto(XmlNode* node)
+	{
+		if (!node) return;
+		node->Accept(static_cast<XmlNode::IVisitor*>(this));
+	}
+
+	void AstVisitor::InspectInto(XmlAttribute* node)
+	{
+		if (!node) return;
+		Traverse(static_cast<vl::glr::ParsingAstBase*>(node));
+		Traverse(static_cast<XmlAttribute*>(node));
+		Traverse(node->name);
+		Traverse(node->value);
+		Finishing(static_cast<XmlAttribute*>(node));
+		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));
+	}
+
 }
 
 
@@ -8070,131 +8235,130 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
+	void XmlParserData(vl::stream::IStream& outputStream)
 	{
-		namespace xml
-		{
-			void XmlParserData(vl::stream::IStream& outputStream)
-			{
-				static const vl::vint dataLength = 2539; // 23493 bytes before compressing
-				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 235;
-				static const vl::vint dataSolidRows = 9;
-				static const vl::vint dataRows = 10;
-				static const char* compressed[] = {
-					"\xC5\x5B\x00\x00\xE3\x09\x00\x00\x0D\x00\x01\x82\x80\x08\x03\x82\x81\x82\x06\x89\x82\x85\x0A\x83\x06\x84\x07\x0A\x91\x0A\x9C\x0A\x82\x12\x84\x14\x0A\xA3\x42\x09\x8F\x7D\x8E\x8F\x8E\x0A\x80\x1F\x9F\x81\x93\x92\x8F\x92\x26\xFF\x68\x86\x9B\x93\x91\x96\x92\x0A\xA9\xAA\x91\x99\x91\x91\x91\x00\x34\xAC\xB9\x8E\x9B\x98\x98\x8F\x9A\x3D\xA7\x81\xA0\x93\xA3\x9B\x9E\x9D\x47\xBC\x89\xBE\x96\x82\x9B\x96\xA1\x4B\xD0\x8D\xA0\xA1\xAC\xA1\xAA\xA3\x53\xC8\x99\xAA\xAB\xAC\xA7\x80\xA7\x45\xCF\x96\xBD\xA2\xAF\xAC\xAA\xB2\x63\xE6\x9A\xAA\xBC\xAC\xB6\xAE\x81\x60\xD7\xB7\x8A\x88\x9A\xB9\xB1\xBB\x76\x89\x9B\x89\x85\xB8\xB4\xAC\xB7\x65\xF0\xA7\xA0\xC9\xB2\xC3\xB4\xC3\x6D\x88\xEF\xA1\x81\xBE\xBE\xB1\xBF\x8A\x81\xCC\xC3\xC1\xCD\xC3\xC9\xC3\x97\x89\xD9\xCB\xC2\x94\xCB\xCC\xC9\x9D\x98\xE1\xDA\xC3\xD4\xCD\xC7\x81\x03\x74\xB8\xAE\xCB\xD4\xC0\xC9\xCF\x96\xA5\xE0\xC7\xD5\xCF\xD6\xD9\xD8\xB4\xB0\xF6\xD9\xD7\xDB\xDE\xCE\x00\x04\x2A\xC9\x8C\x8C\xBA\x86\x02\xE1\xAC\xF9\x86\x87\x08\xE6\xD7\xC7\xE7\xAD\xB5\xD0\xEA\xEE\xE1\xEA\xDD\xE9\xC9\xD9\xD5\xF4",
-					"\xE2\xEA\x84\x84\x83\x7D\xDB\xDA\xFD\xEC\xEF\xEA\xEB\xDE\xD8\xE2\xEA\xE4\xF3\xF6\xF1\xF2\x00\x09\x4D\xEC\xEB\xFE\xF5\xF4\xF5\xF3\xBC\xF9\xFF\xDA\xF2\xD4\xFC\xD2\xDE\x0A\x32\x75\x7C\x7D\xF7\x6F\x7E\x7E\x69\xFB\x49\x8D\x7E\x82\xFF\x4C\x88\x82\x68\x0E\x45\x76\x82\x83\xB3\x54\x88\x6E\x85\xBE\x4B\x8A\x85\x83\x1B\x8F\x8C\x87\x87\x1E\xA1\x85\x85\x87\x23\xA0\x85\x8A\x88\x17\xA4\x89\x88\x69\x0C\x02\x85\x82\x7D\x07\xA7\x82\x8F\x8A\x28\x99\x86\x88\x8D\x33\xB6\x85\x8D\x7A\xF3\x7D\x81\x40\x40\x12\xB0\x88\x84\x8F\x03\xBE\x8F\x88\x81\x31\xB8\x8A\x92\x8E\x39\x84\x97\x92\x91\x49\x8C\x9B\x92\x93\x51\x8E\x90\x45\x90\x48\x83\x98\x7E\x96\x13\xAA\x82\x97\x97\x54\x9C\x92\x92\x97\x4E\x8F\x0E\x89\x95\x5B\xA4\x99\x9B\x8D\x60\xAB\x9B\x8E\x9B\x4D\xB0\x93\x96\x9C\xB6\x50\x07\x9A\x98\x59\xAA\x9D\x94\x9B\x61\xBA\x93\x98\x9F\x74\xBD\x90\xA3\x9E\x6F\x84\xA1\x9E\xA1\x73\x88\xAD\x9B\x7B\x12\x58\x90\x94\x9E\x8F\xBE\x99\x9F\xA0\xF6\x52\x07\x9E\x68\x13\x17\xA4\x68\x05\x9A\x85\xAF\x9E\xA7\x93\xA0\xA1\xA4\x69\x15\x1D\xA0\x6A\x05\xA6\xB1\x67\x05\xAA",
-					"\x8B\x9F\xA7\xA2\x41\x18\x2C\xA2\xA2\xA8\x45\xB5\xAF\x92\xAD\x68\x8A\xA3\xAF\xAB\xA1\xBC\xA2\x41\x06\xB2\x8A\x4A\x05\xB0\x09\x5B\x0E\x88\x45\x8E\x81\x4D\x06\x8B\x1E\x2E\x8F\x06\x8B\x20\x04\xBE\xA9\xA2\xF6\x61\x02\xB7\x40\x16\x49\xB7\xAC\x00\x23\x2E\x84\x0A\x8B\x25\x2E\x86\x0A\x8B\x27\x2E\x88\x46\xB6\xB9\x93\xBD\xA9\xAF\xD4\xAC\xB6\x6D\x0A\xD7\xA3\xA4\xAF\xB6\x2A\x31\xB8\xAC\xA4\xF7\x92\xA2\xBE\xAF\xF9\x94\xAE\xBB\xAE\xED\xBB\xB1\xC1\x40\x2B\x36\xBB\xB5\xBA\xFF\x81\xAA\xC2\xAE\xE7\x6C\x06\xC1\x0B\x2E\xAE\x0E\x8B\x0B\x2E\xB0\x0E\x89\x0C\x2E\xB2\x06\xC0\xC2\x02\xEB\xBD\xC4\xC0\x1E\xFD\xB3\xBC\xC7\x01\x73\x0B\xC4\xBE\x07\xE8\xC4\xC9\xCA\xFA\xA2\xCC\xBC\x00\x34\x27\xCD\xC8\xCB\xFE\x9F\xCB\xC2\xBA\x20\xE1\x45\x0E\xCC\x35\xEE\xC3\xC0\xCD\x23\xEA\xC2\xD2\x68\x36\x3C\xC1\xD3\xCC\x2B\xC9\xD3\xD1\xCF\x40\xEF\xC7\x0E\xD1\x2F\xCA\xD8\xD3\xD2\x47\xCC\xD2\xD6\xD5\x54\xD1\xD9\xD7\xCF\x57\xD5\xDE\xD6\xD6\x53\xE2\x68\x0C\xD4\x5C\xDB\xD1\xCB\xB6\x39\x24\xD7\xDB\xCA\x3A\x2A\xD9\xCF\xCD\x09\xC9\x4B\x0E\xDB\x70\xC6\x9C\x0C\xDD\x0C",
-					"\xEF\x7D\x0C\xDE\x38\xF5\xDE\xCF\xDA\x66\xEF\xD9\xDE\x41\x3E\x3C\xD4\x83\x0F\x86\xF6\xC9\x40\x10\x89\xFF\xD2\xE1\xDF\x83\xF1\xD0\xE7\xE4\x92\xD5\xE2\x41\x10\x8D\xDB\xB2\x11\xE6\x2B\xC3\x1C\xE7\x6F\x44\x1F\xE1\xD8\xD6\xA3\xDF\xD5\xD9\xE9\x2F\xC5\x12\xE8\x69\x46\x2B\xE3\xBF\x11\xAE\xE0\x6D\x2A\x42\x7B\x76\x4E\xBA\x4C\xF1\x76\xE7\xED\x4A\xB9\xE0\x75\x50\x71\x7E\x72\x45\xEF\x40\xCC\x4A\xA8\xEE\x42\x2D\x97\x53\xF2\x40\xC5\xEA\xB7\xF1\x42\xC9\xFE\x5B\xF1\x40\xCD\xFB\xE6\x49\xEF\x03\x51\xFE\x6B\xF4\x00\x15\xFD\xC7\xF3\x06\x5A\xF5\x6C\xF0\xAE\x72\x44\xF9\x6D\xE6\xC5\x59\xFB\x55\xC2\xEA\xD0\xFB\x40\xDC\xEB\xF1\xF1\x4A\xDC\xF1\xF8\x87\xFB\x02\x69\x67\x57\xF9\xBA\x6D\xF9\x41\x70\xC6\x7C\x76\x77\x45\x2C\x7A\x90\x78\x7E\x76\xFE\x7A\x77\xDF\x07\x86\x26\xF9\x65\x79\x25\xFA\x73\x7E\x49\x5C\x70\x80\xBF\x11\x87\x81\x13\x8A\x22\xF7\x0B\x82\x80\xE8\x45\x2F\x82\xE8\x74\x7E\x06\xF4\x4C\x80\xF1\x7A\x30\x84\xFD\x62\x85\x42\x1B\x8D\x68\x99\x1D\x20\x7B\x02\x26\x85\x6F\x28\x8D\x37\x04\xB0\x7C\x84\x1D\x86\x20\x0D\xB2\x2B\x86\x17\x99\x80",
-					"\x5D\xF7\x79\x87\x0D\xD7\x2D\x86\x1F\x9F\x24\x7B\x2C\x91\x49\x09\x9F\x8A\x7C\x15\x86\x25\x82\xAE\x25\x8A\x11\x9D\x28\x88\x1C\x97\x78\x79\x4C\x8C\x7E\x13\xC4\x76\x8B\x91\x30\x81\x20\x32\x9C\x85\x13\xBF\x8B\x39\x2E\x9F\x27\x8B\x00\x01\x8C\x04\xE3\x83\x25\xFA\x66\x8E\x23\x68\x92\x8B\x47\x72\x86\x88\xEE\x61\x3F\x7B\x42\x82\x22\xFD\x26\x24\x8E\x1F\x95\x89\x80\x57\x9E\x80\x20\xDE\x83\x85\xFD\x6C\x8B\x8E\x87\x9E\x20\x05\xD9\x82\x83\x36\x85\x96\x79\x79\x80\x8C\x23\x98\x8E\x91\x15\xAF\x8F\x85\x58\x84\x89\x22\xD4\x8F\x90\xEB\x44\x92\x90\x16\x9B\x93\x3F\x6E\x83\x91\x33\x8A\x25\x8F\xFF\x08\x96\x0D\x82\x27\x8E\x0E\x81\x96\x20\x7B\x83\x26\x2A\xDB\x8C\x79\x4B\xBF\x18\x8D\x6A\x86\x24\x14\xA1\x86\x24\xFE\x75\x81\x25\xBB\x89\x85\x2F\xA2\x91\x99\x5F\x83\x9A\x8B\xBA\x82\x96\x2F\xD3\x87\x88\x85\x0B\x99\x88\xAF\x83\x21\x84\x52\x7A\x80\x3C\x91\x9A\x77\xAB\x88\x80\x34\x9F\x95\x9A\x07\xBC\x95\x92\x3A\x84\x82\x33\xE2\x99\x20\x54\x8B\x92\x79\xA7\x84\x9C\x2C\xB6\x91\x8E\x75\x83\x27\x99\x64\x83\x21\x31\xD9\x90\x01\x58\xB5\x44\x81\xA8\x90",
-					"\x9C\x33\xDC\x7A\x9F\x66\xBF\x7E\x9D\x7A\x8C\x9D\x3A\xD7\x28\x8D\xE3\x04\xA6\x38\x45\x28\x8C\x1A\x8C\x8B\xA1\x48\x80\x01\x40\x07\xA9\x20\x44\xFE\x28\x8D\x79\x8E\xA5\x9F\x70\x8A\x22\x45\xD7\x91\x21\x8D\x9C\x9F\x9D\x09\xBA\xA1\x48\xFF\x91\xA2\x83\x18\xA0\x93\x24\xBE\x2E\xC5\x55\x90\x01\x56\xB5\x9B\xA0\xEB\x89\xA7\x10\xCF\x84\x76\x91\xBA\x2B\x9C\x37\xA9\x22\x41\xB1\xA4\xA6\x4B\xA5\x9D\x93\x02\x25\x98\x0B\xC2\xA6\xA7\x32\x83\x38\xA8\x01\x3B\xA4\x17\xB2\xA9\x7F\xA2\xB2\x9E\xA9\x0B\x28\xA0\x53\x81\x2F\x3B\x81\x28\x8B\xA2\xD2\x99\x92\x41\x40\x46\x21\x2B\x46\x26\x4C\x09\x36\x4D\x42\x0D\x56\x20\x4B\x49\x21\x53\x2C\xA5\x54\x4B\xA1\x2E\x12\x17\x61\x22\xAD\x6B\xA9\x23\x27\x2E\x4E\x97\x58\x71\xA9\x21\xA0\x0E\x45\x31\xD6\x5C\xA4\x54\xB3\x29\x21\xCD\x5D\xAF\x79\x34\x81\x5A\xC1\xAF\x3C\x7B\xCF\x46\xB2\x7D\x75\xA7\xAF\x84\x21\x16\xAD\x0A\x23\x5D\x63\x83\x22\x14\xC8\x89\x22\xB2\x93\xA1\x23\x28\x2E\x4A\xA8\x81\x35\x59\xB3\x01\x24\x16\x5E\x8A\x25\x60\xD0\x80\x05\x14\x2E\x54\x86\xC3\x26\xB6\x14\xCE\x8A\x27\xB3\xA0\xA7\x17\x68\x89",
-					"\x25\xB4\xD0\xA8\x11\xB5\x0A\x2B\xB4\x68\xA9\x1E\xB5\x84\x30\xB1\xB3\xAA\x13\xB6\x41\x35\xB9\xB3\x55\x38\xB1\x21\xBA\xB9\xB0\x2B\x2E\x48\x09\xB5\x9E\xA4\x33\x71\xAE\xA6\x4B\xF6\x90\x34\xEE\x7E\xAB\xAD\xBC\x34\x84\x75\xB1\x34\x86\x97\xBC\x31\x24\xBE\x9E\xB8\xCA\x45\x9B\xBA\xDB\x0F\x74\x40\xBE\x89\x8B\x6F\x21\x2D\xB3\x80\x2E\xA4\x85\xE5\xA0\xBE\x42\x0D\xA2\x35\x90\x28\x8E\xA5\x58\xA1\xA3\x7B\x3E\x95\xAA\x23\x61\x22\x86\x2E\xBC\xAB\x4C\xE8\xBA\x21\xFC\xB6\x51\x24\x60\xBE\x75\x58\xB5\xAF\x3C\x16\xAD\xBB\x5B\x21\x26\xAE\x82\x94\x77\x20\xA9\xB6\x39\x24\x68\xB3\xC2\xE5\x01\x25\xA1\xF3\x21\x24\x53\x40\x93\x66\x81\x80\x0F\xC1\xEF\x8A\x20\xAE\x03\x22\xBF\xCC\x53\x93\x20\x01\xFE\xBA\x21\xA8\x5A\x5B\xAA\x39\xA6\x3E\x17\xD2\x97\x3D\x21\x20\x59\x88\xCC\x6E\xAB\x81\x22\xAF\xC2\xC2\x4E\x46\xB1\x34\xC4\x41\x1F\xC3\x21\xC1\x04\x41\x27\xB2\x3B\xC3\x5E\xB2\x83\x21\xC3\x49\xCA\x21\x60\x9A\xCA\x70\x83\x10\xCA\x20\x20\xC0\xCB\x7B\x09\xBC\xA6\x02\x59\xCB\x20\x31\xDA\xC8\x85\xB6\x5F\xCA\x81\x33\xC2\xCC\x1B\xDB\x59\x99\x9D\xAE\xC2\x85",
-					"\x3C\xAC\xCA\x01\x39\x59\x97\xBA\x7E\xA4\x14\xC2\x21\xCC\x51\xD1\x72\x91\x76\xC1\x21\x33\xF9\xCB\xCC\xDB\x5C\xCC\x70\x6D\xC9\x21\x6F\x5A\x59\x5C\x44\xCC\x96\x8B\x78\xC2\x20\x09\xFF\xCB\x20\xE5\x4C\xCB\xCB\x7E\xCF\x56\x42\xC0\xD4\x37\x94\xC1\x23\x95\x87\xC7\x22\x06\xF6\x3C\x94\x06\x39\xD1\xF7\x16\xD3\x21\xDF\xBA\xBE\x20\xC9\xA7\xD7\x53\x89\xDD\xCF\xF9\xA4\xD2\x20\x12\x6C\xD4\x00\x2B\xA3\xCF\xA4\x9E\xD3\x20\xA2\xDD\xBC\xA7\x89\x2A\x62\x59\xF1\x62\xD6\xBA\xCF\xA5\x42\x22\xD6\xC9\x17\xC9\x25\x68\xB2\xC3\x6E\xAC\xA3\xCC\x7A\x51\xF6\xC0\xC2\x0A\x2D\x6E\xAC\xF7\x62\xD6\x19\x8D\xDD\xC0\xAF\xC1\x21\xE1\x32\xDC\x70\x59\xFD\xC2\xD5\x02\x36\xAE\x41\x3A\xC8\xCD\x2A\xC4\x42\xDC\x4F\xD9\xD8\x00\x1B\x72\xD6\xDE\x05\xD9\x20\xDC\x68\xDD\x2D\xB8\xCA\x21\xD0\x72\xD5\x75\xB2\xCE\xD0\xB8\x81\x22\xDE\x0E\xEA\xDD\xB9\xB2\xCA\x0B\xAD\xD8\xC3\xE0\x7E\xC3\x84\xDE\x09\x2C\x09\xC1\x80\x0E\x09\x85\xCC\xD0\xDE\x0A\x3D\xDC\x00\x6F\xD0\xDB\x84\x10\x0B\xE1\x52\x0B\xE2\xC4\xF1\xDA\x21\x67\xE6\xC1\x21\x54\x0B\xE2\x15\x0B\xE3\x58\x59\xD2\xE3\xC4",
-					"\x1F\xE6\x20\x16\x0B\xEA\x0B\x85\xC8\x5D\xD6\x00\x04\xDF\x40\x43\xC5\xDC\x5B\x5C\x0B\xE1\xBC\x25\xE5\x59\xEA\xDE\x0B\xCC\x74\xE3\x20\x3A\xEF\xD2\xB9\xC6\x4F\xE5\x74\xC8\xE6\x20\x5F\x18\xE7\x6F\x53\xC9\xC5\x89\x08\xAD\xE2\x06\x21\x0F\xC2\xE3\x0B\xE0\x2E\xCD\xE9\x21\x45\xE2\x20\x7D\xA4\x31\x25\x32\x0B\xE7\x0C\x0B\xE5\xB0\x9C\x80\x09\xEA\xAA\xAA\xD9\x0D\x0B\xEB\x0F\xC2\xEF\xC7\xEA\x83\x25\xEB\xE2\xEA\xCD\x0F\xC2\xEF\x0B\xE0\x39\xED\xEB\x20\x6F\xFE\xE3\x7A\x8A\x21\x0F\x85\xF3\x0B\xE1\xDD\x5A\x5B\xDB\xA8\xEB\xEF\x84\x35\x0B\xE1\x77\x0B\xE2\xA1\xE3\xEC\xE8\x81\x0B\xCD\xE6\x00\x19\x0E\xD2\xB3\x66\xEA\xC7\xEA\xDB\x0F\x93\xEC\x6A\xD8\x83\x2F\xF0\xA1\xC1\x25\x0F\x99\xF3\x5C\xDB\x96\xF7\xE9\x81\x3F\x09\xF4\x2F\x76\xEE\x40\x0B\xFE\xF2\x00\x01\x11\x73\xAC\xE2\x20\xA2\x90\xFC\x36\x41\x28\xF1\x36\xB3\xF0\xD2\xBA\xDD\x60\x35\xDC\xC1\xAA\xDD\x84\x0E\x45\x21\x0B\xEE\xF6\xF7\x91\xB2\x21\x91\xD4\xF5\xE0\x47\xF3\xAA\xA8\xC3\x27\x10\x2E\x48\x13\xC2\x98\xB7\xEE\x81\x09\xFB\x20\x81\xF0\xF2\x22\x19\x77\x5C\x83\x31\xF3\xD7\x06\x2B\x13",
-					"\xED\xB6\x37\xFA\x45\xC9\x25\xFB\x46\xF0\xF1\x23\x63\xF1\x24\xF4\xE6\xFE\x20\xEE\xE1\x20\xC5\xA9\xE3\x21\x47\x0B\xE1\x12\x0B\xF0\x5E\xB6\x26\xD1\x21\xEF\xCE\xFA\x20\x93\x06\x30\xFC\x7D\x52\xAF\x5A\x10\x9B\x6F\x7F\x01\x14\x09\x06\x34\x5C\xEF\x75\x6A\x0A\x13\x7F\x85\x76\x10\x95\x0E\x22\x96\x0B\x70\xA9\x66\x7C\xB4\x5A\x10\xFA\x70\x79\x98\x09\x39\x17\x80\x00\xFE\x74\x7F\x02\x19\x09\x0F\x3E\x22\x1F\x87\x80\x22\x81\x10\x9A\x06\x30\xB1\x63\x76\x1F\x80\x81\xF5\x5A\x10\x9B\x0E\x22\x9C\x0B\x70\x14\x3A\x2D\x10\x3C\x52\xDF\x5E\x42\xA6\x5D\x83\x92\x60\x12\x2A\x66\x12\xD2\x5F\x57\x30\x74\x80\x6B\x5E\x52\x34\x42\x6C\x8E\x15\x5E\xA3\x41\x57\x7E\x5A\x4A\x49\x81\x12\xCF\x57\x12\x53\x8E\x11\xC5\x46\x13\x57\x82\x85\x71\x59\x85\x50\x5A\x3B\x5C\x8D\x7C\x58\x8B\x85\x71\x57\x52\x2A\x14\x86\xFF\x0E\x4B\x36\x18\x86\xF2\x5B\x56\x6A\x86\x61\xCE\x15\x62\x32\x1F\x60\x36\x12\x87\xEC\x51\x57\x74\x8F\x74\x4E\x1A\x5E\x29\x1C\x42\x36\x1C\x87\x21\x1E\x87\x6B\x50",
-				};
-				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
-			}
+		static const vl::vint dataLength = 2539; // 23493 bytes before compressing
+		static const vl::vint dataBlock = 256;
+		static const vl::vint dataRemain = 235;
+		static const vl::vint dataSolidRows = 9;
+		static const vl::vint dataRows = 10;
+		static const char* compressed[] = {
+			"\xC5\x5B\x00\x00\xE3\x09\x00\x00\x0D\x00\x01\x82\x80\x08\x03\x82\x81\x82\x06\x89\x82\x85\x0A\x83\x06\x84\x07\x0A\x91\x0A\x9C\x0A\x82\x12\x84\x14\x0A\xA3\x42\x09\x8F\x7D\x8E\x8F\x8E\x0A\x80\x1F\x9F\x81\x93\x92\x8F\x92\x26\xFF\x68\x86\x9B\x93\x91\x96\x92\x0A\xA9\xAA\x91\x99\x91\x91\x91\x00\x34\xAC\xB9\x8E\x9B\x98\x98\x8F\x9A\x3D\xA7\x81\xA0\x93\xA3\x9B\x9E\x9D\x47\xBC\x89\xBE\x96\x82\x9B\x96\xA1\x4B\xD0\x8D\xA0\xA1\xAC\xA1\xAA\xA3\x53\xC8\x99\xAA\xAB\xAC\xA7\x80\xA7\x45\xCF\x96\xBD\xA2\xAF\xAC\xAA\xB2\x63\xE6\x9A\xAA\xBC\xAC\xB6\xAE\x81\x60\xD7\xB7\x8A\x88\x9A\xB9\xB1\xBB\x76\x89\x9B\x89\x85\xB8\xB4\xAC\xB7\x65\xF0\xA7\xA0\xC9\xB2\xC3\xB4\xC3\x6D\x88\xEF\xA1\x81\xBE\xBE\xB1\xBF\x8A\x81\xCC\xC3\xC1\xCD\xC3\xC9\xC3\x97\x89\xD9\xCB\xC2\x94\xCB\xCC\xC9\x9D\x98\xE1\xDA\xC3\xD4\xCD\xC7\x81\x03\x74\xB8\xAE\xCB\xD4\xC0\xC9\xCF\x96\xA5\xE0\xC7\xD5\xCF\xD6\xD9\xD8\xB4\xB0\xF6\xD9\xD7\xDB\xDE\xCE\x00\x04\x2A\xC9\x8C\x8C\xBA\x86\x02\xE1\xAC\xF9\x86\x87\x08\xE6\xD7\xC7\xE7\xAD\xB5\xD0\xEA\xEE\xE1\xEA\xDD\xE9\xC9\xD9\xD5\xF4",
+			"\xE2\xEA\x84\x84\x83\x7D\xDB\xDA\xFD\xEC\xEF\xEA\xEB\xDE\xD8\xE2\xEA\xE4\xF3\xF6\xF1\xF2\x00\x09\x4D\xEC\xEB\xFE\xF5\xF4\xF5\xF3\xBC\xF9\xFF\xDA\xF2\xD4\xFC\xD2\xDE\x0A\x32\x75\x7C\x7D\xF7\x6F\x7E\x7E\x69\xFB\x49\x8D\x7E\x82\xFF\x4C\x88\x82\x68\x0E\x45\x76\x82\x83\xB3\x54\x88\x6E\x85\xBE\x4B\x8A\x85\x83\x1B\x8F\x8C\x87\x87\x1E\xA1\x85\x85\x87\x23\xA0\x85\x8A\x88\x17\xA4\x89\x88\x69\x0C\x02\x85\x82\x7D\x07\xA7\x82\x8F\x8A\x28\x99\x86\x88\x8D\x33\xB6\x85\x8D\x7A\xF3\x7D\x81\x40\x40\x12\xB0\x88\x84\x8F\x03\xBE\x8F\x88\x81\x31\xB8\x8A\x92\x8E\x39\x84\x97\x92\x91\x49\x8C\x9B\x92\x93\x51\x8E\x90\x45\x90\x48\x83\x98\x7E\x96\x13\xAA\x82\x97\x97\x54\x9C\x92\x92\x97\x4E\x8F\x0E\x89\x95\x5B\xA4\x99\x9B\x8D\x60\xAB\x9B\x8E\x9B\x4D\xB0\x93\x96\x9C\xB6\x50\x07\x9A\x98\x59\xAA\x9D\x94\x9B\x61\xBA\x93\x98\x9F\x74\xBD\x90\xA3\x9E\x6F\x84\xA1\x9E\xA1\x73\x88\xAD\x9B\x7B\x12\x58\x90\x94\x9E\x8F\xBE\x99\x9F\xA0\xF6\x52\x07\x9E\x68\x13\x17\xA4\x68\x05\x9A\x85\xAF\x9E\xA7\x93\xA0\xA1\xA4\x69\x15\x1D\xA0\x6A\x05\xA6\xB1\x67\x05\xAA",
+			"\x8B\x9F\xA7\xA2\x41\x18\x2C\xA2\xA2\xA8\x45\xB5\xAF\x92\xAD\x68\x8A\xA3\xAF\xAB\xA1\xBC\xA2\x41\x06\xB2\x8A\x4A\x05\xB0\x09\x5B\x0E\x88\x45\x8E\x81\x4D\x06\x8B\x1E\x2E\x8F\x06\x8B\x20\x04\xBE\xA9\xA2\xF6\x61\x02\xB7\x40\x16\x49\xB7\xAC\x00\x23\x2E\x84\x0A\x8B\x25\x2E\x86\x0A\x8B\x27\x2E\x88\x46\xB6\xB9\x93\xBD\xA9\xAF\xD4\xAC\xB6\x6D\x0A\xD7\xA3\xA4\xAF\xB6\x2A\x31\xB8\xAC\xA4\xF7\x92\xA2\xBE\xAF\xF9\x94\xAE\xBB\xAE\xED\xBB\xB1\xC1\x40\x2B\x36\xBB\xB5\xBA\xFF\x81\xAA\xC2\xAE\xE7\x6C\x06\xC1\x0B\x2E\xAE\x0E\x8B\x0B\x2E\xB0\x0E\x89\x0C\x2E\xB2\x06\xC0\xC2\x02\xEB\xBD\xC4\xC0\x1E\xFD\xB3\xBC\xC7\x01\x73\x0B\xC4\xBE\x07\xE8\xC4\xC9\xCA\xFA\xA2\xCC\xBC\x00\x34\x27\xCD\xC8\xCB\xFE\x9F\xCB\xC2\xBA\x20\xE1\x45\x0E\xCC\x35\xEE\xC3\xC0\xCD\x23\xEA\xC2\xD2\x68\x36\x3C\xC1\xD3\xCC\x2B\xC9\xD3\xD1\xCF\x40\xEF\xC7\x0E\xD1\x2F\xCA\xD8\xD3\xD2\x47\xCC\xD2\xD6\xD5\x54\xD1\xD9\xD7\xCF\x57\xD5\xDE\xD6\xD6\x53\xE2\x68\x0C\xD4\x5C\xDB\xD1\xCB\xB6\x39\x24\xD7\xDB\xCA\x3A\x2A\xD9\xCF\xCD\x09\xC9\x4B\x0E\xDB\x70\xC6\x9C\x0C\xDD\x0C",
+			"\xEF\x7D\x0C\xDE\x38\xF5\xDE\xCF\xDA\x66\xEF\xD9\xDE\x41\x3E\x3C\xD4\x83\x0F\x86\xF6\xC9\x40\x10\x89\xFF\xD2\xE1\xDF\x83\xF1\xD0\xE7\xE4\x92\xD5\xE2\x41\x10\x8D\xDB\xB2\x11\xE6\x2B\xC3\x1C\xE7\x6F\x44\x1F\xE1\xD8\xD6\xA3\xDF\xD5\xD9\xE9\x2F\xC5\x12\xE8\x69\x46\x2B\xE3\xBF\x11\xAE\xE0\x6D\x2A\x42\x7B\x76\x4E\xBA\x4C\xF1\x76\xE7\xED\x4A\xB9\xE0\x75\x50\x71\x7E\x72\x45\xEF\x40\xCC\x4A\xA8\xEE\x42\x2D\x97\x53\xF2\x40\xC5\xEA\xB7\xF1\x42\xC9\xFE\x5B\xF1\x40\xCD\xFB\xE6\x49\xEF\x03\x51\xFE\x6B\xF4\x00\x15\xFD\xC7\xF3\x06\x5A\xF5\x6C\xF0\xAE\x72\x44\xF9\x6D\xE6\xC5\x59\xFB\x55\xC2\xEA\xD0\xFB\x40\xDC\xEB\xF1\xF1\x4A\xDC\xF1\xF8\x87\xFB\x02\x69\x67\x57\xF9\xBA\x6D\xF9\x41\x70\xC6\x7C\x76\x77\x45\x2C\x7A\x90\x78\x7E\x76\xFE\x7A\x77\xDF\x07\x86\x26\xF9\x65\x79\x25\xFA\x73\x7E\x49\x5C\x70\x80\xBF\x11\x87\x81\x13\x8A\x22\xF7\x0B\x82\x80\xE8\x45\x2F\x82\xE8\x74\x7E\x06\xF4\x4C\x80\xF1\x7A\x30\x84\xFD\x62\x85\x42\x1B\x8D\x68\x99\x1D\x20\x7B\x02\x26\x85\x6F\x28\x8D\x37\x04\xB0\x7C\x84\x1D\x86\x20\x0D\xB2\x2B\x86\x17\x99\x80",
+			"\x5D\xF7\x79\x87\x0D\xD7\x2D\x86\x1F\x9F\x24\x7B\x2C\x91\x49\x09\x9F\x8A\x7C\x15\x86\x25\x82\xAE\x25\x8A\x11\x9D\x28\x88\x1C\x97\x78\x79\x4C\x8C\x7E\x13\xC4\x76\x8B\x91\x30\x81\x20\x32\x9C\x85\x13\xBF\x8B\x39\x2E\x9F\x27\x8B\x00\x01\x8C\x04\xE3\x83\x25\xFA\x66\x8E\x23\x68\x92\x8B\x47\x72\x86\x88\xEE\x61\x3F\x7B\x42\x82\x22\xFD\x26\x24\x8E\x1F\x95\x89\x80\x57\x9E\x80\x20\xDE\x83\x85\xFD\x6C\x8B\x8E\x87\x9E\x20\x05\xD9\x82\x83\x36\x85\x96\x79\x79\x80\x8C\x23\x98\x8E\x91\x15\xAF\x8F\x85\x58\x84\x89\x22\xD4\x8F\x90\xEB\x44\x92\x90\x16\x9B\x93\x3F\x6E\x83\x91\x33\x8A\x25\x8F\xFF\x08\x96\x0D\x82\x27\x8E\x0E\x81\x96\x20\x7B\x83\x26\x2A\xDB\x8C\x79\x4B\xBF\x18\x8D\x6A\x86\x24\x14\xA1\x86\x24\xFE\x75\x81\x25\xBB\x89\x85\x2F\xA2\x91\x99\x5F\x83\x9A\x8B\xBA\x82\x96\x2F\xD3\x87\x88\x85\x0B\x99\x88\xAF\x83\x21\x84\x52\x7A\x80\x3C\x91\x9A\x77\xAB\x88\x80\x34\x9F\x95\x9A\x07\xBC\x95\x92\x3A\x84\x82\x33\xE2\x99\x20\x54\x8B\x92\x79\xA7\x84\x9C\x2C\xB6\x91\x8E\x75\x83\x27\x99\x64\x83\x21\x31\xD9\x90\x01\x58\xB5\x44\x81\xA8\x90",
+			"\x9C\x33\xDC\x7A\x9F\x66\xBF\x7E\x9D\x7A\x8C\x9D\x3A\xD7\x28\x8D\xE3\x04\xA6\x38\x45\x28\x8C\x1A\x8C\x8B\xA1\x48\x80\x01\x40\x07\xA9\x20\x44\xFE\x28\x8D\x79\x8E\xA5\x9F\x70\x8A\x22\x45\xD7\x91\x21\x8D\x9C\x9F\x9D\x09\xBA\xA1\x48\xFF\x91\xA2\x83\x18\xA0\x93\x24\xBE\x2E\xC5\x55\x90\x01\x56\xB5\x9B\xA0\xEB\x89\xA7\x10\xCF\x84\x76\x91\xBA\x2B\x9C\x37\xA9\x22\x41\xB1\xA4\xA6\x4B\xA5\x9D\x93\x02\x25\x98\x0B\xC2\xA6\xA7\x32\x83\x38\xA8\x01\x3B\xA4\x17\xB2\xA9\x7F\xA2\xB2\x9E\xA9\x0B\x28\xA0\x53\x81\x2F\x3B\x81\x28\x8B\xA2\xD2\x99\x92\x41\x40\x46\x21\x2B\x46\x26\x4C\x09\x36\x4D\x42\x0D\x56\x20\x4B\x49\x21\x53\x2C\xA5\x54\x4B\xA1\x2E\x12\x17\x61\x22\xAD\x6B\xA9\x23\x27\x2E\x4E\x97\x58\x71\xA9\x21\xA0\x0E\x45\x31\xD6\x5C\xA4\x54\xB3\x29\x21\xCD\x5D\xAF\x79\x34\x81\x5A\xC1\xAF\x3C\x7B\xCF\x46\xB2\x7D\x75\xA7\xAF\x84\x21\x16\xAD\x0A\x23\x5D\x63\x83\x22\x14\xC8\x89\x22\xB2\x93\xA1\x23\x28\x2E\x4A\xA8\x81\x35\x59\xB3\x01\x24\x16\x5E\x8A\x25\x60\xD0\x80\x05\x14\x2E\x54\x86\xC3\x26\xB6\x14\xCE\x8A\x27\xB3\xA0\xA7\x17\x68\x89",
+			"\x25\xB4\xD0\xA8\x11\xB5\x0A\x2B\xB4\x68\xA9\x1E\xB5\x84\x30\xB1\xB3\xAA\x13\xB6\x41\x35\xB9\xB3\x55\x38\xB1\x21\xBA\xB9\xB0\x2B\x2E\x48\x09\xB5\x9E\xA4\x33\x71\xAE\xA6\x4B\xF6\x90\x34\xEE\x7E\xAB\xAD\xBC\x34\x84\x75\xB1\x34\x86\x97\xBC\x31\x24\xBE\x9E\xB8\xCA\x45\x9B\xBA\xDB\x0F\x74\x40\xBE\x89\x8B\x6F\x21\x2D\xB3\x80\x2E\xA4\x85\xE5\xA0\xBE\x42\x0D\xA2\x35\x90\x28\x8E\xA5\x58\xA1\xA3\x7B\x3E\x95\xAA\x23\x61\x22\x86\x2E\xBC\xAB\x4C\xE8\xBA\x21\xFC\xB6\x51\x24\x60\xBE\x75\x58\xB5\xAF\x3C\x16\xAD\xBB\x5B\x21\x26\xAE\x82\x94\x77\x20\xA9\xB6\x39\x24\x68\xB3\xC2\xE5\x01\x25\xA1\xF3\x21\x24\x53\x40\x93\x66\x81\x80\x0F\xC1\xEF\x8A\x20\xAE\x03\x22\xBF\xCC\x53\x93\x20\x01\xFE\xBA\x21\xA8\x5A\x5B\xAA\x39\xA6\x3E\x17\xD2\x97\x3D\x21\x20\x59\x88\xCC\x6E\xAB\x81\x22\xAF\xC2\xC2\x4E\x46\xB1\x34\xC4\x41\x1F\xC3\x21\xC1\x04\x41\x27\xB2\x3B\xC3\x5E\xB2\x83\x21\xC3\x49\xCA\x21\x60\x9A\xCA\x70\x83\x10\xCA\x20\x20\xC0\xCB\x7B\x09\xBC\xA6\x02\x59\xCB\x20\x31\xDA\xC8\x85\xB6\x5F\xCA\x81\x33\xC2\xCC\x1B\xDB\x59\x99\x9D\xAE\xC2\x85",
+			"\x3C\xAC\xCA\x01\x39\x59\x97\xBA\x7E\xA4\x14\xC2\x21\xCC\x51\xD1\x72\x91\x76\xC1\x21\x33\xF9\xCB\xCC\xDB\x5C\xCC\x70\x6D\xC9\x21\x6F\x5A\x59\x5C\x44\xCC\x96\x8B\x78\xC2\x20\x09\xFF\xCB\x20\xE5\x4C\xCB\xCB\x7E\xCF\x56\x42\xC0\xD4\x37\x94\xC1\x23\x95\x87\xC7\x22\x06\xF6\x3C\x94\x06\x39\xD1\xF7\x16\xD3\x21\xDF\xBA\xBE\x20\xC9\xA7\xD7\x53\x89\xDD\xCF\xF9\xA4\xD2\x20\x12\x6C\xD4\x00\x2B\xA3\xCF\xA4\x9E\xD3\x20\xA2\xDD\xBC\xA7\x89\x2A\x62\x59\xF1\x62\xD6\xBA\xCF\xA5\x42\x22\xD6\xC9\x17\xC9\x25\x68\xB2\xC3\x6E\xAC\xA3\xCC\x7A\x51\xF6\xC0\xC2\x0A\x2D\x6E\xAC\xF7\x62\xD6\x19\x8D\xDD\xC0\xAF\xC1\x21\xE1\x32\xDC\x70\x59\xFD\xC2\xD5\x02\x36\xAE\x41\x3A\xC8\xCD\x2A\xC4\x42\xDC\x4F\xD9\xD8\x00\x1B\x72\xD6\xDE\x05\xD9\x20\xDC\x68\xDD\x2D\xB8\xCA\x21\xD0\x72\xD5\x75\xB2\xCE\xD0\xB8\x81\x22\xDE\x0E\xEA\xDD\xB9\xB2\xCA\x0B\xAD\xD8\xC3\xE0\x7E\xC3\x84\xDE\x09\x2C\x09\xC1\x80\x0E\x09\x85\xCC\xD0\xDE\x0A\x3D\xDC\x00\x6F\xD0\xDB\x84\x10\x0B\xE1\x52\x0B\xE2\xC4\xF1\xDA\x21\x67\xE6\xC1\x21\x54\x0B\xE2\x15\x0B\xE3\x58\x59\xD2\xE3\xC4",
+			"\x1F\xE6\x20\x16\x0B\xEA\x0B\x85\xC8\x5D\xD6\x00\x04\xDF\x40\x43\xC5\xDC\x5B\x5C\x0B\xE1\xBC\x25\xE5\x59\xEA\xDE\x0B\xCC\x74\xE3\x20\x3A\xEF\xD2\xB9\xC6\x4F\xE5\x74\xC8\xE6\x20\x5F\x18\xE7\x6F\x53\xC9\xC5\x89\x08\xAD\xE2\x06\x21\x0F\xC2\xE3\x0B\xE0\x2E\xCD\xE9\x21\x45\xE2\x20\x7D\xA4\x31\x25\x32\x0B\xE7\x0C\x0B\xE5\xB0\x9C\x80\x09\xEA\xAA\xAA\xD9\x0D\x0B\xEB\x0F\xC2\xEF\xC7\xEA\x83\x25\xEB\xE2\xEA\xCD\x0F\xC2\xEF\x0B\xE0\x39\xED\xEB\x20\x6F\xFE\xE3\x7A\x8A\x21\x0F\x85\xF3\x0B\xE1\xDD\x5A\x5B\xDB\xA8\xEB\xEF\x84\x35\x0B\xE1\x77\x0B\xE2\xA1\xE3\xEC\xE8\x81\x0B\xCD\xE6\x00\x19\x0E\xD2\xB3\x66\xEA\xC7\xEA\xDB\x0F\x93\xEC\x6A\xD8\x83\x2F\xF0\xA1\xC1\x25\x0F\x99\xF3\x5C\xDB\x96\xF7\xE9\x81\x3F\x09\xF4\x2F\x76\xEE\x40\x0B\xFE\xF2\x00\x01\x11\x73\xAC\xE2\x20\xA2\x90\xFC\x36\x41\x28\xF1\x36\xB3\xF0\xD2\xBA\xDD\x60\x35\xDC\xC1\xAA\xDD\x84\x0E\x45\x21\x0B\xEE\xF6\xF7\x91\xB2\x21\x91\xD4\xF5\xE0\x47\xF3\xAA\xA8\xC3\x27\x10\x2E\x48\x13\xC2\x98\xB7\xEE\x81\x09\xFB\x20\x81\xF0\xF2\x22\x19\x77\x5C\x83\x31\xF3\xD7\x06\x2B\x13",
+			"\xED\xB6\x37\xFA\x45\xC9\x25\xFB\x46\xF0\xF1\x23\x63\xF1\x24\xF4\xE6\xFE\x20\xEE\xE1\x20\xC5\xA9\xE3\x21\x47\x0B\xE1\x12\x0B\xF0\x5E\xB6\x26\xD1\x21\xEF\xCE\xFA\x20\x93\x06\x30\xFC\x7D\x52\xAF\x5A\x10\x9B\x6F\x7F\x01\x14\x09\x06\x34\x5C\xEF\x75\x6A\x0A\x13\x7F\x85\x76\x10\x95\x0E\x22\x96\x0B\x70\xA9\x66\x7C\xB4\x5A\x10\xFA\x70\x79\x98\x09\x39\x17\x80\x00\xFE\x74\x7F\x02\x19\x09\x0F\x3E\x22\x1F\x87\x80\x22\x81\x10\x9A\x06\x30\xB1\x63\x76\x1F\x80\x81\xF5\x5A\x10\x9B\x0E\x22\x9C\x0B\x70\x14\x3A\x2D\x10\x3C\x52\xDF\x5E\x42\xA6\x5D\x83\x92\x60\x12\x2A\x66\x12\xD2\x5F\x57\x30\x74\x80\x6B\x5E\x52\x34\x42\x6C\x8E\x15\x5E\xA3\x41\x57\x7E\x5A\x4A\x49\x81\x12\xCF\x57\x12\x53\x8E\x11\xC5\x46\x13\x57\x82\x85\x71\x59\x85\x50\x5A\x3B\x5C\x8D\x7C\x58\x8B\x85\x71\x57\x52\x2A\x14\x86\xFF\x0E\x4B\x36\x18\x86\xF2\x5B\x56\x6A\x86\x61\xCE\x15\x62\x32\x1F\x60\x36\x12\x87\xEC\x51\x57\x74\x8F\x74\x4E\x1A\x5E\x29\x1C\x42\x36\x1C\x87\x21\x1E\x87\x6B\x50",
+		};
+		vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
+	}
 
-			const wchar_t* ParserRuleName(vl::vint index)
-			{
-				static const wchar_t* results[] = {
-					L"XAttribute",
-					L"XText",
-					L"XCData",
-					L"XComment",
-					L"XElement",
-					L"XSubNode",
-					L"XInstruction",
-					L"XDocument",
-				};
-				return results[index];
-			}
+	const wchar_t* ParserRuleName(vl::vint index)
+	{
+		static const wchar_t* results[] = {
+			L"XAttribute",
+			L"XText",
+			L"XCData",
+			L"XComment",
+			L"XElement",
+			L"XSubNode",
+			L"XInstruction",
+			L"XDocument",
+		};
+		return results[index];
+	}
 
-			const wchar_t* ParserStateLabel(vl::vint index)
-			{
-				static const wchar_t* results[] = {
-					L"[0][XAttribute] BEGIN ",
-					L"[1][XAttribute] END [ENDING]",
-					L"[2][XAttribute]< NAME \"=\" @ ATTVALUE >",
-					L"[3][XAttribute]< NAME \"=\" ATTVALUE @ >",
-					L"[4][XAttribute]< NAME @ \"=\" ATTVALUE >",
-					L"[5][XText] BEGIN ",
-					L"[6][XText] END [ENDING]",
-					L"[7][XText]< \"=\" @ >",
-					L"[8][XText]< ATTVALUE @ >",
-					L"[9][XText]< NAME @ >",
-					L"[10][XText]< TEXT @ >",
-					L"[11][XCData] BEGIN ",
-					L"[12][XCData] END [ENDING]",
-					L"[13][XCData]< CDATA @ >",
-					L"[14][XComment] BEGIN ",
-					L"[15][XComment] END [ENDING]",
-					L"[16][XComment]< COMMENT @ >",
-					L"[17][XElement] BEGIN ",
-					L"[18][XElement] END [ENDING]",
-					L"[19][XElement]< \"<\" @ NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" ) >",
-					L"[20][XElement]< \"<\" NAME @ { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" ) >",
-					L"[21][XElement]< \"<\" NAME { XAttribute @ } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" ) >",
-					L"[22][XElement]< \"<\" NAME { XAttribute } ( \"/>\" @ | \">\" { XSubNode } \"</\" NAME \">\" ) >",
-					L"[23][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" @ { XSubNode } \"</\" NAME \">\" ) >",
-					L"[24][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode @ } \"</\" NAME \">\" ) >",
-					L"[25][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" @ NAME \">\" ) >",
-					L"[26][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" @ ) >",
-					L"[27][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME @ \">\" ) >",
-					L"[28][XSubNode] BEGIN ",
-					L"[29][XSubNode] END [ENDING]",
-					L"[30][XSubNode]<< ( !XText @ | !XCData | !XComment | !XElement ) >>",
-					L"[31][XSubNode]<< ( !XText | !XCData @ | !XComment | !XElement ) >>",
-					L"[32][XSubNode]<< ( !XText | !XCData | !XComment @ | !XElement ) >>",
-					L"[33][XSubNode]<< ( !XText | !XCData | !XComment | !XElement @ ) >>",
-					L"[34][XInstruction] BEGIN ",
-					L"[35][XInstruction] END [ENDING]",
-					L"[36][XInstruction]< \"<?\" @ NAME { XAttribute } \"?>\" >",
-					L"[37][XInstruction]< \"<?\" NAME @ { XAttribute } \"?>\" >",
-					L"[38][XInstruction]< \"<?\" NAME { XAttribute @ } \"?>\" >",
-					L"[39][XInstruction]< \"<?\" NAME { XAttribute } \"?>\" @ >",
-					L"[40][XDocument] BEGIN ",
-					L"[41][XDocument] END [ENDING]",
-					L"[42][XDocument]< { ( XInstruction @ | XComment ) } XElement >",
-					L"[43][XDocument]< { ( XInstruction | XComment ) } XElement @ >",
-					L"[44][XDocument]< { ( XInstruction | XComment @ ) } XElement >",
-				};
-				return results[index];
-			}
+	const wchar_t* ParserStateLabel(vl::vint index)
+	{
+		static const wchar_t* results[] = {
+			L"[0][XAttribute] BEGIN ",
+			L"[1][XAttribute] END [ENDING]",
+			L"[2][XAttribute]< NAME \"=\" @ ATTVALUE >",
+			L"[3][XAttribute]< NAME \"=\" ATTVALUE @ >",
+			L"[4][XAttribute]< NAME @ \"=\" ATTVALUE >",
+			L"[5][XText] BEGIN ",
+			L"[6][XText] END [ENDING]",
+			L"[7][XText]< \"=\" @ >",
+			L"[8][XText]< ATTVALUE @ >",
+			L"[9][XText]< NAME @ >",
+			L"[10][XText]< TEXT @ >",
+			L"[11][XCData] BEGIN ",
+			L"[12][XCData] END [ENDING]",
+			L"[13][XCData]< CDATA @ >",
+			L"[14][XComment] BEGIN ",
+			L"[15][XComment] END [ENDING]",
+			L"[16][XComment]< COMMENT @ >",
+			L"[17][XElement] BEGIN ",
+			L"[18][XElement] END [ENDING]",
+			L"[19][XElement]< \"<\" @ NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" ) >",
+			L"[20][XElement]< \"<\" NAME @ { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" ) >",
+			L"[21][XElement]< \"<\" NAME { XAttribute @ } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" ) >",
+			L"[22][XElement]< \"<\" NAME { XAttribute } ( \"/>\" @ | \">\" { XSubNode } \"</\" NAME \">\" ) >",
+			L"[23][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" @ { XSubNode } \"</\" NAME \">\" ) >",
+			L"[24][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode @ } \"</\" NAME \">\" ) >",
+			L"[25][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" @ NAME \">\" ) >",
+			L"[26][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME \">\" @ ) >",
+			L"[27][XElement]< \"<\" NAME { XAttribute } ( \"/>\" | \">\" { XSubNode } \"</\" NAME @ \">\" ) >",
+			L"[28][XSubNode] BEGIN ",
+			L"[29][XSubNode] END [ENDING]",
+			L"[30][XSubNode]<< ( !XText @ | !XCData | !XComment | !XElement ) >>",
+			L"[31][XSubNode]<< ( !XText | !XCData @ | !XComment | !XElement ) >>",
+			L"[32][XSubNode]<< ( !XText | !XCData | !XComment @ | !XElement ) >>",
+			L"[33][XSubNode]<< ( !XText | !XCData | !XComment | !XElement @ ) >>",
+			L"[34][XInstruction] BEGIN ",
+			L"[35][XInstruction] END [ENDING]",
+			L"[36][XInstruction]< \"<?\" @ NAME { XAttribute } \"?>\" >",
+			L"[37][XInstruction]< \"<?\" NAME @ { XAttribute } \"?>\" >",
+			L"[38][XInstruction]< \"<?\" NAME { XAttribute @ } \"?>\" >",
+			L"[39][XInstruction]< \"<?\" NAME { XAttribute } \"?>\" @ >",
+			L"[40][XDocument] BEGIN ",
+			L"[41][XDocument] END [ENDING]",
+			L"[42][XDocument]< { ( XInstruction @ | XComment ) } XElement >",
+			L"[43][XDocument]< { ( XInstruction | XComment ) } XElement @ >",
+			L"[44][XDocument]< { ( XInstruction | XComment @ ) } XElement >",
+		};
+		return results[index];
+	}
 
-			Parser::Parser()
-				: vl::glr::ParserBase<XmlTokens, ParserStates, XmlAstInsReceiver>(&XmlTokenDeleter, &XmlLexerData, &XmlParserData)
-			{
-			};
+	Parser::Parser()
+		: vl::glr::ParserBase<XmlTokens, ParserStates, XmlAstInsReceiver>(&XmlTokenDeleter, &XmlLexerData, &XmlParserData)
+	{
+	}
 
-			vl::vint32_t Parser::FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const
-			{
-				return -1;
-			};
+	vl::WString Parser::GetClassName(vl::vint32_t classIndex) const
+	{
+		return vl::WString::Unmanaged(XmlTypeName((XmlClasses)classIndex));
+	}
 
-			vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(const vl::WString& input, vl::vint codeIndex) const
-			{
-				 return ParseWithString<vl::glr::xml::XmlElement, ParserStates::XElement>(input, this, codeIndex);
-			};
+	vl::vint32_t Parser::FindCommonBaseClass(vl::vint32_t class1, vl::vint32_t class2) const
+	{
+		return -1;
+	}
 
-			vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
-			{
-				 return ParseWithTokens<vl::glr::xml::XmlElement, ParserStates::XElement>(tokens, this, codeIndex);
-			};
+	vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(const vl::WString& input, vl::vint codeIndex) const
+	{
+		 return ParseWithString<vl::glr::xml::XmlElement, ParserStates::XElement>(input, this, codeIndex);
+	}
 
-			vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(const vl::WString& input, vl::vint codeIndex) const
-			{
-				 return ParseWithString<vl::glr::xml::XmlDocument, ParserStates::XDocument>(input, this, codeIndex);
-			};
+	vl::Ptr<vl::glr::xml::XmlElement> Parser::ParseXElement(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
+	{
+		 return ParseWithTokens<vl::glr::xml::XmlElement, ParserStates::XElement>(tokens, this, codeIndex);
+	}
 
-			vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
-			{
-				 return ParseWithTokens<vl::glr::xml::XmlDocument, ParserStates::XDocument>(tokens, this, codeIndex);
-			};
-		}
+	vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(const vl::WString& input, vl::vint codeIndex) const
+	{
+		 return ParseWithString<vl::glr::xml::XmlDocument, ParserStates::XDocument>(input, this, codeIndex);
+	}
+
+	vl::Ptr<vl::glr::xml::XmlDocument> Parser::ParseXDocument(vl::collections::List<vl::regex::RegexToken>& tokens, vl::vint codeIndex) const
+	{
+		 return ParseWithTokens<vl::glr::xml::XmlDocument, ParserStates::XDocument>(tokens, this, codeIndex);
 	}
 }
 
@@ -8209,173 +8373,167 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
-	{
-		namespace xml
-		{
 
 /***********************************************************************
 XmlAstInsReceiver : public vl::glr::AstInsReceiverBase
 ***********************************************************************/
 
-			vl::Ptr<vl::glr::ParsingAstBase> XmlAstInsReceiver::CreateAstNode(vl::vint32_t type)
-			{
-				auto cppTypeName = XmlCppTypeName((XmlClasses)type);
-				switch((XmlClasses)type)
-				{
-				case XmlClasses::Attribute:
-					return vl::Ptr(new vl::glr::xml::XmlAttribute);
-				case XmlClasses::CData:
-					return vl::Ptr(new vl::glr::xml::XmlCData);
-				case XmlClasses::Comment:
-					return vl::Ptr(new vl::glr::xml::XmlComment);
-				case XmlClasses::Document:
-					return vl::Ptr(new vl::glr::xml::XmlDocument);
-				case XmlClasses::Element:
-					return vl::Ptr(new vl::glr::xml::XmlElement);
-				case XmlClasses::Instruction:
-					return vl::Ptr(new vl::glr::xml::XmlInstruction);
-				case XmlClasses::Text:
-					return vl::Ptr(new vl::glr::xml::XmlText);
-				default:
-					return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
-				}
-			}
-
-			void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value)
-			{
-				auto cppFieldName = XmlCppFieldName((XmlFields)field);
-				switch((XmlFields)field)
-				{
-				case XmlFields::Document_prologs:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlDocument::prologs, object, field, value, cppFieldName);
-				case XmlFields::Document_rootElement:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlDocument::rootElement, object, field, value, cppFieldName);
-				case XmlFields::Element_attributes:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlElement::attributes, object, field, value, cppFieldName);
-				case XmlFields::Element_subNodes:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlElement::subNodes, object, field, value, cppFieldName);
-				case XmlFields::Instruction_attributes:
-					return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlInstruction::attributes, object, field, value, cppFieldName);
-				default:
-					return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
-				}
-			}
-
-			void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex)
-			{
-				auto cppFieldName = XmlCppFieldName((XmlFields)field);
-				switch((XmlFields)field)
-				{
-				case XmlFields::Attribute_name:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlAttribute::name, object, field, token, tokenIndex, cppFieldName);
-				case XmlFields::Attribute_value:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlAttribute::value, object, field, token, tokenIndex, cppFieldName);
-				case XmlFields::CData_content:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlCData::content, object, field, token, tokenIndex, cppFieldName);
-				case XmlFields::Comment_content:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlComment::content, object, field, token, tokenIndex, cppFieldName);
-				case XmlFields::Element_closingName:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlElement::closingName, object, field, token, tokenIndex, cppFieldName);
-				case XmlFields::Element_name:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlElement::name, object, field, token, tokenIndex, cppFieldName);
-				case XmlFields::Instruction_name:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlInstruction::name, object, field, token, tokenIndex, cppFieldName);
-				case XmlFields::Text_content:
-					return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlText::content, object, field, token, tokenIndex, cppFieldName);
-				default:
-					return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
-				}
-			}
-
-			void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
-			{
-				auto cppFieldName = XmlCppFieldName((XmlFields)field);
-				return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
-			}
-
-			const wchar_t* XmlTypeName(XmlClasses type)
-			{
-				const wchar_t* results[] = {
-					L"Attribute",
-					L"CData",
-					L"Comment",
-					L"Document",
-					L"Element",
-					L"Instruction",
-					L"Node",
-					L"Text",
-				};
-				vl::vint index = (vl::vint)type;
-				return 0 <= index && index < 8 ? results[index] : nullptr;
-			}
-
-			const wchar_t* XmlCppTypeName(XmlClasses type)
-			{
-				const wchar_t* results[] = {
-					L"vl::glr::xml::XmlAttribute",
-					L"vl::glr::xml::XmlCData",
-					L"vl::glr::xml::XmlComment",
-					L"vl::glr::xml::XmlDocument",
-					L"vl::glr::xml::XmlElement",
-					L"vl::glr::xml::XmlInstruction",
-					L"vl::glr::xml::XmlNode",
-					L"vl::glr::xml::XmlText",
-				};
-				vl::vint index = (vl::vint)type;
-				return 0 <= index && index < 8 ? results[index] : nullptr;
-			}
-
-			const wchar_t* XmlFieldName(XmlFields field)
-			{
-				const wchar_t* results[] = {
-					L"Attribute::name",
-					L"Attribute::value",
-					L"CData::content",
-					L"Comment::content",
-					L"Document::prologs",
-					L"Document::rootElement",
-					L"Element::attributes",
-					L"Element::closingName",
-					L"Element::name",
-					L"Element::subNodes",
-					L"Instruction::attributes",
-					L"Instruction::name",
-					L"Text::content",
-				};
-				vl::vint index = (vl::vint)field;
-				return 0 <= index && index < 13 ? results[index] : nullptr;
-			}
-
-			const wchar_t* XmlCppFieldName(XmlFields field)
-			{
-				const wchar_t* results[] = {
-					L"vl::glr::xml::XmlAttribute::name",
-					L"vl::glr::xml::XmlAttribute::value",
-					L"vl::glr::xml::XmlCData::content",
-					L"vl::glr::xml::XmlComment::content",
-					L"vl::glr::xml::XmlDocument::prologs",
-					L"vl::glr::xml::XmlDocument::rootElement",
-					L"vl::glr::xml::XmlElement::attributes",
-					L"vl::glr::xml::XmlElement::closingName",
-					L"vl::glr::xml::XmlElement::name",
-					L"vl::glr::xml::XmlElement::subNodes",
-					L"vl::glr::xml::XmlInstruction::attributes",
-					L"vl::glr::xml::XmlInstruction::name",
-					L"vl::glr::xml::XmlText::content",
-				};
-				vl::vint index = (vl::vint)field;
-				return 0 <= index && index < 13 ? results[index] : nullptr;
-			}
-
-			vl::Ptr<vl::glr::ParsingAstBase> XmlAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
-			{
-				auto cppTypeName = XmlCppTypeName((XmlClasses)type);
-				return vl::glr::AssemblyThrowTypeNotAllowAmbiguity(type, cppTypeName);
-			}
+	vl::Ptr<vl::glr::ParsingAstBase> XmlAstInsReceiver::CreateAstNode(vl::vint32_t type)
+	{
+		auto cppTypeName = XmlCppTypeName((XmlClasses)type);
+		switch((XmlClasses)type)
+		{
+		case XmlClasses::Attribute:
+			return vl::Ptr(new vl::glr::xml::XmlAttribute);
+		case XmlClasses::CData:
+			return vl::Ptr(new vl::glr::xml::XmlCData);
+		case XmlClasses::Comment:
+			return vl::Ptr(new vl::glr::xml::XmlComment);
+		case XmlClasses::Document:
+			return vl::Ptr(new vl::glr::xml::XmlDocument);
+		case XmlClasses::Element:
+			return vl::Ptr(new vl::glr::xml::XmlElement);
+		case XmlClasses::Instruction:
+			return vl::Ptr(new vl::glr::xml::XmlInstruction);
+		case XmlClasses::Text:
+			return vl::Ptr(new vl::glr::xml::XmlText);
+		default:
+			return vl::glr::AssemblyThrowCannotCreateAbstractType(type, cppTypeName);
 		}
+	}
+
+	void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::Ptr<vl::glr::ParsingAstBase> value)
+	{
+		auto cppFieldName = XmlCppFieldName((XmlFields)field);
+		switch((XmlFields)field)
+		{
+		case XmlFields::Document_prologs:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlDocument::prologs, object, field, value, cppFieldName);
+		case XmlFields::Document_rootElement:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlDocument::rootElement, object, field, value, cppFieldName);
+		case XmlFields::Element_attributes:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlElement::attributes, object, field, value, cppFieldName);
+		case XmlFields::Element_subNodes:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlElement::subNodes, object, field, value, cppFieldName);
+		case XmlFields::Instruction_attributes:
+			return vl::glr::AssemblerSetObjectField(&vl::glr::xml::XmlInstruction::attributes, object, field, value, cppFieldName);
+		default:
+			return vl::glr::AssemblyThrowFieldNotObject(field, cppFieldName);
+		}
+	}
+
+	void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, const vl::regex::RegexToken& token, vl::vint32_t tokenIndex)
+	{
+		auto cppFieldName = XmlCppFieldName((XmlFields)field);
+		switch((XmlFields)field)
+		{
+		case XmlFields::Attribute_name:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlAttribute::name, object, field, token, tokenIndex, cppFieldName);
+		case XmlFields::Attribute_value:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlAttribute::value, object, field, token, tokenIndex, cppFieldName);
+		case XmlFields::CData_content:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlCData::content, object, field, token, tokenIndex, cppFieldName);
+		case XmlFields::Comment_content:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlComment::content, object, field, token, tokenIndex, cppFieldName);
+		case XmlFields::Element_closingName:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlElement::closingName, object, field, token, tokenIndex, cppFieldName);
+		case XmlFields::Element_name:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlElement::name, object, field, token, tokenIndex, cppFieldName);
+		case XmlFields::Instruction_name:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlInstruction::name, object, field, token, tokenIndex, cppFieldName);
+		case XmlFields::Text_content:
+			return vl::glr::AssemblerSetTokenField(&vl::glr::xml::XmlText::content, object, field, token, tokenIndex, cppFieldName);
+		default:
+			return vl::glr::AssemblyThrowFieldNotToken(field, cppFieldName);
+		}
+	}
+
+	void XmlAstInsReceiver::SetField(vl::glr::ParsingAstBase* object, vl::vint32_t field, vl::vint32_t enumItem, bool weakAssignment)
+	{
+		auto cppFieldName = XmlCppFieldName((XmlFields)field);
+		return vl::glr::AssemblyThrowFieldNotEnum(field, cppFieldName);
+	}
+
+	const wchar_t* XmlTypeName(XmlClasses type)
+	{
+		const wchar_t* results[] = {
+			L"Attribute",
+			L"CData",
+			L"Comment",
+			L"Document",
+			L"Element",
+			L"Instruction",
+			L"Node",
+			L"Text",
+		};
+		vl::vint index = (vl::vint)type;
+		return 0 <= index && index < 8 ? results[index] : nullptr;
+	}
+
+	const wchar_t* XmlCppTypeName(XmlClasses type)
+	{
+		const wchar_t* results[] = {
+			L"vl::glr::xml::XmlAttribute",
+			L"vl::glr::xml::XmlCData",
+			L"vl::glr::xml::XmlComment",
+			L"vl::glr::xml::XmlDocument",
+			L"vl::glr::xml::XmlElement",
+			L"vl::glr::xml::XmlInstruction",
+			L"vl::glr::xml::XmlNode",
+			L"vl::glr::xml::XmlText",
+		};
+		vl::vint index = (vl::vint)type;
+		return 0 <= index && index < 8 ? results[index] : nullptr;
+	}
+
+	const wchar_t* XmlFieldName(XmlFields field)
+	{
+		const wchar_t* results[] = {
+			L"Attribute::name",
+			L"Attribute::value",
+			L"CData::content",
+			L"Comment::content",
+			L"Document::prologs",
+			L"Document::rootElement",
+			L"Element::attributes",
+			L"Element::closingName",
+			L"Element::name",
+			L"Element::subNodes",
+			L"Instruction::attributes",
+			L"Instruction::name",
+			L"Text::content",
+		};
+		vl::vint index = (vl::vint)field;
+		return 0 <= index && index < 13 ? results[index] : nullptr;
+	}
+
+	const wchar_t* XmlCppFieldName(XmlFields field)
+	{
+		const wchar_t* results[] = {
+			L"vl::glr::xml::XmlAttribute::name",
+			L"vl::glr::xml::XmlAttribute::value",
+			L"vl::glr::xml::XmlCData::content",
+			L"vl::glr::xml::XmlComment::content",
+			L"vl::glr::xml::XmlDocument::prologs",
+			L"vl::glr::xml::XmlDocument::rootElement",
+			L"vl::glr::xml::XmlElement::attributes",
+			L"vl::glr::xml::XmlElement::closingName",
+			L"vl::glr::xml::XmlElement::name",
+			L"vl::glr::xml::XmlElement::subNodes",
+			L"vl::glr::xml::XmlInstruction::attributes",
+			L"vl::glr::xml::XmlInstruction::name",
+			L"vl::glr::xml::XmlText::content",
+		};
+		vl::vint index = (vl::vint)field;
+		return 0 <= index && index < 13 ? results[index] : nullptr;
+	}
+
+	vl::Ptr<vl::glr::ParsingAstBase> XmlAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)
+	{
+		auto cppTypeName = XmlCppTypeName((XmlClasses)type);
+		return vl::glr::AssemblyThrowTypeNotAllowAmbiguity(type, cppTypeName);
 	}
 }
 
@@ -8390,103 +8548,97 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
-namespace vl
+namespace vl::glr::xml
 {
-	namespace glr
+	bool XmlTokenDeleter(vl::vint token)
 	{
-		namespace xml
+		switch((XmlTokens)token)
 		{
-			bool XmlTokenDeleter(vl::vint token)
-			{
-				switch((XmlTokens)token)
-				{
-				case XmlTokens::SPACE:
-					return true;
-				default:
-					return false;
-				}
-			}
-
-			const wchar_t* XmlTokenId(XmlTokens token)
-			{
-				static const wchar_t* results[] = {
-					L"INSTRUCTION_OPEN",
-					L"INSTRUCTION_CLOSE",
-					L"COMPLEX_ELEMENT_OPEN",
-					L"SINGLE_ELEMENT_CLOSE",
-					L"ELEMENT_OPEN",
-					L"ELEMENT_CLOSE",
-					L"EQUAL",
-					L"NAME",
-					L"ATTVALUE",
-					L"COMMENT",
-					L"CDATA",
-					L"TEXT",
-					L"SPACE",
-				};
-				vl::vint index = (vl::vint)token;
-				return 0 <= index && index < XmlTokenCount ? results[index] : nullptr;
-			}
-
-			const wchar_t* XmlTokenDisplayText(XmlTokens token)
-			{
-				static const wchar_t* results[] = {
-					L"<?",
-					L"?>",
-					L"</",
-					L"/>",
-					L"<",
-					L">",
-					L"=",
-					nullptr,
-					nullptr,
-					nullptr,
-					nullptr,
-					nullptr,
-					nullptr,
-				};
-				vl::vint index = (vl::vint)token;
-				return 0 <= index && index < XmlTokenCount ? results[index] : nullptr;
-			}
-
-			const wchar_t* XmlTokenRegex(XmlTokens token)
-			{
-				static const wchar_t* results[] = {
-					L"/</?",
-					L"/?/>",
-					L"/<//",
-					L"///>",
-					L"/<",
-					L"/>",
-					L"/=",
-					L"[a-zA-Z0-9:._/-]+",
-					L"\"[^<>\"]*\"|\'[^<>\']*\'",
-					L"/</!--([^/-]|-[^/-]|--[^>])*--/>",
-					L"/</!/[CDATA/[([^/]]|/][^/]]|/]/]+[^/]>])*/]/]+/>",
-					L"([^<>=\"\' /r/n/ta-zA-Z0-9:._/-])+|\"|\'",
-					L"/s+",
-				};
-				vl::vint index = (vl::vint)token;
-				return 0 <= index && index < XmlTokenCount ? results[index] : nullptr;
-			}
-
-			void XmlLexerData(vl::stream::IStream& outputStream)
-			{
-				static const vl::vint dataLength = 1105; // 7530 bytes before compressing
-				static const vl::vint dataBlock = 256;
-				static const vl::vint dataRemain = 81;
-				static const vl::vint dataSolidRows = 4;
-				static const vl::vint dataRows = 5;
-				static const char* compressed[] = {
-					"\x6A\x1D\x00\x00\x49\x04\x00\x00\x2D\x00\x01\xA7\x01\x84\x81\x82\x12\x82\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x07\x82\x84\x83\x81\x80\x14\x82\x16\x04\x80\x81\x92\x90\x06\x14\x82\x9B\x01\xAF\x04\x9A\x91\x80\x18\x83\x1C\x04\xBA\x01\xA4\x8B\x1C\xA0\x82\x1E\x47\x84\xBD\x0A\xA4\x86\x1D\xA6\x82\x3F\x50\x84\x80\x23\xAC\x81\x20\xAB\x04\xC2\x19\xA4\x83\x24\xAC\x82\x22\x5F\x84\x85\x24\x83\x2C\x80\x2A\xB3\x04\xD5\x04\x9A\x24\x83\x2D\xB6\x82\x5C\x70\x84\x9D\x23\xBC\x82\x2E\xBB\x04\xDF\x39\xA4\x80\x34\xBC\x83\x30\x04\xFA\x04\x9B\x34\x87\x7F\x7E\x08\x00\x0D\x81\x90\x8B\xC6\x85\xC7\x80\x8A\x80\x0C\xC9\xC4\x87\x02\xC6\x00\x0B\x90\xC4\x86\x0B\xCC\x83\x01\xCE\x01\x9C\xDA\xC1\x89\x81\x81\x02\x82\x04\x04\x82\x17\xC2\xD0\x01\xD7\xD7\xA0\xAE\xF1\xD1\xC4\xDC\xD6\xDB\xD1\x00\x06\xFA\xDB\xDC\xDD\xDE\xDE\xDE\x17\x81\xBF\xC3\xEE\xDD\x8A\xE0\xE2\xC8\x86\xD3\x87\xE9\xE5\xE6\xE7\xE7\xC9\x8F\x05\xDE\xD2\xEC\xE7\x7F\xEA\xB9\xBA\xD8\xFB",
-					"\xDB\xEA\xEF\xE9\xDE\xDD\xE0\xDF\xFC\xDA\x89\x80\xED\xF0\xD0\xC3\xE7\xE4\x8B\xF6\xE8\xF5\xF7\xE3\xDC\xE3\xF0\xFE\xF3\xF9\xF8\xEF\xD6\xF2\xF9\xFA\xD8\xC6\xF0\xF7\xFB\xE9\x7C\x6D\x78\x00\x03\xBA\x79\x76\x61\xE8\x41\x8A\x83\x82\x0C\x8D\x8E\x83\x83\x10\x91\x82\x87\x84\x14\x95\x86\x85\x7A\x11\x04\x49\x86\x75\x1B\x80\x0D\x87\x83\x1D\xA1\x8A\x87\x88\x01\x62\x8B\x7C\x71\x1F\xBA\x69\x89\x6F\x12\x04\x4D\x89\x40\x2F\x80\x01\x8F\x8C\x2E\xB5\x81\x43\x04\x36\xB2\x89\x8C\x8D\x30\xBB\x89\x8F\x6E\x31\x80\x9E\x8D\x8F\x44\xBA\x85\x90\x8F\x46\x89\x98\x93\x92\x3F\xBA\x64\x04\x41\x4F\x81\x41\x94\x00\x53\x95\x90\x97\x95\x52\x98\x90\x01\x05\x5A\x96\x99\x97\x97\x54\x9A\x9B\x6F\x94\x63\x9D\x96\x98\x98\x5E\xA1\x98\x9B\x99\x6A\xAD\x99\x9A\x81\xBF\x74\x77\x83\x75\xF6\x75\x77\x88\x9D\x77\x89\x84\x77\x7F\x77\x8B\x83\x81\x81\xF8\x73\x9A\x9E\x61\x16\x04\x45\xA2\x75\x87\xB3\x99\xA3\x85\x8C\x8D\xAE\xA3\xA3\x90\x91\xA2\xA7\xA4\x94\x95\xA6\xA5\xA4\x17\x00\x87\xA5\x7A\x18\x1A\xAB\xA7\xA7\xA0\x95\xA3\xA0\x9E\x82\xB5\x95\xAA\x9D\x73\xB0\x9B\x9D\x9F",
-					"\x81\xA3\xAE\x9C\x9F\x04\xB0\xAA\xA8\x82\x9E\xA1\xA6\xAF\xAD\xB8\xBF\x36\x8B\x9C\xBB\xA0\x84\x8A\x87\xBF\xBB\xAB\x89\x73\xC3\x83\xB2\x93\x91\x43\x8A\x99\x8C\x8E\xC8\x8D\xBA\xB2\xB3\x41\xBA\x61\xB6\x61\x4C\x90\xB9\xB1\xB5\xCF\x99\xB8\x91\xAE\xDC\x9D\xBF\x3D\x9A\xE0\xAC\x91\xB9\x40\x5C\xAB\x96\xBA\x9B\x62\x8E\x93\x7B\xB8\xE8\xA7\xBC\xBB\xBB\xE2\xB5\xAE\xB7\xBC\x96\x89\xAB\xA2\x6E\xF7\x84\xA2\xBC\xBD\xFC\xB7\xA9\x07\xBE\xFD\x81\xC2\xC1\x72\x1A\x00\xC2\xA7\x06\x04\x48\xC1\x42\xC2\x00\x0C\xCE\xC1\xC2\x10\xCB\xC1\xC5\xC3\x13\xDC\x03\xC7\xC3\x12\xD9\xC4\xC6\xC6\x18\xDB\xCE\xC5\xC7\x20\xD7\xC2\xC8\xC7\x23\xDE\xC3\xC3\xA7\x1D\x06\xCD\xA1\xC8\x24\xED\xCF\xC5\xC9\x0C\xD6\xCE\xC8\xCB\x2F\xF3\xC0\xCF\xCD\x36\xF9\xC5\xCE\xC9\xBA\x5E\x04\x42\xCF\x01\x40\xD0\x02\xD0\x44\xFF\xC6\xD1\xD0\x47\xC3\xD9\xD0\x47\x48\xCD\xDA\xD2\xD3\x45\xD0\xD9\xD1\xD4\x4F\xD5\xD4\xD7\xD5\x53\xD9\xD2\xD6\xD3\x27\xCC\xAE\x44\xAB\xB7\xB4\xC2\xD8\xCE\x3B\xF2\xCB\xCF\xD8\x3A\xE8\xD7\xD8\xD9\x6A\xDD\xCB\x6D\x48\x01\x70\xD0\x02\xDC\x74\xE2\x41\xDE\xDD\x73",
-					"\xF8\xD5\xDF\xDD\x7C\xF9\xDD\xDF\xDE\x7E\xC1\xE4\x4B\xDF\x7A\xC5\xE4\xE3\xE1\x81\xC0\xEA\xE0\xDE\x5D\xF9\xA7\x48\xD8\x14\xAD\xDC\xD8\xD9\x66\xD2\xE9\xDB\xE4\x97\xD9\xEB\xDA\xC6\x8D\xDD\xEE\xE5\xB7\x24\x2A\xCF\xE7\xE8\x13\xA5\x02\xE8\x74\x29\x40\x09\xEB\xEA\x28\x6D\xE6\x42\xEB\xAA\xF0\xEC\xEB\xEB\xB4\xF1\xE5\xEF\xEC\xB6\xF9\xE8\xEF\xEE\xB2\xFD\xE7\xEC\xEC\x2C\x7A\xEE\xED\xEE\xBB\x7C\xEF\xEF\xF1\xC2\xC8\xF6\xF1\xF2\xCC\xCB\xFE\xF3\xF0\xCF\xF5\xE1\xF1\xF4\xC4\xFA\x6E\x49\x4B\x04\x57\xF0\x02\xF6\xDC\xD9\xFE\xF4\xF6\xE0\xDB\xFF\xF6\xF8\xE1\xDD\xF5\xFB\xF8\xE6\xE4\xFA\xF9\xFA\xEC\xE8\xFE\xF9\x40\x29\x2F\xFB\xFB\xF8\xC5\xD0\xF6\xFE\xF2\xF7\xCD\xF9\xFC\xF5\xFC\xFB\xFB\x4A\xFF\xB5\x7B\x37\x0A\x04\x23\x81\x80\x05\x80\x00\x07\x89\x80\x01\x8B\x86\x80\x06\x88\x86\x81\x0A\x8D\x82\x04\x8F\x83\x83\x08\x80\x00\x26\x15\x90\x82\x06\x99\x8C\x82\x0A\x80\x02\x05\x1B\x9E\x82\x05\x82\x81\x84\x0B\xA6\x85\x84\x28\x9D\x83\x09\x93\x88\x82\x11\xA9\x86\x85\x2A\x8E\x80\x08\xB1\x8D\x83\xFA\x78\x7F\x86\xFA\x78\x85\xFF\x3A\x80\x81\x1C\xBE\x83",
-					"\x7A\x3D\x84\x76\x10\x8A\x4E\x1F\x6F\x2B\x08\x00\x04\x10\x00\x4D\x05\x29\x35\x80\x0B\x38\x00\x4F\x87\x35\x68\x15\x32\x23\x2A\x8E\x8C\x22\x05\x2A\x34\x46\x24\x36\x8A\x00\x1F\x31\x20\x96\x21\x21\x70\x18\x3B\x8A\x32\x81\x26\x38\x00\x03\x8E\x1A\xE5\x8B\x8C\x31\xAC\x8F\x8D\xB8\x2D\x8D\x1A\xF0\x83\x8E\x37\xB6\x8D\x8E\x92\x24\x20",
-				};
-				vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
-			}
+		case XmlTokens::SPACE:
+			return true;
+		default:
+			return false;
 		}
+	}
+
+	const wchar_t* XmlTokenId(XmlTokens token)
+	{
+		static const wchar_t* results[] = {
+			L"INSTRUCTION_OPEN",
+			L"INSTRUCTION_CLOSE",
+			L"COMPLEX_ELEMENT_OPEN",
+			L"SINGLE_ELEMENT_CLOSE",
+			L"ELEMENT_OPEN",
+			L"ELEMENT_CLOSE",
+			L"EQUAL",
+			L"NAME",
+			L"ATTVALUE",
+			L"COMMENT",
+			L"CDATA",
+			L"TEXT",
+			L"SPACE",
+		};
+		vl::vint index = (vl::vint)token;
+		return 0 <= index && index < XmlTokenCount ? results[index] : nullptr;
+	}
+
+	const wchar_t* XmlTokenDisplayText(XmlTokens token)
+	{
+		static const wchar_t* results[] = {
+			L"<?",
+			L"?>",
+			L"</",
+			L"/>",
+			L"<",
+			L">",
+			L"=",
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+		};
+		vl::vint index = (vl::vint)token;
+		return 0 <= index && index < XmlTokenCount ? results[index] : nullptr;
+	}
+
+	const wchar_t* XmlTokenRegex(XmlTokens token)
+	{
+		static const wchar_t* results[] = {
+			L"/</?",
+			L"/?/>",
+			L"/<//",
+			L"///>",
+			L"/<",
+			L"/>",
+			L"/=",
+			L"[a-zA-Z0-9:._/-]+",
+			L"\"[^<>\"]*\"|\'[^<>\']*\'",
+			L"/</!--([^/-]|-[^/-]|--[^>])*--/>",
+			L"/</!/[CDATA/[([^/]]|/][^/]]|/]/]+[^/]>])*/]/]+/>",
+			L"([^<>=\"\' /r/n/ta-zA-Z0-9:._/-])+|\"|\'",
+			L"/s+",
+		};
+		vl::vint index = (vl::vint)token;
+		return 0 <= index && index < XmlTokenCount ? results[index] : nullptr;
+	}
+
+	void XmlLexerData(vl::stream::IStream& outputStream)
+	{
+		static const vl::vint dataLength = 1105; // 7530 bytes before compressing
+		static const vl::vint dataBlock = 256;
+		static const vl::vint dataRemain = 81;
+		static const vl::vint dataSolidRows = 4;
+		static const vl::vint dataRows = 5;
+		static const char* compressed[] = {
+			"\x6A\x1D\x00\x00\x49\x04\x00\x00\x2D\x00\x01\xA7\x01\x84\x81\x82\x12\x82\x01\x04\x88\x04\x89\x04\x84\x82\x05\x0F\x84\x8B\x04\x8C\x04\x81\x06\x8B\x04\x8E\x04\x9F\x04\x80\x11\x8E\x82\x21\x20\x84\x82\x13\x94\x83\x10\x82\x07\x82\x84\x83\x81\x80\x14\x82\x16\x04\x80\x81\x92\x90\x06\x14\x82\x9B\x01\xAF\x04\x9A\x91\x80\x18\x83\x1C\x04\xBA\x01\xA4\x8B\x1C\xA0\x82\x1E\x47\x84\xBD\x0A\xA4\x86\x1D\xA6\x82\x3F\x50\x84\x80\x23\xAC\x81\x20\xAB\x04\xC2\x19\xA4\x83\x24\xAC\x82\x22\x5F\x84\x85\x24\x83\x2C\x80\x2A\xB3\x04\xD5\x04\x9A\x24\x83\x2D\xB6\x82\x5C\x70\x84\x9D\x23\xBC\x82\x2E\xBB\x04\xDF\x39\xA4\x80\x34\xBC\x83\x30\x04\xFA\x04\x9B\x34\x87\x7F\x7E\x08\x00\x0D\x81\x90\x8B\xC6\x85\xC7\x80\x8A\x80\x0C\xC9\xC4\x87\x02\xC6\x00\x0B\x90\xC4\x86\x0B\xCC\x83\x01\xCE\x01\x9C\xDA\xC1\x89\x81\x81\x02\x82\x04\x04\x82\x17\xC2\xD0\x01\xD7\xD7\xA0\xAE\xF1\xD1\xC4\xDC\xD6\xDB\xD1\x00\x06\xFA\xDB\xDC\xDD\xDE\xDE\xDE\x17\x81\xBF\xC3\xEE\xDD\x8A\xE0\xE2\xC8\x86\xD3\x87\xE9\xE5\xE6\xE7\xE7\xC9\x8F\x05\xDE\xD2\xEC\xE7\x7F\xEA\xB9\xBA\xD8\xFB",
+			"\xDB\xEA\xEF\xE9\xDE\xDD\xE0\xDF\xFC\xDA\x89\x80\xED\xF0\xD0\xC3\xE7\xE4\x8B\xF6\xE8\xF5\xF7\xE3\xDC\xE3\xF0\xFE\xF3\xF9\xF8\xEF\xD6\xF2\xF9\xFA\xD8\xC6\xF0\xF7\xFB\xE9\x7C\x6D\x78\x00\x03\xBA\x79\x76\x61\xE8\x41\x8A\x83\x82\x0C\x8D\x8E\x83\x83\x10\x91\x82\x87\x84\x14\x95\x86\x85\x7A\x11\x04\x49\x86\x75\x1B\x80\x0D\x87\x83\x1D\xA1\x8A\x87\x88\x01\x62\x8B\x7C\x71\x1F\xBA\x69\x89\x6F\x12\x04\x4D\x89\x40\x2F\x80\x01\x8F\x8C\x2E\xB5\x81\x43\x04\x36\xB2\x89\x8C\x8D\x30\xBB\x89\x8F\x6E\x31\x80\x9E\x8D\x8F\x44\xBA\x85\x90\x8F\x46\x89\x98\x93\x92\x3F\xBA\x64\x04\x41\x4F\x81\x41\x94\x00\x53\x95\x90\x97\x95\x52\x98\x90\x01\x05\x5A\x96\x99\x97\x97\x54\x9A\x9B\x6F\x94\x63\x9D\x96\x98\x98\x5E\xA1\x98\x9B\x99\x6A\xAD\x99\x9A\x81\xBF\x74\x77\x83\x75\xF6\x75\x77\x88\x9D\x77\x89\x84\x77\x7F\x77\x8B\x83\x81\x81\xF8\x73\x9A\x9E\x61\x16\x04\x45\xA2\x75\x87\xB3\x99\xA3\x85\x8C\x8D\xAE\xA3\xA3\x90\x91\xA2\xA7\xA4\x94\x95\xA6\xA5\xA4\x17\x00\x87\xA5\x7A\x18\x1A\xAB\xA7\xA7\xA0\x95\xA3\xA0\x9E\x82\xB5\x95\xAA\x9D\x73\xB0\x9B\x9D\x9F",
+			"\x81\xA3\xAE\x9C\x9F\x04\xB0\xAA\xA8\x82\x9E\xA1\xA6\xAF\xAD\xB8\xBF\x36\x8B\x9C\xBB\xA0\x84\x8A\x87\xBF\xBB\xAB\x89\x73\xC3\x83\xB2\x93\x91\x43\x8A\x99\x8C\x8E\xC8\x8D\xBA\xB2\xB3\x41\xBA\x61\xB6\x61\x4C\x90\xB9\xB1\xB5\xCF\x99\xB8\x91\xAE\xDC\x9D\xBF\x3D\x9A\xE0\xAC\x91\xB9\x40\x5C\xAB\x96\xBA\x9B\x62\x8E\x93\x7B\xB8\xE8\xA7\xBC\xBB\xBB\xE2\xB5\xAE\xB7\xBC\x96\x89\xAB\xA2\x6E\xF7\x84\xA2\xBC\xBD\xFC\xB7\xA9\x07\xBE\xFD\x81\xC2\xC1\x72\x1A\x00\xC2\xA7\x06\x04\x48\xC1\x42\xC2\x00\x0C\xCE\xC1\xC2\x10\xCB\xC1\xC5\xC3\x13\xDC\x03\xC7\xC3\x12\xD9\xC4\xC6\xC6\x18\xDB\xCE\xC5\xC7\x20\xD7\xC2\xC8\xC7\x23\xDE\xC3\xC3\xA7\x1D\x06\xCD\xA1\xC8\x24\xED\xCF\xC5\xC9\x0C\xD6\xCE\xC8\xCB\x2F\xF3\xC0\xCF\xCD\x36\xF9\xC5\xCE\xC9\xBA\x5E\x04\x42\xCF\x01\x40\xD0\x02\xD0\x44\xFF\xC6\xD1\xD0\x47\xC3\xD9\xD0\x47\x48\xCD\xDA\xD2\xD3\x45\xD0\xD9\xD1\xD4\x4F\xD5\xD4\xD7\xD5\x53\xD9\xD2\xD6\xD3\x27\xCC\xAE\x44\xAB\xB7\xB4\xC2\xD8\xCE\x3B\xF2\xCB\xCF\xD8\x3A\xE8\xD7\xD8\xD9\x6A\xDD\xCB\x6D\x48\x01\x70\xD0\x02\xDC\x74\xE2\x41\xDE\xDD\x73",
+			"\xF8\xD5\xDF\xDD\x7C\xF9\xDD\xDF\xDE\x7E\xC1\xE4\x4B\xDF\x7A\xC5\xE4\xE3\xE1\x81\xC0\xEA\xE0\xDE\x5D\xF9\xA7\x48\xD8\x14\xAD\xDC\xD8\xD9\x66\xD2\xE9\xDB\xE4\x97\xD9\xEB\xDA\xC6\x8D\xDD\xEE\xE5\xB7\x24\x2A\xCF\xE7\xE8\x13\xA5\x02\xE8\x74\x29\x40\x09\xEB\xEA\x28\x6D\xE6\x42\xEB\xAA\xF0\xEC\xEB\xEB\xB4\xF1\xE5\xEF\xEC\xB6\xF9\xE8\xEF\xEE\xB2\xFD\xE7\xEC\xEC\x2C\x7A\xEE\xED\xEE\xBB\x7C\xEF\xEF\xF1\xC2\xC8\xF6\xF1\xF2\xCC\xCB\xFE\xF3\xF0\xCF\xF5\xE1\xF1\xF4\xC4\xFA\x6E\x49\x4B\x04\x57\xF0\x02\xF6\xDC\xD9\xFE\xF4\xF6\xE0\xDB\xFF\xF6\xF8\xE1\xDD\xF5\xFB\xF8\xE6\xE4\xFA\xF9\xFA\xEC\xE8\xFE\xF9\x40\x29\x2F\xFB\xFB\xF8\xC5\xD0\xF6\xFE\xF2\xF7\xCD\xF9\xFC\xF5\xFC\xFB\xFB\x4A\xFF\xB5\x7B\x37\x0A\x04\x23\x81\x80\x05\x80\x00\x07\x89\x80\x01\x8B\x86\x80\x06\x88\x86\x81\x0A\x8D\x82\x04\x8F\x83\x83\x08\x80\x00\x26\x15\x90\x82\x06\x99\x8C\x82\x0A\x80\x02\x05\x1B\x9E\x82\x05\x82\x81\x84\x0B\xA6\x85\x84\x28\x9D\x83\x09\x93\x88\x82\x11\xA9\x86\x85\x2A\x8E\x80\x08\xB1\x8D\x83\xFA\x78\x7F\x86\xFA\x78\x85\xFF\x3A\x80\x81\x1C\xBE\x83",
+			"\x7A\x3D\x84\x76\x10\x8A\x4E\x1F\x6F\x2B\x08\x00\x04\x10\x00\x4D\x05\x29\x35\x80\x0B\x38\x00\x4F\x87\x35\x68\x15\x32\x23\x2A\x8E\x8C\x22\x05\x2A\x34\x46\x24\x36\x8A\x00\x1F\x31\x20\x96\x21\x21\x70\x18\x3B\x8A\x32\x81\x26\x38\x00\x03\x8E\x1A\xE5\x8B\x8C\x31\xAC\x8F\x8D\xB8\x2D\x8D\x1A\xF0\x83\x8E\x37\xB6\x8D\x8E\x92\x24\x20",
+		};
+		vl::glr::DecompressSerializedData(compressed, true, dataSolidRows, dataRows, dataBlock, dataRemain, outputStream);
 	}
 }
 

@@ -20,8 +20,5 @@
   </Asts>
 
   <Lexer file="Lexer.txt"/>
-
-  <Syntax name="Parser" file="Syntax.txt">
-    <Export rule="QueryRoot"/>
-  </Syntax>
+  <Syntax name="Parser" file="Syntax.txt"/>
 </Parser>
