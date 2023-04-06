@@ -2347,7 +2347,12 @@ INativeWindow
 			/// </summary>
 			/// <returns>Returns true if the window needs to be updated.</returns>
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
-			virtual void				ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice);
+			virtual void				ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice);
+			/// <summary>
+			/// Called when the window becomes a main window in hosted mode.
+			/// This callback is only called once on the main window.
+			/// </summary>
+			virtual void				BecomeMainHostedWindow();
 			/// <summary>
 			/// Called when the window becomes a non-main window in hosted mode.
 			/// It requires MaximizedBox and MinimizedBox to be disabled.
@@ -3707,6 +3712,10 @@ Predefined Events
 				ParentLineChanged,
 				/// <summary>Service added changed.</summary>
 				ServiceAdded,
+				/// <summary>The window need to update when data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
+				UpdateRequested,
+				/// <summary>The window finished all the updating works after data or layout is changed. This even only triggered on <see cref="controls::GuiControlHost"/>.</summary>
+				UpdateFullfilled,
 			};
 
 			/// <summary>Control signal event arguments.</summary>
@@ -4018,7 +4027,9 @@ Basic Construction
 
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
-				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
+				friend void InvokeOnCompositionStateChanged(GuiGraphicsComposition* composition);
+				friend Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
+				friend Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
 			public:
 				/// <summary>
 				/// Minimum size limitation.
@@ -4072,6 +4083,9 @@ Basic Construction
 				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
 				void										SetAssociatedControl(controls::GuiControl* control);
 				void										InvokeOnCompositionStateChanged();
+
+				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize) = 0;
+				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize) = 0;
 
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 			public:
@@ -4209,16 +4223,17 @@ Basic Construction
 				virtual Rect								GetClientArea();
 				/// <summary>Force to calculate layout and size immediately</summary>
 				virtual void								ForceCalculateSizeImmediately();
+
+				/// <summary>Get the preferred minimum client size.</summary>
+				/// <returns>The preferred minimum client size.</returns>
+				Size										GetMinPreferredClientSize();
+				/// <summary>Get the preferred bounds.</summary>
+				/// <returns>The preferred bounds.</returns>
+				Rect										GetPreferredBounds();
 				
 				/// <summary>Test is the size calculation affected by the parent.</summary>
 				/// <returns>Returns true if the size calculation is affected by the parent.</returns>
 				virtual bool								IsSizeAffectParent()=0;
-				/// <summary>Get the preferred minimum client size.</summary>
-				/// <returns>The preferred minimum client size.</returns>
-				virtual Size								GetMinPreferredClientSize()=0;
-				/// <summary>Get the preferred bounds.</summary>
-				/// <returns>The preferred bounds.</returns>
-				virtual Rect								GetPreferredBounds()=0;
 				/// <summary>Get the bounds.</summary>
 				/// <returns>The bounds.</returns>
 				virtual Rect								GetBounds()=0;
@@ -4229,15 +4244,18 @@ Basic Construction
 			/// </summary>
 			class GuiGraphicsSite : public GuiGraphicsComposition, public Description<GuiGraphicsSite>
 			{
+				friend Rect							InvokeGetBoundsInternal(GuiGraphicsSite* composition, Rect expectedBounds, bool considerPreferredMinSize);
 			protected:
 				Rect								previousBounds;
 
 				/// <summary>Calculate the final bounds from an expected bounds.</summary>
 				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
 				/// <param name="expectedBounds">The expected bounds.</param>
-				virtual Rect						GetBoundsInternal(Rect expectedBounds);
+				virtual Rect						GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
 
 				void								UpdatePreviousBounds(Rect bounds);
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiGraphicsSite();
 				~GuiGraphicsSite();
@@ -4246,8 +4264,6 @@ Basic Construction
 				compositions::GuiNotifyEvent		BoundsChanged;
 				
 				bool								IsSizeAffectParent()override;
-				Size								GetMinPreferredClientSize()override;
-				Rect								GetPreferredBounds()override;
 
 				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
 				/// <returns>The previous calculated bounds.</returns>
@@ -4327,7 +4343,8 @@ Basic Compositions
 				bool								sizeAffectParent = true;
 				Rect								compositionBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
-				
+
+				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiBoundsComposition();
 				~GuiBoundsComposition();
@@ -4340,7 +4357,6 @@ Basic Compositions
 				void								SetSizeAffectParent(bool value);
 				
 				bool								IsSizeAffectParent()override;
-				Rect								GetPreferredBounds()override;
 				Rect								GetBounds()override;
 				/// <summary>Set the expected bounds.</summary>
 				/// <param name="value">The expected bounds.</param>
@@ -4789,6 +4805,7 @@ Host
 				HostRecord								hostRecord;
 				bool									supressPaint = false;
 				bool									needRender = true;
+				bool									renderingTriggeredInLastFrame = false;
 				ProcList								afterRenderProcs;
 				ProcMap									afterRenderKeyedProcs;
 
@@ -4849,9 +4866,11 @@ Host
 				void									Char(const NativeWindowCharInfo& info)override;
 
 				bool									NeedRefresh()override;
-				void									ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)override;
-
+				void									ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice)override;
 				void									GlobalTimer()override;
+
+				elements::RenderTargetFailure			Render(bool forceUpdate, bool handleFailure, bool& updated);
+
 			public:
 				GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition);
 				~GuiGraphicsHost();
@@ -4865,10 +4884,6 @@ Host
 				/// <summary>Get the main <see cref="GuiWindowComposition"/>. If a window is associated, everything that put into the main composition will be shown in the window.</summary>
 				/// <returns>The main compositoin.</returns>
 				GuiGraphicsComposition*					GetMainComposition();
-				/// <summary>Render the main composition and all content to the associated window.</summary>
-				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				/// <param name="forceUpdate">Set to true to force updating layout and then render.</param>
-				elements::RenderTargetFailure			Render(bool forceUpdate, bool handleFailure);
 				/// <summary>Request a rendering</summary>
 				void									RequestRender();
 				/// <summary>Invoke a specified function after rendering.</summary>
@@ -5031,6 +5046,7 @@ Flow Compositions
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiFlowComposition();
 				~GuiFlowComposition();
@@ -5080,7 +5096,6 @@ Flow Compositions
 				void								SetAlignment(FlowAlignment value);
 				
 				void								ForceCalculateSizeImmediately()override;
-				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 			};
 			
@@ -5106,6 +5121,9 @@ Flow Compositions
 				double								percentage = 0.0;
 				/// <summary>The distance value.</summary>
 				vint								distance = 0;
+
+				bool operator==(const GuiFlowOption& value) { return baseline == value.baseline && percentage == value.percentage && distance == value.distance; }
+				bool operator!=(const GuiFlowOption& value) { return !operator==(value); }
 			};
 			
 			/// <summary>
@@ -5702,6 +5720,7 @@ Stack Compositions
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiStackComposition();
 				~GuiStackComposition();
@@ -5729,7 +5748,6 @@ Stack Compositions
 				void								SetPadding(vint value);
 				
 				void								ForceCalculateSizeImmediately()override;
-				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 				
 				/// <summary>Get the extra margin inside the stack composition.</summary>
@@ -5932,8 +5950,8 @@ Table Compositions
 				{
 				}
 
-				bool operator==(const GuiCellOption& value){return false;}
-				bool operator!=(const GuiCellOption& value){return true;}
+				bool operator==(const GuiCellOption& value) { return composeType == value.composeType && absolute == value.absolute && percentage == value.percentage; }
+				bool operator!=(const GuiCellOption& value) { return !operator==(value); }
 
 				/// <summary>Creates an absolute sizing option</summary>
 				/// <returns>The created option.</returns>
@@ -6025,6 +6043,7 @@ Table Compositions
 														);
 				
 				void								OnRenderContextChanged()override;
+				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
 			public:
 				GuiTableComposition();
 				~GuiTableComposition();
@@ -6085,7 +6104,6 @@ Table Compositions
 				void								UpdateCellBounds();
 				
 				void								ForceCalculateSizeImmediately()override;
-				Size								GetMinPreferredClientSize()override;
 				Rect								GetBounds()override;
 			};
 
@@ -25058,6 +25076,7 @@ GuiHostedController
 		protected:
 			SharedCallbackService										callbackService;
 			hosted_window_manager::WindowManager<GuiHostedWindow*>*		wmManager = nullptr;
+			bool														windowsUpdatedInLastFrame = false;
 			INativeController*											nativeController = nullptr;
 			elements::GuiHostedGraphicsResourceManager*					hostedResourceManager = nullptr;
 			collections::SortedList<Ptr<GuiHostedWindow>>				createdWindows;

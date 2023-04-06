@@ -3136,32 +3136,9 @@ namespace vl
 GuiBoundsComposition
 ***********************************************************************/
 
-			GuiBoundsComposition::GuiBoundsComposition()
+			Rect GuiBoundsComposition::GetPreferredBoundsInternal(bool considerPreferredMinSize)
 			{
-			}
-
-			GuiBoundsComposition::~GuiBoundsComposition()
-			{
-			}
-
-			bool GuiBoundsComposition::GetSizeAffectParent()
-			{
-				return sizeAffectParent;
-			}
-
-			void GuiBoundsComposition::SetSizeAffectParent(bool value)
-			{
-				sizeAffectParent = value;
-			}
-
-			bool GuiBoundsComposition::IsSizeAffectParent()
-			{
-				return sizeAffectParent;
-			}
-
-			Rect GuiBoundsComposition::GetPreferredBounds()
-			{
-				Rect result = GetBoundsInternal(compositionBounds);
+				Rect result = GetBoundsInternal(compositionBounds, considerPreferredMinSize);
 				if (GetParent() && IsAlignedToParent())
 				{
 					if (alignmentToParent.left >= 0)
@@ -3186,6 +3163,29 @@ GuiBoundsComposition
 					}
 				}
 				return result;
+			}
+
+			GuiBoundsComposition::GuiBoundsComposition()
+			{
+			}
+
+			GuiBoundsComposition::~GuiBoundsComposition()
+			{
+			}
+
+			bool GuiBoundsComposition::GetSizeAffectParent()
+			{
+				return sizeAffectParent;
+			}
+
+			void GuiBoundsComposition::SetSizeAffectParent(bool value)
+			{
+				sizeAffectParent = value;
+			}
+
+			bool GuiBoundsComposition::IsSizeAffectParent()
+			{
+				return sizeAffectParent;
 			}
 
 			Rect GuiBoundsComposition::GetBounds()
@@ -3236,8 +3236,11 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetBounds(Rect value)
 			{
-				compositionBounds = value;
-				InvokeOnCompositionStateChanged();
+				if (compositionBounds != value)
+				{
+					compositionBounds = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiBoundsComposition::GetAlignmentToParent()
@@ -3247,8 +3250,11 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetAlignmentToParent(Margin value)
 			{
-				alignmentToParent = value;
-				InvokeOnCompositionStateChanged();
+				if (alignmentToParent != value)
+				{
+					alignmentToParent = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiBoundsComposition::IsAlignedToParent()
@@ -3276,6 +3282,21 @@ namespace vl
 			void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
 			{
 				composition->InvokeOnCompositionStateChanged();
+			}
+
+			Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize)
+			{
+				return composition->GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+			}
+
+			Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize)
+			{
+				return composition->GetPreferredBoundsInternal(considerPreferredMinSize);
+			}
+
+			Rect InvokeGetBoundsInternal(GuiGraphicsSite* composition, Rect expectedBounds, bool considerPreferredMinSize)
+			{
+				return composition->GetBoundsInternal(expectedBounds, considerPreferredMinSize);
 			}
 
 /***********************************************************************
@@ -3550,8 +3571,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetVisible(bool value)
 			{
-				visible = value;
-				InvokeOnCompositionStateChanged();
+				if (visible != value)
+				{
+					visible = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiGraphicsComposition::GetEventuallyVisible()
@@ -3572,8 +3596,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMinSizeLimitation(MinSizeLimitation value)
 			{
-				minSizeLimitation = value;
-				InvokeOnCompositionStateChanged();
+				if (minSizeLimitation != value)
+				{
+					minSizeLimitation = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			elements::IGuiGraphicsRenderTarget* GuiGraphicsComposition::GetRenderTarget()
@@ -3796,8 +3823,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetMargin(Margin value)
 			{
-				margin = value;
-				InvokeOnCompositionStateChanged();
+				if (margin != value)
+				{
+					margin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiGraphicsComposition::GetInternalMargin()
@@ -3807,8 +3837,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetInternalMargin(Margin value)
 			{
-				internalMargin = value;
-				InvokeOnCompositionStateChanged();
+				if (internalMargin != value)
+				{
+					internalMargin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Size GuiGraphicsComposition::GetPreferredMinSize()
@@ -3818,8 +3851,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetPreferredMinSize(Size value)
 			{
-				preferredMinSize = value;
-				InvokeOnCompositionStateChanged();
+				if (preferredMinSize != value)
+				{
+					preferredMinSize = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Rect GuiGraphicsComposition::GetClientArea()
@@ -3843,15 +3879,28 @@ GuiGraphicsComposition
 				InvokeOnCompositionStateChanged();
 			}
 
+			Size GuiGraphicsComposition::GetMinPreferredClientSize()
+			{
+				return GetMinPreferredClientSizeInternal(true);
+			}
+
+			Rect GuiGraphicsComposition::GetPreferredBounds()
+			{
+				return GetPreferredBoundsInternal(true);
+			}
+
 /***********************************************************************
 GuiGraphicsSite
 ***********************************************************************/
 
-			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds)
+			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize)
 			{
-				Size minSize = GetMinPreferredClientSize();
-				if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
-				if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
+				Size minSize = GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				if (considerPreferredMinSize)
+				{
+					if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
+					if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
+				}
 
 				minSize.x += margin.left + margin.right + internalMargin.left + internalMargin.right;
 				minSize.y += margin.top + margin.bottom + internalMargin.top + internalMargin.bottom;
@@ -3872,21 +3921,7 @@ GuiGraphicsSite
 				}
 			}
 
-			GuiGraphicsSite::GuiGraphicsSite()
-			{
-				BoundsChanged.SetAssociatedComposition(this);
-			}
-
-			GuiGraphicsSite::~GuiGraphicsSite()
-			{
-			}
-
-			bool GuiGraphicsSite::IsSizeAffectParent()
-			{
-				return true;
-			}
-
-			Size GuiGraphicsSite::GetMinPreferredClientSize()
+			Size GuiGraphicsSite::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
 				Size minSize;
 				if (minSizeLimitation != GuiGraphicsComposition::NoLimit)
@@ -3908,7 +3943,7 @@ GuiGraphicsSite
 						GuiGraphicsComposition* child = children[i];
 						if (child->IsSizeAffectParent())
 						{
-							Rect childBounds = child->GetPreferredBounds();
+							Rect childBounds = InvokeGetPreferredBoundsInternal(child, considerPreferredMinSize);
 							if (minSize.x < childBounds.x2) minSize.x = childBounds.x2;
 							if (minSize.y < childBounds.y2) minSize.y = childBounds.y2;
 						}
@@ -3917,9 +3952,23 @@ GuiGraphicsSite
 				return minSize;
 			}
 
-			Rect GuiGraphicsSite::GetPreferredBounds()
+			Rect GuiGraphicsSite::GetPreferredBoundsInternal(bool considerPreferredMinSize)
 			{
-				return GetBoundsInternal(Rect(Point(0, 0), GetMinPreferredClientSize()));
+				return GetBoundsInternal(Rect(Point(0, 0), GetMinPreferredClientSize()), considerPreferredMinSize);
+			}
+
+			GuiGraphicsSite::GuiGraphicsSite()
+			{
+				BoundsChanged.SetAssociatedComposition(this);
+			}
+
+			GuiGraphicsSite::~GuiGraphicsSite()
+			{
+			}
+
+			bool GuiGraphicsSite::IsSizeAffectParent()
+			{
+				return true;
 			}
 
 			Rect GuiGraphicsSite::GetPreviousCalculatedBounds()
@@ -4654,11 +4703,20 @@ GuiGraphicsHost
 				return needRender;
 			}
 
-			void GuiGraphicsHost::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+			void GuiGraphicsHost::ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice)
 			{
-				auto result = Render(true, handleFailure);
-				failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
-				failureByLostDevice |= result == RenderTargetFailure::LostDevice;
+				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible())
+				{
+					auto result = Render(true, handleFailure, updated);
+					failureByResized |= result == RenderTargetFailure::ResizeWhileRendering;
+					failureByLostDevice |= result == RenderTargetFailure::LostDevice;
+				}
+				else
+				{
+					updated = false;
+					failureByResized = false;
+					failureByLostDevice = false;
+				}
 			}
 
 			void GuiGraphicsHost::GlobalTimer()
@@ -4675,77 +4733,33 @@ GuiGraphicsHost
 					}
 				}
 
-				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsActivelyRefreshing())
+				if (hostRecord.nativeWindow && hostRecord.nativeWindow->IsVisible() && hostRecord.nativeWindow->IsActivelyRefreshing())
 				{
-					Render(false, true);
+					bool updated = false;
+					Render(false, true, updated);
 				}
 			}
 
-			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
-				:controlHost(_controlHost)
-			{
-				altActionManager = new GuiAltActionManager(controlHost);
-				tabActionManager = new GuiTabActionManager(controlHost);
-				hostRecord.host = this;
-				windowComposition=new GuiWindowComposition;
-				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-				windowComposition->AddChild(boundsComposition);
-				RefreshRelatedHostRecord(nullptr);
-			}
-
-			GuiGraphicsHost::~GuiGraphicsHost()
-			{
-				windowComposition->RemoveChild(windowComposition->Children()[0]);
-				NotifyFinalizeInstance(windowComposition);
-
-				delete altActionManager;
-				delete tabActionManager;
-				if (shortcutKeyManager)
-				{
-					delete shortcutKeyManager;
-					shortcutKeyManager = nullptr;
-				}
-
-				delete windowComposition;
-			}
-
-			INativeWindow* GuiGraphicsHost::GetNativeWindow()
-			{
-				return hostRecord.nativeWindow;
-			}
-
-			void GuiGraphicsHost::SetNativeWindow(INativeWindow* _nativeWindow)
-			{
-				if (hostRecord.nativeWindow != _nativeWindow)
-				{
-					if (hostRecord.nativeWindow)
-					{
-						GetCurrentController()->CallbackService()->UninstallListener(this);
-						hostRecord.nativeWindow->UninstallListener(this);
-					}
-
-					if (_nativeWindow)
-					{
-						_nativeWindow->InstallListener(this);
-						GetCurrentController()->CallbackService()->InstallListener(this);
-						previousClientSize = _nativeWindow->GetClientSize();
-						minSize = windowComposition->GetPreferredBounds().GetSize();
-						_nativeWindow->SetCaretPoint(_nativeWindow->Convert(caretPoint));
-						needRender = true;
-					}
-
-					RefreshRelatedHostRecord(_nativeWindow);
-				}
-			}
-
-			GuiGraphicsComposition* GuiGraphicsHost::GetMainComposition()
-			{
-				return windowComposition;
-			}
-
-			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool handleFailure)
+			elements::RenderTargetFailure GuiGraphicsHost::Render(bool forceUpdate, bool handleFailure, bool& updated)
 			{
 				RenderTargetFailure result = RenderTargetFailure::None;
+
+				if (!renderingTriggeredInLastFrame && needRender)
+				{
+					GuiControlSignalEventArgs arguments(controlHost->boundsComposition);
+					arguments.controlSignal = ControlSignal::UpdateRequested;
+					controlHost->ControlSignalTrigerred.Execute(arguments);
+				}
+				else if (renderingTriggeredInLastFrame && !needRender)
+				{
+					GuiControlSignalEventArgs arguments(controlHost->boundsComposition);
+					arguments.controlSignal = ControlSignal::UpdateFullfilled;
+					controlHost->ControlSignalTrigerred.Execute(arguments);
+				}
+
+				updated = needRender;
+				renderingTriggeredInLastFrame = needRender;
+
 				if (!forceUpdate && !needRender)
 				{
 					return result;
@@ -4818,6 +4832,68 @@ GuiGraphicsHost
 				}
 
 				return result;
+			}
+
+			GuiGraphicsHost::GuiGraphicsHost(controls::GuiControlHost* _controlHost, GuiGraphicsComposition* boundsComposition)
+				:controlHost(_controlHost)
+			{
+				altActionManager = new GuiAltActionManager(controlHost);
+				tabActionManager = new GuiTabActionManager(controlHost);
+				hostRecord.host = this;
+				windowComposition=new GuiWindowComposition;
+				windowComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				windowComposition->AddChild(boundsComposition);
+				RefreshRelatedHostRecord(nullptr);
+			}
+
+			GuiGraphicsHost::~GuiGraphicsHost()
+			{
+				windowComposition->RemoveChild(windowComposition->Children()[0]);
+				NotifyFinalizeInstance(windowComposition);
+
+				delete altActionManager;
+				delete tabActionManager;
+				if (shortcutKeyManager)
+				{
+					delete shortcutKeyManager;
+					shortcutKeyManager = nullptr;
+				}
+
+				delete windowComposition;
+			}
+
+			INativeWindow* GuiGraphicsHost::GetNativeWindow()
+			{
+				return hostRecord.nativeWindow;
+			}
+
+			void GuiGraphicsHost::SetNativeWindow(INativeWindow* _nativeWindow)
+			{
+				if (hostRecord.nativeWindow != _nativeWindow)
+				{
+					if (hostRecord.nativeWindow)
+					{
+						GetCurrentController()->CallbackService()->UninstallListener(this);
+						hostRecord.nativeWindow->UninstallListener(this);
+					}
+
+					if (_nativeWindow)
+					{
+						_nativeWindow->InstallListener(this);
+						GetCurrentController()->CallbackService()->InstallListener(this);
+						previousClientSize = _nativeWindow->GetClientSize();
+						minSize = windowComposition->GetPreferredBounds().GetSize();
+						_nativeWindow->SetCaretPoint(_nativeWindow->Convert(caretPoint));
+						needRender = true;
+					}
+
+					RefreshRelatedHostRecord(_nativeWindow);
+				}
+			}
+
+			GuiGraphicsComposition* GuiGraphicsHost::GetMainComposition()
+			{
+				return windowComposition;
 			}
 
 			void GuiGraphicsHost::RequestRender()
@@ -27371,6 +27447,31 @@ GuiFlowComposition
 					needUpdate = true;
 				}
 			}
+			
+			Size GuiFlowComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+			{
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
+					for (auto item : flowItems)
+					{
+						auto itemSize = InvokeGetPreferredBoundsInternal(item, considerPreferredMinSize).GetSize();
+						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
+						if (clientSize.y < itemSize.y) clientSize.y = itemSize.y;
+					}
+					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
+					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
+				}
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
+			}
 
 			GuiFlowComposition::GuiFlowComposition()
 				:axis(new GuiDefaultAxis)
@@ -27410,9 +27511,12 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (extraMargin != value)
+				{
+					extraMargin = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			vint GuiFlowComposition::GetRowPadding()
@@ -27422,9 +27526,12 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetRowPadding(vint value)
 			{
-				rowPadding = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (rowPadding != value)
+				{
+					rowPadding = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			vint GuiFlowComposition::GetColumnPadding()
@@ -27434,9 +27541,12 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetColumnPadding(vint value)
 			{
-				columnPadding = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (columnPadding != value)
+				{
+					columnPadding = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Ptr<IGuiAxis> GuiFlowComposition::GetAxis()
@@ -27461,40 +27571,18 @@ GuiFlowComposition
 
 			void GuiFlowComposition::SetAlignment(FlowAlignment value)
 			{
-				alignment = value;
-				needUpdate = true;
-				InvokeOnCompositionStateChanged();
+				if (alignment != value)
+				{
+					alignment = value;
+					needUpdate = true;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiFlowComposition::ForceCalculateSizeImmediately()
 			{
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
 				UpdateFlowItemBounds(true);
-			}
-			
-			Size GuiFlowComposition::GetMinPreferredClientSize()
-			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
-				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
-				{
-					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
-					for (auto item : flowItems)
-					{
-						auto itemSize = item->GetPreferredBounds().GetSize();
-						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
-						if (clientSize.y < itemSize.y) clientSize.y = itemSize.y;
-					}
-					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
-					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
-				}
-
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
 			}
 
 			Rect GuiFlowComposition::GetBounds()
@@ -27532,7 +27620,7 @@ GuiFlowItemComposition
 
 			Size GuiFlowItemComposition::GetMinSize()
 			{
-				return GetBoundsInternal(bounds).GetSize();
+				return GetBoundsInternal(bounds, true).GetSize();
 			}
 
 			GuiFlowItemComposition::GuiFlowItemComposition()
@@ -27574,8 +27662,11 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::SetBounds(Rect value)
 			{
-				bounds = value;
-				InvokeOnCompositionStateChanged();
+				if (bounds != value)
+				{
+					bounds = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiFlowItemComposition::GetExtraMargin()
@@ -27585,8 +27676,11 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin = value;
-				InvokeOnCompositionStateChanged();
+				if (extraMargin != value)
+				{
+					extraMargin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			GuiFlowOption GuiFlowItemComposition::GetFlowOption()
@@ -27596,11 +27690,14 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::SetFlowOption(GuiFlowOption value)
 			{
-				option = value;
-				if (flowParent)
+				if (option != value)
 				{
-					flowParent->needUpdate = true;
-					InvokeOnCompositionStateChanged();
+					option = value;
+					if (flowParent)
+					{
+						flowParent->needUpdate = true;
+						InvokeOnCompositionStateChanged();
+					}
 				}
 			}
 		}
@@ -28855,8 +28952,7 @@ GuiSharedSizeRootComposition
 				{
 					auto group = item->GetGroup();
 					auto minSize = item->GetPreferredMinSize();
-					item->SetPreferredMinSize(Size(0, 0));
-					auto size = item->GetPreferredBounds().GetSize();
+					auto size = InvokeGetPreferredBoundsInternal(item, false).GetSize();
 
 					if (item->GetSharedWidth())
 					{
@@ -28961,8 +29057,11 @@ GuiSideAlignedComposition
 
 			void GuiSideAlignedComposition::SetDirection(Direction value)
 			{
-				direction = value;
-				InvokeOnCompositionStateChanged();
+				if (direction != value)
+				{
+					direction = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			vint GuiSideAlignedComposition::GetMaxLength()
@@ -28973,8 +29072,11 @@ GuiSideAlignedComposition
 			void GuiSideAlignedComposition::SetMaxLength(vint value)
 			{
 				if (value < 0) value = 0;
-				maxLength = value;
-				InvokeOnCompositionStateChanged();
+				if (maxLength != value)
+				{
+					maxLength = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			double GuiSideAlignedComposition::GetMaxRatio()
@@ -28984,11 +29086,12 @@ GuiSideAlignedComposition
 
 			void GuiSideAlignedComposition::SetMaxRatio(double value)
 			{
-				maxRatio =
-					value < 0 ? 0 :
-					value>1 ? 1 :
-					value;
-				InvokeOnCompositionStateChanged();
+				if (value < 0) value = 0; else if (value > 1) value = 1;
+				if (maxRatio != value)
+				{
+					maxRatio = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiSideAlignedComposition::IsSizeAffectParent()
@@ -29074,26 +29177,38 @@ GuiPartialViewComposition
 
 			void GuiPartialViewComposition::SetWidthRatio(double value)
 			{
-				wRatio = value;
-				InvokeOnCompositionStateChanged();
+				if (wRatio != value)
+				{
+					wRatio = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiPartialViewComposition::SetWidthPageSize(double value)
 			{
-				wPageSize = value;
-				InvokeOnCompositionStateChanged();
+				if (wPageSize != value)
+				{
+					wPageSize = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiPartialViewComposition::SetHeightRatio(double value)
 			{
-				hRatio = value;
-				InvokeOnCompositionStateChanged();
+				if (hRatio != value)
+				{
+					hRatio = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			void GuiPartialViewComposition::SetHeightPageSize(double value)
 			{
-				hPageSize = value;
-				InvokeOnCompositionStateChanged();
+				if (hPageSize != value)
+				{
+					hPageSize = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiPartialViewComposition::IsSizeAffectParent()
@@ -29202,6 +29317,7 @@ GuiStackComposition
 				if (itemBounds.U() <= 0)											\
 				{																	\
 					adjustment -= itemBounds.U();									\
+					InvokeOnCompositionStateChanged();								\
 				}																	\
 				else																\
 				{																	\
@@ -29209,6 +29325,7 @@ GuiStackComposition
 					if (overflow > 0)												\
 					{																\
 						adjustment -= overflow;										\
+						InvokeOnCompositionStateChanged();							\
 					}																\
 				}																	\
 
@@ -29227,8 +29344,6 @@ GuiStackComposition
 						break;
 					}
 				}
-
-				InvokeOnCompositionStateChanged();
 #undef ADJUSTMENT
 			}
 
@@ -29264,6 +29379,36 @@ GuiStackComposition
 					}
 					UpdateStackItemBounds();
 				}
+			}
+			
+			Size GuiStackComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+			{
+				Size minSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
+					{
+						if (minSize.x < stackItemTotalSize.x)
+						{
+							minSize.x = stackItemTotalSize.x;
+						}
+					}
+					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
+					{
+						if (minSize.y < stackItemTotalSize.y)
+						{
+							minSize.y = stackItemTotalSize.y;
+						}
+					}
+				}
+
+				vint x = 0;
+				vint y = 0;
+				if (extraMargin.left > 0) x += extraMargin.left;
+				if (extraMargin.right > 0) x += extraMargin.right;
+				if (extraMargin.top > 0) y += extraMargin.top;
+				if (extraMargin.bottom > 0) y += extraMargin.bottom;
+				return minSize + Size(x, y);
 			}
 
 			GuiStackComposition::GuiStackComposition()
@@ -29320,36 +29465,6 @@ GuiStackComposition
 			{
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
 				UpdateStackItemBounds();
-			}
-			
-			Size GuiStackComposition::GetMinPreferredClientSize()
-			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSize();
-				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
-				{
-					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
-					{
-						if (minSize.x < stackItemTotalSize.x)
-						{
-							minSize.x = stackItemTotalSize.x;
-						}
-					}
-					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
-					{
-						if (minSize.y < stackItemTotalSize.y)
-						{
-							minSize.y = stackItemTotalSize.y;
-						}
-					}
-				}
-
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
 			}
 
 			Rect GuiStackComposition::GetBounds()
@@ -29435,7 +29550,7 @@ GuiStackItemComposition
 
 			Size GuiStackItemComposition::GetMinSize()
 			{
-				return GetBoundsInternal(bounds).GetSize();
+				return GetBoundsInternal(bounds, true).GetSize();
 			}
 
 			GuiStackItemComposition::GuiStackItemComposition()
@@ -29513,8 +29628,11 @@ GuiStackItemComposition
 
 			void GuiStackItemComposition::SetBounds(Rect value)
 			{
-				bounds = value;
-				InvokeOnCompositionStateChanged();
+				if (bounds != value)
+				{
+					bounds = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiStackItemComposition::GetExtraMargin()
@@ -29524,8 +29642,11 @@ GuiStackItemComposition
 
 			void GuiStackItemComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin = value;
-				InvokeOnCompositionStateChanged();
+				if (extraMargin != value)
+				{
+					extraMargin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 		}
 	}
@@ -29848,6 +29969,12 @@ GuiTableComposition
 				}
 			}
 
+			Size GuiTableComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+			{
+				vint offset = (borderVisible ? 2 * cellPadding : 0);
+				return Size(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
+			}
+
 			GuiTableComposition::GuiTableComposition()
 				:rows(0)
 				, columns(0)
@@ -29914,9 +30041,12 @@ GuiTableComposition
 
 			void GuiTableComposition::SetRowOption(vint _row, GuiCellOption option)
 			{
-				rowOptions[_row] = option;
-				UpdateCellBounds();
-				ConfigChanged.Execute(GuiEventArgs(this));
+				if (rowOptions[_row] != option)
+				{
+					rowOptions[_row] = option;
+					UpdateCellBounds();
+					ConfigChanged.Execute(GuiEventArgs(this));
+				}
 			}
 
 			GuiCellOption GuiTableComposition::GetColumnOption(vint _column)
@@ -29926,9 +30056,12 @@ GuiTableComposition
 
 			void GuiTableComposition::SetColumnOption(vint _column, GuiCellOption option)
 			{
-				columnOptions[_column] = option;
-				UpdateCellBounds();
-				ConfigChanged.Execute(GuiEventArgs(this));
+				if (columnOptions[_column] != option)
+				{
+					columnOptions[_column] = option;
+					UpdateCellBounds();
+					ConfigChanged.Execute(GuiEventArgs(this));
+				}
 			}
 
 			vint GuiTableComposition::GetCellPadding()
@@ -30035,12 +30168,6 @@ GuiTableComposition
 				GuiBoundsComposition::ForceCalculateSizeImmediately();
 				UpdateCellBounds();
 				UpdateCellBounds();
-			}
-
-			Size GuiTableComposition::GetMinPreferredClientSize()
-			{
-				vint offset = (borderVisible ? 2 * cellPadding : 0);
-				return Size(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
 			}
 
 			Rect GuiTableComposition::GetBounds()
@@ -30459,8 +30586,11 @@ GuiRowSplitterComposition
 
 			void GuiRowSplitterComposition::SetRowsToTheTop(vint value)
 			{
-				rowsToTheTop = value;
-				InvokeOnCompositionStateChanged();
+				if (rowsToTheTop != value)
+				{
+					rowsToTheTop = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Rect GuiRowSplitterComposition::GetBounds()
@@ -30511,8 +30641,11 @@ GuiColumnSplitterComposition
 
 			void GuiColumnSplitterComposition::SetColumnsToTheLeft(vint value)
 			{
-				columnsToTheLeft = value;
-				InvokeOnCompositionStateChanged();
+				if (columnsToTheLeft != value)
+				{
+					columnsToTheLeft = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Rect GuiColumnSplitterComposition::GetBounds()
@@ -33565,7 +33698,11 @@ INativeWindowListener
 			return false;
 		}
 
-		void INativeWindowListener::ForceRefresh(bool handleFailure, bool& failureByResized, bool& failureByLostDevice)
+		void INativeWindowListener::ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice)
+		{
+		}
+
+		void INativeWindowListener::BecomeMainHostedWindow()
 		{
 		}
 
@@ -34261,7 +34398,6 @@ GuiHostedController::INativeWindowListener
 
 		void GuiHostedController::Paint()
 		{
-			wmManager->needRefresh = true;
 		}
 
 /***********************************************************************
@@ -34674,27 +34810,30 @@ GuiHostedController::INativeControllerListener
 				auto renderTarget = hostedResourceManager->nativeManager->GetRenderTarget(nativeWindow);
 				if (renderTarget->IsInHostedRendering())
 				{
-					goto SKIP_REFRESH;
+					return;
 				}
 
-				if (wmManager->needRefresh)
-				{
-					wmManager->needRefresh = false;
-					goto NEED_REFRESH;
-				}
 				for (auto hostedWindow : createdWindows)
 				{
 					for (auto listener : hostedWindow->listeners)
 					{
 						if (listener->NeedRefresh())
 						{
+							wmManager->needRefresh = true;
 							goto NEED_REFRESH;
 						}
 					}
 				}
-				return;
+
+				if (!wmManager->needRefresh && !windowsUpdatedInLastFrame)
+				{
+					return;
+				}
 
 			NEED_REFRESH:
+				wmManager->needRefresh = false;
+				windowsUpdatedInLastFrame = false;
+
 				while (true)
 				{
 					renderTarget->StartHostedRendering();
@@ -34706,7 +34845,9 @@ GuiHostedController::INativeControllerListener
 						auto hostedWindow = wmManager->ordinaryWindowsInOrder[i]->id;
 						for (auto listener : hostedWindow->listeners)
 						{
-							listener->ForceRefresh(false, failureByResized, failureByLostDevice);
+							bool updated = false;
+							listener->ForceRefresh(false, updated, failureByResized, failureByLostDevice);
+							windowsUpdatedInLastFrame |= updated;
 							if (failureByResized || failureByLostDevice)
 							{
 								goto STOP_RENDERING;
@@ -34718,7 +34859,9 @@ GuiHostedController::INativeControllerListener
 						auto hostedWindow = wmManager->topMostedWindowsInOrder[i]->id;
 						for (auto listener : hostedWindow->listeners)
 						{
-							listener->ForceRefresh(false, failureByResized, failureByLostDevice);
+							bool updated = false;
+							listener->ForceRefresh(false, updated, failureByResized, failureByLostDevice);
+							windowsUpdatedInLastFrame |= updated;
 							if (failureByResized || failureByLostDevice)
 							{
 								goto STOP_RENDERING;
@@ -34741,10 +34884,12 @@ GuiHostedController::INativeControllerListener
 					if (failureByLostDevice)
 					{
 						hostedResourceManager->nativeManager->RecreateRenderTarget(nativeWindow);
+						wmManager->needRefresh = true;
 					}
 					else if (failureByResized)
 					{
 						hostedResourceManager->nativeManager->ResizeRenderTarget(nativeWindow);
+						wmManager->needRefresh = true;
 					}
 					else
 					{
@@ -34752,7 +34897,6 @@ GuiHostedController::INativeControllerListener
 						break;
 					}
 				}
-			SKIP_REFRESH:;
 			}
 		}
 
@@ -44057,11 +44201,26 @@ FakeDialogServiceBase
 		{
 			auto app = GetApplication();
 			bool exit = false;
+
 			dialog->WindowOpened.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 			{
 				dialog->ForceCalculateSizeImmediately();
 				dialog->MoveToScreenCenter();
 			});
+
+			auto movingFlag = Ptr(new bool(false));
+			dialog->ControlSignalTrigerred.AttachLambda([=](GuiGraphicsComposition* sender, GuiControlSignalEventArgs& arguments)
+			{
+				if (arguments.controlSignal == ControlSignal::UpdateFullfilled)
+				{
+					if (!*movingFlag.Obj())
+					{
+						*movingFlag.Obj() = true;
+						dialog->MoveToScreenCenter();
+					}
+				}
+			});
+
 			dialog->ShowModalAndDelete(owner, [&exit]() { exit = true; }, [viewModel]() { (void)viewModel; });
 			while (!exit && app->RunOneCycle());
 		}
