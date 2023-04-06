@@ -1,8 +1,8 @@
 #define GAC_HEADER_USE_NAMESPACE
 #include "..\..\..\Source\GacUI.h"
-#include "..\..\..\Source\PlatformProviders\Windows\WinNativeWindow.h"
 #include "..\..\..\Source\Compiler\InstanceQuery\GuiInstanceQuery.h"
 #include "..\..\..\Source\Resources\GuiParserManager.h"
+#include "..\..\..\Source\PlatformProviders\Windows\WinNativeWindow.h"
 #include <Windows.h>
 #include <msctf.h>
 
