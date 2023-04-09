@@ -90,11 +90,7 @@ FakeDialogServiceBase
 				GetCurrentController()->ResourceService()->EnumerateFonts(vm->fontList);
 				if (vm->fontList.Count() > 0)
 				{
-					Sort(
-						&vm->fontList[0],
-						vm->fontList.Count(),
-						Func([](WString a, WString b) {return WString::Compare(a, b); })
-						);
+					Sort(&vm->fontList[0], vm->fontList.Count());
 				}
 			};
 

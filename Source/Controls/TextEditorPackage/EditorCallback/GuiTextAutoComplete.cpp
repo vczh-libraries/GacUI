@@ -190,7 +190,7 @@ GuiTextBoxAutoCompleteBase
 					From(items)
 						.OrderBy([](const AutoCompleteItem& a, const AutoCompleteItem& b)
 						{
-							return INVLOC.Compare(a.text, b.text, Locale::IgnoreCase);
+							return INVLOC.Compare(a.text, b.text, Locale::IgnoreCase) <=> 0;
 						})
 					);
 

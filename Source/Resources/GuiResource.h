@@ -233,7 +233,7 @@ Resource Structure
 			GuiResourceLocation(const WString& _resourcePath, const WString& _filePath);
 			GuiResourceLocation(Ptr<GuiResourceNodeBase> node);
 
-			bool operator==(const GuiResourceLocation& b) const = default;
+			GUI_DEFINE_COMPARE_OPERATORS(GuiResourceLocation)
 		};
 
 		struct GuiResourceTextPos
@@ -245,7 +245,7 @@ Resource Structure
 			GuiResourceTextPos() = default;
 			GuiResourceTextPos(GuiResourceLocation location, glr::ParsingTextPos position);
 
-			bool operator==(const GuiResourceTextPos& b) const = default;
+			GUI_DEFINE_COMPARE_OPERATORS(GuiResourceTextPos)
 		};
 
 		struct GuiResourceError
@@ -262,7 +262,7 @@ Resource Structure
 			GuiResourceError(GuiResourceLocation _location, const WString& _message);
 			GuiResourceError(GuiResourceLocation _location, GuiResourceTextPos _position, const WString& _message);
 
-			bool operator==(const GuiResourceError& b) const = default;
+			GUI_DEFINE_COMPARE_OPERATORS(GuiResourceError)
 
 			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors);
 			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, glr::ParsingTextPos offset);

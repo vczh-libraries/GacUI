@@ -481,7 +481,8 @@ Color
 			{
 			}
 
-			GUI_DEFINE_COMPARE_OPERATORS(Color)
+			std::strong_ordering operator<=>(const Color& c) const { return value <=> c.value; }
+			bool operator==(const Color& c) const { return value == c.value; }
 
 			static Color Parse(const WString& value)
 			{

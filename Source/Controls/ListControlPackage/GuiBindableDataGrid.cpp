@@ -625,7 +625,7 @@ DataProvider
 							virtualRowToSourceRow.Count(),
 							[=](vint a, vint b)
 							{
-								return sorter->Compare(itemSource->Get(a), itemSource->Get(b));
+								return sorter->Compare(itemSource->Get(a), itemSource->Get(b)) <=> 0;
 							});
 					}
 
