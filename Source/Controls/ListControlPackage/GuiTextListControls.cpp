@@ -183,12 +183,7 @@ TextItem
 
 				bool TextItem::operator==(const TextItem& value)const
 				{
-					return text==value.text;
-				}
-
-				bool TextItem::operator!=(const TextItem& value)const
-				{
-					return text!=value.text;
+					return text == value.text;
 				}
 
 				const WString& TextItem::GetText()

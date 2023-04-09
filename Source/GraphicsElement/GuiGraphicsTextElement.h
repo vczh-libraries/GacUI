@@ -81,8 +81,7 @@ Colorized Plain Text (model)
 					~TextLine();
 
 					static vint						CalculateBufferLength(vint dataLength);
-					bool							operator==(const TextLine& value)const{return false;}
-					bool							operator!=(const TextLine& value)const{return true;}
+					bool							operator==(const TextLine& value) const { return false; }
 
 					/// <summary>
 					/// Initialize the <see cref="TextLine"/> instance to be an empty line.

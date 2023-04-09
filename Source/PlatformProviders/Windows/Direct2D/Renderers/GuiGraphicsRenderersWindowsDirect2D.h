@@ -225,8 +225,7 @@ Renderers
 					ColorItemResource			selectedFocused;
 					ColorItemResource			selectedUnfocused;
 
-					bool						operator==(const ColorEntryResource& value){return false;}
-					bool						operator!=(const ColorEntryResource& value){return true;}
+					bool						operator==(const ColorEntryResource& value) const { return false; }
 				};
 
 				typedef collections::Array<ColorEntryResource>			ColorArray;

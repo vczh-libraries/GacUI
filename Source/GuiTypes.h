@@ -60,14 +60,6 @@ Enumerations
 			UpRight,
 		};
 
-#define GUI_DEFINE_COMPARE_OPERATORS(TYPE)\
-		inline bool operator==(const TYPE& right)const { return Compare(right) == 0; } \
-		inline bool operator!=(const TYPE& right)const { return Compare(right) != 0; } \
-		inline bool operator< (const TYPE& right)const { return Compare(right) < 0; }  \
-		inline bool operator<=(const TYPE& right)const { return Compare(right) <= 0; } \
-		inline bool operator> (const TYPE& right)const { return Compare(right) > 0; }  \
-		inline bool operator>=(const TYPE& right)const { return Compare(right) >= 0; } \
-
 /***********************************************************************
 TextPos
 ***********************************************************************/

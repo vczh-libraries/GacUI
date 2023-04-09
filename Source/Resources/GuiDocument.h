@@ -45,15 +45,7 @@ Rich Content Document (style)
 			static DocumentFontSize			Parse(const WString& value);
 			WString							ToString()const;
 
-			bool operator==(const DocumentFontSize& value)const
-			{
-				return size == value.size && relative == value.relative;
-			}
-
-			bool operator!=(const DocumentFontSize& value)const
-			{
-				return size != value.size || relative != value.relative;
-			}
+			bool operator==(const DocumentFontSize& value) const = default;
 		};
 
 		/// <summary>Represents a text style.</summary>

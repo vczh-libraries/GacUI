@@ -238,16 +238,14 @@ Helpers
 				struct Package\
 				{\
 					TVALUE							resource;\
-					vint								counter;\
+					vint							counter;\
 					bool operator==(const Package& package)const{return false;}\
-					bool operator!=(const Package& package)const{return true;}\
 				};\
 				struct DeadPackage\
 				{\
 					TKEY							key;\
 					TVALUE							value;\
 					bool operator==(const DeadPackage& package)const{return false;}\
-					bool operator!=(const DeadPackage& package)const{return true;}\
 				};\
 				Dictionary<TKEY, Package>			aliveResources;\
 				List<DeadPackage>					deadResources;\

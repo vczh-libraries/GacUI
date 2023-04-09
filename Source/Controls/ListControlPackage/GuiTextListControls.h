@@ -104,7 +104,6 @@ TextItemProvider
 					~TextItem();
 
 					bool										operator==(const TextItem& value)const;
-					bool										operator!=(const TextItem& value)const;
 					
 					/// <summary>Get the text of this item.</summary>
 					/// <returns>The text of this item.</returns>

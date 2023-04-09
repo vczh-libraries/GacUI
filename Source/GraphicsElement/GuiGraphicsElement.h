@@ -46,8 +46,7 @@ Elements
 				int						radiusX = 0;
 				int						radiusY = 0;
 
-				bool operator==(const ElementShape& value)const { return shapeType == value.shapeType && radiusX == value.radiusX && radiusY == value.radiusY; }
-				bool operator!=(const ElementShape& value)const { return !(*this == value); }
+				bool operator==(const ElementShape& value) const = default;
 			};
 
 			/// <summary>

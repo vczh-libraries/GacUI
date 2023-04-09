@@ -234,8 +234,7 @@ Resource Structure
 			GuiResourceLocation(const WString& _resourcePath, const WString& _filePath);
 			GuiResourceLocation(Ptr<GuiResourceNodeBase> node);
 
-			bool operator==(const GuiResourceLocation& b)const { return resourcePath == b.resourcePath && filePath == b.filePath; }
-			bool operator!=(const GuiResourceLocation& b)const { return !(*this == b); }
+			bool operator==(const GuiResourceLocation& b) const = default;
 		};
 
 		struct GuiResourceTextPos
@@ -247,8 +246,7 @@ Resource Structure
 			GuiResourceTextPos() = default;
 			GuiResourceTextPos(GuiResourceLocation location, glr::ParsingTextPos position);
 
-			bool operator==(const GuiResourceTextPos& b)const { return originalLocation == b.originalLocation && row == b.row && column == b.column; }
-			bool operator!=(const GuiResourceTextPos& b)const { return !(*this == b); }
+			bool operator==(const GuiResourceTextPos& b) const = default;
 		};
 
 		struct GuiResourceError
@@ -265,8 +263,7 @@ Resource Structure
 			GuiResourceError(GuiResourceLocation _location, const WString& _message);
 			GuiResourceError(GuiResourceLocation _location, GuiResourceTextPos _position, const WString& _message);
 
-			bool operator==(const GuiResourceError& b)const { return location == b.location && position == b.position && message == b.message; }
-			bool operator!=(const GuiResourceError& b)const { return !(*this == b); }
+			bool operator==(const GuiResourceError& b) const = default;
 
 			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors);
 			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, glr::ParsingTextPos offset);
