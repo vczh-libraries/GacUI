@@ -35,13 +35,6 @@ UniscribeColor
 				UniscribeColorRange(){}
 				UniscribeColorRange(vint _start, vint _end):start(_start),end(_end){}
 
-				inline vint Compare(const UniscribeColorRange& value)const
-				{
-					vint result;
-					if ((result = start - value.start) != 0) return result;
-					if ((result = end - value.end) != 0) return result;
-					return 0;
-				}
 				GUI_DEFINE_COMPARE_OPERATORS(UniscribeColorRange)
 			};
 
@@ -53,13 +46,6 @@ UniscribeColor
 				UniscribeColor(){}
 				UniscribeColor(Color _fontColor, Color _backgroundColor):fontColor(_fontColor),backgroundColor(_backgroundColor){}
 
-				inline vint64_t Compare(const UniscribeColor& value)const
-				{
-					vint64_t result;
-					if ((result = fontColor.Compare(value.fontColor)) != 0) return result;
-					if ((result = backgroundColor.Compare(value.backgroundColor)) != 0) return result;
-					return 0;
-				}
 				GUI_DEFINE_COMPARE_OPERATORS(UniscribeColor)
 			};
 		}

@@ -60,6 +60,10 @@ Enumerations
 			UpRight,
 		};
 
+#define GUI_DEFINE_COMPARE_OPERATORS(TYPE)\
+		std::strong_ordering operator<=>(const TYPE&) const = default;\
+		bool operator==(const TYPE&) const = default;\
+
 /***********************************************************************
 TextPos
 ***********************************************************************/
@@ -88,13 +92,6 @@ TextPos
 			{
 			}
 
-			inline vint Compare(const TextPos& value)const
-			{
-				vint result;
-				if ((result = row - value.row) != 0) return result;
-				if ((result = column - value.column) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(TextPos)
 		};
 
@@ -126,13 +123,6 @@ GridPos
 			{
 			}
 
-			inline vint Compare(const GridPos& value)const
-			{
-				vint result;
-				if ((result = row - value.row) != 0) return result;
-				if ((result = column - value.column) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(GridPos)
 		};
 
@@ -159,7 +149,6 @@ Coordinate
 			NativeCoordinate& operator=(const NativeCoordinate& _value) = default;
 			NativeCoordinate& operator=(NativeCoordinate&& _value) = default;
 
-			inline vint Compare(NativeCoordinate c) const { return value - c.value; }
 			GUI_DEFINE_COMPARE_OPERATORS(NativeCoordinate)
 
 			inline NativeCoordinate operator+(NativeCoordinate c)const { return value + c.value; };
@@ -206,13 +195,6 @@ Point
 			{
 			}
 
-			inline vint Compare(const Point_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(x, value.x)) != 0) return result;
-				if ((result = CompareCoordinate(y, value.y)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Point_<T>)
 		};
 
@@ -249,13 +231,6 @@ Size
 			{
 			}
 
-			inline vint Compare(const Size_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(x, value.x)) != 0) return result;
-				if ((result = CompareCoordinate(y, value.y)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Size_<T>)
 		};
 
@@ -305,15 +280,6 @@ Rectangle
 			{
 			}
 
-			inline vint Compare(const Rect_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(x1, value.x1)) != 0) return result;
-				if ((result = CompareCoordinate(y1, value.y1)) != 0) return result;
-				if ((result = CompareCoordinate(x2, value.x2)) != 0) return result;
-				if ((result = CompareCoordinate(y2, value.y2)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Rect_<T>)
 
 			Point_<T> LeftTop()const
@@ -515,10 +481,6 @@ Color
 			{
 			}
 
-			vint64_t Compare(Color color)const
-			{
-				return (vint64_t)value - (vint64_t)color.value;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Color)
 
 			static Color Parse(const WString& value)
@@ -607,15 +569,6 @@ Margin
 			{
 			}
 
-			inline vint Compare(const Margin_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(left, value.left)) != 0) return result;
-				if ((result = CompareCoordinate(top, value.top)) != 0) return result;
-				if ((result = CompareCoordinate(right, value.right)) != 0) return result;
-				if ((result = CompareCoordinate(bottom, value.bottom)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Margin_<T>)
 		};
 
@@ -675,33 +628,6 @@ Resources
 			{
 			}
 			
-			vint64_t Compare(const FontProperties& value)const
-			{
-				vint64_t result = 0;
-
-				result = WString::Compare(fontFamily, value.fontFamily);
-				if (result != 0) return result;
-
-				result = (vint64_t)size - (vint64_t)value.size;
-				if (result != 0) return result;
-
-				result = (vint64_t)bold - (vint64_t)value.bold;
-				if (result != 0) return result;
-
-				result = (vint64_t)italic - (vint64_t)value.italic;
-				if (result != 0) return result;
-
-				result = (vint64_t)underline - (vint64_t)value.underline;
-				if (result != 0) return result;
-
-				result = (vint64_t)strikeline - (vint64_t)value.strikeline;
-				if (result != 0) return result;
-
-				result = (vint64_t)antialias - (vint64_t)value.antialias;
-				if (result != 0) return result;
-
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(FontProperties)
 		};
 

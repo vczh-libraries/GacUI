@@ -76,7 +76,6 @@ Global String Key
 			vint									key = -1;
 
 		public:
-			inline vint Compare(GlobalStringKey value)const{ return key - value.key; }
 			GUI_DEFINE_COMPARE_OPERATORS(GlobalStringKey)
 
 			static GlobalStringKey					Get(const WString& string);

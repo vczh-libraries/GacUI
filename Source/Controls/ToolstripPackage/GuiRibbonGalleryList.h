@@ -41,13 +41,6 @@ Ribbon Gallery List
 				{
 				}
 
-				inline vint Compare(const GalleryPos& value)const
-				{
-					vint result;
-					if ((result = group - value.group) != 0) return result;
-					if ((result = item - value.item) != 0) return result;
-					return 0;
-				}
 				GUI_DEFINE_COMPARE_OPERATORS(GalleryPos)
 			};
 

@@ -431,13 +431,6 @@ Colorized Plain Text (model)
 					/// </summary>
 					Color							background;
 
-					inline vint64_t Compare(const ColorItem& value)const
-					{
-						vint64_t result;
-						if ((result = text.Compare(value.text)) != 0) return result;
-						if ((result = background.Compare(value.background)) != 0) return result;
-						return 0;
-					}
 					GUI_DEFINE_COMPARE_OPERATORS(ColorItem)
 				};
 				
@@ -459,14 +452,6 @@ Colorized Plain Text (model)
 					/// </summary>
 					ColorItem						selectedUnfocused;
 
-					inline vint64_t Compare(const ColorEntry& value)const
-					{
-						vint64_t result;
-						if ((result = normal.Compare(value.normal)) != 0) return result;
-						if ((result = selectedFocused.Compare(value.selectedFocused)) != 0) return result;
-						if ((result = selectedUnfocused.Compare(value.selectedUnfocused)) != 0) return result;
-						return 0;
-					}
 					GUI_DEFINE_COMPARE_OPERATORS(ColorEntry)
 				};
 			}
