@@ -1622,11 +1622,6 @@ Data Structures for Backtracking
 			StateSaver(const StateSaver&) = default;
 			StateSaver& operator=(const StateSaver&) = default;
 
-			bool operator==(const StateSaver& saver)const
-			{
-				CHECK_FAIL(L"This function is only created to satisfy List<T>.");
-			}
-
 			void RestoreReaderTo(StateSaver<TChar>& saver)
 			{
 				saver.reader = reader;
@@ -1652,11 +1647,6 @@ Data Structures for Backtracking
 
 			ExtensionSaver(const ExtensionSaver&) = default;
 			ExtensionSaver& operator=(const ExtensionSaver&) = default;
-
-			bool operator==(const ExtensionSaver& saver)const
-			{
-				CHECK_FAIL(L"This function is only created to satisfy List<T>.");
-			}
 
 			void RestoreReaderTo(StateSaver<TChar>& saver)
 			{
@@ -1717,14 +1707,6 @@ Data Structures for Backtracking
 
 	namespace regex_internal
 	{
-/***********************************************************************
-CaptureRecord
-***********************************************************************/
-
-		bool CaptureRecord::operator==(const CaptureRecord& record)const
-		{
-			return capture == record.capture && start == record.start && length == record.length;
-		}
 
 /***********************************************************************
 RichInterpretor

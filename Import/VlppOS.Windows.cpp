@@ -406,9 +406,6 @@ Utilities
 			, length(_length)
 		{
 		}
-
-		bool operator==(const BufferPair& pair) { return false; }
-		bool operator!=(const BufferPair& pair) { return true; }
 	};
 
 	bool HttpQuery(const HttpRequest& request, HttpResponse& response)

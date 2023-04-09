@@ -827,19 +827,14 @@ Value
 				Value(DescriptableObject* value);
 				Value(Ptr<DescriptableObject> value);
 				Value(Ptr<IBoxedValue> value, ITypeDescriptor* associatedTypeDescriptor);
-
-				vint							Compare(const Value& a, const Value& b)const;
 			public:
 				/// <summary>Create a null value.</summary>
 				Value();
 				Value(const Value& value);
 				Value&							operator=(const Value& value);
-				bool							operator==(const Value& value)const { return Compare(*this, value) == 0; }
-				bool							operator!=(const Value& value)const { return Compare(*this, value) != 0; }
-				bool							operator<(const Value& value)const { return Compare(*this, value)<0; }
-				bool							operator<=(const Value& value)const { return Compare(*this, value) <= 0; }
-				bool							operator>(const Value& value)const { return Compare(*this, value)>0; }
-				bool							operator>=(const Value& value)const { return Compare(*this, value) >= 0; }
+
+				friend std::strong_ordering		operator<=>(const Value& a, const Value& b);
+				friend bool						operator==(const Value& a, const Value& b) { return (a <=> b) == 0; }
 
 				/// <summary>Find out how the value is stored.</summary>
 				/// <returns>Returns How the value is stored.</returns>

@@ -3740,7 +3740,7 @@ GenerateTable
 										i1 > i2 ? ParsingTable::TransitionItem::WrongOrder :
 										ParsingTable::TransitionItem::SameOrder
 										;
-									return ParsingTable::TransitionItem::Compare(t1, t2, defaultOrder);
+									return ParsingTable::TransitionItem::Compare(t1, t2, defaultOrder) <=> 0;
 								}));
 
 							// build look ahead inside a transition
@@ -4225,38 +4225,44 @@ IsMergableCandidate
 RearrangeState
 ***********************************************************************/
 
-#define COMPARE_SYMBOL(S1, S2)\
-			if (S1 && S2)\
-			{\
-				if (S1->GetType() < S2->GetType()) return -1;\
-				if (S1->GetType() > S2->GetType()) return 1;\
-				if (S1->GetName() < S2->GetName()) return -1;\
-				if (S1->GetName() > S2->GetName()) return 1;\
-			}\
-			else if (S1)\
-			{\
-				return 1;\
-			}\
-			else if (S2)\
-			{\
-				return -1;\
-			}\
-
-			vint CompareTransitionForRearranging(Transition* t1, Transition* t2)
+			std::strong_ordering CompareParsingSymbol(ParsingSymbol* s1, ParsingSymbol* s2)
 			{
-				if (t1->transitionType < t2->transitionType) return -1;
-				if (t1->transitionType > t2->transitionType) return 1;
-				COMPARE_SYMBOL(t1->transitionSymbol, t2->transitionSymbol);
-				return 0;
+				if (s1 && s2)
+				{
+					std::strong_ordering
+						result = s1->GetType() <=> s2->GetType(); if (result != 0) return result;
+					result = s1->GetName() <=> s2->GetName(); if (result != 0) return result;
+					return result;
+				}
+				else if (s1)
+				{
+					return std::strong_ordering::greater;
+				}
+				else if (s2)
+				{
+					return std::strong_ordering::less;
+				}
+				else
+				{
+					return std::strong_ordering::equal;
+				}
 			}
 
-			vint CompareActionForRearranging(Ptr<Action> a1, Ptr<Action> a2)
+			std::strong_ordering CompareTransitionForRearranging(Transition* t1, Transition* t2)
 			{
-				if(a1->actionType<a2->actionType) return -1;
-				if(a1->actionType>a2->actionType) return 1;
-				COMPARE_SYMBOL(a1->actionSource, a2->actionSource);
-				COMPARE_SYMBOL(a1->actionTarget, a2->actionTarget);
-				return 0;
+				std::strong_ordering
+				result = t1->transitionType <=> t2->transitionType; if (result != 0) return result;
+				result = CompareParsingSymbol(t1->transitionSymbol, t2->transitionSymbol); if (result != 0) return result;
+				return result;
+			}
+
+			std::strong_ordering CompareActionForRearranging(Ptr<Action> a1, Ptr<Action> a2)
+			{
+				std::strong_ordering
+				result = a1->actionType <=> a2->actionType; if (result != 0) return result;
+				result = CompareParsingSymbol(a1->actionSource, a2->actionSource); if (result != 0) return result;
+				result = CompareParsingSymbol(a1->actionTarget, a2->actionTarget); if (result != 0) return result;
+				return result;
 			}
 
 #undef COMPARE_SYMBOL
@@ -8540,10 +8546,6 @@ namespace vl
 
 	namespace parsing
 	{
-		vint CompareTextRange(Ptr<ParsingTreeNode> r1, Ptr<ParsingTreeNode> r2)
-		{
-			return ParsingTextPos::Compare(r1->GetCodeRange().start, r2->GetCodeRange().start);
-		}
 
 /***********************************************************************
 ParsingTreeNode::TraversalVisitor
@@ -8719,7 +8721,7 @@ ParsingTreeNode
 							const auto& range = node->GetCodeRange();
 							return !range.start.IsInvalid() && !range.end.IsInvalid();
 						})
-						.OrderBy(&CompareTextRange)
+						.OrderByKey([](auto&& node) { return node->GetCodeRange().start; })
 					);
 			}
 		}

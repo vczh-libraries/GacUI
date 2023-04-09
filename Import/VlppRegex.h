@@ -1375,64 +1375,28 @@ CharRange
 			CharRange() = default;
 			CharRange(char32_t _begin, char32_t _end) : begin(_begin), end(_end) {}
 
-			bool operator<(CharRange item) const
+			std::partial_ordering operator<=>(const CharRange& cr)const
 			{
-				return end < item.begin;
+				if (end < cr.begin) return std::partial_ordering::less;
+				if (cr.end < begin) return std::partial_ordering::greater;
+				return *this == cr ? std::partial_ordering::equivalent : std::partial_ordering::unordered;
 			}
 
-			bool operator<=(CharRange item) const
+			bool operator==(const CharRange& cr)const
 			{
-				return *this < item || *this == item;
+				return begin == cr.begin && end == cr.end;
 			}
 
-			bool operator>(CharRange item) const
+			std::strong_ordering operator<=>(char32_t item)const
 			{
-				return item.end < begin;
+				if (end < item) return std::strong_ordering::less;
+				if (begin > item) return std::strong_ordering::greater;
+				return std::strong_ordering::equal;
 			}
 
-			bool operator>=(CharRange item) const
-			{
-				return *this > item || *this == item;
-			}
-
-			bool operator==(CharRange item) const
-			{
-				return begin == item.begin && end == item.end;
-			}
-
-			bool operator!=(CharRange item) const
-			{
-				return begin != item.begin || item.end != end;
-			}
-
-			bool operator<(char32_t item) const
-			{
-				return end < item;
-			}
-
-			bool operator<=(char32_t item) const
-			{
-				return begin <= item;
-			}
-
-			bool operator>(char32_t item) const
-			{
-				return item < begin;
-			}
-
-			bool operator>=(char32_t item) const
-			{
-				return item <= end;
-			}
-
-			bool operator==(char32_t item) const
+			bool operator==(char32_t item)const
 			{
 				return begin <= item && item <= end;
-			}
-
-			bool operator!=(char32_t item) const
-			{
-				return item < begin || end < item;
 			}
 		};
 	}
@@ -2092,8 +2056,6 @@ namespace vl
 			vint									capture;
 			vint									start;
 			vint									length;
-
-			bool									operator==(const CaptureRecord& record)const;
 		};
 	}
 

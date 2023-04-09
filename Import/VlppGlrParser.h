@@ -83,47 +83,45 @@ ParsingTextPos
 				return { token->start + token->length - 1,token->rowEnd,token->columnEnd };
 			}
 
-			static vint Compare(const ParsingTextPos& a, const ParsingTextPos& b)
+			friend std::strong_ordering operator<=>(const ParsingTextPos& a, const ParsingTextPos& b)
 			{
 				if (a.IsInvalid() && b.IsInvalid())
 				{
-					return 0;
+					return std::strong_ordering::equal;
 				}
 				else if (a.IsInvalid())
 				{
-					return -1;
+					return std::strong_ordering::less;
 				}
 				else if (b.IsInvalid())
 				{
-					return 1;
+					return std::strong_ordering::greater;
 				}
 				else if (a.index >= 0 && b.index >= 0)
 				{
-					return a.index - b.index;
+					return a.index <=> b.index;
 				}
 				else if (a.row >= 0 && a.column >= 0 && b.row >= 0 && b.column >= 0)
 				{
 					if (a.row == b.row)
 					{
-						return a.column - b.column;
+						return a.column <=> b.column;
 					}
 					else
 					{
-						return a.row - b.row;
+						return a.row <=> b.row;
 					}
 				}
 				else
 				{
-					return 0;
+					return std::strong_ordering::equal;
 				}
 			}
 
-			bool operator==(const ParsingTextPos& pos)const { return Compare(*this, pos) == 0; }
-			bool operator!=(const ParsingTextPos& pos)const { return Compare(*this, pos) != 0; }
-			bool operator<(const ParsingTextPos& pos)const { return Compare(*this, pos) < 0; }
-			bool operator<=(const ParsingTextPos& pos)const { return Compare(*this, pos) <= 0; }
-			bool operator>(const ParsingTextPos& pos)const { return Compare(*this, pos) > 0; }
-			bool operator>=(const ParsingTextPos& pos)const { return Compare(*this, pos) >= 0; }
+			friend bool operator==(const ParsingTextPos& a, const ParsingTextPos& b)
+			{
+				return(a <=> b) == 0;
+			}
 		};
 
 /***********************************************************************
@@ -295,21 +293,19 @@ Instructions
 			vint32_t									param = -1;
 			vint										count = -1;
 
-			vint Compare(const AstIns& ins) const
+			std::strong_ordering operator<=>(const AstIns& ins) const
 			{
-				auto result = (vint)type - (vint)ins.type;
-				if (result != 0) return result;
-				result = (vint)param - (vint)ins.param;
-				if (result != 0) return result;
-				return count - ins.count;
+				std::strong_ordering
+				result = type <=> ins.type; if (result != 0) return result;
+				result = param <=> ins.param; if (result != 0) return result;
+				result = count <=> ins.count; if (result != 0) return result;
+				return result;
 			}
 
-			bool operator==(const AstIns& ins) const { return Compare(ins) == 0; }
-			bool operator!=(const AstIns& ins) const { return Compare(ins) != 0; }
-			bool operator< (const AstIns& ins) const { return Compare(ins) < 0; }
-			bool operator<=(const AstIns& ins) const { return Compare(ins) <= 0; }
-			bool operator> (const AstIns& ins) const { return Compare(ins) > 0; }
-			bool operator>=(const AstIns& ins) const { return Compare(ins) >= 0; }
+			bool operator==(const AstIns& ins) const
+			{
+				return (*this <=> ins) == 0;
+			}
 		};
 
 		enum class AstInsErrorType
@@ -1776,24 +1772,16 @@ AllocateOnly<T>
 				explicit Ref(vint32_t _handle) :handle(_handle) {}
 
 				__forceinline bool operator==(NullRef) const { return handle == -1; }
-				__forceinline bool operator!=(NullRef) const { return handle != -1; }
+
+				__forceinline std::strong_ordering operator<=>(const Ref<T>& ref) const { return handle <=> ref.handle; }
 				__forceinline bool operator==(const Ref<T>& ref) const { return handle == ref.handle; }
-				__forceinline bool operator!=(const Ref<T>& ref) const { return handle != ref.handle; }
-				__forceinline bool operator> (const Ref<T>& ref) const { return handle >  ref.handle; }
-				__forceinline bool operator>=(const Ref<T>& ref) const { return handle >= ref.handle; }
-				__forceinline bool operator< (const Ref<T>& ref) const { return handle <  ref.handle; }
-				__forceinline bool operator<=(const Ref<T>& ref) const { return handle <= ref.handle; }
 
 				__forceinline Ref& operator=(const Ref<T>& ref) { handle = ref.handle; return *this; }
 				__forceinline Ref& operator=(T* obj) { handle = obj == nullptr ? -1 : obj->allocatedIndex; return *this; }
 				__forceinline Ref& operator=(NullRef) { handle = -1; return *this; }
 
+				__forceinline std::strong_ordering operator<=>(vint32_t) = delete;
 				__forceinline bool operator==(vint32_t) = delete;
-				__forceinline bool operator!=(vint32_t) = delete;
-				__forceinline bool operator> (vint32_t) = delete;
-				__forceinline bool operator>=(vint32_t) = delete;
-				__forceinline bool operator< (vint32_t) = delete;
-				__forceinline bool operator<=(vint32_t) = delete;
 				__forceinline Ref& operator=(vint32_t) = delete;
 			};
 

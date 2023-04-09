@@ -2826,9 +2826,9 @@ WfDebugger BreakPoints
 						PropertyKey key1(breakPoint.thisObject, breakPoint.propertyInfo);
 						MethodKey key2(breakPoint.thisObject, breakPoint.propertyInfo->GetGetter());
 						TEST(true, key1, getPropertyBreakPoints);
-						TEST(key2.f1, key2, invokeMethodBreakPoints);
+						TEST(key2.get<1>(), key2, invokeMethodBreakPoints);
 						SET(key1, getPropertyBreakPoints);
-						SETC(key2.f1, key2, invokeMethodBreakPoints);
+						SETC(key2.get<1>(), key2, invokeMethodBreakPoints);
 					}
 					break;
 				case WfBreakPoint::SetProperty:
@@ -2836,9 +2836,9 @@ WfDebugger BreakPoints
 						PropertyKey key1(breakPoint.thisObject, breakPoint.propertyInfo);
 						MethodKey key2(breakPoint.thisObject, breakPoint.propertyInfo->GetSetter());
 						TEST(true, key1, setPropertyBreakPoints);
-						TEST(key2.f1, key2, invokeMethodBreakPoints);
+						TEST(key2.get<1>(), key2, invokeMethodBreakPoints);
 						SET(key1, setPropertyBreakPoints);
-						SETC(key2.f1, key2, invokeMethodBreakPoints);
+						SETC(key2.get<1>(), key2, invokeMethodBreakPoints);
 					}
 					break;
 				case WfBreakPoint::AttachEvent:

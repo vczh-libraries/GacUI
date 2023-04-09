@@ -74,47 +74,45 @@ Location
 				return index < 0 && row < 0 && column < 0;
 			}
 
-			static vint Compare(const ParsingTextPos& a, const ParsingTextPos& b)
+			friend std::strong_ordering operator<=>(const ParsingTextPos& a, const ParsingTextPos& b)
 			{
 				if (a.IsInvalid() && b.IsInvalid())
 				{
-					return 0;
+					return std::strong_ordering::equal;
 				}
 				else if (a.IsInvalid())
 				{
-					return -1;
+					return std::strong_ordering::less;
 				}
 				else if (b.IsInvalid())
 				{
-					return 1;
+					return std::strong_ordering::greater;
 				}
 				else if (a.index >= 0 && b.index >= 0)
 				{
-					return a.index - b.index;
+					return a.index <=> b.index;
 				}
 				else if (a.row >= 0 && a.column >= 0 && b.row >= 0 && b.column >= 0)
 				{
 					if (a.row == b.row)
 					{
-						return a.column - b.column;
+						return a.column <=> b.column;
 					}
 					else
 					{
-						return a.row - b.row;
+						return a.row <=> b.row;
 					}
 				}
 				else
 				{
-					return 0;
+					return std::strong_ordering::equal;
 				}
 			}
 
-			bool operator==(const ParsingTextPos& pos)const{return Compare(*this, pos)==0;}
-			bool operator!=(const ParsingTextPos& pos)const{return Compare(*this, pos)!=0;}
-			bool operator<(const ParsingTextPos& pos)const{return Compare(*this, pos)<0;}
-			bool operator<=(const ParsingTextPos& pos)const{return Compare(*this, pos)<=0;}
-			bool operator>(const ParsingTextPos& pos)const{return Compare(*this, pos)>0;}
-			bool operator>=(const ParsingTextPos& pos)const{return Compare(*this, pos)>=0;}
+			friend bool operator==(const ParsingTextPos& a, const ParsingTextPos& b)
+			{
+				return (a <=> b) == 0;
+			}
 		};
 
 		/// <summary>A type representing text range.</summary>
@@ -1124,21 +1122,18 @@ DefinitionTypeScopePair
 				{
 				}
 
-				vint Compare(const DefinitionTypeScopePair& pair)const
+				std::strong_ordering operator<=>(const DefinitionTypeScopePair& pair)const
 				{
-					if(type<pair.type) return -1;
-					if(type>pair.type) return 1;
-					if(scope<pair.scope) return -1;
-					if(scope>pair.scope) return 1;
-					return 0;
+					std::strong_ordering
+					result = type <=> pair.type; if (result != 0) return result;
+					result = scope <=> pair.scope; if (result != 0) return result;
+					return result;
 				}
 
-				bool operator==	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)==0;}
-				bool operator!=	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)!=0;}
-				bool operator>	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)>0;}
-				bool operator>=	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)>=0;}
-				bool operator<	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)<0;}
-				bool operator<=	(const DefinitionTypeScopePair& pair)const	{return Compare(pair)<=0;}
+				bool operator==(const DefinitionTypeScopePair& pair)const
+				{
+					return (*this <=> pair) == 0;
+				}
 			};
 
 /***********************************************************************

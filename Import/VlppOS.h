@@ -175,15 +175,18 @@ namespace vl
 		/// In Windows, the specified locale need to be installed in order to take effect.
 		/// In Linux and macOS, only en-US is supported.
 		/// </remarks>
-		Locale(const WString& _localeName=WString::Empty);
-		~Locale();
+		Locale() = default;
+		Locale(const Locale&) = default;
+		Locale(Locale&&) = default;
+		~Locale() = default;
 
-		bool operator==(const Locale& value)const { return localeName==value.localeName; }
-		bool operator!=(const Locale& value)const { return localeName!=value.localeName; }
-		bool operator<(const Locale& value)const { return localeName<value.localeName; }
-		bool operator<=(const Locale& value)const { return localeName<=value.localeName; }
-		bool operator>(const Locale& value)const { return localeName>value.localeName; }
-		bool operator>=(const Locale& value)const { return localeName>=value.localeName; }
+		Locale& operator=(const Locale&) = default;
+		Locale& operator=(Locale&&) = default;
+
+		Locale(const WString& _localeName);
+
+		std::strong_ordering		operator<=>(const Locale& locale)const { return localeName <=> locale.localeName; }
+		bool						operator==(const Locale& locale)const { return localeName == locale.localeName; }
 
 		/// <summary>Get the invariant locale. An invariant locale is neutral, it is not awared of any language specified thing.</summary>
 		/// <returns>The invariant locale.</returns>
@@ -1918,13 +1921,8 @@ namespace vl
 			FilePath(const FilePath& _filePath);
 			~FilePath() = default;
 
-			static vint					Compare(const FilePath& a, const FilePath& b);
-			bool						operator==(const FilePath& filePath)const{ return Compare(*this, filePath) == 0; }
-			bool						operator!=(const FilePath& filePath)const{ return Compare(*this, filePath) != 0; }
-			bool						operator< (const FilePath& filePath)const{ return Compare(*this, filePath) <  0; }
-			bool						operator<=(const FilePath& filePath)const{ return Compare(*this, filePath) <= 0; }
-			bool						operator> (const FilePath& filePath)const{ return Compare(*this, filePath) >  0; }
-			bool						operator>=(const FilePath& filePath)const{ return Compare(*this, filePath) >= 0; }
+			std::strong_ordering		operator<=>(const FilePath& path)const { return fullPath <=> path.fullPath; }
+			bool						operator==(const FilePath& path)const { return fullPath == path.fullPath; }
 
 			/// <summary>Concat an absolute path and a relative path.</summary>
 			/// <returns>The result absolute path.</returns>

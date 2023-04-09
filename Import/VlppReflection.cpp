@@ -2350,140 +2350,6 @@ description::Value
 			{
 			}
 
-			vint Value::Compare(const Value& a, const Value& b)const
-			{
-				switch (a.GetValueType())
-				{
-				case Value::RawPtr:
-				case Value::SharedPtr:
-					switch (b.GetValueType())
-					{
-					case Value::RawPtr:
-					case Value::SharedPtr:
-						{
-							auto pa = a.GetRawPtr();
-							auto pb = b.GetRawPtr();
-							if (pa < pb) return -1;
-							if (pa > pb) return 1;
-							return 0;
-						}
-					case Value::BoxedValue:
-						return -1;
-					default:
-						return 1;
-					}
-				case Value::BoxedValue:
-					switch (b.GetValueType())
-					{
-					case Value::RawPtr:
-					case Value::SharedPtr:
-						return 1;
-					case Value::BoxedValue:
-						{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-							auto aSt = a.GetTypeDescriptor()->GetSerializableType();
-							auto bSt = b.GetTypeDescriptor()->GetSerializableType();
-							if (aSt)
-							{
-								if (bSt)
-								{
-									auto aSt = a.GetTypeDescriptor()->GetSerializableType();
-									auto bSt = b.GetTypeDescriptor()->GetSerializableType();
-
-									WString aText;
-									WString bText;
-									aSt->Serialize(a, aText);
-									bSt->Serialize(b, bText);
-									if (aText < bText) return -1;
-									if (aText > bText) return 1;
-									return 0;
-								}
-								else
-								{
-									return 1;
-								}
-							}
-							else
-							{
-								if (bSt)
-								{
-									return -1;
-								}
-								else
-								{
-									if (a.GetTypeDescriptor() != b.GetTypeDescriptor())
-									{
-										auto aText = a.GetTypeDescriptor()->GetTypeName();
-										auto bText = b.GetTypeDescriptor()->GetTypeName();
-										if (aText < bText) return -1;
-										if (aText > bText) return 1;
-										return 0;
-									}
-
-									switch (a.GetTypeDescriptor()->GetTypeDescriptorFlags())
-									{
-									case TypeDescriptorFlags::Struct:
-										{
-											auto td = a.GetTypeDescriptor();
-											vint count = td->GetPropertyCount();
-											for (vint i = 0; i < count; i++)
-											{
-												auto prop = td->GetProperty(i);
-												auto ap = prop->GetValue(a);
-												auto bp = prop->GetValue(b);
-												vint result = Compare(ap, bp);
-												if (result != 0)
-												{
-													return result;
-												}
-											}
-										}
-										return 0;
-									case TypeDescriptorFlags::FlagEnum:
-									case TypeDescriptorFlags::NormalEnum:
-										{
-											auto ai = a.GetTypeDescriptor()->GetEnumType()->FromEnum(a);
-											auto bi = a.GetTypeDescriptor()->GetEnumType()->FromEnum(b);
-											if (ai < bi) return -1;
-											if (ai > bi) return 1;
-											return 0;
-										}
-									default:
-										return 0;
-									}
-								}
-							}
-#else
-								auto pa = a.GetBoxedValue();
-								auto pb = b.GetBoxedValue();
-								switch (pa->ComparePrimitive(pb))
-								{
-								case IBoxedValue::Smaller: return -1;
-								case IBoxedValue::Greater: return 1;
-								case IBoxedValue::Equal: return 0;
-								default:;
-								}
-								if (pa.Obj() < pb.Obj()) return -1;
-								if (pa.Obj() > pb.Obj()) return 1;
-								return 0;
-#endif
-						}
-					default:
-						return 1;
-					}
-				default:
-					switch (b.GetValueType())
-					{
-					case Value::RawPtr:
-					case Value::SharedPtr:
-					case Value::BoxedValue:
-						return -1;
-					default:
-						return 0;
-					}
-				}
-			}
-
 			Value::Value()
 				:valueType(Null)
 				,rawPtr(0)
@@ -2514,6 +2380,126 @@ description::Value
 				typeDescriptor = value.typeDescriptor;
 #endif
 				return *this;
+			}
+
+			std::strong_ordering operator<=>(const Value& a, const Value& b)
+			{
+				switch (a.GetValueType())
+				{
+				case Value::RawPtr:
+				case Value::SharedPtr:
+					switch (b.GetValueType())
+					{
+					case Value::RawPtr:
+					case Value::SharedPtr:
+						{
+							auto pa = a.GetRawPtr();
+							auto pb = b.GetRawPtr();
+							return pa <=> pb;
+						}
+					case Value::BoxedValue:
+						return std::strong_ordering::less;
+					default:
+						return std::strong_ordering::greater;
+					}
+				case Value::BoxedValue:
+					switch (b.GetValueType())
+					{
+					case Value::RawPtr:
+					case Value::SharedPtr:
+						return std::strong_ordering::greater;
+					case Value::BoxedValue:
+						{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+							auto aSt = a.GetTypeDescriptor()->GetSerializableType();
+							auto bSt = b.GetTypeDescriptor()->GetSerializableType();
+							if (aSt)
+							{
+								if (bSt)
+								{
+									auto aSt = a.GetTypeDescriptor()->GetSerializableType();
+									auto bSt = b.GetTypeDescriptor()->GetSerializableType();
+
+									WString aText;
+									WString bText;
+									aSt->Serialize(a, aText);
+									bSt->Serialize(b, bText);
+									return aText <=> bText;
+								}
+								else
+								{
+									return std::strong_ordering::greater;
+								}
+							}
+							else
+							{
+								if (bSt)
+								{
+									return std::strong_ordering::less;
+								}
+								else
+								{
+									if (a.GetTypeDescriptor() != b.GetTypeDescriptor())
+									{
+										auto aText = a.GetTypeDescriptor()->GetTypeName();
+										auto bText = b.GetTypeDescriptor()->GetTypeName();
+										return aText <=> bText;
+									}
+
+									switch (a.GetTypeDescriptor()->GetTypeDescriptorFlags())
+									{
+									case TypeDescriptorFlags::Struct:
+										{
+											auto td = a.GetTypeDescriptor();
+											vint count = td->GetPropertyCount();
+											for (vint i = 0; i < count; i++)
+											{
+												auto prop = td->GetProperty(i);
+												auto ap = prop->GetValue(a);
+												auto bp = prop->GetValue(b);
+												return ap <=> bp;
+											}
+										}
+										return std::strong_ordering::equal;
+									case TypeDescriptorFlags::FlagEnum:
+									case TypeDescriptorFlags::NormalEnum:
+										{
+											auto ai = a.GetTypeDescriptor()->GetEnumType()->FromEnum(a);
+											auto bi = a.GetTypeDescriptor()->GetEnumType()->FromEnum(b);
+											return ai <=> bi;
+										}
+									default:
+										return std::strong_ordering::equal;
+									}
+								}
+							}
+#else
+								auto pa = a.GetBoxedValue();
+								auto pb = b.GetBoxedValue();
+								switch (pa->ComparePrimitive(pb))
+								{
+								case IBoxedValue::Smaller: return std::strong_ordering::less;
+								case IBoxedValue::Greater: return std::strong_ordering::greater;
+								case IBoxedValue::Equal: return std::strong_ordering::equal;
+								default:;
+								}
+								return pa.Obj() <=> pb.Obj();
+#endif
+						}
+					default:
+						return std::strong_ordering::greater;
+					}
+				default:
+					switch (b.GetValueType())
+					{
+					case Value::RawPtr:
+					case Value::SharedPtr:
+					case Value::BoxedValue:
+						return std::strong_ordering::less;
+					default:
+						return std::strong_ordering::equal;
+					}
+				}
 			}
 
 			Value::ValueType Value::GetValueType()const

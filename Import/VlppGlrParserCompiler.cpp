@@ -5782,7 +5782,7 @@ CreateRewrittenRules
 						auto originRule = vContext.astRules[ruleSymbol];
 						auto&& prefixClauses = rContext.extractPrefixClauses.GetByIndex(index);
 						for (auto [prefixRuleSymbol, prefixClause] : From(prefixClauses)
-							.OrderBy([](auto p1, auto p2) {return WString::Compare(p1.ruleSymbol->Name(), p2.ruleSymbol->Name()); }))
+							.OrderByKey([](auto&& p) {return p.ruleSymbol->Name(); }))
 						{
 							if (!rContext.extractedPrefixRules.Keys().Contains({ ruleSymbol,prefixRuleSymbol }))
 							{
@@ -7518,7 +7518,7 @@ RewriteSyntax
 					if (index != -1)
 					{
 						for (auto expandedRule : From(expandedRules.GetByIndex(index))
-							.OrderBy([](auto a, auto b) { return WString::Compare(a->name.value, b->name.value); })
+							.OrderByKey([](auto&& a) { return a->name.value; })
 							)
 						{
 							rewritten->rules.Add(expandedRule);
@@ -7529,7 +7529,7 @@ RewriteSyntax
 				void CreateRuleSymbols(SyntaxSymbolManager& syntaxManager, Group<RuleSymbol*, Ptr<GlrRule>>& expandedRules)
 				{
 					for (auto ruleSymbol : From(expandedRules.Keys())
-						.OrderBy([](auto a, auto b) { return WString::Compare(a->Name(), b->Name()); })
+						.OrderByKey([](auto&& a) { return a->Name(); })
 						)
 					{
 						for (auto rule : expandedRules[ruleSymbol])
@@ -15110,42 +15110,38 @@ StateSymbol
 				CopyFrom(orderedEdges, From(outEdges)
 					.OrderBy([&](EdgeSymbol* e1, EdgeSymbol* e2)
 					{
-						vint result = 0;
-						if (e1->input.type != e2->input.type)
-						{
-							result = (vint)e1->input.type - (vint)e2->input.type;
-						}
-						else
+						std::strong_ordering result = e1->input.type <=> e2->input.type;
+						if (result == 0)
 						{
 							switch (e1->input.type)
 							{
 							case EdgeInputType::Token:
-								result = e1->input.token - e2->input.token;
+								result = e1->input.token <=> e2->input.token;
 								if (result == 0)
 								{
 									if (e1->input.condition && e2->input.condition)
 									{
-										result = (vint)WString::Compare(e1->input.condition.Value(), e2->input.condition.Value());
+										result = e1->input.condition.Value() <=> e2->input.condition.Value();
 									}
 									else if (e1->input.condition)
 									{
-										result = 1;
+										result = std::strong_ordering::greater;
 									}
 									else if (e2->input.condition)
 									{
-										result = -1;
+										result = std::strong_ordering::less;
 									}
 								}
 								break;
 							case EdgeInputType::Rule:
-								result = ownerManager->RuleOrder().IndexOf(e1->input.rule->Name()) - ownerManager->RuleOrder().IndexOf(e2->input.rule->Name());
+								result = ownerManager->RuleOrder().IndexOf(e1->input.rule->Name()) <=> ownerManager->RuleOrder().IndexOf(e2->input.rule->Name());
 								break;
 							default:;
 							}
 						}
 
 						if (result != 0) return result;
-						return orderedStates.IndexOf(e1->To()) - orderedStates.IndexOf(e2->To());
+						return orderedStates.IndexOf(e1->To()) <=> orderedStates.IndexOf(e2->To());
 					}));
 			}
 
@@ -15269,9 +15265,9 @@ SyntaxSymbolManager
 					{
 						auto ruleSymbol = rules.map[ruleName];
 						auto orderedStates = From(groupedStates[ruleSymbol])
-							.OrderBy([](StateSymbol* s1, StateSymbol* s2)
+							.OrderByKey([](StateSymbol* s)
 							{
-								return WString::Compare(s1->label, s2->label);
+								return s->label;
 							});
 						for (auto state : orderedStates)
 						{
@@ -15819,9 +15815,9 @@ SyntaxSymbolManager::BuildAutomaton
 									return edge->input.type == EdgeInputType::Token && edge->input.token == input - automaton::Executable::TokenBegin;
 								}
 							})
-							.OrderBy([&](EdgeSymbol* e1, EdgeSymbol* e2)
+							.OrderByKey([&](EdgeSymbol* e)
 							{
-								return statesInOrder.IndexOf(e1->To()) - statesInOrder.IndexOf(e2->To());
+								return statesInOrder.IndexOf(e->To());
 							});
 						transition.start = (vint32_t)edgesInOrder.Count();
 						CopyFrom(edgesInOrder, orderedEdges, true);
@@ -16382,20 +16378,15 @@ StateSymbolSet
 					return states ? *states.Obj() : EmptyStates;
 				}
 
-				vint Compare(const StateSymbolSet& set) const
+				std::strong_ordering operator<=>(const StateSymbolSet& set) const
 				{
-					if (!states && !set.states) return 0;
-					if (!states) return -1;
-					if (!set.states) return 1;
+					if (!states && !set.states) return std::strong_ordering::equal;
+					if (!states) return std::strong_ordering::less;
+					if (!set.states) return std::strong_ordering::greater;
 					return CompareEnumerable(*states.Obj(), *set.states.Obj());
 				}
 
-				bool operator==(const StateSymbolSet& set) const { return Compare(set) == 0; }
-				bool operator!=(const StateSymbolSet& set) const { return Compare(set) != 0; }
-				bool operator< (const StateSymbolSet& set) const { return Compare(set) < 0; }
-				bool operator<=(const StateSymbolSet& set) const { return Compare(set) <= 0; }
-				bool operator> (const StateSymbolSet& set) const { return Compare(set) > 0; }
-				bool operator>=(const StateSymbolSet& set) const { return Compare(set) >= 0; }
+				bool operator==(const StateSymbolSet& set) const { return (*this <=> set) == 0; }
 			};
 			const SortedList<StateSymbol*> StateSymbolSet::EmptyStates;
 
@@ -17153,21 +17144,18 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 						List<EdgeSymbol*>*		returnEdges;
 						vint					returnEdgeCount;
 
-						vint Compare(const Entry& entry)const
+						std::strong_ordering operator<=>(const Entry& entry)const
 						{
-							if (lrEdge < entry.lrEdge) return -1;
-							if (lrEdge > entry.lrEdge) return 1;
-							if (tokenEdge < entry.tokenEdge) return -1;
-							if (tokenEdge > entry.tokenEdge) return 1;
+							std::strong_ordering
+							result = lrEdge <=> entry.lrEdge; if (result != 0) return result;
+							result = tokenEdge <=> entry.tokenEdge; if (result != 0) return result;
 							return CompareEnumerable(
 								From(*returnEdges).Take(returnEdgeCount),
 								From(*entry.returnEdges).Take(returnEdgeCount)
 								);
 						}
 
-						bool operator< (const Entry& entry)const { return Compare(entry) < 0; }
-						bool operator> (const Entry& entry)const { return Compare(entry) > 0; }
-						bool operator==(const Entry& entry)const { return Compare(entry) == 0; }
+						bool operator==(const Entry& entry) const { return (*this <=> entry) == 0; }
 					};
 					Group<Entry, vint> simpleUseRecords;
 

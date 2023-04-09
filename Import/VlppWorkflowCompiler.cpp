@@ -2587,18 +2587,16 @@ CheckScopes_SymbolType
 			{
 				vint errorCount = manager->errors.Count();
 				for (auto scope : From(manager->nodeScopes)
+					.Select([](auto&& pair) -> Pair<glr::ParsingAstBase*, Ptr<WfLexicalScope>> { return pair; })
 					.OrderBy([](auto&& a, auto&& b)
 					{
 						auto rangeA = a.key->codeRange;
 						auto rangeB = b.key->codeRange;
-						if (rangeA.codeIndex != rangeB.codeIndex)
-						{
-							return rangeA.codeIndex - rangeB.codeIndex;
-						}
-						else
-						{
-							return glr::ParsingTextPos::Compare(rangeA.start, rangeB.start);
-						}
+
+						std::strong_ordering
+						result = rangeA.codeIndex <=> rangeB.codeIndex; if (result != 0) return result;
+						result = rangeA.start <=> rangeB.start; if (result != 0) return result;
+						return result;
 					})
 					.Select([](auto&& pair) { return pair.value; })
 					)
@@ -3641,7 +3639,7 @@ namespace vl
 				WString description;
 				for (auto friendlyName : From(items)
 					.Select(f)
-					.OrderBy([](auto&& a, auto&& b) { return WString::Compare(a, b); })
+					.OrderBySelf()
 					)
 				{
 					description += L"\r\n\t";
@@ -7454,9 +7452,9 @@ ExpandNewCoroutineExpression
 				/////////////////////////////////////////////////////////////////////////////
 
 				for (auto symbol : From(referenceRenaming.Keys())
-					.OrderBy([&](WfLexicalSymbol* a, WfLexicalSymbol* b)
+					.OrderByKey([&](WfLexicalSymbol* a)
 					{
-						return WString::Compare(referenceRenaming[a], referenceRenaming[b]);
+						return referenceRenaming[a];
 					}))
 				{
 					auto varDecl = Ptr(new WfVariableDeclaration);
@@ -7688,9 +7686,9 @@ ExpandNewCoroutineExpression
 										{
 											return node->exceptionDestination;
 										})
-										.OrderBy([&](const GroupPair& p1, const GroupPair& p2)
+										.OrderByKey([&](const GroupPair& p)
 										{
-											return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
+											return nodeOrders.IndexOf(p.key);
 										});
 
 									for (auto group : nodeByCatches)
@@ -7708,9 +7706,9 @@ ExpandNewCoroutineExpression
 												{
 													conditionRanges.Add({ state,state });
 												}
-												else if (conditionRanges[conditionRanges.Count() - 1].f1 == state - 1)
+												else if (conditionRanges[conditionRanges.Count() - 1].get<1>() == state - 1)
 												{
-													conditionRanges[conditionRanges.Count() - 1].f1 = state;
+													conditionRanges[conditionRanges.Count() - 1].get<1>() = state;
 												}
 												else
 												{
@@ -7723,13 +7721,13 @@ ExpandNewCoroutineExpression
 												auto range = conditionRanges[i];
 
 												Ptr<WfExpression> singleCondition;
-												if (range.f0 == range.f1)
+												if (range.get<0>() == range.get<1>())
 												{
 													auto refState = Ptr(new WfReferenceExpression);
 													refState->name.value = L"<co-state-before-pause>";
 
 													auto intState = Ptr(new WfIntegerExpression);
-													intState->value.value = itow(range.f0);
+													intState->value.value = itow(range.get<0>());
 
 													auto compExpr = Ptr(new WfBinaryExpression);
 													compExpr->op = WfBinaryOperator::EQ;
@@ -7744,10 +7742,10 @@ ExpandNewCoroutineExpression
 													refState->name.value = L"<co-state-before-pause>";
 
 													auto intState1 = Ptr(new WfIntegerExpression);
-													intState1->value.value = itow(range.f0);
+													intState1->value.value = itow(range.get<0>());
 
 													auto intState2 = Ptr(new WfIntegerExpression);
-													intState2->value.value = itow(range.f1);
+													intState2->value.value = itow(range.get<1>());
 
 													auto rangeExpr = Ptr(new WfRangeExpression);
 													rangeExpr->begin = intState1;
@@ -7855,9 +7853,9 @@ ExpandNewCoroutineExpression
 								{
 									return node->exceptionDestination;
 								})
-								.OrderBy([&](const GroupPair& p1, const GroupPair& p2)
+								.OrderByKey([&](const GroupPair& p)
 								{
-									return nodeOrders.IndexOf(p1.key) - nodeOrders.IndexOf(p2.key);
+									return nodeOrders.IndexOf(p.key);
 								});
 
 							for (auto group : nodeByCatches)
@@ -12328,7 +12326,7 @@ ValidateSemantic(Expression)
 							{
 								vint aId = wtoi(a->name.Sub(1, a->name.Length() - 1));
 								vint bId = wtoi(b->name.Sub(1, a->name.Length() - 1));
-								return aId - bId;
+								return aId <=> bId;
 							})
 						);
 					Ptr<ITypeInfo> resultType = expectedType;
@@ -17297,7 +17295,7 @@ WfCppConfig::Collect
 
 								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
-									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+									return a->GetTypeName() <=> b->GetTypeName();
 								});
 								manager->errors.Add(WfErrors::CppUnableToDecideClassOrder(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
 							}
@@ -17389,7 +17387,7 @@ WfCppConfig::Collect
 
 								SortLambda<ITypeDescriptor*>(&tds[0], tds.Count(), [](ITypeDescriptor* a, ITypeDescriptor* b)
 								{
-									return WString::Compare(a->GetTypeName(), b->GetTypeName());
+									return a->GetTypeName() <=> b->GetTypeName();
 								});
 								manager->errors.Add(WfErrors::CppUnableToSeparateCustomFile(tdDecls[tds[0]].Cast<WfClassDeclaration>().Obj(), tds));
 							}
@@ -17435,7 +17433,7 @@ WfCppConfig::Collect
 										vint indexB = From(nodeB.firstSubClassItem, nodeB.firstSubClassItem + nodeB.subClassItemCount)
 											.Select([&](vint index) {return globalDep.topLevelClasses[index]; })
 											.Min();
-										return indexA - indexB;
+										return indexA <=> indexB;
 									});
 								}
 							};
@@ -17648,7 +17646,7 @@ WfCppConfig::Collect
 						{
 							vint aIndex = ordered.IndexOf(a.Obj());
 							vint bIndex = ordered.IndexOf(b.Obj());
-							return aIndex - bIndex;
+							return aIndex <=> bIndex;
 						});
 					}
 
@@ -17659,7 +17657,7 @@ WfCppConfig::Collect
 						{
 							vint aIndex = ordered.IndexOf(a.Obj());
 							vint bIndex = ordered.IndexOf(b.Obj());
-							return aIndex - bIndex;
+							return aIndex <=> bIndex;
 						});
 					}
 				}
@@ -22144,7 +22142,7 @@ namespace vl
 						{
 							return scope->symbols.GetByIndex(index)[0]->name;
 						})
-						.OrderBy((vint64_t(*)(const WString&, const WString&))&WString::Compare)
+						.OrderBySelf()
 					);
 
 				return WriteFunctionHeader(writer, typeInfo, arguments, name, writeReturnType);
@@ -22809,9 +22807,9 @@ namespace vl
 				CopyFrom(
 					tds,
 					From(config->manager->declarationTypes.Values())
-						.OrderBy([](Ptr<ITypeDescriptor> a, Ptr<ITypeDescriptor> b)
+						.OrderByKey([](auto&& a)
 						{
-							return WString::Compare(a->GetTypeName(), b->GetTypeName());
+							return a->GetTypeName();
 						})
 						.Select([](Ptr<ITypeDescriptor> td)
 						{
@@ -23369,7 +23367,7 @@ namespace vl
 				{
 					writer.WriteString(prefix);
 					writer.WriteString(L"inline bool operator");
-					writer.WriteString(op.f0);
+					writer.WriteString(op.get<0>());
 					writer.WriteString(L" (const ");
 					writer.WriteString(name);
 					writer.WriteString(L"& a, const ");
@@ -23387,12 +23385,12 @@ namespace vl
 						writer.WriteString(L" != b.");
 						writer.WriteString(ConvertName(member->name.value));
 						writer.WriteString(L") return ");
-						writer.WriteString(op.f1);
+						writer.WriteString(op.get<1>());
 						writer.WriteLine(L";");
 					}
 					writer.WriteString(prefix);
 					writer.WriteString(L"\treturn ");
-					writer.WriteString(op.f2);
+					writer.WriteString(op.get<2>());
 					writer.WriteLine(L";");
 
 					writer.WriteString(prefix);
@@ -24902,7 +24900,7 @@ GenerateInstructions(Closure)
 						{
 							vint aId = wtoi(a->name.Sub(1, a->name.Length() - 1));
 							vint bId = wtoi(b->name.Sub(1, a->name.Length() - 1));
-							return aId - bId;
+							return aId <=> bId;
 						})
 					);
 
