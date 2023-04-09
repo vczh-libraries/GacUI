@@ -27,6 +27,9 @@ namespace demo
         var self : ::demo::DataGridTabPage* = null of (::demo::DataGridTabPage*);
 
         @cpp:Protected
+        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -97,9 +100,6 @@ namespace demo
 
         @cpp:Protected
         var comboView : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
-
-        @cpp:Protected
-        var dataGrid : ::presentation::controls::GuiBindableDataGrid* = null of (::presentation::controls::GuiBindableDataGrid*);
 
         @cpp:Protected
         var dateFilter : ::demo::DateFilter* = null of (::demo::DateFilter*);
@@ -189,10 +189,10 @@ namespace demo
                 <collection>.Add(<precompile>9);
             }
             {
-                (<precompile>2.VerticalAlwaysVisible = false);
+                (<precompile>2.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>2.HorizontalAlwaysVisible = false);
+                (<precompile>2.VerticalAlwaysVisible = false);
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
@@ -200,12 +200,12 @@ namespace demo
             {
                 (comboView.SelectedIndex = 6 of (::system::Int64));
             }
-            {
-                (comboView.Alt = "V");
-            }
             (<precompile>10 = comboView.BoundsComposition);
             {
                 (<precompile>10.PreferredMinSize = {x : 120;} of (::presentation::Size));
+            }
+            {
+                (comboView.Alt = "V");
             }
             {
                 <precompile>1.AddChild(comboView.BoundsComposition);
@@ -220,10 +220,10 @@ namespace demo
             {
                 (<precompile>12 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            (<precompile>13 = <precompile>12.BoundsComposition);
             {
                 (<precompile>12.Alt = "X");
             }
-            (<precompile>13 = <precompile>12.BoundsComposition);
             {
                 (<precompile>12.Text = "Rotate Item Source");
             }
@@ -241,13 +241,6 @@ namespace demo
                 (dataGrid = new (::presentation::controls::GuiBindableDataGrid*)(::presentation::theme::ThemeName::ListView));
             }
             {
-                (dataGrid.SmallImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
-                {
-                    var itemToBind = (cast (demo::MyDataItem^) <item>);
-                    return itemToBind.SmallImage;
-                });
-            }
-            {
                 (dataGrid.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
                 {
                     var itemToBind = (cast (demo::MyDataItem^) <item>);
@@ -259,17 +252,24 @@ namespace demo
                 <collection>.Add(0 of (::system::Int64));
             }
             {
-                (dataGrid.VerticalAlwaysVisible = false);
+                (dataGrid.SmallImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
+                {
+                    var itemToBind = (cast (demo::MyDataItem^) <item>);
+                    return itemToBind.SmallImage;
+                });
             }
             {
                 (dataGrid.HorizontalAlwaysVisible = false);
             }
             {
-                (dataGrid.Alt = "L");
+                (dataGrid.VerticalAlwaysVisible = false);
             }
             (<precompile>22 = dataGrid.BoundsComposition);
             {
                 (<precompile>22.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (dataGrid.Alt = "L");
             }
             (<precompile>15 = new (::presentation::controls::list::DataColumn^)());
             {
@@ -309,14 +309,14 @@ namespace demo
                 });
             }
             {
+                (<precompile>15.Size = 120 of (::system::Int64));
+            }
+            {
                 (<precompile>15.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var itemToBind = (cast (demo::MyDataItem^) <item>);
                     return itemToBind.Name;
                 });
-            }
-            {
-                (<precompile>15.Size = 120 of (::system::Int64));
             }
             {
                 (<precompile>15.Text = "Name");
@@ -381,14 +381,14 @@ namespace demo
                 });
             }
             {
+                (<precompile>16.Size = 80 of (::system::Int64));
+            }
+            {
                 (<precompile>16.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var itemToBind = (cast (demo::MyDataItem^) <item>);
                     return demo::ToString(itemToBind.Gender);
                 });
-            }
-            {
-                (<precompile>16.Size = 80 of (::system::Int64));
             }
             {
                 (<precompile>16.Text = "Gender");
@@ -453,14 +453,14 @@ namespace demo
                 });
             }
             {
+                (<precompile>17.Size = 80 of (::system::Int64));
+            }
+            {
                 (<precompile>17.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var itemToBind = (cast (demo::MyDataItem^) <item>);
                     return demo::ToString(itemToBind.Category);
                 });
-            }
-            {
-                (<precompile>17.Size = 80 of (::system::Int64));
             }
             {
                 (<precompile>17.Text = "Category");
@@ -521,14 +521,14 @@ namespace demo
                 });
             }
             {
+                (<precompile>18.Size = 80 of (::system::Int64));
+            }
+            {
                 (<precompile>18.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var itemToBind = (cast (demo::MyDataItem^) <item>);
                     return demo::ToString(itemToBind.Birthday);
                 });
-            }
-            {
-                (<precompile>18.Size = 80 of (::system::Int64));
             }
             {
                 (<precompile>18.Text = "Birthday");
@@ -593,14 +593,14 @@ namespace demo
                 });
             }
             {
+                (<precompile>21.Size = 160 of (::system::Int64));
+            }
+            {
                 (<precompile>21.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var itemToBind = (cast (demo::MyDataItem^) <item>);
                     return itemToBind.Website;
                 });
-            }
-            {
-                (<precompile>21.Size = 160 of (::system::Int64));
             }
             {
                 (<precompile>21.Text = "Website");
@@ -1698,10 +1698,10 @@ namespace demo
                 <collection>.Add(<precompile>8);
             }
             {
-                (<precompile>2.VerticalAlwaysVisible = false);
+                (<precompile>2.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>2.HorizontalAlwaysVisible = false);
+                (<precompile>2.VerticalAlwaysVisible = false);
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
@@ -1709,12 +1709,12 @@ namespace demo
             {
                 (comboView.SelectedIndex = 5 of (::system::Int64));
             }
-            {
-                (comboView.Alt = "V");
-            }
             (<precompile>9 = comboView.BoundsComposition);
             {
                 (<precompile>9.PreferredMinSize = {x : 120;} of (::presentation::Size));
+            }
+            {
+                (comboView.Alt = "V");
             }
             {
                 <precompile>1.AddChild(comboView.BoundsComposition);
@@ -1729,10 +1729,10 @@ namespace demo
             {
                 (<precompile>11 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            (<precompile>12 = <precompile>11.BoundsComposition);
             {
                 (<precompile>11.Alt = "X");
             }
-            (<precompile>12 = <precompile>11.BoundsComposition);
             {
                 (<precompile>11.Text = "Rotate Item Source -->");
             }
@@ -1762,17 +1762,17 @@ namespace demo
                 <collection>.Add(2 of (::system::Int64));
             }
             {
-                (listView.VerticalAlwaysVisible = false);
-            }
-            {
                 (listView.HorizontalAlwaysVisible = false);
             }
             {
-                (listView.Alt = "L");
+                (listView.VerticalAlwaysVisible = false);
             }
             (<precompile>18 = listView.BoundsComposition);
             {
                 (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (listView.Alt = "L");
             }
             (<precompile>14 = new (::presentation::controls::list::ListViewColumn^)());
             {
@@ -1820,13 +1820,6 @@ namespace demo
                 (bindableListView = new (::presentation::controls::GuiBindableListView*)(::presentation::theme::ThemeName::ListView));
             }
             {
-                (bindableListView.SmallImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
-                {
-                    var itemToBind = (cast (ListViewItem^) <item>);
-                    return itemToBind.SmallImage;
-                });
-            }
-            {
                 (bindableListView.LargeImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
                 {
                     var itemToBind = (cast (ListViewItem^) <item>);
@@ -1846,17 +1839,24 @@ namespace demo
                 <collection>.Add(2 of (::system::Int64));
             }
             {
-                (bindableListView.VerticalAlwaysVisible = false);
+                (bindableListView.SmallImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
+                {
+                    var itemToBind = (cast (ListViewItem^) <item>);
+                    return itemToBind.SmallImage;
+                });
             }
             {
                 (bindableListView.HorizontalAlwaysVisible = false);
             }
             {
-                (bindableListView.Alt = "L");
+                (bindableListView.VerticalAlwaysVisible = false);
             }
             (<precompile>24 = bindableListView.BoundsComposition);
             {
                 (<precompile>24.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (bindableListView.Alt = "L");
             }
             (<precompile>20 = new (::presentation::controls::list::ListViewColumn^)());
             {
@@ -2228,12 +2228,12 @@ namespace demo
         func <demo-MainWindow>Initialize(<this> : ::demo::MainWindow*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
+            }
             (<precompile>40 = self.BoundsComposition);
             {
                 (<precompile>40.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
-            }
-            {
-                (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
                 (self.Text = "Complete Control Showcase");
@@ -2964,79 +2964,6 @@ namespace demo
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (checkBorder ?? null of (::presentation::controls::GuiSelectableButton*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiSelectableButton*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = self.Border;
-                    var <new> = (cast (::system::Boolean) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (self.Border = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Selected of (::system::Boolean);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
                             (<bind-cache>0 = (checkSizeBox ?? null of (::presentation::controls::GuiSelectableButton*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
                             return true;
@@ -3153,6 +3080,79 @@ namespace demo
                         return;
                     }
                     (self.IconVisible = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Selected of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (checkBorder ?? null of (::presentation::controls::GuiSelectableButton*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiSelectableButton*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.Border;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.Border = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3478,10 +3478,7 @@ namespace demo
             }
             (<precompile>6 = new (::presentation::compositions::GuiRepeatStackComposition*)());
             {
-                (<precompile>6.Padding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>6.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>6.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (<precompile>6.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
@@ -3496,7 +3493,10 @@ namespace demo
                 });
             }
             {
-                (<precompile>6.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>6.Padding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>6.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -3543,6 +3543,9 @@ namespace demo
                 (<precompile>10.RowPadding = 5 of (::system::Int64));
             }
             {
+                (<precompile>10.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
                 (<precompile>10.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
                 {
                     {
@@ -3553,9 +3556,6 @@ namespace demo
                     }
                     raise "Cannot find a matched control template to create.";
                 });
-            }
-            {
-                (<precompile>10.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -3609,6 +3609,9 @@ namespace demo
                 (<precompile>15.RowPadding = 5 of (::system::Int64));
             }
             {
+                (<precompile>15.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+            }
+            {
                 (<precompile>15.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
                 {
                     {
@@ -3619,9 +3622,6 @@ namespace demo
                     }
                     raise "Cannot find a matched control template to create.";
                 });
-            }
-            {
-                (<precompile>15.ExtraMargin = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -3661,17 +3661,17 @@ namespace demo
                 (<precompile>19 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
-                (<precompile>19.TextProperty = func (<item> : ::system::Object) : (::system::String)
-                {
-                    var item = (cast (demo::MyTextItem^) <item>);
-                    return item.Name;
-                });
+                (<precompile>19.HorizontalAlwaysVisible = false);
             }
             {
                 (<precompile>19.VerticalAlwaysVisible = false);
             }
             {
-                (<precompile>19.HorizontalAlwaysVisible = false);
+                (<precompile>19.TextProperty = func (<item> : ::system::Object) : (::system::String)
+                {
+                    var item = (cast (demo::MyTextItem^) <item>);
+                    return item.Name;
+                });
             }
             {
                 (<precompile>19.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
@@ -3728,12 +3728,12 @@ namespace demo
             {
                 (<precompile>22.TotalSize = 100 of (::system::Int64));
             }
-            {
-                (<precompile>22.Alt = "H");
-            }
             (<precompile>23 = <precompile>22.BoundsComposition);
             {
                 (<precompile>23.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>22.Alt = "H");
             }
             {
                 <precompile>21.AddChild(<precompile>22.BoundsComposition);
@@ -3752,12 +3752,12 @@ namespace demo
             {
                 (hTracker.TotalSize = 10 of (::system::Int64));
             }
-            {
-                (hTracker.Alt = "H");
-            }
             (<precompile>25 = hTracker.BoundsComposition);
             {
                 (<precompile>25.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (hTracker.Alt = "H");
             }
             {
                 <precompile>24.AddChild(hTracker.BoundsComposition);
@@ -3799,12 +3799,12 @@ namespace demo
             {
                 (<precompile>30.TotalSize = 50 of (::system::Int64));
             }
-            {
-                (<precompile>30.Alt = "V");
-            }
             (<precompile>31 = <precompile>30.BoundsComposition);
             {
                 (<precompile>31.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>30.Alt = "V");
             }
             {
                 <precompile>29.AddChild(<precompile>30.BoundsComposition);
@@ -3823,12 +3823,12 @@ namespace demo
             {
                 (<precompile>33.TotalSize = 5 of (::system::Int64));
             }
-            {
-                (<precompile>33.Alt = "V");
-            }
             (<precompile>34 = <precompile>33.BoundsComposition);
             {
                 (<precompile>34.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>33.Alt = "V");
             }
             {
                 <precompile>32.AddChild(<precompile>33.BoundsComposition);
@@ -4404,79 +4404,6 @@ namespace demo
                         if ((!<bind-opened>))
                         {
                             (<bind-opened> = true);
-                            (<bind-cache>0 = (checkBorder ?? null of (::presentation::controls::GuiSelectableButton*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Update() : (::system::Boolean)
-                    {
-                        if ((<bind-opened> and (!<bind-closed>)))
-                        {
-                            <bind-activator>();
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    override func Close() : (::system::Boolean)
-                    {
-                        if ((!<bind-closed>))
-                        {
-                            (<bind-closed> = true);
-                            if (<bind-handler>0_0 is not null)
-                            {
-                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
-                                (<bind-handler>0_0 = null);
-                            }
-                            (<bind-cache>0 = null of (::presentation::controls::GuiSelectableButton*));
-                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
-                {
-                    var <old> = self.Border;
-                    var <new> = (cast (::system::Boolean) <value>);
-                    if ((<old> == <new>))
-                    {
-                        return;
-                    }
-                    (self.Border = <new>);
-                });
-                <this>.AddSubscription(<created-subscription>);
-            }
-            {
-                var <created-subscription> = new (::system::Subscription^)
-                {
-                    var <bind-cache>0 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
-
-                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
-
-                    var <bind-opened> : ::system::Boolean = false;
-
-                    var <bind-closed> : ::system::Boolean = false;
-
-                    func <bind-activator>() : (::system::Void)
-                    {
-                        var <bind-activator-result> = <bind-cache>0.Selected of (::system::Boolean);
-                        ValueChanged(<bind-activator-result>);
-                    }
-
-                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
-                    {
-                        <bind-activator>();
-                    }
-
-                    override func Open() : (::system::Boolean)
-                    {
-                        if ((!<bind-opened>))
-                        {
-                            (<bind-opened> = true);
                             (<bind-cache>0 = (checkSizeBox ?? null of (::presentation::controls::GuiSelectableButton*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
                             return true;
@@ -4593,6 +4520,79 @@ namespace demo
                         return;
                     }
                     (self.IconVisible = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Selected of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (checkBorder ?? null of (::presentation::controls::GuiSelectableButton*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.SelectedChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.SelectedChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiSelectableButton*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = self.Border;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (self.Border = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -4747,13 +4747,13 @@ namespace demo
     class SystemFrameWindowTemplateConstructor
     {
         @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
         var <precompile>0 : ::demo::SystemFrameWindowTemplate* = null of (::demo::SystemFrameWindowTemplate*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-SystemFrameWindowTemplate>Initialize(<this> : ::demo::SystemFrameWindowTemplate*) : (::system::Void)
@@ -4861,6 +4861,9 @@ namespace demo
     {
         @cpp:Protected
         var self : ::demo::TextListTabPage* = null of (::demo::TextListTabPage*);
+
+        @cpp:Protected
+        var textList : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -4986,16 +4989,13 @@ namespace demo
         var comboView : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
 
         @cpp:Protected
-        var textList : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
-
-        @cpp:Protected
         var bindableTextList : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
-        var <precompile>39 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>39 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>40 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>40 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
         var <precompile>41 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -5061,10 +5061,10 @@ namespace demo
                 <collection>.Add(<precompile>5);
             }
             {
-                (<precompile>2.VerticalAlwaysVisible = false);
+                (<precompile>2.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>2.HorizontalAlwaysVisible = false);
+                (<precompile>2.VerticalAlwaysVisible = false);
             }
             {
                 (comboView = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, <precompile>2));
@@ -5072,12 +5072,12 @@ namespace demo
             {
                 (comboView.SelectedIndex = 0 of (::system::Int64));
             }
-            {
-                (comboView.Alt = "V");
-            }
             (<precompile>6 = comboView.BoundsComposition);
             {
                 (<precompile>6.PreferredMinSize = {x : 120;} of (::presentation::Size));
+            }
+            {
+                (comboView.Alt = "V");
             }
             {
                 <precompile>1.AddChild(comboView.BoundsComposition);
@@ -5093,17 +5093,17 @@ namespace demo
                 (textList = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
-                (textList.VerticalAlwaysVisible = false);
-            }
-            {
                 (textList.HorizontalAlwaysVisible = false);
             }
             {
-                (textList.Alt = "L");
+                (textList.VerticalAlwaysVisible = false);
             }
             (<precompile>8 = textList.BoundsComposition);
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (textList.Alt = "L");
             }
             {
                 <precompile>7.AddChild(textList.BoundsComposition);
@@ -5118,13 +5118,13 @@ namespace demo
             {
                 (<precompile>10 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>40 = <precompile>10.BoundsComposition);
+            (<precompile>40 = <precompile>10.ContainerComposition);
             {
-                (<precompile>40.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
+                (<precompile>40.InternalMargin = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
             }
-            (<precompile>39 = <precompile>10.ContainerComposition);
+            (<precompile>39 = <precompile>10.BoundsComposition);
             {
-                (<precompile>39.InternalMargin = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>39.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
             }
             {
                 (<precompile>10.Text = "Operations");
@@ -5146,12 +5146,12 @@ namespace demo
             {
                 (<precompile>13 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>13.Alt = "A");
-            }
             (<precompile>14 = <precompile>13.BoundsComposition);
             {
                 (<precompile>14.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>13.Alt = "A");
             }
             {
                 (<precompile>13.Text = "Add 10 items");
@@ -5166,12 +5166,12 @@ namespace demo
             {
                 (<precompile>16 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>16.Alt = "O");
-            }
             (<precompile>17 = <precompile>16.BoundsComposition);
             {
                 (<precompile>17.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>16.Alt = "O");
             }
             {
                 (<precompile>16.Text = "Remove odd items");
@@ -5186,12 +5186,12 @@ namespace demo
             {
                 (<precompile>19 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>19.Alt = "E");
-            }
             (<precompile>20 = <precompile>19.BoundsComposition);
             {
                 (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>19.Alt = "E");
             }
             {
                 (<precompile>19.Text = "Remove even items");
@@ -5206,12 +5206,12 @@ namespace demo
             {
                 (<precompile>22 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>22.Alt = "C");
-            }
             (<precompile>23 = <precompile>22.BoundsComposition);
             {
                 (<precompile>23.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>22.Alt = "C");
             }
             {
                 (<precompile>22.Text = "Clear");
@@ -5226,12 +5226,12 @@ namespace demo
             {
                 (<precompile>25 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>25.Alt = "X");
-            }
             (<precompile>26 = <precompile>25.BoundsComposition);
             {
                 (<precompile>26.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>25.Alt = "X");
             }
             {
                 (<precompile>25.Text = "Rotate Item Source -->");
@@ -5342,24 +5342,24 @@ namespace demo
                 });
             }
             {
+                (bindableTextList.HorizontalAlwaysVisible = false);
+            }
+            {
+                (bindableTextList.VerticalAlwaysVisible = false);
+            }
+            {
                 (bindableTextList.TextProperty = func (<item> : ::system::Object) : (::system::String)
                 {
                     var item = (cast (demo::MyTextItem^) <item>);
                     return item.Name;
                 });
             }
-            {
-                (bindableTextList.VerticalAlwaysVisible = false);
-            }
-            {
-                (bindableTextList.HorizontalAlwaysVisible = false);
-            }
-            {
-                (bindableTextList.Alt = "B");
-            }
             (<precompile>42 = bindableTextList.BoundsComposition);
             {
                 (<precompile>42.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (bindableTextList.Alt = "B");
             }
             {
                 <precompile>41.AddChild(bindableTextList.BoundsComposition);
@@ -5586,6 +5586,9 @@ namespace demo
         var self : ::demo::TreeViewTabPage* = null of (::demo::TreeViewTabPage*);
 
         @cpp:Protected
+        var treeView : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -5701,9 +5704,6 @@ namespace demo
 
         @cpp:Protected
         var <precompile>38 : ::presentation::controls::tree::MemoryNodeProvider^ = null of (::presentation::controls::tree::MemoryNodeProvider^);
-
-        @cpp:Protected
-        var treeView : ::presentation::controls::GuiTreeView* = null of (::presentation::controls::GuiTreeView*);
 
         @cpp:Protected
         var bindableTreeView : ::presentation::controls::GuiBindableTreeView* = null of (::presentation::controls::GuiBindableTreeView*);
@@ -5870,10 +5870,10 @@ namespace demo
             {
                 (<precompile>2 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
+            (<precompile>3 = <precompile>2.BoundsComposition);
             {
                 (<precompile>2.Alt = "X");
             }
-            (<precompile>3 = <precompile>2.BoundsComposition);
             {
                 (<precompile>2.Text = "Rotate Item Source -->");
             }
@@ -5891,17 +5891,17 @@ namespace demo
                 (treeView = new (::presentation::controls::GuiTreeView*)(::presentation::theme::ThemeName::TreeView));
             }
             {
-                (treeView.VerticalAlwaysVisible = false);
-            }
-            {
                 (treeView.HorizontalAlwaysVisible = false);
             }
             {
-                (treeView.Alt = "L");
+                (treeView.VerticalAlwaysVisible = false);
             }
             (<precompile>27 = treeView.BoundsComposition);
             {
                 (<precompile>27.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (treeView.Alt = "L");
             }
             (<precompile>5 = new (::presentation::controls::tree::MemoryNodeProvider^)(new (::presentation::controls::tree::TreeViewItem^)((cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "SmallImages/Plus_Blue", true)), "Blue+")));
             (<precompile>6 = new (::presentation::controls::tree::MemoryNodeProvider^)(new (::presentation::controls::tree::TreeViewItem^)((cast (::presentation::GuiImageData^) <this>.ResolveResource("res", "SmallImages/ArrowCurve_Blue_Left", true)), "<--")));
@@ -6005,6 +6005,13 @@ namespace demo
                 (bindableTreeView = new (::presentation::controls::GuiBindableTreeView*)(::presentation::theme::ThemeName::TreeView));
             }
             {
+                (bindableTreeView.ImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
+                {
+                    var nodeToBind = (cast (MemoryNodeProvider^) <item>);
+                    return (nodeToBind.Data as (TreeViewItem^)).image;
+                });
+            }
+            {
                 (bindableTreeView.ChildrenProperty = func (<item> : ::system::Object) : (::system::Enumerable^)
                 {
                     var nodeToBind = (cast (MemoryNodeProvider^) <item>);
@@ -6012,11 +6019,10 @@ namespace demo
                 });
             }
             {
-                (bindableTreeView.ImageProperty = func (<item> : ::system::Object) : (::presentation::GuiImageData^)
-                {
-                    var nodeToBind = (cast (MemoryNodeProvider^) <item>);
-                    return (nodeToBind.Data as (TreeViewItem^)).image;
-                });
+                (bindableTreeView.HorizontalAlwaysVisible = false);
+            }
+            {
+                (bindableTreeView.VerticalAlwaysVisible = false);
             }
             {
                 (bindableTreeView.TextProperty = func (<item> : ::system::Object) : (::system::String)
@@ -6025,18 +6031,12 @@ namespace demo
                     return (nodeToBind.Data as (TreeViewItem^)).text;
                 });
             }
-            {
-                (bindableTreeView.VerticalAlwaysVisible = false);
-            }
-            {
-                (bindableTreeView.HorizontalAlwaysVisible = false);
-            }
-            {
-                (bindableTreeView.Alt = "L");
-            }
             (<precompile>29 = bindableTreeView.BoundsComposition);
             {
                 (<precompile>29.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (bindableTreeView.Alt = "L");
             }
             {
                 <precompile>28.AddChild(bindableTreeView.BoundsComposition);
@@ -7474,10 +7474,10 @@ namespace demo
         var self : ::demo::DateEditor* = null of (::demo::DateEditor*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var comboBox : ::presentation::controls::GuiDateComboBox* = null of (::presentation::controls::GuiDateComboBox*);
 
         @cpp:Protected
-        var comboBox : ::presentation::controls::GuiDateComboBox* = null of (::presentation::controls::GuiDateComboBox*);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-DateEditor>Initialize(<this> : ::demo::DateEditor*) : (::system::Void)
@@ -8161,10 +8161,10 @@ namespace demo
         var self : ::demo::TextEditor* = null of (::demo::TextEditor*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var textBox : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
 
         @cpp:Protected
-        var textBox : ::presentation::controls::GuiSinglelineTextBox* = null of (::presentation::controls::GuiSinglelineTextBox*);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-TextEditor>Initialize(<this> : ::demo::TextEditor*) : (::system::Void)
@@ -8818,13 +8818,13 @@ namespace demo
         var self : ::demo::CategoryEditor* = null of (::demo::CategoryEditor*);
 
         @cpp:Protected
+        var comboBox : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var comboBox : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
 
         @cpp:Protected
         func <demo-CategoryEditor>Initialize(<this> : ::demo::CategoryEditor*) : (::system::Void)
@@ -8834,10 +8834,10 @@ namespace demo
                 (<precompile>0 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
-                (<precompile>0.VerticalAlwaysVisible = false);
+                (<precompile>0.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>0.HorizontalAlwaysVisible = false);
+                (<precompile>0.VerticalAlwaysVisible = false);
             }
             {
                 (<precompile>0.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
@@ -9736,13 +9736,13 @@ namespace demo
         var self : ::demo::GenderEditor* = null of (::demo::GenderEditor*);
 
         @cpp:Protected
+        var comboBox : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var comboBox : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
 
         @cpp:Protected
         func <demo-GenderEditor>Initialize(<this> : ::demo::GenderEditor*) : (::system::Void)
@@ -9752,10 +9752,10 @@ namespace demo
                 (<precompile>0 = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
             }
             {
-                (<precompile>0.VerticalAlwaysVisible = false);
+                (<precompile>0.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>0.HorizontalAlwaysVisible = false);
+                (<precompile>0.VerticalAlwaysVisible = false);
             }
             {
                 (<precompile>0.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiListItemTemplate*)
@@ -10405,12 +10405,12 @@ namespace demo
             {
                 (dp1 = new (::presentation::controls::GuiDatePicker*)(::presentation::theme::ThemeName::DatePicker));
             }
-            {
-                (dp1.Alt = "D");
-            }
             (<precompile>2 = dp1.BoundsComposition);
             {
                 (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (dp1.Alt = "D");
             }
             {
                 <precompile>1.AddChild(dp1.BoundsComposition);
@@ -10425,12 +10425,12 @@ namespace demo
             {
                 (dp2 = new (::presentation::controls::GuiDatePicker*)(::presentation::theme::ThemeName::DatePicker));
             }
-            {
-                (dp2.Alt = "D");
-            }
             (<precompile>4 = dp2.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (dp2.Alt = "D");
             }
             {
                 <precompile>3.AddChild(dp2.BoundsComposition);
@@ -10445,12 +10445,12 @@ namespace demo
             {
                 (dc1 = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
             }
-            {
-                (dc1.Alt = "D");
-            }
             (<precompile>6 = dc1.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (dc1.Alt = "D");
             }
             {
                 <precompile>5.AddChild(dc1.BoundsComposition);
@@ -10465,12 +10465,12 @@ namespace demo
             {
                 (dc2 = new (::presentation::controls::GuiDateComboBox*)(::presentation::theme::ThemeName::DateComboBox));
             }
-            {
-                (dc2.Alt = "D");
-            }
             (<precompile>8 = dc2.BoundsComposition);
             {
                 (<precompile>8.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (dc2.Alt = "D");
             }
             {
                 <precompile>7.AddChild(dc2.BoundsComposition);
@@ -11260,9 +11260,6 @@ namespace demo
         {
             (self = <this>);
             {
-                (self.ShowInTaskBar = false);
-            }
-            {
                 (self.SizeBox = false);
             }
             {
@@ -11271,22 +11268,25 @@ namespace demo
             {
                 (self.MaximizedBox = false);
             }
-            (<precompile>13 = self.BoundsComposition);
             {
-                (<precompile>13.PreferredMinSize = {x : 320; y : 80;} of (::presentation::Size));
+                (self.ShowInTaskBar = false);
             }
             {
                 (self.ClientSize = {x : 320; y : 80;} of (::presentation::Size));
+            }
+            (<precompile>13 = self.BoundsComposition);
+            {
+                (<precompile>13.PreferredMinSize = {x : 320; y : 80;} of (::presentation::Size));
             }
             {
                 (self.Text = "Hyperlink");
             }
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.BorderVisible = true);
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
+                (<precompile>0.BorderVisible = true);
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -11766,12 +11766,12 @@ namespace demo
             {
                 (document.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
             }
-            {
-                (document.Alt = "D");
-            }
             (<precompile>2 = document.BoundsComposition);
             {
                 (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (document.Alt = "D");
             }
             {
                 <precompile>1.AddChild(document.BoundsComposition);
@@ -15280,15 +15280,15 @@ namespace demo
             {
                 (<precompile>94 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>94.Alt = "S");
-            }
             (<precompile>95 = <precompile>94.BoundsComposition);
             {
                 (<precompile>95.PreferredMinSize = {x : 180;} of (::presentation::Size));
             }
             {
                 (<precompile>95.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 1;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>94.Alt = "S");
             }
             {
                 <precompile>93.AddChild(<precompile>94.BoundsComposition);
@@ -15662,15 +15662,15 @@ namespace demo
             {
                 (<precompile>52 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>52.Alt = "L");
-            }
             (<precompile>53 = <precompile>52.BoundsComposition);
             {
                 (<precompile>53.PreferredMinSize = {x : 36;} of (::presentation::Size));
             }
             {
                 (<precompile>53.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>52.Alt = "L");
             }
             {
                 <precompile>51.AddChild(<precompile>52);
@@ -15688,15 +15688,15 @@ namespace demo
             {
                 (<precompile>55 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>55.Alt = "C");
-            }
             (<precompile>56 = <precompile>55.BoundsComposition);
             {
                 (<precompile>56.PreferredMinSize = {x : 36;} of (::presentation::Size));
             }
             {
                 (<precompile>56.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>55.Alt = "C");
             }
             {
                 <precompile>54.AddChild(<precompile>55);
@@ -15714,15 +15714,15 @@ namespace demo
             {
                 (<precompile>58 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>58.Alt = "R");
-            }
             (<precompile>59 = <precompile>58.BoundsComposition);
             {
                 (<precompile>59.PreferredMinSize = {x : 36;} of (::presentation::Size));
             }
             {
                 (<precompile>59.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>58.Alt = "R");
             }
             {
                 <precompile>57.AddChild(<precompile>58);
@@ -15754,15 +15754,15 @@ namespace demo
             {
                 (<precompile>63 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>63.Alt = "L");
-            }
             (<precompile>64 = <precompile>63.BoundsComposition);
             {
                 (<precompile>64.PreferredMinSize = {x : 36;} of (::presentation::Size));
             }
             {
                 (<precompile>64.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>63.Alt = "L");
             }
             {
                 <precompile>62.AddChild(<precompile>63);
@@ -15780,15 +15780,15 @@ namespace demo
             {
                 (<precompile>66 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>66.Alt = "C");
-            }
             (<precompile>67 = <precompile>66.BoundsComposition);
             {
                 (<precompile>67.PreferredMinSize = {x : 36;} of (::presentation::Size));
             }
             {
                 (<precompile>67.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>66.Alt = "C");
             }
             {
                 <precompile>65.AddChild(<precompile>66);
@@ -15806,15 +15806,15 @@ namespace demo
             {
                 (<precompile>69 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>69.Alt = "R");
-            }
             (<precompile>70 = <precompile>69.BoundsComposition);
             {
                 (<precompile>70.PreferredMinSize = {x : 36;} of (::presentation::Size));
             }
             {
                 (<precompile>70.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>69.Alt = "R");
             }
             {
                 <precompile>68.AddChild(<precompile>69);
@@ -15965,12 +15965,12 @@ namespace demo
                 var <collection> = <precompile>10.Groups;
                 <collection>.Add(<precompile>71);
             }
-            {
-                (<precompile>10.Alt = "E");
-            }
             (<precompile>11 = <precompile>10.ContainerComposition);
             {
                 (<precompile>11.PreferredMinSize = {y : 110;} of (::presentation::Size));
+            }
+            {
+                (<precompile>10.Alt = "E");
             }
             {
                 (<precompile>10.Text = "Edit");
@@ -16030,10 +16030,10 @@ namespace demo
                 <collection>.Add(<precompile>82);
             }
             {
-                (<precompile>81.Alt = "I");
+                (<precompile>81.Highlighted = true);
             }
             {
-                (<precompile>81.Highlighted = true);
+                (<precompile>81.Alt = "I");
             }
             {
                 (<precompile>81.Text = "Insert");
@@ -17195,6 +17195,9 @@ namespace demo
         var self : ::demo::StyleItemTemplate* = null of (::demo::StyleItemTemplate*);
 
         @cpp:Protected
+        var ViewModel : ::demo::StyleItem^ = null of (::demo::StyleItem^);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
@@ -17217,9 +17220,6 @@ namespace demo
 
         @cpp:Protected
         var <precompile>7 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var ViewModel : ::demo::StyleItem^ = null of (::demo::StyleItem^);
 
         @cpp:Protected
         var containerControl : ::presentation::controls::GuiCustomControl* = null of (::presentation::controls::GuiCustomControl*);
@@ -18995,10 +18995,10 @@ namespace demo
                 <collection>.Add(<precompile>5);
             }
             {
-                (listLocales.VerticalAlwaysVisible = false);
+                (listLocales.HorizontalAlwaysVisible = false);
             }
             {
-                (listLocales.HorizontalAlwaysVisible = false);
+                (listLocales.VerticalAlwaysVisible = false);
             }
             {
                 (comboLocales = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, listLocales));
@@ -19081,10 +19081,10 @@ namespace demo
                 <collection>.Add(<precompile>21);
             }
             {
-                (<precompile>8.VerticalAlwaysVisible = false);
+                (<precompile>8.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>8.HorizontalAlwaysVisible = false);
+                (<precompile>8.VerticalAlwaysVisible = false);
             }
             (<precompile>9 = <precompile>8.BoundsComposition);
             {
@@ -20529,10 +20529,10 @@ namespace demo
         var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>17 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>18 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
 
         @cpp:Protected
         func <demo-EnglishNumbersController>Initialize(<this> : ::demo::EnglishNumbersController*) : (::system::Void)
@@ -20541,13 +20541,13 @@ namespace demo
             {
                 (<precompile>0 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>18 = <precompile>0.BoundsComposition);
+            (<precompile>18 = <precompile>0.ContainerComposition);
             {
-                (<precompile>18.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
+                (<precompile>18.InternalMargin = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
             }
-            (<precompile>17 = <precompile>0.ContainerComposition);
+            (<precompile>17 = <precompile>0.BoundsComposition);
             {
-                (<precompile>17.InternalMargin = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>17.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
             }
             (<precompile>1 = new (::presentation::compositions::GuiStackComposition*)());
             {
@@ -20566,12 +20566,12 @@ namespace demo
             {
                 (<precompile>3 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>3.Alt = "A");
-            }
             (<precompile>4 = <precompile>3.BoundsComposition);
             {
                 (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>3.Alt = "A");
             }
             {
                 (<precompile>3.Text = "Add 10 items");
@@ -20586,12 +20586,12 @@ namespace demo
             {
                 (<precompile>6 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>6.Alt = "O");
-            }
             (<precompile>7 = <precompile>6.BoundsComposition);
             {
                 (<precompile>7.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>6.Alt = "O");
             }
             {
                 (<precompile>6.Text = "Remove odd items");
@@ -20606,12 +20606,12 @@ namespace demo
             {
                 (<precompile>9 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>9.Alt = "E");
-            }
             (<precompile>10 = <precompile>9.BoundsComposition);
             {
                 (<precompile>10.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>9.Alt = "E");
             }
             {
                 (<precompile>9.Text = "Remove even items");
@@ -20626,12 +20626,12 @@ namespace demo
             {
                 (<precompile>12 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>12.Alt = "C");
-            }
             (<precompile>13 = <precompile>12.BoundsComposition);
             {
                 (<precompile>13.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>12.Alt = "C");
             }
             {
                 (<precompile>12.Text = "Clear");
@@ -20646,12 +20646,12 @@ namespace demo
             {
                 (<precompile>15 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            {
-                (<precompile>15.Alt = "R");
-            }
             (<precompile>16 = <precompile>15.BoundsComposition);
             {
                 (<precompile>16.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>15.Alt = "R");
             }
             {
                 (<precompile>15.Text = "Reset Counter");
@@ -21058,9 +21058,6 @@ namespace demo
     class EnglishNumbersControllerTabPageConstructor
     {
         @cpp:Protected
-        var content : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
         var <precompile>0 : ::demo::EnglishNumbersControllerTabPage* = null of (::demo::EnglishNumbersControllerTabPage*);
 
         @cpp:Protected
@@ -21071,6 +21068,9 @@ namespace demo
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var content : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
         var controller : ::demo::EnglishNumbersController* = null of (::demo::EnglishNumbersController*);
@@ -21235,6 +21235,9 @@ namespace demo
     class RepeatItemTemplateConstructor
     {
         @cpp:Protected
+        var ViewModel : ::demo::MyTextItem^ = null of (::demo::MyTextItem^);
+
+        @cpp:Protected
         var <precompile>0 : ::demo::RepeatItemTemplate* = null of (::demo::RepeatItemTemplate*);
 
         @cpp:Protected
@@ -21242,9 +21245,6 @@ namespace demo
 
         @cpp:Protected
         var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var ViewModel : ::demo::MyTextItem^ = null of (::demo::MyTextItem^);
 
         @cpp:Protected
         func <demo-RepeatItemTemplate>Initialize(<this> : ::demo::RepeatItemTemplate*) : (::system::Void)
@@ -21404,6 +21404,9 @@ namespace demo
     class SharedSizeItemTemplateConstructor
     {
         @cpp:Protected
+        var ViewModel : ::demo::MyTextItem^ = null of (::demo::MyTextItem^);
+
+        @cpp:Protected
         var <precompile>0 : ::demo::SharedSizeItemTemplate* = null of (::demo::SharedSizeItemTemplate*);
 
         @cpp:Protected
@@ -21414,9 +21417,6 @@ namespace demo
 
         @cpp:Protected
         var <precompile>3 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        var ViewModel : ::demo::MyTextItem^ = null of (::demo::MyTextItem^);
 
         @cpp:Protected
         func <demo-SharedSizeItemTemplate>Initialize(<this> : ::demo::SharedSizeItemTemplate*) : (::system::Void)
@@ -21592,13 +21592,13 @@ namespace demo
         var self : ::demo::SharedSizeTextItemTemplate* = null of (::demo::SharedSizeTextItemTemplate*);
 
         @cpp:Protected
+        var ViewModel : ::demo::MyTextItem^ = null of (::demo::MyTextItem^);
+
+        @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
 
         @cpp:Protected
         var <precompile>1 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
-
-        @cpp:Protected
-        var ViewModel : ::demo::MyTextItem^ = null of (::demo::MyTextItem^);
 
         @cpp:Protected
         func <demo-SharedSizeTextItemTemplate>Initialize(<this> : ::demo::SharedSizeTextItemTemplate*) : (::system::Void)
@@ -22045,10 +22045,10 @@ namespace demo
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.BorderVisible = false);
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
+                (<precompile>0.BorderVisible = false);
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -22713,10 +22713,10 @@ namespace demo
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.BorderVisible = false);
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
+                (<precompile>0.BorderVisible = false);
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -23604,10 +23604,10 @@ namespace demo
             (self = <this>);
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>0.BorderVisible = false);
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
             }
             {
-                (<precompile>0.CellPadding = 5 of (::system::Int64));
+                (<precompile>0.BorderVisible = false);
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
@@ -24495,12 +24495,12 @@ namespace demo
             {
                 (<precompile>2.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
             }
-            {
-                (<precompile>2.Alt = "T");
-            }
             (<precompile>3 = <precompile>2.BoundsComposition);
             {
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>2.Alt = "T");
             }
             {
                 (<precompile>2.Text = "Archer");
@@ -24521,12 +24521,12 @@ namespace demo
             {
                 (<precompile>5.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
             }
-            {
-                (<precompile>5.Alt = "V");
-            }
             (<precompile>6 = <precompile>5.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.Alt = "V");
             }
             {
                 <precompile>4.AddChild(<precompile>5.BoundsComposition);
@@ -24544,12 +24544,12 @@ namespace demo
             {
                 (<precompile>8.EditMode = Editable of (::presentation::controls::GuiDocumentCommonInterface::EditMode));
             }
-            {
-                (<precompile>8.Alt = "L");
-            }
             (<precompile>9 = <precompile>8.BoundsComposition);
             {
                 (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>8.Alt = "L");
             }
             {
                 <precompile>7.AddChild(<precompile>8.BoundsComposition);
@@ -24929,12 +24929,12 @@ namespace demo
             {
                 (<precompile>2 = new (::presentation::controls::GuiSinglelineTextBox*)(::presentation::theme::ThemeName::SinglelineTextBox));
             }
-            {
-                (<precompile>2.Alt = "S");
-            }
             (<precompile>3 = <precompile>2.BoundsComposition);
             {
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>2.Alt = "S");
             }
             {
                 (<precompile>2.Text = "Archer");
@@ -24953,17 +24953,17 @@ namespace demo
                 (<precompile>5 = new (::presentation::controls::GuiMultilineTextBox*)(::presentation::theme::ThemeName::MultilineTextBox));
             }
             {
-                (<precompile>5.VerticalAlwaysVisible = false);
-            }
-            {
                 (<precompile>5.HorizontalAlwaysVisible = false);
             }
             {
-                (<precompile>5.Alt = "M");
+                (<precompile>5.VerticalAlwaysVisible = false);
             }
             (<precompile>6 = <precompile>5.BoundsComposition);
             {
                 (<precompile>6.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>5.Alt = "M");
             }
             {
                 <precompile>4.AddChild(<precompile>5.BoundsComposition);

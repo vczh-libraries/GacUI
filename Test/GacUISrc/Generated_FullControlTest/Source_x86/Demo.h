@@ -683,9 +683,9 @@ namespace demo
 #endif
 	protected:
 		::demo::CategoryEditor* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		void __vwsn_demo_CategoryEditor_Initialize(::demo::CategoryEditor* __vwsn_this_);
 	public:
 		CategoryEditorConstructor();
@@ -885,6 +885,7 @@ namespace demo
 #endif
 	protected:
 		::demo::DataGridTabPage* self;
+		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -909,7 +910,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::list::DataColumn> __vwsn_precompile_21;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_22;
 		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiBindableDataGrid* dataGrid;
 		::demo::DateFilter* dateFilter;
 		void __vwsn_demo_DataGridTabPage_Initialize(::demo::DataGridTabPage* __vwsn_this_);
 	public:
@@ -978,8 +978,8 @@ namespace demo
 #endif
 	protected:
 		::demo::DateEditor* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiDateComboBox* comboBox;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		void __vwsn_demo_DateEditor_Initialize(::demo::DateEditor* __vwsn_this_);
 	public:
 		DateEditorConstructor();
@@ -1667,8 +1667,8 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_14;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_15;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_17;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_18;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_18;
 		void __vwsn_demo_EnglishNumbersController_Initialize(::demo::EnglishNumbersController* __vwsn_this_);
 	public:
 		EnglishNumbersControllerConstructor();
@@ -1710,11 +1710,11 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<EnglishNumbersControllerTabPageConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiCellComposition* content;
 		::demo::EnglishNumbersControllerTabPage* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* content;
 		::demo::EnglishNumbersController* controller;
 		void __vwsn_demo_EnglishNumbersControllerTabPage_Initialize(::demo::EnglishNumbersControllerTabPage* __vwsn_this_);
 	public:
@@ -1785,9 +1785,9 @@ namespace demo
 #endif
 	protected:
 		::demo::GenderEditor* self;
+		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		::vl::presentation::controls::GuiBindableTextList* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiComboBoxListControl* comboBox;
 		void __vwsn_demo_GenderEditor_Initialize(::demo::GenderEditor* __vwsn_this_);
 	public:
 		GenderEditorConstructor();
@@ -2281,10 +2281,10 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RepeatItemTemplateConstructor>;
 #endif
 	protected:
+		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		::demo::RepeatItemTemplate* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
-		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		void __vwsn_demo_RepeatItemTemplate_Initialize(::demo::RepeatItemTemplate* __vwsn_this_);
 	public:
 		RepeatItemTemplateConstructor();
@@ -2672,11 +2672,11 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SharedSizeItemTemplateConstructor>;
 #endif
 	protected:
+		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		::demo::SharedSizeItemTemplate* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_3;
-		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		void __vwsn_demo_SharedSizeItemTemplate_Initialize(::demo::SharedSizeItemTemplate* __vwsn_this_);
 	public:
 		SharedSizeItemTemplateConstructor();
@@ -2710,9 +2710,9 @@ namespace demo
 #endif
 	protected:
 		::demo::SharedSizeTextItemTemplate* self;
+		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_1;
-		::vl::Ptr<::demo::MyTextItem> ViewModel;
 		void __vwsn_demo_SharedSizeTextItemTemplate_Initialize(::demo::SharedSizeTextItemTemplate* __vwsn_this_);
 	public:
 		SharedSizeTextItemTemplateConstructor();
@@ -2785,6 +2785,7 @@ namespace demo
 #endif
 	protected:
 		::demo::StyleItemTemplate* self;
+		::vl::Ptr<::demo::StyleItem> ViewModel;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_2;
@@ -2793,7 +2794,6 @@ namespace demo
 		::vl::presentation::controls::GuiCustomControl* __vwsn_precompile_5;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_7;
-		::vl::Ptr<::demo::StyleItem> ViewModel;
 		::vl::presentation::controls::GuiCustomControl* containerControl;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> styleLabel;
 		void __vwsn_demo_StyleItemTemplate_Initialize(::demo::StyleItemTemplate* __vwsn_this_);
@@ -2898,9 +2898,9 @@ namespace demo
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<SystemFrameWindowTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::demo::SystemFrameWindowTemplate* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* container;
 		void __vwsn_demo_SystemFrameWindowTemplate_Initialize(::demo::SystemFrameWindowTemplate* __vwsn_this_);
 	public:
 		SystemFrameWindowTemplateConstructor();
@@ -3024,8 +3024,8 @@ namespace demo
 #endif
 	protected:
 		::demo::TextEditor* self;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		::vl::presentation::controls::GuiSinglelineTextBox* textBox;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		void __vwsn_demo_TextEditor_Initialize(::demo::TextEditor* __vwsn_this_);
 	public:
 		TextEditorConstructor();
@@ -3061,6 +3061,7 @@ namespace demo
 #endif
 	protected:
 		::demo::TextListTabPage* self;
+		::vl::presentation::controls::GuiTextList* textList;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiTextList* __vwsn_precompile_2;
@@ -3102,10 +3103,9 @@ namespace demo
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_38;
 		::vl::presentation::controls::GuiSelectableButton::MutexGroupController* mutexGroupController;
 		::vl::presentation::controls::GuiComboBoxListControl* comboView;
-		::vl::presentation::controls::GuiTextList* textList;
 		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_39;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_40;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_39;
+		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_40;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_41;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_42;
 		void __vwsn_demo_TextListTabPage_Initialize(::demo::TextListTabPage* __vwsn_this_);
@@ -3145,6 +3145,7 @@ namespace demo
 #endif
 	protected:
 		::demo::TreeViewTabPage* self;
+		::vl::presentation::controls::GuiTreeView* treeView;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_2;
@@ -3184,7 +3185,6 @@ namespace demo
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_36;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_37;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_38;
-		::vl::presentation::controls::GuiTreeView* treeView;
 		::vl::presentation::controls::GuiBindableTreeView* bindableTreeView;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_39;
 		::vl::Ptr<::vl::presentation::controls::tree::MemoryNodeProvider> __vwsn_precompile_40;
@@ -5361,7 +5361,7 @@ Closures
 
 		__vwsnf78_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::Ptr<::vl::presentation::GuiImageData> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf79_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_
@@ -5370,7 +5370,7 @@ Closures
 
 		__vwsnf79_Demo_demo_TreeViewTabPageConstructor___vwsn_demo_TreeViewTabPage_Initialize_(::demo::TreeViewTabPageConstructor* __vwsnctorthis_0);
 
-		::vl::Ptr<::vl::presentation::GuiImageData> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
+		::vl::Ptr<::vl::reflection::description::IValueEnumerable> operator()(const ::vl::reflection::description::Value& __vwsn_item_) const;
 	};
 
 	struct __vwsnf7_Demo_demo_DataGridTabPageConstructor___vwsn_demo_DataGridTabPage_Initialize_
