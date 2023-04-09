@@ -74,12 +74,8 @@ Enumerations
 		};
 
 #define GUI_DEFINE_COMPARE_OPERATORS(TYPE)\
-		inline bool operator==(const TYPE& right)const { return Compare(right) == 0; } \
-		inline bool operator!=(const TYPE& right)const { return Compare(right) != 0; } \
-		inline bool operator< (const TYPE& right)const { return Compare(right) < 0; }  \
-		inline bool operator<=(const TYPE& right)const { return Compare(right) <= 0; } \
-		inline bool operator> (const TYPE& right)const { return Compare(right) > 0; }  \
-		inline bool operator>=(const TYPE& right)const { return Compare(right) >= 0; } \
+		std::strong_ordering operator<=>(const TYPE&) const = default;\
+		bool operator==(const TYPE&) const = default;\
 
 /***********************************************************************
 TextPos
@@ -109,13 +105,6 @@ TextPos
 			{
 			}
 
-			inline vint Compare(const TextPos& value)const
-			{
-				vint result;
-				if ((result = row - value.row) != 0) return result;
-				if ((result = column - value.column) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(TextPos)
 		};
 
@@ -147,13 +136,6 @@ GridPos
 			{
 			}
 
-			inline vint Compare(const GridPos& value)const
-			{
-				vint result;
-				if ((result = row - value.row) != 0) return result;
-				if ((result = column - value.column) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(GridPos)
 		};
 
@@ -180,7 +162,6 @@ Coordinate
 			NativeCoordinate& operator=(const NativeCoordinate& _value) = default;
 			NativeCoordinate& operator=(NativeCoordinate&& _value) = default;
 
-			inline vint Compare(NativeCoordinate c) const { return value - c.value; }
 			GUI_DEFINE_COMPARE_OPERATORS(NativeCoordinate)
 
 			inline NativeCoordinate operator+(NativeCoordinate c)const { return value + c.value; };
@@ -227,13 +208,6 @@ Point
 			{
 			}
 
-			inline vint Compare(const Point_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(x, value.x)) != 0) return result;
-				if ((result = CompareCoordinate(y, value.y)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Point_<T>)
 		};
 
@@ -270,13 +244,6 @@ Size
 			{
 			}
 
-			inline vint Compare(const Size_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(x, value.x)) != 0) return result;
-				if ((result = CompareCoordinate(y, value.y)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Size_<T>)
 		};
 
@@ -326,15 +293,6 @@ Rectangle
 			{
 			}
 
-			inline vint Compare(const Rect_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(x1, value.x1)) != 0) return result;
-				if ((result = CompareCoordinate(y1, value.y1)) != 0) return result;
-				if ((result = CompareCoordinate(x2, value.x2)) != 0) return result;
-				if ((result = CompareCoordinate(y2, value.y2)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Rect_<T>)
 
 			Point_<T> LeftTop()const
@@ -536,11 +494,8 @@ Color
 			{
 			}
 
-			vint64_t Compare(Color color)const
-			{
-				return (vint64_t)value - (vint64_t)color.value;
-			}
-			GUI_DEFINE_COMPARE_OPERATORS(Color)
+			std::strong_ordering operator<=>(const Color& c) const { return value <=> c.value; }
+			bool operator==(const Color& c) const { return value == c.value; }
 
 			static Color Parse(const WString& value)
 			{
@@ -628,15 +583,6 @@ Margin
 			{
 			}
 
-			inline vint Compare(const Margin_<T>& value)const
-			{
-				vint result;
-				if ((result = CompareCoordinate(left, value.left)) != 0) return result;
-				if ((result = CompareCoordinate(top, value.top)) != 0) return result;
-				if ((result = CompareCoordinate(right, value.right)) != 0) return result;
-				if ((result = CompareCoordinate(bottom, value.bottom)) != 0) return result;
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(Margin_<T>)
 		};
 
@@ -696,33 +642,6 @@ Resources
 			{
 			}
 			
-			vint64_t Compare(const FontProperties& value)const
-			{
-				vint64_t result = 0;
-
-				result = WString::Compare(fontFamily, value.fontFamily);
-				if (result != 0) return result;
-
-				result = (vint64_t)size - (vint64_t)value.size;
-				if (result != 0) return result;
-
-				result = (vint64_t)bold - (vint64_t)value.bold;
-				if (result != 0) return result;
-
-				result = (vint64_t)italic - (vint64_t)value.italic;
-				if (result != 0) return result;
-
-				result = (vint64_t)underline - (vint64_t)value.underline;
-				if (result != 0) return result;
-
-				result = (vint64_t)strikeline - (vint64_t)value.strikeline;
-				if (result != 0) return result;
-
-				result = (vint64_t)antialias - (vint64_t)value.antialias;
-				if (result != 0) return result;
-
-				return 0;
-			}
 			GUI_DEFINE_COMPARE_OPERATORS(FontProperties)
 		};
 
@@ -5122,8 +5041,7 @@ Flow Compositions
 				/// <summary>The distance value.</summary>
 				vint								distance = 0;
 
-				bool operator==(const GuiFlowOption& value) { return baseline == value.baseline && percentage == value.percentage && distance == value.distance; }
-				bool operator!=(const GuiFlowOption& value) { return !operator==(value); }
+				bool operator==(const GuiFlowOption& value) const = default;
 			};
 			
 			/// <summary>
@@ -5950,8 +5868,7 @@ Table Compositions
 				{
 				}
 
-				bool operator==(const GuiCellOption& value) { return composeType == value.composeType && absolute == value.absolute && percentage == value.percentage; }
-				bool operator!=(const GuiCellOption& value) { return !operator==(value); }
+				bool operator==(const GuiCellOption& value) const = default;
 
 				/// <summary>Creates an absolute sizing option</summary>
 				/// <returns>The created option.</returns>
@@ -6506,16 +6423,14 @@ Helpers
 				struct Package\
 				{\
 					TVALUE							resource;\
-					vint								counter;\
+					vint							counter;\
 					bool operator==(const Package& package)const{return false;}\
-					bool operator!=(const Package& package)const{return true;}\
 				};\
 				struct DeadPackage\
 				{\
 					TKEY							key;\
 					TVALUE							value;\
 					bool operator==(const DeadPackage& package)const{return false;}\
-					bool operator!=(const DeadPackage& package)const{return true;}\
 				};\
 				Dictionary<TKEY, Package>			aliveResources;\
 				List<DeadPackage>					deadResources;\
@@ -7677,7 +7592,6 @@ Global String Key
 			vint									key = -1;
 
 		public:
-			inline vint Compare(GlobalStringKey value)const{ return key - value.key; }
 			GUI_DEFINE_COMPARE_OPERATORS(GlobalStringKey)
 
 			static GlobalStringKey					Get(const WString& string);
@@ -7835,8 +7749,7 @@ Resource Structure
 			GuiResourceLocation(const WString& _resourcePath, const WString& _filePath);
 			GuiResourceLocation(Ptr<GuiResourceNodeBase> node);
 
-			bool operator==(const GuiResourceLocation& b)const { return resourcePath == b.resourcePath && filePath == b.filePath; }
-			bool operator!=(const GuiResourceLocation& b)const { return !(*this == b); }
+			GUI_DEFINE_COMPARE_OPERATORS(GuiResourceLocation)
 		};
 
 		struct GuiResourceTextPos
@@ -7848,8 +7761,7 @@ Resource Structure
 			GuiResourceTextPos() = default;
 			GuiResourceTextPos(GuiResourceLocation location, glr::ParsingTextPos position);
 
-			bool operator==(const GuiResourceTextPos& b)const { return originalLocation == b.originalLocation && row == b.row && column == b.column; }
-			bool operator!=(const GuiResourceTextPos& b)const { return !(*this == b); }
+			GUI_DEFINE_COMPARE_OPERATORS(GuiResourceTextPos)
 		};
 
 		struct GuiResourceError
@@ -7866,8 +7778,7 @@ Resource Structure
 			GuiResourceError(GuiResourceLocation _location, const WString& _message);
 			GuiResourceError(GuiResourceLocation _location, GuiResourceTextPos _position, const WString& _message);
 
-			bool operator==(const GuiResourceError& b)const { return location == b.location && position == b.position && message == b.message; }
-			bool operator!=(const GuiResourceError& b)const { return !(*this == b); }
+			GUI_DEFINE_COMPARE_OPERATORS(GuiResourceError)
 
 			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors);
 			static void								Transform(GuiResourceLocation _location, GuiResourceError::List& errors, collections::List<glr::ParsingError>& parsingErrors, glr::ParsingTextPos offset);
@@ -10551,15 +10462,7 @@ Rich Content Document (style)
 			static DocumentFontSize			Parse(const WString& value);
 			WString							ToString()const;
 
-			bool operator==(const DocumentFontSize& value)const
-			{
-				return size == value.size && relative == value.relative;
-			}
-
-			bool operator!=(const DocumentFontSize& value)const
-			{
-				return size != value.size || relative != value.relative;
-			}
+			bool operator==(const DocumentFontSize& value) const = default;
 		};
 
 		/// <summary>Represents a text style.</summary>
@@ -10940,8 +10843,7 @@ Elements
 				int						radiusX = 0;
 				int						radiusY = 0;
 
-				bool operator==(const ElementShape& value)const { return shapeType == value.shapeType && radiusX == value.radiusX && radiusY == value.radiusY; }
-				bool operator!=(const ElementShape& value)const { return !(*this == value); }
+				bool operator==(const ElementShape& value) const = default;
 			};
 
 			/// <summary>
@@ -11933,8 +11835,7 @@ Colorized Plain Text (model)
 					~TextLine();
 
 					static vint						CalculateBufferLength(vint dataLength);
-					bool							operator==(const TextLine& value)const{return false;}
-					bool							operator!=(const TextLine& value)const{return true;}
+					bool							operator==(const TextLine& value) const { return false; }
 
 					/// <summary>
 					/// Initialize the <see cref="TextLine"/> instance to be an empty line.
@@ -12284,13 +12185,6 @@ Colorized Plain Text (model)
 					/// </summary>
 					Color							background;
 
-					inline vint64_t Compare(const ColorItem& value)const
-					{
-						vint64_t result;
-						if ((result = text.Compare(value.text)) != 0) return result;
-						if ((result = background.Compare(value.background)) != 0) return result;
-						return 0;
-					}
 					GUI_DEFINE_COMPARE_OPERATORS(ColorItem)
 				};
 				
@@ -12312,14 +12206,6 @@ Colorized Plain Text (model)
 					/// </summary>
 					ColorItem						selectedUnfocused;
 
-					inline vint64_t Compare(const ColorEntry& value)const
-					{
-						vint64_t result;
-						if ((result = normal.Compare(value.normal)) != 0) return result;
-						if ((result = selectedFocused.Compare(value.selectedFocused)) != 0) return result;
-						if ((result = selectedUnfocused.Compare(value.selectedUnfocused)) != 0) return result;
-						return 0;
-					}
 					GUI_DEFINE_COMPARE_OPERATORS(ColorEntry)
 				};
 			}
@@ -14313,7 +14199,6 @@ TextItemProvider
 					~TextItem();
 
 					bool										operator==(const TextItem& value)const;
-					bool										operator!=(const TextItem& value)const;
 					
 					/// <summary>Get the text of this item.</summary>
 					/// <returns>The text of this item.</returns>
@@ -20569,13 +20454,6 @@ Ribbon Gallery List
 				{
 				}
 
-				inline vint Compare(const GalleryPos& value)const
-				{
-					vint result;
-					if ((result = group - value.group) != 0) return result;
-					if ((result = item - value.item) != 0) return result;
-					return 0;
-				}
 				GUI_DEFINE_COMPARE_OPERATORS(GalleryPos)
 			};
 

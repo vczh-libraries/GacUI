@@ -8381,7 +8381,7 @@ DataProvider
 							virtualRowToSourceRow.Count(),
 							[=](vint a, vint b)
 							{
-								return sorter->Compare(itemSource->Get(a), itemSource->Get(b));
+								return sorter->Compare(itemSource->Get(a), itemSource->Get(b)) <=> 0;
 							});
 					}
 
@@ -15134,12 +15134,7 @@ TextItem
 
 				bool TextItem::operator==(const TextItem& value)const
 				{
-					return text==value.text;
-				}
-
-				bool TextItem::operator!=(const TextItem& value)const
-				{
-					return text!=value.text;
+					return text == value.text;
 				}
 
 				const WString& TextItem::GetText()
@@ -20589,7 +20584,7 @@ GuiTextBoxAutoCompleteBase
 					From(items)
 						.OrderBy([](const AutoCompleteItem& a, const AutoCompleteItem& b)
 						{
-							return INVLOC.Compare(a.text, b.text, Locale::IgnoreCase);
+							return INVLOC.Compare(a.text, b.text, Locale::IgnoreCase) <=> 0;
 						})
 					);
 
@@ -41894,17 +41889,7 @@ GuiResourceError
 		void GuiResourceError::SortAndLog(List& errors, collections::List<WString>& output, const WString& workingDirectory)
 		{
 			if (errors.Count() == 0) return;
-			SortLambda(&errors[0], errors.Count(), [](const GuiResourceError& a, const GuiResourceError& b)
-			{
-				vint64_t result = 0;
-				if (result == 0) result = WString::Compare(a.location.resourcePath, b.location.resourcePath);
-				if (result == 0) result = WString::Compare(a.location.filePath, b.location.filePath);
-				if (result == 0) result = WString::Compare(a.position.originalLocation.resourcePath, b.position.originalLocation.resourcePath);
-				if (result == 0) result = WString::Compare(a.position.originalLocation.filePath, b.position.originalLocation.filePath);
-				if (result == 0) result = a.position.row - b.position.row;
-				if (result == 0) result = a.position.column - b.position.column;
-				return result;
-			});
+			Sort(&errors[0], errors.Count());
 
 			for (vint index = 0; index < errors.Count(); index++)
 			{
@@ -42433,15 +42418,9 @@ GuiResourceFolder
 
 			vint count = itemTuples.Count();
 			writer << count;
-			for (auto item : itemTuples)
+			for (auto [typeName, name, directLoad, resource, content] : itemTuples)
 			{
-				vint typeName = item.f0;
-				WString name = item.f1;
 				writer << typeName << name;
-
-				auto directLoad = item.f2;
-				auto resource = item.f3;
-				auto content = item.f4;
 				directLoad->SerializePrecompiled(resource, content, writer.output);
 			}
 
@@ -45271,11 +45250,7 @@ FakeDialogServiceBase
 				GetCurrentController()->ResourceService()->EnumerateFonts(vm->fontList);
 				if (vm->fontList.Count() > 0)
 				{
-					Sort(
-						&vm->fontList[0],
-						vm->fontList.Count(),
-						Func([](WString a, WString b) {return WString::Compare(a, b); })
-						);
+					Sort(&vm->fontList[0], vm->fontList.Count());
 				}
 			};
 

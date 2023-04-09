@@ -2030,7 +2030,7 @@ GuiDefaultInstanceLoader
 					}
 					else
 					{
-						PropertyType value(GuiInstancePropertyInfo::Unsupported(), 0);
+						PropertyType value(GuiInstancePropertyInfo::Unsupported(), nullptr);
 						propertyTypes.Add(key, value);
 						return value;
 					}
@@ -2043,7 +2043,7 @@ GuiDefaultInstanceLoader
 
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 			{
-				return GetPropertyTypeCached(propertyInfo).f0;
+				return GetPropertyTypeCached(propertyInfo).get<0>();
 			}
 
 			//***********************************************************************************
@@ -2141,9 +2141,9 @@ GuiDefaultInstanceLoader
 				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
 					PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
-					if (propertyType.f1)
+					if (propertyType.get<1>())
 					{
-						switch (propertyType.f0->support)
+						switch (propertyType.get<0>()->support)
 						{
 						case GuiInstancePropertyInfo::SupportCollection:
 							{
@@ -5301,7 +5301,7 @@ GuiInstanceLocalizedStrings
 				textDesc->texts.Add(reading);
 			}
 
-			for (auto [i, index] : indexed(From(textDesc->positions).OrderBy([](vint a, vint b) {return a - b; })))
+			for (auto [i, index] : indexed(From(textDesc->positions).OrderBySelf()))
 			{
 				if (i != index)
 				{
@@ -10492,7 +10492,7 @@ Workflow_GenerateInstanceClass
 					auto expression = Workflow_ParseExpression(
 						precompileContext,
 						parameter->classPosition.originalLocation,
-						L"cast("+parameterTypeInfoTuple.f1+L") (null of object)",
+						L"cast("+parameterTypeInfoTuple.get<1>() + L") (null of object)",
 						parameter->classPosition,
 						errors,
 						{ 0,5 }
@@ -10617,9 +10617,9 @@ Workflow_GenerateInstanceClass
 			{
 				auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
 				vint errorCount = errors.Count();
-				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameterTypeInfoTuple.f1, parameter->classPosition, errors);
+				auto type = Workflow_ParseType(precompileContext, { resolvingResult.resource }, parameterTypeInfoTuple.get<1>(), parameter->classPosition, errors);
 
-				if (!needFunctionBody && !parameterTypeInfoTuple.f0 && errorCount == errors.Count())
+				if (!needFunctionBody && !parameterTypeInfoTuple.get<0>() && errorCount == errors.Count())
 				{
 					if (!type || type.Cast<WfReferenceType>() || type.Cast<WfChildType>() || type.Cast<WfTopQualifiedType>())
 					{
@@ -10635,7 +10635,7 @@ Workflow_GenerateInstanceClass
 
 						decl->name.value = L"<parameter>" + parameter->name.ToString();
 						decl->type = CopyType(type);
-						decl->expression = CreateDefaultValue(parameterTypeInfoTuple.f0.Obj());
+						decl->expression = CreateDefaultValue(parameterTypeInfoTuple.get<0>().Obj());
 
 						Workflow_RecordScriptPosition(precompileContext, parameter->tagPosition, (Ptr<WfDeclaration>)decl);
 					}
