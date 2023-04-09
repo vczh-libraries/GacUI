@@ -1671,20 +1671,6 @@ namespace vl
 		}
 	};
 
-	template<>
-	class Tuple<>
-	{
-	public:
-		Tuple() = default;
-		Tuple(const Tuple<>&) = default;
-		Tuple(Tuple<>&&) = default;
-
-		Tuple<>& operator=(const Tuple<>&) = default;
-		Tuple<>& operator=(Tuple<>&&) = default;
-		constexpr std::strong_ordering operator<=>(const Tuple<>&) const { return std::strong_ordering::equal; }
-		constexpr bool operator==(const Tuple<>&) const { return true; }
-	};
-
 	template<typename T>
 	struct TupleElementCtad { using Type = std::remove_cvref_t<T>; };
 
