@@ -481,7 +481,7 @@ GuiDefaultInstanceLoader
 					}
 					else
 					{
-						PropertyType value(GuiInstancePropertyInfo::Unsupported(), 0);
+						PropertyType value(GuiInstancePropertyInfo::Unsupported(), nullptr);
 						propertyTypes.Add(key, value);
 						return value;
 					}
@@ -494,7 +494,7 @@ GuiDefaultInstanceLoader
 
 			Ptr<GuiInstancePropertyInfo> GetPropertyType(GuiResourcePrecompileContext& precompileContext, const PropertyInfo& propertyInfo)override
 			{
-				return GetPropertyTypeCached(propertyInfo).f0;
+				return GetPropertyTypeCached(propertyInfo).get<0>();
 			}
 
 			//***********************************************************************************
@@ -592,9 +592,9 @@ GuiDefaultInstanceLoader
 				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
 					PropertyType propertyType = GetPropertyTypeCached(PropertyInfo(typeInfo, prop));
-					if (propertyType.f1)
+					if (propertyType.get<1>())
 					{
-						switch (propertyType.f0->support)
+						switch (propertyType.get<0>()->support)
 						{
 						case GuiInstancePropertyInfo::SupportCollection:
 							{

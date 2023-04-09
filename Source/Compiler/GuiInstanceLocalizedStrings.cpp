@@ -346,7 +346,7 @@ GuiInstanceLocalizedStrings
 				textDesc->texts.Add(reading);
 			}
 
-			for (auto [i, index] : indexed(From(textDesc->positions).OrderBy([](vint a, vint b) {return a - b; })))
+			for (auto [i, index] : indexed(From(textDesc->positions).OrderBySelf()))
 			{
 				if (i != index)
 				{

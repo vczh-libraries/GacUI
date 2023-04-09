@@ -162,7 +162,7 @@ ParserParsingAnalyzer
 								if (typeNode && nameToken)
 								{
 									auto resolvedType = ResolveType(typeNode.Obj(), cache, nullptr);
-									cache->classFields.Add(typePrefix, Tuple<WString, WString>(nameToken->GetValue(), resolvedType));
+									cache->classFields.Add(typePrefix, { nameToken->GetValue(), resolvedType });
 								}
 							}
 						}
@@ -402,11 +402,9 @@ ParserParsingAnalyzer
 			vint index = cache->classFields.Keys().IndexOf(type + L".");
 			if (index != -1)
 			{
-				const auto& values = cache->classFields.GetByIndex(index);
-				for (vint i = 0; i < values.Count(); i++)
+				for (auto [name, resolvedType] : cache->classFields.GetByIndex(index))
 				{
-					auto& value = values[i];
-					fields.Add(Tuple<WString, WString, WString>(type, value.f0, value.f1));
+					fields.Add({type, name, resolvedType});
 				}
 			}
 		}
@@ -583,11 +581,11 @@ ParserParsingAnalyzer
 					List<Tuple<WString, WString, WString>> fields;
 					FindAvailableFields(tokenContext.tokenParent, cache, fields, &partialOutput);
 
-					for (vint i = 0; i < fields.Count(); i++)
+					for (auto [type, name, resolvedType] : fields)
 					{
 						ParsingCandidateItem item;
 						item.semanticId = _field;
-						item.name = fields[i].f1;
+						item.name = name;
 						candidateItems.Add(item);
 					}
 				}
@@ -599,13 +597,13 @@ ParserParsingAnalyzer
 					List<Tuple<WString, WString, WString>> fields;
 					FindAvailableFields(tokenContext.tokenParent, cache, fields, &partialOutput);
 
-					for (vint i = 0; i < fields.Count(); i++)
+					for (auto [type, name, resolvedType] : fields)
 					{
-						if (cache->enumItems.Keys().Contains(fields[i].f2 + L"."))
+						if (cache->enumItems.Keys().Contains(resolvedType + L"."))
 						{
 							ParsingCandidateItem item;
 							item.semanticId = _field;
-							item.name = fields[i].f1;
+							item.name = name;
 							candidateItems.Add(item);
 						}
 					}
@@ -617,12 +615,12 @@ ParserParsingAnalyzer
 						auto memberName = memberNameToken->GetValue();
 						List<Tuple<WString, WString, WString>> fields;
 						FindAvailableFields(tokenContext.tokenParent, cache, fields, &partialOutput);
-						
-						for (vint i = 0; i < fields.Count(); i++)
+
+						for (auto [type, name, resolvedType] : fields)
 						{
-							if (memberName == fields[i].f1)
+							if (memberName == name)
 							{
-								vint index = cache->enumItems.Keys().IndexOf(fields[i].f2 + L".");
+								vint index = cache->enumItems.Keys().IndexOf(resolvedType + L".");
 								if (index != -1)
 								{
 									const auto& members = cache->enumItems.GetByIndex(index);
