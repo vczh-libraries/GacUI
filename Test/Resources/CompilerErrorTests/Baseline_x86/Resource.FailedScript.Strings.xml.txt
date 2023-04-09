@@ -1,8 +1,8 @@
 s1 # .\Resource.FailedScript.Strings.xml
 (3, 5): Precompile: The root element of localized strings should be "LocalizedStrings".
 s2 # .\Resource.FailedScript.Strings.xml
-(8, 5): Precompile: Missing attribute "ref.Class" in "LocalizedStrings".
 (8, 5): Precompile: Missing attribute "DefaultLocale" in "LocalizedStrings".
+(8, 5): Precompile: Missing attribute "ref.Class" in "LocalizedStrings".
 s3 # .\Resource.FailedScript.Strings.xml
 (13, 5): Precompile: Strings for the default locale "en-US" is not defined.
 (14, 7): Precompile: Unknown element "X", it should be "Strings".
