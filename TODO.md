@@ -45,15 +45,6 @@
 
 ## Done but not Released
 
-- Fixed Issues:
-  - GuiSharedSizeRootComposition makes rendering non-stopped.
-  - Fake dialog service:
-    - message box is not shown at the center.
-- Use `std::string_ordering` and `operator<=>` everywhere.
-- Added `LazyList<T>::OrderBySelf` and `LazyList<T>::OrderByKey`.
-- Refactor `Tuple`, `Pair`, `Nullable`.
-- Remove `Lazy`.
-
 ## OS Provider Features
 
 - Drag and Drop framework.
