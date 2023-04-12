@@ -4,7 +4,6 @@
 
 - Issue on dialog service
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
-  - file dialog can't expand/collapse tree view by key.
 - `GacUI_Host` font not right.
 
 ## Progressing
@@ -43,6 +42,8 @@
 - Fix document for control signal event if already exists.
 
 ## Done but not Released
+
+- `GuiVirtualTreeListControl` handles `LEFT` and `RIGHT` for item navigation.
 
 ## OS Provider Features
 
