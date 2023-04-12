@@ -4,7 +4,6 @@
 
 - Issue on dialog service
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
-  - font dialog alt to list and press UP/DOWN jumps to incorrect item.
   - file dialog can't expand/collapse tree view by key.
 - `GacUI_Host` font not right.
 

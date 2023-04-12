@@ -54,7 +54,7 @@
 
           var index = treeView.NodeItemView.CalculateNodeVisibilityIndex(cast * currentNode);
           treeView.EnsureItemVisible(index);
-          treeView.SetSelected(index, true);
+          treeView.SelectItemsByClick(index, false, false, true);
         }
 
         func CreateFileFilter(filter: IFileDialogFilter^): IDataFilter^

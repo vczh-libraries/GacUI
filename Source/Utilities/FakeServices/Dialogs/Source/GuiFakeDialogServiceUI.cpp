@@ -6602,7 +6602,7 @@ Class (::gaclib_controls::FilePickerControl)
 		}
 		auto index = ::vl::__vwsn::This(::vl::__vwsn::This(this->treeView)->GetNodeItemView())->CalculateNodeVisibilityIndex(::vl::__vwsn::Ensure(static_cast<::vl::presentation::controls::tree::INodeProvider*>(currentNode.Obj())));
 		::vl::__vwsn::This(this->treeView)->EnsureItemVisible(index);
-		::vl::__vwsn::This(this->treeView)->SetSelected(index, true);
+		::vl::__vwsn::This(this->treeView)->SelectItemsByClick(index, false, false, true);
 	}
 
 	::vl::Ptr<::vl::presentation::controls::list::IDataFilter> FilePickerControl::CreateFileFilter(::vl::Ptr<::vl::presentation::IFileDialogFilter> filter)
@@ -6841,7 +6841,7 @@ Class (::gaclib_controls::FontNameControl)
 		auto index = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetFontList()).Obj())->IndexOf(::vl::__vwsn::Box(this->GetValue()));
 		if ((index > (- static_cast<::vl::vint>(1))))
 		{
-			::vl::__vwsn::This(this->textList)->SetSelected(index, true);
+			::vl::__vwsn::This(this->textList)->SelectItemsByClick(index, false, false, true);
 			::vl::__vwsn::This(this->textList)->EnsureItemVisible(index);
 		}
 	}
@@ -7069,7 +7069,7 @@ Class (::gaclib_controls::FontSizeControl)
 		auto index = ::vl::__vwsn::This(::vl::__vwsn::This(this->self)->GetSizeList().Obj())->IndexOf(::vl::__vwsn::Box(this->GetValue()));
 		if ((index > (- static_cast<::vl::vint>(1))))
 		{
-			::vl::__vwsn::This(this->textList)->SetSelected(index, true);
+			::vl::__vwsn::This(this->textList)->SelectItemsByClick(index, false, false, true);
 			::vl::__vwsn::This(this->textList)->EnsureItemVisible(index);
 		}
 	}

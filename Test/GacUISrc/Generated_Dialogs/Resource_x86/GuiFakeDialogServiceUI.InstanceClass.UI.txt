@@ -3541,7 +3541,7 @@ namespace gaclib_controls
             }
             var index = treeView.NodeItemView.CalculateNodeVisibilityIndex((cast (::presentation::controls::tree::INodeProvider*) currentNode));
             treeView.EnsureItemVisible(index);
-            treeView.SetSelected(index, true);
+            treeView.SelectItemsByClick(index, false, false, true);
         }
 
         func CreateFileFilter(filter : IFileDialogFilter^) : (IDataFilter^)
@@ -4165,7 +4165,7 @@ namespace gaclib_controls
             var index = ViewModel.FontList.IndexOf(Value);
             if ((index > (-1)))
             {
-                textList.SetSelected(index, true);
+                textList.SelectItemsByClick(index, false, false, true);
                 textList.EnsureItemVisible(index);
             }
         }
@@ -4773,7 +4773,7 @@ namespace gaclib_controls
             var index = self.SizeList.IndexOf(Value);
             if ((index > (-1)))
             {
-                textList.SetSelected(index, true);
+                textList.SelectItemsByClick(index, false, false, true);
                 textList.EnsureItemVisible(index);
             }
         }
