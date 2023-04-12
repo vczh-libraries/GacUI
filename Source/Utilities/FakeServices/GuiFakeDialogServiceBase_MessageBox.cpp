@@ -27,7 +27,7 @@ View Model (IMessageBoxDialogViewModel)
 				}
 
 				ButtonItem			GetButton() override					{ return button; }
-				void				PerformAction() override				{ viewModel->result = button; }
+				void				PerformAction() override				{ viewModel->result = Ptr(this); }
 			};
 
 			WString					text;
@@ -78,7 +78,7 @@ FakeDialogServiceBase
 			}
 #undef USE_BUTTON
 
-#define USE_DEFAULT_BUTTON(INDEX) if (vm->buttons.Count() > INDEX) vm->defaultButton = vm->buttons[INDEX]->GetButton()
+#define USE_DEFAULT_BUTTON(INDEX) if (vm->buttons.Count() > INDEX) vm->defaultButton = vm->buttons[INDEX]
 			USE_DEFAULT_BUTTON(0);
 			switch (defaultButton)
 			{
@@ -94,7 +94,7 @@ FakeDialogServiceBase
 				auto dialog = CreateMessageBoxDialog(vm);
 				ShowModalDialogAndDelete(vm, owner, dialog);
 			}
-			return vm->result;
+			return vm->result->GetButton();
 		}
 	}
 }

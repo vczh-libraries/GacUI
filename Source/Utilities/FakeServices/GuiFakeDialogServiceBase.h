@@ -50,8 +50,8 @@ View Models (MessageBox)
 		{
 		public:
 			using Icon = INativeDialogService::MessageBoxIcons;
-			using ButtonItem = INativeDialogService::MessageBoxButtonsOutput;
-			using ButtonItemList = collections::List<Ptr<IMessageBoxDialogAction>>;
+			using ButtonItem = Ptr<IMessageBoxDialogAction>;
+			using ButtonItemList = collections::List<ButtonItem>;
 
 			/// <summary>
 			/// Get the text to display on the message box.
