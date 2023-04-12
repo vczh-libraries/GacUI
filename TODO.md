@@ -40,6 +40,7 @@
 - Add document for `<ComboButton/>` and its `DropdownControl` property.
 - Add document for `<LocalizedStringsInjection/>` external injection.
 - Fix document for control signal event if already exists.
+- Add `static` keyword in workflow document.
 
 ## Done but not Released
 
