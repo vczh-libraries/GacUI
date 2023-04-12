@@ -8,7 +8,6 @@
 
 ## Progressing
 
-- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
 - Theme
   - Add HostedWindow theme.
 - `INativeWindow` add callback for state changing.
@@ -45,6 +44,7 @@
 ## Done but not Released
 
 - `GuiVirtualTreeListControl` handles `LEFT` and `RIGHT` for item navigation.
+- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
 
 ## OS Provider Features
 
