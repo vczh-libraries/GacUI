@@ -3,7 +3,6 @@
 ## Known Issues
 
 - Issue on dialog service
-  - message box default button.
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.

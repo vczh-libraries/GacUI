@@ -4,6 +4,8 @@
       <ref.LocalizedStrings Name="Strings" Class="gaclib_controls::DialogStrings" Default="true"/>
       <ref.Parameter Name="Action" Class="presentation::IMessageBoxDialogAction"/>
       <ref.Members><![CDATA[
+        prop ButtonControl : GuiButton* = null {const}
+
         func GetButtonText(button: INativeDialogService::MessageBoxButtonsOutput, strings: IDialogStringsStrings^) : string
         {
           switch (button)
@@ -38,8 +40,13 @@
           }
         }
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          self.SetButtonControl(self.buttonControl);
+        }
+      ]]></ref.Ctor>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Button Text-eval="self.GetButtonText(Action.Button, self.Strings)" Alt-eval="self.GetButtonAlt(Action.Button)">
+        <Button ref.Name="buttonControl" Text-eval="self.GetButtonText(Action.Button, self.Strings)" Alt-eval="self.GetButtonAlt(Action.Button)">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
           <ev.Clicked-eval><![CDATA[
             {
@@ -69,6 +76,13 @@
           return (cast (GuiImageData^) self.ResolveResource("res", iconUri, true)).Image;
         }
       ]]></ref.Members>
+      <ref.Ctor> <![CDATA[
+        {
+          var defaultButton = ViewModel.Buttons.IndexOf(ViewModel.DefaultButton);
+          var buttonControl = (cast (MessageBoxButtonTemplate*) buttonStack.StackItems[defaultButton].Children[0]).ButtonControl;
+          buttonControl.SetFocused();
+        }
+      ]]></ref.Ctor>
       <Window
           ref.Name="self"
           Text-eval="ViewModel.Title"
@@ -141,7 +155,7 @@
               </att.Columns>
 
               <Cell Site="row:0 column:1">
-                <RepeatStack Direction="Horizontal" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+                <RepeatStack ref.Name="buttonStack" Direction="Horizontal" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
                   <att.ItemTemplate>gaclib_controls::MessageBoxButtonTemplate</att.ItemTemplate>
                   <att.ItemSource-eval>ViewModel.Buttons</att.ItemSource-eval>
                 </RepeatStack>
