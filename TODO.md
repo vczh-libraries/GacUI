@@ -3,7 +3,6 @@
 ## Known Issues
 
 - Issue on dialog service
-  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - font dialog alt to list and press UP/DOWN jumps to incorrect item.
   - file dialog can't expand/collapse tree view by key.
@@ -24,6 +23,8 @@
 
 ## Optional
 
+- Issue on dialog service
+  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
 - Issues on Templates
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
 - Issues on GDI
