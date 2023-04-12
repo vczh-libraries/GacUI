@@ -27,10 +27,16 @@ namespace vl
 		{
 			struct SiteValue
 			{
-				vint			row = 0;
-				vint			column = 0;
-				vint			rowSpan = 1;
-				vint			columnSpan = 1;
+				vint					row = 0;
+				vint					column = 0;
+				vint					rowSpan = 1;
+				vint					columnSpan = 1;
+			};
+
+			class LocalizedStrings
+			{
+			public:
+				static WString			FirstOrEmpty(const collections::LazyList<WString>& formats);
 			};
 		}
 	}

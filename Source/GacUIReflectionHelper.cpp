@@ -2,6 +2,22 @@
 
 namespace vl
 {
+	namespace presentation
+	{
+		namespace helper_types
+		{
+
+/***********************************************************************
+LocalizedStrings
+***********************************************************************/
+
+			WString LocalizedStrings::FirstOrEmpty(const collections::LazyList<WString>& formats)
+			{
+				return formats.First(WString::Empty);
+			}
+		}
+	}
+
 	namespace reflection
 	{
 		namespace description

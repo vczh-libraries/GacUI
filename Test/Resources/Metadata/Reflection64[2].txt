@@ -4450,6 +4450,11 @@ class presentation::elements::text::TextLines : system::ReferenceType {
 
 }
 
+class presentation::helper_types::LocalizedStrings : system::ReferenceType {
+    static function FirstOrEmpty(formats : system::Enumerable<system::String>^) : system::String;
+
+}
+
 @ValueType
 struct presentation::helper_types::SiteValue {
     property column : system::Int64;
