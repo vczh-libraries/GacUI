@@ -7678,27 +7678,27 @@ Class (::gaclib_controls::MessageBoxButtonTemplateConstructor)
 			::vl::__vwsn::This(this->self)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			(this->__vwsn_precompile_0 = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
+			(this->buttonControl = new ::vl::presentation::controls::GuiButton(::vl::presentation::theme::ThemeName::Button));
 		}
-		(this->__vwsn_precompile_1 = ::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition());
+		(this->__vwsn_precompile_0 = ::vl::__vwsn::This(this->buttonControl)->GetBoundsComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(80L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(24L); return __vwsn_temp__; }());
-		}
-		{
-			::vl::__vwsn::This(this->__vwsn_precompile_1)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetPreferredMinSize([&](){ ::vl::presentation::Size __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint64_t>(80L); __vwsn_temp__.y = static_cast<::vl::vint64_t>(24L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->__vwsn_precompile_0)->GetBoundsComposition()));
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetText(::vl::__vwsn::This(this->self)->GetButtonText(::vl::__vwsn::This(this->Action.Obj())->GetButton(), ::vl::__vwsn::This(this->self)->GetStrings()));
+			::vl::__vwsn::This(this->self)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->buttonControl)->GetBoundsComposition()));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetAlt(::vl::__vwsn::This(this->self)->GetButtonAlt(::vl::__vwsn::This(this->Action.Obj())->GetButton()));
+			::vl::__vwsn::This(this->buttonControl)->SetText(::vl::__vwsn::This(this->self)->GetButtonText(::vl::__vwsn::This(this->Action.Obj())->GetButton(), ::vl::__vwsn::This(this->self)->GetStrings()));
+		}
+		{
+			::vl::__vwsn::This(this->buttonControl)->SetAlt(::vl::__vwsn::This(this->self)->GetButtonAlt(::vl::__vwsn::This(this->Action.Obj())->GetButton()));
 		}
 		{
 			auto __vwsn_event_handler_ = vl::Func(::vl_workflow_global::__vwsnf85_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(this));
-			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->__vwsn_precompile_0)->Clicked, __vwsn_event_handler_);
+			::vl::__vwsn::EventAttach(::vl::__vwsn::This(this->buttonControl)->Clicked, __vwsn_event_handler_);
 		}
 		{
 			auto __vwsn_created_subscription_ = ::vl::Ptr<::vl::reflection::description::IValueSubscription>(new ::vl_workflow_global::__vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(this));
@@ -7710,14 +7710,27 @@ Class (::gaclib_controls::MessageBoxButtonTemplateConstructor)
 	MessageBoxButtonTemplateConstructor::MessageBoxButtonTemplateConstructor()
 		: Action(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>())
 		, self(static_cast<::gaclib_controls::MessageBoxButtonTemplate*>(nullptr))
-		, __vwsn_precompile_0(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
-		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
+		, buttonControl(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiBoundsComposition*>(nullptr))
 	{
 	}
 
 /***********************************************************************
 Class (::gaclib_controls::MessageBoxButtonTemplate)
 ***********************************************************************/
+
+	::vl::presentation::controls::GuiButton* MessageBoxButtonTemplate::GetButtonControl()
+	{
+		return this->__vwsn_prop_ButtonControl;
+	}
+	void MessageBoxButtonTemplate::SetButtonControl(::vl::presentation::controls::GuiButton* __vwsn_value_)
+	{
+		if ((this->__vwsn_prop_ButtonControl != __vwsn_value_))
+		{
+			(this->__vwsn_prop_ButtonControl = __vwsn_value_);
+			::vl::__vwsn::EventInvoke(this->ButtonControlChanged)();
+		}
+	}
 
 	::vl::WString MessageBoxButtonTemplate::GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> strings)
 	{
@@ -7832,7 +7845,8 @@ Class (::gaclib_controls::MessageBoxButtonTemplate)
 	}
 
 	MessageBoxButtonTemplate::MessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action)
-		: __vwsn_prop_Strings(::gaclib_controls::DialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
+		: __vwsn_prop_ButtonControl(static_cast<::vl::presentation::controls::GuiButton*>(nullptr))
+		, __vwsn_prop_Strings(::gaclib_controls::DialogStrings::Get(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))))
 		, __vwsn_parameter_Action(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>())
 	{
 		(this->__vwsn_parameter_Action = __vwsn_ctor_parameter_Action);
@@ -7840,6 +7854,12 @@ Class (::gaclib_controls::MessageBoxButtonTemplate)
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void MessageBoxButtonTemplate::__vwsn_instance_ctor_()
+	{
+		::vl::__vwsn::This(this->self)->SetButtonControl(::vl::__vwsn::This(this->self)->buttonControl);
 	}
 
 	MessageBoxButtonTemplate::~MessageBoxButtonTemplate()
@@ -8024,24 +8044,24 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_14)->SetSite(static_cast<::vl::vint64_t>(0L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L), static_cast<::vl::vint64_t>(1L));
 		}
-		(this->__vwsn_precompile_15 = new ::vl::presentation::compositions::GuiRepeatStackComposition());
+		(this->buttonStack = new ::vl::presentation::compositions::GuiRepeatStackComposition());
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
+			::vl::__vwsn::This(this->buttonStack)->SetItemTemplate(vl::Func(::vl_workflow_global::__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(this)));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetPadding(static_cast<::vl::vint64_t>(5L));
+			::vl::__vwsn::This(this->buttonStack)->SetPadding(static_cast<::vl::vint64_t>(5L));
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Horizontal);
+			::vl::__vwsn::This(this->buttonStack)->SetDirection(::vl::presentation::compositions::GuiStackComposition::Direction::Horizontal);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
+			::vl::__vwsn::This(this->buttonStack)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
+			::vl::__vwsn::This(this->buttonStack)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_15));
+			::vl::__vwsn::This(this->__vwsn_precompile_14)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->buttonStack));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_13)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(this->__vwsn_precompile_14));
@@ -8062,7 +8082,7 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_10)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetText());
 		}
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_15)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetButtons())));
+			::vl::__vwsn::This(this->buttonStack)->SetItemSource(::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->ViewModel.Obj())->GetButtons())));
 		}
 		{
 			::vl::__vwsn::This(this->self)->SetText(::vl::__vwsn::This(this->ViewModel.Obj())->GetTitle());
@@ -8072,6 +8092,7 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 	MessageBoxWindowConstructor::MessageBoxWindowConstructor()
 		: self(static_cast<::gaclib_controls::MessageBoxWindow*>(nullptr))
 		, ViewModel(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>())
+		, buttonStack(static_cast<::vl::presentation::compositions::GuiRepeatStackComposition*>(nullptr))
 		, __vwsn_precompile_0(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_1(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_2(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
@@ -8087,7 +8108,6 @@ Class (::gaclib_controls::MessageBoxWindowConstructor)
 		, __vwsn_precompile_12(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
 		, __vwsn_precompile_13(static_cast<::vl::presentation::compositions::GuiTableComposition*>(nullptr))
 		, __vwsn_precompile_14(static_cast<::vl::presentation::compositions::GuiCellComposition*>(nullptr))
-		, __vwsn_precompile_15(static_cast<::vl::presentation::compositions::GuiRepeatStackComposition*>(nullptr))
 	{
 	}
 
@@ -8134,6 +8154,14 @@ Class (::gaclib_controls::MessageBoxWindow)
 		auto __vwsn_resolver_ = ::vl::Ptr<::vl::presentation::GuiResourcePathResolver>(new ::vl::presentation::GuiResourcePathResolver(__vwsn_resource_, ::vl::__vwsn::This(__vwsn_resource_.Obj())->GetWorkingDirectory()));
 		::vl::__vwsn::This(this)->SetResourceResolver(__vwsn_resolver_);
 		::vl::__vwsn::This(this)->__vwsn_gaclib_controls_MessageBoxWindow_Initialize(this);
+		this->__vwsn_instance_ctor_();
+	}
+
+	void MessageBoxWindow::__vwsn_instance_ctor_()
+	{
+		auto defaultButton = ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueReadonlyList>(::vl::__vwsn::This(this->GetViewModel().Obj())->GetButtons()).Obj())->IndexOf(::vl::__vwsn::Box(::vl::__vwsn::This(this->GetViewModel().Obj())->GetDefaultButton()));
+		auto buttonControl = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::gaclib_controls::MessageBoxButtonTemplate>(::vl::__vwsn::This(::vl::__vwsn::This(this->buttonStack)->GetStackItems()[defaultButton])->Children()[static_cast<::vl::vint64_t>(0L)])))->GetButtonControl();
+		::vl::__vwsn::This(buttonControl)->SetFocused();
 	}
 
 	MessageBoxWindow::~MessageBoxWindow()

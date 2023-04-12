@@ -808,6 +808,28 @@ namespace gaclib_controls
 {
     class MessageBoxButtonTemplate : ::presentation::templates::GuiControlTemplate
     {
+        @cpp:Private
+        var <prop>ButtonControl : GuiButton* = null;
+
+        func GetButtonControl() : (GuiButton*)
+        {
+            return <prop>ButtonControl;
+        }
+
+        @cpp:Protected
+        func SetButtonControl(<value> : GuiButton*) : (void)
+        {
+            if ((<prop>ButtonControl != <value>))
+            {
+                (<prop>ButtonControl = <value>);
+                ButtonControlChanged();
+            }
+        }
+
+        event ButtonControlChanged();
+
+        prop ButtonControl : GuiButton*{GetButtonControl : ButtonControlChanged}
+
         func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
         {
             raise "Not Implemented";

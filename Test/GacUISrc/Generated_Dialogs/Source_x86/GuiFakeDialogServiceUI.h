@@ -920,8 +920,8 @@ namespace gaclib_controls
 	protected:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> Action;
 		::gaclib_controls::MessageBoxButtonTemplate* self;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiButton* buttonControl;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		void __vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize(::gaclib_controls::MessageBoxButtonTemplate* __vwsn_this_);
 	public:
 		MessageBoxButtonTemplateConstructor();
@@ -937,6 +937,10 @@ namespace gaclib_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButtonTemplate>;
 #endif
 	public:
+		::vl::presentation::controls::GuiButton* __vwsn_prop_ButtonControl;
+		::vl::presentation::controls::GuiButton* GetButtonControl();
+		void SetButtonControl(::vl::presentation::controls::GuiButton* __vwsn_value_);
+		::vl::Event<void()> ButtonControlChanged;
 		::vl::WString GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> strings);
 		::vl::WString GetButtonAlt(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button);
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
@@ -946,6 +950,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_parameter_Action;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> GetAction();
 		MessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action);
+		void __vwsn_instance_ctor_();
 		~MessageBoxButtonTemplate();
 	};
 
@@ -958,6 +963,7 @@ namespace gaclib_controls
 	protected:
 		::gaclib_controls::MessageBoxWindow* self;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> ViewModel;
+		::vl::presentation::compositions::GuiRepeatStackComposition* buttonStack;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
@@ -973,7 +979,6 @@ namespace gaclib_controls
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_13;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiRepeatStackComposition* __vwsn_precompile_15;
 		void __vwsn_gaclib_controls_MessageBoxWindow_Initialize(::gaclib_controls::MessageBoxWindow* __vwsn_this_);
 	public:
 		MessageBoxWindowConstructor();
@@ -991,6 +996,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_parameter_ViewModel;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> GetViewModel();
 		MessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
 		~MessageBoxWindow();
 	};
 

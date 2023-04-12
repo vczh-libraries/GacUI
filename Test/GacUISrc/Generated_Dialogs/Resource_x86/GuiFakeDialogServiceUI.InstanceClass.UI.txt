@@ -7677,10 +7677,10 @@ namespace gaclib_controls
         var self : ::gaclib_controls::MessageBoxButtonTemplate* = null of (::gaclib_controls::MessageBoxButtonTemplate*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var buttonControl : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gaclib_controls-MessageBoxButtonTemplate>Initialize(<this> : ::gaclib_controls::MessageBoxButtonTemplate*) : (::system::Void)
@@ -7691,23 +7691,23 @@ namespace gaclib_controls
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>0 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                (buttonControl = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            (<precompile>1 = <precompile>0.BoundsComposition);
+            (<precompile>0 = buttonControl.BoundsComposition);
             {
-                (<precompile>1.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
-            }
-            {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
             }
             {
-                self.AddChild(<precompile>0.BoundsComposition);
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.Text = self.GetButtonText(Action.Button, self.Strings));
+                self.AddChild(buttonControl.BoundsComposition);
             }
             {
-                (<precompile>0.Alt = self.GetButtonAlt(Action.Button));
+                (buttonControl.Text = self.GetButtonText(Action.Button, self.Strings));
+            }
+            {
+                (buttonControl.Alt = self.GetButtonAlt(Action.Button));
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -7715,7 +7715,7 @@ namespace gaclib_controls
                     Action.PerformAction();
                     self.RelatedControlHost.Close();
                 };
-                attach(<precompile>0.Clicked, <event-handler>);
+                attach(buttonControl.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -7824,6 +7824,28 @@ namespace gaclib_controls
     @cpp:Friend(typeof(MessageBoxButtonTemplateConstructor))
     class MessageBoxButtonTemplate : ::presentation::templates::GuiControlTemplate, MessageBoxButtonTemplateConstructor
     {
+        @cpp:Private
+        var <prop>ButtonControl : GuiButton* = null;
+
+        func GetButtonControl() : (GuiButton*)
+        {
+            return <prop>ButtonControl;
+        }
+
+        @cpp:Protected
+        func SetButtonControl(<value> : GuiButton*) : (void)
+        {
+            if ((<prop>ButtonControl != <value>))
+            {
+                (<prop>ButtonControl = <value>);
+                ButtonControlChanged();
+            }
+        }
+
+        event ButtonControlChanged();
+
+        prop ButtonControl : GuiButton*{GetButtonControl : ButtonControlChanged}
+
         func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
         {
             {
@@ -7955,6 +7977,12 @@ namespace gaclib_controls
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gaclib_controls-MessageBoxButtonTemplate>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            self.SetButtonControl(self.buttonControl);
         }
 
         delete
@@ -7994,6 +8022,9 @@ namespace gaclib_controls
 
         @cpp:Protected
         var ViewModel : ::presentation::IMessageBoxDialogViewModel^ = null of (::presentation::IMessageBoxDialogViewModel^);
+
+        @cpp:Protected
+        var buttonStack : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -8039,9 +8070,6 @@ namespace gaclib_controls
 
         @cpp:Protected
         var <precompile>14 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
 
         @cpp:Protected
         func <gaclib_controls-MessageBoxWindow>Initialize(<this> : ::gaclib_controls::MessageBoxWindow*) : (::system::Void)
@@ -8217,9 +8245,9 @@ namespace gaclib_controls
             {
                 <precompile>14.SetSite(0, 1, 1, 1);
             }
-            (<precompile>15 = new (::presentation::compositions::GuiRepeatStackComposition*)());
+            (buttonStack = new (::presentation::compositions::GuiRepeatStackComposition*)());
             {
-                (<precompile>15.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
+                (buttonStack.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
                 {
                     {
                         if (<viewModel> is (::presentation::IMessageBoxDialogAction^))
@@ -8231,19 +8259,19 @@ namespace gaclib_controls
                 });
             }
             {
-                (<precompile>15.Padding = 5 of (::system::Int32));
+                (buttonStack.Padding = 5 of (::system::Int32));
             }
             {
-                (<precompile>15.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+                (buttonStack.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (buttonStack.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>15.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (buttonStack.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>14.AddChild(<precompile>15);
+                <precompile>14.AddChild(buttonStack);
             }
             {
                 <precompile>13.AddChild(<precompile>14);
@@ -8264,7 +8292,7 @@ namespace gaclib_controls
                 (<precompile>10.Text = ViewModel.Text);
             }
             {
-                (<precompile>15.ItemSource = ViewModel.Buttons);
+                (buttonStack.ItemSource = ViewModel.Buttons);
             }
             {
                 (self.Text = ViewModel.Title);
@@ -8345,6 +8373,14 @@ namespace gaclib_controls
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gaclib_controls-MessageBoxWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            var defaultButton = ViewModel.Buttons.IndexOf(ViewModel.DefaultButton);
+            var buttonControl = (cast (MessageBoxButtonTemplate*) buttonStack.StackItems[defaultButton].Children[0]).ButtonControl;
+            buttonControl.SetFocused();
         }
 
         delete
