@@ -772,99 +772,8 @@ namespace demo
 {
     class StringResource
     {
-        static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
+        static func <ls>_en-US(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
         {
-            {
-                var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
-                var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
-                while (<for-enumerator><ls>format.Next())
-                {
-                    var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
-                    {
-                        return <ls>format;
-                    }
-                }
-            }
-            return "";
-        }
-
-        static func Get(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
-        {
-            if (<ls>locale of (::system::String) in {"zh-CN";})
-            {
-                return new (IStringResourceStrings^)
-                {
-                    override func Currency(<ls>0 : ::system::String) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
-                        return ("货币：" & <ls>_0);
-                    }
-
-                    override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
-                        return ("日期格式：" & <ls>_0);
-                    }
-
-                    override func Label() : (::system::String)
-                    {
-                        return "语言设置：";
-                    }
-
-                    override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
-                        return ("长日期：" & <ls>_0);
-                    }
-
-                    override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
-                        return ("长时间：" & <ls>_0);
-                    }
-
-                    override func Number(<ls>0 : ::system::String) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
-                        return ("数字：" & <ls>_0);
-                    }
-
-                    override func Sentence(<ls>0 : ::system::String) : (::system::String)
-                    {
-                        var <ls>_0 = <ls>0;
-                        return (("$" & <ls>_0) & "，早上好！$");
-                    }
-
-                    override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
-                        return ("短日期：" & <ls>_0);
-                    }
-
-                    override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
-                        return ("短时间：" & <ls>_0);
-                    }
-
-                    override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
-                        return ("时间格式： " & <ls>_0);
-                    }
-
-                    override func Title() : (::system::String)
-                    {
-                        return "本地化";
-                    }
-
-                    override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
-                        return ("年月：" & <ls>_0);
-                    }
-                };
-            }
             return new (IStringResourceStrings^)
             {
                 override func Currency(<ls>0 : ::system::String) : (::system::String)
@@ -886,13 +795,13 @@ namespace demo
 
                 override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
                     return ("LongDate: " & <ls>_0);
                 }
 
                 override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
                     return ("LongTime: " & <ls>_0);
                 }
 
@@ -910,13 +819,13 @@ namespace demo
 
                 override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
                     return ("ShortDate: " & <ls>_0);
                 }
 
                 override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
                     return ("ShortTime: " & <ls>_0);
                 }
 
@@ -933,10 +842,95 @@ namespace demo
 
                 override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
                     return ("YearMonthDate: " & <ls>_0);
                 }
             };
+        }
+
+        static func <ls>_zh-CN(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        {
+            return new (IStringResourceStrings^)
+            {
+                override func Currency(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
+                    return ("货币：" & <ls>_0);
+                }
+
+                override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
+                    return ("日期格式：" & <ls>_0);
+                }
+
+                override func Label() : (::system::String)
+                {
+                    return "语言设置：";
+                }
+
+                override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    return ("长日期：" & <ls>_0);
+                }
+
+                override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    return ("长时间：" & <ls>_0);
+                }
+
+                override func Number(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
+                    return ("数字：" & <ls>_0);
+                }
+
+                override func Sentence(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    return (("$" & <ls>_0) & "，早上好！$");
+                }
+
+                override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    return ("短日期：" & <ls>_0);
+                }
+
+                override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    return ("短时间：" & <ls>_0);
+                }
+
+                override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
+                    return ("时间格式： " & <ls>_0);
+                }
+
+                override func Title() : (::system::String)
+                {
+                    return "本地化";
+                }
+
+                override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    return ("年月：" & <ls>_0);
+                }
+            };
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        {
+            if (((cast (::system::String) <ls>locale) == "zh-CN"))
+            {
+                return <ls>_zh-CN(<ls>locale);
+            }
+            return <ls>_en-US((cast (::system::Locale) "en-US"));
         }
 
         new ()

@@ -8479,23 +8479,7 @@ namespace gaclib_controls
 {
     class DialogStrings
     {
-        static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
-        {
-            {
-                var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
-                var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
-                while (<for-enumerator><ls>format.Next())
-                {
-                    var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
-                    {
-                        return <ls>format;
-                    }
-                }
-            }
-            return "";
-        }
-
-        static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+        static func <ls>_en-US(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
         {
             return new (IDialogStringsStrings^)
             {
@@ -8689,6 +8673,11 @@ namespace gaclib_controls
                     return "Yes";
                 }
             };
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+        {
+            return <ls>_en-US((cast (::system::Locale) "en-US"));
         }
 
         new ()
