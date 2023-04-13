@@ -5791,6 +5791,7 @@ CheckMergeTrace
 					}
 					else
 					{
+						// TODO: check if last is in the same thread and is or after the merge trace
 						last = GetTrace(lastPostfix.trace);
 						ta->lastTrace = last;
 						ta->postfix = lastPostfix.ins;

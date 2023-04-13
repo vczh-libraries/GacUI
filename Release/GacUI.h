@@ -13788,6 +13788,8 @@ Selectable List Control
 				void											NormalizeSelectedItemIndexStartEnd();
 				void											SetMultipleItemsSelectedSilently(vint start, vint end, bool selected);
 				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+
+				virtual vint									FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -14631,6 +14633,7 @@ GuiVirtualTreeListControl
 				void								OnItemExpanded(tree::INodeProvider* node)override;
 				void								OnItemCollapsed(tree::INodeProvider* node)override;
 
+				vint								FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection)override;
 			protected:
 				tree::NodeItemProvider*				nodeItemProvider;
 				tree::INodeItemView*				nodeItemView;
@@ -21037,8 +21040,8 @@ View Models (MessageBox)
 		{
 		public:
 			using Icon = INativeDialogService::MessageBoxIcons;
-			using ButtonItem = INativeDialogService::MessageBoxButtonsOutput;
-			using ButtonItemList = collections::List<Ptr<IMessageBoxDialogAction>>;
+			using ButtonItem = Ptr<IMessageBoxDialogAction>;
+			using ButtonItemList = collections::List<ButtonItem>;
 
 			/// <summary>
 			/// Get the text to display on the message box.
@@ -21597,10 +21600,16 @@ namespace vl
 		{
 			struct SiteValue
 			{
-				vint			row = 0;
-				vint			column = 0;
-				vint			rowSpan = 1;
-				vint			columnSpan = 1;
+				vint					row = 0;
+				vint					column = 0;
+				vint					rowSpan = 1;
+				vint					columnSpan = 1;
+			};
+
+			class LocalizedStrings
+			{
+			public:
+				static WString			FirstOrEmpty(const collections::LazyList<WString>& formats);
 			};
 		}
 	}
@@ -21937,7 +21946,7 @@ namespace vl_workflow_global
 	class __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc54_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings;
+	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings;
 	class __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
@@ -22169,12 +22178,12 @@ namespace gaclib_controls
 
 	class DialogStrings : public ::vl::Object, public ::vl::reflection::Description<DialogStrings>
 	{
-		friend class ::vl_workflow_global::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings;
+		friend class ::vl_workflow_global::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStrings>;
 #endif
 	public:
-		static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
+		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale);
 		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> Get(::vl::Locale __vwsn_ls_locale);
 		DialogStrings();
 	};
@@ -22696,8 +22705,8 @@ namespace gaclib_controls
 	protected:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> Action;
 		::gaclib_controls::MessageBoxButtonTemplate* self;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiButton* buttonControl;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		void __vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize(::gaclib_controls::MessageBoxButtonTemplate* __vwsn_this_);
 	public:
 		MessageBoxButtonTemplateConstructor();
@@ -22713,6 +22722,10 @@ namespace gaclib_controls
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButtonTemplate>;
 #endif
 	public:
+		::vl::presentation::controls::GuiButton* __vwsn_prop_ButtonControl;
+		::vl::presentation::controls::GuiButton* GetButtonControl();
+		void SetButtonControl(::vl::presentation::controls::GuiButton* __vwsn_value_);
+		::vl::Event<void()> ButtonControlChanged;
 		::vl::WString GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> strings);
 		::vl::WString GetButtonAlt(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button);
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
@@ -22722,6 +22735,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_parameter_Action;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> GetAction();
 		MessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action);
+		void __vwsn_instance_ctor_();
 		~MessageBoxButtonTemplate();
 	};
 
@@ -22734,6 +22748,7 @@ namespace gaclib_controls
 	protected:
 		::gaclib_controls::MessageBoxWindow* self;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> ViewModel;
+		::vl::presentation::compositions::GuiRepeatStackComposition* buttonStack;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
@@ -22749,7 +22764,6 @@ namespace gaclib_controls
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_13;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiRepeatStackComposition* __vwsn_precompile_15;
 		void __vwsn_gaclib_controls_MessageBoxWindow_Initialize(::gaclib_controls::MessageBoxWindow* __vwsn_this_);
 	public:
 		MessageBoxWindowConstructor();
@@ -22767,6 +22781,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_parameter_ViewModel;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> GetViewModel();
 		MessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
 		~MessageBoxWindow();
 	};
 
@@ -24618,10 +24633,10 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
+	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
 	{
 	public:
-		__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings();
+		__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings();
 
 		::vl::WString Abort() override;
 		::vl::WString Blue() override;
