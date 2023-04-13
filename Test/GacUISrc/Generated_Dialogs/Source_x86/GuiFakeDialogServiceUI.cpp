@@ -4796,196 +4796,196 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings()
+	__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings()
 	{
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Abort()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Abort()
 	{
 		return ::vl::WString::Unmanaged(L"Abort");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Blue()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Blue()
 	{
 		return ::vl::WString::Unmanaged(L"Blue:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Bold()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Bold()
 	{
 		return ::vl::WString::Unmanaged(L"Bold");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Cancel()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Cancel()
 	{
 		return ::vl::WString::Unmanaged(L"Cancel");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Color()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Color()
 	{
 		return ::vl::WString::Unmanaged(L"Color:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::ColorDialogTitle()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::ColorDialogTitle()
 	{
 		return ::vl::WString::Unmanaged(L"Choose Color");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Continue()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Continue()
 	{
 		return ::vl::WString::Unmanaged(L"Continue");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogAskCreateFile()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogAskCreateFile()
 	{
 		return ::vl::WString::Unmanaged(L"Do you want to create the following file(s):");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogAskOverrideFile()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogAskOverrideFile()
 	{
 		return ::vl::WString::Unmanaged(L"Do you want to override the following file(s):");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogErrorEmptySelection()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogErrorEmptySelection()
 	{
 		return ::vl::WString::Unmanaged(L"At least one file must be selected.");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogErrorFileExpected()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogErrorFileExpected()
 	{
 		return ::vl::WString::Unmanaged(L"File(s) expected but folder(s) selected:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogErrorFileNotExist()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogErrorFileNotExist()
 	{
 		return ::vl::WString::Unmanaged(L"File(s) not exist:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogErrorFolderNotExist()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogErrorFolderNotExist()
 	{
 		return ::vl::WString::Unmanaged(L"Folder not exist:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogErrorMultipleSelectionNotEnabled()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogErrorMultipleSelectionNotEnabled()
 	{
 		return ::vl::WString::Unmanaged(L"Multiple selection is not enabled in this dialog.");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogFileName()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogFileName()
 	{
 		return ::vl::WString::Unmanaged(L"File Name:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogOpen()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogOpen()
 	{
 		return ::vl::WString::Unmanaged(L"Open");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogSave()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogSave()
 	{
 		return ::vl::WString::Unmanaged(L"Save");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogTextLoadingFiles()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogTextLoadingFiles()
 	{
 		return ::vl::WString::Unmanaged(L"(Loading Folders and Files...)");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FileDialogTextLoadingFolders()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FileDialogTextLoadingFolders()
 	{
 		return ::vl::WString::Unmanaged(L"(Loading...)");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FontColorGroup()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FontColorGroup()
 	{
 		return ::vl::WString::Unmanaged(L"Color:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FontColorGroup2()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FontColorGroup2()
 	{
 		return ::vl::WString::Unmanaged(L"Pick a Color:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FontDialogTitle()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FontDialogTitle()
 	{
 		return ::vl::WString::Unmanaged(L"Choose Font");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FontEffectGroup()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FontEffectGroup()
 	{
 		return ::vl::WString::Unmanaged(L"Effect:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FontNameGroup()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FontNameGroup()
 	{
 		return ::vl::WString::Unmanaged(L"Font:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FontPreviewGroup()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FontPreviewGroup()
 	{
 		return ::vl::WString::Unmanaged(L"Preview:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::FontSizeGroup()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::FontSizeGroup()
 	{
 		return ::vl::WString::Unmanaged(L"Size:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Green()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Green()
 	{
 		return ::vl::WString::Unmanaged(L"Green:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::HAA()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::HAA()
 	{
 		return ::vl::WString::Unmanaged(L"Horizontal Antialias");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Ignore()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Ignore()
 	{
 		return ::vl::WString::Unmanaged(L"Ignore");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Italic()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Italic()
 	{
 		return ::vl::WString::Unmanaged(L"Italic");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::No()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::No()
 	{
 		return ::vl::WString::Unmanaged(L"No");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::OK()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::OK()
 	{
 		return ::vl::WString::Unmanaged(L"OK");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Red()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Red()
 	{
 		return ::vl::WString::Unmanaged(L"Red:");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Retry()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Retry()
 	{
 		return ::vl::WString::Unmanaged(L"Retry");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::TryAgain()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::TryAgain()
 	{
 		return ::vl::WString::Unmanaged(L"Try Again");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Underline()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Underline()
 	{
 		return ::vl::WString::Unmanaged(L"Underline");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::VAA()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::VAA()
 	{
 		return ::vl::WString::Unmanaged(L"Vertical Antialias");
 	}
 
-	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings::Yes()
+	::vl::WString __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings::Yes()
 	{
 		return ::vl::WString::Unmanaged(L"Yes");
 	}
@@ -5963,14 +5963,14 @@ Class (::gaclib_controls::ColorDialogWindow)
 Class (::gaclib_controls::DialogStrings)
 ***********************************************************************/
 
-	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> DialogStrings::__vwsn_ls__en(::vl::Locale __vwsn_ls_locale)
+	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> DialogStrings::__vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::vl::Ptr<::gaclib_controls::IDialogStringsStrings>(new ::vl_workflow_global::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls__en__gaclib_controls_IDialogStringsStrings());
+		return ::vl::Ptr<::gaclib_controls::IDialogStringsStrings>(new ::vl_workflow_global::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings());
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> DialogStrings::Get(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::gaclib_controls::DialogStrings::__vwsn_ls__en(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")));
+		return ::gaclib_controls::DialogStrings::__vwsn_ls_en_US_BuildStrings(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")));
 	}
 
 	DialogStrings::DialogStrings()

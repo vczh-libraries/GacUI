@@ -170,7 +170,7 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::DialogStrings>(), NO_PARAMETER)
-				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls__en, { L"__vwsn_ls_locale" })
+				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_en_US_BuildStrings, { L"__vwsn_ls_locale" })
 				CLASS_MEMBER_STATIC_METHOD(Get, { L"__vwsn_ls_locale" })
 			END_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 

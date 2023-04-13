@@ -8479,7 +8479,7 @@ namespace gaclib_controls
 {
     class DialogStrings
     {
-        static func <ls>_en-US(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
         {
             return new (IDialogStringsStrings^)
             {
@@ -8677,7 +8677,7 @@ namespace gaclib_controls
 
         static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
         {
-            return <ls>_en-US((cast (::system::Locale) "en-US"));
+            return <ls_en-US>BuildStrings((cast (::system::Locale) "en-US"));
         }
 
         new ()

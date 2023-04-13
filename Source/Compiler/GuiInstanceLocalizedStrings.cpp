@@ -472,13 +472,14 @@ GuiInstanceLocalizedStrings
 
 		WString GuiInstanceLocalizedStrings::GenerateStringsCppName(Ptr<Strings> ls)
 		{
-			return From(ls->locales)
+			auto encoded = From(ls->locales)
 				.Aggregate(
-					WString::Unmanaged(L"<ls>"),
+					WString::Empty,
 					[](auto&& a, auto&& b)
 					{
 						return a + WString::Unmanaged(L"_") + b;
 					});
+			return WString::Unmanaged(L"<ls") + encoded + WString::Unmanaged(L">BuildStrings");
 		}
 
 		Ptr<workflow::WfExpression> GuiInstanceLocalizedStrings::GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls)

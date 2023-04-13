@@ -26330,7 +26330,7 @@ namespace demo
 {
     class StringResource
     {
-        static func <ls>_en-US(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
         {
             return new (IStringResourceStrings^)
             {
@@ -26406,7 +26406,7 @@ namespace demo
             };
         }
 
-        static func <ls>_zh-CN(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        static func <ls_zh-CN>BuildStrings(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
         {
             return new (IStringResourceStrings^)
             {
@@ -26486,9 +26486,9 @@ namespace demo
         {
             if (((cast (::system::String) <ls>locale) == "zh-CN"))
             {
-                return <ls>_zh-CN(<ls>locale);
+                return <ls_zh-CN>BuildStrings(<ls>locale);
             }
-            return <ls>_en-US((cast (::system::Locale) "en-US"));
+            return <ls_en-US>BuildStrings((cast (::system::Locale) "en-US"));
         }
 
         new ()
