@@ -550,7 +550,7 @@ GuiInstanceLocalizedStrings
 						callFormats->function = refFormats;
 						callFormats->arguments.Add(refLocale);
 
-						auto refFirst = Ptr(new WfMemberExpression);
+						auto refFirst = Ptr(new WfChildExpression);
 						refFirst->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<helper_types::LocalizedStrings>());
 						refFirst->name.value = L"FirstOrEmpty";
 
@@ -681,6 +681,12 @@ GuiInstanceLocalizedStrings
 
 				func->returnType = refPointer;
 			}
+			{
+				auto argument = Ptr(new WfFunctionArgument);
+				argument->name.value = L"<ls>locale";
+				argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+				func->arguments.Add(argument);
+			}
 
 			auto block = Ptr(new WfBlockStatement);
 			func->statement = block;
@@ -741,6 +747,8 @@ GuiInstanceLocalizedStrings
 						eqExpr->op = WfBinaryOperator::EQ;
 						eqExpr->first = inferExpr;
 						eqExpr->second = strExpr;
+
+						ifStat->expression = eqExpr;
 					}
 					else
 					{
@@ -769,8 +777,12 @@ GuiInstanceLocalizedStrings
 					auto refStrings = Ptr(new WfReferenceExpression);
 					refStrings->name.value = GenerateStringsCppName(ls);
 
+					auto refLocale2 = Ptr(new WfReferenceExpression);
+					refLocale2->name.value = L"<ls>locale";
+
 					auto callExpr = Ptr(new WfCallExpression);
 					callExpr->function = refStrings;
+					callExpr->arguments.Add(refLocale2);
 
 					auto returnStat = Ptr(new WfReturnStatement);
 					returnStat->expression = callExpr;
@@ -778,7 +790,23 @@ GuiInstanceLocalizedStrings
 				}
 			}
 			auto returnStat = Ptr(new WfReturnStatement);
-			returnStat->expression = GenerateStrings(textDescs, defaultStrings);
+			{
+				auto refStrings = Ptr(new WfReferenceExpression);
+				refStrings->name.value = GenerateStringsCppName(defaultStrings);
+
+				auto refDefaultLocale = Ptr(new WfStringExpression);
+				refDefaultLocale->value.value = defaultLocale;
+
+				auto inferExpr = Ptr(new WfInferExpression);
+				inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+				inferExpr->expression = refDefaultLocale;
+
+				auto callExpr = Ptr(new WfCallExpression);
+				callExpr->function = refStrings;
+				callExpr->arguments.Add(inferExpr);
+
+				returnStat->expression = callExpr;
+			}
 			block->statements.Add(returnStat);
 
 			return func;
