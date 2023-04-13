@@ -731,9 +731,10 @@ GuiInstanceLocalizedStrings
 					auto refLocale = Ptr(new WfReferenceExpression);
 					refLocale->name.value = L"<ls>locale";
 
-					auto inferExpr = Ptr(new WfInferExpression);
-					inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-					inferExpr->expression = refLocale;
+					auto castExpr = Ptr(new WfTypeCastingExpression);
+					castExpr->strategy = WfTypeCastingStrategy::Strong;
+					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+					castExpr->expression = refLocale;
 
 					auto ifStat = Ptr(new WfIfStatement);
 					block->statements.Add(ifStat);
@@ -745,7 +746,7 @@ GuiInstanceLocalizedStrings
 
 						auto eqExpr = Ptr(new WfBinaryExpression);
 						eqExpr->op = WfBinaryOperator::EQ;
-						eqExpr->first = inferExpr;
+						eqExpr->first = castExpr;
 						eqExpr->second = strExpr;
 
 						ifStat->expression = eqExpr;
@@ -765,7 +766,7 @@ GuiInstanceLocalizedStrings
 
 						auto inExpr = Ptr(new WfSetTestingExpression);
 						inExpr->test = WfSetTesting::In;
-						inExpr->element = inferExpr;
+						inExpr->element = castExpr;
 						inExpr->collection = listExpr;
 
 						ifStat->expression = inExpr;
@@ -797,13 +798,14 @@ GuiInstanceLocalizedStrings
 				auto refDefaultLocale = Ptr(new WfStringExpression);
 				refDefaultLocale->value.value = defaultLocale;
 
-				auto inferExpr = Ptr(new WfInferExpression);
-				inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
-				inferExpr->expression = refDefaultLocale;
+				auto castExpr = Ptr(new WfTypeCastingExpression);
+				castExpr->strategy = WfTypeCastingStrategy::Strong;
+				castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+				castExpr->expression = refDefaultLocale;
 
 				auto callExpr = Ptr(new WfCallExpression);
 				callExpr->function = refStrings;
-				callExpr->arguments.Add(inferExpr);
+				callExpr->arguments.Add(castExpr);
 
 				returnStat->expression = callExpr;
 			}
