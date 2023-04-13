@@ -66,7 +66,10 @@ namespace vl
 			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
 			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind);
+			WString										GenerateStringsCppName(Ptr<Strings> ls);
 			Ptr<workflow::WfExpression>					GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls);
+			Ptr<workflow::WfFunctionDeclaration>		GenerateStringsFunction(const WString& name, TextDescMap& textDescs, Ptr<Strings> ls);
+			Ptr<workflow::WfFunctionDeclaration>		GenerateGetFunction(TextDescMap& textDescs);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 	}
