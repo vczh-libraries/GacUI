@@ -39,12 +39,16 @@
 - Add document for `<ComboButton/>` and its `DropdownControl` property.
 - Add document for `<LocalizedStringsInjection/>` external injection.
 - Fix document for control signal event if already exists.
-- Add `static` keyword in workflow document.
+- Add `static` keyword (method and init) in workflow document.
+- Add `static{}` in workflow document.
 
 ## Done but not Released
 
 - `GuiVirtualTreeListControl` handles `LEFT` and `RIGHT` for item navigation.
 - Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
+- Workflow
+  - Disallow struct `X` contains `X?` field.
+  - `static{}` initialization.
 
 ## OS Provider Features
 
