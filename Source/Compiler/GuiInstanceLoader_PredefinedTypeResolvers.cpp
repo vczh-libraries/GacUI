@@ -830,6 +830,7 @@ Localized Strings Type Resolver (LocalizedStrings)
 				switch (passIndex)
 				{
 				case Workflow_Collect:
+				case Instance_CompileInstanceClass:
 					return PerResource;
 				default:
 					return NotSupported;
@@ -845,6 +846,17 @@ Localized Strings Type Resolver (LocalizedStrings)
 						if (auto obj = resource->GetContent().Cast<GuiInstanceLocalizedStrings>())
 						{
 							if (auto module = obj->Compile(context, L"<localized-strings>" + obj->className, errors))
+							{
+								Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
+							}
+						}
+					}
+					break;
+				case Instance_CompileInstanceClass:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceLocalizedStringsInjection>())
+						{
+							if (auto module = obj->Compile(context, L"<localized-strings-injection>" + obj->className, errors))
 							{
 								Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
 							}
@@ -882,7 +894,18 @@ Localized Strings Type Resolver (LocalizedStrings)
 			{
 				if (auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
-					return GuiInstanceLocalizedStrings::LoadFromXml(resource, xml, errors);
+					if (xml->rootElement->name.value != L"LocalizedStrings")
+					{
+						return GuiInstanceLocalizedStrings::LoadFromXml(resource, xml, errors);
+					}
+					else if (xml->rootElement->name.value != L"LocalizedStringsInjection")
+					{
+						return GuiInstanceLocalizedStringsInjection::LoadFromXml(resource, xml, errors);
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: The root element of localized strings should be \"LocalizedStrings\" or \"LocalizedStringsInjection\"."));
+					}
 				}
 				return nullptr;
 			}

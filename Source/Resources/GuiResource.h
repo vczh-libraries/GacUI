@@ -613,7 +613,7 @@ Resource Type Resolver
 		///			Pass  3: Compile
 		///			Pass  4: Generate instance types with event handler functions to TemporaryClass	/ Compile animation types
 		///			Pass  5: Compile
-		///			Pass  6: Generate instance types with everything to InstanceCtor				/ Compile animation types
+		///			Pass  6: Generate instance types with everything to InstanceCtor				/ Compile animation types / Compile localized strings injection
 		///			Pass  7: Compile
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>

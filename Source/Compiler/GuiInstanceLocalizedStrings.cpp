@@ -12,16 +12,24 @@ namespace vl
 		using namespace reflection::description;
 
 /***********************************************************************
-GuiInstanceLocalizedStrings
+GuiInstanceLocalizedStringsBase
 ***********************************************************************/
 
-		WString GuiInstanceLocalizedStrings::Strings::GetLocalesName()
+		WString GuiInstanceLocalizedStringsBase::Strings::GetLocalesName()
 		{
 			return From(locales).Aggregate(WString(L""), [](const WString& a, const WString& b)
-			{
-				return a == L"" ? b : a + L";" + b;
-			});
+				{
+					return a == L"" ? b : a + L";" + b;
+				});
 		}
+
+/***********************************************************************
+GuiInstanceLocalizedStringsBase
+***********************************************************************/
+
+/***********************************************************************
+GuiInstanceLocalizedStrings
+***********************************************************************/
 
 		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
@@ -1044,6 +1052,35 @@ GuiInstanceLocalizedStrings
 			glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
 			SetCodeRange(module, { pos,pos });
 			return module;
+		}
+
+/***********************************************************************
+GuiInstanceLocalizedStringsInjection
+***********************************************************************/
+
+		Ptr<GuiInstanceLocalizedStringsInjection> GuiInstanceLocalizedStringsInjection::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStringsInjection::SaveToXml()
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		Ptr<GuiInstanceLocalizedStringsBase::Strings> GuiInstanceLocalizedStringsInjection::GetDefaultStrings()
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		WString GuiInstanceLocalizedStringsInjection::GetInterfaceTypeName(bool hasNamespace)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
+		Ptr<workflow::WfModule> GuiInstanceLocalizedStringsInjection::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
+		{
+			CHECK_FAIL(L"Not Implemented!");
 		}
 	}
 }
