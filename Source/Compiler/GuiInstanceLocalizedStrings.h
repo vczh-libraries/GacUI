@@ -69,6 +69,7 @@ namespace vl
 			WString										GenerateStringsCppName(Ptr<Strings> ls);
 			Ptr<workflow::WfExpression>					GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateStringsFunction(const WString& name, TextDescMap& textDescs, Ptr<Strings> ls);
+			Ptr<workflow::WfFunctionDeclaration>		GenerateInstallFunction(const WString& cacheName);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateGetFunction(TextDescMap& textDescs);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};

@@ -699,6 +699,137 @@ GuiInstanceLocalizedStrings
 			return func;
 		}
 
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateInstallFunction(const WString& cacheName)
+		{
+			auto func = Ptr(new WfFunctionDeclaration);
+			func->functionKind = WfFunctionKind::Static;
+			func->anonymity = WfFunctionAnonymity::Named;
+			func->name.value = L"Install";
+			{
+				auto refVoid = Ptr(new WfPredefinedType);
+				refVoid->name = WfPredefinedTypeName::Void;
+				func->returnType = refVoid;
+			}
+			{
+				auto argument = Ptr(new WfFunctionArgument);
+				argument->name.value = L"<ls>locale";
+				argument->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+				func->arguments.Add(argument);
+			}
+			{
+				auto refType = Ptr(new WfReferenceType);
+				refType->name.value = GetInterfaceTypeName(false);
+
+				auto refPointer = Ptr(new WfSharedPointerType);
+				refPointer->element = refType;
+
+				auto argument = Ptr(new WfFunctionArgument);
+				argument->name.value = L"<ls>impl";
+				argument->type = refPointer;
+				func->arguments.Add(argument);
+			}
+
+			auto block = Ptr(new WfBlockStatement);
+			func->statement = block;
+
+			{
+				auto ifStat = Ptr(new WfIfStatement);
+				{
+					auto refCache = Ptr(new WfReferenceExpression);
+					refCache->name.value = cacheName;
+
+					auto refKeys = Ptr(new WfMemberExpression);
+					refKeys->parent = refCache;
+					refKeys->name.value = L"Keys";
+
+					auto refContains = Ptr(new WfMemberExpression);
+					refContains->parent = refKeys;
+					refContains->name.value = L"Contains";
+
+					auto refLocale = Ptr(new WfReferenceExpression);
+					refLocale->name.value = L"<ls>locale";
+
+					auto castExpr = Ptr(new WfTypeCastingExpression);
+					castExpr->strategy = WfTypeCastingStrategy::Strong;
+					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+					castExpr->expression = refLocale;
+
+					ifStat->expression = castExpr;
+				}
+
+				auto trueBlock = Ptr(new WfBlockStatement);
+				ifStat->trueBranch = trueBlock;
+
+				auto raiseStat = Ptr(new WfRaiseExceptionStatement);
+				trueBlock->statements.Add(raiseStat);
+				{
+					auto errorHead = Ptr(new WfStringExpression);
+					errorHead->value.value = L"Localized strings \"" + className + L"\" has already registered for locale \"";
+
+					auto refLocale = Ptr(new WfReferenceExpression);
+					refLocale->name.value = L"<ls>locale";
+
+					auto castExpr = Ptr(new WfTypeCastingExpression);
+					castExpr->strategy = WfTypeCastingStrategy::Strong;
+					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+					castExpr->expression = refLocale;
+
+					auto errorTail = Ptr(new WfStringExpression);
+					errorTail->value.value = L"\".";
+
+					auto concat0 = Ptr(new WfBinaryExpression);
+					concat0->op = WfBinaryOperator::And;
+					concat0->first = errorHead;
+					concat0->second = castExpr;
+
+					auto concat1 = Ptr(new WfBinaryExpression);
+					concat1->op = WfBinaryOperator::And;
+					concat1->first = concat0;
+					concat1->second = errorTail;
+
+					raiseStat->expression = concat1;
+				}
+
+				block->statements.Add(ifStat);
+			}
+			{
+				auto callExpr = Ptr(new WfCallExpression);
+				{
+					auto refCache = Ptr(new WfReferenceExpression);
+					refCache->name.value = cacheName;
+
+					auto refSet = Ptr(new WfMemberExpression);
+					refSet->parent = refCache;
+					refSet->name.value = L"Set";
+
+					callExpr->function = refSet;
+				}
+				{
+					auto refLocale = Ptr(new WfReferenceExpression);
+					refLocale->name.value = L"<ls>locale";
+
+					auto castExpr = Ptr(new WfTypeCastingExpression);
+					castExpr->strategy = WfTypeCastingStrategy::Strong;
+					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+					castExpr->expression = refLocale;
+
+					callExpr->arguments.Add(castExpr);
+				}
+				{
+					auto refImpl = Ptr(new WfReferenceExpression);
+					refImpl->name.value = L"<ls>impl";
+
+					callExpr->arguments.Add(refImpl);
+				}
+
+				auto exprStat = Ptr(new WfExpressionStatement);
+				exprStat->expression = callExpr;
+				block->statements.Add(exprStat);
+			}
+
+			return func;
+		}
+
 		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateGetFunction(TextDescMap& textDescs)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
@@ -825,6 +956,8 @@ GuiInstanceLocalizedStrings
 				return nullptr;
 			}
 
+			WString cacheName;
+
 			auto module = Ptr(new WfModule);
 			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
@@ -840,13 +973,46 @@ GuiInstanceLocalizedStrings
 					lsInterface->declarations.Add(func);
 				}
 			}
-			auto lsClass = Workflow_InstallClass(className, module);
-			for (auto ls : strings)
 			{
-				auto cppName = GenerateStringsCppName(ls);
-				lsClass->declarations.Add(GenerateStringsFunction(cppName, textDescs, ls));
+				auto refType = Ptr(new WfReferenceType);
+				refType->name.value = className;
+
+				auto ptrType = Ptr(new WfSharedPointerType);
+				ptrType->element = refType;
+
+				auto stringType = Ptr(new WfPredefinedType);
+				stringType->name = WfPredefinedTypeName::String;
+
+				auto mapType = Ptr(new WfMapType);
+				mapType->writability = WfMapWritability::Writable;
+				mapType->key = stringType;
+				mapType->value = ptrType;
+
+				auto lsCache = Ptr(new WfVariableDeclaration);
+				lsCache->type = mapType;
+				lsCache->expression = Ptr(new WfConstructorExpression);
+
+				cacheName = L"<ls>" + Workflow_InstallWithClass(className, module, lsCache);
+				lsCache->name.value = cacheName;
 			}
-			lsClass->declarations.Add(GenerateGetFunction(textDescs));
+			{
+				auto lsClass = Workflow_InstallClass(className, module);
+				for (auto ls : strings)
+				{
+					auto cppName = GenerateStringsCppName(ls);
+					lsClass->declarations.Add(GenerateStringsFunction(cppName, textDescs, ls));
+				}
+				lsClass->declarations.Add(GenerateInstallFunction(cacheName));
+				lsClass->declarations.Add(GenerateGetFunction(textDescs));
+			}
+			{
+				auto lsInit = Ptr(new WfStaticInitDeclaration);
+
+				auto block = Ptr(new WfBlockStatement);
+				lsInit->statement = block;
+
+				Workflow_InstallWithClass(className, module, lsInit);
+			}
 
 			glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
 			SetCodeRange(module, { pos,pos });
