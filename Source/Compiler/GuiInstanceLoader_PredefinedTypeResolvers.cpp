@@ -838,7 +838,7 @@ Localized Strings Type Resolver (LocalizedStrings)
 						{
 							if (auto module = obj->Compile(context, L"<localized-strings-injection>" + obj->className, errors))
 							{
-								Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
+								Workflow_AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
 							}
 						}
 					}
@@ -864,6 +864,10 @@ Localized Strings Type Resolver (LocalizedStrings)
 			Ptr<DescriptableObject> Serialize(Ptr<GuiResourceItem> resource, Ptr<DescriptableObject> content)override
 			{
 				if (auto obj = content.Cast<GuiInstanceLocalizedStrings>())
+				{
+					return obj->SaveToXml();
+				}
+				if (auto obj = content.Cast<GuiInstanceLocalizedStringsInjection>())
 				{
 					return obj->SaveToXml();
 				}
