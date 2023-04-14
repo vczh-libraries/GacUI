@@ -36,7 +36,18 @@ Global Variables
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Demo)
 	vl_workflow_global::Demo instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
+
+		instance.__vwsn_ls_StringResource = ::vl::reflection::description::IValueDictionary::Create();
+
+		([]()
+		{
+			::demo::StringResource::Install(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")), ::demo::StringResource::__vwsn_ls_en_US_BuildStrings(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))));
+			::demo::StringResource::Install(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"zh-CN")), ::demo::StringResource::__vwsn_ls_zh_CN_BuildStrings(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"zh-CN"))));
+		}
+		)();
 	FINALIZE_GLOBAL_STORAGE_CLASS
+
+		instance.__vwsn_ls_StringResource = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Demo)
 
 namespace vl_workflow_global
@@ -23182,13 +23193,22 @@ Class (::demo::StringResource)
 		return ::vl::Ptr<::demo::IStringResourceStrings>(new ::vl_workflow_global::__vwsnc138_Demo_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings(__vwsn_ls_locale));
 	}
 
+	void StringResource::Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::demo::IStringResourceStrings> __vwsn_ls_impl)
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_StringResource.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(__vwsn_ls_locale)))
+		{
+			throw ::vl::Exception(((::vl::WString::Unmanaged(L"Localized strings \"demo::StringResource\" has already registered for locale \"") + ::vl::__vwsn::ToString(__vwsn_ls_locale)) + ::vl::WString::Unmanaged(L"\".")));
+		}
+		::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_StringResource.Obj())->Set(::vl::__vwsn::Box(__vwsn_ls_locale), ::vl::__vwsn::Box(__vwsn_ls_impl));
+	}
+
 	::vl::Ptr<::demo::IStringResourceStrings> StringResource::Get(::vl::Locale __vwsn_ls_locale)
 	{
-		if ((::vl::__vwsn::ToString(__vwsn_ls_locale) == ::vl::WString::Unmanaged(L"zh-CN")))
+		if (::vl::__vwsn::This(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_StringResource.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(__vwsn_ls_locale)))
 		{
-			return ::demo::StringResource::__vwsn_ls_zh_CN_BuildStrings(__vwsn_ls_locale);
+			return ::vl::__vwsn::Unbox<::vl::Ptr<::demo::IStringResourceStrings>>(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_StringResource.Obj())->Get(::vl::__vwsn::Box(__vwsn_ls_locale)));
 		}
-		return ::demo::StringResource::__vwsn_ls_en_US_BuildStrings(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")));
+		return ::vl::__vwsn::Unbox<::vl::Ptr<::demo::IStringResourceStrings>>(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_StringResource.Obj())->Get(::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")))));
 	}
 
 	StringResource::StringResource()

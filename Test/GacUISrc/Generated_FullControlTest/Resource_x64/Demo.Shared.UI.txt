@@ -770,6 +770,11 @@ namespace demo
 
 namespace demo
 {
+    var <ls>StringResource : IStringResourceStrings^[::system::Locale] = {};
+}
+
+namespace demo
+{
     class StringResource
     {
         static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
@@ -924,18 +929,36 @@ namespace demo
             };
         }
 
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IStringResourceStrings^) : (void)
+        {
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"demo::StringResource\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>StringResource.Set(<ls>locale, <ls>impl);
+        }
+
         static func Get(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
         {
-            if (((cast (::system::String) <ls>locale) == "zh-CN"))
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
             {
-                return <ls_zh-CN>BuildStrings(<ls>locale);
+                return <ls>StringResource[<ls>locale];
             }
-            return <ls_en-US>BuildStrings((cast (::system::Locale) "en-US"));
+            return <ls>StringResource[(cast (::system::Locale) "en-US")];
         }
 
         new ()
         {
         }
+    }
+}
+
+namespace demo
+{
+    static
+    {
+        StringResource::Install((cast (::system::Locale) "en-US"), StringResource::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+        StringResource::Install((cast (::system::Locale) "zh-CN"), StringResource::<ls_zh-CN>BuildStrings((cast (::system::Locale) "zh-CN")));
     }
 }
 

@@ -2747,6 +2747,7 @@ namespace demo
 	public:
 		static ::vl::Ptr<::demo::IStringResourceStrings> __vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale);
 		static ::vl::Ptr<::demo::IStringResourceStrings> __vwsn_ls_zh_CN_BuildStrings(::vl::Locale __vwsn_ls_locale);
+		static void Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::demo::IStringResourceStrings> __vwsn_ls_impl);
 		static ::vl::Ptr<::demo::IStringResourceStrings> Get(::vl::Locale __vwsn_ls_locale);
 		StringResource();
 	};
@@ -3233,6 +3234,8 @@ namespace vl_workflow_global
 	class Demo
 	{
 	public:
+
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_ls_StringResource;
 
 		void LoadListView(::vl::presentation::controls::GuiInstanceRootObject* root, const ::vl::Func<void(::vl::Ptr<::vl::presentation::controls::list::ListViewItem>)>& callback);
 		::vl::WString ToString(::demo::MyCategory value);
