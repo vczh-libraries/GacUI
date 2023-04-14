@@ -5989,7 +5989,11 @@ Class (::gaclib_controls::DialogStrings)
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> DialogStrings::Get(::vl::Locale __vwsn_ls_locale)
 	{
-		return ::gaclib_controls::DialogStrings::__vwsn_ls_en_US_BuildStrings(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")));
+		if (::vl::__vwsn::This(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_DialogStrings.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(__vwsn_ls_locale)))
+		{
+			return ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_DialogStrings.Obj())->Get(::vl::__vwsn::Box(__vwsn_ls_locale)));
+		}
+		return ::vl::__vwsn::Unbox<::vl::Ptr<::gaclib_controls::IDialogStringsStrings>>(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_DialogStrings.Obj())->Get(::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")))));
 	}
 
 	DialogStrings::DialogStrings()
