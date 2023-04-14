@@ -1011,11 +1011,67 @@ GuiInstanceLocalizedStrings
 			}
 			{
 				auto lsInit = Ptr(new WfStaticInitDeclaration);
+				auto classNameWithoutNs = Workflow_InstallWithClass(className, module, lsInit);
 
 				auto block = Ptr(new WfBlockStatement);
 				lsInit->statement = block;
 
-				Workflow_InstallWithClass(className, module, lsInit);
+				for (auto ls : strings)
+				{
+					auto cppName = GenerateStringsCppName(ls);
+					for (auto locale : ls->locales)
+					{
+						Ptr<WfExpression> exprStrings, exprInstall;
+						{
+							auto refClass = Ptr(new WfReferenceExpression);
+							refClass->name.value = classNameWithoutNs;
+
+							auto refStrings = Ptr(new WfChildExpression);
+							refStrings->parent = refClass;
+							refStrings->name.value = GenerateStringsCppName(ls);
+
+							auto strExpr = Ptr(new WfStringExpression);
+							strExpr->value.value = locale;
+
+							auto castExpr = Ptr(new WfTypeCastingExpression);
+							castExpr->strategy = WfTypeCastingStrategy::Strong;
+							castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+							castExpr->expression = strExpr;
+
+							auto callStringsExpr = Ptr(new WfCallExpression);
+							callStringsExpr->function = refStrings;
+							callStringsExpr->arguments.Add(castExpr);
+
+							exprStrings = callStringsExpr;
+						}
+						{
+							auto strExpr = Ptr(new WfStringExpression);
+							strExpr->value.value = locale;
+
+							auto castExpr = Ptr(new WfTypeCastingExpression);
+							castExpr->strategy = WfTypeCastingStrategy::Strong;
+							castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
+							castExpr->expression = strExpr;
+
+							auto refClass = Ptr(new WfReferenceExpression);
+							refClass->name.value = classNameWithoutNs;
+
+							auto refInstall = Ptr(new WfChildExpression);
+							refInstall->parent = refClass;
+							refInstall->name.value = L"Install";
+
+							auto callInstallExpr = Ptr(new WfCallExpression);
+							callInstallExpr->function = refInstall;
+							callInstallExpr->arguments.Add(castExpr);
+							callInstallExpr->arguments.Add(exprStrings);
+
+							exprInstall = callInstallExpr;
+						}
+						auto exprStat = Ptr(new WfExpressionStatement);
+						exprStat->expression = exprInstall;
+						block->statements.Add(exprStat);
+					}
+				}
 			}
 
 			glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
