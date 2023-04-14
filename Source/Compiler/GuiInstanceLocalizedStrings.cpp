@@ -754,7 +754,11 @@ GuiInstanceLocalizedStrings
 					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
 					castExpr->expression = refLocale;
 
-					ifStat->expression = castExpr;
+					auto callExpr = Ptr(new WfCallExpression);
+					callExpr->function = refContains;
+					callExpr->arguments.Add(castExpr);
+
+					ifStat->expression = callExpr;
 				}
 
 				auto trueBlock = Ptr(new WfBlockStatement);
@@ -778,12 +782,12 @@ GuiInstanceLocalizedStrings
 					errorTail->value.value = L"\".";
 
 					auto concat0 = Ptr(new WfBinaryExpression);
-					concat0->op = WfBinaryOperator::And;
+					concat0->op = WfBinaryOperator::FlagAnd;
 					concat0->first = errorHead;
 					concat0->second = castExpr;
 
 					auto concat1 = Ptr(new WfBinaryExpression);
-					concat1->op = WfBinaryOperator::And;
+					concat1->op = WfBinaryOperator::FlagAnd;
 					concat1->first = concat0;
 					concat1->second = errorTail;
 
@@ -975,23 +979,23 @@ GuiInstanceLocalizedStrings
 			}
 			{
 				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = className;
-
+				refType->name.value = GetInterfaceTypeName(false);
+				
 				auto ptrType = Ptr(new WfSharedPointerType);
 				ptrType->element = refType;
-
+				
 				auto stringType = Ptr(new WfPredefinedType);
 				stringType->name = WfPredefinedTypeName::String;
-
+				
 				auto mapType = Ptr(new WfMapType);
 				mapType->writability = WfMapWritability::Writable;
 				mapType->key = stringType;
 				mapType->value = ptrType;
-
+				
 				auto lsCache = Ptr(new WfVariableDeclaration);
 				lsCache->type = mapType;
 				lsCache->expression = Ptr(new WfConstructorExpression);
-
+				
 				cacheName = L"<ls>" + Workflow_InstallWithClass(className, module, lsCache);
 				lsCache->name.value = cacheName;
 			}
