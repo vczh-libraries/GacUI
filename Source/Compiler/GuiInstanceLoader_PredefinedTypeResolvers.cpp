@@ -894,11 +894,11 @@ Localized Strings Type Resolver (LocalizedStrings)
 			{
 				if (auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
-					if (xml->rootElement->name.value != L"LocalizedStrings")
+					if (xml->rootElement->name.value == L"LocalizedStrings")
 					{
 						return GuiInstanceLocalizedStrings::LoadFromXml(resource, xml, errors);
 					}
-					else if (xml->rootElement->name.value != L"LocalizedStringsInjection")
+					else if (xml->rootElement->name.value == L"LocalizedStringsInjection")
 					{
 						return GuiInstanceLocalizedStringsInjection::LoadFromXml(resource, xml, errors);
 					}

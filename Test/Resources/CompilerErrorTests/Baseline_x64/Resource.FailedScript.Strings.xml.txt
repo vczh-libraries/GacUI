@@ -1,5 +1,5 @@
 s1 # .\Resource.FailedScript.Strings.xml
-(3, 5): Precompile: The root element of localized strings should be "LocalizedStrings".
+(3, 5): Precompile: The root element of localized strings should be "LocalizedStrings" or "LocalizedStringsInjection".
 s2 # .\Resource.FailedScript.Strings.xml
 (8, 5): Precompile: Missing attribute "DefaultLocale" in "LocalizedStrings".
 (8, 5): Precompile: Missing attribute "ref.Class" in "LocalizedStrings".
