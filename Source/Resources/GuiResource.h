@@ -587,19 +587,19 @@ Resource Type Resolver
 			
 			/// <summary>Get the precompiler for the type resolver.</summary>
 			/// <returns>Returns null if the type resolve does not support precompiling.</returns>
-			virtual IGuiResourceTypeResolver_Precompile*		Precompile(){ return 0; }
+			virtual IGuiResourceTypeResolver_Precompile*		Precompile(){ return nullptr; }
 			/// <summary>Get the initializer for the type resolver.</summary>
 			/// <returns>Returns null if the type resolve does not support initializing.</returns>
-			virtual IGuiResourceTypeResolver_Initialize*		Initialize(){ return 0; }
+			virtual IGuiResourceTypeResolver_Initialize*		Initialize(){ return nullptr; }
 			/// <summary>Get the object for convert the resource between xml and object.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
-			virtual IGuiResourceTypeResolver_DirectLoadXml*		DirectLoadXml(){ return 0; }
+			virtual IGuiResourceTypeResolver_DirectLoadXml*		DirectLoadXml(){ return nullptr; }
 			/// <summary>Get the object for convert the resource between stream and object.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
-			virtual IGuiResourceTypeResolver_DirectLoadStream*	DirectLoadStream(){ return 0; }
+			virtual IGuiResourceTypeResolver_DirectLoadStream*	DirectLoadStream(){ return nullptr; }
 			/// <summary>Get the object for convert the resource between the preload type and the current type.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
-			virtual IGuiResourceTypeResolver_IndirectLoad*		IndirectLoad(){ return 0; }
+			virtual IGuiResourceTypeResolver_IndirectLoad*		IndirectLoad(){ return nullptr; }
 		};
 
 		/// <summary>
