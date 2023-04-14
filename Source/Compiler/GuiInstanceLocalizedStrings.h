@@ -94,7 +94,7 @@ namespace vl
 		{
 		public:
 			WString										className;
-			WString										extendFromClassName;
+			WString										injectIntoClassName;
 
 		public:
 

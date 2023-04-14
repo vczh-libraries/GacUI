@@ -1083,12 +1083,75 @@ GuiInstanceLocalizedStringsInjection
 
 		Ptr<GuiInstanceLocalizedStringsInjection> GuiInstanceLocalizedStringsInjection::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto ls = Ptr(new GuiInstanceLocalizedStringsInjection);
+
+			if (xml->rootElement->name.value!=L"LocalizedStringsInjection")
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: The root element of localized strings should be \"LocalizedStringsInjection\"."));
+				return nullptr;
+			}
+			ls->tagPosition = { {resource},xml->rootElement->name.codeRange.start };
+
+			auto attClassName = XmlGetAttribute(xml->rootElement, L"ref.Class");
+			if (!attClassName)
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Missing attribute \"ref.Class\" in \"LocalizedStringsInjection\"."));
+			}
+			else
+			{
+				ls->className = attClassName->value.value;
+			}
+
+			auto attInjectIntoClassName = XmlGetAttribute(xml->rootElement, L"ref.InjectInto");
+			if (!attInjectIntoClassName)
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Missing attribute \"ref.InjectInto\" in \"LocalizedStringsInjection\"."));
+			}
+			else
+			{
+				ls->injectIntoClassName = attInjectIntoClassName->value.value;
+			}
+
+			if (!attClassName || !attInjectIntoClassName)
+			{
+				return nullptr;
+			}
+
+			SortedList<WString> existingLocales;
+			for (auto xmlStrings : XmlGetElements(xml->rootElement))
+			{
+				if (auto lss = LoadStringsFromXml(resource, xmlStrings, existingLocales, errors))
+				{
+					ls->strings.Add(lss);
+				}
+			}
+
+			return ls;
 		}
 
 		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStringsInjection::SaveToXml()
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto xml = Ptr(new XmlElement);
+			xml->name.value = L"LocalizedStringsInjection";
+			{
+				auto att = Ptr(new XmlAttribute);
+				att->name.value = L"ref.Class";
+				att->value.value = className;
+				xml->attributes.Add(att);
+			}
+			{
+				auto att = Ptr(new XmlAttribute);
+				att->name.value = L"ref.InjectInto";
+				att->value.value = injectIntoClassName;
+				xml->attributes.Add(att);
+			}
+
+			for (auto lss : strings)
+			{
+				xml->subNodes.Add(SaveStringsToXml(lss));
+			}
+
+			return xml;
 		}
 
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStringsInjection::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)

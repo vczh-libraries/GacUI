@@ -1,0 +1,22 @@
+<Resource>
+  <LocalizedStrings name="baseline">
+    <LocalizedStrings ref.Class="demo::baseline" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="A" Text="$(0:ShortDate) $(1:Number)"/>
+        <String Name="B" Text="$(1:ShortDate) $(0:Number)"/>
+        <String Name="C" Text="$(0:LongTime) $(1:Currency)"/>
+      </Strings>
+      <!-- zh-CN, ja-JP, ar-SA -->
+    </LocalizedStrings>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s1">
+    <LocalizedStringsInjection>
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s2">
+    <LocalizedStringsInjection ref.Class="demo::s2" ref.InjectInto="demo::Unexisting">
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+</Resource>
