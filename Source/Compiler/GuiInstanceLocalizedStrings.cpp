@@ -272,6 +272,90 @@ GuiInstanceLocalizedStringsBase
 			return textDesc;
 		}
 
+		void GuiInstanceLocalizedStringsBase::FillStringsToTextDescMap(Ptr<Strings> lss, TextDescMap& textDescs, GuiResourceError::List& errors)
+		{
+			for (auto lssi : lss->items.Values())
+			{
+				if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
+				{
+					textDescs.Add({ lss,lssi->name }, textDesc);
+				}
+			}
+		}
+
+		void GuiInstanceLocalizedStringsBase::ValidateAgainstDefaultStrings(Ptr<Strings> defaultStrings, collections::List<Ptr<Strings>>& nonDefaultStrings, TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors)
+		{
+			vint errorCount = errors.Count();
+			for (auto lss : nonDefaultStrings)
+			{
+				auto localesName = lss->GetLocalesName();
+
+				auto missing = From(defaultStrings->items.Keys())
+					.Except(lss->items.Keys())
+					.Aggregate(WString(L""), [](const WString& a, const WString& b)
+					{
+						return a == L"" ? b : a + L", " + b;
+					});
+				
+				auto extra = From(lss->items.Keys())
+					.Except(defaultStrings->items.Keys())
+					.Aggregate(WString(L""), [](const WString& a, const WString& b)
+					{
+						return a == L"" ? b : a + L", " + b;
+					});
+
+				if (missing != L"")
+				{
+					errors.Add({ lss->tagPosition,L"Precompile: Missing strings for locale \"" + localesName + L"\": " + missing + L"." });
+				}
+
+				if (extra != L"")
+				{
+					errors.Add({ lss->tagPosition,L"Precompile: Unnecessary strings for locale \"" + localesName + L"\": " + extra + L"." });
+				}
+			}
+			if (errors.Count() != errorCount)
+			{
+				return;
+			}
+
+			auto defaultLocalesName = defaultStrings->GetLocalesName();
+			for (auto lss : nonDefaultStrings)
+			{
+				auto localesName = lss->GetLocalesName();
+
+				for (auto lssi : lss->items.Values())
+				{
+					if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
+					{
+						textDescs.Add({ lss,lssi->name }, textDesc);
+						auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
+						if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
+						{
+							errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
+						}
+						else
+						{
+							for (vint i = 0; i < textDesc->parameters.Count(); i++)
+							{
+								auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
+								auto parameter = textDesc->parameters[textDesc->positions[i]];
+
+								if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
+								{
+									errors.Add({ lss->tagPosition,L"Parameter \"" + itow(i) + L"\" in String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" are in different types \"" + defaultParameter.key->GetTypeFriendlyName() + L"\" and \"" + parameter.key->GetTypeFriendlyName() + L"\"." });
+								}
+							}
+						}
+					}
+				}
+			}
+			if (errors.Count() != errorCount)
+			{
+				return;
+			}
+		}
+
 		WString GuiInstanceLocalizedStringsBase::GetInterfaceTypeName(const WString& className, bool hasNamespace)
 		{
 			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
@@ -622,97 +706,6 @@ GuiInstanceLocalizedStrings
 			return xml;
 		}
 
-		void GuiInstanceLocalizedStrings::Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors)
-		{
-			vint errorCount = errors.Count();
-			for (auto lss : strings)
-			{
-				if (lss != defaultStrings)
-				{
-					auto localesName = lss->GetLocalesName();
-
-					auto missing = From(defaultStrings->items.Keys())
-						.Except(lss->items.Keys())
-						.Aggregate(WString(L""), [](const WString& a, const WString& b)
-						{
-							return a == L"" ? b : a + L", " + b;
-						});
-					
-					auto extra = From(lss->items.Keys())
-						.Except(defaultStrings->items.Keys())
-						.Aggregate(WString(L""), [](const WString& a, const WString& b)
-						{
-							return a == L"" ? b : a + L", " + b;
-						});
-
-					if (missing != L"")
-					{
-						errors.Add({ lss->tagPosition,L"Precompile: Missing strings for locale \"" + localesName + L"\": " + missing + L"." });
-					}
-
-					if (extra != L"")
-					{
-						errors.Add({ lss->tagPosition,L"Precompile: Unnecessary strings for locale \"" + localesName + L"\": " + extra + L"." });
-					}
-				}
-			}
-			if (errors.Count() != errorCount)
-			{
-				return;
-			}
-
-			for (auto lssi : defaultStrings->items.Values())
-			{
-				if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
-				{
-					textDescs.Add({ defaultStrings,lssi->name }, textDesc);
-				}
-			}
-			if (errors.Count() != errorCount)
-			{
-				return;
-			}
-
-			auto defaultLocalesName = defaultStrings->GetLocalesName();
-			for (auto lss : strings)
-			{
-				if (lss != defaultStrings)
-				{
-					auto localesName = lss->GetLocalesName();
-
-					for (auto lssi : lss->items.Values())
-					{
-						if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
-						{
-							textDescs.Add({ lss,lssi->name }, textDesc);
-							auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
-							if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
-							{
-								errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
-							}
-							else
-							{
-								for (vint i = 0; i < textDesc->parameters.Count(); i++)
-								{
-									auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
-									auto parameter = textDesc->parameters[textDesc->positions[i]];
-
-									if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
-									{
-										errors.Add({ lss->tagPosition,L"Parameter \"" + itow(i) + L"\" in String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" are in different types \"" + defaultParameter.key->GetTypeFriendlyName() + L"\" and \"" + parameter.key->GetTypeFriendlyName() + L"\"." });
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			if (errors.Count() != errorCount)
-			{
-				return;
-			}
-		}
-
 		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateInstallFunction(const WString& cacheName)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
@@ -932,7 +925,16 @@ GuiInstanceLocalizedStrings
 		{
 			vint errorCount = errors.Count();
 			TextDescMap textDescs;
-			Validate(textDescs, precompileContext, errors);
+			{
+				List<Ptr<Strings>> nonDefaultStrings;
+				CopyFrom(
+					nonDefaultStrings,
+					From(strings).Where([this](auto&& lss) { return lss != defaultStrings; })
+					);
+
+				FillStringsToTextDescMap(defaultStrings, textDescs, errors);
+				ValidateAgainstDefaultStrings(defaultStrings, nonDefaultStrings, textDescs, precompileContext, errors);
+			}
 			if (errors.Count() != errorCount)
 			{
 				return nullptr;
