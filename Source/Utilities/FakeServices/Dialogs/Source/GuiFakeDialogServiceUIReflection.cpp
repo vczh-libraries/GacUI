@@ -172,6 +172,7 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::DialogStrings>(), NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_en_US_BuildStrings, { L"__vwsn_ls_locale" })
 				CLASS_MEMBER_STATIC_METHOD(Get, { L"__vwsn_ls_locale" })
+				CLASS_MEMBER_STATIC_METHOD(Install, { L"__vwsn_ls_locale" _ L"__vwsn_ls_impl" })
 			END_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::FileDialogWindow)

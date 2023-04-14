@@ -1017,6 +1017,11 @@ namespace gaclib_controls
 
 namespace gaclib_controls
 {
+    var <ls>DialogStrings : IDialogStringsStrings^[string] = {};
+}
+
+namespace gaclib_controls
+{
     class DialogStrings
     {
         static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
@@ -1215,6 +1220,15 @@ namespace gaclib_controls
             };
         }
 
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IDialogStringsStrings^) : (void)
+        {
+            if (<ls>DialogStrings.Keys.Contains((cast (::system::String) <ls>locale)))
+            {
+                raise (("Localized strings \"gaclib_controls::DialogStrings\" has already registered for locale \"" & (cast (::system::String) <ls>locale)) & "\".");
+            }
+            <ls>DialogStrings.Set((cast (::system::String) <ls>locale), <ls>impl);
+        }
+
         static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
         {
             return <ls_en-US>BuildStrings((cast (::system::Locale) "en-US"));
@@ -1223,6 +1237,13 @@ namespace gaclib_controls
         new ()
         {
         }
+    }
+}
+
+namespace gaclib_controls
+{
+    static
+    {
     }
 }
 

@@ -399,6 +399,7 @@ namespace gaclib_controls
 #endif
 	public:
 		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale);
+		static void Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_ls_impl);
 		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> Get(::vl::Locale __vwsn_ls_locale);
 		DialogStrings();
 	};
@@ -1095,6 +1096,8 @@ namespace vl_workflow_global
 	class GuiFakeDialogServiceUI
 	{
 	public:
+
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_ls_DialogStrings;
 
 		static GuiFakeDialogServiceUI& Instance();
 	};
