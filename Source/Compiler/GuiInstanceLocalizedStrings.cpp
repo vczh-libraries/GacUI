@@ -272,9 +272,24 @@ GuiInstanceLocalizedStringsBase
 			return textDesc;
 		}
 
-		WString GuiInstanceLocalizedStringsBase::GenerateStringsCppName(Ptr<Strings> ls)
+		WString GuiInstanceLocalizedStringsBase::GetInterfaceTypeName(const WString& className, bool hasNamespace)
 		{
-			auto encoded = From(ls->locales)
+			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
+			if (pair.key == -1)
+			{
+				return L"I" + className + L"Strings";
+			}
+			else
+			{
+				auto ns = className.Left(pair.key + 2);
+				auto name = className.Right(className.Length() - ns.Length());
+				return(hasNamespace ? ns : L"") + L"I" + name + L"Strings";
+			}
+		}
+
+		WString GuiInstanceLocalizedStringsBase::GenerateStringsCppName(Ptr<Strings> lss)
+		{
+			auto encoded = From(lss->locales)
 				.Aggregate(
 					WString::Empty,
 					[](auto&& a, auto&& b)
@@ -304,7 +319,7 @@ GuiInstanceLocalizedStringsBase
 			return func;
 		}
 
-		Ptr<workflow::WfExpression> GuiInstanceLocalizedStringsBase::GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls)
+		Ptr<workflow::WfExpression> GuiInstanceLocalizedStringsBase::GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss)
 		{
 			auto lsExpr = Ptr(new WfNewInterfaceExpression);
 			{
@@ -317,10 +332,10 @@ GuiInstanceLocalizedStringsBase
 				lsExpr->type = refPointer;
 			}
 
-			for (auto lss : ls->items.Values())
+			for (auto lssi : lss->items.Values())
 			{
-				auto textDesc = textDescs[{ls, lss->name}];
-				auto func = GenerateTextDescFunction(textDesc, lss->name, WfFunctionKind::Override);
+				auto textDesc = textDescs[{lss, lssi->name}];
+				auto func = GenerateTextDescFunction(textDesc, lssi->name, WfFunctionKind::Override);
 				lsExpr->declarations.Add(func);
 
 				auto block = Ptr(new WfBlockStatement);
@@ -489,12 +504,12 @@ GuiInstanceLocalizedStringsBase
 			return lsExpr;
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = WfFunctionKind::Static;
 			func->anonymity = WfFunctionAnonymity::Named;
-			func->name.value = GenerateStringsCppName(ls);
+			func->name.value = GenerateStringsCppName(lss);
 			{
 				auto refType = Ptr(new WfReferenceType);
 				refType->name.value = interfaceName;
@@ -515,7 +530,7 @@ GuiInstanceLocalizedStringsBase
 			func->statement = block;
 			
 			auto returnStat = Ptr(new WfReturnStatement);
-			returnStat->expression = GenerateStringsConstructor(interfaceName, textDescs, ls);
+			returnStat->expression = GenerateStringsConstructor(interfaceName, textDescs, lss);
 			block->statements.Add(returnStat);
 
 			return func;
@@ -567,10 +582,14 @@ GuiInstanceLocalizedStrings
 				if (auto lss = LoadStringsFromXml(resource, xmlStrings, existingLocales, errors))
 				{
 					ls->strings.Add(lss);
+					if (lss->locales.Contains(ls->defaultLocale))
+					{
+						ls->defaultStrings = lss;
+					}
 				}
 			}
 
-			if (!existingLocales.Contains(ls->defaultLocale))
+			if (!ls->defaultStrings)
 			{
 				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Strings for the default locale \"" + ls->defaultLocale + L"\" is not defined."));
 			}
@@ -603,35 +622,8 @@ GuiInstanceLocalizedStrings
 			return xml;
 		}
 
-		Ptr<GuiInstanceLocalizedStrings::Strings> GuiInstanceLocalizedStrings::GetDefaultStrings()
-		{
-			return From(strings)
-				.Where([=](Ptr<Strings> strings)
-				{
-					return strings->locales.Contains(defaultLocale);
-				})
-				.First();
-		}
-
-		WString GuiInstanceLocalizedStrings::GetInterfaceTypeName(bool hasNamespace)
-		{
-			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
-			if (pair.key == -1)
-			{
-				return L"I" + className + L"Strings";
-			}
-			else
-			{
-				auto ns = className.Left(pair.key + 2);
-				auto name = className.Right(className.Length() - ns.Length());
-				return(hasNamespace ? ns : L"") + L"I" + name + L"Strings";
-			}
-		}
-
 		void GuiInstanceLocalizedStrings::Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors)
 		{
-			auto defaultStrings = GetDefaultStrings();
-
 			vint errorCount = errors.Count();
 			for (auto lss : strings)
 			{
@@ -740,7 +732,7 @@ GuiInstanceLocalizedStrings
 			}
 			{
 				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = GetInterfaceTypeName(false);
+				refType->name.value = GetInterfaceTypeName(className, false);
 
 				auto refPointer = Ptr(new WfSharedPointerType);
 				refPointer->element = refType;
@@ -849,7 +841,7 @@ GuiInstanceLocalizedStrings
 			func->name.value = L"Get";
 			{
 				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = GetInterfaceTypeName(false);
+				refType->name.value = GetInterfaceTypeName(className, false);
 
 				auto refPointer = Ptr(new WfSharedPointerType);
 				refPointer->element = refType;
@@ -954,11 +946,10 @@ GuiInstanceLocalizedStrings
 
 			// interface
 			{
-				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(true), module);
+				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(className, true), module);
 				lsInterface->kind = WfClassKind::Interface;
 				lsInterface->constructorType = WfConstructorType::SharedPtr;
 
-				auto defaultStrings = GetDefaultStrings();
 				for (auto functionName : defaultStrings->items.Keys())
 				{
 					auto func = GenerateTextDescFunction(textDescs[{defaultStrings, functionName}], functionName, WfFunctionKind::Normal);
@@ -969,7 +960,7 @@ GuiInstanceLocalizedStrings
 			// cache
 			{
 				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = GetInterfaceTypeName(false);
+				refType->name.value = GetInterfaceTypeName(className, false);
 				
 				auto ptrType = Ptr(new WfSharedPointerType);
 				ptrType->element = refType;
@@ -992,7 +983,7 @@ GuiInstanceLocalizedStrings
 				auto lsClass = Workflow_InstallClass(className, module);
 				for (auto ls : strings)
 				{
-					lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(false), textDescs, ls));
+					lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(className, false), textDescs, ls));
 				}
 				lsClass->declarations.Add(GenerateInstallFunction(cacheName));
 				lsClass->declarations.Add(GenerateGetFunction(cacheName));
@@ -1077,16 +1068,6 @@ GuiInstanceLocalizedStringsInjection
 		}
 
 		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStringsInjection::SaveToXml()
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-
-		Ptr<GuiInstanceLocalizedStringsBase::Strings> GuiInstanceLocalizedStringsInjection::GetDefaultStrings()
-		{
-			CHECK_FAIL(L"Not Implemented!");
-		}
-
-		WString GuiInstanceLocalizedStringsInjection::GetInterfaceTypeName(bool hasNamespace)
 		{
 			CHECK_FAIL(L"Not Implemented!");
 		}

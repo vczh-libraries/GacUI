@@ -57,17 +57,15 @@ namespace vl
 			using TextDescMap = collections::Dictionary<collections::Pair<Ptr<Strings>, WString>, Ptr<TextDesc>>;
 
 		public:
-			virtual Ptr<Strings>						GetDefaultStrings() = 0;
-			virtual WString								GetInterfaceTypeName(bool hasNamespace) = 0;
-
 			static Ptr<Strings>							LoadStringsFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xmlStrings, collections::SortedList<WString>& existingLocales, GuiResourceError::List& errors);
 			static Ptr<glr::xml::XmlElement>			SaveStringsToXml(Ptr<Strings> lss);
 			static Ptr<TextDesc>						ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
 
-			static WString								GenerateStringsCppName(Ptr<Strings> ls);
+			static WString								GetInterfaceTypeName(const WString& className, bool hasNamespace);
+			static WString								GenerateStringsCppName(Ptr<Strings> lss);
 			static Ptr<workflow::WfFunctionDeclaration>	GenerateTextDescFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind);
-			static Ptr<workflow::WfExpression>			GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls);
-			static Ptr<workflow::WfFunctionDeclaration>	GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls);
+			static Ptr<workflow::WfExpression>			GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
+			static Ptr<workflow::WfFunctionDeclaration>	GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
 		};
 
 		class GuiInstanceLocalizedStrings : public GuiInstanceLocalizedStringsBase, public Description<GuiInstanceLocalizedStrings>
@@ -75,14 +73,12 @@ namespace vl
 		public:
 			WString										className;
 			WString										defaultLocale;
+			Ptr<Strings>								defaultStrings;
 
 		public:
 
 			static Ptr<GuiInstanceLocalizedStrings>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<glr::xml::XmlElement>					SaveToXml();
-
-			Ptr<Strings>								GetDefaultStrings() override;
-			WString										GetInterfaceTypeName(bool hasNamespace) override;
 
 			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateInstallFunction(const WString& cacheName);
@@ -101,8 +97,6 @@ namespace vl
 			static Ptr<GuiInstanceLocalizedStringsInjection>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<glr::xml::XmlElement>								SaveToXml();
 
-			Ptr<Strings>								GetDefaultStrings() override;
-			WString										GetInterfaceTypeName(bool hasNamespace) override;
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 	}
