@@ -49,6 +49,8 @@
 - Workflow
   - Disallow struct `X` contains `X?` field.
   - `static{}` initialization.
+- GacUI
+  - Fix GacUI compiler failure when compiled with reflection.
 
 ## OS Provider Features
 

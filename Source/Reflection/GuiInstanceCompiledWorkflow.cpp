@@ -45,7 +45,7 @@ GuiInstanceSharedScript
 				context = Ptr(new WfRuntimeGlobalContext(assembly));
 				LoadFunction<void()>(context, L"<initialize>")();
 			}
-#else
+#endif
 			if (initializeContext)
 			{
 				if (assembly->typeImpl)
@@ -56,7 +56,6 @@ GuiInstanceSharedScript
 					}
 				}
 			}
-#endif
 			return true;
 		}
 
@@ -70,7 +69,7 @@ GuiInstanceSharedScript
 		{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			context = nullptr;
-#else
+#endif
 			if (assembly && assembly->typeImpl)
 			{
 				if (auto tm = GetGlobalTypeManager())
@@ -78,7 +77,6 @@ GuiInstanceSharedScript
 					tm->RemoveTypeLoader(assembly->typeImpl);
 				}
 			}
-#endif
 		}
 
 /***********************************************************************
