@@ -5980,11 +5980,11 @@ Class (::gaclib_controls::DialogStrings)
 
 	void DialogStrings::Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_ls_impl)
 	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_DialogStrings.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(::vl::__vwsn::ToString(__vwsn_ls_locale))))
+		if (::vl::__vwsn::This(::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_DialogStrings.Obj())->GetKeys().Obj())->Contains(::vl::__vwsn::Box(__vwsn_ls_locale)))
 		{
 			throw ::vl::Exception(((::vl::WString::Unmanaged(L"Localized strings \"gaclib_controls::DialogStrings\" has already registered for locale \"") + ::vl::__vwsn::ToString(__vwsn_ls_locale)) + ::vl::WString::Unmanaged(L"\".")));
 		}
-		::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_DialogStrings.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::ToString(__vwsn_ls_locale)), ::vl::__vwsn::Box(__vwsn_ls_impl));
+		::vl::__vwsn::This(GLOBAL_NAME __vwsn_ls_DialogStrings.Obj())->Set(::vl::__vwsn::Box(__vwsn_ls_locale), ::vl::__vwsn::Box(__vwsn_ls_impl));
 	}
 
 	::vl::Ptr<::gaclib_controls::IDialogStringsStrings> DialogStrings::Get(::vl::Locale __vwsn_ls_locale)

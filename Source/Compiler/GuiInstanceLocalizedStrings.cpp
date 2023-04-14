@@ -749,14 +749,9 @@ GuiInstanceLocalizedStrings
 					auto refLocale = Ptr(new WfReferenceExpression);
 					refLocale->name.value = L"<ls>locale";
 
-					auto castExpr = Ptr(new WfTypeCastingExpression);
-					castExpr->strategy = WfTypeCastingStrategy::Strong;
-					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-					castExpr->expression = refLocale;
-
 					auto callExpr = Ptr(new WfCallExpression);
 					callExpr->function = refContains;
-					callExpr->arguments.Add(castExpr);
+					callExpr->arguments.Add(refLocale);
 
 					ifStat->expression = callExpr;
 				}
@@ -773,18 +768,13 @@ GuiInstanceLocalizedStrings
 					auto refLocale = Ptr(new WfReferenceExpression);
 					refLocale->name.value = L"<ls>locale";
 
-					auto castExpr = Ptr(new WfTypeCastingExpression);
-					castExpr->strategy = WfTypeCastingStrategy::Strong;
-					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-					castExpr->expression = refLocale;
-
 					auto errorTail = Ptr(new WfStringExpression);
 					errorTail->value.value = L"\".";
 
 					auto concat0 = Ptr(new WfBinaryExpression);
 					concat0->op = WfBinaryOperator::FlagAnd;
 					concat0->first = errorHead;
-					concat0->second = castExpr;
+					concat0->second = refLocale;
 
 					auto concat1 = Ptr(new WfBinaryExpression);
 					concat1->op = WfBinaryOperator::FlagAnd;
@@ -812,12 +802,7 @@ GuiInstanceLocalizedStrings
 					auto refLocale = Ptr(new WfReferenceExpression);
 					refLocale->name.value = L"<ls>locale";
 
-					auto castExpr = Ptr(new WfTypeCastingExpression);
-					castExpr->strategy = WfTypeCastingStrategy::Strong;
-					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-					castExpr->expression = refLocale;
-
-					callExpr->arguments.Add(castExpr);
+					callExpr->arguments.Add(refLocale);
 				}
 				{
 					auto refImpl = Ptr(new WfReferenceExpression);
@@ -965,6 +950,8 @@ GuiInstanceLocalizedStrings
 			auto module = Ptr(new WfModule);
 			module->moduleType = WfModuleType::Module;
 			module->name.value = moduleName;
+
+			// interface
 			{
 				auto lsInterface = Workflow_InstallClass(GetInterfaceTypeName(true), module);
 				lsInterface->kind = WfClassKind::Interface;
@@ -977,6 +964,8 @@ GuiInstanceLocalizedStrings
 					lsInterface->declarations.Add(func);
 				}
 			}
+
+			// cache
 			{
 				auto refType = Ptr(new WfReferenceType);
 				refType->name.value = GetInterfaceTypeName(false);
@@ -984,12 +973,9 @@ GuiInstanceLocalizedStrings
 				auto ptrType = Ptr(new WfSharedPointerType);
 				ptrType->element = refType;
 				
-				auto stringType = Ptr(new WfPredefinedType);
-				stringType->name = WfPredefinedTypeName::String;
-				
 				auto mapType = Ptr(new WfMapType);
 				mapType->writability = WfMapWritability::Writable;
-				mapType->key = stringType;
+				mapType->key = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
 				mapType->value = ptrType;
 				
 				auto lsCache = Ptr(new WfVariableDeclaration);
@@ -999,6 +985,8 @@ GuiInstanceLocalizedStrings
 				cacheName = L"<ls>" + Workflow_InstallWithClass(className, module, lsCache);
 				lsCache->name.value = cacheName;
 			}
+
+			// class
 			{
 				auto lsClass = Workflow_InstallClass(className, module);
 				for (auto ls : strings)
@@ -1009,6 +997,8 @@ GuiInstanceLocalizedStrings
 				lsClass->declarations.Add(GenerateInstallFunction(cacheName));
 				lsClass->declarations.Add(GenerateGetFunction(textDescs));
 			}
+
+			// init
 			{
 				auto lsInit = Ptr(new WfStaticInitDeclaration);
 				auto classNameWithoutNs = Workflow_InstallWithClass(className, module, lsInit);
@@ -1033,9 +1023,8 @@ GuiInstanceLocalizedStrings
 							auto strExpr = Ptr(new WfStringExpression);
 							strExpr->value.value = locale;
 
-							auto castExpr = Ptr(new WfTypeCastingExpression);
+							auto castExpr = Ptr(new WfExpectedTypeCastExpression);
 							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
 							castExpr->expression = strExpr;
 
 							auto callStringsExpr = Ptr(new WfCallExpression);
@@ -1048,9 +1037,8 @@ GuiInstanceLocalizedStrings
 							auto strExpr = Ptr(new WfStringExpression);
 							strExpr->value.value = locale;
 
-							auto castExpr = Ptr(new WfTypeCastingExpression);
+							auto castExpr = Ptr(new WfExpectedTypeCastExpression);
 							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
 							castExpr->expression = strExpr;
 
 							auto refClass = Ptr(new WfReferenceExpression);
