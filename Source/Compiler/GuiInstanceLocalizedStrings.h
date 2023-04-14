@@ -63,6 +63,7 @@ namespace vl
 
 			static void									FillStringsToTextDescMap(Ptr<Strings> lss, TextDescMap& textDescs, GuiResourceError::List& errors);
 			static void									ValidateNamesAgainstDefaultStrings(Ptr<Strings> defaultStrings, Ptr<Strings> lss, GuiResourceError::List& errors);
+			static void									ValidateSignatureAgainstDefaultStrings(Ptr<Strings> defaultStrings, Ptr<Strings> lss, TextDescMap& textDescs, GuiResourceError::List& errors);
 			static void									ValidateAgainstDefaultStrings(Ptr<Strings> defaultStrings, collections::List<Ptr<Strings>>& nonDefaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors);
 
 			static WString								GetInterfaceTypeName(const WString& className, bool hasNamespace);

@@ -312,6 +312,36 @@ GuiInstanceLocalizedStringsBase
 			}
 		}
 
+		void GuiInstanceLocalizedStringsBase::ValidateSignatureAgainstDefaultStrings(Ptr<Strings> defaultStrings, Ptr<Strings> lss, TextDescMap& textDescs, GuiResourceError::List& errors)
+		{
+			auto defaultLocalesName = defaultStrings->GetLocalesName();
+			auto localesName = lss->GetLocalesName();
+
+			for (auto lssi : lss->items.Values())
+			{
+				auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
+				auto textDesc = textDescs[{lss, lssi->name}];
+
+				if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
+				{
+					errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
+				}
+				else
+				{
+					for (vint i = 0; i < textDesc->parameters.Count(); i++)
+					{
+						auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
+						auto parameter = textDesc->parameters[textDesc->positions[i]];
+
+						if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
+						{
+							errors.Add({ lss->tagPosition,L"Parameter \"" + itow(i) + L"\" in String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" are in different types \"" + defaultParameter.key->GetTypeFriendlyName() + L"\" and \"" + parameter.key->GetTypeFriendlyName() + L"\"." });
+						}
+					}
+				}
+			}
+		}
+
 		void GuiInstanceLocalizedStringsBase::ValidateAgainstDefaultStrings(Ptr<Strings> defaultStrings, collections::List<Ptr<Strings>>& nonDefaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors)
 		{
 			vint errorCount = errors.Count();
@@ -324,36 +354,18 @@ GuiInstanceLocalizedStringsBase
 				return;
 			}
 
-			auto defaultLocalesName = defaultStrings->GetLocalesName();
 			for (auto lss : nonDefaultStrings)
 			{
-				auto localesName = lss->GetLocalesName();
+				FillStringsToTextDescMap(lss, textDescs, errors);
+			}
+			if (errors.Count() != errorCount)
+			{
+				return;
+			}
 
-				for (auto lssi : lss->items.Values())
-				{
-					if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
-					{
-						textDescs.Add({ lss,lssi->name }, textDesc);
-						auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
-						if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
-						{
-							errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
-						}
-						else
-						{
-							for (vint i = 0; i < textDesc->parameters.Count(); i++)
-							{
-								auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
-								auto parameter = textDesc->parameters[textDesc->positions[i]];
-
-								if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
-								{
-									errors.Add({ lss->tagPosition,L"Parameter \"" + itow(i) + L"\" in String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" are in different types \"" + defaultParameter.key->GetTypeFriendlyName() + L"\" and \"" + parameter.key->GetTypeFriendlyName() + L"\"." });
-								}
-							}
-						}
-					}
-				}
+			for (auto lss : nonDefaultStrings)
+			{
+				ValidateSignatureAgainstDefaultStrings(defaultStrings, lss, textDescs, errors);
 			}
 			if (errors.Count() != errorCount)
 			{
