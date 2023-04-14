@@ -27,204 +27,111 @@ GuiInstanceLocalizedStringsBase
 GuiInstanceLocalizedStringsBase
 ***********************************************************************/
 
-/***********************************************************************
-GuiInstanceLocalizedStrings
-***********************************************************************/
-
-		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		Ptr<GuiInstanceLocalizedStringsBase::Strings> GuiInstanceLocalizedStringsBase::LoadStringsFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xmlStrings, collections::SortedList<WString>& existingLocales, GuiResourceError::List& errors)
 		{
-			auto ls = Ptr(new GuiInstanceLocalizedStrings);
-
-			if (xml->rootElement->name.value!=L"LocalizedStrings")
+			if (xmlStrings->name.value != L"Strings")
 			{
-				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: The root element of localized strings should be \"LocalizedStrings\"."));
-				return nullptr;
-			}
-			ls->tagPosition = { {resource},xml->rootElement->name.codeRange.start };
-
-			auto attClassName = XmlGetAttribute(xml->rootElement, L"ref.Class");
-			if (!attClassName)
-			{
-				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Missing attribute \"ref.Class\" in \"LocalizedStrings\"."));
-			}
-			else
-			{
-				ls->className = attClassName->value.value;
-			}
-
-			auto attDefaultLocale = XmlGetAttribute(xml->rootElement, L"DefaultLocale");
-			if (!attDefaultLocale)
-			{
-				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Missing attribute \"DefaultLocale\" in \"LocalizedStrings\"."));
-			}
-			else
-			{
-				ls->defaultLocale = attDefaultLocale->value.value;
-			}
-
-			if (!attClassName || !attDefaultLocale)
-			{
+				errors.Add(GuiResourceError({ { resource },xmlStrings->codeRange.start }, L"Precompile: Unknown element \"" + xmlStrings->name.value + L"\", it should be \"Strings\"."));
 				return nullptr;
 			}
 
-			SortedList<WString> existingLocales;
-			for (auto xmlStrings : XmlGetElements(xml->rootElement))
+			auto attLocales = XmlGetAttribute(xmlStrings, L"Locales");
+			if (!attLocales)
 			{
-				if (xmlStrings->name.value != L"Strings")
-				{
-					errors.Add(GuiResourceError({ { resource },xmlStrings->codeRange.start }, L"Precompile: Unknown element \"" + xmlStrings->name.value + L"\", it should be \"Strings\"."));
-					continue;
-				}
+				errors.Add(GuiResourceError({ { resource },xmlStrings->codeRange.start }, L"Precompile: Missing attribute \"Locales\" in \"Strings\"."));
+				return nullptr;
+			}
 
-				auto attLocales = XmlGetAttribute(xmlStrings, L"Locales");
-				if (!attLocales)
+			auto lss = Ptr(new GuiInstanceLocalizedStrings::Strings);
+			lss->tagPosition = { { resource },xmlStrings->name.codeRange.start };
+			SplitBySemicolon(attLocales->value.value, lss->locales);
+
+			for (auto locale : lss->locales)
+			{
+				if (!existingLocales.Contains(locale))
 				{
-					errors.Add(GuiResourceError({ { resource },xmlStrings->codeRange.start }, L"Precompile: Missing attribute \"Locales\" in \"Strings\"."));
+					existingLocales.Add(locale);
 				}
 				else
 				{
-					auto lss = Ptr(new GuiInstanceLocalizedStrings::Strings);
-					ls->strings.Add(lss);
-					lss->tagPosition = { { resource },xmlStrings->name.codeRange.start };
-					SplitBySemicolon(attLocales->value.value, lss->locales);
+					errors.Add(GuiResourceError({ { resource },attLocales->codeRange.start }, L"Precompile: Locale \"" + locale + L"\" already exists."));
+				}
+			}
 
-					for (auto locale : lss->locales)
+			for (auto xmlString : XmlGetElements(xmlStrings))
+			{
+				if (xmlString->name.value != L"String")
+				{
+					errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: Unknown element \"" + xmlString->name.value + L"\", it should be \"String\"."));
+					continue;
+				}
+
+				auto attName = XmlGetAttribute(xmlString, L"Name");
+				auto attText = XmlGetAttribute(xmlString, L"Text");
+
+				if (!attName)
+				{
+					errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: Missing attribute \"Name\" in \"String\"."));
+				}
+				if (!attText)
+				{
+					errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: Missing attribute \"Text\" in \"String\"."));
+				}
+
+				if (attName && attText)
+				{
+					if (lss->items.Keys().Contains(attName->value.value))
 					{
-						if (!existingLocales.Contains(locale))
-						{
-							existingLocales.Add(locale);
-						}
-						else
-						{
-							errors.Add(GuiResourceError({ { resource },attLocales->codeRange.start }, L"Precompile: Locale \"" + locale + L"\" already exists."));
-						}
+						errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: String \"" + attName->value.value + L"\" already exists."));
 					}
-
-					for (auto xmlString : XmlGetElements(xmlStrings))
+					else
 					{
-						if (xmlString->name.value != L"String")
-						{
-							errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: Unknown element \"" + xmlString->name.value + L"\", it should be \"String\"."));
-							continue;
-						}
-
-						auto attName = XmlGetAttribute(xmlString, L"Name");
-						auto attText = XmlGetAttribute(xmlString, L"Text");
-
-						if (!attName)
-						{
-							errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: Missing attribute \"Name\" in \"String\"."));
-						}
-						if (!attText)
-						{
-							errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: Missing attribute \"Text\" in \"String\"."));
-						}
-
-						if (attName && attText)
-						{
-							if (lss->items.Keys().Contains(attName->value.value))
-							{
-								errors.Add(GuiResourceError({ { resource },xmlString->codeRange.start }, L"Precompile: String \"" + attName->value.value + L"\" already exists."));
-							}
-							else
-							{
-								auto item = Ptr(new GuiInstanceLocalizedStrings::StringItem);
-								item->name = attName->value.value;
-								item->text = attText->value.value;
-								item->textPosition = { {resource},attText->value.codeRange.start };
-								item->textPosition.column += 1;
-								lss->items.Add(item->name, item);
-							}
-						}
+						auto item = Ptr(new GuiInstanceLocalizedStrings::StringItem);
+						item->name = attName->value.value;
+						item->text = attText->value.value;
+						item->textPosition = { {resource},attText->value.codeRange.start };
+						item->textPosition.column += 1;
+						lss->items.Add(item->name, item);
 					}
 				}
 			}
 
-			if (!existingLocales.Contains(ls->defaultLocale))
-			{
-				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Strings for the default locale \"" + ls->defaultLocale + L"\" is not defined."));
-			}
-
-			return ls;
+			return lss;
 		}
 
-		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStrings::SaveToXml()
+		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStringsBase::SaveStringsToXml(Ptr<Strings> lss)
 		{
-			auto xml = Ptr(new XmlElement);
-			xml->name.value = L"LocalizedStrings";
+			auto xmlStrings = Ptr(new XmlElement);
+			xmlStrings->name.value = L"Strings";
 			{
 				auto att = Ptr(new XmlAttribute);
-				att->name.value = L"ref.Class";
-				att->value.value = className;
-				xml->attributes.Add(att);
-			}
-			{
-				auto att = Ptr(new XmlAttribute);
-				att->name.value = L"DefaultLocale";
-				att->value.value = defaultLocale;
-				xml->attributes.Add(att);
+				att->name.value = L"Strings";
+				att->value.value = lss->GetLocalesName();
+				xmlStrings->attributes.Add(att);
 			}
 
-			for (auto lss : strings)
+			for (auto lssi : lss->items.Values())
 			{
-				auto xmlStrings = Ptr(new XmlElement);
-				xml->subNodes.Add(xmlStrings);
-				xmlStrings->name.value = L"Strings";
+				auto xmlString = Ptr(new XmlElement);
+				xmlStrings->subNodes.Add(xmlString);
 				{
 					auto att = Ptr(new XmlAttribute);
-					att->name.value = L"Strings";
-					att->value.value = lss->GetLocalesName();
-					xmlStrings->attributes.Add(att);
+					att->name.value = L"Name";
+					att->value.value = lssi->name;
+					xmlString->attributes.Add(att);
 				}
-
-				for (auto lssi : lss->items.Values())
 				{
-					auto xmlString = Ptr(new XmlElement);
-					xmlStrings->subNodes.Add(xmlString);
-					{
-						auto att = Ptr(new XmlAttribute);
-						att->name.value = L"Name";
-						att->value.value = lssi->name;
-						xmlString->attributes.Add(att);
-					}
-					{
-						auto att = Ptr(new XmlAttribute);
-						att->name.value = L"Text";
-						att->value.value = lssi->text;
-						xmlString->attributes.Add(att);
-					}
+					auto att = Ptr(new XmlAttribute);
+					att->name.value = L"Text";
+					att->value.value = lssi->text;
+					xmlString->attributes.Add(att);
 				}
 			}
 
-			return xml;
+			return xmlStrings;
 		}
 
-		Ptr<GuiInstanceLocalizedStrings::Strings> GuiInstanceLocalizedStrings::GetDefaultStrings()
-		{
-			return From(strings)
-				.Where([=](Ptr<Strings> strings)
-				{
-					return strings->locales.Contains(defaultLocale);
-				})
-				.First();
-		}
-
-		WString GuiInstanceLocalizedStrings::GetInterfaceTypeName(bool hasNamespace)
-		{
-			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
-			if (pair.key == -1)
-			{
-				return L"I" + className + L"Strings";
-			}
-			else
-			{
-				auto ns = className.Left(pair.key + 2);
-				auto name = className.Right(className.Length() - ns.Length());
-				return(hasNamespace ? ns : L"") + L"I" + name + L"Strings";
-			}
-		}
-
-		Ptr<GuiInstanceLocalizedStrings::TextDesc> GuiInstanceLocalizedStrings::ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors)
+		Ptr<GuiInstanceLocalizedStrings::TextDesc> GuiInstanceLocalizedStringsBase::ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors)
 		{
 			const wchar_t* reading = text.Buffer();
 			const wchar_t* textPosCounter = reading;
@@ -365,100 +272,19 @@ GuiInstanceLocalizedStrings
 			return textDesc;
 		}
 
-		void GuiInstanceLocalizedStrings::Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors)
+		WString GuiInstanceLocalizedStringsBase::GenerateStringsCppName(Ptr<Strings> ls)
 		{
-			auto defaultStrings = GetDefaultStrings();
-
-			vint errorCount = errors.Count();
-			for (auto lss : strings)
-			{
-				if (lss != defaultStrings)
-				{
-					auto localesName = lss->GetLocalesName();
-
-					auto missing = From(defaultStrings->items.Keys())
-						.Except(lss->items.Keys())
-						.Aggregate(WString(L""), [](const WString& a, const WString& b)
-						{
-							return a == L"" ? b : a + L", " + b;
-						});
-					
-					auto extra = From(lss->items.Keys())
-						.Except(defaultStrings->items.Keys())
-						.Aggregate(WString(L""), [](const WString& a, const WString& b)
-						{
-							return a == L"" ? b : a + L", " + b;
-						});
-
-					if (missing != L"")
+			auto encoded = From(ls->locales)
+				.Aggregate(
+					WString::Empty,
+					[](auto&& a, auto&& b)
 					{
-						errors.Add({ lss->tagPosition,L"Precompile: Missing strings for locale \"" + localesName + L"\": " + missing + L"." });
-					}
-
-					if (extra != L"")
-					{
-						errors.Add({ lss->tagPosition,L"Precompile: Unnecessary strings for locale \"" + localesName + L"\": " + extra + L"." });
-					}
-				}
-			}
-			if (errors.Count() != errorCount)
-			{
-				return;
-			}
-
-			for (auto lssi : defaultStrings->items.Values())
-			{
-				if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
-				{
-					textDescs.Add({ defaultStrings,lssi->name }, textDesc);
-				}
-			}
-			if (errors.Count() != errorCount)
-			{
-				return;
-			}
-
-			auto defaultLocalesName = defaultStrings->GetLocalesName();
-			for (auto lss : strings)
-			{
-				if (lss != defaultStrings)
-				{
-					auto localesName = lss->GetLocalesName();
-
-					for (auto lssi : lss->items.Values())
-					{
-						if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
-						{
-							textDescs.Add({ lss,lssi->name }, textDesc);
-							auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
-							if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
-							{
-								errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
-							}
-							else
-							{
-								for (vint i = 0; i < textDesc->parameters.Count(); i++)
-								{
-									auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
-									auto parameter = textDesc->parameters[textDesc->positions[i]];
-
-									if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
-									{
-										errors.Add({ lss->tagPosition,L"Parameter \"" + itow(i) + L"\" in String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" are in different types \"" + defaultParameter.key->GetTypeFriendlyName() + L"\" and \"" + parameter.key->GetTypeFriendlyName() + L"\"." });
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			if (errors.Count() != errorCount)
-			{
-				return;
-			}
+						return a + WString::Unmanaged(L"_") + b;
+					});
+			return WString::Unmanaged(L"<ls") + encoded + WString::Unmanaged(L">BuildStrings");
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateTextDescFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = functionKind;
@@ -478,24 +304,12 @@ GuiInstanceLocalizedStrings
 			return func;
 		}
 
-		WString GuiInstanceLocalizedStrings::GenerateStringsCppName(Ptr<Strings> ls)
-		{
-			auto encoded = From(ls->locales)
-				.Aggregate(
-					WString::Empty,
-					[](auto&& a, auto&& b)
-					{
-						return a + WString::Unmanaged(L"_") + b;
-					});
-			return WString::Unmanaged(L"<ls") + encoded + WString::Unmanaged(L">BuildStrings");
-		}
-
-		Ptr<workflow::WfExpression> GuiInstanceLocalizedStrings::GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls)
+		Ptr<workflow::WfExpression> GuiInstanceLocalizedStringsBase::GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls)
 		{
 			auto lsExpr = Ptr(new WfNewInterfaceExpression);
 			{
 				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = GetInterfaceTypeName(false);
+				refType->name.value = interfaceName;
 
 				auto refPointer = Ptr(new WfSharedPointerType);
 				refPointer->element = refType;
@@ -506,7 +320,7 @@ GuiInstanceLocalizedStrings
 			for (auto lss : ls->items.Values())
 			{
 				auto textDesc = textDescs[{ls, lss->name}];
-				auto func = GenerateFunction(textDesc, lss->name, WfFunctionKind::Override);
+				auto func = GenerateTextDescFunction(textDesc, lss->name, WfFunctionKind::Override);
 				lsExpr->declarations.Add(func);
 
 				auto block = Ptr(new WfBlockStatement);
@@ -675,15 +489,15 @@ GuiInstanceLocalizedStrings
 			return lsExpr;
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateStringsFunction(const WString& name, TextDescMap& textDescs, Ptr<Strings> ls)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = WfFunctionKind::Static;
 			func->anonymity = WfFunctionAnonymity::Named;
-			func->name.value = name;
+			func->name.value = GenerateStringsCppName(ls);
 			{
 				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = GetInterfaceTypeName(false);
+				refType->name.value = interfaceName;
 
 				auto refPointer = Ptr(new WfSharedPointerType);
 				refPointer->element = refType;
@@ -701,10 +515,210 @@ GuiInstanceLocalizedStrings
 			func->statement = block;
 			
 			auto returnStat = Ptr(new WfReturnStatement);
-			returnStat->expression = GenerateStrings(textDescs, ls);
+			returnStat->expression = GenerateStringsConstructor(interfaceName, textDescs, ls);
 			block->statements.Add(returnStat);
 
 			return func;
+		}
+
+/***********************************************************************
+GuiInstanceLocalizedStrings
+***********************************************************************/
+
+		Ptr<GuiInstanceLocalizedStrings> GuiInstanceLocalizedStrings::LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors)
+		{
+			auto ls = Ptr(new GuiInstanceLocalizedStrings);
+
+			if (xml->rootElement->name.value!=L"LocalizedStrings")
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: The root element of localized strings should be \"LocalizedStrings\"."));
+				return nullptr;
+			}
+			ls->tagPosition = { {resource},xml->rootElement->name.codeRange.start };
+
+			auto attClassName = XmlGetAttribute(xml->rootElement, L"ref.Class");
+			if (!attClassName)
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Missing attribute \"ref.Class\" in \"LocalizedStrings\"."));
+			}
+			else
+			{
+				ls->className = attClassName->value.value;
+			}
+
+			auto attDefaultLocale = XmlGetAttribute(xml->rootElement, L"DefaultLocale");
+			if (!attDefaultLocale)
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Missing attribute \"DefaultLocale\" in \"LocalizedStrings\"."));
+			}
+			else
+			{
+				ls->defaultLocale = attDefaultLocale->value.value;
+			}
+
+			if (!attClassName || !attDefaultLocale)
+			{
+				return nullptr;
+			}
+
+			SortedList<WString> existingLocales;
+			for (auto xmlStrings : XmlGetElements(xml->rootElement))
+			{
+				if (auto lss = LoadStringsFromXml(resource, xmlStrings, existingLocales, errors))
+				{
+					ls->strings.Add(lss);
+				}
+			}
+
+			if (!existingLocales.Contains(ls->defaultLocale))
+			{
+				errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: Strings for the default locale \"" + ls->defaultLocale + L"\" is not defined."));
+			}
+
+			return ls;
+		}
+
+		Ptr<glr::xml::XmlElement> GuiInstanceLocalizedStrings::SaveToXml()
+		{
+			auto xml = Ptr(new XmlElement);
+			xml->name.value = L"LocalizedStrings";
+			{
+				auto att = Ptr(new XmlAttribute);
+				att->name.value = L"ref.Class";
+				att->value.value = className;
+				xml->attributes.Add(att);
+			}
+			{
+				auto att = Ptr(new XmlAttribute);
+				att->name.value = L"DefaultLocale";
+				att->value.value = defaultLocale;
+				xml->attributes.Add(att);
+			}
+
+			for (auto lss : strings)
+			{
+				xml->subNodes.Add(SaveStringsToXml(lss));
+			}
+
+			return xml;
+		}
+
+		Ptr<GuiInstanceLocalizedStrings::Strings> GuiInstanceLocalizedStrings::GetDefaultStrings()
+		{
+			return From(strings)
+				.Where([=](Ptr<Strings> strings)
+				{
+					return strings->locales.Contains(defaultLocale);
+				})
+				.First();
+		}
+
+		WString GuiInstanceLocalizedStrings::GetInterfaceTypeName(bool hasNamespace)
+		{
+			auto pair = INVLOC.FindLast(className, L"::", Locale::None);
+			if (pair.key == -1)
+			{
+				return L"I" + className + L"Strings";
+			}
+			else
+			{
+				auto ns = className.Left(pair.key + 2);
+				auto name = className.Right(className.Length() - ns.Length());
+				return(hasNamespace ? ns : L"") + L"I" + name + L"Strings";
+			}
+		}
+
+		void GuiInstanceLocalizedStrings::Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors)
+		{
+			auto defaultStrings = GetDefaultStrings();
+
+			vint errorCount = errors.Count();
+			for (auto lss : strings)
+			{
+				if (lss != defaultStrings)
+				{
+					auto localesName = lss->GetLocalesName();
+
+					auto missing = From(defaultStrings->items.Keys())
+						.Except(lss->items.Keys())
+						.Aggregate(WString(L""), [](const WString& a, const WString& b)
+						{
+							return a == L"" ? b : a + L", " + b;
+						});
+					
+					auto extra = From(lss->items.Keys())
+						.Except(defaultStrings->items.Keys())
+						.Aggregate(WString(L""), [](const WString& a, const WString& b)
+						{
+							return a == L"" ? b : a + L", " + b;
+						});
+
+					if (missing != L"")
+					{
+						errors.Add({ lss->tagPosition,L"Precompile: Missing strings for locale \"" + localesName + L"\": " + missing + L"." });
+					}
+
+					if (extra != L"")
+					{
+						errors.Add({ lss->tagPosition,L"Precompile: Unnecessary strings for locale \"" + localesName + L"\": " + extra + L"." });
+					}
+				}
+			}
+			if (errors.Count() != errorCount)
+			{
+				return;
+			}
+
+			for (auto lssi : defaultStrings->items.Values())
+			{
+				if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
+				{
+					textDescs.Add({ defaultStrings,lssi->name }, textDesc);
+				}
+			}
+			if (errors.Count() != errorCount)
+			{
+				return;
+			}
+
+			auto defaultLocalesName = defaultStrings->GetLocalesName();
+			for (auto lss : strings)
+			{
+				if (lss != defaultStrings)
+				{
+					auto localesName = lss->GetLocalesName();
+
+					for (auto lssi : lss->items.Values())
+					{
+						if (auto textDesc = ParseLocalizedText(lssi->text, lssi->textPosition, errors))
+						{
+							textDescs.Add({ lss,lssi->name }, textDesc);
+							auto defaultDesc = textDescs[{defaultStrings, lssi->name}];
+							if (defaultDesc->parameters.Count() != textDesc->parameters.Count())
+							{
+								errors.Add({ lss->tagPosition,L"String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" have different numbers of parameters." });
+							}
+							else
+							{
+								for (vint i = 0; i < textDesc->parameters.Count(); i++)
+								{
+									auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
+									auto parameter = textDesc->parameters[textDesc->positions[i]];
+
+									if (defaultParameter.key->GetTypeDescriptor()->GetTypeName() != parameter.key->GetTypeDescriptor()->GetTypeName())
+									{
+										errors.Add({ lss->tagPosition,L"Parameter \"" + itow(i) + L"\" in String \"" + lssi->name + L"\" in locales \"" + defaultLocalesName + L"\" and \"" + localesName + L"\" are in different types \"" + defaultParameter.key->GetTypeFriendlyName() + L"\" and \"" + parameter.key->GetTypeFriendlyName() + L"\"." });
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if (errors.Count() != errorCount)
+			{
+				return;
+			}
 		}
 
 		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateInstallFunction(const WString& cacheName)
@@ -947,7 +961,7 @@ GuiInstanceLocalizedStrings
 				auto defaultStrings = GetDefaultStrings();
 				for (auto functionName : defaultStrings->items.Keys())
 				{
-					auto func = GenerateFunction(textDescs[{defaultStrings, functionName}], functionName, WfFunctionKind::Normal);
+					auto func = GenerateTextDescFunction(textDescs[{defaultStrings, functionName}], functionName, WfFunctionKind::Normal);
 					lsInterface->declarations.Add(func);
 				}
 			}
@@ -978,8 +992,7 @@ GuiInstanceLocalizedStrings
 				auto lsClass = Workflow_InstallClass(className, module);
 				for (auto ls : strings)
 				{
-					auto cppName = GenerateStringsCppName(ls);
-					lsClass->declarations.Add(GenerateStringsFunction(cppName, textDescs, ls));
+					lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(false), textDescs, ls));
 				}
 				lsClass->declarations.Add(GenerateInstallFunction(cacheName));
 				lsClass->declarations.Add(GenerateGetFunction(cacheName));

@@ -59,6 +59,15 @@ namespace vl
 		public:
 			virtual Ptr<Strings>						GetDefaultStrings() = 0;
 			virtual WString								GetInterfaceTypeName(bool hasNamespace) = 0;
+
+			static Ptr<Strings>							LoadStringsFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlElement> xmlStrings, collections::SortedList<WString>& existingLocales, GuiResourceError::List& errors);
+			static Ptr<glr::xml::XmlElement>			SaveStringsToXml(Ptr<Strings> lss);
+			static Ptr<TextDesc>						ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
+
+			static WString								GenerateStringsCppName(Ptr<Strings> ls);
+			static Ptr<workflow::WfFunctionDeclaration>	GenerateTextDescFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind);
+			static Ptr<workflow::WfExpression>			GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls);
+			static Ptr<workflow::WfFunctionDeclaration>	GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> ls);
 		};
 
 		class GuiInstanceLocalizedStrings : public GuiInstanceLocalizedStringsBase, public Description<GuiInstanceLocalizedStrings>
@@ -75,12 +84,7 @@ namespace vl
 			Ptr<Strings>								GetDefaultStrings() override;
 			WString										GetInterfaceTypeName(bool hasNamespace) override;
 
-			Ptr<TextDesc>								ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
 			void										Validate(TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
-			Ptr<workflow::WfFunctionDeclaration>		GenerateFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind);
-			WString										GenerateStringsCppName(Ptr<Strings> ls);
-			Ptr<workflow::WfExpression>					GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls);
-			Ptr<workflow::WfFunctionDeclaration>		GenerateStringsFunction(const WString& name, TextDescMap& textDescs, Ptr<Strings> ls);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateInstallFunction(const WString& cacheName);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateGetFunction(const WString& cacheName);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
