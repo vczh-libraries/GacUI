@@ -62,7 +62,8 @@ namespace vl
 			static Ptr<TextDesc>						ParseLocalizedText(const WString& text, GuiResourceTextPos pos, GuiResourceError::List& errors);
 
 			static void									FillStringsToTextDescMap(Ptr<Strings> lss, TextDescMap& textDescs, GuiResourceError::List& errors);
-			static void									ValidateAgainstDefaultStrings(Ptr<Strings> defaultStrings, collections::List<Ptr<Strings>>& nonDefaultStrings, TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors);
+			static void									ValidateNamesAgainstDefaultStrings(Ptr<Strings> defaultStrings, Ptr<Strings> lss, GuiResourceError::List& errors);
+			static void									ValidateAgainstDefaultStrings(Ptr<Strings> defaultStrings, collections::List<Ptr<Strings>>& nonDefaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors);
 
 			static WString								GetInterfaceTypeName(const WString& className, bool hasNamespace);
 			static WString								GenerateStringsCppName(Ptr<Strings> lss);

@@ -283,36 +283,41 @@ GuiInstanceLocalizedStringsBase
 			}
 		}
 
-		void GuiInstanceLocalizedStringsBase::ValidateAgainstDefaultStrings(Ptr<Strings> defaultStrings, collections::List<Ptr<Strings>>& nonDefaultStrings, TextDescMap& textDescs, GuiResourcePrecompileContext& precompileContext, GuiResourceError::List& errors)
+		void GuiInstanceLocalizedStringsBase::ValidateNamesAgainstDefaultStrings(Ptr<Strings> defaultStrings, Ptr<Strings> lss, GuiResourceError::List& errors)
+		{
+			auto localesName = lss->GetLocalesName();
+
+			auto missing = From(defaultStrings->items.Keys())
+				.Except(lss->items.Keys())
+				.Aggregate(WString(L""), [](const WString& a, const WString& b)
+				{
+					return a == L"" ? b : a + L", " + b;
+				});
+			
+			auto extra = From(lss->items.Keys())
+				.Except(defaultStrings->items.Keys())
+				.Aggregate(WString(L""), [](const WString& a, const WString& b)
+				{
+					return a == L"" ? b : a + L", " + b;
+				});
+
+			if (missing != L"")
+			{
+				errors.Add({ lss->tagPosition,L"Precompile: Missing strings for locale \"" + localesName + L"\": " + missing + L"." });
+			}
+
+			if (extra != L"")
+			{
+				errors.Add({ lss->tagPosition,L"Precompile: Unnecessary strings for locale \"" + localesName + L"\": " + extra + L"." });
+			}
+		}
+
+		void GuiInstanceLocalizedStringsBase::ValidateAgainstDefaultStrings(Ptr<Strings> defaultStrings, collections::List<Ptr<Strings>>& nonDefaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors)
 		{
 			vint errorCount = errors.Count();
 			for (auto lss : nonDefaultStrings)
 			{
-				auto localesName = lss->GetLocalesName();
-
-				auto missing = From(defaultStrings->items.Keys())
-					.Except(lss->items.Keys())
-					.Aggregate(WString(L""), [](const WString& a, const WString& b)
-					{
-						return a == L"" ? b : a + L", " + b;
-					});
-				
-				auto extra = From(lss->items.Keys())
-					.Except(defaultStrings->items.Keys())
-					.Aggregate(WString(L""), [](const WString& a, const WString& b)
-					{
-						return a == L"" ? b : a + L", " + b;
-					});
-
-				if (missing != L"")
-				{
-					errors.Add({ lss->tagPosition,L"Precompile: Missing strings for locale \"" + localesName + L"\": " + missing + L"." });
-				}
-
-				if (extra != L"")
-				{
-					errors.Add({ lss->tagPosition,L"Precompile: Unnecessary strings for locale \"" + localesName + L"\": " + extra + L"." });
-				}
+				ValidateNamesAgainstDefaultStrings(defaultStrings, lss, errors);
 			}
 			if (errors.Count() != errorCount)
 			{
@@ -933,7 +938,7 @@ GuiInstanceLocalizedStrings
 					);
 
 				FillStringsToTextDescMap(defaultStrings, textDescs, errors);
-				ValidateAgainstDefaultStrings(defaultStrings, nonDefaultStrings, textDescs, precompileContext, errors);
+				ValidateAgainstDefaultStrings(defaultStrings, nonDefaultStrings, textDescs, errors);
 			}
 			if (errors.Count() != errorCount)
 			{
