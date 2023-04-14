@@ -41,6 +41,7 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_GuiFakeDialogServiceUI)
 
 		([]()
 		{
+			::gaclib_controls::DialogStrings::Install(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US")), ::gaclib_controls::DialogStrings::__vwsn_ls_en_US_BuildStrings(::vl::__vwsn::Parse<::vl::Locale>(::vl::WString::Unmanaged(L"en-US"))));
 		}
 		)();
 	FINALIZE_GLOBAL_STORAGE_CLASS

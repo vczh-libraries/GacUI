@@ -312,6 +312,7 @@ namespace gaclib_controls
 {
     static
     {
+        DialogStrings::Install((cast (::system::Locale) "en-US"), DialogStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
     }
 }
 
