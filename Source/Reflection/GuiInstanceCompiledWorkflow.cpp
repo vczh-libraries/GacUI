@@ -107,9 +107,15 @@ Compiled Workflow Type Resolver (Workflow)
 				return true;
 			}
 
-			vint GetMaxPassIndex()override
+			bool GetInitializePassSupport(vint passIndex)override
 			{
-				return 1;
+				switch (passIndex)
+				{
+				case Workflow_Initialize:
+					return true;
+				default:
+					return false;
+				}
 			}
 
 			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context, GuiResourceError::List& errors)override

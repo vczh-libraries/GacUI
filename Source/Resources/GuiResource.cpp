@@ -933,7 +933,7 @@ GuiResourceFolder
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto precompile = typeResolver->Precompile())
 				{
-					if (precompile->GetPassSupport(context.passIndex) == IGuiResourceTypeResolver_Precompile::PerResource)
+					if (precompile->GetPrecompilePassSupport(context.passIndex) == IGuiResourceTypeResolver_Precompile::PerResource)
 					{
 						if (callback)
 						{
@@ -958,7 +958,10 @@ GuiResourceFolder
 				auto typeResolver = GetResourceResolverManager()->GetTypeResolver(item->GetTypeName());
 				if (auto initialize = typeResolver->Initialize())
 				{
-					initialize->Initialize(item, context, errors);
+					if (initialize->GetInitializePassSupport(context.passIndex))
+					{
+						initialize->Initialize(item, context, errors);
+					}
 				}
 			}
 
@@ -1434,9 +1437,8 @@ GuiResource
 			context.targetFolder = Ptr(new GuiResourceFolder);
 			
 			auto manager = GetResourceResolverManager();
-			vint maxPass = manager->GetMaxPrecompilePassIndex();
 			List<WString> resolvers;
-			for (vint i = 0; i <= maxPass; i++)
+			for (vint i = 0; i <= IGuiResourceTypeResolver_Precompile::Everything_Max; i++)
 			{
 				context.passIndex = i;
 				{
@@ -1485,8 +1487,7 @@ GuiResource
 			context.targetFolder = precompiledFolder;
 			context.usage = usage;
 
-			vint maxPass = GetResourceResolverManager()->GetMaxInitializePassIndex();
-			for (vint i = 0; i <= maxPass; i++)
+			for (vint i = 0; i <= IGuiResourceTypeResolver_Initialize::Everything_Max; i++)
 			{
 				context.passIndex = i;
 				InitializeResourceFolder(context, errors);
@@ -1735,10 +1736,9 @@ IGuiResourceResolverManager
 
 				if (auto precompile = resolver->Precompile())
 				{
-					vint maxPassIndex = precompile->GetMaxPassIndex();
-					for (vint i = 0; i <= maxPassIndex; i++)
+					for (vint i = 0; i <= IGuiResourceTypeResolver_Precompile::Everything_Max; i++)
 					{
-						switch (precompile->GetPassSupport(i))
+						switch (precompile->GetPrecompilePassSupport(i))
 						{
 						case IGuiResourceTypeResolver_Precompile::PerResource:
 							perResourceResolvers.Add(i, resolver->GetType());
@@ -1752,40 +1752,6 @@ IGuiResourceResolverManager
 				}
 
 				return true;
-			}
-
-			vint GetMaxPrecompilePassIndex()override
-			{
-				vint maxPass = -1;
-				for (auto resolver : typeResolvers.Values())
-				{
-					if (auto precompile = resolver->Precompile())
-					{
-						vint pass = precompile->GetMaxPassIndex();
-						if (maxPass < pass)
-						{
-							maxPass = pass;
-						}
-					}
-				}
-				return maxPass;
-			}
-
-			vint GetMaxInitializePassIndex()override
-			{
-				vint maxPass = -1;
-				for (auto resolver : typeResolvers.Values())
-				{
-					if (auto initialize = resolver->Initialize())
-					{
-						vint pass = initialize->GetMaxPassIndex();
-						if (maxPass < pass)
-						{
-							maxPass = pass;
-						}
-					}
-				}
-				return maxPass;
 			}
 
 			void GetPerResourceResolverNames(vint passIndex, collections::List<WString>& names)override

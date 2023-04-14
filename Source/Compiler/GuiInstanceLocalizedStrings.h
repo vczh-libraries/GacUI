@@ -59,7 +59,6 @@ namespace vl
 		public:
 			virtual Ptr<Strings>						GetDefaultStrings() = 0;
 			virtual WString								GetInterfaceTypeName(bool hasNamespace) = 0;
-			virtual Ptr<workflow::WfModule>				Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors) = 0;
 		};
 
 		class GuiInstanceLocalizedStrings : public GuiInstanceLocalizedStringsBase, public Description<GuiInstanceLocalizedStrings>
@@ -84,7 +83,7 @@ namespace vl
 			Ptr<workflow::WfFunctionDeclaration>		GenerateStringsFunction(const WString& name, TextDescMap& textDescs, Ptr<Strings> ls);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateInstallFunction(const WString& cacheName);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateGetFunction(const WString& cacheName);
-			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors) override;
+			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 
 		class GuiInstanceLocalizedStringsInjection : public GuiInstanceLocalizedStringsBase, public Description<GuiInstanceLocalizedStringsInjection>
@@ -100,7 +99,7 @@ namespace vl
 
 			Ptr<Strings>								GetDefaultStrings() override;
 			WString										GetInterfaceTypeName(bool hasNamespace) override;
-			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors) override;
+			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 	}
 }

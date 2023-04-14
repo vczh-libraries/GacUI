@@ -242,12 +242,7 @@ Shared Script Type Resolver (Script)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Workflow_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{
@@ -368,12 +363,7 @@ Instance Type Resolver (Instance)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Instance_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{
@@ -695,12 +685,7 @@ Animation Type Resolver (Animation)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Instance_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{
@@ -820,12 +805,7 @@ Localized Strings Type Resolver (LocalizedStrings)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Workflow_Collect + 1;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{

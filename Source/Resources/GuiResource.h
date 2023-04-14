@@ -632,6 +632,8 @@ Resource Type Resolver
 				Instance_GenerateInstanceClass		= 6,
 				Instance_CompileInstanceClass		= 7,
 				Instance_Max						= Instance_CompileInstanceClass,
+
+				Everything_Max						= Instance_Max,
 			};
 
 			enum PassSupport
@@ -641,13 +643,10 @@ Resource Type Resolver
 				PerPass,
 			};
 
-			/// <summary>Get the maximum pass index that the precompiler needs.</summary>
-			/// <returns>Returns the maximum pass index. The precompiler doesn't not need to response to every pass.</returns>
-			virtual vint										GetMaxPassIndex() = 0;
 			/// <summary>Get how this resolver supports precompiling.</summary>
 			/// <param name="passIndex">The pass index.</param>
 			/// <returns>Returns how this resolver supports precompiling.</returns>
-			virtual PassSupport									GetPassSupport(vint passIndex) = 0;
+			virtual PassSupport									GetPrecompilePassSupport(vint passIndex) = 0;
 			/// <summary>Precompile the resource item.</summary>
 			/// <param name="resource">The resource to precompile.</param>
 			/// <param name="context">The context for precompiling.</param>
@@ -677,9 +676,16 @@ Resource Type Resolver
 		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Initialize>
 		{
 		public:
-			/// <summary>Get the maximum pass index that the initializer needs.</summary>
-			/// <returns>Returns the maximum pass index. The initializer doesn't not need to response to every pass.</returns>
-			virtual vint										GetMaxPassIndex() = 0;
+			enum PassNames
+			{
+				Workflow_Initialize					= 0,
+				Everything_Max						= Workflow_Initialize,
+			};
+
+			/// <summary>Get how this resolver supports precompiling.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <returns>Returns how this resolver supports precompiling.</returns>
+			virtual bool										GetInitializePassSupport(vint passIndex) = 0;
 			/// <summary>Initialize the resource item.</summary>
 			/// <param name="resource">The resource to initializer.</param>
 			/// <param name="context">The context for initializing.</param>
@@ -779,12 +785,6 @@ Resource Resolver Manager
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="resolver">The resolver.</param>
 			virtual bool										SetTypeResolver(Ptr<IGuiResourceTypeResolver> resolver) = 0;
-			/// <summary>Get the maximum precompiling pass index.</summary>
-			/// <returns>The maximum precompiling pass index.</returns>
-			virtual vint										GetMaxPrecompilePassIndex() = 0;
-			/// <summary>Get the maximum initializing pass index.</summary>
-			/// <returns>The maximum initializing pass index.</returns>
-			virtual vint										GetMaxInitializePassIndex() = 0;
 			/// <summary>Get names of all per resource resolvers for a pass.</summary>
 			/// <param name="passIndex">The pass index.</param>
 			/// <param name="names">Names of resolvers</param>
