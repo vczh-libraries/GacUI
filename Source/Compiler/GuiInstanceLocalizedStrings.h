@@ -70,7 +70,7 @@ namespace vl
 			Ptr<workflow::WfExpression>					GenerateStrings(TextDescMap& textDescs, Ptr<Strings> ls);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateStringsFunction(const WString& name, TextDescMap& textDescs, Ptr<Strings> ls);
 			Ptr<workflow::WfFunctionDeclaration>		GenerateInstallFunction(const WString& cacheName);
-			Ptr<workflow::WfFunctionDeclaration>		GenerateGetFunction(TextDescMap& textDescs);
+			Ptr<workflow::WfFunctionDeclaration>		GenerateGetFunction(const WString& cacheName);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 	}

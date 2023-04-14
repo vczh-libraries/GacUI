@@ -819,7 +819,7 @@ GuiInstanceLocalizedStrings
 			return func;
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateGetFunction(TextDescMap& textDescs)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStrings::GenerateGetFunction(const WString& cacheName)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = WfFunctionKind::Static;
@@ -844,93 +844,72 @@ GuiInstanceLocalizedStrings
 			auto block = Ptr(new WfBlockStatement);
 			func->statement = block;
 
-			auto defaultStrings = GetDefaultStrings();
-			for (auto ls : strings)
 			{
-				if (ls != defaultStrings)
+				auto ifStat = Ptr(new WfIfStatement);
 				{
+					auto refCache = Ptr(new WfReferenceExpression);
+					refCache->name.value = cacheName;
+
+					auto refKeys = Ptr(new WfMemberExpression);
+					refKeys->parent = refCache;
+					refKeys->name.value = L"Keys";
+
+					auto refContains = Ptr(new WfMemberExpression);
+					refContains->parent = refKeys;
+					refContains->name.value = L"Contains";
+
 					auto refLocale = Ptr(new WfReferenceExpression);
 					refLocale->name.value = L"<ls>locale";
 
-					auto castExpr = Ptr(new WfTypeCastingExpression);
-					castExpr->strategy = WfTypeCastingStrategy::Strong;
-					castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
-					castExpr->expression = refLocale;
-
-					auto ifStat = Ptr(new WfIfStatement);
-					block->statements.Add(ifStat);
-
-					if (ls->locales.Count() == 1)
-					{
-						auto strExpr = Ptr(new WfStringExpression);
-						strExpr->value.value = ls->locales[0];
-
-						auto eqExpr = Ptr(new WfBinaryExpression);
-						eqExpr->op = WfBinaryOperator::EQ;
-						eqExpr->first = castExpr;
-						eqExpr->second = strExpr;
-
-						ifStat->expression = eqExpr;
-					}
-					else
-					{
-						auto listExpr = Ptr(new WfConstructorExpression);
-						for (auto locale : ls->locales)
-						{
-							auto strExpr = Ptr(new WfStringExpression);
-							strExpr->value.value = locale;
-
-							auto item = Ptr(new WfConstructorArgument);
-							item->key = strExpr;
-							listExpr->arguments.Add(item);
-						}
-
-						auto inExpr = Ptr(new WfSetTestingExpression);
-						inExpr->test = WfSetTesting::In;
-						inExpr->element = castExpr;
-						inExpr->collection = listExpr;
-
-						ifStat->expression = inExpr;
-					}
-
-					auto trueBlock = Ptr(new WfBlockStatement);
-					ifStat->trueBranch = trueBlock;
-
-					auto refStrings = Ptr(new WfReferenceExpression);
-					refStrings->name.value = GenerateStringsCppName(ls);
-
-					auto refLocale2 = Ptr(new WfReferenceExpression);
-					refLocale2->name.value = L"<ls>locale";
-
 					auto callExpr = Ptr(new WfCallExpression);
-					callExpr->function = refStrings;
-					callExpr->arguments.Add(refLocale2);
+					callExpr->function = refContains;
+					callExpr->arguments.Add(refLocale);
+
+					ifStat->expression = callExpr;
+				}
+
+				auto trueBlock = Ptr(new WfBlockStatement);
+				ifStat->trueBranch = trueBlock;
+
+				{
+					auto refCache = Ptr(new WfReferenceExpression);
+					refCache->name.value = cacheName;
+
+					auto refLocale = Ptr(new WfReferenceExpression);
+					refLocale->name.value = L"<ls>locale";
+
+					auto refGet = Ptr(new WfBinaryExpression);
+					refGet->op = WfBinaryOperator::Index;
+					refGet->first = refCache;
+					refGet->second = refLocale;
 
 					auto returnStat = Ptr(new WfReturnStatement);
-					returnStat->expression = callExpr;
+					returnStat->expression = refGet;
 					trueBlock->statements.Add(returnStat);
 				}
+
+				block->statements.Add(ifStat);
 			}
-			auto returnStat = Ptr(new WfReturnStatement);
 			{
-				auto refStrings = Ptr(new WfReferenceExpression);
-				refStrings->name.value = GenerateStringsCppName(defaultStrings);
+				auto refCache = Ptr(new WfReferenceExpression);
+				refCache->name.value = cacheName;
 
-				auto refDefaultLocale = Ptr(new WfStringExpression);
-				refDefaultLocale->value.value = defaultLocale;
+				auto strExpr = Ptr(new WfStringExpression);
+				strExpr->value.value = defaultLocale;
 
-				auto castExpr = Ptr(new WfTypeCastingExpression);
+				auto castExpr = Ptr(new WfExpectedTypeCastExpression);
 				castExpr->strategy = WfTypeCastingStrategy::Strong;
-				castExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Locale>::CreateTypeInfo().Obj());
-				castExpr->expression = refDefaultLocale;
+				castExpr->expression = strExpr;
 
-				auto callExpr = Ptr(new WfCallExpression);
-				callExpr->function = refStrings;
-				callExpr->arguments.Add(castExpr);
+				auto refGet = Ptr(new WfBinaryExpression);
+				refGet->op = WfBinaryOperator::Index;
+				refGet->first = refCache;
+				refGet->second = castExpr;
 
-				returnStat->expression = callExpr;
+				auto returnStat = Ptr(new WfReturnStatement);
+				returnStat->expression = refGet;
+				block->statements.Add(returnStat);
 			}
-			block->statements.Add(returnStat);
 
 			return func;
 		}
@@ -995,7 +974,7 @@ GuiInstanceLocalizedStrings
 					lsClass->declarations.Add(GenerateStringsFunction(cppName, textDescs, ls));
 				}
 				lsClass->declarations.Add(GenerateInstallFunction(cacheName));
-				lsClass->declarations.Add(GenerateGetFunction(textDescs));
+				lsClass->declarations.Add(GenerateGetFunction(cacheName));
 			}
 
 			// init
