@@ -2982,9 +2982,9 @@ namespace demo
 {
     class StringResource
     {
-        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
         {
-            return new (IStringResourceStrings^)
+            return new (::demo::IStringResourceStrings^)
             {
                 override func Currency(<ls>0 : ::system::String) : (::system::String)
                 {
@@ -3058,9 +3058,9 @@ namespace demo
             };
         }
 
-        static func <ls_zh-CN>BuildStrings(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        static func <ls_zh-CN>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
         {
-            return new (IStringResourceStrings^)
+            return new (::demo::IStringResourceStrings^)
             {
                 override func Currency(<ls>0 : ::system::String) : (::system::String)
                 {
@@ -3162,8 +3162,8 @@ namespace demo
 {
     static
     {
-        StringResource::Install((cast (::system::Locale) "en-US"), StringResource::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
-        StringResource::Install((cast (::system::Locale) "zh-CN"), StringResource::<ls_zh-CN>BuildStrings((cast (::system::Locale) "zh-CN")));
+        ::demo::StringResource::Install((cast (::system::Locale) "en-US"), StringResource::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+        ::demo::StringResource::Install((cast (::system::Locale) "zh-CN"), StringResource::<ls_zh-CN>BuildStrings((cast (::system::Locale) "zh-CN")));
     }
 }
 

@@ -56,6 +56,7 @@ namespace vl
 			DECL_TYPE_INFO(::demo::DateFilterConstructor)
 			DECL_TYPE_INFO(::demo::DatePickerTabPage)
 			DECL_TYPE_INFO(::demo::DatePickerTabPageConstructor)
+			DECL_TYPE_INFO(::demo::DialogStringsInjection)
 			DECL_TYPE_INFO(::demo::DocumentBoxSubTabPage)
 			DECL_TYPE_INFO(::demo::DocumentBoxSubTabPageConstructor)
 			DECL_TYPE_INFO(::demo::DocumentEditorBase)

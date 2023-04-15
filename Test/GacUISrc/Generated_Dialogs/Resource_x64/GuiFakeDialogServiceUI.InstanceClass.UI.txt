@@ -8484,9 +8484,9 @@ namespace gaclib_controls
 {
     class DialogStrings
     {
-        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::gaclib_controls::IDialogStringsStrings^)
         {
-            return new (IDialogStringsStrings^)
+            return new (::gaclib_controls::IDialogStringsStrings^)
             {
                 override func Abort() : (::system::String)
                 {
@@ -8708,7 +8708,7 @@ namespace gaclib_controls
 {
     static
     {
-        DialogStrings::Install((cast (::system::Locale) "en-US"), DialogStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+        ::gaclib_controls::DialogStrings::Install((cast (::system::Locale) "en-US"), DialogStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
     }
 }
 
