@@ -11,6 +11,7 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_DEMO
 
 #include "../../../../Source/GacUI.h"
+#include "../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)

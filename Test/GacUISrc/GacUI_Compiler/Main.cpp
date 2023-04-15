@@ -164,7 +164,7 @@ void GuiMain()
 		targetCpuArchitecture,
 		L"Demo",
 		L"Source: Generated_FullControlTest",
-		L"../../../../Source/GacUI.h",
+		L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h",
 		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
 		dependencies,
 		(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
