@@ -86,7 +86,7 @@
       <Strings Locales="ar-SA">
         <String Name="A" Text="$(0:ShortDate)"/>
         <String Name="B" Text="$(0:ShortDate) $(1:Number)"/>
-        <String Name="C" Text="$(0:LongTime) $(1)"/>
+        <String Name="C" Text="$(0:Number) $(1:Currency)"/>
       </Strings>
     </LocalizedStringsInjection>
   </LocalizedStrings>
