@@ -19,7 +19,6 @@ namespace vl
 }
 
 FilePath GetResourcePath();
-extern void UnitTestInGuiMain();
 
 GuiResourceCpuArchitecture targetCpuArchitecture = GuiResourceCpuArchitecture::Unspecified;
 
@@ -136,8 +135,6 @@ Compiler
 
 void GuiMain()
 {
-	UnitTestInGuiMain();
-
 	List<WString> dependencies;
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
