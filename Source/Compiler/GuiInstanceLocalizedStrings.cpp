@@ -1252,8 +1252,8 @@ GuiInstanceLocalizedStringsInjection
 
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStringsInjection::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
 		{
-			auto tdInjectTo = description::GetTypeDescriptor(injectIntoClassName);
-			if (!tdInjectTo)
+			auto tdInjectInto = description::GetTypeDescriptor(injectIntoClassName);
+			if (!tdInjectInto)
 			{
 				errors.Add(GuiResourceError(tagPosition, L"Precompile: attribute \"ref.InjectInto\" specifies an unexisting type \"" + injectIntoClassName + L"\"."));
 				return nullptr;
@@ -1264,7 +1264,7 @@ GuiInstanceLocalizedStringsInjection
 			IParameterInfo* tdGetMethodParameter = nullptr;
 			ITypeDescriptor* tdStringsInterface = nullptr;
 
-			tdGetMethodGroup = tdInjectTo->GetMethodGroupByName(L"Get", false);
+			tdGetMethodGroup = tdInjectInto->GetMethodGroupByName(L"Get", false);
 			if (!tdGetMethodGroup) goto INCORRECT_STRINGS_TYPE;
 			if (tdGetMethodGroup->GetMethodCount() != 1) goto INCORRECT_STRINGS_TYPE;
 

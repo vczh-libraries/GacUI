@@ -69,7 +69,7 @@
   </LocalizedStrings>
 
   <LocalizedStrings name="DialogStringsInjection">
-    <LocalizedStringsInjection ref.Class="demo::DialogStringsInjection" ref.InjectTo="gaclib_controls::DialogStrings">
+    <LocalizedStringsInjection ref.Class="demo::DialogStringsInjection" ref.InjectInto="gaclib_controls::DialogStrings">
       <Strings Locales="zh-CN">
         <String Name="OK" Text="确定"/>
         <String Name="Cancel" Text="取消"/>
