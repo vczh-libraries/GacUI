@@ -838,7 +838,7 @@ Localized Strings Type Resolver (LocalizedStrings)
 						{
 							if (auto module = obj->Compile(context, L"<localized-strings-injection>" + obj->className, errors))
 							{
-								Workflow_AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
+								Workflow_AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
 							}
 						}
 					}

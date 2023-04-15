@@ -71,8 +71,8 @@ namespace vl
 			static Ptr<workflow::WfFunctionDeclaration>				GenerateTextDescFunctionHeader(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind);
 			static Ptr<workflow::WfExpression>						GenerateTextDescArgumentFormatting(Ptr<description::ITypeInfo> type, const WString& function, vint argumentIndex);
 			static Ptr<workflow::WfBlockStatement>					GenerateTextDescFunctionBody(Ptr<TextDesc> textDesc);
-			static Ptr<workflow::WfExpression>						GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
-			static Ptr<workflow::WfFunctionDeclaration>				GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
+			static Ptr<workflow::WfExpression>						GenerateStringsConstructor(const WString& interfaceFullName, TextDescMap& textDescs, Ptr<Strings> lss);
+			static Ptr<workflow::WfFunctionDeclaration>				GenerateBuildStringsFunction(const WString& interfaceFullName, TextDescMap& textDescs, Ptr<Strings> lss);
 			static Ptr<workflow::WfBlockStatement>					GenerateStaticInit(const WString& stringsClassWithoutNs, const WString& installClassFullName, collections::List<Ptr<Strings>>& strings);
 		};
 

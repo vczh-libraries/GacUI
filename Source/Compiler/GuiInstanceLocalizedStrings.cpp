@@ -591,15 +591,39 @@ GuiInstanceLocalizedStringsBase
 			return block;
 		}
 
-		Ptr<workflow::WfExpression> GuiInstanceLocalizedStringsBase::GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss)
+		template<typename TResult, typename TTopQualified, typename TChild>
+		Ptr<TResult> GenerateFullNameAst(const WString& fullName)
+		{
+			Ptr<TResult> refClass;
+			{
+				List<WString> fragments;
+				SplitTypeName(fullName, fragments);
+				for (auto fragment : fragments)
+				{
+					if (refClass)
+					{
+						auto refType = Ptr(new TChild);
+						refType->parent = refClass;
+						refType->name.value = fragment;
+						refClass = refType;
+					}
+					else
+					{
+						auto refType = Ptr(new TTopQualified);
+						refType->name.value = fragment;
+						refClass = refType;
+					}
+				}
+			}
+			return refClass;
+		}
+
+		Ptr<workflow::WfExpression> GuiInstanceLocalizedStringsBase::GenerateStringsConstructor(const WString& interfaceFullName, TextDescMap& textDescs, Ptr<Strings> lss)
 		{
 			auto lsExpr = Ptr(new WfNewInterfaceExpression);
 			{
-				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = interfaceName;
-
 				auto refPointer = Ptr(new WfSharedPointerType);
-				refPointer->element = refType;
+				refPointer->element = GenerateFullNameAst<WfType, WfTopQualifiedType, WfChildType>(interfaceFullName);
 
 				lsExpr->type = refPointer;
 			}
@@ -615,18 +639,15 @@ GuiInstanceLocalizedStringsBase
 			return lsExpr;
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateBuildStringsFunction(const WString& interfaceFullName, TextDescMap& textDescs, Ptr<Strings> lss)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = WfFunctionKind::Static;
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = GenerateStringsCppName(lss);
 			{
-				auto refType = Ptr(new WfReferenceType);
-				refType->name.value = interfaceName;
-
 				auto refPointer = Ptr(new WfSharedPointerType);
-				refPointer->element = refType;
+				refPointer->element = GenerateFullNameAst<WfType, WfTopQualifiedType, WfChildType>(interfaceFullName);
 
 				func->returnType = refPointer;
 			}
@@ -641,7 +662,7 @@ GuiInstanceLocalizedStringsBase
 			func->statement = block;
 			
 			auto returnStat = Ptr(new WfReturnStatement);
-			returnStat->expression = GenerateStringsConstructor(interfaceName, textDescs, lss);
+			returnStat->expression = GenerateStringsConstructor(interfaceFullName, textDescs, lss);
 			block->statements.Add(returnStat);
 
 			return func;
@@ -686,30 +707,8 @@ GuiInstanceLocalizedStringsBase
 						castExpr->strategy = WfTypeCastingStrategy::Strong;
 						castExpr->expression = strExpr;
 
-						Ptr<WfExpression> refClass;
-						{
-							List<WString> fragments;
-							SplitTypeName(installClassFullName, fragments);
-							for (auto fragment : fragments)
-							{
-								if (refClass)
-								{
-									auto refType = Ptr(new WfChildExpression);
-									refType->parent = refClass;
-									refType->name.value = fragment;
-									refClass = refType;
-								}
-								else
-								{
-									auto refType = Ptr(new WfTopQualifiedExpression);
-									refType->name.value = fragment;
-									refClass = refType;
-								}
-							}
-						}
-
 						auto refInstall = Ptr(new WfChildExpression);
-						refInstall->parent = refClass;
+						refInstall->parent = GenerateFullNameAst<WfExpression, WfTopQualifiedExpression, WfChildExpression>(installClassFullName);
 						refInstall->name.value = L"Install";
 
 						auto callInstallExpr = Ptr(new WfCallExpression);
@@ -1093,7 +1092,7 @@ GuiInstanceLocalizedStrings
 				auto lsClass = Workflow_InstallClass(className, module);
 				for (auto ls : strings)
 				{
-					lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(className, false), textDescs, ls));
+					lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(className, true), textDescs, ls));
 				}
 				lsClass->declarations.Add(GenerateInstallFunction(cacheName));
 				lsClass->declarations.Add(GenerateGetFunction(cacheName));
@@ -1306,7 +1305,7 @@ GuiInstanceLocalizedStringsInjection
 					auto lsClass = Workflow_InstallClass(className, module);
 					for (auto ls : strings)
 					{
-						lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(className, false), textDescs, ls));
+						lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(injectIntoClassName, true), textDescs, ls));
 					}
 				}
 
