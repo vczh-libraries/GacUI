@@ -73,7 +73,7 @@ namespace vl
 			static Ptr<workflow::WfBlockStatement>					GenerateTextDescFunctionBody(Ptr<TextDesc> textDesc);
 			static Ptr<workflow::WfExpression>						GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
 			static Ptr<workflow::WfFunctionDeclaration>				GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
-			static Ptr<workflow::WfBlockStatement>					GenerateStaticInit(const WString& stringsClassWithoutNs, const WString& installClass, collections::List<Ptr<Strings>>& strings);
+			static Ptr<workflow::WfBlockStatement>					GenerateStaticInit(const WString& stringsClassWithoutNs, const WString& installClassFullName, collections::List<Ptr<Strings>>& strings);
 		};
 
 		class GuiInstanceLocalizedStrings : public GuiInstanceLocalizedStringsBase, public Description<GuiInstanceLocalizedStrings>

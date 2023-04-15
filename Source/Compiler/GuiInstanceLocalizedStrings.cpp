@@ -647,7 +647,7 @@ GuiInstanceLocalizedStringsBase
 			return func;
 		}
 
-		Ptr<workflow::WfBlockStatement> GuiInstanceLocalizedStringsBase::GenerateStaticInit(const WString& stringsClassWithoutNs, const WString& installClass, collections::List<Ptr<Strings>>& strings)
+		Ptr<workflow::WfBlockStatement> GuiInstanceLocalizedStringsBase::GenerateStaticInit(const WString& stringsClassWithoutNs, const WString& installClassFullName, collections::List<Ptr<Strings>>& strings)
 		{
 			auto block = Ptr(new WfBlockStatement);
 
@@ -659,7 +659,7 @@ GuiInstanceLocalizedStringsBase
 					Ptr<WfExpression> exprStrings, exprInstall;
 					{
 						auto refClass = Ptr(new WfReferenceExpression);
-						refClass->name.value = classNameWithoutNs;
+						refClass->name.value = stringsClassWithoutNs;
 
 						auto refStrings = Ptr(new WfChildExpression);
 						refStrings->parent = refClass;
@@ -686,8 +686,27 @@ GuiInstanceLocalizedStringsBase
 						castExpr->strategy = WfTypeCastingStrategy::Strong;
 						castExpr->expression = strExpr;
 
-						auto refClass = Ptr(new WfReferenceExpression);
-						refClass->name.value = stringsClassWithoutNs;
+						Ptr<WfExpression> refClass;
+						{
+							List<WString> fragments;
+							SplitTypeName(installClassFullName, fragments);
+							for (auto fragment : fragments)
+							{
+								if (refClass)
+								{
+									auto refType = Ptr(new WfChildExpression);
+									refType->parent = refClass;
+									refType->name.value = fragment;
+									refClass = refType;
+								}
+								else
+								{
+									auto refType = Ptr(new WfTopQualifiedExpression);
+									refType->name.value = fragment;
+									refClass = refType;
+								}
+							}
+						}
 
 						auto refInstall = Ptr(new WfChildExpression);
 						refInstall->parent = refClass;
@@ -1084,7 +1103,7 @@ GuiInstanceLocalizedStrings
 			{
 				auto lsInit = Ptr(new WfStaticInitDeclaration);
 				auto classNameWithoutNs = Workflow_InstallWithClass(className, module, lsInit);
-				lsInit->statement = GenerateStaticInit(classNameWithoutNs, classNameWithoutNs, strings);
+				lsInit->statement = GenerateStaticInit(classNameWithoutNs, className, strings);
 			}
 
 			glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
