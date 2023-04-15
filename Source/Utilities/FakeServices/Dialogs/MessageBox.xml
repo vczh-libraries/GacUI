@@ -46,7 +46,7 @@
         }
       ]]></ref.Ctor>
       <ControlTemplate ref.Name="self" MinSizeLimitation="LimitToElementAndChildren">
-        <Button ref.Name="buttonControl" Text-eval="self.GetButtonText(Action.Button, self.Strings)" Alt-eval="self.GetButtonAlt(Action.Button)">
+        <Button ref.Name="buttonControl" Text-bind="self.GetButtonText(Action.Button, self.Strings)" Alt-eval="self.GetButtonAlt(Action.Button)">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:80 y:24"/>
           <ev.Clicked-eval><![CDATA[
             {
