@@ -1164,7 +1164,7 @@ GuiInstanceLocalizedStringsInjection
 			return xml;
 		}
 
-		void GuiInstanceLocalizedStringsInjection::DecompileDefaultStrings(description::ITypeDescriptor* td, Ptr<Strings>& defaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors)
+		void GuiInstanceLocalizedStringsInjection::DecompileDefaultStrings(description::ITypeDescriptor* td, Ptr<Strings> defaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors)
 		{
 			auto tdString = description::GetTypeDescriptor<WString>();
 			auto tdDateTime = description::GetTypeDescriptor<DateTime>();
@@ -1196,7 +1196,27 @@ GuiInstanceLocalizedStringsInjection
 
 					if (errors.Count() == errorCount)
 					{
-						CHECK_FAIL(L"Not Implemented!");
+						defaultStrings->items.Add(
+							tdMethod->GetName(),
+							Ptr(new StringItem{ .name = tdMethod->GetName() })
+							);
+
+						auto textDesc = Ptr(new TextDesc);
+						textDescs.Add({ defaultStrings,tdMethod->GetName() }, textDesc);
+
+						CopyFrom(
+							textDesc->parameters,
+							Range<vint>(0, tdMethod->GetParameterCount())
+								.Select([tdMethod](vint j) -> ParameterPair
+								{
+									return { CopyTypeInfo(tdMethod->GetParameter(j)->GetType()),WString::Empty };
+								})
+							);
+
+						CopyFrom(
+							textDesc->positions,
+							Range<vint>(0, tdMethod->GetParameterCount())
+							);
 					}
 				}
 				else
@@ -1238,7 +1258,7 @@ GuiInstanceLocalizedStringsInjection
 
 			{
 				vint errorCount = errors.Count();
-				Ptr<Strings> defaultStrings;
+				auto defaultStrings = Ptr(new Strings);
 				TextDescMap textDescs;
 
 				DecompileDefaultStrings(tdStringsInterface, defaultStrings, textDescs, errors);
@@ -1253,6 +1273,7 @@ GuiInstanceLocalizedStringsInjection
 					return nullptr;
 				}
 
+				CHECK_FAIL(L"Not Implemented!");
 				auto module = Ptr(new WfModule);
 				module->moduleType = WfModuleType::Module;
 				module->name.value = moduleName;
