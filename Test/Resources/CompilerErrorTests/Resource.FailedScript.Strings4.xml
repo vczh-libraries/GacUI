@@ -33,6 +33,8 @@
         {
           func NotReturnString():void;
           func ArgunmentNotStringOrDateTime(a:int, b:bool):string;
+          func Duplicated(a:string):string;
+          func Duplicated(b:DateTime):string;
         }
 
         class Fake

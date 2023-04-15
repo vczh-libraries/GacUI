@@ -1166,7 +1166,44 @@ GuiInstanceLocalizedStringsInjection
 
 		void GuiInstanceLocalizedStringsInjection::DecompileDefaultStrings(description::ITypeDescriptor* td, Ptr<Strings>& defaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto tdString = description::GetTypeDescriptor<WString>();
+			auto tdDateTime = description::GetTypeDescriptor<DateTime>();
+
+			for (vint i = 0; i < td->GetMethodGroupCount(); i++)
+			{
+				auto tdMethodGroup = td->GetMethodGroup(i);
+				if (tdMethodGroup->GetMethodCount() == 1)
+				{
+					vint errorCount = errors.Count();
+					auto tdMethod = tdMethodGroup->GetMethod(0);
+					auto returnType = tdMethod->GetReturn();
+
+					if (returnType->GetDecorator() != ITypeInfo::TypeDescriptor || returnType->GetTypeDescriptor() != tdString)
+					{
+						errors.Add(GuiResourceError(tagPosition, L"Precompile: function \"" + tdMethod->GetName() + L"\" in interface \"" + td->GetTypeName() + L"\" does not return string."));
+					}
+
+					for (vint j = 0; j < tdMethod->GetParameterCount(); j++)
+					{
+						auto tdParameter = tdMethod->GetParameter(j);
+						if (tdParameter->GetType()->GetDecorator() != ITypeInfo::TypeDescriptor || (
+							tdParameter->GetType()->GetTypeDescriptor() != tdString &&
+							tdParameter->GetType()->GetTypeDescriptor() != tdDateTime))
+						{
+							errors.Add(GuiResourceError(tagPosition, L"Precompile: argument \"" + tdParameter->GetName() + L"\" in function \"" + tdMethod->GetName() + L"\" in interface \"" + td->GetTypeName() + L"\" is not string or DateTime."));
+						}
+					}
+
+					if (errors.Count() == errorCount)
+					{
+						CHECK_FAIL(L"Not Implemented!");
+					}
+				}
+				else
+				{
+					errors.Add(GuiResourceError(tagPosition, L"Precompile: interface \"" + td->GetTypeName() + L"\" has more than one function named \"" + tdMethodGroup->GetName() + L"\"."));
+				}
+			}
 		}
 
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStringsInjection::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
