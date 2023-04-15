@@ -165,7 +165,7 @@ void GuiMain()
 		L"Demo",
 		L"Source: Generated_FullControlTest",
 		L"../../../../Source/GacUI.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h",
-		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h;../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h",
 		dependencies,
 		(GetResourcePath() / L"App/FullControlTest/Resource.xml"),
 		(GetResourcePath() / FULLCONTROLTEST_BINARY_FOLDER()),
