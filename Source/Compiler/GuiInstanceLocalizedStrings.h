@@ -103,6 +103,7 @@ namespace vl
 			static Ptr<GuiInstanceLocalizedStringsInjection>		LoadFromXml(Ptr<GuiResourceItem> resource, Ptr<glr::xml::XmlDocument> xml, GuiResourceError::List& errors);
 			Ptr<glr::xml::XmlElement>								SaveToXml();
 
+			static void									DecompileDefaultStrings(description::ITypeDescriptor* td, Ptr<Strings>& defaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors);
 			Ptr<workflow::WfModule>						Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors);
 		};
 	}

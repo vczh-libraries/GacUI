@@ -1164,6 +1164,11 @@ GuiInstanceLocalizedStringsInjection
 			return xml;
 		}
 
+		void GuiInstanceLocalizedStringsInjection::DecompileDefaultStrings(description::ITypeDescriptor* td, Ptr<Strings>& defaultStrings, TextDescMap& textDescs, GuiResourceError::List& errors)
+		{
+			CHECK_FAIL(L"Not Implemented!");
+		}
+
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStringsInjection::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
 		{
 			auto tdInjectTo = description::GetTypeDescriptor(injectIntoClassName);
@@ -1195,6 +1200,22 @@ GuiInstanceLocalizedStringsInjection
 			if (tdStringsInterface->GetTypeName() != GetInterfaceTypeName(injectIntoClassName, true)) goto INCORRECT_STRINGS_TYPE;
 
 			{
+				vint errorCount = errors.Count();
+				Ptr<Strings> defaultStrings;
+				TextDescMap textDescs;
+
+				DecompileDefaultStrings(tdStringsInterface, defaultStrings, textDescs, errors);
+				if (errors.Count() != errorCount)
+				{
+					return nullptr;
+				}
+
+				ValidateAgainstDefaultStrings(defaultStrings, strings, textDescs, errors);
+				if (errors.Count() != errorCount)
+				{
+					return nullptr;
+				}
+
 				auto module = Ptr(new WfModule);
 				module->moduleType = WfModuleType::Module;
 				module->name.value = moduleName;
