@@ -68,7 +68,9 @@ namespace vl
 
 			static WString								GetInterfaceTypeName(const WString& className, bool hasNamespace);
 			static WString								GenerateStringsCppName(Ptr<Strings> lss);
-			static Ptr<workflow::WfFunctionDeclaration>	GenerateTextDescFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind);
+			static Ptr<workflow::WfFunctionDeclaration>	GenerateTextDescFunctionHeader(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind);
+			static Ptr<workflow::WfExpression>			GenerateTextDescArgumentFormatting(Ptr<description::ITypeInfo> type, const WString& function, vint argumentIndex);
+			static Ptr<workflow::WfBlockStatement>		GenerateTextDescFunctionBody(Ptr<TextDesc> textDesc);
 			static Ptr<workflow::WfExpression>			GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
 			static Ptr<workflow::WfFunctionDeclaration>	GenerateBuildStringsFunction(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss);
 		};

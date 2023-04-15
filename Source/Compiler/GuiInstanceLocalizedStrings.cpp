@@ -400,7 +400,7 @@ GuiInstanceLocalizedStringsBase
 			return WString::Unmanaged(L"<ls") + encoded + WString::Unmanaged(L">BuildStrings");
 		}
 
-		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateTextDescFunction(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind)
+		Ptr<workflow::WfFunctionDeclaration> GuiInstanceLocalizedStringsBase::GenerateTextDescFunctionHeader(Ptr<TextDesc> textDesc, const WString& functionName, workflow::WfFunctionKind functionKind)
 		{
 			auto func = Ptr(new WfFunctionDeclaration);
 			func->functionKind = functionKind;
@@ -420,6 +420,177 @@ GuiInstanceLocalizedStringsBase
 			return func;
 		}
 
+		Ptr<workflow::WfExpression> GuiInstanceLocalizedStringsBase::GenerateTextDescArgumentFormatting(Ptr<description::ITypeInfo> type, const WString& function, vint argumentIndex)
+		{
+			WString argumentName = L"<ls>" + itow(argumentIndex);
+			if (function == L"ShortDate" || function == L"LongDate" || function == L"YearMonthDate" || function == L"ShortTime" || function == L"LongTime")
+			{
+				auto refLoc = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
+
+				auto refFormats = Ptr(new WfChildExpression);
+				refFormats->parent = refLoc;
+				refFormats->name.value = L"Get" + function + L"Formats";
+
+				auto refLocale = Ptr(new WfReferenceExpression);
+				refLocale->name.value = L"<ls>locale";
+
+				auto callFormats = Ptr(new WfCallExpression);
+				callFormats->function = refFormats;
+				callFormats->arguments.Add(refLocale);
+
+				auto refFirst = Ptr(new WfChildExpression);
+				refFirst->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<helper_types::LocalizedStrings>());
+				refFirst->name.value = L"FirstOrEmpty";
+
+				auto callFirst = Ptr(new WfCallExpression);
+				{
+					callFirst->function = refFirst;
+					callFirst->arguments.Add(callFormats);
+				}
+
+				auto refLocale2 = Ptr(new WfReferenceExpression);
+				refLocale2->name.value = L"<ls>locale";
+
+				auto refParameter = Ptr(new WfReferenceExpression);
+				refParameter->name.value = argumentName;
+
+				auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
+
+				auto refFD = Ptr(new WfChildExpression);
+				refFD->parent = refLoc2;
+				refFD->name.value = L"Format" + function.Right(4);
+
+				auto callFD = Ptr(new WfCallExpression);
+				callFD->function = refFD;
+				callFD->arguments.Add(refLocale2);
+				callFD->arguments.Add(callFirst);
+				callFD->arguments.Add(refParameter);
+
+				return callFD;
+			}
+			else if (function.Length() >= 5 && (function.Left(5) == L"Date:" || function.Left(5) == L"Time:"))
+			{
+				auto refLocale = Ptr(new WfReferenceExpression);
+				refLocale->name.value = L"<ls>locale";
+
+				auto refFormat = Ptr(new WfStringExpression);
+				refFormat->value.value = function.Right(function.Length() - 5);
+
+				auto refParameter = Ptr(new WfReferenceExpression);
+				refParameter->name.value = argumentName;
+
+				auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
+
+				auto refFD = Ptr(new WfChildExpression);
+				refFD->parent = refLoc2;
+				refFD->name.value = L"Format" + function.Left(4);
+
+				auto callFD = Ptr(new WfCallExpression);
+				callFD->function = refFD;
+				callFD->arguments.Add(refLocale);
+				callFD->arguments.Add(refFormat);
+				callFD->arguments.Add(refParameter);
+
+				return callFD;
+			}
+			else if (function == L"Number" || function == L"Currency")
+			{
+				auto refLocale = Ptr(new WfReferenceExpression);
+				refLocale->name.value = L"<ls>locale";
+
+				auto refParameter = Ptr(new WfReferenceExpression);
+				refParameter->name.value = argumentName;
+
+				auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
+
+				auto refFD = Ptr(new WfChildExpression);
+				refFD->parent = refLoc2;
+				refFD->name.value = L"Format" + function;
+
+				auto callFD = Ptr(new WfCallExpression);
+				callFD->function = refFD;
+				callFD->arguments.Add(refLocale);
+				callFD->arguments.Add(refParameter);
+
+				return callFD;
+			}
+			else
+			{
+				auto refParameter = Ptr(new WfReferenceExpression);
+				refParameter->name.value = argumentName;
+
+				return refParameter;
+			}
+		}
+
+		Ptr<workflow::WfBlockStatement> GuiInstanceLocalizedStringsBase::GenerateTextDescFunctionBody(Ptr<TextDesc> textDesc)
+		{
+			auto appendExpr = [](Ptr<WfExpression> resultExpr, Ptr<WfExpression> strExpr) -> Ptr<WfExpression>
+			{
+				if (resultExpr)
+				{
+					auto binaryExpr = Ptr(new WfBinaryExpression);
+					binaryExpr->op = WfBinaryOperator::FlagAnd;
+					binaryExpr->first = resultExpr;
+					binaryExpr->second = strExpr;
+
+					return binaryExpr;
+				}
+				else
+				{
+					return strExpr;
+				}
+			};
+
+			auto block = Ptr(new WfBlockStatement);
+
+			for (vint i = 0; i < textDesc->parameters.Count(); i++)
+			{
+				auto varDesc = Ptr(new WfVariableDeclaration);
+				varDesc->name.value = L"<ls>_" + itow(i);
+
+				auto varStat = Ptr(new WfVariableStatement);
+				varStat->variable = varDesc;
+				block->statements.Add(varStat);
+
+				auto type = textDesc->parameters[i].key;
+				auto function = textDesc->parameters[i].value;
+				auto index = textDesc->positions[i];
+				varDesc->expression = GenerateTextDescArgumentFormatting(type, function, index);
+			}
+
+			{
+				Ptr<WfExpression> resultExpr;
+				for (vint i = 0; i < textDesc->texts.Count(); i++)
+				{
+					if (textDesc->texts[i] != L"")
+					{
+						auto strExpr = Ptr(new WfStringExpression);
+						strExpr->value.value = textDesc->texts[i];
+						resultExpr = appendExpr(resultExpr, strExpr);
+					}
+
+					if (i < textDesc->parameters.Count())
+					{
+						auto refExpr = Ptr(new WfReferenceExpression);
+						refExpr->name.value = L"<ls>_" + itow(i);
+						resultExpr = appendExpr(resultExpr, refExpr);
+					}
+				}
+
+				if (!resultExpr)
+				{
+					resultExpr = Ptr(new WfStringExpression);
+				}
+
+				auto returnStat = Ptr(new WfReturnStatement);
+				returnStat->expression = resultExpr;
+				block->statements.Add(returnStat);
+			}
+
+			return block;
+		}
+
 		Ptr<workflow::WfExpression> GuiInstanceLocalizedStringsBase::GenerateStringsConstructor(const WString& interfaceName, TextDescMap& textDescs, Ptr<Strings> lss)
 		{
 			auto lsExpr = Ptr(new WfNewInterfaceExpression);
@@ -436,170 +607,9 @@ GuiInstanceLocalizedStringsBase
 			for (auto lssi : lss->items.Values())
 			{
 				auto textDesc = textDescs[{lss, lssi->name}];
-				auto func = GenerateTextDescFunction(textDesc, lssi->name, WfFunctionKind::Override);
+				auto func = GenerateTextDescFunctionHeader(textDesc, lssi->name, WfFunctionKind::Override);
+				func->statement = GenerateTextDescFunctionBody(textDesc);
 				lsExpr->declarations.Add(func);
-
-				auto block = Ptr(new WfBlockStatement);
-				func->statement = block;
-
-				Ptr<WfExpression> resultExpr;
-
-				auto appendExpr = [&](Ptr<WfExpression> strExpr)
-				{
-					if (resultExpr)
-					{
-						auto binaryExpr = Ptr(new WfBinaryExpression);
-						binaryExpr->op = WfBinaryOperator::FlagAnd;
-						binaryExpr->first = resultExpr;
-						binaryExpr->second = strExpr;
-
-						resultExpr = binaryExpr;
-					}
-					else
-					{
-						resultExpr = strExpr;
-					}
-				};
-
-				for (vint i = 0; i < textDesc->parameters.Count(); i++)
-				{
-					auto varDesc = Ptr(new WfVariableDeclaration);
-					varDesc->name.value = L"<ls>_" + itow(i);
-
-					auto varStat = Ptr(new WfVariableStatement);
-					varStat->variable = varDesc;
-					block->statements.Add(varStat);
-
-					auto type = textDesc->parameters[i].key;
-					auto function = textDesc->parameters[i].value;
-					auto index = textDesc->positions[i];
-
-					if (function == L"ShortDate" || function == L"LongDate" || function == L"YearMonthDate" || function == L"ShortTime" || function == L"LongTime")
-					{
-						auto refLoc = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
-
-						auto refFormats = Ptr(new WfChildExpression);
-						refFormats->parent = refLoc;
-						refFormats->name.value = L"Get" + function + L"Formats";
-
-						auto refLocale = Ptr(new WfReferenceExpression);
-						refLocale->name.value = L"<ls>locale";
-
-						auto callFormats = Ptr(new WfCallExpression);
-						callFormats->function = refFormats;
-						callFormats->arguments.Add(refLocale);
-
-						auto refFirst = Ptr(new WfChildExpression);
-						refFirst->parent = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<helper_types::LocalizedStrings>());
-						refFirst->name.value = L"FirstOrEmpty";
-
-						auto callFirst = Ptr(new WfCallExpression);
-						{
-							callFirst->function = refFirst;
-							callFirst->arguments.Add(callFormats);
-						}
-
-						auto refLocale2 = Ptr(new WfReferenceExpression);
-						refLocale2->name.value = L"<ls>locale";
-
-						auto refParameter = Ptr(new WfReferenceExpression);
-						refParameter->name.value = L"<ls>" + itow(index);
-
-						auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
-
-						auto refFD = Ptr(new WfChildExpression);
-						refFD->parent = refLoc2;
-						refFD->name.value = L"Format" + function.Right(4);
-
-						auto callFD = Ptr(new WfCallExpression);
-						callFD->function = refFD;
-						callFD->arguments.Add(refLocale2);
-						callFD->arguments.Add(callFirst);
-						callFD->arguments.Add(refParameter);
-
-						varDesc->expression = callFD;
-					}
-					else if (function.Length() >= 5 && (function.Left(5) == L"Date:" || function.Left(5) == L"Time:"))
-					{
-						auto refLocale = Ptr(new WfReferenceExpression);
-						refLocale->name.value = L"<ls>locale";
-
-						auto refFormat = Ptr(new WfStringExpression);
-						refFormat->value.value = function.Right(function.Length() - 5);
-
-						auto refParameter = Ptr(new WfReferenceExpression);
-						refParameter->name.value = L"<ls>" + itow(index);
-
-						auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
-
-						auto refFD = Ptr(new WfChildExpression);
-						refFD->parent = refLoc2;
-						refFD->name.value = L"Format" + function.Left(4);
-
-						auto callFD = Ptr(new WfCallExpression);
-						callFD->function = refFD;
-						callFD->arguments.Add(refLocale);
-						callFD->arguments.Add(refFormat);
-						callFD->arguments.Add(refParameter);
-
-						varDesc->expression = callFD;
-					}
-					else if (function == L"Number" || function == L"Currency")
-					{
-						auto refLocale = Ptr(new WfReferenceExpression);
-						refLocale->name.value = L"<ls>locale";
-
-						auto refParameter = Ptr(new WfReferenceExpression);
-						refParameter->name.value = L"<ls>" + itow(index);
-
-						auto refLoc2 = GetExpressionFromTypeDescriptor(description::GetTypeDescriptor<Localization>());
-
-						auto refFD = Ptr(new WfChildExpression);
-						refFD->parent = refLoc2;
-						refFD->name.value = L"Format" + function;
-
-						auto callFD = Ptr(new WfCallExpression);
-						callFD->function = refFD;
-						callFD->arguments.Add(refLocale);
-						callFD->arguments.Add(refParameter);
-
-						varDesc->expression = callFD;
-					}
-					else
-					{
-						auto refParameter = Ptr(new WfReferenceExpression);
-						refParameter->name.value = L"<ls>" + itow(index);
-
-						varDesc->expression = refParameter;
-					}
-				}
-
-				for (vint i = 0; i < textDesc->texts.Count(); i++)
-				{
-					if (textDesc->texts[i] != L"")
-					{
-						auto strExpr = Ptr(new WfStringExpression);
-						strExpr->value.value = textDesc->texts[i];
-						appendExpr(strExpr);
-					}
-
-					if (i < textDesc->parameters.Count())
-					{
-						auto refExpr = Ptr(new WfReferenceExpression);
-						refExpr->name.value = L"<ls>_" + itow(i);
-						appendExpr(refExpr);
-					}
-				}
-
-				if (!resultExpr)
-				{
-					resultExpr = Ptr(new WfStringExpression);
-				}
-
-				auto returnStat = Ptr(new WfReturnStatement);
-				returnStat->expression = resultExpr;
-
-				block->statements.Add(returnStat);
 			}
 
 			return lsExpr;
@@ -971,7 +981,7 @@ GuiInstanceLocalizedStrings
 
 				for (auto functionName : defaultStrings->items.Keys())
 				{
-					auto func = GenerateTextDescFunction(textDescs[{defaultStrings, functionName}], functionName, WfFunctionKind::Normal);
+					auto func = GenerateTextDescFunctionHeader(textDescs[{defaultStrings, functionName}], functionName, WfFunctionKind::Normal);
 					lsInterface->declarations.Add(func);
 				}
 			}
