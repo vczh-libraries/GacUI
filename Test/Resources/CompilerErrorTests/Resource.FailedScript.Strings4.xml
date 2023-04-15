@@ -19,4 +19,36 @@
     <LocalizedStringsInjection ref.Class="demo::s2" ref.InjectInto="presentation::controls::GuiControl">
     </LocalizedStringsInjection>
   </LocalizedStrings>
+
+  <Script name="FakeStrings">
+    <Workflow><![CDATA[
+    module fakestrings;
+    using system::*;
+
+    namespace a
+    {
+      namespace b
+      {
+        interface IFakeStrings
+        {
+          func NotReturnString():void;
+          func ArgunmentNotStringOrDateTime(a:int, b:bool):string;
+        }
+
+        class Fake
+        {
+          static func Get(x:Locale):IFakeStrings^
+          {
+            return null;
+          }
+        }
+      }
+    }
+    ]]></Workflow>
+  </Script>
+  
+  <LocalizedStrings name="s3">
+    <LocalizedStringsInjection ref.Class="demo::s3" ref.InjectInto="a::b::Fake">
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
 </Resource>

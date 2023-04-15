@@ -1184,7 +1184,7 @@ GuiInstanceLocalizedStringsInjection
 
 			tdGetMethod = tdGetMethodGroup->GetMethod(0);
 			if (!tdGetMethod->IsStatic()) goto INCORRECT_STRINGS_TYPE;
-			if (tdGetMethod->GetParameterCount() == 1) goto INCORRECT_STRINGS_TYPE;
+			if (tdGetMethod->GetParameterCount() != 1) goto INCORRECT_STRINGS_TYPE;
 			if (tdGetMethod->GetReturn()->GetDecorator() != ITypeInfo::SharedPtr) goto INCORRECT_STRINGS_TYPE;
 
 			tdGetMethodParameter = tdGetMethod->GetParameter(0);
