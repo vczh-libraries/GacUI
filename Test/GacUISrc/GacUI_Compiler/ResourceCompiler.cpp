@@ -154,8 +154,8 @@ FilePath CompileResources(
 		input->multiFile = WfCppFileSwitch::Enabled;
 		input->reflection = WfCppFileSwitch::Enabled;
 		input->comment = cppComment;
-		input->normalIncludes.Add(cppNormalInclude);
-		input->reflectionIncludes.Add(cppReflectionInclude);
+		SplitBySemicolon(cppNormalInclude, input->normalIncludes);
+		SplitBySemicolon(cppReflectionInclude, input->reflectionIncludes);
 
 		FilePath cppFolder = outputCppFolder;
 		auto output = WriteCppCodesToFile(resource, compiled, input, cppFolder, errors);
