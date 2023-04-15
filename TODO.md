@@ -5,7 +5,6 @@
 - Issue on dialog service
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
 - `GacUI_Host` font not right.
-- `GacUI_Host` memory leaks, probably caused by global variables from `<LocalizedStrings/>`.
 
 ## Progressing
 
