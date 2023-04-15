@@ -3,6 +3,7 @@
 #define GAC_HEADER_USE_NAMESPACE
 #include "../../../Source/GacUI.h"
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
 #include <Windows.h>
 
 using namespace vl;
@@ -39,6 +40,7 @@ void GuiMain()
 #define DARKSKIN_BINARY			L"../GacUISrc/Generated_DarkSkin/Resource_x86/DarkSkin.UI.bin"
 #define FULLCONTROLTEST_BINARY	L"../GacUISrc/Generated_FullControlTest/Resource_x86/Demo.UI.bin"
 #endif
+	LoadGuiFakeDialogServiceUITypes();
 	{
 		FileStream fileStream(GetResourcePath() + DARKSKIN_BINARY, FileStream::ReadOnly);
 		GetResourceManager()->LoadResourceOrPending(fileStream, GuiResourceUsage::InstanceClass);
