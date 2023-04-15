@@ -647,6 +647,68 @@ GuiInstanceLocalizedStringsBase
 			return func;
 		}
 
+		Ptr<workflow::WfBlockStatement> GuiInstanceLocalizedStringsBase::GenerateStaticInit(const WString& stringsClassWithoutNs, const WString& installClass, collections::List<Ptr<Strings>>& strings)
+		{
+			auto block = Ptr(new WfBlockStatement);
+
+			for (auto ls : strings)
+			{
+				auto cppName = GenerateStringsCppName(ls);
+				for (auto locale : ls->locales)
+				{
+					Ptr<WfExpression> exprStrings, exprInstall;
+					{
+						auto refClass = Ptr(new WfReferenceExpression);
+						refClass->name.value = classNameWithoutNs;
+
+						auto refStrings = Ptr(new WfChildExpression);
+						refStrings->parent = refClass;
+						refStrings->name.value = GenerateStringsCppName(ls);
+
+						auto strExpr = Ptr(new WfStringExpression);
+						strExpr->value.value = locale;
+
+						auto castExpr = Ptr(new WfExpectedTypeCastExpression);
+						castExpr->strategy = WfTypeCastingStrategy::Strong;
+						castExpr->expression = strExpr;
+
+						auto callStringsExpr = Ptr(new WfCallExpression);
+						callStringsExpr->function = refStrings;
+						callStringsExpr->arguments.Add(castExpr);
+
+						exprStrings = callStringsExpr;
+					}
+					{
+						auto strExpr = Ptr(new WfStringExpression);
+						strExpr->value.value = locale;
+
+						auto castExpr = Ptr(new WfExpectedTypeCastExpression);
+						castExpr->strategy = WfTypeCastingStrategy::Strong;
+						castExpr->expression = strExpr;
+
+						auto refClass = Ptr(new WfReferenceExpression);
+						refClass->name.value = stringsClassWithoutNs;
+
+						auto refInstall = Ptr(new WfChildExpression);
+						refInstall->parent = refClass;
+						refInstall->name.value = L"Install";
+
+						auto callInstallExpr = Ptr(new WfCallExpression);
+						callInstallExpr->function = refInstall;
+						callInstallExpr->arguments.Add(castExpr);
+						callInstallExpr->arguments.Add(exprStrings);
+
+						exprInstall = callInstallExpr;
+					}
+					auto exprStat = Ptr(new WfExpressionStatement);
+					exprStat->expression = exprInstall;
+					block->statements.Add(exprStat);
+				}
+			}
+
+			return block;
+		}
+
 /***********************************************************************
 GuiInstanceLocalizedStrings
 ***********************************************************************/
@@ -1022,64 +1084,7 @@ GuiInstanceLocalizedStrings
 			{
 				auto lsInit = Ptr(new WfStaticInitDeclaration);
 				auto classNameWithoutNs = Workflow_InstallWithClass(className, module, lsInit);
-
-				auto block = Ptr(new WfBlockStatement);
-				lsInit->statement = block;
-
-				for (auto ls : strings)
-				{
-					auto cppName = GenerateStringsCppName(ls);
-					for (auto locale : ls->locales)
-					{
-						Ptr<WfExpression> exprStrings, exprInstall;
-						{
-							auto refClass = Ptr(new WfReferenceExpression);
-							refClass->name.value = classNameWithoutNs;
-
-							auto refStrings = Ptr(new WfChildExpression);
-							refStrings->parent = refClass;
-							refStrings->name.value = GenerateStringsCppName(ls);
-
-							auto strExpr = Ptr(new WfStringExpression);
-							strExpr->value.value = locale;
-
-							auto castExpr = Ptr(new WfExpectedTypeCastExpression);
-							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->expression = strExpr;
-
-							auto callStringsExpr = Ptr(new WfCallExpression);
-							callStringsExpr->function = refStrings;
-							callStringsExpr->arguments.Add(castExpr);
-
-							exprStrings = callStringsExpr;
-						}
-						{
-							auto strExpr = Ptr(new WfStringExpression);
-							strExpr->value.value = locale;
-
-							auto castExpr = Ptr(new WfExpectedTypeCastExpression);
-							castExpr->strategy = WfTypeCastingStrategy::Strong;
-							castExpr->expression = strExpr;
-
-							auto refClass = Ptr(new WfReferenceExpression);
-							refClass->name.value = classNameWithoutNs;
-
-							auto refInstall = Ptr(new WfChildExpression);
-							refInstall->parent = refClass;
-							refInstall->name.value = L"Install";
-
-							auto callInstallExpr = Ptr(new WfCallExpression);
-							callInstallExpr->function = refInstall;
-							callInstallExpr->arguments.Add(castExpr);
-							callInstallExpr->arguments.Add(exprStrings);
-
-							exprInstall = callInstallExpr;
-						}
-						auto exprStat = Ptr(new WfExpressionStatement);
-						exprStat->expression = exprInstall;
-						block->statements.Add(exprStat);
-					}
-				}
+				lsInit->statement = GenerateStaticInit(classNameWithoutNs, classNameWithoutNs, strings);
 			}
 
 			glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
@@ -1273,10 +1278,28 @@ GuiInstanceLocalizedStringsInjection
 					return nullptr;
 				}
 
-				CHECK_FAIL(L"Not Implemented!");
 				auto module = Ptr(new WfModule);
 				module->moduleType = WfModuleType::Module;
 				module->name.value = moduleName;
+
+				// class
+				{
+					auto lsClass = Workflow_InstallClass(className, module);
+					for (auto ls : strings)
+					{
+						lsClass->declarations.Add(GenerateBuildStringsFunction(GetInterfaceTypeName(className, false), textDescs, ls));
+					}
+				}
+
+				// init
+				{
+					auto lsInit = Ptr(new WfStaticInitDeclaration);
+					auto classNameWithoutNs = Workflow_InstallWithClass(className, module, lsInit);
+					lsInit->statement = GenerateStaticInit(classNameWithoutNs, injectIntoClassName, strings);
+				}
+
+				glr::ParsingTextPos pos(tagPosition.row, tagPosition.column);
+				SetCodeRange(module, { pos,pos });
 				return module;
 			}
 		INCORRECT_STRINGS_TYPE:
