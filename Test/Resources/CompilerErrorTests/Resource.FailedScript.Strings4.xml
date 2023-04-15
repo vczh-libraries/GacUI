@@ -14,4 +14,9 @@
     <LocalizedStringsInjection ref.Class="demo::s1" ref.InjectInto="demo::Unexisting">
     </LocalizedStringsInjection>
   </LocalizedStrings>
+  
+  <LocalizedStrings name="s2">
+    <LocalizedStringsInjection ref.Class="demo::s2" ref.InjectInto="presentation::controls::GuiControl">
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
 </Resource>
