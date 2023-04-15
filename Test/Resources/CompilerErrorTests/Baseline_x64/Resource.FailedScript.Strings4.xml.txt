@@ -1,0 +1,2 @@
+s1 # .\Resource.FailedScript.Strings4.xml
+(14, 6): Precompile: attribute "ref.InjectInto" specifies an unexisting type "demo::Unexisting".

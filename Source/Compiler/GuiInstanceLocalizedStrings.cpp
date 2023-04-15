@@ -1166,7 +1166,17 @@ GuiInstanceLocalizedStringsInjection
 
 		Ptr<workflow::WfModule> GuiInstanceLocalizedStringsInjection::Compile(GuiResourcePrecompileContext& precompileContext, const WString& moduleName, GuiResourceError::List& errors)
 		{
-			CHECK_FAIL(L"Not Implemented!");
+			auto tdInjectTo = description::GetTypeDescriptor(injectIntoClassName);
+			if (!tdInjectTo)
+			{
+				errors.Add(GuiResourceError(tagPosition, L"Precompile: attribute \"ref.InjectInto\" specifies an unexisting type \"" + injectIntoClassName + L"\"."));
+				return nullptr;
+			}
+
+			auto module = Ptr(new WfModule);
+			module->moduleType = WfModuleType::Module;
+			module->name.value = moduleName;
+			return module;
 		}
 	}
 }
