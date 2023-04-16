@@ -1350,14 +1350,6 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event systemKeyDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiKeyEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event systemKeyUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiKeyEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
     event verticalWheel : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
 
     property AssociatedControl : presentation::controls::GuiControl* { get:GetAssociatedControl }
