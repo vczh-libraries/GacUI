@@ -63,6 +63,7 @@
 
 ## Control Features
 
+- Check all control key operation, ensure accessibility.
 - `IColumnItemView`.
   - Change column size from `int` to `{minSize:int, columnOption:Absolute|Percentage, absolute:int, percentage:float}`
   - Column drag and drop.

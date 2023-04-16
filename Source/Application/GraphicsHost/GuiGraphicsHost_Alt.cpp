@@ -334,17 +334,7 @@ GuiAltActionManager
 
 			bool GuiAltActionManager::KeyDown(const NativeWindowKeyInfo& info)
 			{
-				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && !currentAltHost)
-				{
-					if (auto altHost = controlHost->QueryTypedService<IGuiAltActionHost>())
-					{
-						if (!altHost->GetPreviousAltHost())
-						{
-							EnterAltHost(altHost);
-						}
-					}
-				}
-				if (!info.ctrl && !info.shift && currentAltHost)
+				if (!info.ctrl && !info.shift)
 				{
 					if (currentAltHost)
 					{
