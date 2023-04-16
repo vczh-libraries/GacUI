@@ -2457,7 +2457,8 @@ description::Value
 												auto prop = td->GetProperty(i);
 												auto ap = prop->GetValue(a);
 												auto bp = prop->GetValue(b);
-												return ap <=> bp;
+												auto r = ap <=> bp;
+												if (r != 0) return r;
 											}
 										}
 										return std::strong_ordering::equal;

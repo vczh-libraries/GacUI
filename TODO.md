@@ -5,7 +5,6 @@
 - Issue on dialog service
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
-- `GacUI_Host` font not right, happened after introducing `operator<=>`, could because `Value::operator<=>` is not right.
 
 ## Progressing
 
