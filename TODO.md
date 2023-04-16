@@ -11,15 +11,15 @@
 
 - Theme
   - Add HostedWindow theme.
-- `INativeWindow` add callback for state changing.
-  - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
-  - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
-  - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 
 ## Optional
 
+- `INativeWindow` add callback for state changing.
+  - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
+  - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
+  - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - Issue on dialog service
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
 - Issues on Templates
