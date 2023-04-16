@@ -14,7 +14,6 @@
   - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
   - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
-- Remove SysKey callbacks, merge into Key callbacks.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 
@@ -51,6 +50,7 @@
   - `static{}` initialization.
 - GacUI
   - Fix GacUI compiler failure when compiled with reflection.
+  - Remove SysKey callbacks, merge into Key callbacks.
 
 ## OS Provider Features
 

@@ -724,16 +724,6 @@ INativeWindow
 			/// <param name="info">Detailed information to this message.</param>
 			virtual void				KeyUp(const NativeWindowKeyInfo& info);
 			/// <summary>
-			/// Called a system key is pressed.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				SysKeyDown(const NativeWindowKeyInfo& info);
-			/// <summary>
-			/// Called a system key is released.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				SysKeyUp(const NativeWindowKeyInfo& info);
-			/// <summary>
 			/// Called an input character is generated.
 			/// </summary>
 			/// <param name="info">Detailed information to this message.</param>

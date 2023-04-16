@@ -498,10 +498,6 @@ Event Receiver
 				GuiKeyEvent						keyDown;
 				/// <summary>Key up event.</summary>
 				GuiKeyEvent						keyUp;
-				/// <summary>System key down event.</summary>
-				GuiKeyEvent						systemKeyDown;
-				/// <summary>System key up event.</summary>
-				GuiKeyEvent						systemKeyUp;
 				/// <summary>Preview char input event.</summary>
 				GuiCharEvent					previewCharInput;
 				/// <summary>Char input event.</summary>
