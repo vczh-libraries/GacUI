@@ -52,7 +52,7 @@ GuiInstanceSharedScript
 				context = Ptr(new WfRuntimeGlobalContext(assembly));
 				LoadFunction<void()>(context, L"<initialize>")();
 			}
-#else
+#endif
 			if (initializeContext)
 			{
 				if (assembly->typeImpl)
@@ -63,7 +63,6 @@ GuiInstanceSharedScript
 					}
 				}
 			}
-#endif
 			return true;
 		}
 
@@ -77,7 +76,7 @@ GuiInstanceSharedScript
 		{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			context = nullptr;
-#else
+#endif
 			if (assembly && assembly->typeImpl)
 			{
 				if (auto tm = GetGlobalTypeManager())
@@ -85,7 +84,6 @@ GuiInstanceSharedScript
 					tm->RemoveTypeLoader(assembly->typeImpl);
 				}
 			}
-#endif
 		}
 
 /***********************************************************************
@@ -114,9 +112,15 @@ Compiled Workflow Type Resolver (Workflow)
 				return true;
 			}
 
-			vint GetMaxPassIndex()override
+			bool GetInitializePassSupport(vint passIndex)override
 			{
-				return 1;
+				switch (passIndex)
+				{
+				case Workflow_Initialize:
+					return true;
+				default:
+					return false;
+				}
 			}
 
 			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context, GuiResourceError::List& errors)override
@@ -1260,8 +1264,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewKey)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyDown)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyUp)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewCharInput)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(charInput)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(gotFocus)
@@ -4047,6 +4049,7 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::DialogStrings>(), NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_en_US_BuildStrings, { L"__vwsn_ls_locale" })
 				CLASS_MEMBER_STATIC_METHOD(Get, { L"__vwsn_ls_locale" })
+				CLASS_MEMBER_STATIC_METHOD(Install, { L"__vwsn_ls_locale" _ L"__vwsn_ls_impl" })
 			END_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::FileDialogWindow)
