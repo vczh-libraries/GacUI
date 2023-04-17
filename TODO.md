@@ -5,6 +5,8 @@
 - Issue on dialog service
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
+- GacUI_Host
+  - ComboBox doesn't display the selected item when it is opened in a datagrid.
 
 ## Progressing
 
