@@ -632,6 +632,11 @@ GuiSelectableListControl
 				}
 			}
 
+			vint GuiSelectableListControl::FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection)
+			{
+				return GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
+			}
+
 			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)
 				:GuiListControl(themeName, _itemProvider, true)
 				, multiSelect(false)
@@ -817,7 +822,7 @@ GuiSelectableListControl
 				{
 					keyDirection = GetAxis()->RealKeyDirectionToVirtualKeyDirection(keyDirection);
 				}
-				vint itemIndex = GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
+				vint itemIndex = FindItemByVirtualKeyDirection(selectedItemIndexEnd, keyDirection);
 				if (SelectItemsByClick(itemIndex, ctrl, shift, true))
 				{
 					return EnsureItemVisible(itemIndex);

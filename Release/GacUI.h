@@ -2241,16 +2241,6 @@ INativeWindow
 			/// <param name="info">Detailed information to this message.</param>
 			virtual void				KeyUp(const NativeWindowKeyInfo& info);
 			/// <summary>
-			/// Called a system key is pressed.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				SysKeyDown(const NativeWindowKeyInfo& info);
-			/// <summary>
-			/// Called a system key is released.
-			/// </summary>
-			/// <param name="info">Detailed information to this message.</param>
-			virtual void				SysKeyUp(const NativeWindowKeyInfo& info);
-			/// <summary>
 			/// Called an input character is generated.
 			/// </summary>
 			/// <param name="info">Detailed information to this message.</param>
@@ -3809,10 +3799,6 @@ Event Receiver
 				GuiKeyEvent						keyDown;
 				/// <summary>Key up event.</summary>
 				GuiKeyEvent						keyUp;
-				/// <summary>System key down event.</summary>
-				GuiKeyEvent						systemKeyDown;
-				/// <summary>System key up event.</summary>
-				GuiKeyEvent						systemKeyUp;
 				/// <summary>Preview char input event.</summary>
 				GuiCharEvent					previewCharInput;
 				/// <summary>Char input event.</summary>
@@ -4426,8 +4412,6 @@ Alt-Combined Shortcut Key Interfaces Helpers
 				void									CloseAltHost();
 				bool									KeyDown(const NativeWindowKeyInfo& info);
 				bool									KeyUp(const NativeWindowKeyInfo& info);
-				bool									SysKeyDown(const NativeWindowKeyInfo& info);
-				bool									SysKeyUp(const NativeWindowKeyInfo& info);
 				bool									Char(const NativeWindowCharInfo& info);
 			};
 		}
@@ -4780,8 +4764,6 @@ Host
 
 				void									KeyDown(const NativeWindowKeyInfo& info)override;
 				void									KeyUp(const NativeWindowKeyInfo& info)override;
-				void									SysKeyDown(const NativeWindowKeyInfo& info)override;
-				void									SysKeyUp(const NativeWindowKeyInfo& info)override;
 				void									Char(const NativeWindowCharInfo& info)override;
 
 				bool									NeedRefresh()override;
@@ -8103,19 +8085,19 @@ Resource Type Resolver
 			
 			/// <summary>Get the precompiler for the type resolver.</summary>
 			/// <returns>Returns null if the type resolve does not support precompiling.</returns>
-			virtual IGuiResourceTypeResolver_Precompile*		Precompile(){ return 0; }
+			virtual IGuiResourceTypeResolver_Precompile*		Precompile(){ return nullptr; }
 			/// <summary>Get the initializer for the type resolver.</summary>
 			/// <returns>Returns null if the type resolve does not support initializing.</returns>
-			virtual IGuiResourceTypeResolver_Initialize*		Initialize(){ return 0; }
+			virtual IGuiResourceTypeResolver_Initialize*		Initialize(){ return nullptr; }
 			/// <summary>Get the object for convert the resource between xml and object.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
-			virtual IGuiResourceTypeResolver_DirectLoadXml*		DirectLoadXml(){ return 0; }
+			virtual IGuiResourceTypeResolver_DirectLoadXml*		DirectLoadXml(){ return nullptr; }
 			/// <summary>Get the object for convert the resource between stream and object.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
-			virtual IGuiResourceTypeResolver_DirectLoadStream*	DirectLoadStream(){ return 0; }
+			virtual IGuiResourceTypeResolver_DirectLoadStream*	DirectLoadStream(){ return nullptr; }
 			/// <summary>Get the object for convert the resource between the preload type and the current type.</summary>
 			/// <returns>Returns null if the type resolver does not have this ability.</returns>
-			virtual IGuiResourceTypeResolver_IndirectLoad*		IndirectLoad(){ return 0; }
+			virtual IGuiResourceTypeResolver_IndirectLoad*		IndirectLoad(){ return nullptr; }
 		};
 
 		/// <summary>
@@ -8129,7 +8111,7 @@ Resource Type Resolver
 		///			Pass  3: Compile
 		///			Pass  4: Generate instance types with event handler functions to TemporaryClass	/ Compile animation types
 		///			Pass  5: Compile
-		///			Pass  6: Generate instance types with everything to InstanceCtor				/ Compile animation types
+		///			Pass  6: Generate instance types with everything to InstanceCtor				/ Compile animation types / Compile localized strings injection
 		///			Pass  7: Compile
 		/// </summary>
 		class IGuiResourceTypeResolver_Precompile : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Precompile>
@@ -8148,6 +8130,8 @@ Resource Type Resolver
 				Instance_GenerateInstanceClass		= 6,
 				Instance_CompileInstanceClass		= 7,
 				Instance_Max						= Instance_CompileInstanceClass,
+
+				Everything_Max						= Instance_Max,
 			};
 
 			enum PassSupport
@@ -8157,13 +8141,10 @@ Resource Type Resolver
 				PerPass,
 			};
 
-			/// <summary>Get the maximum pass index that the precompiler needs.</summary>
-			/// <returns>Returns the maximum pass index. The precompiler doesn't not need to response to every pass.</returns>
-			virtual vint										GetMaxPassIndex() = 0;
 			/// <summary>Get how this resolver supports precompiling.</summary>
 			/// <param name="passIndex">The pass index.</param>
 			/// <returns>Returns how this resolver supports precompiling.</returns>
-			virtual PassSupport									GetPassSupport(vint passIndex) = 0;
+			virtual PassSupport									GetPrecompilePassSupport(vint passIndex) = 0;
 			/// <summary>Precompile the resource item.</summary>
 			/// <param name="resource">The resource to precompile.</param>
 			/// <param name="context">The context for precompiling.</param>
@@ -8193,9 +8174,16 @@ Resource Type Resolver
 		class IGuiResourceTypeResolver_Initialize : public virtual IDescriptable, public Description<IGuiResourceTypeResolver_Initialize>
 		{
 		public:
-			/// <summary>Get the maximum pass index that the initializer needs.</summary>
-			/// <returns>Returns the maximum pass index. The initializer doesn't not need to response to every pass.</returns>
-			virtual vint										GetMaxPassIndex() = 0;
+			enum PassNames
+			{
+				Workflow_Initialize					= 0,
+				Everything_Max						= Workflow_Initialize,
+			};
+
+			/// <summary>Get how this resolver supports precompiling.</summary>
+			/// <param name="passIndex">The pass index.</param>
+			/// <returns>Returns how this resolver supports precompiling.</returns>
+			virtual bool										GetInitializePassSupport(vint passIndex) = 0;
 			/// <summary>Initialize the resource item.</summary>
 			/// <param name="resource">The resource to initializer.</param>
 			/// <param name="context">The context for initializing.</param>
@@ -8295,12 +8283,6 @@ Resource Resolver Manager
 			/// <returns>Returns true if this operation succeeded.</returns>
 			/// <param name="resolver">The resolver.</param>
 			virtual bool										SetTypeResolver(Ptr<IGuiResourceTypeResolver> resolver) = 0;
-			/// <summary>Get the maximum precompiling pass index.</summary>
-			/// <returns>The maximum precompiling pass index.</returns>
-			virtual vint										GetMaxPrecompilePassIndex() = 0;
-			/// <summary>Get the maximum initializing pass index.</summary>
-			/// <returns>The maximum initializing pass index.</returns>
-			virtual vint										GetMaxInitializePassIndex() = 0;
 			/// <summary>Get names of all per resource resolvers for a pass.</summary>
 			/// <param name="passIndex">The pass index.</param>
 			/// <param name="names">Names of resolvers</param>
@@ -10462,7 +10444,8 @@ Rich Content Document (style)
 			static DocumentFontSize			Parse(const WString& value);
 			WString							ToString()const;
 
-			bool operator==(const DocumentFontSize& value) const = default;
+			std::partial_ordering operator<=>(const DocumentFontSize&) const = default;
+			bool operator==(const DocumentFontSize&) const = default;
 		};
 
 		/// <summary>Represents a text style.</summary>
@@ -13788,6 +13771,8 @@ Selectable List Control
 				void											NormalizeSelectedItemIndexStartEnd();
 				void											SetMultipleItemsSelectedSilently(vint start, vint end, bool selected);
 				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+
+				virtual vint									FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -14631,6 +14616,7 @@ GuiVirtualTreeListControl
 				void								OnItemExpanded(tree::INodeProvider* node)override;
 				void								OnItemCollapsed(tree::INodeProvider* node)override;
 
+				vint								FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection)override;
 			protected:
 				tree::NodeItemProvider*				nodeItemProvider;
 				tree::INodeItemView*				nodeItemView;
@@ -21037,8 +21023,8 @@ View Models (MessageBox)
 		{
 		public:
 			using Icon = INativeDialogService::MessageBoxIcons;
-			using ButtonItem = INativeDialogService::MessageBoxButtonsOutput;
-			using ButtonItemList = collections::List<Ptr<IMessageBoxDialogAction>>;
+			using ButtonItem = Ptr<IMessageBoxDialogAction>;
+			using ButtonItemList = collections::List<ButtonItem>;
 
 			/// <summary>
 			/// Get the text to display on the message box.
@@ -21597,10 +21583,16 @@ namespace vl
 		{
 			struct SiteValue
 			{
-				vint			row = 0;
-				vint			column = 0;
-				vint			rowSpan = 1;
-				vint			columnSpan = 1;
+				vint					row = 0;
+				vint					column = 0;
+				vint					rowSpan = 1;
+				vint					columnSpan = 1;
+			};
+
+			class LocalizedStrings
+			{
+			public:
+				static WString			FirstOrEmpty(const collections::LazyList<WString>& formats);
 			};
 		}
 	}
@@ -21620,7 +21612,6 @@ Serialization
 				static presentation::Color GetDefaultValue();
 				static bool Serialize(const presentation::Color& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::Color& output);
-				static IBoxedValue::CompareResult Compare(const presentation::Color& a, const presentation::Color& b);
 			};
 
 			template<>
@@ -21629,7 +21620,6 @@ Serialization
 				static presentation::DocumentFontSize GetDefaultValue();
 				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
-				static IBoxedValue::CompareResult Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b);
 			};
 
 			template<>
@@ -21638,7 +21628,6 @@ Serialization
 				static presentation::GlobalStringKey GetDefaultValue();
 				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
-				static IBoxedValue::CompareResult Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b);
 			};
 
 /***********************************************************************
@@ -21880,7 +21869,8 @@ namespace vl_workflow_global
 	struct __vwsnf84_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize_;
 	struct __vwsnf85_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
 	struct __vwsnf86_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
-	struct __vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
+	struct __vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+	struct __vwsnf88_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
 	struct __vwsnf8_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_;
 	struct __vwsnf9_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize_;
 	struct __vwsno31_GuiFakeDialogServiceUI_gaclib_controls_FilePickerControlConstructor___vwsn_gaclib_controls_FilePickerControl_Initialize_;
@@ -21937,7 +21927,8 @@ namespace vl_workflow_global
 	class __vwsnc53_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc54_GuiFakeDialogServiceUI_gaclib_controls_SimpleFontDialogWindowConstructor___vwsn_gaclib_controls_SimpleFontDialogWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings;
+	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+	class __vwsnc57_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings;
 	class __vwsnc5_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc6_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc7_GuiFakeDialogServiceUI_gaclib_controls_ColorDialogControlConstructor___vwsn_gaclib_controls_ColorDialogControl_Initialize__vl_reflection_description_IValueSubscription;
@@ -22169,12 +22160,13 @@ namespace gaclib_controls
 
 	class DialogStrings : public ::vl::Object, public ::vl::reflection::Description<DialogStrings>
 	{
-		friend class ::vl_workflow_global::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings;
+		friend class ::vl_workflow_global::__vwsnc57_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStrings>;
 #endif
 	public:
-		static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
+		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale);
+		static void Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_ls_impl);
 		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> Get(::vl::Locale __vwsn_ls_locale);
 		DialogStrings();
 	};
@@ -22688,16 +22680,18 @@ namespace gaclib_controls
 	class MessageBoxButtonTemplateConstructor : public ::vl::Object, public ::vl::reflection::Description<MessageBoxButtonTemplateConstructor>
 	{
 		friend class ::vl_workflow_global::__vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf85_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf86_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButtonTemplateConstructor>;
 #endif
 	protected:
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> Action;
 		::gaclib_controls::MessageBoxButtonTemplate* self;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::presentation::controls::GuiButton* buttonControl;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_0;
 		void __vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize(::gaclib_controls::MessageBoxButtonTemplate* __vwsn_this_);
 	public:
 		MessageBoxButtonTemplateConstructor();
@@ -22707,12 +22701,18 @@ namespace gaclib_controls
 	{
 		friend class ::gaclib_controls::MessageBoxButtonTemplateConstructor;
 		friend class ::vl_workflow_global::__vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
+		friend class ::vl_workflow_global::__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription;
 		friend struct ::vl_workflow_global::__vwsnf85_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf86_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxButtonTemplate>;
 #endif
 	public:
+		::vl::presentation::controls::GuiButton* __vwsn_prop_ButtonControl;
+		::vl::presentation::controls::GuiButton* GetButtonControl();
+		void SetButtonControl(::vl::presentation::controls::GuiButton* __vwsn_value_);
+		::vl::Event<void()> ButtonControlChanged;
 		::vl::WString GetButtonText(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button, ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> strings);
 		::vl::WString GetButtonAlt(::vl::presentation::INativeDialogService::MessageBoxButtonsOutput button);
 		::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_prop_Strings;
@@ -22722,18 +22722,20 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_parameter_Action;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> GetAction();
 		MessageBoxButtonTemplate(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction> __vwsn_ctor_parameter_Action);
+		void __vwsn_instance_ctor_();
 		~MessageBoxButtonTemplate();
 	};
 
 	class MessageBoxWindowConstructor : public ::vl::Object, public ::vl::reflection::Description<MessageBoxWindowConstructor>
 	{
-		friend struct ::vl_workflow_global::__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf88_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxWindowConstructor>;
 #endif
 	protected:
 		::gaclib_controls::MessageBoxWindow* self;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> ViewModel;
+		::vl::presentation::compositions::GuiRepeatStackComposition* buttonStack;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
@@ -22749,7 +22751,6 @@ namespace gaclib_controls
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_12;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_13;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_14;
-		::vl::presentation::compositions::GuiRepeatStackComposition* __vwsn_precompile_15;
 		void __vwsn_gaclib_controls_MessageBoxWindow_Initialize(::gaclib_controls::MessageBoxWindow* __vwsn_this_);
 	public:
 		MessageBoxWindowConstructor();
@@ -22758,7 +22759,7 @@ namespace gaclib_controls
 	class MessageBoxWindow : public ::vl::presentation::controls::GuiWindow, public ::gaclib_controls::MessageBoxWindowConstructor, public ::vl::reflection::Description<MessageBoxWindow>
 	{
 		friend class ::gaclib_controls::MessageBoxWindowConstructor;
-		friend struct ::vl_workflow_global::__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
+		friend struct ::vl_workflow_global::__vwsnf88_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MessageBoxWindow>;
 #endif
@@ -22767,6 +22768,7 @@ namespace gaclib_controls
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_parameter_ViewModel;
 		::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> GetViewModel();
 		MessageBoxWindow(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel> __vwsn_ctor_parameter_ViewModel);
+		void __vwsn_instance_ctor_();
 		~MessageBoxWindow();
 	};
 
@@ -22865,6 +22867,8 @@ namespace vl_workflow_global
 	class GuiFakeDialogServiceUI
 	{
 	public:
+
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_ls_DialogStrings;
 
 		static GuiFakeDialogServiceUI& Instance();
 	};
@@ -23582,7 +23586,7 @@ Closures
 
 		__vwsnf85_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
-		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
 	struct __vwsnf86_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_
@@ -23591,14 +23595,23 @@ Closures
 
 		__vwsnf86_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
+		void operator()(::vl::presentation::compositions::GuiGraphicsComposition* sender, ::vl::presentation::compositions::GuiEventArgs* arguments) const;
+	};
+
+	struct __vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_
+	{
+		::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize_(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
+
 		void operator()(const ::vl::reflection::description::Value& __vwsn_value_) const;
 	};
 
-	struct __vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_
+	struct __vwsnf88_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_
 	{
 		::gaclib_controls::MessageBoxWindowConstructor* __vwsnthis_0;
 
-		__vwsnf87_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0);
+		__vwsnf88_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxWindowConstructor___vwsn_gaclib_controls_MessageBoxWindow_Initialize_(::gaclib_controls::MessageBoxWindowConstructor* __vwsnctorthis_0);
 
 		::vl::presentation::templates::GuiTemplate* operator()(const ::vl::reflection::description::Value& __vwsn_viewModel_) const;
 	};
@@ -24607,6 +24620,24 @@ Closures
 
 		__vwsnc55_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
 
+		::gaclib_controls::MessageBoxButtonTemplate* __vwsn_bind_cache_0 = nullptr;
+		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
+		bool __vwsn_bind_opened_ = false;
+		bool __vwsn_bind_closed_ = false;
+		void __vwsn_bind_activator_();
+		void __vwsn_bind_callback_0_0();
+		bool Open() override;
+		bool Update() override;
+		bool Close() override;
+	};
+
+	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription : public ::vl::Object, public virtual ::vl::reflection::description::IValueSubscription
+	{
+	public:
+		::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnthis_0;
+
+		__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_MessageBoxButtonTemplateConstructor___vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize__vl_reflection_description_IValueSubscription(::gaclib_controls::MessageBoxButtonTemplateConstructor* __vwsnctorthis_0);
+
 		::vl::presentation::controls::GuiApplication* __vwsn_bind_cache_0 = nullptr;
 		::vl::Ptr<::vl::reflection::description::IEventHandler> __vwsn_bind_handler_0_0;
 		bool __vwsn_bind_opened_ = false;
@@ -24618,10 +24649,10 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
+	class __vwsnc57_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
 	{
 	public:
-		__vwsnc56_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings_Get__gaclib_controls_IDialogStringsStrings();
+		__vwsnc57_GuiFakeDialogServiceUI_gaclib_controls_DialogStrings___vwsn_ls_en_US_BuildStrings__gaclib_controls_IDialogStringsStrings();
 
 		::vl::WString Abort() override;
 		::vl::WString Blue() override;
@@ -25062,8 +25093,6 @@ GuiHostedController
 
 			void							KeyDown(const NativeWindowKeyInfo& info) override;
 			void							KeyUp(const NativeWindowKeyInfo& info) override;
-			void							SysKeyDown(const NativeWindowKeyInfo& info) override;
-			void							SysKeyUp(const NativeWindowKeyInfo& info) override;
 			void							Char(const NativeWindowCharInfo& info) override;
 
 			// =============================================================

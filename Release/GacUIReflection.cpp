@@ -52,7 +52,7 @@ GuiInstanceSharedScript
 				context = Ptr(new WfRuntimeGlobalContext(assembly));
 				LoadFunction<void()>(context, L"<initialize>")();
 			}
-#else
+#endif
 			if (initializeContext)
 			{
 				if (assembly->typeImpl)
@@ -63,7 +63,6 @@ GuiInstanceSharedScript
 					}
 				}
 			}
-#endif
 			return true;
 		}
 
@@ -77,7 +76,7 @@ GuiInstanceSharedScript
 		{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 			context = nullptr;
-#else
+#endif
 			if (assembly && assembly->typeImpl)
 			{
 				if (auto tm = GetGlobalTypeManager())
@@ -85,7 +84,6 @@ GuiInstanceSharedScript
 					tm->RemoveTypeLoader(assembly->typeImpl);
 				}
 			}
-#endif
 		}
 
 /***********************************************************************
@@ -114,9 +112,15 @@ Compiled Workflow Type Resolver (Workflow)
 				return true;
 			}
 
-			vint GetMaxPassIndex()override
+			bool GetInitializePassSupport(vint passIndex)override
 			{
-				return 1;
+				switch (passIndex)
+				{
+				case Workflow_Initialize:
+					return true;
+				default:
+					return false;
+				}
 			}
 
 			void Initialize(Ptr<GuiResourceItem> resource, GuiResourceInitializeContext& context, GuiResourceError::List& errors)override
@@ -258,6 +262,10 @@ Type Declaration
 				STRUCT_MEMBER(rowSpan)
 				STRUCT_MEMBER(columnSpan)
 			END_STRUCT_MEMBER(SiteValue)
+
+			BEGIN_CLASS_MEMBER(LocalizedStrings)
+				CLASS_MEMBER_STATIC_METHOD(FirstOrEmpty, {L"formats"})
+			END_CLASS_MEMBER(LocalizedStrings)
 
 			BEGIN_STRUCT_MEMBER(Color)
 				valueType = Ptr(new SerializableValueType<Color>);
@@ -1256,8 +1264,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewKey)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyDown)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(keyUp)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyDown)
-				CLASS_MEMBER_GUIEVENT_COMPOSITION(systemKeyUp)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(previewCharInput)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(charInput)
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(gotFocus)
@@ -4041,8 +4047,9 @@ namespace vl
 			BEGIN_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 				CLASS_MEMBER_BASE(::vl::reflection::DescriptableObject)
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::DialogStrings>(), NO_PARAMETER)
-				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_First, { L"__vwsn_ls_formats" })
+				CLASS_MEMBER_STATIC_METHOD(__vwsn_ls_en_US_BuildStrings, { L"__vwsn_ls_locale" })
 				CLASS_MEMBER_STATIC_METHOD(Get, { L"__vwsn_ls_locale" })
+				CLASS_MEMBER_STATIC_METHOD(Install, { L"__vwsn_ls_locale" _ L"__vwsn_ls_impl" })
 			END_CLASS_MEMBER(::gaclib_controls::DialogStrings)
 
 			BEGIN_CLASS_MEMBER(::gaclib_controls::FileDialogWindow)
@@ -4338,15 +4345,21 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::templates::GuiControlTemplate)
 				CLASS_MEMBER_BASE(::gaclib_controls::MessageBoxButtonTemplateConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::MessageBoxButtonTemplate*(::vl::Ptr<::vl::presentation::IMessageBoxDialogAction>), { L"__vwsn_ctor_parameter_Action" })
+				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetAction, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetButtonAlt, { L"button" })
+				CLASS_MEMBER_METHOD(GetButtonControl, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetButtonText, { L"button" _ L"strings" })
 				CLASS_MEMBER_METHOD(GetStrings, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetButtonControl, { L"__vwsn_value_" })
 				CLASS_MEMBER_METHOD(SetStrings, { L"__vwsn_value_" })
+				CLASS_MEMBER_EVENT(ButtonControlChanged)
 				CLASS_MEMBER_EVENT(StringsChanged)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_Action)
+				CLASS_MEMBER_FIELD(__vwsn_prop_ButtonControl)
 				CLASS_MEMBER_FIELD(__vwsn_prop_Strings)
 				CLASS_MEMBER_PROPERTY_READONLY(Action, GetAction)
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY(ButtonControl, GetButtonControl, ButtonControlChanged)
 				CLASS_MEMBER_PROPERTY_EVENT(Strings, GetStrings, SetStrings, StringsChanged)
 			END_CLASS_MEMBER(::gaclib_controls::MessageBoxButtonTemplate)
 
@@ -4355,8 +4368,8 @@ namespace vl
 				CLASS_MEMBER_CONSTRUCTOR(::vl::Ptr<::gaclib_controls::MessageBoxButtonTemplateConstructor>(), NO_PARAMETER)
 				CLASS_MEMBER_METHOD(__vwsn_gaclib_controls_MessageBoxButtonTemplate_Initialize, { L"__vwsn_this_" })
 				CLASS_MEMBER_FIELD(__vwsn_precompile_0)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_1)
 				CLASS_MEMBER_FIELD(Action)
+				CLASS_MEMBER_FIELD(buttonControl)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::gaclib_controls::MessageBoxButtonTemplateConstructor)
 
@@ -4364,6 +4377,7 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::presentation::controls::GuiWindow)
 				CLASS_MEMBER_BASE(::gaclib_controls::MessageBoxWindowConstructor)
 				CLASS_MEMBER_CONSTRUCTOR(::gaclib_controls::MessageBoxWindow*(::vl::Ptr<::vl::presentation::IMessageBoxDialogViewModel>), { L"__vwsn_ctor_parameter_ViewModel" })
+				CLASS_MEMBER_METHOD(__vwsn_instance_ctor_, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetIcon, { L"icon" })
 				CLASS_MEMBER_METHOD(GetViewModel, NO_PARAMETER)
 				CLASS_MEMBER_FIELD(__vwsn_parameter_ViewModel)
@@ -4381,7 +4395,6 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_12)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_13)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_14)
-				CLASS_MEMBER_FIELD(__vwsn_precompile_15)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_2)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_3)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_4)
@@ -4391,6 +4404,7 @@ namespace vl
 				CLASS_MEMBER_FIELD(__vwsn_precompile_8)
 				CLASS_MEMBER_FIELD(__vwsn_precompile_9)
 				CLASS_MEMBER_FIELD(ViewModel)
+				CLASS_MEMBER_FIELD(buttonStack)
 				CLASS_MEMBER_FIELD(self)
 			END_CLASS_MEMBER(::gaclib_controls::MessageBoxWindowConstructor)
 

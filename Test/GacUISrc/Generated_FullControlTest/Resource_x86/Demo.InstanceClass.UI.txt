@@ -1,4 +1,4 @@
-﻿================================(1/87)================================
+﻿================================(1/88)================================
 module <constructor>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -680,7 +680,7 @@ namespace demo
     }
 }
 
-================================(2/87)================================
+================================(2/88)================================
 module <instance>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -745,7 +745,7 @@ namespace demo
     }
 }
 
-================================(3/87)================================
+================================(3/88)================================
 module <constructor>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1466,7 +1466,7 @@ namespace demo
     }
 }
 
-================================(4/87)================================
+================================(4/88)================================
 module <instance>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1508,7 +1508,7 @@ namespace demo
     }
 }
 
-================================(5/87)================================
+================================(5/88)================================
 module <constructor>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1988,7 +1988,7 @@ namespace demo
     }
 }
 
-================================(6/87)================================
+================================(6/88)================================
 module <instance>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2046,7 +2046,7 @@ namespace demo
     }
 }
 
-================================(7/87)================================
+================================(7/88)================================
 module <constructor>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3237,7 +3237,7 @@ namespace demo
     }
 }
 
-================================(8/87)================================
+================================(8/88)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3282,7 +3282,7 @@ namespace demo
     }
 }
 
-================================(9/87)================================
+================================(9/88)================================
 module <constructor>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3932,7 +3932,7 @@ namespace demo
     }
 }
 
-================================(10/87)================================
+================================(10/88)================================
 module <instance>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3974,7 +3974,7 @@ namespace demo
     }
 }
 
-================================(11/87)================================
+================================(11/88)================================
 module <constructor>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4677,7 +4677,7 @@ namespace demo
     }
 }
 
-================================(12/87)================================
+================================(12/88)================================
 module <instance>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4721,7 +4721,7 @@ namespace demo
     }
 }
 
-================================(13/87)================================
+================================(13/88)================================
 module <constructor>demo::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4793,7 +4793,7 @@ namespace demo
     }
 }
 
-================================(14/87)================================
+================================(14/88)================================
 module <instance>demo::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4834,7 +4834,7 @@ namespace demo
     }
 }
 
-================================(15/87)================================
+================================(15/88)================================
 module <constructor>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5511,7 +5511,7 @@ namespace demo
     }
 }
 
-================================(16/87)================================
+================================(16/88)================================
 module <instance>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5557,7 +5557,7 @@ namespace demo
     }
 }
 
-================================(17/87)================================
+================================(17/88)================================
 module <constructor>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6069,7 +6069,7 @@ namespace demo
     }
 }
 
-================================(18/87)================================
+================================(18/88)================================
 module <instance>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6119,7 +6119,7 @@ namespace demo
     }
 }
 
-================================(19/87)================================
+================================(19/88)================================
 module <constructor>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6797,7 +6797,7 @@ namespace demo
     }
 }
 
-================================(20/87)================================
+================================(20/88)================================
 module <instance>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7237,7 +7237,7 @@ namespace demo
     }
 }
 
-================================(21/87)================================
+================================(21/88)================================
 module <animation>demo::ColorAnimation;
 
 namespace demo
@@ -7445,7 +7445,7 @@ namespace demo
     }
 }
 
-================================(22/87)================================
+================================(22/88)================================
 module <constructor>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7650,7 +7650,7 @@ namespace demo
     }
 }
 
-================================(23/87)================================
+================================(23/88)================================
 module <instance>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7691,7 +7691,7 @@ namespace demo
     }
 }
 
-================================(24/87)================================
+================================(24/88)================================
 module <constructor>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8030,7 +8030,7 @@ namespace demo
     }
 }
 
-================================(25/87)================================
+================================(25/88)================================
 module <instance>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8132,7 +8132,7 @@ namespace demo
     }
 }
 
-================================(26/87)================================
+================================(26/88)================================
 module <constructor>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8337,7 +8337,7 @@ namespace demo
     }
 }
 
-================================(27/87)================================
+================================(27/88)================================
 module <instance>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8378,7 +8378,7 @@ namespace demo
     }
 }
 
-================================(28/87)================================
+================================(28/88)================================
 module <constructor>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8726,7 +8726,7 @@ namespace demo
     }
 }
 
-================================(29/87)================================
+================================(29/88)================================
 module <instance>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8789,7 +8789,7 @@ namespace demo
     }
 }
 
-================================(30/87)================================
+================================(30/88)================================
 module <constructor>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9033,7 +9033,7 @@ namespace demo
     }
 }
 
-================================(31/87)================================
+================================(31/88)================================
 module <instance>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9076,7 +9076,7 @@ namespace demo
     }
 }
 
-================================(32/87)================================
+================================(32/88)================================
 module <constructor>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9213,7 +9213,7 @@ namespace demo
     }
 }
 
-================================(33/87)================================
+================================(33/88)================================
 module <instance>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9264,7 +9264,7 @@ namespace demo
     }
 }
 
-================================(34/87)================================
+================================(34/88)================================
 module <constructor>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9464,7 +9464,7 @@ namespace demo
     }
 }
 
-================================(35/87)================================
+================================(35/88)================================
 module <instance>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9505,7 +9505,7 @@ namespace demo
     }
 }
 
-================================(36/87)================================
+================================(36/88)================================
 module <constructor>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9644,7 +9644,7 @@ namespace demo
     }
 }
 
-================================(37/87)================================
+================================(37/88)================================
 module <instance>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9707,7 +9707,7 @@ namespace demo
     }
 }
 
-================================(38/87)================================
+================================(38/88)================================
 module <constructor>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9951,7 +9951,7 @@ namespace demo
     }
 }
 
-================================(39/87)================================
+================================(39/88)================================
 module <instance>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9994,7 +9994,7 @@ namespace demo
     }
 }
 
-================================(40/87)================================
+================================(40/88)================================
 module <constructor>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10058,7 +10058,7 @@ namespace demo
     }
 }
 
-================================(41/87)================================
+================================(41/88)================================
 module <instance>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10109,7 +10109,7 @@ namespace demo
     }
 }
 
-================================(42/87)================================
+================================(42/88)================================
 module <constructor>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10236,7 +10236,7 @@ namespace demo
     }
 }
 
-================================(43/87)================================
+================================(43/88)================================
 module <instance>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10277,7 +10277,7 @@ namespace demo
     }
 }
 
-================================(44/87)================================
+================================(44/88)================================
 module <constructor>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11140,7 +11140,7 @@ namespace demo
     }
 }
 
-================================(45/87)================================
+================================(45/88)================================
 module <instance>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11182,7 +11182,7 @@ namespace demo
     }
 }
 
-================================(46/87)================================
+================================(46/88)================================
 module <constructor>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11425,7 +11425,7 @@ namespace demo
     }
 }
 
-================================(47/87)================================
+================================(47/88)================================
 module <instance>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11488,7 +11488,7 @@ namespace demo
     }
 }
 
-================================(48/87)================================
+================================(48/88)================================
 module <constructor>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14648,7 +14648,7 @@ namespace demo
     }
 }
 
-================================(49/87)================================
+================================(49/88)================================
 module <instance>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14906,7 +14906,7 @@ namespace demo
     }
 }
 
-================================(50/87)================================
+================================(50/88)================================
 module <constructor>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16949,7 +16949,7 @@ namespace demo
     }
 }
 
-================================(51/87)================================
+================================(51/88)================================
 module <instance>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17166,7 +17166,7 @@ namespace demo
     }
 }
 
-================================(52/87)================================
+================================(52/88)================================
 module <constructor>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17530,7 +17530,7 @@ namespace demo
     }
 }
 
-================================(53/87)================================
+================================(53/88)================================
 module <instance>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17631,7 +17631,7 @@ namespace demo
     }
 }
 
-================================(54/87)================================
+================================(54/88)================================
 module <constructor>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18794,7 +18794,7 @@ namespace demo
     }
 }
 
-================================(55/87)================================
+================================(55/88)================================
 module <instance>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18835,7 +18835,7 @@ namespace demo
     }
 }
 
-================================(56/87)================================
+================================(56/88)================================
 module <constructor>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20360,7 +20360,7 @@ namespace demo
     }
 }
 
-================================(57/87)================================
+================================(57/88)================================
 module <instance>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20449,7 +20449,7 @@ namespace demo
     }
 }
 
-================================(58/87)================================
+================================(58/88)================================
 module <constructor>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20808,7 +20808,7 @@ namespace demo
     }
 }
 
-================================(59/87)================================
+================================(59/88)================================
 module <instance>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21032,7 +21032,7 @@ namespace demo
     }
 }
 
-================================(60/87)================================
+================================(60/88)================================
 module <constructor>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21128,7 +21128,7 @@ namespace demo
     }
 }
 
-================================(61/87)================================
+================================(61/88)================================
 module <instance>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21209,7 +21209,7 @@ namespace demo
     }
 }
 
-================================(62/87)================================
+================================(62/88)================================
 module <constructor>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21327,7 +21327,7 @@ namespace demo
     }
 }
 
-================================(63/87)================================
+================================(63/88)================================
 module <instance>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21378,7 +21378,7 @@ namespace demo
     }
 }
 
-================================(64/87)================================
+================================(64/88)================================
 module <constructor>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21512,7 +21512,7 @@ namespace demo
     }
 }
 
-================================(65/87)================================
+================================(65/88)================================
 module <instance>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21563,7 +21563,7 @@ namespace demo
     }
 }
 
-================================(66/87)================================
+================================(66/88)================================
 module <constructor>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21834,7 +21834,7 @@ namespace demo
     }
 }
 
-================================(67/87)================================
+================================(67/88)================================
 module <instance>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21885,7 +21885,7 @@ namespace demo
     }
 }
 
-================================(68/87)================================
+================================(68/88)================================
 module <constructor>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22511,7 +22511,7 @@ namespace demo
     }
 }
 
-================================(69/87)================================
+================================(69/88)================================
 module <instance>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22553,7 +22553,7 @@ namespace demo
     }
 }
 
-================================(70/87)================================
+================================(70/88)================================
 module <constructor>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23179,7 +23179,7 @@ namespace demo
     }
 }
 
-================================(71/87)================================
+================================(71/88)================================
 module <instance>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23221,7 +23221,7 @@ namespace demo
     }
 }
 
-================================(72/87)================================
+================================(72/88)================================
 module <constructor>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23414,7 +23414,7 @@ namespace demo
     }
 }
 
-================================(73/87)================================
+================================(73/88)================================
 module <instance>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23456,7 +23456,7 @@ namespace demo
     }
 }
 
-================================(74/87)================================
+================================(74/88)================================
 module <constructor>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24367,7 +24367,7 @@ namespace demo
     }
 }
 
-================================(75/87)================================
+================================(75/88)================================
 module <instance>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24409,7 +24409,7 @@ namespace demo
     }
 }
 
-================================(76/87)================================
+================================(76/88)================================
 module <constructor>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24793,7 +24793,7 @@ namespace demo
     }
 }
 
-================================(77/87)================================
+================================(77/88)================================
 module <instance>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24856,7 +24856,7 @@ namespace demo
     }
 }
 
-================================(78/87)================================
+================================(78/88)================================
 module <constructor>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25131,7 +25131,7 @@ namespace demo
     }
 }
 
-================================(79/87)================================
+================================(79/88)================================
 module <instance>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25194,7 +25194,7 @@ namespace demo
     }
 }
 
-================================(80/87)================================
+================================(80/88)================================
 module <constructor>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25498,7 +25498,7 @@ namespace demo
     }
 }
 
-================================(81/87)================================
+================================(81/88)================================
 module <instance>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25556,7 +25556,224 @@ namespace demo
     }
 }
 
-================================(82/87)================================
+================================(82/88)================================
+module <localized-strings-injection>demo::DialogStringsInjection;
+
+namespace demo
+{
+    class DialogStringsInjection
+    {
+        static func <ls_zh-CN>BuildStrings(<ls>locale : ::system::Locale) : (::gaclib_controls::IDialogStringsStrings^)
+        {
+            return new (::gaclib_controls::IDialogStringsStrings^)
+            {
+                override func Abort() : (::system::String)
+                {
+                    return "关于";
+                }
+
+                override func Blue() : (::system::String)
+                {
+                    return "蓝色：";
+                }
+
+                override func Bold() : (::system::String)
+                {
+                    return "粗体";
+                }
+
+                override func Cancel() : (::system::String)
+                {
+                    return "取消";
+                }
+
+                override func Color() : (::system::String)
+                {
+                    return "颜色：";
+                }
+
+                override func ColorDialogTitle() : (::system::String)
+                {
+                    return "选择颜色";
+                }
+
+                override func Continue() : (::system::String)
+                {
+                    return "继续";
+                }
+
+                override func FileDialogAskCreateFile() : (::system::String)
+                {
+                    return "你确定想要创建下列文件吗？";
+                }
+
+                override func FileDialogAskOverrideFile() : (::system::String)
+                {
+                    return "你确定想要覆盖下列文件吗？";
+                }
+
+                override func FileDialogErrorEmptySelection() : (::system::String)
+                {
+                    return "应该选中至少一个文件。";
+                }
+
+                override func FileDialogErrorFileExpected() : (::system::String)
+                {
+                    return "下列文件夹不应该被选中：";
+                }
+
+                override func FileDialogErrorFileNotExist() : (::system::String)
+                {
+                    return "下列文件不存在：";
+                }
+
+                override func FileDialogErrorFolderNotExist() : (::system::String)
+                {
+                    return "文件夹不存在：";
+                }
+
+                override func FileDialogErrorMultipleSelectionNotEnabled() : (::system::String)
+                {
+                    return "本对话框不支持多选。";
+                }
+
+                override func FileDialogFileName() : (::system::String)
+                {
+                    return "文件名：";
+                }
+
+                override func FileDialogOpen() : (::system::String)
+                {
+                    return "打开";
+                }
+
+                override func FileDialogSave() : (::system::String)
+                {
+                    return "保存";
+                }
+
+                override func FileDialogTextLoadingFiles() : (::system::String)
+                {
+                    return "(正在加载文件夹和文件……)";
+                }
+
+                override func FileDialogTextLoadingFolders() : (::system::String)
+                {
+                    return "（正在加载……）";
+                }
+
+                override func FontColorGroup() : (::system::String)
+                {
+                    return "颜色：";
+                }
+
+                override func FontColorGroup2() : (::system::String)
+                {
+                    return "选择颜色：";
+                }
+
+                override func FontDialogTitle() : (::system::String)
+                {
+                    return "选择字体";
+                }
+
+                override func FontEffectGroup() : (::system::String)
+                {
+                    return "效果：";
+                }
+
+                override func FontNameGroup() : (::system::String)
+                {
+                    return "字体：";
+                }
+
+                override func FontPreviewGroup() : (::system::String)
+                {
+                    return "预览：";
+                }
+
+                override func FontSizeGroup() : (::system::String)
+                {
+                    return "尺寸：";
+                }
+
+                override func Green() : (::system::String)
+                {
+                    return "绿色：";
+                }
+
+                override func HAA() : (::system::String)
+                {
+                    return "水平抗锯齿";
+                }
+
+                override func Ignore() : (::system::String)
+                {
+                    return "忽略";
+                }
+
+                override func Italic() : (::system::String)
+                {
+                    return "斜体";
+                }
+
+                override func No() : (::system::String)
+                {
+                    return "否";
+                }
+
+                override func OK() : (::system::String)
+                {
+                    return "确定";
+                }
+
+                override func Red() : (::system::String)
+                {
+                    return "红色：";
+                }
+
+                override func Retry() : (::system::String)
+                {
+                    return "重试";
+                }
+
+                override func TryAgain() : (::system::String)
+                {
+                    return "再试一次";
+                }
+
+                override func Underline() : (::system::String)
+                {
+                    return "下划线";
+                }
+
+                override func VAA() : (::system::String)
+                {
+                    return "垂直抗锯齿";
+                }
+
+                override func Yes() : (::system::String)
+                {
+                    return "是";
+                }
+            };
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+namespace demo
+{
+    static
+    {
+        ::gaclib_controls::DialogStrings::Install((cast (::system::Locale) "zh-CN"), DialogStringsInjection::<ls_zh-CN>BuildStrings((cast (::system::Locale) "zh-CN")));
+    }
+}
+
+================================(83/88)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -25856,7 +26073,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(83/87)================================
+================================(84/88)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -26110,7 +26327,7 @@ namespace demo
     }
 }
 
-================================(84/87)================================
+================================(85/88)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -26254,7 +26471,7 @@ namespace demo
     }
 }
 
-================================(85/87)================================
+================================(86/88)================================
 module ribbonscript;
 using presentation::*;
 
@@ -26293,7 +26510,7 @@ namespace demo
     }
 }
 
-================================(86/87)================================
+================================(87/88)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -26328,102 +26545,16 @@ namespace demo
 
 namespace demo
 {
+    var <ls>StringResource : IStringResourceStrings^[::system::Locale] = {};
+}
+
+namespace demo
+{
     class StringResource
     {
-        static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
         {
-            {
-                var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
-                var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
-                while (<for-enumerator><ls>format.Next())
-                {
-                    var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
-                    {
-                        return <ls>format;
-                    }
-                }
-            }
-            return "";
-        }
-
-        static func Get(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
-        {
-            if (<ls>locale of (::system::String) in {"zh-CN";})
-            {
-                return new (IStringResourceStrings^)
-                {
-                    override func Currency(<ls>0 : ::system::String) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
-                        return ("货币：" & <ls>_0);
-                    }
-
-                    override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
-                        return ("日期格式：" & <ls>_0);
-                    }
-
-                    override func Label() : (::system::String)
-                    {
-                        return "语言设置：";
-                    }
-
-                    override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
-                        return ("长日期：" & <ls>_0);
-                    }
-
-                    override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
-                        return ("长时间：" & <ls>_0);
-                    }
-
-                    override func Number(<ls>0 : ::system::String) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
-                        return ("数字：" & <ls>_0);
-                    }
-
-                    override func Sentence(<ls>0 : ::system::String) : (::system::String)
-                    {
-                        var <ls>_0 = <ls>0;
-                        return (("$" & <ls>_0) & "，早上好！$");
-                    }
-
-                    override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
-                        return ("短日期：" & <ls>_0);
-                    }
-
-                    override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
-                        return ("短时间：" & <ls>_0);
-                    }
-
-                    override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
-                        return ("时间格式： " & <ls>_0);
-                    }
-
-                    override func Title() : (::system::String)
-                    {
-                        return "本地化";
-                    }
-
-                    override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
-                    {
-                        var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
-                        return ("年月：" & <ls>_0);
-                    }
-                };
-            }
-            return new (IStringResourceStrings^)
+            return new (::demo::IStringResourceStrings^)
             {
                 override func Currency(<ls>0 : ::system::String) : (::system::String)
                 {
@@ -26444,13 +26575,13 @@ namespace demo
 
                 override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
                     return ("LongDate: " & <ls>_0);
                 }
 
                 override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
                     return ("LongTime: " & <ls>_0);
                 }
 
@@ -26468,13 +26599,13 @@ namespace demo
 
                 override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
                     return ("ShortDate: " & <ls>_0);
                 }
 
                 override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, <ls>First(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
                     return ("ShortTime: " & <ls>_0);
                 }
 
@@ -26491,10 +26622,104 @@ namespace demo
 
                 override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
                 {
-                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, <ls>First(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
                     return ("YearMonthDate: " & <ls>_0);
                 }
             };
+        }
+
+        static func <ls_zh-CN>BuildStrings(<ls>locale : ::system::Locale) : (::demo::IStringResourceStrings^)
+        {
+            return new (::demo::IStringResourceStrings^)
+            {
+                override func Currency(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatCurrency(<ls>locale, <ls>0);
+                    return ("货币：" & <ls>_0);
+                }
+
+                override func DateFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, "yyyy", <ls>0);
+                    return ("日期格式：" & <ls>_0);
+                }
+
+                override func Label() : (::system::String)
+                {
+                    return "语言设置：";
+                }
+
+                override func LongDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongDateFormats(<ls>locale)), <ls>0);
+                    return ("长日期：" & <ls>_0);
+                }
+
+                override func LongTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetLongTimeFormats(<ls>locale)), <ls>0);
+                    return ("长时间：" & <ls>_0);
+                }
+
+                override func Number(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatNumber(<ls>locale, <ls>0);
+                    return ("数字：" & <ls>_0);
+                }
+
+                override func Sentence(<ls>0 : ::system::String) : (::system::String)
+                {
+                    var <ls>_0 = <ls>0;
+                    return (("$" & <ls>_0) & "，早上好！$");
+                }
+
+                override func ShortDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortDateFormats(<ls>locale)), <ls>0);
+                    return ("短日期：" & <ls>_0);
+                }
+
+                override func ShortTime(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetShortTimeFormats(<ls>locale)), <ls>0);
+                    return ("短时间：" & <ls>_0);
+                }
+
+                override func TimeFormat(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatTime(<ls>locale, "HH", <ls>0);
+                    return ("时间格式： " & <ls>_0);
+                }
+
+                override func Title() : (::system::String)
+                {
+                    return "本地化";
+                }
+
+                override func YearMonthDate(<ls>0 : ::system::DateTime) : (::system::String)
+                {
+                    var <ls>_0 = ::system::Localization::FormatDate(<ls>locale, ::presentation::helper_types::LocalizedStrings::FirstOrEmpty(::system::Localization::GetYearMonthDateFormats(<ls>locale)), <ls>0);
+                    return ("年月：" & <ls>_0);
+                }
+            };
+        }
+
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IStringResourceStrings^) : (void)
+        {
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"demo::StringResource\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>StringResource.Set(<ls>locale, <ls>impl);
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IStringResourceStrings^)
+        {
+            if (<ls>StringResource.Keys.Contains(<ls>locale))
+            {
+                return <ls>StringResource[<ls>locale];
+            }
+            return <ls>StringResource[(cast (::system::Locale) "en-US")];
         }
 
         new ()
@@ -26503,7 +26728,16 @@ namespace demo
     }
 }
 
-================================(87/87)================================
+namespace demo
+{
+    static
+    {
+        ::demo::StringResource::Install((cast (::system::Locale) "en-US"), StringResource::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
+        ::demo::StringResource::Install((cast (::system::Locale) "zh-CN"), StringResource::<ls_zh-CN>BuildStrings((cast (::system::Locale) "zh-CN")));
+    }
+}
+
+================================(88/88)================================
 module fontHelper;
 using presentation::*;
 

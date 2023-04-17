@@ -3541,7 +3541,7 @@ namespace gaclib_controls
             }
             var index = treeView.NodeItemView.CalculateNodeVisibilityIndex((cast (::presentation::controls::tree::INodeProvider*) currentNode));
             treeView.EnsureItemVisible(index);
-            treeView.SetSelected(index, true);
+            treeView.SelectItemsByClick(index, false, false, true);
         }
 
         func CreateFileFilter(filter : IFileDialogFilter^) : (IDataFilter^)
@@ -4165,7 +4165,7 @@ namespace gaclib_controls
             var index = ViewModel.FontList.IndexOf(Value);
             if ((index > (-1)))
             {
-                textList.SetSelected(index, true);
+                textList.SelectItemsByClick(index, false, false, true);
                 textList.EnsureItemVisible(index);
             }
         }
@@ -4773,7 +4773,7 @@ namespace gaclib_controls
             var index = self.SizeList.IndexOf(Value);
             if ((index > (-1)))
             {
-                textList.SetSelected(index, true);
+                textList.SelectItemsByClick(index, false, false, true);
                 textList.EnsureItemVisible(index);
             }
         }
@@ -7677,10 +7677,10 @@ namespace gaclib_controls
         var self : ::gaclib_controls::MessageBoxButtonTemplate* = null of (::gaclib_controls::MessageBoxButtonTemplate*);
 
         @cpp:Protected
-        var <precompile>0 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var buttonControl : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>0 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gaclib_controls-MessageBoxButtonTemplate>Initialize(<this> : ::gaclib_controls::MessageBoxButtonTemplate*) : (::system::Void)
@@ -7691,23 +7691,93 @@ namespace gaclib_controls
                 (self.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>0 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+                (buttonControl = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
-            (<precompile>1 = <precompile>0.BoundsComposition);
+            (<precompile>0 = buttonControl.BoundsComposition);
             {
-                (<precompile>1.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
-            }
-            {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>0.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
             }
             {
-                self.AddChild(<precompile>0.BoundsComposition);
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>0.Text = self.GetButtonText(Action.Button, self.Strings));
+                self.AddChild(buttonControl.BoundsComposition);
             }
             {
-                (<precompile>0.Alt = self.GetButtonAlt(Action.Button));
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gaclib_controls::MessageBoxButtonTemplate* = null of (::gaclib_controls::MessageBoxButtonTemplate*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = self.GetButtonText(Action.Button, <bind-cache>0.Strings) of (::system::String);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::gaclib_controls::MessageBoxButtonTemplate*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gaclib_controls::MessageBoxButtonTemplate*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = buttonControl.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (buttonControl.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (buttonControl.Alt = self.GetButtonAlt(Action.Button));
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -7715,7 +7785,7 @@ namespace gaclib_controls
                     Action.PerformAction();
                     self.RelatedControlHost.Close();
                 };
-                attach(<precompile>0.Clicked, <event-handler>);
+                attach(buttonControl.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -7824,6 +7894,28 @@ namespace gaclib_controls
     @cpp:Friend(typeof(MessageBoxButtonTemplateConstructor))
     class MessageBoxButtonTemplate : ::presentation::templates::GuiControlTemplate, MessageBoxButtonTemplateConstructor
     {
+        @cpp:Private
+        var <prop>ButtonControl : GuiButton* = null;
+
+        func GetButtonControl() : (GuiButton*)
+        {
+            return <prop>ButtonControl;
+        }
+
+        @cpp:Protected
+        func SetButtonControl(<value> : GuiButton*) : (void)
+        {
+            if ((<prop>ButtonControl != <value>))
+            {
+                (<prop>ButtonControl = <value>);
+                ButtonControlChanged();
+            }
+        }
+
+        event ButtonControlChanged();
+
+        prop ButtonControl : GuiButton*{GetButtonControl : ButtonControlChanged}
+
         func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
         {
             {
@@ -7955,6 +8047,12 @@ namespace gaclib_controls
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gaclib_controls-MessageBoxButtonTemplate>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            self.SetButtonControl(self.buttonControl);
         }
 
         delete
@@ -7994,6 +8092,9 @@ namespace gaclib_controls
 
         @cpp:Protected
         var ViewModel : ::presentation::IMessageBoxDialogViewModel^ = null of (::presentation::IMessageBoxDialogViewModel^);
+
+        @cpp:Protected
+        var buttonStack : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
 
         @cpp:Protected
         var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
@@ -8039,9 +8140,6 @@ namespace gaclib_controls
 
         @cpp:Protected
         var <precompile>14 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiRepeatStackComposition* = null of (::presentation::compositions::GuiRepeatStackComposition*);
 
         @cpp:Protected
         func <gaclib_controls-MessageBoxWindow>Initialize(<this> : ::gaclib_controls::MessageBoxWindow*) : (::system::Void)
@@ -8217,9 +8315,9 @@ namespace gaclib_controls
             {
                 <precompile>14.SetSite(0, 1, 1, 1);
             }
-            (<precompile>15 = new (::presentation::compositions::GuiRepeatStackComposition*)());
+            (buttonStack = new (::presentation::compositions::GuiRepeatStackComposition*)());
             {
-                (<precompile>15.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
+                (buttonStack.ItemTemplate = func (<viewModel> : ::system::Object) : (::presentation::templates::GuiTemplate*)
                 {
                     {
                         if (<viewModel> is (::presentation::IMessageBoxDialogAction^))
@@ -8231,19 +8329,19 @@ namespace gaclib_controls
                 });
             }
             {
-                (<precompile>15.Padding = 5 of (::system::Int32));
+                (buttonStack.Padding = 5 of (::system::Int32));
             }
             {
-                (<precompile>15.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+                (buttonStack.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (buttonStack.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (<precompile>15.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (buttonStack.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                <precompile>14.AddChild(<precompile>15);
+                <precompile>14.AddChild(buttonStack);
             }
             {
                 <precompile>13.AddChild(<precompile>14);
@@ -8264,7 +8362,7 @@ namespace gaclib_controls
                 (<precompile>10.Text = ViewModel.Text);
             }
             {
-                (<precompile>15.ItemSource = ViewModel.Buttons);
+                (buttonStack.ItemSource = ViewModel.Buttons);
             }
             {
                 (self.Text = ViewModel.Title);
@@ -8345,6 +8443,14 @@ namespace gaclib_controls
             var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
             this.SetResourceResolver(<resolver>);
             this.<gaclib_controls-MessageBoxWindow>Initialize(this);
+            <instance-ctor>();
+        }
+
+        func <instance-ctor>() : (::system::Void)
+        {
+            var defaultButton = ViewModel.Buttons.IndexOf(ViewModel.DefaultButton);
+            var buttonControl = (cast (MessageBoxButtonTemplate*) buttonStack.StackItems[defaultButton].Children[0]).ButtonControl;
+            buttonControl.SetFocused();
         }
 
         delete
@@ -8441,27 +8547,16 @@ namespace gaclib_controls
 
 namespace gaclib_controls
 {
+    var <ls>DialogStrings : IDialogStringsStrings^[::system::Locale] = {};
+}
+
+namespace gaclib_controls
+{
     class DialogStrings
     {
-        static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::gaclib_controls::IDialogStringsStrings^)
         {
-            {
-                var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
-                var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
-                while (<for-enumerator><ls>format.Next())
-                {
-                    var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
-                    {
-                        return <ls>format;
-                    }
-                }
-            }
-            return "";
-        }
-
-        static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
-        {
-            return new (IDialogStringsStrings^)
+            return new (::gaclib_controls::IDialogStringsStrings^)
             {
                 override func Abort() : (::system::String)
                 {
@@ -8655,9 +8750,35 @@ namespace gaclib_controls
             };
         }
 
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IDialogStringsStrings^) : (void)
+        {
+            if (<ls>DialogStrings.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"gaclib_controls::DialogStrings\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>DialogStrings.Set(<ls>locale, <ls>impl);
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+        {
+            if (<ls>DialogStrings.Keys.Contains(<ls>locale))
+            {
+                return <ls>DialogStrings[<ls>locale];
+            }
+            return <ls>DialogStrings[(cast (::system::Locale) "en-US")];
+        }
+
         new ()
         {
         }
+    }
+}
+
+namespace gaclib_controls
+{
+    static
+    {
+        ::gaclib_controls::DialogStrings::Install((cast (::system::Locale) "en-US"), DialogStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
     }
 }
 

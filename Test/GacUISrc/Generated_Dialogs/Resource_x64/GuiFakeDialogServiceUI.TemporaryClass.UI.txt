@@ -808,6 +808,28 @@ namespace gaclib_controls
 {
     class MessageBoxButtonTemplate : ::presentation::templates::GuiControlTemplate
     {
+        @cpp:Private
+        var <prop>ButtonControl : GuiButton* = null;
+
+        func GetButtonControl() : (GuiButton*)
+        {
+            return <prop>ButtonControl;
+        }
+
+        @cpp:Protected
+        func SetButtonControl(<value> : GuiButton*) : (void)
+        {
+            if ((<prop>ButtonControl != <value>))
+            {
+                (<prop>ButtonControl = <value>);
+                ButtonControlChanged();
+            }
+        }
+
+        event ButtonControlChanged();
+
+        prop ButtonControl : GuiButton*{GetButtonControl : ButtonControlChanged}
+
         func GetButtonText(button : INativeDialogService::MessageBoxButtonsOutput, strings : IDialogStringsStrings^) : (string)
         {
             raise "Not Implemented";
@@ -995,27 +1017,16 @@ namespace gaclib_controls
 
 namespace gaclib_controls
 {
+    var <ls>DialogStrings : IDialogStringsStrings^[::system::Locale] = {};
+}
+
+namespace gaclib_controls
+{
     class DialogStrings
     {
-        static func <ls>First(<ls>formats : ::system::String{}) : (::system::String)
+        static func <ls_en-US>BuildStrings(<ls>locale : ::system::Locale) : (::gaclib_controls::IDialogStringsStrings^)
         {
-            {
-                var <for-enumerable><ls>format = <ls>formats of (::system::Enumerable^);
-                var <for-enumerator><ls>format = <for-enumerable><ls>format.CreateEnumerator();
-                while (<for-enumerator><ls>format.Next())
-                {
-                    var <ls>format = (cast (::system::String) <for-enumerator><ls>format.GetCurrent());
-                    {
-                        return <ls>format;
-                    }
-                }
-            }
-            return "";
-        }
-
-        static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
-        {
-            return new (IDialogStringsStrings^)
+            return new (::gaclib_controls::IDialogStringsStrings^)
             {
                 override func Abort() : (::system::String)
                 {
@@ -1209,9 +1220,35 @@ namespace gaclib_controls
             };
         }
 
+        static func Install(<ls>locale : ::system::Locale, <ls>impl : IDialogStringsStrings^) : (void)
+        {
+            if (<ls>DialogStrings.Keys.Contains(<ls>locale))
+            {
+                raise (("Localized strings \"gaclib_controls::DialogStrings\" has already registered for locale \"" & <ls>locale) & "\".");
+            }
+            <ls>DialogStrings.Set(<ls>locale, <ls>impl);
+        }
+
+        static func Get(<ls>locale : ::system::Locale) : (IDialogStringsStrings^)
+        {
+            if (<ls>DialogStrings.Keys.Contains(<ls>locale))
+            {
+                return <ls>DialogStrings[<ls>locale];
+            }
+            return <ls>DialogStrings[(cast (::system::Locale) "en-US")];
+        }
+
         new ()
         {
         }
+    }
+}
+
+namespace gaclib_controls
+{
+    static
+    {
+        ::gaclib_controls::DialogStrings::Install((cast (::system::Locale) "en-US"), DialogStrings::<ls_en-US>BuildStrings((cast (::system::Locale) "en-US")));
     }
 }
 

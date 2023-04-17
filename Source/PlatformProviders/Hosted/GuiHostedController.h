@@ -148,8 +148,6 @@ GuiHostedController
 
 			void							KeyDown(const NativeWindowKeyInfo& info) override;
 			void							KeyUp(const NativeWindowKeyInfo& info) override;
-			void							SysKeyDown(const NativeWindowKeyInfo& info) override;
-			void							SysKeyUp(const NativeWindowKeyInfo& info) override;
 			void							Char(const NativeWindowCharInfo& info) override;
 
 			// =============================================================

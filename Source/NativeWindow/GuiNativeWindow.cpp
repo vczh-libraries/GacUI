@@ -142,14 +142,6 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::SysKeyDown(const NativeWindowKeyInfo& info)
-		{
-		}
-
-		void INativeWindowListener::SysKeyUp(const NativeWindowKeyInfo& info)
-		{
-		}
-
 		void INativeWindowListener::Char(const NativeWindowCharInfo& info)
 		{
 		}

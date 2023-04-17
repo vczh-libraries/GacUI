@@ -1,0 +1,93 @@
+<Resource>
+  <LocalizedStrings name="baseline">
+    <LocalizedStrings ref.Class="demo::baseline" DefaultLocale="en-US">
+      <Strings Locales="en-US">
+        <String Name="A" Text="$(0:ShortDate) $(1:Number)"/>
+        <String Name="B" Text="$(1:ShortDate) $(0:Number)"/>
+        <String Name="C" Text="$(0:LongTime) $(1:Currency)"/>
+      </Strings>
+    </LocalizedStrings>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s1">
+    <LocalizedStringsInjection ref.Class="demo::s1" ref.InjectInto="demo::Unexisting">
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s2">
+    <LocalizedStringsInjection ref.Class="demo::s2" ref.InjectInto="presentation::controls::GuiControl">
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+
+  <Script name="FakeStrings">
+    <Workflow><![CDATA[
+    module fakestrings;
+    using system::*;
+
+    namespace a
+    {
+      namespace b
+      {
+        interface IFakeStrings
+        {
+          func NotReturnString():void;
+          func ArgunmentNotStringOrDateTime(a:int, b:bool):string;
+          func Duplicated(a:string):string;
+          func Duplicated(b:DateTime):string;
+        }
+
+        class Fake
+        {
+          static func Get(x:Locale):IFakeStrings^
+          {
+            return null;
+          }
+        }
+      }
+    }
+    ]]></Workflow>
+  </Script>
+  
+  <LocalizedStrings name="s3">
+    <LocalizedStringsInjection ref.Class="demo::s3" ref.InjectInto="a::b::Fake">
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s4">
+    <LocalizedStringsInjection ref.Class="demo::s4" ref.InjectInto="demo::baseline">
+      <Strings Locales="zh-CN">
+        <String Name="A" Text=""/>
+        <String Name="B" Text=""/>
+        <String Name="D" Text=""/>
+
+        <String Name="_A" Text="$("/>
+        <String Name="_B" Text="$()"/>
+        <String Name="_C" Text="$(abc)"/>
+        <String Name="_D" Text="$(0+)"/>
+        <String Name="_E" Text="$(0:)"/>
+        <String Name="_F" Text="$(0:X)"/>
+        <String Name="_G" Text="$(0)$(2)"/>
+      </Strings>
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s5">
+    <LocalizedStringsInjection ref.Class="demo::s5" ref.InjectInto="demo::baseline">
+      <Strings Locales="ja-JP">
+        <String Name="A" Text="$("/>
+        <String Name="B" Text="$()"/>
+        <String Name="C" Text="$(abc)"/>
+      </Strings>
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+  
+  <LocalizedStrings name="s6">
+    <LocalizedStringsInjection ref.Class="demo::s6" ref.InjectInto="demo::baseline">
+      <Strings Locales="ar-SA">
+        <String Name="A" Text="$(0:ShortDate)"/>
+        <String Name="B" Text="$(0:ShortDate) $(1:Number)"/>
+        <String Name="C" Text="$(0:Number) $(1:Currency)"/>
+      </Strings>
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+</Resource>

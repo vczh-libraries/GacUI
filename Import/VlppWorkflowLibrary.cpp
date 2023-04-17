@@ -843,15 +843,10 @@ Sys
 #define DEFINE_COMPARE(TYPE)\
 			vint Sys::Compare(TYPE a, TYPE b)\
 			{\
-				auto result = TypedValueSerializerProvider<TYPE>::Compare(a, b);\
-				switch (result)\
-				{\
-				case IBoxedValue::Smaller:	return -1;\
-				case IBoxedValue::Greater:	return 1;\
-				case IBoxedValue::Equal:	return 0;\
-				default:\
-					CHECK_FAIL(L"Unexpected compare result.");\
-				}\
+				auto result = a <=> b;\
+				if (result < 0) return -1;\
+				if (result > 0) return 1;\
+				return 0;\
 			}\
 
 			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)

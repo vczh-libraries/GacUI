@@ -242,12 +242,7 @@ Shared Script Type Resolver (Script)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Workflow_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{
@@ -368,12 +363,7 @@ Instance Type Resolver (Instance)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Instance_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{
@@ -695,12 +685,7 @@ Animation Type Resolver (Animation)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Instance_Max;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{
@@ -820,16 +805,12 @@ Localized Strings Type Resolver (LocalizedStrings)
 				return false;
 			}
 
-			vint GetMaxPassIndex()override
-			{
-				return Workflow_Collect + 1;
-			}
-
-			PassSupport GetPassSupport(vint passIndex)override
+			PassSupport GetPrecompilePassSupport(vint passIndex)override
 			{
 				switch (passIndex)
 				{
 				case Workflow_Collect:
+				case Instance_CompileInstanceClass:
 					return PerResource;
 				default:
 					return NotSupported;
@@ -847,6 +828,17 @@ Localized Strings Type Resolver (LocalizedStrings)
 							if (auto module = obj->Compile(context, L"<localized-strings>" + obj->className, errors))
 							{
 								Workflow_AddModule(context, Path_Shared, module, GuiInstanceCompiledWorkflow::Shared, obj->tagPosition);
+							}
+						}
+					}
+					break;
+				case Instance_CompileInstanceClass:
+					{
+						if (auto obj = resource->GetContent().Cast<GuiInstanceLocalizedStringsInjection>())
+						{
+							if (auto module = obj->Compile(context, L"<localized-strings-injection>" + obj->className, errors))
+							{
+								Workflow_AddModule(context, Path_InstanceClass, module, GuiInstanceCompiledWorkflow::InstanceClass, obj->tagPosition);
 							}
 						}
 					}
@@ -875,6 +867,10 @@ Localized Strings Type Resolver (LocalizedStrings)
 				{
 					return obj->SaveToXml();
 				}
+				if (auto obj = content.Cast<GuiInstanceLocalizedStringsInjection>())
+				{
+					return obj->SaveToXml();
+				}
 				return nullptr;
 			}
 
@@ -882,7 +878,18 @@ Localized Strings Type Resolver (LocalizedStrings)
 			{
 				if (auto xml = resource->GetContent().Cast<XmlDocument>())
 				{
-					return GuiInstanceLocalizedStrings::LoadFromXml(resource, xml, errors);
+					if (xml->rootElement->name.value == L"LocalizedStrings")
+					{
+						return GuiInstanceLocalizedStrings::LoadFromXml(resource, xml, errors);
+					}
+					else if (xml->rootElement->name.value == L"LocalizedStringsInjection")
+					{
+						return GuiInstanceLocalizedStringsInjection::LoadFromXml(resource, xml, errors);
+					}
+					else
+					{
+						errors.Add(GuiResourceError({ { resource },xml->rootElement->codeRange.start }, L"Precompile: The root element of localized strings should be \"LocalizedStrings\" or \"LocalizedStringsInjection\"."));
+					}
 				}
 				return nullptr;
 			}

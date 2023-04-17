@@ -31,6 +31,7 @@ Type List (Basic)
 
 #define GUIREFLECTIONBASIC_TYPELIST(F)\
 			F(presentation::helper_types::SiteValue)\
+			F(presentation::helper_types::LocalizedStrings)\
 			F(presentation::Color)\
 			F(presentation::Alignment)\
 			F(presentation::AxisDirection)\

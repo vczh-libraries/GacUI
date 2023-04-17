@@ -428,16 +428,16 @@ interface presentation::IMessageBoxDialogAction : system::Interface {
 
 interface presentation::IMessageBoxDialogViewModel : system::Interface {
     property Buttons : system::ReadonlyList<presentation::IMessageBoxDialogAction^>^ { get:GetButtons }
-    property DefaultButton : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetDefaultButton }
+    property DefaultButton : presentation::IMessageBoxDialogAction^ { get:GetDefaultButton }
     property Icon : presentation::INativeDialogService::MessageBoxIcons { get:GetIcon }
-    property Result : presentation::INativeDialogService::MessageBoxButtonsOutput { get:GetResult }
+    property Result : presentation::IMessageBoxDialogAction^ { get:GetResult }
     property Text : system::String { get:GetText }
     property Title : system::String { get:GetTitle }
 
     function GetButtons() : system::ReadonlyList<presentation::IMessageBoxDialogAction^>^;
-    function GetDefaultButton() : presentation::INativeDialogService::MessageBoxButtonsOutput;
+    function GetDefaultButton() : presentation::IMessageBoxDialogAction^;
     function GetIcon() : presentation::INativeDialogService::MessageBoxIcons;
-    function GetResult() : presentation::INativeDialogService::MessageBoxButtonsOutput;
+    function GetResult() : presentation::IMessageBoxDialogAction^;
     function GetText() : system::String;
     function GetTitle() : system::String;
 
@@ -1347,14 +1347,6 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
     event rightButtonUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiMouseEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event systemKeyDown : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiKeyEventArgs*>^;
-    @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
-    @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
-    @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
-    event systemKeyUp : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiKeyEventArgs*>^;
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
@@ -4447,6 +4439,11 @@ class presentation::elements::text::TextLines : system::ReferenceType {
     function SetPasswordChar(value : system::Char) : system::Void;
     function SetTabSpaceCount(value : system::Int32) : system::Void;
     function SetText(value : system::String) : system::Void;
+
+}
+
+class presentation::helper_types::LocalizedStrings : system::ReferenceType {
+    static function FirstOrEmpty(formats : system::Enumerable<system::String>^) : system::String;
 
 }
 

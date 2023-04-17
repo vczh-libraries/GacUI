@@ -775,6 +775,19 @@ namespace vl
 Value
 ***********************************************************************/
 
+			enum class PredefinedBoxableType : vint
+			{
+				PBT_Unknown = -1,
+				PBT_S8, PBT_S16, PBT_S32, PBT_S64,
+				PBT_U8, PBT_U16, PBT_U32, PBT_U64,
+				PBT_F32, PBT_F64,
+				PBT_BOOL,
+				PBT_WCHAR,
+				PBT_STRING,
+				PBT_LOCALE,
+				PBT_DATETIME,
+			};
+
 			class IBoxedValue : public virtual IDescriptable, public Description<IBoxedValue>
 			{
 			public:
@@ -786,6 +799,7 @@ Value
 					NotComparable,
 				};
 
+				virtual PredefinedBoxableType	GetBoxableType() = 0;
 				virtual Ptr<IBoxedValue>		Copy() = 0;
 				virtual CompareResult			ComparePrimitive(Ptr<IBoxedValue> boxedValue) = 0;
 			};
@@ -833,7 +847,7 @@ Value
 				Value(const Value& value);
 				Value&							operator=(const Value& value);
 
-				friend std::strong_ordering		operator<=>(const Value& a, const Value& b);
+				friend std::partial_ordering	operator<=>(const Value& a, const Value& b);
 				friend bool						operator==(const Value& a, const Value& b) { return (a <=> b) == 0; }
 
 				/// <summary>Find out how the value is stored.</summary>
@@ -1894,39 +1908,39 @@ namespace vl
 ValueType
 ***********************************************************************/
 
+			namespace pbt_selector
+			{
+				template<PredefinedBoxableType _Value>
+				struct SelectorBase { static constexpr PredefinedBoxableType Value = _Value; };
+
+				template<typename T> struct Selector : SelectorBase<PredefinedBoxableType::PBT_Unknown> {};
+
+				template<> struct Selector<vint8_t> : SelectorBase<PredefinedBoxableType::PBT_S8> {};
+				template<> struct Selector<vint16_t> : SelectorBase<PredefinedBoxableType::PBT_S16> {};
+				template<> struct Selector<vint32_t> : SelectorBase<PredefinedBoxableType::PBT_S32> {};
+				template<> struct Selector<vint64_t> : SelectorBase<PredefinedBoxableType::PBT_S64> {};
+
+				template<> struct Selector<vuint8_t> : SelectorBase<PredefinedBoxableType::PBT_U8> {};
+				template<> struct Selector<vuint16_t> : SelectorBase<PredefinedBoxableType::PBT_U16> {};
+				template<> struct Selector<vuint32_t> : SelectorBase<PredefinedBoxableType::PBT_U32> {};
+				template<> struct Selector<vuint64_t> : SelectorBase<PredefinedBoxableType::PBT_U64> {};
+
+				template<> struct Selector<float> : SelectorBase<PredefinedBoxableType::PBT_F32> {};
+				template<> struct Selector<double> : SelectorBase<PredefinedBoxableType::PBT_F64> {};
+
+				template<> struct Selector<bool> : SelectorBase<PredefinedBoxableType::PBT_BOOL> {};
+				template<> struct Selector<wchar_t> : SelectorBase<PredefinedBoxableType::PBT_WCHAR> {};
+				template<> struct Selector<WString> : SelectorBase<PredefinedBoxableType::PBT_STRING> {};
+				template<> struct Selector<Locale> : SelectorBase<PredefinedBoxableType::PBT_LOCALE> {};
+				template<> struct Selector<DateTime> : SelectorBase<PredefinedBoxableType::PBT_DATETIME> {};
+			}
+
 			class IValueType : public virtual IDescriptable, public Description<IValueType>
 			{
 			public:
 				template<typename T>
 				class TypedBox : public IBoxedValue
 				{
-				private:
-					template<typename U = T>
-					static CompareResult ComparePrimitiveInternal(const U& a, const U& b, std::enable_if_t<sizeof(decltype(&TypedValueSerializerProvider<U>::Compare)) >= 0, vint>)
-					{
-						return TypedValueSerializerProvider<U>::Compare(a, b);
-					}
-
-					template<typename U = T>
-					static CompareResult ComparePrimitiveInternal(const U& a, const U& b, double)
-					{
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdynamic-class-memaccess"
-#elif defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wclass-memaccess"
-#endif
-						auto result = memcmp(&a, &b, sizeof(U));
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#elif defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-						if (result < 0) return IBoxedValue::Smaller;
-						if (result > 0) return IBoxedValue::Greater;
-						return IBoxedValue::Equal;
-					}
 				public:
 					T							value;
 
@@ -1940,6 +1954,11 @@ ValueType
 					{
 					}
 
+					PredefinedBoxableType GetBoxableType()override
+					{
+						return pbt_selector::Selector<T>::Value;
+					}
+
 					Ptr<IBoxedValue> Copy()override
 					{
 						return Ptr(new TypedBox<T>(value));
@@ -1949,17 +1968,27 @@ ValueType
 					{
 						if (auto typedBox = boxedValue.Cast<TypedBox<T>>())
 						{
-							return ComparePrimitiveInternal(value, typedBox->value, (vint)0);
+							if constexpr (std::three_way_comparable<T, std::strong_ordering>)
+							{
+								auto r = value <=> typedBox->value;
+								if (r < 0) return IBoxedValue::Smaller;
+								if (r > 0) return IBoxedValue::Greater;
+								return IBoxedValue::Equal;
+							}
+							else if constexpr (std::three_way_comparable<T, std::partial_ordering>)
+							{
+								auto r = value <=> typedBox->value;
+								if (r == std::partial_ordering::unordered) return IBoxedValue::NotComparable;
+								if (r < 0) return IBoxedValue::Smaller;
+								if (r > 0) return IBoxedValue::Greater;
+								return IBoxedValue::Equal;
+							}
 						}
-						else
-						{
-							return IBoxedValue::NotComparable;
-						}
+						return IBoxedValue::NotComparable;
 					}
 				};
 
 				virtual Value						CreateDefault() = 0;
-				virtual IBoxedValue::CompareResult	Compare(const Value& a, const Value& b) = 0;
 			};
 
 			class IEnumType : public virtual IDescriptable, public Description<IEnumType>
@@ -2792,6 +2821,164 @@ namespace vl
 }
 
 #endif
+
+/***********************************************************************
+.\PREDEFINED\TYPEDVALUESERIALIZERPROVIDER.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_REFLECTION_TYPES_TYPEDVALUESERIALIZERPROVIDER
+#define VCZH_REFLECTION_TYPES_TYPEDVALUESERIALIZERPROVIDER
+
+
+namespace vl
+{
+	namespace reflection
+	{
+		namespace description
+		{
+/***********************************************************************
+Signed Types
+***********************************************************************/
+
+			template<typename T, T MinValue, T MaxValue>
+			struct TypedValueSerializerProvider_Signed
+			{
+				static T GetDefaultValue()
+				{
+					return 0;
+				}
+
+				static bool Serialize(const T& input, WString& output)
+				{
+					output = i64tow(input);
+					return true;
+				}
+
+				static bool Deserialize(const WString& input, T& output)
+				{
+					bool success = false;
+					vint64_t result = wtoi64_test(input, success);
+					if (!success) return false;
+					if (result < MinValue || result > MaxValue) return false;
+					output = (T)result;
+					return true;
+				}
+			};
+
+/***********************************************************************
+Unsigned Types
+***********************************************************************/
+
+			template<typename T, T MaxValue>
+			struct TypedValueSerializerProvider_Unsigned
+			{
+				static T GetDefaultValue()
+				{
+					return 0;
+				}
+
+				static bool Serialize(const T& input, WString& output)
+				{
+					output = u64tow(input);
+					return true;
+				}
+
+				static bool Deserialize(const WString& input, T& output)
+				{
+					bool success = false;
+					vuint64_t result = wtou64_test(input, success);
+					if (!success) return false;
+					if (result > MaxValue) return false;
+					output = (T)result;
+					return true;
+				}
+			};
+
+/***********************************************************************
+Floating Point Types
+***********************************************************************/
+
+			template<typename T, T MaxValue>
+			struct TypedValueSerializerProvider_FloatingPoint
+			{
+				static T GetDefaultValue()
+				{
+					return 0;
+				}
+
+				static bool Serialize(const T& input, WString& output)
+				{
+					output = ftow(input);
+					if (output == L"-0") output = L"0";
+					return true;
+				}
+
+				static bool Deserialize(const WString& input, T& output)
+				{
+					bool success = false;
+					double result = wtof_test(input, success);
+					if (!success) return false;
+					if (result < -MaxValue || result > MaxValue) return false;
+					output = (T)result;
+					return true;
+				}
+			};
+
+/***********************************************************************
+Serializable Types
+***********************************************************************/
+
+#define DEFINE_SIGNED_TVSP(TYPENAME, MINVALUE, MAXVALUE)\
+		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_Signed<TYPENAME, MINVALUE, MAXVALUE> {};\
+
+		DEFINE_SIGNED_TVSP(vint8_t, _I8_MIN, _I8_MAX)
+		DEFINE_SIGNED_TVSP(vint16_t, _I16_MIN, _I16_MAX)
+		DEFINE_SIGNED_TVSP(vint32_t, _I32_MIN, _I32_MAX)
+		DEFINE_SIGNED_TVSP(vint64_t, _I64_MIN, _I64_MAX)
+#undef DEFINE_SIGNED_TVSP
+
+#define DEFINE_UNSIGNED_TVSP(TYPENAME, MAXVALUE)\
+		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_Unsigned<TYPENAME, MAXVALUE> {};\
+
+		DEFINE_UNSIGNED_TVSP(vuint8_t, _UI8_MAX)
+		DEFINE_UNSIGNED_TVSP(vuint16_t, _UI16_MAX)
+		DEFINE_UNSIGNED_TVSP(vuint32_t, _UI32_MAX)
+		DEFINE_UNSIGNED_TVSP(vuint64_t, _UI64_MAX)
+#undef DEFINE_UNSIGNED_TVSP
+
+#define DEFINE_FLOAT_TVSP(TYPENAME, MAXVALUE)\
+		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_FloatingPoint<TYPENAME, MAXVALUE> {};\
+
+		DEFINE_FLOAT_TVSP(float, (float)FLT_MAX)
+		DEFINE_FLOAT_TVSP(double, (double)DBL_MAX)
+#undef DEFINE_FLOAT_TVSP
+			
+#define DEFINE_TVSP(TYPENAME)\
+			template<>\
+			struct TypedValueSerializerProvider<TYPENAME>\
+			{\
+				static TYPENAME GetDefaultValue();\
+				static bool Serialize(const TYPENAME& input, WString& output);\
+				static bool Deserialize(const WString& input, TYPENAME& output);\
+			};\
+
+		DEFINE_TVSP(bool)
+		DEFINE_TVSP(wchar_t)
+		DEFINE_TVSP(WString)
+		DEFINE_TVSP(Locale)
+		DEFINE_TVSP(DateTime)
+
+#undef DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER
+		}
+	}
+}
+
+#endif
+
 
 /***********************************************************************
 .\PREDEFINED\PREDEFINEDTYPES.H
@@ -4262,13 +4449,6 @@ PrimitiveTypeDescriptor
 				{
 					return BoxValue<T>(TypedValueSerializerProvider<T>::GetDefaultValue());
 				}
-
-				IBoxedValue::CompareResult Compare(const Value& a, const Value& b)override
-				{
-					auto va = UnboxValue<T>(a);
-					auto vb = UnboxValue<T>(b);
-					return TypedValueSerializerProvider<T>::Compare(va, vb);
-				}
 			};
 
 			template<typename T>
@@ -4318,15 +4498,6 @@ EnumTypeDescriptor
 				Value CreateDefault()override
 				{
 					return BoxValue<T>(static_cast<T>(0));
-				}
-
-				IBoxedValue::CompareResult Compare(const Value& a, const Value& b)override
-				{
-					auto ea = static_cast<vuint64_t>(UnboxValue<T>(a));
-					auto eb = static_cast<vuint64_t>(UnboxValue<T>(b));
-					if (ea < eb) return IBoxedValue::Smaller;
-					if (ea > eb)return IBoxedValue::Greater;
-					return IBoxedValue::Equal;
 				}
 			};
 
@@ -4412,11 +4583,6 @@ StructTypeDescriptor
 				Value CreateDefault()override
 				{
 					return BoxValue<T>(T{});
-				}
-
-				IBoxedValue::CompareResult Compare(const Value& a, const Value& b)override
-				{
-					return IBoxedValue::NotComparable;
 				}
 			};
 
@@ -7640,18 +7806,6 @@ Predefined Types
 			REFLECTION_PREDEFINED_COMPLEX_TYPES(DECL_TYPE_INFO, void)
 
 #endif
-
-#define DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER(TYPENAME)\
-			template<>\
-			struct TypedValueSerializerProvider<TYPENAME>\
-			{\
-				static TYPENAME GetDefaultValue();\
-				static bool Serialize(const TYPENAME& input, WString& output);\
-				static bool Deserialize(const WString& input, TYPENAME& output);\
-				static IBoxedValue::CompareResult Compare(const TYPENAME& a, const TYPENAME& b);\
-			};\
-
-			REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER)
 
 #undef DEFINE_TYPED_VALUE_SERIALIZER_PROVIDER
 

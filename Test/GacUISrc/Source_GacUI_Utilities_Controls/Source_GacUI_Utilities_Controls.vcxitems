@@ -15,7 +15,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\GuiFakeDialogService.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUI.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\FakeServices\Dialogs\Source\GuiFakeDialogServiceUIResource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Utilities\GuiUtilitiesRegistration.cpp" />
   </ItemGroup>

@@ -396,6 +396,8 @@ Selectable List Control
 				void											NormalizeSelectedItemIndexStartEnd();
 				void											SetMultipleItemsSelectedSilently(vint start, vint end, bool selected);
 				void											OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
+
+				virtual vint									FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection);
 			public:
 				/// <summary>Create a control with a specified style provider.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

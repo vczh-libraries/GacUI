@@ -12,7 +12,7 @@
           var index = ViewModel.FontList.IndexOf(Value);
           if (index > -1)
           {
-            textList.SetSelected(index, true);
+            textList.SelectItemsByClick(index, false, false, true);
             textList.EnsureItemVisible(index);
           }
         }
@@ -79,7 +79,7 @@
           var index = self.SizeList.IndexOf(Value);
           if (index > -1)
           {
-            textList.SetSelected(index, true);
+            textList.SelectItemsByClick(index, false, false, true);
             textList.EnsureItemVisible(index);
           }
         }

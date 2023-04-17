@@ -2,39 +2,38 @@
 
 ## Known Issues
 
-- Issue on dialog service
-  - message box default button.
-  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
-  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
-  - font dialog alt to list and press UP/DOWN jumps to incorrect item.
-  - file dialog can't expand/collapse tree view by key.
-- `GacUI_Host` font not right.
+- FakeDialogService
+  - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
+- GacUI_Host
+  - ComboBox doesn't display the selected item when it is opened in a datagrid.
 
 ## Progressing
 
-- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
 - Theme
   - Add HostedWindow theme.
+- Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
+  - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
+- Add DarkSkin and Dialog in Reflection(32|64).bin
+- Tutorial
+  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
+
+## Optional
+
 - `INativeWindow` add callback for state changing.
   - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
   - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
-- Remove SysKey callbacks, merge into Key callbacks.
-- Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
-  - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
-
-## Optional
-
-- Issues on Templates
+- FakeDialogService
+  - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
+- Theme
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-- Issues on GDI
+- GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh
 - Rewrite GacBuild.ps1 in C++
-- Add DarkSkin and Dialog in Reflection(32|64).bin
 - Add `MoveToScreenCenterAfterLayouted` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
 
 ## Document
@@ -42,8 +41,19 @@
 - Add document for `<ComboButton/>` and its `DropdownControl` property.
 - Add document for `<LocalizedStringsInjection/>` external injection.
 - Fix document for control signal event if already exists.
+- Add `static` keyword (method and init) in workflow document.
+- Add `static{}` in workflow document.
 
 ## Done but not Released
+
+- `GuiVirtualTreeListControl` handles `LEFT` and `RIGHT` for item navigation.
+- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
+- Workflow
+  - Disallow struct `X` contains `X?` field.
+  - `static{}` initialization.
+- GacUI
+  - Fix GacUI compiler failure when compiled with reflection.
+  - Remove SysKey callbacks, merge into Key callbacks.
 
 ## OS Provider Features
 
@@ -56,6 +66,7 @@
 
 ## Control Features
 
+- Check all control key operation, ensure accessibility.
 - `IColumnItemView`.
   - Change column size from `int` to `{minSize:int, columnOption:Absolute|Percentage, absolute:int, percentage:float}`
   - Column drag and drop.

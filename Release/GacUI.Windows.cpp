@@ -799,7 +799,7 @@ WindowsForm
 							}
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->SysKeyUp(info);
+								listeners[i]->KeyUp(info);
 							}
 						}
 						break;
@@ -812,7 +812,7 @@ WindowsForm
 							}
 							for(vint i=0;i<listeners.Count();i++)
 							{
-								listeners[i]->SysKeyDown(info);
+								listeners[i]->KeyDown(info);
 							}
 						}
 						break;

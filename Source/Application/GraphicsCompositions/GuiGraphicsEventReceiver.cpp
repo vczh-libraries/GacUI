@@ -30,8 +30,6 @@ Event Receiver
 				,previewKey(_sender)
 				,keyDown(_sender)
 				,keyUp(_sender)
-				,systemKeyDown(_sender)
-				,systemKeyUp(_sender)
 				,previewCharInput(_sender)
 				,charInput(_sender)
 				,gotFocus(_sender)

@@ -424,19 +424,19 @@ Workflow_GenerateInstanceClass
 
 				List<WString> fragments;
 				SplitTypeName(baseTypeContext->className, fragments);
-				for (vint i = 0; i < fragments.Count(); i++)
+				for (auto fragment : fragments)
 				{
 					if (baseWfType)
 					{
 						auto type = Ptr(new WfChildType);
 						type->parent = baseWfType;
-						type->name.value = fragments[i];
+						type->name.value = fragment;
 						baseWfType = type;
 					}
 					else
 					{
 						auto type = Ptr(new WfTopQualifiedType);
-						type->name.value = fragments[i];
+						type->name.value = fragment;
 						baseWfType = type;
 					}
 				}

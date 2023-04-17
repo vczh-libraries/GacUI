@@ -85,10 +85,10 @@ Workflow_CreateModuleWithUsings
 		}
 
 /***********************************************************************
-Workflow_InstallClass
+Workflow_InstallWithClass
 ***********************************************************************/
 
-		Ptr<workflow::WfClassDeclaration> Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module)
+		WString Workflow_InstallWithClass(const WString& className, Ptr<workflow::WfModule> module, Ptr<workflow::WfDeclaration> decl)
 		{
 			auto decls = &module->declarations;
 			auto reading = className.Buffer();
@@ -104,15 +104,24 @@ Workflow_InstallClass
 				}
 				else
 				{
-					auto ctorClass = Ptr(new WfClassDeclaration);
-					ctorClass->kind = WfClassKind::Class;
-					ctorClass->constructorType = WfConstructorType::Undefined;
-					ctorClass->name.value = reading;
-					decls->Add(ctorClass);
-					return ctorClass;
+					decls->Add(decl);
+					return reading;
 				}
 				reading = delimiter + 2;
 			}
+		}
+
+/***********************************************************************
+Workflow_InstallClass
+***********************************************************************/
+
+		Ptr<workflow::WfClassDeclaration> Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module)
+		{
+			auto ctorClass = Ptr(new WfClassDeclaration);
+			ctorClass->kind = WfClassKind::Class;
+			ctorClass->constructorType = WfConstructorType::Undefined;
+			ctorClass->name.value = Workflow_InstallWithClass(className, module, ctorClass);
+			return ctorClass;
 		}
 
 /***********************************************************************

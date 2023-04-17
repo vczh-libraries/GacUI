@@ -503,35 +503,14 @@ GuiGraphicsHost
 			void GuiGraphicsHost::KeyUp(const NativeWindowKeyInfo& info)
 			{
 				if (altActionManager->KeyUp(info)) { return; }
-
-				if(focusedComposition && focusedComposition->HasEventReceiver())
-				{
-					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::keyUp);
-				}
-			}
-
-			void GuiGraphicsHost::SysKeyDown(const NativeWindowKeyInfo& info)
-			{
-				if (altActionManager->SysKeyDown(info)) { return; }
-
-				if(focusedComposition && focusedComposition->HasEventReceiver())
-				{
-					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::systemKeyDown);
-				}
-			}
-
-			void GuiGraphicsHost::SysKeyUp(const NativeWindowKeyInfo& info)
-			{
-				if (altActionManager->SysKeyUp(info)) { return; }
-
 				if (!info.ctrl && !info.shift && info.code == VKEY::KEY_MENU && hostRecord.nativeWindow)
 				{
 					hostRecord.nativeWindow->SupressAlt();
 				}
 
-				if (focusedComposition && focusedComposition->HasEventReceiver())
+				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
-					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::systemKeyUp);
+					OnKeyInput(info, focusedComposition, &GuiGraphicsEventReceiver::keyUp);
 				}
 			}
 

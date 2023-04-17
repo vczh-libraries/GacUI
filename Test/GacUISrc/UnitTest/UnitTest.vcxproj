@@ -181,6 +181,8 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
+    <ClCompile Include="TestPtrDescriptableObject.cpp" />
+    <ClCompile Include="TestQueryParser.cpp" />
     <ClCompile Include="TestReflectionTypeList.cpp" />
     <ClCompile Include="TestResource.cpp" />
   </ItemGroup>

@@ -125,8 +125,6 @@ Alt-Combined Shortcut Key Interfaces Helpers
 				void									CloseAltHost();
 				bool									KeyDown(const NativeWindowKeyInfo& info);
 				bool									KeyUp(const NativeWindowKeyInfo& info);
-				bool									SysKeyDown(const NativeWindowKeyInfo& info);
-				bool									SysKeyUp(const NativeWindowKeyInfo& info);
 				bool									Char(const NativeWindowCharInfo& info);
 			};
 		}

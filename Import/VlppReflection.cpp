@@ -1467,11 +1467,6 @@ ITypeDescriptor
 					CHECK_FAIL(L"Not Supported!");
 				}
 
-				IBoxedValue::CompareResult Compare(const Value& a, const Value& b) override
-				{
-					CHECK_FAIL(L"Not Supported!");
-				}
-
 				// IEnumType
 
 				bool IsFlagEnum() override
@@ -2382,126 +2377,6 @@ description::Value
 				return *this;
 			}
 
-			std::strong_ordering operator<=>(const Value& a, const Value& b)
-			{
-				switch (a.GetValueType())
-				{
-				case Value::RawPtr:
-				case Value::SharedPtr:
-					switch (b.GetValueType())
-					{
-					case Value::RawPtr:
-					case Value::SharedPtr:
-						{
-							auto pa = a.GetRawPtr();
-							auto pb = b.GetRawPtr();
-							return pa <=> pb;
-						}
-					case Value::BoxedValue:
-						return std::strong_ordering::less;
-					default:
-						return std::strong_ordering::greater;
-					}
-				case Value::BoxedValue:
-					switch (b.GetValueType())
-					{
-					case Value::RawPtr:
-					case Value::SharedPtr:
-						return std::strong_ordering::greater;
-					case Value::BoxedValue:
-						{
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-							auto aSt = a.GetTypeDescriptor()->GetSerializableType();
-							auto bSt = b.GetTypeDescriptor()->GetSerializableType();
-							if (aSt)
-							{
-								if (bSt)
-								{
-									auto aSt = a.GetTypeDescriptor()->GetSerializableType();
-									auto bSt = b.GetTypeDescriptor()->GetSerializableType();
-
-									WString aText;
-									WString bText;
-									aSt->Serialize(a, aText);
-									bSt->Serialize(b, bText);
-									return aText <=> bText;
-								}
-								else
-								{
-									return std::strong_ordering::greater;
-								}
-							}
-							else
-							{
-								if (bSt)
-								{
-									return std::strong_ordering::less;
-								}
-								else
-								{
-									if (a.GetTypeDescriptor() != b.GetTypeDescriptor())
-									{
-										auto aText = a.GetTypeDescriptor()->GetTypeName();
-										auto bText = b.GetTypeDescriptor()->GetTypeName();
-										return aText <=> bText;
-									}
-
-									switch (a.GetTypeDescriptor()->GetTypeDescriptorFlags())
-									{
-									case TypeDescriptorFlags::Struct:
-										{
-											auto td = a.GetTypeDescriptor();
-											vint count = td->GetPropertyCount();
-											for (vint i = 0; i < count; i++)
-											{
-												auto prop = td->GetProperty(i);
-												auto ap = prop->GetValue(a);
-												auto bp = prop->GetValue(b);
-												return ap <=> bp;
-											}
-										}
-										return std::strong_ordering::equal;
-									case TypeDescriptorFlags::FlagEnum:
-									case TypeDescriptorFlags::NormalEnum:
-										{
-											auto ai = a.GetTypeDescriptor()->GetEnumType()->FromEnum(a);
-											auto bi = a.GetTypeDescriptor()->GetEnumType()->FromEnum(b);
-											return ai <=> bi;
-										}
-									default:
-										return std::strong_ordering::equal;
-									}
-								}
-							}
-#else
-								auto pa = a.GetBoxedValue();
-								auto pb = b.GetBoxedValue();
-								switch (pa->ComparePrimitive(pb))
-								{
-								case IBoxedValue::Smaller: return std::strong_ordering::less;
-								case IBoxedValue::Greater: return std::strong_ordering::greater;
-								case IBoxedValue::Equal: return std::strong_ordering::equal;
-								default:;
-								}
-								return pa.Obj() <=> pb.Obj();
-#endif
-						}
-					default:
-						return std::strong_ordering::greater;
-					}
-				default:
-					switch (b.GetValueType())
-					{
-					case Value::RawPtr:
-					case Value::SharedPtr:
-					case Value::BoxedValue:
-						return std::strong_ordering::less;
-					default:
-						return std::strong_ordering::equal;
-					}
-				}
-			}
-
 			Value::ValueType Value::GetValueType()const
 			{
 				return valueType;
@@ -2792,6 +2667,197 @@ description::Value
 				rawPtr->Dispose(true);
 				*this=Value();
 				return true;
+			}
+		}
+	}
+}
+
+
+/***********************************************************************
+.\DESCRIPTABLEVALUE_COMPARISON.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+namespace vl
+{
+	using namespace collections;
+
+	namespace reflection
+	{
+
+/***********************************************************************
+description::Value
+***********************************************************************/
+
+		namespace description
+		{
+			namespace pbt_selector
+			{
+				template<typename T>
+				struct UnboxTypeBase { using Type = T; };
+
+				template<PredefinedBoxableType> struct ExpectedUnboxType;
+				template<PredefinedBoxableType> struct RealUnboxType;
+
+				constexpr vint PBT_MIN = (vint)PredefinedBoxableType::PBT_S8;
+				constexpr vint PBT_MAX = (vint)PredefinedBoxableType::PBT_F64;
+				constexpr vint PBT_COUNT = PBT_MAX - PBT_MIN + 1;
+
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_S8>	: UnboxTypeBase<vint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_S16>	: UnboxTypeBase<vint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_S32>	: UnboxTypeBase<vint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_S64>	: UnboxTypeBase<vint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_U8>	: UnboxTypeBase<vuint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_U16>	: UnboxTypeBase<vuint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_U32>	: UnboxTypeBase<vuint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_U64>	: UnboxTypeBase<vuint64_t> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_F32>	: UnboxTypeBase<double> {};
+				template<> struct ExpectedUnboxType<PredefinedBoxableType::PBT_F64>	: UnboxTypeBase<double> {};
+
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_S8>	: UnboxTypeBase<vint8_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_S16>	: UnboxTypeBase<vint16_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_S32>	: UnboxTypeBase<vint32_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_S64>	: UnboxTypeBase<vint64_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_U8>	: UnboxTypeBase<vuint8_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_U16>	: UnboxTypeBase<vuint16_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_U32>	: UnboxTypeBase<vuint32_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_U64>	: UnboxTypeBase<vuint64_t> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_F32>	: UnboxTypeBase<float> {};
+				template<> struct RealUnboxType<PredefinedBoxableType::PBT_F64>	: UnboxTypeBase<double> {};
+
+#define DEFINE_PBT_COMPARE(TYPE1, TYPE2)\
+				inline std::partial_ordering Compare(TYPE1& v1, TYPE2& v2)\
+				{\
+					return v1 <=> v2;\
+				}\
+
+				DEFINE_PBT_COMPARE(vint64_t, vint64_t)
+				DEFINE_PBT_COMPARE(vuint64_t, vuint64_t)
+				DEFINE_PBT_COMPARE(double, double)
+				DEFINE_PBT_COMPARE(vint64_t, double)
+				DEFINE_PBT_COMPARE(vuint64_t, double)
+				DEFINE_PBT_COMPARE(double, vint64_t)
+				DEFINE_PBT_COMPARE(double, vuint64_t)
+					
+				inline std::partial_ordering Compare(vint64_t& v1, vuint64_t& v2)
+				{
+					if (v2 > _I64_MAX) return std::partial_ordering::less;
+					return v1 <=> (vint64_t)v2;
+				}
+
+				inline std::partial_ordering Compare(vuint64_t& v1, vint64_t& v2)
+				{
+					if (v1 > _I64_MAX) return std::partial_ordering::greater;
+					return (vint64_t)v1 <=> v2;
+				}
+
+				template<PredefinedBoxableType PBT1, PredefinedBoxableType PBT2>
+				std::partial_ordering PBT_Compare(const Value& v1, const Value& v2)
+				{
+					using E1 = typename ExpectedUnboxType<PBT1>::Type;
+					using E2 = typename ExpectedUnboxType<PBT2>::Type;
+					using R1 = typename RealUnboxType<PBT1>::Type;
+					using R2 = typename RealUnboxType<PBT2>::Type;
+
+					E1 e1 = (E1)v1.GetBoxedValue().Cast<IValueType::TypedBox<R1>>()->value;
+					E2 e2 = (E2)v2.GetBoxedValue().Cast<IValueType::TypedBox<R2>>()->value;
+					return Compare(e1, e2);
+				}
+
+#undef DEFINE_PBT_COMPARE
+			}
+
+			std::partial_ordering operator<=>(const Value& a, const Value& b)
+			{
+				auto avt = a.GetValueType();
+				auto bvt = b.GetValueType();
+
+				if (avt == Value::RawPtr || avt == Value::SharedPtr)
+				{
+					if (bvt == Value::RawPtr || bvt == Value::SharedPtr)
+					{
+						auto pa = a.GetRawPtr();
+						auto pb = b.GetRawPtr();
+						return pa <=> pb;
+					}
+				}
+
+				if (avt != bvt)
+				{
+					return avt <=> bvt;
+				}
+
+				if (avt == Value::BoxedValue)
+				{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+					auto adt = a.GetTypeDescriptor();
+					auto bdt = b.GetTypeDescriptor();
+					if (adt == bdt)
+#endif
+					{
+						auto pa = a.GetBoxedValue();
+						auto pb = b.GetBoxedValue();
+						switch (pa->ComparePrimitive(pb))
+						{
+						case IBoxedValue::Smaller: return std::partial_ordering::less;
+						case IBoxedValue::Greater: return std::partial_ordering::greater;
+						case IBoxedValue::Equal: return std::partial_ordering::equivalent;
+						default: return std::partial_ordering::unordered;
+						}
+					}
+
+
+#define DEFINE_PBT_MATRIX2(PBT1, PBT2) &pbt_selector::PBT_Compare<(PredefinedBoxableType)PBT1, (PredefinedBoxableType)PBT2>
+
+#define DEFINE_PBT_MATRIX1(PBT1)\
+			DEFINE_PBT_MATRIX2(PBT1, 0),\
+			DEFINE_PBT_MATRIX2(PBT1, 1),\
+			DEFINE_PBT_MATRIX2(PBT1, 2),\
+			DEFINE_PBT_MATRIX2(PBT1, 3),\
+			DEFINE_PBT_MATRIX2(PBT1, 4),\
+			DEFINE_PBT_MATRIX2(PBT1, 5),\
+			DEFINE_PBT_MATRIX2(PBT1, 6),\
+			DEFINE_PBT_MATRIX2(PBT1, 7),\
+			DEFINE_PBT_MATRIX2(PBT1, 8),\
+			DEFINE_PBT_MATRIX2(PBT1, 9)
+
+#define DEFINE_PBT_MATRIX\
+			DEFINE_PBT_MATRIX1(0),\
+			DEFINE_PBT_MATRIX1(1),\
+			DEFINE_PBT_MATRIX1(2),\
+			DEFINE_PBT_MATRIX1(3),\
+			DEFINE_PBT_MATRIX1(4),\
+			DEFINE_PBT_MATRIX1(5),\
+			DEFINE_PBT_MATRIX1(6),\
+			DEFINE_PBT_MATRIX1(7),\
+			DEFINE_PBT_MATRIX1(8),\
+			DEFINE_PBT_MATRIX1(9)
+
+					{
+						static std::partial_ordering(*PBT_CompareMatrix[pbt_selector::PBT_COUNT][pbt_selector::PBT_COUNT])(const Value & v1, const Value & v2) = { DEFINE_PBT_MATRIX };
+						auto apbt = (vint)a.GetBoxedValue()->GetBoxableType();
+						auto bpbt = (vint)b.GetBoxedValue()->GetBoxableType();
+						if (pbt_selector::PBT_MIN <= apbt && apbt <= pbt_selector::PBT_MAX)
+						{
+							if (pbt_selector::PBT_MIN <= bpbt && bpbt <= pbt_selector::PBT_MAX)
+							{
+								return PBT_CompareMatrix[apbt][bpbt](a, b);
+							}
+						}
+					}
+
+#undef DEFINE_PBT_MATRIX
+#undef DEFINE_PBT_MATRIX1
+#undef DEFINE_PBT_MATRI2
+
+					std::partial_ordering::unordered;
+				}
+
+				return std::partial_ordering::equivalent;
 			}
 		}
 	}
@@ -4281,19 +4347,16 @@ IValueException
 
 
 /***********************************************************************
-.\REFLECTION\REFLECTION.CPP
+.\PREDEFINED\TYPEDVALUESERIALIZERPROVIDER.CPP
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
-#include <limits.h>
-#include <float.h>
 
 namespace vl
 {
-	using namespace collections;
 	using namespace regex;
 
 	namespace reflection
@@ -4302,348 +4365,8 @@ namespace vl
 		{
 
 /***********************************************************************
-TypeName
+bool
 ***********************************************************************/
-
-#ifndef VCZH_DEBUG_NO_REFLECTION
-
-			IMPL_TYPE_INFO_RENAME(void, system::Void)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::VoidValue, system::Void)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::IDescriptable, system::Interface)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::DescriptableObject, system::ReferenceType)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Value, system::Object)
-			IMPL_TYPE_INFO_RENAME(vl::vuint8_t, system::UInt8)
-			IMPL_TYPE_INFO_RENAME(vl::vuint16_t, system::UInt16)
-			IMPL_TYPE_INFO_RENAME(vl::vuint32_t, system::UInt32)
-			IMPL_TYPE_INFO_RENAME(vl::vuint64_t, system::UInt64)
-			IMPL_TYPE_INFO_RENAME(vl::vint8_t, system::Int8)
-			IMPL_TYPE_INFO_RENAME(vl::vint16_t, system::Int16)
-			IMPL_TYPE_INFO_RENAME(vl::vint32_t, system::Int32)
-			IMPL_TYPE_INFO_RENAME(vl::vint64_t, system::Int64)
-			IMPL_TYPE_INFO_RENAME(float, system::Single)
-			IMPL_TYPE_INFO_RENAME(double, system::Double)
-			IMPL_TYPE_INFO_RENAME(bool, system::Boolean)
-			IMPL_TYPE_INFO_RENAME(wchar_t, system::Char)
-			IMPL_TYPE_INFO_RENAME(vl::WString, system::String)
-			IMPL_TYPE_INFO_RENAME(vl::DateTime, system::DateTime)
-			IMPL_TYPE_INFO_RENAME(vl::Locale, system::Locale)
-
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueEnumerator, system::Enumerator)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueEnumerable, system::Enumerable)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueReadonlyList, system::ReadonlyList)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueArray, system::Array)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueList, system::List)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueObservableList, system::ObservableList)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueReadonlyDictionary, system::ReadonlyDictionary)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueDictionary, system::Dictionary)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueInterfaceProxy, system::InterfaceProxy)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueFunctionProxy, system::Function)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueSubscription, system::Subscription)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueCallStack, system::CallStack)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueException, system::Exception)
-
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IBoxedValue, system::reflection::BoxedValue)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IBoxedValue::CompareResult, system::reflection::ValueType::CompareResult)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueType, system::reflection::ValueType)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEnumType, system::reflection::EnumType)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ISerializableType, system::reflection::SerializableType)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeInfo, system::reflection::TypeInfo)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeInfo::Decorator, system::reflection::TypeInfo::Decorator)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMemberInfo, system::reflection::MemberInfo)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEventHandler, system::reflection::EventHandler)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEventInfo, system::reflection::EventInfo)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IPropertyInfo, system::reflection::PropertyInfo)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IParameterInfo, system::reflection::ParameterInfo)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMethodInfo, system::reflection::MethodInfo)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMethodGroupInfo, system::reflection::MethodGroupInfo)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::TypeDescriptorFlags, system::reflection::TypeDescriptorFlags)
-			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeDescriptor, system::reflection::TypeDescriptor)
-
-#endif
-
-/***********************************************************************
-TypedValueSerializerProvider
-***********************************************************************/
-
-#define DEFINE_COMPARE(TYPENAME)\
-			IBoxedValue::CompareResult TypedValueSerializerProvider<TYPENAME>::Compare(const TYPENAME& a, const TYPENAME& b)\
-			{\
-				if (a < b) return IBoxedValue::Smaller;\
-				if (a > b) return IBoxedValue::Greater;\
-				return IBoxedValue::Equal;\
-			}\
-
-			REFLECTION_PREDEFINED_PRIMITIVE_TYPES(DEFINE_COMPARE)
-
-#undef DEFINE_COMPARE
-
-			vuint8_t TypedValueSerializerProvider<vuint8_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vuint8_t>::Serialize(const vuint8_t& input, WString& output)
-			{
-				output = u64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vuint8_t>::Deserialize(const WString& input, vuint8_t& output)
-			{
-				bool success = false;
-				vuint64_t result = wtou64_test(input, success);
-				if (!success) return false;
-				if (result>_UI8_MAX) return false;
-				output = (vuint8_t)result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			vuint16_t TypedValueSerializerProvider<vuint16_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vuint16_t>::Serialize(const vuint16_t& input, WString& output)
-			{
-				output = u64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vuint16_t>::Deserialize(const WString& input, vuint16_t& output)
-			{
-				bool success = false;
-				vuint64_t result = wtou64_test(input, success);
-				if (!success) return false;
-				if (result>_UI16_MAX) return false;
-				output = (vuint16_t)result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			vuint32_t TypedValueSerializerProvider<vuint32_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vuint32_t>::Serialize(const vuint32_t& input, WString& output)
-			{
-				output = u64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vuint32_t>::Deserialize(const WString& input, vuint32_t& output)
-			{
-				bool success = false;
-				vuint64_t result = wtou64_test(input, success);
-				if (!success) return false;
-				if (result>_UI32_MAX) return false;
-				output = (vuint32_t)result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			vuint64_t TypedValueSerializerProvider<vuint64_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vuint64_t>::Serialize(const vuint64_t& input, WString& output)
-			{
-				output = u64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vuint64_t>::Deserialize(const WString& input, vuint64_t& output)
-			{
-				bool success = false;
-				vuint64_t result = wtou64_test(input, success);
-				if (!success) return false;
-				output = result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			vint8_t TypedValueSerializerProvider<vint8_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vint8_t>::Serialize(const vint8_t& input, WString& output)
-			{
-				output = i64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vint8_t>::Deserialize(const WString& input, vint8_t& output)
-			{
-				bool success = false;
-				vint64_t result = wtoi64_test(input, success);
-				if (!success) return false;
-				if (result<_I8_MIN || result>_I8_MAX) return false;
-				output = (vint8_t)result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			vint16_t TypedValueSerializerProvider<vint16_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vint16_t>::Serialize(const vint16_t& input, WString& output)
-			{
-				output = i64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vint16_t>::Deserialize(const WString& input, vint16_t& output)
-			{
-				bool success = false;
-				vint64_t result = wtoi64_test(input, success);
-				if (!success) return false;
-				if (result<_I16_MIN || result>_I16_MAX) return false;
-				output = (vint16_t)result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			vint32_t TypedValueSerializerProvider<vint32_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vint32_t>::Serialize(const vint32_t& input, WString& output)
-			{
-				output = i64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vint32_t>::Deserialize(const WString& input, vint32_t& output)
-			{
-				bool success = false;
-				vint64_t result = wtoi64_test(input, success);
-				if (!success) return false;
-				if (result<_I32_MIN || result>_I32_MAX) return false;
-				output = (vint32_t)result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			vint64_t TypedValueSerializerProvider<vint64_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<vint64_t>::Serialize(const vint64_t& input, WString& output)
-			{
-				output = i64tow(input);
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<vint64_t>::Deserialize(const WString& input, vint64_t& output)
-			{
-				bool success = false;
-				vint64_t result = wtoi64_test(input, success);
-				if (!success) return false;
-				output = result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			float TypedValueSerializerProvider<float>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<float>::Serialize(const float& input, WString& output)
-			{
-				output = ftow(input);
-				if (output == L"-0") output = L"0";
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<float>::Deserialize(const WString& input, float& output)
-			{
-				bool success = false;
-				double result = wtof_test(input, success);
-				if (!success) return false;
-				if (result<-FLT_MAX || result>FLT_MAX) return false;
-				output = (float)result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			double TypedValueSerializerProvider<double>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<double>::Serialize(const double& input, WString& output)
-			{
-				output = ftow(input);
-				if (output == L"-0") output = L"0";
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<double>::Deserialize(const WString& input, double& output)
-			{
-				bool success = false;
-				double result = wtof_test(input, success);
-				if (!success) return false;
-				output = result;
-				return true;
-			}
-
-			//---------------------------------------
-
-			wchar_t TypedValueSerializerProvider<wchar_t>::GetDefaultValue()
-			{
-				return 0;
-			}
-
-			bool TypedValueSerializerProvider<wchar_t>::Serialize(const wchar_t& input, WString& output)
-			{
-				output = input ? WString::FromChar(input) : L"";
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<wchar_t>::Deserialize(const WString& input, wchar_t& output)
-			{
-				if (input.Length()>1) return false;
-				output = input.Length() == 0 ? 0 : input[0];
-				return true;
-			}
-
-			//---------------------------------------
-
-			WString TypedValueSerializerProvider<WString>::GetDefaultValue()
-			{
-				return L"";
-			}
-
-			bool TypedValueSerializerProvider<WString>::Serialize(const WString& input, WString& output)
-			{
-				output = input;
-				return true;
-			}
-
-			bool TypedValueSerializerProvider<WString>::Deserialize(const WString& input, WString& output)
-			{
-				output = input;
-				return true;
-			}
-
-			//---------------------------------------
 
 			bool TypedValueSerializerProvider<bool>::GetDefaultValue()
 			{
@@ -4662,7 +4385,52 @@ TypedValueSerializerProvider
 				return input == L"true" || input == L"false";
 			}
 
-			//---------------------------------------
+/***********************************************************************
+wchar_t
+***********************************************************************/
+
+			wchar_t TypedValueSerializerProvider<wchar_t>::GetDefaultValue()
+			{
+				return 0;
+			}
+
+			bool TypedValueSerializerProvider<wchar_t>::Serialize(const wchar_t& input, WString& output)
+			{
+				output = input ? WString::FromChar(input) : L"";
+				return true;
+			}
+
+			bool TypedValueSerializerProvider<wchar_t>::Deserialize(const WString& input, wchar_t& output)
+			{
+				if (input.Length() > 1) return false;
+				output = input.Length() == 0 ? 0 : input[0];
+				return true;
+			}
+
+/***********************************************************************
+WString
+***********************************************************************/
+
+			WString TypedValueSerializerProvider<WString>::GetDefaultValue()
+			{
+				return L"";
+			}
+
+			bool TypedValueSerializerProvider<WString>::Serialize(const WString& input, WString& output)
+			{
+				output = input;
+				return true;
+			}
+
+			bool TypedValueSerializerProvider<WString>::Deserialize(const WString& input, WString& output)
+			{
+				output = input;
+				return true;
+			}
+
+/***********************************************************************
+Locale
+***********************************************************************/
 
 			Locale TypedValueSerializerProvider<Locale>::GetDefaultValue()
 			{
@@ -4682,7 +4450,7 @@ TypedValueSerializerProvider
 			}
 
 /***********************************************************************
-DateTimeValueSerializer
+DateTime
 ***********************************************************************/
 
 			BEGIN_GLOBAL_STORAGE_CLASS(DateTimeSerializerStorage)
@@ -4749,15 +4517,90 @@ DateTimeValueSerializer
 				output = DateTime::FromDateTime(year, month, day, hour, minute, second, milliseconds);
 				return true;
 			}
+		}
+	}
+}
 
-			IBoxedValue::CompareResult TypedValueSerializerProvider<DateTime>::Compare(const DateTime& a, const DateTime& b)
-			{
-				auto ta = a.filetime;
-				auto tb = b.filetime;
-				if (ta < tb) return IBoxedValue::Smaller;
-				if (ta > tb) return IBoxedValue::Greater;
-				return IBoxedValue::Equal;
-			}
+
+/***********************************************************************
+.\REFLECTION\REFLECTION.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#include <limits.h>
+#include <float.h>
+
+namespace vl
+{
+	using namespace collections;
+
+	namespace reflection
+	{
+		namespace description
+		{
+
+/***********************************************************************
+TypeName
+***********************************************************************/
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
+
+			IMPL_TYPE_INFO_RENAME(void, system::Void)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::VoidValue, system::Void)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::IDescriptable, system::Interface)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::DescriptableObject, system::ReferenceType)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Value, system::Object)
+			IMPL_TYPE_INFO_RENAME(vl::vuint8_t, system::UInt8)
+			IMPL_TYPE_INFO_RENAME(vl::vuint16_t, system::UInt16)
+			IMPL_TYPE_INFO_RENAME(vl::vuint32_t, system::UInt32)
+			IMPL_TYPE_INFO_RENAME(vl::vuint64_t, system::UInt64)
+			IMPL_TYPE_INFO_RENAME(vl::vint8_t, system::Int8)
+			IMPL_TYPE_INFO_RENAME(vl::vint16_t, system::Int16)
+			IMPL_TYPE_INFO_RENAME(vl::vint32_t, system::Int32)
+			IMPL_TYPE_INFO_RENAME(vl::vint64_t, system::Int64)
+			IMPL_TYPE_INFO_RENAME(float, system::Single)
+			IMPL_TYPE_INFO_RENAME(double, system::Double)
+			IMPL_TYPE_INFO_RENAME(bool, system::Boolean)
+			IMPL_TYPE_INFO_RENAME(wchar_t, system::Char)
+			IMPL_TYPE_INFO_RENAME(vl::WString, system::String)
+			IMPL_TYPE_INFO_RENAME(vl::DateTime, system::DateTime)
+			IMPL_TYPE_INFO_RENAME(vl::Locale, system::Locale)
+
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueEnumerator, system::Enumerator)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueEnumerable, system::Enumerable)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueReadonlyList, system::ReadonlyList)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueArray, system::Array)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueList, system::List)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueObservableList, system::ObservableList)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueReadonlyDictionary, system::ReadonlyDictionary)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueDictionary, system::Dictionary)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueInterfaceProxy, system::InterfaceProxy)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueFunctionProxy, system::Function)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueSubscription, system::Subscription)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueCallStack, system::CallStack)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueException, system::Exception)
+
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IBoxedValue, system::reflection::BoxedValue)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IBoxedValue::CompareResult, system::reflection::ValueType::CompareResult)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IValueType, system::reflection::ValueType)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEnumType, system::reflection::EnumType)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ISerializableType, system::reflection::SerializableType)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeInfo, system::reflection::TypeInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeInfo::Decorator, system::reflection::TypeInfo::Decorator)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMemberInfo, system::reflection::MemberInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEventHandler, system::reflection::EventHandler)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IEventInfo, system::reflection::EventInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IPropertyInfo, system::reflection::PropertyInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IParameterInfo, system::reflection::ParameterInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMethodInfo, system::reflection::MethodInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::IMethodGroupInfo, system::reflection::MethodGroupInfo)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::TypeDescriptorFlags, system::reflection::TypeDescriptorFlags)
+			IMPL_TYPE_INFO_RENAME(vl::reflection::description::ITypeDescriptor, system::reflection::TypeDescriptor)
+
+#endif
 
 /***********************************************************************
 Helper Functions
@@ -4983,7 +4826,6 @@ LoadPredefinedTypes
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IValueType)
 				CLASS_MEMBER_METHOD(CreateDefault, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(Compare, { L"a" _ L"b" })
 			END_INTERFACE_MEMBER(IValueType)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IEnumType)

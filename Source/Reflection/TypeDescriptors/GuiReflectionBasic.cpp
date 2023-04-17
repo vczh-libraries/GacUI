@@ -28,6 +28,10 @@ Type Declaration
 				STRUCT_MEMBER(columnSpan)
 			END_STRUCT_MEMBER(SiteValue)
 
+			BEGIN_CLASS_MEMBER(LocalizedStrings)
+				CLASS_MEMBER_STATIC_METHOD(FirstOrEmpty, {L"formats"})
+			END_CLASS_MEMBER(LocalizedStrings)
+
 			BEGIN_STRUCT_MEMBER(Color)
 				valueType = Ptr(new SerializableValueType<Color>);
 				serializableType = Ptr(new SerializableType<Color>);

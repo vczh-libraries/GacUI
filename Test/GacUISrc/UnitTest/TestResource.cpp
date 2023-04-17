@@ -109,4 +109,6 @@ TEST_FILE
 	LoadResource(L"Resource.FailedScript.Animations2.xml");
 	LoadResource(L"Resource.FailedScript.Strings.xml");
 	LoadResource(L"Resource.FailedScript.Strings2.xml");
+	LoadResource(L"Resource.FailedScript.Strings3.xml");
+	LoadResource(L"Resource.FailedScript.Strings4.xml");
 }

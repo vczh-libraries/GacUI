@@ -45,7 +45,8 @@ Rich Content Document (style)
 			static DocumentFontSize			Parse(const WString& value);
 			WString							ToString()const;
 
-			bool operator==(const DocumentFontSize& value) const = default;
+			std::partial_ordering operator<=>(const DocumentFontSize&) const = default;
+			bool operator==(const DocumentFontSize&) const = default;
 		};
 
 		/// <summary>Represents a text style.</summary>

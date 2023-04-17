@@ -318,6 +318,7 @@ GuiVirtualTreeListControl
 				void								OnItemExpanded(tree::INodeProvider* node)override;
 				void								OnItemCollapsed(tree::INodeProvider* node)override;
 
+				vint								FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection)override;
 			protected:
 				tree::NodeItemProvider*				nodeItemProvider;
 				tree::INodeItemView*				nodeItemView;

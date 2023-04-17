@@ -11,6 +11,7 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_DEMO
 
 #include "../../../../Source/GacUI.h"
+#include "../../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUI.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)
@@ -328,8 +329,9 @@ namespace vl_workflow_global
 	class __vwsnc134_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc135_Demo_demo_TextBoxSubTabPageConstructor___vwsn_demo_TextBoxSubTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc136_Demo_demo_TextBoxTabPageConstructor___vwsn_demo_TextBoxTabPage_Initialize__vl_reflection_description_IValueSubscription;
-	class __vwsnc137_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
-	class __vwsnc138_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+	class __vwsnc137_Demo_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
+	class __vwsnc138_Demo_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
+	class __vwsnc139_Demo_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
 	class __vwsnc13_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc14_Demo_demo_RepeatTabPageConstructor___vwsn_demo_RepeatTabPage_Initialize__vl_reflection_description_IValueSubscription;
 	class __vwsnc15_Demo_demo_SubWindowConstructor___vwsn_demo_SubWindow_Initialize__vl_reflection_description_IValueSubscription;
@@ -475,6 +477,7 @@ namespace demo
 	class DateFilter;
 	class DatePickerTabPageConstructor;
 	class DatePickerTabPage;
+	class DialogStringsInjection;
 	class DocumentBoxSubTabPageConstructor;
 	class DocumentBoxSubTabPage;
 	class DocumentEditorBaseConstructor;
@@ -1134,6 +1137,17 @@ namespace demo
 	public:
 		DatePickerTabPage();
 		~DatePickerTabPage();
+	};
+
+	class DialogStringsInjection : public ::vl::Object, public ::vl::reflection::Description<DialogStringsInjection>
+	{
+		friend class ::vl_workflow_global::__vwsnc137_Demo_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<DialogStringsInjection>;
+#endif
+	public:
+		static ::vl::Ptr<::gaclib_controls::IDialogStringsStrings> __vwsn_ls_zh_CN_BuildStrings(::vl::Locale __vwsn_ls_locale);
+		DialogStringsInjection();
 	};
 
 	class DocumentBoxSubTabPageConstructor : public ::vl::Object, public ::vl::reflection::Description<DocumentBoxSubTabPageConstructor>
@@ -2739,13 +2753,15 @@ namespace demo
 
 	class StringResource : public ::vl::Object, public ::vl::reflection::Description<StringResource>
 	{
-		friend class ::vl_workflow_global::__vwsnc137_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
-		friend class ::vl_workflow_global::__vwsnc138_Demo_demo_StringResource_Get__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc138_Demo_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings;
+		friend class ::vl_workflow_global::__vwsnc139_Demo_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<StringResource>;
 #endif
 	public:
-		static ::vl::WString __vwsn_ls_First(const ::vl::collections::LazyList<::vl::WString>& __vwsn_ls_formats);
+		static ::vl::Ptr<::demo::IStringResourceStrings> __vwsn_ls_en_US_BuildStrings(::vl::Locale __vwsn_ls_locale);
+		static ::vl::Ptr<::demo::IStringResourceStrings> __vwsn_ls_zh_CN_BuildStrings(::vl::Locale __vwsn_ls_locale);
+		static void Install(::vl::Locale __vwsn_ls_locale, ::vl::Ptr<::demo::IStringResourceStrings> __vwsn_ls_impl);
 		static ::vl::Ptr<::demo::IStringResourceStrings> Get(::vl::Locale __vwsn_ls_locale);
 		StringResource();
 	};
@@ -3232,6 +3248,8 @@ namespace vl_workflow_global
 	class Demo
 	{
 	public:
+
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_ls_StringResource;
 
 		void LoadListView(::vl::presentation::controls::GuiInstanceRootObject* root, const ::vl::Func<void(::vl::Ptr<::vl::presentation::controls::list::ListViewItem>)>& callback);
 		::vl::WString ToString(::demo::MyCategory value);
@@ -6355,12 +6373,57 @@ Closures
 		bool Close() override;
 	};
 
-	class __vwsnc137_Demo_demo_StringResource_Get__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc137_Demo_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings : public ::vl::Object, public virtual ::gaclib_controls::IDialogStringsStrings
+	{
+	public:
+		__vwsnc137_Demo_demo_DialogStringsInjection___vwsn_ls_zh_CN_BuildStrings__gaclib_controls_IDialogStringsStrings();
+
+		::vl::WString Abort() override;
+		::vl::WString Blue() override;
+		::vl::WString Bold() override;
+		::vl::WString Cancel() override;
+		::vl::WString Color() override;
+		::vl::WString ColorDialogTitle() override;
+		::vl::WString Continue() override;
+		::vl::WString FileDialogAskCreateFile() override;
+		::vl::WString FileDialogAskOverrideFile() override;
+		::vl::WString FileDialogErrorEmptySelection() override;
+		::vl::WString FileDialogErrorFileExpected() override;
+		::vl::WString FileDialogErrorFileNotExist() override;
+		::vl::WString FileDialogErrorFolderNotExist() override;
+		::vl::WString FileDialogErrorMultipleSelectionNotEnabled() override;
+		::vl::WString FileDialogFileName() override;
+		::vl::WString FileDialogOpen() override;
+		::vl::WString FileDialogSave() override;
+		::vl::WString FileDialogTextLoadingFiles() override;
+		::vl::WString FileDialogTextLoadingFolders() override;
+		::vl::WString FontColorGroup() override;
+		::vl::WString FontColorGroup2() override;
+		::vl::WString FontDialogTitle() override;
+		::vl::WString FontEffectGroup() override;
+		::vl::WString FontNameGroup() override;
+		::vl::WString FontPreviewGroup() override;
+		::vl::WString FontSizeGroup() override;
+		::vl::WString Green() override;
+		::vl::WString HAA() override;
+		::vl::WString Ignore() override;
+		::vl::WString Italic() override;
+		::vl::WString No() override;
+		::vl::WString OK() override;
+		::vl::WString Red() override;
+		::vl::WString Retry() override;
+		::vl::WString TryAgain() override;
+		::vl::WString Underline() override;
+		::vl::WString VAA() override;
+		::vl::WString Yes() override;
+	};
+
+	class __vwsnc138_Demo_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc137_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc138_Demo_demo_StringResource___vwsn_ls_en_US_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;
@@ -6376,12 +6439,12 @@ Closures
 		::vl::WString YearMonthDate(::vl::DateTime __vwsn_ls_0) override;
 	};
 
-	class __vwsnc138_Demo_demo_StringResource_Get__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
+	class __vwsnc139_Demo_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings : public ::vl::Object, public virtual ::demo::IStringResourceStrings
 	{
 	public:
 		::vl::Locale __vwsn_ls_locale;
 
-		__vwsnc138_Demo_demo_StringResource_Get__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
+		__vwsnc139_Demo_demo_StringResource___vwsn_ls_zh_CN_BuildStrings__demo_IStringResourceStrings(::vl::Locale __vwsnctor___vwsn_ls_locale);
 
 		::vl::WString Currency(const ::vl::WString& __vwsn_ls_0) override;
 		::vl::WString DateFormat(::vl::DateTime __vwsn_ls_0) override;

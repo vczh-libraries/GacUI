@@ -156,6 +156,7 @@ namespace vl::workflow
 	class WfStateSwitchCase;
 	class WfStateSwitchStatement;
 	class WfStatement;
+	class WfStaticInitDeclaration;
 	class WfStringExpression;
 	class WfStructDeclaration;
 	class WfStructMember;
@@ -484,6 +485,7 @@ namespace vl::workflow
 			virtual void Visit(WfVariableDeclaration* node) = 0;
 			virtual void Visit(WfEventDeclaration* node) = 0;
 			virtual void Visit(WfPropertyDeclaration* node) = 0;
+			virtual void Visit(WfStaticInitDeclaration* node) = 0;
 			virtual void Visit(WfConstructorDeclaration* node) = 0;
 			virtual void Visit(WfDestructorDeclaration* node) = 0;
 			virtual void Visit(WfClassDeclaration* node) = 0;
@@ -643,6 +645,14 @@ namespace vl::workflow
 		vl::glr::ParsingToken getter;
 		vl::glr::ParsingToken setter;
 		vl::glr::ParsingToken valueChangedEvent;
+
+		void Accept(WfDeclaration::IVisitor* visitor) override;
+	};
+
+	class WfStaticInitDeclaration : public WfDeclaration, vl::reflection::Description<WfStaticInitDeclaration>
+	{
+	public:
+		vl::Ptr<WfStatement> statement;
 
 		void Accept(WfDeclaration::IVisitor* visitor) override;
 	};
@@ -1494,6 +1504,7 @@ namespace vl::reflection::description
 	DECL_TYPE_INFO(vl::workflow::WfVariableDeclaration)
 	DECL_TYPE_INFO(vl::workflow::WfEventDeclaration)
 	DECL_TYPE_INFO(vl::workflow::WfPropertyDeclaration)
+	DECL_TYPE_INFO(vl::workflow::WfStaticInitDeclaration)
 	DECL_TYPE_INFO(vl::workflow::WfClassKind)
 	DECL_TYPE_INFO(vl::workflow::WfConstructorType)
 	DECL_TYPE_INFO(vl::workflow::WfBaseConstructorCall)
@@ -1931,6 +1942,11 @@ namespace vl::reflection::description
 		}
 
 		void Visit(vl::workflow::WfPropertyDeclaration* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::workflow::WfStaticInitDeclaration* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}
@@ -2693,6 +2709,14 @@ namespace vl::workflow::builder
 		MakeStateSwitchStatement& type(WfStateSwitchType value);
 	};
 
+	class MakeStaticInitDeclaration : public vl::glr::ParsingAstBuilder<WfStaticInitDeclaration>
+	{
+	public:
+		MakeStaticInitDeclaration& statement(const vl::Ptr<WfStatement>& value);
+		MakeStaticInitDeclaration& attributes(const vl::Ptr<WfAttribute>& value);
+		MakeStaticInitDeclaration& name(const vl::WString& value);
+	};
+
 	class MakeStringExpression : public vl::glr::ParsingAstBuilder<WfStringExpression>
 	{
 	public:
@@ -2964,6 +2988,7 @@ namespace vl::workflow::copy_visitor
 		void CopyFields(WfStateSwitchCase* from, WfStateSwitchCase* to);
 		void CopyFields(WfStateSwitchStatement* from, WfStateSwitchStatement* to);
 		void CopyFields(WfStatement* from, WfStatement* to);
+		void CopyFields(WfStaticInitDeclaration* from, WfStaticInitDeclaration* to);
 		void CopyFields(WfStringExpression* from, WfStringExpression* to);
 		void CopyFields(WfStructDeclaration* from, WfStructDeclaration* to);
 		void CopyFields(WfStructMember* from, WfStructMember* to);
@@ -3072,6 +3097,7 @@ namespace vl::workflow::copy_visitor
 		void Visit(WfVariableDeclaration* node) override;
 		void Visit(WfEventDeclaration* node) override;
 		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfStaticInitDeclaration* node) override;
 		void Visit(WfConstructorDeclaration* node) override;
 		void Visit(WfDestructorDeclaration* node) override;
 		void Visit(WfClassDeclaration* node) override;
@@ -3197,6 +3223,7 @@ namespace vl::workflow::copy_visitor
 		vl::Ptr<WfStateMachineDeclaration> CopyNode(WfStateMachineDeclaration* node);
 		vl::Ptr<WfStateMachineStatement> CopyNode(WfStateMachineStatement* node);
 		vl::Ptr<WfStateSwitchStatement> CopyNode(WfStateSwitchStatement* node);
+		vl::Ptr<WfStaticInitDeclaration> CopyNode(WfStaticInitDeclaration* node);
 		vl::Ptr<WfStringExpression> CopyNode(WfStringExpression* node);
 		vl::Ptr<WfStructDeclaration> CopyNode(WfStructDeclaration* node);
 		vl::Ptr<WfSwitchStatement> CopyNode(WfSwitchStatement* node);
@@ -3344,6 +3371,7 @@ namespace vl::workflow::empty_visitor
 		void Visit(WfVariableDeclaration* node) override;
 		void Visit(WfEventDeclaration* node) override;
 		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfStaticInitDeclaration* node) override;
 		void Visit(WfConstructorDeclaration* node) override;
 		void Visit(WfDestructorDeclaration* node) override;
 		void Visit(WfClassDeclaration* node) override;
@@ -3572,6 +3600,7 @@ namespace vl::workflow::json_visitor
 		virtual void PrintFields(WfStateSwitchCase* node);
 		virtual void PrintFields(WfStateSwitchStatement* node);
 		virtual void PrintFields(WfStatement* node);
+		virtual void PrintFields(WfStaticInitDeclaration* node);
 		virtual void PrintFields(WfStringExpression* node);
 		virtual void PrintFields(WfStructDeclaration* node);
 		virtual void PrintFields(WfStructMember* node);
@@ -3663,6 +3692,7 @@ namespace vl::workflow::json_visitor
 		void Visit(WfVariableDeclaration* node) override;
 		void Visit(WfEventDeclaration* node) override;
 		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfStaticInitDeclaration* node) override;
 		void Visit(WfConstructorDeclaration* node) override;
 		void Visit(WfDestructorDeclaration* node) override;
 		void Visit(WfClassDeclaration* node) override;
@@ -3845,6 +3875,7 @@ namespace vl::workflow::traverse_visitor
 		virtual void Traverse(WfStateSwitchCase* node);
 		virtual void Traverse(WfStateSwitchStatement* node);
 		virtual void Traverse(WfStatement* node);
+		virtual void Traverse(WfStaticInitDeclaration* node);
 		virtual void Traverse(WfStringExpression* node);
 		virtual void Traverse(WfStructDeclaration* node);
 		virtual void Traverse(WfStructMember* node);
@@ -3957,6 +3988,7 @@ namespace vl::workflow::traverse_visitor
 		virtual void Finishing(WfStateSwitchCase* node);
 		virtual void Finishing(WfStateSwitchStatement* node);
 		virtual void Finishing(WfStatement* node);
+		virtual void Finishing(WfStaticInitDeclaration* node);
 		virtual void Finishing(WfStringExpression* node);
 		virtual void Finishing(WfStructDeclaration* node);
 		virtual void Finishing(WfStructMember* node);
@@ -4048,6 +4080,7 @@ namespace vl::workflow::traverse_visitor
 		void Visit(WfVariableDeclaration* node) override;
 		void Visit(WfEventDeclaration* node) override;
 		void Visit(WfPropertyDeclaration* node) override;
+		void Visit(WfStaticInitDeclaration* node) override;
 		void Visit(WfConstructorDeclaration* node) override;
 		void Visit(WfDestructorDeclaration* node) override;
 		void Visit(WfClassDeclaration* node) override;
@@ -4211,29 +4244,30 @@ namespace vl::workflow
 		StateSwitchCase = 83,
 		StateSwitchStatement = 84,
 		Statement = 85,
-		StringExpression = 86,
-		StructDeclaration = 87,
-		StructMember = 88,
-		SwitchCase = 89,
-		SwitchStatement = 90,
-		ThisExpression = 91,
-		TopQualifiedExpression = 92,
-		TopQualifiedType = 93,
-		TryStatement = 94,
-		Type = 95,
-		TypeCastingExpression = 96,
-		TypeOfExpressionExpression = 97,
-		TypeOfTypeExpression = 98,
-		TypeTestingExpression = 99,
-		UnaryExpression = 100,
-		VariableDeclaration = 101,
-		VariableStatement = 102,
-		VirtualCfeDeclaration = 103,
-		VirtualCfeExpression = 104,
-		VirtualCseDeclaration = 105,
-		VirtualCseExpression = 106,
-		VirtualCseStatement = 107,
-		WhileStatement = 108,
+		StaticInitDeclaration = 86,
+		StringExpression = 87,
+		StructDeclaration = 88,
+		StructMember = 89,
+		SwitchCase = 90,
+		SwitchStatement = 91,
+		ThisExpression = 92,
+		TopQualifiedExpression = 93,
+		TopQualifiedType = 94,
+		TryStatement = 95,
+		Type = 96,
+		TypeCastingExpression = 97,
+		TypeOfExpressionExpression = 98,
+		TypeOfTypeExpression = 99,
+		TypeTestingExpression = 100,
+		UnaryExpression = 101,
+		VariableDeclaration = 102,
+		VariableStatement = 103,
+		VirtualCfeDeclaration = 104,
+		VirtualCfeExpression = 105,
+		VirtualCseDeclaration = 106,
+		VirtualCseExpression = 107,
+		VirtualCseStatement = 108,
+		WhileStatement = 109,
 	};
 
 	enum class WorkflowFields : vl::vint32_t
@@ -4399,42 +4433,43 @@ namespace vl::workflow
 		StateSwitchCase_statement = 158,
 		StateSwitchStatement_caseBranches = 159,
 		StateSwitchStatement_type = 160,
-		StringExpression_value = 161,
-		StructDeclaration_members = 162,
-		StructMember_attributes = 163,
-		StructMember_name = 164,
-		StructMember_type = 165,
-		SwitchCase_expression = 166,
-		SwitchCase_statement = 167,
-		SwitchStatement_caseBranches = 168,
-		SwitchStatement_defaultBranch = 169,
-		SwitchStatement_expression = 170,
-		TopQualifiedExpression_name = 171,
-		TopQualifiedType_name = 172,
-		TryStatement_catchStatement = 173,
-		TryStatement_finallyStatement = 174,
-		TryStatement_name = 175,
-		TryStatement_protectedStatement = 176,
-		TypeCastingExpression_expression = 177,
-		TypeCastingExpression_strategy = 178,
-		TypeCastingExpression_type = 179,
-		TypeOfExpressionExpression_expression = 180,
-		TypeOfTypeExpression_type = 181,
-		TypeTestingExpression_expression = 182,
-		TypeTestingExpression_test = 183,
-		TypeTestingExpression_type = 184,
-		UnaryExpression_op = 185,
-		UnaryExpression_operand = 186,
-		VariableDeclaration_expression = 187,
-		VariableDeclaration_type = 188,
-		VariableStatement_variable = 189,
-		VirtualCfeDeclaration_expandedDeclarations = 190,
-		VirtualCfeExpression_expandedExpression = 191,
-		VirtualCseDeclaration_expandedDeclarations = 192,
-		VirtualCseExpression_expandedExpression = 193,
-		VirtualCseStatement_expandedStatement = 194,
-		WhileStatement_condition = 195,
-		WhileStatement_statement = 196,
+		StaticInitDeclaration_statement = 161,
+		StringExpression_value = 162,
+		StructDeclaration_members = 163,
+		StructMember_attributes = 164,
+		StructMember_name = 165,
+		StructMember_type = 166,
+		SwitchCase_expression = 167,
+		SwitchCase_statement = 168,
+		SwitchStatement_caseBranches = 169,
+		SwitchStatement_defaultBranch = 170,
+		SwitchStatement_expression = 171,
+		TopQualifiedExpression_name = 172,
+		TopQualifiedType_name = 173,
+		TryStatement_catchStatement = 174,
+		TryStatement_finallyStatement = 175,
+		TryStatement_name = 176,
+		TryStatement_protectedStatement = 177,
+		TypeCastingExpression_expression = 178,
+		TypeCastingExpression_strategy = 179,
+		TypeCastingExpression_type = 180,
+		TypeOfExpressionExpression_expression = 181,
+		TypeOfTypeExpression_type = 182,
+		TypeTestingExpression_expression = 183,
+		TypeTestingExpression_test = 184,
+		TypeTestingExpression_type = 185,
+		UnaryExpression_op = 186,
+		UnaryExpression_operand = 187,
+		VariableDeclaration_expression = 188,
+		VariableDeclaration_type = 189,
+		VariableStatement_variable = 190,
+		VirtualCfeDeclaration_expandedDeclarations = 191,
+		VirtualCfeExpression_expandedExpression = 192,
+		VirtualCseDeclaration_expandedDeclarations = 193,
+		VirtualCseExpression_expandedExpression = 194,
+		VirtualCseStatement_expandedStatement = 195,
+		WhileStatement_condition = 196,
+		WhileStatement_statement = 197,
 	};
 
 	extern const wchar_t* WorkflowTypeName(WorkflowClasses type);
@@ -4662,29 +4697,30 @@ namespace vl::workflow
 		_Variable = 602,
 		_Event = 611,
 		_Property = 620,
-		_BaseConstructorCall = 633,
-		_ConstructorType = 641,
-		_Constructor = 646,
-		_Destructor = 657,
-		_ClassBody = 661,
-		_Class = 670,
-		_EnumItemInt = 682,
-		_EnumItemA = 685,
-		_EnumItemB = 692,
-		_Enum = 701,
-		_StructMember = 716,
-		_Struct = 723,
-		_APConfig = 730,
-		_AutoPropertyKind = 747,
-		_AutoProperty = 754,
-		_CastResultInterface = 763,
-		_DeclarationCandidates = 773,
-		_Declaration = 787,
-		_UsingFragment = 791,
-		_UsingItem = 795,
-		_UsingPath = 799,
-		_ModuleBody = 806,
-		_Module = 812,
+		_StaticInit = 633,
+		_BaseConstructorCall = 637,
+		_ConstructorType = 645,
+		_Constructor = 650,
+		_Destructor = 661,
+		_ClassBody = 665,
+		_Class = 674,
+		_EnumItemInt = 686,
+		_EnumItemA = 689,
+		_EnumItemB = 696,
+		_Enum = 705,
+		_StructMember = 720,
+		_Struct = 727,
+		_APConfig = 734,
+		_AutoPropertyKind = 751,
+		_AutoProperty = 758,
+		_CastResultInterface = 767,
+		_DeclarationCandidates = 777,
+		_Declaration = 792,
+		_UsingFragment = 796,
+		_UsingItem = 800,
+		_UsingPath = 804,
+		_ModuleBody = 811,
+		_Module = 817,
 	};
 
 	const wchar_t* ParserRuleName(vl::vint index);
@@ -5446,6 +5482,7 @@ Error Messages
 				static glr::ParsingError					WrongDeclaration(WfDestructorDeclaration* node);
 				static glr::ParsingError					WrongDeclaration(WfAutoPropertyDeclaration* node);
 				static glr::ParsingError					WrongDeclaration(WfStateMachineDeclaration* node);
+				static glr::ParsingError					WrongDeclaration(WfStaticInitDeclaration* node);
 				static glr::ParsingError					WrongDeclarationInInterfaceConstructor(WfDeclaration* node);
 				static glr::ParsingError					EnumValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
 				static glr::ParsingError					FlagValuesNotConsecutiveFromZero(WfEnumDeclaration* node);
@@ -5797,6 +5834,7 @@ namespace vl
 				collections::Group<Ptr<WfClassDeclaration>, Ptr<WfClassDeclaration>>		classDecls;			// class (nullable) to direct internal classes
 				collections::List<Ptr<WfVariableDeclaration>>								varDecls;			// global variables
 				collections::List<Ptr<WfFunctionDeclaration>>								funcDecls;			// global functions
+				collections::List<Ptr<WfStaticInitDeclaration>>								staticInitDecls;		// global static initialization declarations
 
 				collections::Group<WString, Ptr<WfClassDeclaration>>						customFilesClasses;	// @cpp:File to top level classes, empty key means the default cpp
 				collections::Group<vint, Ptr<WfClassDeclaration>>							headerFilesClasses;	// non-@cpp:File header file to top level classes, 0 means the default header
@@ -5847,7 +5885,6 @@ namespace vl
 				void					WriteHeader_MainHeaderEnums(stream::StreamWriter& writer, collections::List<WString>& nss);
 
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix, bool mainHeaderDefinition);
-				void					WriteHeader_StructOp(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, const WString& name, const WString& prefix);
 				void					WriteHeader_Struct(stream::StreamWriter& writer, Ptr<WfStructDeclaration> decl, collections::List<WString>& nss, bool mainHeaderDefinition);
 				void					WriteHeader_MainHeaderStructs(stream::StreamWriter& writer, collections::List<WString>& nss);
 

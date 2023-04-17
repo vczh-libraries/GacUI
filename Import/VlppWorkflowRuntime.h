@@ -704,7 +704,6 @@ Custom Type
 					WfValueType(WfStruct* _owner);
 
 					Value								CreateDefault()override;
-					IBoxedValue::CompareResult			Compare(const Value& a, const Value& b)override;
 				};
 
 			protected:
@@ -740,7 +739,6 @@ Custom Type
 					WfValueType(WfEnum* _owner);
 
 					Value								CreateDefault()override;
-					IBoxedValue::CompareResult			Compare(const Value& a, const Value& b)override;
 				};
 
 				class WfEnumType : public Object, public virtual IEnumType
@@ -1060,7 +1058,11 @@ Lambda
 			{
 				typedef reflection::description::Value										Value;
 			public:
-				Ptr<WfRuntimeGlobalContext>			globalContext;
+				// use raw pointer because
+				// if a lambda is stored in a global variable
+				// it is stored in globalContext->globalVariables->variables[i]
+				// so that globalContext has a cyclic reference to itself
+				WfRuntimeGlobalContext*				globalContext = nullptr;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				vint								functionIndex;
 
@@ -1082,7 +1084,11 @@ InterfaceInstance
 				typedef reflection::description::IValueReadonlyList							IValueReadonlyList;
 				typedef collections::Dictionary<IMethodInfo*, vint>							FunctionMap;
 			public:
-				Ptr<WfRuntimeGlobalContext>			globalContext;
+				// use raw pointer because
+				// if a lambda is stored in a global variable
+				// it is stored in globalContext->globalVariables->variables[i]
+				// so that globalContext has a cyclic reference to itself
+				WfRuntimeGlobalContext*				globalContext = nullptr;
 				Ptr<WfRuntimeVariableContext>		capturedVariables;
 				FunctionMap							functions;
 

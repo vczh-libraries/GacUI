@@ -80,6 +80,7 @@ WorkflowCompiler (Compile)
 ***********************************************************************/
 
 		extern Ptr<workflow::WfModule>							Workflow_CreateModuleWithUsings(Ptr<GuiInstanceContext> context, const WString& moduleName);
+		extern WString											Workflow_InstallWithClass(const WString& className, Ptr<workflow::WfModule> module, Ptr<workflow::WfDeclaration> decl);
 		extern Ptr<workflow::WfClassDeclaration>				Workflow_InstallClass(const WString& className, Ptr<workflow::WfModule> module);
 		extern Ptr<workflow::WfBlockStatement>					Workflow_InstallCtorClass(types::ResolvingResult& resolvingResult, Ptr<workflow::WfModule> module);
 

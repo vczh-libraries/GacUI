@@ -612,6 +612,46 @@ GuiVirtualTreeListControl
 				NodeCollapsed.Execute(arguments);
 			}
 
+			vint GuiVirtualTreeListControl::FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection)
+			{
+				vint newIndex = GuiSelectableListControl::FindItemByVirtualKeyDirection(index, keyDirection);
+				if (newIndex != -1) return newIndex;
+
+				auto selectedNode = nodeItemView->RequestNode(index);
+				if (selectedNode)
+				{
+					bool hasChildren = selectedNode->GetChildCount() > 0;
+					bool expanding = selectedNode->GetExpanding();
+					switch (keyDirection)
+					{
+					case KeyDirection::Right:
+						if (hasChildren)
+						{
+							if (expanding)
+							{
+								selectedNode = selectedNode->GetChild(0);
+							}
+							else
+							{
+								selectedNode->SetExpanding(true);
+							}
+						}
+						break;
+					case KeyDirection::Left:
+						{
+							selectedNode->SetExpanding(false);
+							if (!expanding || !hasChildren)
+							{
+								selectedNode = selectedNode->GetParent();
+							}
+						}
+						break;
+					}
+				}
+
+				return selectedNode ? nodeItemView->CalculateNodeVisibilityIndex(selectedNode.Obj()) : -1;
+			}
+
 			void GuiVirtualTreeListControl::OnItemMouseEvent(compositions::GuiNodeMouseEvent& nodeEvent, compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments)
 			{
 				auto node = GetNodeItemView()->RequestNode(arguments.itemIndex);

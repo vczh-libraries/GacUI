@@ -27,10 +27,16 @@ namespace vl
 		{
 			struct SiteValue
 			{
-				vint			row = 0;
-				vint			column = 0;
-				vint			rowSpan = 1;
-				vint			columnSpan = 1;
+				vint					row = 0;
+				vint					column = 0;
+				vint					rowSpan = 1;
+				vint					columnSpan = 1;
+			};
+
+			class LocalizedStrings
+			{
+			public:
+				static WString			FirstOrEmpty(const collections::LazyList<WString>& formats);
 			};
 		}
 	}
@@ -50,7 +56,6 @@ Serialization
 				static presentation::Color GetDefaultValue();
 				static bool Serialize(const presentation::Color& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::Color& output);
-				static IBoxedValue::CompareResult Compare(const presentation::Color& a, const presentation::Color& b);
 			};
 
 			template<>
@@ -59,7 +64,6 @@ Serialization
 				static presentation::DocumentFontSize GetDefaultValue();
 				static bool Serialize(const presentation::DocumentFontSize& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::DocumentFontSize& output);
-				static IBoxedValue::CompareResult Compare(const presentation::DocumentFontSize& a, const presentation::DocumentFontSize& b);
 			};
 
 			template<>
@@ -68,7 +72,6 @@ Serialization
 				static presentation::GlobalStringKey GetDefaultValue();
 				static bool Serialize(const presentation::GlobalStringKey& input, WString& output);
 				static bool Deserialize(const WString& input, presentation::GlobalStringKey& output);
-				static IBoxedValue::CompareResult Compare(const presentation::GlobalStringKey& a, const presentation::GlobalStringKey& b);
 			};
 
 /***********************************************************************

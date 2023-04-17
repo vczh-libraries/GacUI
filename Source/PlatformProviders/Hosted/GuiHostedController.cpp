@@ -638,8 +638,6 @@ GuiHostedController::INativeWindowListener (IO Event Handling)
 
 		IMPLEMENT_KEY_CALLBACK(KeyDown, Key)
 		IMPLEMENT_KEY_CALLBACK(KeyUp, Key)
-		IMPLEMENT_KEY_CALLBACK(SysKeyDown, Key)
-		IMPLEMENT_KEY_CALLBACK(SysKeyUp, Key)
 		IMPLEMENT_KEY_CALLBACK(Char, Char)
 
 #undef IMPLEMENT_KEY_CALLBACK
