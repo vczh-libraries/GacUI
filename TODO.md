@@ -2,8 +2,7 @@
 
 ## Known Issues
 
-- Issue on dialog service
-  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
+- FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
 - GacUI_Host
   - ComboBox doesn't display the selected item when it is opened in a datagrid.
@@ -14,6 +13,9 @@
   - Add HostedWindow theme.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
+- Add DarkSkin and Dialog in Reflection(32|64).bin
+- Tutorial
+  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
 
 ## Optional
 
@@ -21,18 +23,17 @@
   - Including `MaximizedBox`, `MinimizedBox`, `Border`, `SizeBox`, `IconVisible`, `TitleBar`, `Icon`, `Title`, `SizeState`.
   - In `GuiControlHost` or `GuiWindow`, setting border or state doesn't update the control template, it is updated in that callback.
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
-- Issue on dialog service
+- FakeDialogService
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
-- Issues on Templates
+- Theme
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-- Issues on GDI
+- GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh
 - Rewrite GacBuild.ps1 in C++
-- Add DarkSkin and Dialog in Reflection(32|64).bin
 - Add `MoveToScreenCenterAfterLayouted` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
 
 ## Document
