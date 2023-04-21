@@ -112,11 +112,11 @@
             <Tab>
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.Pages>
-                <demo:LocalizedMessageDialogTabPage/>
-                <demo:LocalizedColorDialogTabPage/>
-                <demo:LocalizedFontDialogTabPage/>
-                <demo:LocalizedOpenFileDialogTabPage/>
-                <demo:LocalizedSaveFileDialogTabPage/>
+                <demo:LocalizedMessageDialogTabPage Alt="M"/>
+                <demo:LocalizedColorDialogTabPage Alt="C"/>
+                <demo:LocalizedFontDialogTabPage Alt="F"/>
+                <demo:LocalizedOpenFileDialogTabPage Alt="O"/>
+                <demo:LocalizedSaveFileDialogTabPage Alt="S"/>
               </att.Pages>
             </Tab>
           </Cell>
