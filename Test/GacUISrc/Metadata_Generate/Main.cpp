@@ -1,4 +1,10 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
+#ifdef VCZH_64
+#include "../Generated_DarkSkin/Source_x64/DarkSkinReflection.h"
+#else
+#include "../Generated_DarkSkin/Source_x86/DarkSkinReflection.h"
+#endif
 #ifdef VCZH_MSVC
 #include <Windows.h>
 #endif
@@ -8,15 +14,6 @@ using namespace vl::filesystem;
 using namespace vl::stream;
 using namespace vl::reflection;
 using namespace vl::reflection::description;
-
-namespace vl
-{
-	namespace presentation
-	{
-		void GuiInitializeUtilities() {}
-		void GuiFinalizeUtilities() {}
-	}
-}
 
 namespace vl
 {
@@ -54,7 +51,7 @@ WString GetExePath()
 
 WString GetTestOutputPath()
 {
-#ifdef _WIN64
+#ifdef VCZH_64
 	return GetExePath() + L"../../../Resources/Metadata/";
 #else
 	return GetExePath() + L"../../Resources/Metadata/";
@@ -68,13 +65,19 @@ WString GetTestOutputPath()
 #endif
 
 #ifdef VCZH_64
+#define REFLECTION_CORE_BIN L"ReflectionCore64.bin"
+#define REFLECTION_CORE_OUTPUT L"ReflectionCore64.txt"
+#else
+#define REFLECTION_CORE_BIN L"ReflectionCore32.bin"
+#define REFLECTION_CORE_OUTPUT L"ReflectionCore32.txt"
+#endif
+
+#ifdef VCZH_64
 #define REFLECTION_BIN L"Reflection64.bin"
 #define REFLECTION_OUTPUT L"Reflection64.txt"
-#define REFLECTION_BASELINE L"Reflection64.txt"
 #else
 #define REFLECTION_BIN L"Reflection32.bin"
 #define REFLECTION_OUTPUT L"Reflection32.txt"
-#define REFLECTION_BASELINE L"Reflection32.txt"
 #endif
 
 void GuiMain()
@@ -99,6 +102,22 @@ int main(int argc, char* argv[])
 	LoadGuiTemplateTypes();
 	LoadGuiControlTypes();
 	GetGlobalTypeManager()->Load();
+
+	{
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_BIN, FileStream::WriteOnly);
+		GenerateMetaonlyTypes(fileStream);
+	}
+	{
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_OUTPUT, FileStream::WriteOnly);
+		BomEncoder encoder(BomEncoder::Utf8);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
+		LogTypeManager(writer);
+	}
+
+	LoadGuiFakeDialogServiceUITypes();
+	LoadDarkSkinTypes();
+
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_BIN, FileStream::WriteOnly);
 		GenerateMetaonlyTypes(fileStream);

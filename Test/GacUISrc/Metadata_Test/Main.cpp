@@ -15,15 +15,6 @@ using namespace vl::reflection;
 using namespace vl::reflection::description;
 using namespace vl::workflow::analyzer;
 
-namespace vl
-{
-	namespace presentation
-	{
-		void GuiInitializeUtilities() {}
-		void GuiFinalizeUtilities() {}
-	}
-}
-
 #if defined VCZH_MSVC
 WString GetExePath()
 {
@@ -58,13 +49,14 @@ WString GetTestOutputPath()
 #endif
 
 WfCpuArchitecture targetCpuArchitecture = WfCpuArchitecture::x64;
+bool coreTypes = false;
 
 const wchar_t* REFLECTION_BIN()
 {
 	switch (targetCpuArchitecture)
 	{
-	case WfCpuArchitecture::x86: return L"Reflection32.bin";
-	case WfCpuArchitecture::x64: return L"Reflection64.bin";
+	case WfCpuArchitecture::x86: return coreTypes ? L"ReflectionCore32.bin" : L"Reflection32.bin";
+	case WfCpuArchitecture::x64: return coreTypes ? L"ReflectionCore64.bin" : L"Reflection64.bin";
 	default:
 		CHECK_FAIL(L"The target CPU architecture is unspecified.");
 	}
@@ -74,8 +66,8 @@ const wchar_t* REFLECTION_BASELINE()
 {
 	switch (targetCpuArchitecture)
 	{
-	case WfCpuArchitecture::x86: return L"Reflection32.txt";
-	case WfCpuArchitecture::x64: return L"Reflection64.txt";
+	case WfCpuArchitecture::x86: return coreTypes ? L"ReflectionCore32.txt" : L"Reflection32.txt";
+	case WfCpuArchitecture::x64: return coreTypes ? L"ReflectionCore64.txt" : L"Reflection64.txt";
 	default:
 		CHECK_FAIL(L"The target CPU architecture is unspecified.");
 	}
@@ -85,8 +77,8 @@ const wchar_t* REFLECTION_OUTPUT()
 {
 	switch (targetCpuArchitecture)
 	{
-	case WfCpuArchitecture::x86: return L"Reflection32[2].txt";
-	case WfCpuArchitecture::x64: return L"Reflection64[2].txt";
+	case WfCpuArchitecture::x86: return coreTypes ? L"ReflectionCore32[2].txt" : L"Reflection32[2].txt";
+	case WfCpuArchitecture::x64: return coreTypes ? L"ReflectionCore64[2].txt" : L"Reflection64[2].txt";
 	default:
 		CHECK_FAIL(L"The target CPU architecture is unspecified.");
 	}
@@ -137,10 +129,21 @@ int wmain(int argc, wchar_t* argv[])
 int main(int argc, char* argv[])
 #endif
 {
+	coreTypes = true;
 	targetCpuArchitecture = WfCpuArchitecture::x86;
 	TestMetaonlyReflection();
 
+	coreTypes = true;
 	targetCpuArchitecture = WfCpuArchitecture::x64;
 	TestMetaonlyReflection();
+
+	coreTypes = false;
+	targetCpuArchitecture = WfCpuArchitecture::x86;
+	TestMetaonlyReflection();
+
+	coreTypes = false;
+	targetCpuArchitecture = WfCpuArchitecture::x64;
+	TestMetaonlyReflection();
+
 	return 0;
 }

@@ -1,5 +1,6 @@
 #include "GacGen.h"
 
+using namespace vl::collections;
 using namespace vl::filesystem;
 using namespace vl::presentation::controls;
 
@@ -687,28 +688,40 @@ public:
 
 	void Load()override
 	{
-		const wchar_t* BINARY_NAME = nullptr;
-		switch (targetCpuArchitecture)
-		{
-		case GuiResourceCpuArchitecture::x86:
-			BINARY_NAME = L"Reflection32.bin";
-			break;
-		case GuiResourceCpuArchitecture::x64:
-			BINARY_NAME = L"Reflection64.bin";
-			break;
-		default:;
-		}
 
 		FilePath exeFolder = FilePath(executablePath).GetFolder();
 		FilePath metadataFolder = exeFolder;
+		auto binaryName32 = WString::Unmanaged(L"Reflection32.bin");
+		auto binaryName64 = WString::Unmanaged(L"Reflection64.bin");
 		{
 			File metadataOverride = exeFolder / L"Metadata.txt";
 			if (metadataOverride.Exists())
 			{
-				auto path = metadataOverride.ReadAllTextByBom();
-				metadataFolder = exeFolder / path;
+				List<WString> lines;
+				metadataOverride.ReadAllLinesByBom(lines);
+				if (lines.Count() < 3)
+				{
+					Console::WriteLine(L"Metadata.txt should contains 3 lines for <MetadataFolder>, <Binary for x86>, <Binary for x64>.");
+					CHECK_FAIL(L"Metadata.txt should contains 3 lines for <MetadataFolder>, <Binary for x86>, <Binary for x64>.");
+				}
+				metadataFolder = exeFolder / lines[0];
+				binaryName32 = lines[1];
+				binaryName64 = lines[2];
 			}
 		}
+
+		const wchar_t* BINARY_NAME = nullptr;
+		switch (targetCpuArchitecture)
+		{
+		case GuiResourceCpuArchitecture::x86:
+			BINARY_NAME = binaryName32.Buffer();
+			break;
+		case GuiResourceCpuArchitecture::x64:
+			BINARY_NAME = binaryName64.Buffer();
+			break;
+		default:;
+		}
+
 		FilePath binaryPath = metadataFolder / BINARY_NAME;
 
 		if (!File(binaryPath).Exists())
