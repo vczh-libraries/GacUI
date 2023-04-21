@@ -1,4 +1,10 @@
 #include "../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h"
+#include "../../../Source/Utilities/FakeServices/Dialogs/Source/GuiFakeDialogServiceUIReflection.h"
+#ifdef VCZH_64
+#include "../Generated_DarkSkin/Source_x64/DarkSkinReflection.h"
+#else
+#include "../Generated_DarkSkin/Source_x86/DarkSkinReflection.h"
+#endif
 #ifdef VCZH_MSVC
 #include <Windows.h>
 #endif
@@ -45,7 +51,7 @@ WString GetExePath()
 
 WString GetTestOutputPath()
 {
-#ifdef _WIN64
+#ifdef VCZH_64
 	return GetExePath() + L"../../../Resources/Metadata/";
 #else
 	return GetExePath() + L"../../Resources/Metadata/";
@@ -108,6 +114,9 @@ int main(int argc, char* argv[])
 		StreamWriter writer(encoderStream);
 		LogTypeManager(writer);
 	}
+
+	LoadGuiFakeDialogServiceUITypes();
+	LoadDarkSkinTypes();
 
 	{
 		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_BIN, FileStream::WriteOnly);
