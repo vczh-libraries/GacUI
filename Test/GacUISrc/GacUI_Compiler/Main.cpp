@@ -30,8 +30,8 @@ const wchar_t* REFLECTION_BIN()
 {
 	switch (targetCpuArchitecture)
 	{
-	case GuiResourceCpuArchitecture::x86: return L"Metadata/Reflection32.bin";
-	case GuiResourceCpuArchitecture::x64: return L"Metadata/Reflection64.bin";
+	case GuiResourceCpuArchitecture::x86: return L"Metadata/ReflectionCore32.bin";
+	case GuiResourceCpuArchitecture::x64: return L"Metadata/ReflectionCore64.bin";
 	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
 	}
 }
