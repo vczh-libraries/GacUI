@@ -13,7 +13,6 @@
   - Add HostedWindow theme.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
-- Add DarkSkin and Dialog in Reflection(32|64).bin
 - Tutorial
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
 
@@ -54,6 +53,8 @@
 - GacUI
   - Fix GacUI compiler failure when compiled with reflection.
   - Remove SysKey callbacks, merge into Key callbacks.
+- GacGen
+  - Add DarkSkin and Dialog in Reflection(32|64).bin
 
 ## OS Provider Features
 
