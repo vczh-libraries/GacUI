@@ -1,4 +1,4 @@
-﻿================================(1/88)================================
+﻿================================(1/100)================================
 module <constructor>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -680,7 +680,7 @@ namespace demo
     }
 }
 
-================================(2/88)================================
+================================(2/100)================================
 module <instance>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -745,7 +745,7 @@ namespace demo
     }
 }
 
-================================(3/88)================================
+================================(3/100)================================
 module <constructor>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1466,7 +1466,7 @@ namespace demo
     }
 }
 
-================================(4/88)================================
+================================(4/100)================================
 module <instance>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1508,7 +1508,7 @@ namespace demo
     }
 }
 
-================================(5/88)================================
+================================(5/100)================================
 module <constructor>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1988,7 +1988,7 @@ namespace demo
     }
 }
 
-================================(6/88)================================
+================================(6/100)================================
 module <instance>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2046,7 +2046,7 @@ namespace demo
     }
 }
 
-================================(7/88)================================
+================================(7/100)================================
 module <constructor>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2159,16 +2159,16 @@ namespace demo
         var <precompile>27 : ::demo::LocalizedStringsTabPage* = null of (::demo::LocalizedStringsTabPage*);
 
         @cpp:Protected
-        var <precompile>28 : ::demo::DatePickerTabPage* = null of (::demo::DatePickerTabPage*);
+        var <precompile>28 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
 
         @cpp:Protected
-        var <precompile>29 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
+        var <precompile>29 : ::demo::DatePickerTabPage* = null of (::demo::DatePickerTabPage*);
 
         @cpp:Protected
-        var <precompile>30 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var <precompile>30 : ::presentation::controls::GuiTabPage* = null of (::presentation::controls::GuiTabPage*);
 
         @cpp:Protected
-        var <precompile>31 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+        var <precompile>31 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
 
         @cpp:Protected
         var <precompile>32 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
@@ -2219,10 +2219,13 @@ namespace demo
         var editorToolstrip : ::demo::DocumentEditorToolstrip* = null of (::demo::DocumentEditorToolstrip*);
 
         @cpp:Protected
-        var <precompile>39 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>39 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>40 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>40 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>41 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-MainWindow>Initialize(<this> : ::demo::MainWindow*) : (::system::Void)
@@ -2231,9 +2234,9 @@ namespace demo
             {
                 (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
-            (<precompile>40 = self.BoundsComposition);
+            (<precompile>41 = self.BoundsComposition);
             {
-                (<precompile>40.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
+                (<precompile>41.PreferredMinSize = {x : 640; y : 480;} of (::presentation::Size));
             }
             {
                 (self.Text = "Complete Control Showcase");
@@ -2438,13 +2441,21 @@ namespace demo
                 var <collection> = <precompile>23.Pages;
                 <collection>.Add(<precompile>27);
             }
-            (<precompile>28 = new (::demo::DatePickerTabPage*)());
+            (<precompile>28 = new (::demo::LocalizedDialogsTabPage*)());
             {
-                (<precompile>28.Alt = "D");
+                (<precompile>28.Alt = "L");
             }
             {
                 var <collection> = <precompile>23.Pages;
                 <collection>.Add(<precompile>28);
+            }
+            (<precompile>29 = new (::demo::DatePickerTabPage*)());
+            {
+                (<precompile>29.Alt = "D");
+            }
+            {
+                var <collection> = <precompile>23.Pages;
+                <collection>.Add(<precompile>29);
             }
             (<precompile>24 = <precompile>23.BoundsComposition);
             {
@@ -2458,28 +2469,28 @@ namespace demo
                 <collection>.Add(<precompile>22);
             }
             {
-                (<precompile>29 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
+                (<precompile>30 = new (::presentation::controls::GuiTabPage*)(::presentation::theme::ThemeName::CustomControl));
             }
             {
-                (<precompile>29.Alt = "W");
+                (<precompile>30.Alt = "W");
             }
             {
-                (<precompile>29.Text = "Window Manager");
+                (<precompile>30.Text = "Window Manager");
             }
-            (<precompile>30 = new (::presentation::compositions::GuiStackComposition*)());
+            (<precompile>31 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>30.Padding = 5 of (::system::Int64));
-            }
-            {
-                (<precompile>30.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>31.Padding = 5 of (::system::Int64));
             }
             {
-                (<precompile>30.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
+                (<precompile>31.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>30.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                (<precompile>31.AlignmentToParent = {left : 5; top : 5; right : 5; bottom : 5;} of (::presentation::Margin));
             }
-            (<precompile>31 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>31.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>32 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkFrame = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -2490,12 +2501,12 @@ namespace demo
                 (checkFrame.Text = "Customized Frame");
             }
             {
-                <precompile>31.AddChild(checkFrame.BoundsComposition);
+                <precompile>32.AddChild(checkFrame.BoundsComposition);
             }
             {
-                <precompile>30.AddChild(<precompile>31);
+                <precompile>31.AddChild(<precompile>32);
             }
-            (<precompile>32 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>33 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMax = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -2506,12 +2517,12 @@ namespace demo
                 (checkMax.Text = "MaximizedBox");
             }
             {
-                <precompile>32.AddChild(checkMax.BoundsComposition);
+                <precompile>33.AddChild(checkMax.BoundsComposition);
             }
             {
-                <precompile>30.AddChild(<precompile>32);
+                <precompile>31.AddChild(<precompile>33);
             }
-            (<precompile>33 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>34 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMin = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -2522,12 +2533,12 @@ namespace demo
                 (checkMin.Text = "MinimizedBox");
             }
             {
-                <precompile>33.AddChild(checkMin.BoundsComposition);
+                <precompile>34.AddChild(checkMin.BoundsComposition);
             }
             {
-                <precompile>30.AddChild(<precompile>33);
+                <precompile>31.AddChild(<precompile>34);
             }
-            (<precompile>34 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>35 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBorder = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -2538,12 +2549,12 @@ namespace demo
                 (checkBorder.Text = "Border");
             }
             {
-                <precompile>34.AddChild(checkBorder.BoundsComposition);
+                <precompile>35.AddChild(checkBorder.BoundsComposition);
             }
             {
-                <precompile>30.AddChild(<precompile>34);
+                <precompile>31.AddChild(<precompile>35);
             }
-            (<precompile>35 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>36 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkSizeBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -2554,12 +2565,12 @@ namespace demo
                 (checkSizeBox.Text = "SizeBox");
             }
             {
-                <precompile>35.AddChild(checkSizeBox.BoundsComposition);
+                <precompile>36.AddChild(checkSizeBox.BoundsComposition);
             }
             {
-                <precompile>30.AddChild(<precompile>35);
+                <precompile>31.AddChild(<precompile>36);
             }
-            (<precompile>36 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>37 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkIcon = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -2570,12 +2581,12 @@ namespace demo
                 (checkIcon.Text = "IconVisible");
             }
             {
-                <precompile>36.AddChild(checkIcon.BoundsComposition);
+                <precompile>37.AddChild(checkIcon.BoundsComposition);
             }
             {
-                <precompile>30.AddChild(<precompile>36);
+                <precompile>31.AddChild(<precompile>37);
             }
-            (<precompile>37 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>38 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkTitle = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -2586,30 +2597,30 @@ namespace demo
                 (checkTitle.Text = "TitleBar");
             }
             {
-                <precompile>37.AddChild(checkTitle.BoundsComposition);
+                <precompile>38.AddChild(checkTitle.BoundsComposition);
             }
             {
-                <precompile>30.AddChild(<precompile>37);
+                <precompile>31.AddChild(<precompile>38);
             }
-            (<precompile>38 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>39 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
-                (<precompile>39 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>39.Text = "Open New Window");
+                (<precompile>40 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
             }
             {
-                <precompile>38.AddChild(<precompile>39.BoundsComposition);
+                (<precompile>40.Text = "Open New Window");
             }
             {
-                <precompile>30.AddChild(<precompile>38);
+                <precompile>39.AddChild(<precompile>40.BoundsComposition);
             }
             {
-                <precompile>29.ContainerComposition.AddChild(<precompile>30);
+                <precompile>31.AddChild(<precompile>39);
+            }
+            {
+                <precompile>30.ContainerComposition.AddChild(<precompile>31);
             }
             {
                 var <collection> = <precompile>0.Pages;
-                <collection>.Add(<precompile>29);
+                <collection>.Add(<precompile>30);
             }
             (<precompile>1 = <precompile>0.BoundsComposition);
             {
@@ -2789,7 +2800,7 @@ namespace demo
                     subWindow.MoveToScreenCenter();
                     subWindow.ShowWithOwner(self);
                 };
-                attach(<precompile>39.Clicked, <event-handler>);
+                attach(<precompile>40.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3237,7 +3248,7 @@ namespace demo
     }
 }
 
-================================(8/88)================================
+================================(8/100)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3282,7 +3293,7 @@ namespace demo
     }
 }
 
-================================(9/88)================================
+================================(9/100)================================
 module <constructor>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3932,7 +3943,7 @@ namespace demo
     }
 }
 
-================================(10/88)================================
+================================(10/100)================================
 module <instance>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3974,7 +3985,7 @@ namespace demo
     }
 }
 
-================================(11/88)================================
+================================(11/100)================================
 module <constructor>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4677,7 +4688,7 @@ namespace demo
     }
 }
 
-================================(12/88)================================
+================================(12/100)================================
 module <instance>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4721,7 +4732,7 @@ namespace demo
     }
 }
 
-================================(13/88)================================
+================================(13/100)================================
 module <constructor>demo::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4793,7 +4804,7 @@ namespace demo
     }
 }
 
-================================(14/88)================================
+================================(14/100)================================
 module <instance>demo::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4834,7 +4845,7 @@ namespace demo
     }
 }
 
-================================(15/88)================================
+================================(15/100)================================
 module <constructor>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5511,7 +5522,7 @@ namespace demo
     }
 }
 
-================================(16/88)================================
+================================(16/100)================================
 module <instance>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5557,7 +5568,7 @@ namespace demo
     }
 }
 
-================================(17/88)================================
+================================(17/100)================================
 module <constructor>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6069,7 +6080,7 @@ namespace demo
     }
 }
 
-================================(18/88)================================
+================================(18/100)================================
 module <instance>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6119,7 +6130,7 @@ namespace demo
     }
 }
 
-================================(19/88)================================
+================================(19/100)================================
 module <constructor>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6797,7 +6808,7 @@ namespace demo
     }
 }
 
-================================(20/88)================================
+================================(20/100)================================
 module <instance>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7237,7 +7248,7 @@ namespace demo
     }
 }
 
-================================(21/88)================================
+================================(21/100)================================
 module <animation>demo::ColorAnimation;
 
 namespace demo
@@ -7445,7 +7456,7 @@ namespace demo
     }
 }
 
-================================(22/88)================================
+================================(22/100)================================
 module <constructor>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7650,7 +7661,7 @@ namespace demo
     }
 }
 
-================================(23/88)================================
+================================(23/100)================================
 module <instance>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7691,7 +7702,7 @@ namespace demo
     }
 }
 
-================================(24/88)================================
+================================(24/100)================================
 module <constructor>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8030,7 +8041,7 @@ namespace demo
     }
 }
 
-================================(25/88)================================
+================================(25/100)================================
 module <instance>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8132,7 +8143,7 @@ namespace demo
     }
 }
 
-================================(26/88)================================
+================================(26/100)================================
 module <constructor>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8337,7 +8348,7 @@ namespace demo
     }
 }
 
-================================(27/88)================================
+================================(27/100)================================
 module <instance>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8378,7 +8389,7 @@ namespace demo
     }
 }
 
-================================(28/88)================================
+================================(28/100)================================
 module <constructor>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8726,7 +8737,7 @@ namespace demo
     }
 }
 
-================================(29/88)================================
+================================(29/100)================================
 module <instance>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8789,7 +8800,7 @@ namespace demo
     }
 }
 
-================================(30/88)================================
+================================(30/100)================================
 module <constructor>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9033,7 +9044,7 @@ namespace demo
     }
 }
 
-================================(31/88)================================
+================================(31/100)================================
 module <instance>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9076,7 +9087,7 @@ namespace demo
     }
 }
 
-================================(32/88)================================
+================================(32/100)================================
 module <constructor>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9213,7 +9224,7 @@ namespace demo
     }
 }
 
-================================(33/88)================================
+================================(33/100)================================
 module <instance>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9264,7 +9275,7 @@ namespace demo
     }
 }
 
-================================(34/88)================================
+================================(34/100)================================
 module <constructor>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9464,7 +9475,7 @@ namespace demo
     }
 }
 
-================================(35/88)================================
+================================(35/100)================================
 module <instance>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9505,7 +9516,7 @@ namespace demo
     }
 }
 
-================================(36/88)================================
+================================(36/100)================================
 module <constructor>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9644,7 +9655,7 @@ namespace demo
     }
 }
 
-================================(37/88)================================
+================================(37/100)================================
 module <instance>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9707,7 +9718,7 @@ namespace demo
     }
 }
 
-================================(38/88)================================
+================================(38/100)================================
 module <constructor>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9951,7 +9962,7 @@ namespace demo
     }
 }
 
-================================(39/88)================================
+================================(39/100)================================
 module <instance>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9994,7 +10005,7 @@ namespace demo
     }
 }
 
-================================(40/88)================================
+================================(40/100)================================
 module <constructor>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10058,7 +10069,7 @@ namespace demo
     }
 }
 
-================================(41/88)================================
+================================(41/100)================================
 module <instance>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10109,7 +10120,7 @@ namespace demo
     }
 }
 
-================================(42/88)================================
+================================(42/100)================================
 module <constructor>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10236,7 +10247,7 @@ namespace demo
     }
 }
 
-================================(43/88)================================
+================================(43/100)================================
 module <instance>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10277,7 +10288,7 @@ namespace demo
     }
 }
 
-================================(44/88)================================
+================================(44/100)================================
 module <constructor>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11140,7 +11151,7 @@ namespace demo
     }
 }
 
-================================(45/88)================================
+================================(45/100)================================
 module <instance>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11182,7 +11193,7 @@ namespace demo
     }
 }
 
-================================(46/88)================================
+================================(46/100)================================
 module <constructor>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11425,7 +11436,7 @@ namespace demo
     }
 }
 
-================================(47/88)================================
+================================(47/100)================================
 module <instance>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11488,7 +11499,7 @@ namespace demo
     }
 }
 
-================================(48/88)================================
+================================(48/100)================================
 module <constructor>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14648,7 +14659,7 @@ namespace demo
     }
 }
 
-================================(49/88)================================
+================================(49/100)================================
 module <instance>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14906,7 +14917,7 @@ namespace demo
     }
 }
 
-================================(50/88)================================
+================================(50/100)================================
 module <constructor>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16949,7 +16960,7 @@ namespace demo
     }
 }
 
-================================(51/88)================================
+================================(51/100)================================
 module <instance>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17166,7 +17177,7 @@ namespace demo
     }
 }
 
-================================(52/88)================================
+================================(52/100)================================
 module <constructor>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17530,7 +17541,7 @@ namespace demo
     }
 }
 
-================================(53/88)================================
+================================(53/100)================================
 module <instance>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17631,7 +17642,7 @@ namespace demo
     }
 }
 
-================================(54/88)================================
+================================(54/100)================================
 module <constructor>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18794,7 +18805,7 @@ namespace demo
     }
 }
 
-================================(55/88)================================
+================================(55/100)================================
 module <instance>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18835,7 +18846,868 @@ namespace demo
     }
 }
 
-================================(56/88)================================
+================================(56/100)================================
+module <constructor>demo::LocalizedColorDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedColorDialogTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::LocalizedColorDialogTabPage* = null of (::demo::LocalizedColorDialogTabPage*);
+
+        @cpp:Protected
+        func <demo-LocalizedColorDialogTabPage>Initialize(<this> : ::demo::LocalizedColorDialogTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "ColorDialog");
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(57/100)================================
+module <instance>demo::LocalizedColorDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(LocalizedColorDialogTabPageConstructor))
+    class LocalizedColorDialogTabPage : ::presentation::controls::GuiTabPage, LocalizedColorDialogTabPageConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::LocalizedColorDialogTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-LocalizedColorDialogTabPage>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(58/100)================================
+module <constructor>demo::LocalizedDialogsTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedDialogsTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>5 : ::presentation::controls::list::TextItem^ = null of (::presentation::controls::list::TextItem^);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>7 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>8 : ::presentation::controls::GuiTab* = null of (::presentation::controls::GuiTab*);
+
+        @cpp:Protected
+        var <precompile>9 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>10 : ::demo::LocalizedMessageDialogTabPage* = null of (::demo::LocalizedMessageDialogTabPage*);
+
+        @cpp:Protected
+        var <precompile>11 : ::demo::LocalizedColorDialogTabPage* = null of (::demo::LocalizedColorDialogTabPage*);
+
+        @cpp:Protected
+        var <precompile>12 : ::demo::LocalizedFontDialogTabPage* = null of (::demo::LocalizedFontDialogTabPage*);
+
+        @cpp:Protected
+        var <precompile>13 : ::demo::LocalizedOpenFileDialogTabPage* = null of (::demo::LocalizedOpenFileDialogTabPage*);
+
+        @cpp:Protected
+        var <precompile>14 : ::demo::LocalizedSaveFileDialogTabPage* = null of (::demo::LocalizedSaveFileDialogTabPage*);
+
+        @cpp:Protected
+        var comboLocales : ::presentation::controls::GuiComboBoxListControl* = null of (::presentation::controls::GuiComboBoxListControl*);
+
+        @cpp:Protected
+        var listLocales : ::presentation::controls::GuiTextList* = null of (::presentation::controls::GuiTextList*);
+
+        @cpp:Protected
+        func <demo-LocalizedDialogsTabPage>Initialize(<this> : ::demo::LocalizedDialogsTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "Dialogs");
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(2, 3);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>1.SetSite(0, 0, 1, 1);
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>2.Color = (cast (::presentation::Color) "#FFFFFF"));
+            }
+            {
+                (<precompile>2.Text = "Locale only works in FakeDialogService (default in Hosted Mode)");
+            }
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>3.SetSite(0, 1, 1, 1);
+            }
+            {
+                (listLocales = new (::presentation::controls::GuiTextList*)(::presentation::theme::ThemeName::TextList));
+            }
+            (<precompile>4 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>4.Text = "en-US");
+            }
+            {
+                var <collection> = listLocales.Items;
+                <collection>.Add(<precompile>4);
+            }
+            (<precompile>5 = new (::presentation::controls::list::TextItem^)());
+            {
+                (<precompile>5.Text = "zh-CN");
+            }
+            {
+                var <collection> = listLocales.Items;
+                <collection>.Add(<precompile>5);
+            }
+            {
+                (listLocales.HorizontalAlwaysVisible = false);
+            }
+            {
+                (listLocales.VerticalAlwaysVisible = false);
+            }
+            {
+                (comboLocales = new (::presentation::controls::GuiComboBoxListControl*)(::presentation::theme::ThemeName::ComboBox, listLocales));
+            }
+            (<precompile>6 = comboLocales.BoundsComposition);
+            {
+                (<precompile>6.PreferredMinSize = {x : 120;} of (::presentation::Size));
+            }
+            {
+                <precompile>3.AddChild(comboLocales.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>3);
+            }
+            (<precompile>7 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>7.SetSite(1, 0, 1, 3);
+            }
+            {
+                (<precompile>8 = new (::presentation::controls::GuiTab*)(::presentation::theme::ThemeName::Tab));
+            }
+            (<precompile>10 = new (::demo::LocalizedMessageDialogTabPage*)());
+            {
+                var <collection> = <precompile>8.Pages;
+                <collection>.Add(<precompile>10);
+            }
+            (<precompile>11 = new (::demo::LocalizedColorDialogTabPage*)());
+            {
+                var <collection> = <precompile>8.Pages;
+                <collection>.Add(<precompile>11);
+            }
+            (<precompile>12 = new (::demo::LocalizedFontDialogTabPage*)());
+            {
+                var <collection> = <precompile>8.Pages;
+                <collection>.Add(<precompile>12);
+            }
+            (<precompile>13 = new (::demo::LocalizedOpenFileDialogTabPage*)());
+            {
+                var <collection> = <precompile>8.Pages;
+                <collection>.Add(<precompile>13);
+            }
+            (<precompile>14 = new (::demo::LocalizedSaveFileDialogTabPage*)());
+            {
+                var <collection> = <precompile>8.Pages;
+                <collection>.Add(<precompile>14);
+            }
+            (<precompile>9 = <precompile>8.BoundsComposition);
+            {
+                (<precompile>9.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>7.AddChild(<precompile>8.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>7);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::LocalizedDialogsTabPage* = null of (::demo::LocalizedDialogsTabPage*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.DisplayFont of (::presentation::FontProperties);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::LocalizedDialogsTabPage*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.DisplayFontChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.DisplayFontChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::LocalizedDialogsTabPage*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = <precompile>2.Font;
+                    var <new> = (cast (::presentation::FontProperties) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (<precompile>2.Font = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::presentation::controls::GuiApplication* = null of (::presentation::controls::GuiApplication*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = self.GetLocaleIndex(<bind-cache>0.Locale) of (::system::Int64);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (Application::GetApplication() ?? null of (::presentation::controls::GuiApplication*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.LocaleChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.LocaleChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::presentation::controls::GuiApplication*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = comboLocales.SelectedIndex;
+                    var <new> = (cast (::system::Int64) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (comboLocales.SelectedIndex = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    var index = comboLocales.SelectedIndex;
+                    if ((index == (-1)))
+                    {
+                        (index = 0);
+                    }
+                    (Application::GetApplication().Locale = (cast (Locale) listLocales.Items[index].Text));
+                };
+                attach(comboLocales.SelectedIndexChanged, <event-handler>);
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(59/100)================================
+module <instance>demo::LocalizedDialogsTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(LocalizedDialogsTabPageConstructor))
+    class LocalizedDialogsTabPage : ::presentation::controls::GuiTabPage, LocalizedDialogsTabPageConstructor
+    {
+        func GetLocaleIndex(locale : Locale) : (int)
+        {
+            {
+                var <for-begin>i : ::system::Int64 = (0 + 1);
+                var <for-end>i : ::system::Int64 = (listLocales.Items.Count - 1);
+                var i = <for-begin>i;
+                while ((i <= <for-end>i))
+                {
+                    {
+                        if ((listLocales.Items[i].Text == locale))
+                        {
+                            return i;
+                        }
+                    }
+                    (i = (i + 1));
+                }
+            }
+            return 0;
+        }
+
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::LocalizedDialogsTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-LocalizedDialogsTabPage>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(60/100)================================
+module <constructor>demo::LocalizedFontDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedFontDialogTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::LocalizedFontDialogTabPage* = null of (::demo::LocalizedFontDialogTabPage*);
+
+        @cpp:Protected
+        func <demo-LocalizedFontDialogTabPage>Initialize(<this> : ::demo::LocalizedFontDialogTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "FontDialog");
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(61/100)================================
+module <instance>demo::LocalizedFontDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(LocalizedFontDialogTabPageConstructor))
+    class LocalizedFontDialogTabPage : ::presentation::controls::GuiTabPage, LocalizedFontDialogTabPageConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::LocalizedFontDialogTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-LocalizedFontDialogTabPage>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(62/100)================================
+module <constructor>demo::LocalizedMessageDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedMessageDialogTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::LocalizedMessageDialogTabPage* = null of (::demo::LocalizedMessageDialogTabPage*);
+
+        @cpp:Protected
+        func <demo-LocalizedMessageDialogTabPage>Initialize(<this> : ::demo::LocalizedMessageDialogTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "MessageDialog");
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(63/100)================================
+module <instance>demo::LocalizedMessageDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(LocalizedMessageDialogTabPageConstructor))
+    class LocalizedMessageDialogTabPage : ::presentation::controls::GuiTabPage, LocalizedMessageDialogTabPageConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::LocalizedMessageDialogTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-LocalizedMessageDialogTabPage>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(64/100)================================
+module <constructor>demo::LocalizedOpenFileDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedOpenFileDialogTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::LocalizedOpenFileDialogTabPage* = null of (::demo::LocalizedOpenFileDialogTabPage*);
+
+        @cpp:Protected
+        func <demo-LocalizedOpenFileDialogTabPage>Initialize(<this> : ::demo::LocalizedOpenFileDialogTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "OpenFileDialog");
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(65/100)================================
+module <instance>demo::LocalizedOpenFileDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(LocalizedOpenFileDialogTabPageConstructor))
+    class LocalizedOpenFileDialogTabPage : ::presentation::controls::GuiTabPage, LocalizedOpenFileDialogTabPageConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::LocalizedOpenFileDialogTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-LocalizedOpenFileDialogTabPage>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(66/100)================================
+module <constructor>demo::LocalizedSaveFileDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedSaveFileDialogTabPageConstructor
+    {
+        @cpp:Protected
+        var self : ::demo::LocalizedSaveFileDialogTabPage* = null of (::demo::LocalizedSaveFileDialogTabPage*);
+
+        @cpp:Protected
+        func <demo-LocalizedSaveFileDialogTabPage>Initialize(<this> : ::demo::LocalizedSaveFileDialogTabPage*) : (::system::Void)
+        {
+            (self = <this>);
+            {
+                (self.Text = "SaveFileDialog");
+            }
+        }
+
+        new ()
+        {
+        }
+    }
+}
+
+================================(67/100)================================
+module <instance>demo::LocalizedSaveFileDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    @cpp:Friend(typeof(LocalizedSaveFileDialogTabPageConstructor))
+    class LocalizedSaveFileDialogTabPage : ::presentation::controls::GuiTabPage, LocalizedSaveFileDialogTabPageConstructor
+    {
+        new* ()
+            :::presentation::controls::GuiTabPage(::presentation::theme::ThemeName::CustomControl)
+        {
+            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::LocalizedSaveFileDialogTabPage");
+            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
+            this.SetResourceResolver(<resolver>);
+            this.<demo-LocalizedSaveFileDialogTabPage>Initialize(this);
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(68/100)================================
 module <constructor>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20360,7 +21232,7 @@ namespace demo
     }
 }
 
-================================(57/88)================================
+================================(69/100)================================
 module <instance>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20449,7 +21321,7 @@ namespace demo
     }
 }
 
-================================(58/88)================================
+================================(70/100)================================
 module <constructor>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20808,7 +21680,7 @@ namespace demo
     }
 }
 
-================================(59/88)================================
+================================(71/100)================================
 module <instance>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21032,7 +21904,7 @@ namespace demo
     }
 }
 
-================================(60/88)================================
+================================(72/100)================================
 module <constructor>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21128,7 +22000,7 @@ namespace demo
     }
 }
 
-================================(61/88)================================
+================================(73/100)================================
 module <instance>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21209,7 +22081,7 @@ namespace demo
     }
 }
 
-================================(62/88)================================
+================================(74/100)================================
 module <constructor>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21327,7 +22199,7 @@ namespace demo
     }
 }
 
-================================(63/88)================================
+================================(75/100)================================
 module <instance>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21378,7 +22250,7 @@ namespace demo
     }
 }
 
-================================(64/88)================================
+================================(76/100)================================
 module <constructor>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21512,7 +22384,7 @@ namespace demo
     }
 }
 
-================================(65/88)================================
+================================(77/100)================================
 module <instance>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21563,7 +22435,7 @@ namespace demo
     }
 }
 
-================================(66/88)================================
+================================(78/100)================================
 module <constructor>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21834,7 +22706,7 @@ namespace demo
     }
 }
 
-================================(67/88)================================
+================================(79/100)================================
 module <instance>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21885,7 +22757,7 @@ namespace demo
     }
 }
 
-================================(68/88)================================
+================================(80/100)================================
 module <constructor>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22511,7 +23383,7 @@ namespace demo
     }
 }
 
-================================(69/88)================================
+================================(81/100)================================
 module <instance>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22553,7 +23425,7 @@ namespace demo
     }
 }
 
-================================(70/88)================================
+================================(82/100)================================
 module <constructor>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23179,7 +24051,7 @@ namespace demo
     }
 }
 
-================================(71/88)================================
+================================(83/100)================================
 module <instance>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23221,7 +24093,7 @@ namespace demo
     }
 }
 
-================================(72/88)================================
+================================(84/100)================================
 module <constructor>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23414,7 +24286,7 @@ namespace demo
     }
 }
 
-================================(73/88)================================
+================================(85/100)================================
 module <instance>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23456,7 +24328,7 @@ namespace demo
     }
 }
 
-================================(74/88)================================
+================================(86/100)================================
 module <constructor>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24367,7 +25239,7 @@ namespace demo
     }
 }
 
-================================(75/88)================================
+================================(87/100)================================
 module <instance>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24409,7 +25281,7 @@ namespace demo
     }
 }
 
-================================(76/88)================================
+================================(88/100)================================
 module <constructor>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24793,7 +25665,7 @@ namespace demo
     }
 }
 
-================================(77/88)================================
+================================(89/100)================================
 module <instance>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24856,7 +25728,7 @@ namespace demo
     }
 }
 
-================================(78/88)================================
+================================(90/100)================================
 module <constructor>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25131,7 +26003,7 @@ namespace demo
     }
 }
 
-================================(79/88)================================
+================================(91/100)================================
 module <instance>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25194,7 +26066,7 @@ namespace demo
     }
 }
 
-================================(80/88)================================
+================================(92/100)================================
 module <constructor>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25498,7 +26370,7 @@ namespace demo
     }
 }
 
-================================(81/88)================================
+================================(93/100)================================
 module <instance>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25556,7 +26428,7 @@ namespace demo
     }
 }
 
-================================(82/88)================================
+================================(94/100)================================
 module <localized-strings-injection>demo::DialogStringsInjection;
 
 namespace demo
@@ -25773,7 +26645,7 @@ namespace demo
     }
 }
 
-================================(83/88)================================
+================================(95/100)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -26073,7 +26945,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(84/88)================================
+================================(96/100)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -26327,7 +27199,7 @@ namespace demo
     }
 }
 
-================================(85/88)================================
+================================(97/100)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -26471,7 +27343,7 @@ namespace demo
     }
 }
 
-================================(86/88)================================
+================================(98/100)================================
 module ribbonscript;
 using presentation::*;
 
@@ -26510,7 +27382,7 @@ namespace demo
     }
 }
 
-================================(87/88)================================
+================================(99/100)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -26737,7 +27609,7 @@ namespace demo
     }
 }
 
-================================(88/88)================================
+================================(100/100)================================
 module fontHelper;
 using presentation::*;
 
