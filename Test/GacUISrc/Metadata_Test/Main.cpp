@@ -129,19 +129,19 @@ int wmain(int argc, wchar_t* argv[])
 int main(int argc, char* argv[])
 #endif
 {
-	coreTypes = false;
+	coreTypes = true;
 	targetCpuArchitecture = WfCpuArchitecture::x86;
 	TestMetaonlyReflection();
 
-	coreTypes = false;
+	coreTypes = true;
 	targetCpuArchitecture = WfCpuArchitecture::x64;
 	TestMetaonlyReflection();
 
-	coreTypes = true;
+	coreTypes = false;
 	targetCpuArchitecture = WfCpuArchitecture::x86;
 	TestMetaonlyReflection();
 
-	coreTypes = true;
+	coreTypes = false;
 	targetCpuArchitecture = WfCpuArchitecture::x64;
 	TestMetaonlyReflection();
 
