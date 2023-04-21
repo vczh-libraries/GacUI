@@ -257,6 +257,9 @@ Global
 		Source_GacUI_Windows\Source_GacUI_Windows.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_Import\Source_Import.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
 		Source_Import_Reflection\Source_Import_Reflection.vcxitems*{bf177697-a8b5-4580-87e7-de77c0a29c9f}*SharedItemsImports = 4
+		Generated_DarkSkin\Generated_DarkSkin.vcxitems*{c3349b3b-054e-4268-9ff8-796e72dc6214}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Controls\Source_GacUI_Utilities_Controls.vcxitems*{c3349b3b-054e-4268-9ff8-796e72dc6214}*SharedItemsImports = 4
+		Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems*{c3349b3b-054e-4268-9ff8-796e72dc6214}*SharedItemsImports = 4
 		Source_GacUI\Source_GacUI.vcxitems*{cf702b13-73b3-47f2-8afc-89d1c25b007e}*SharedItemsImports = 9
 		Source_GacUI_Utilities_Reflection\Source_GacUI_Utilities_Reflection.vcxitems*{d56c7df2-c673-4cbe-99ec-26f3d91790af}*SharedItemsImports = 9
 		Source_GacUI_CoreApplication\Source_GacUI_CoreApplication.vcxitems*{e2f1d033-808d-4d82-8fbc-ebce0f1cc11c}*SharedItemsImports = 9
