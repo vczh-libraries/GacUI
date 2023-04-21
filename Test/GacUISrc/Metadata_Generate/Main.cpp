@@ -11,15 +11,6 @@ using namespace vl::reflection::description;
 
 namespace vl
 {
-	namespace presentation
-	{
-		void GuiInitializeUtilities() {}
-		void GuiFinalizeUtilities() {}
-	}
-}
-
-namespace vl
-{
 	namespace reflection
 	{
 		namespace description
@@ -68,13 +59,19 @@ WString GetTestOutputPath()
 #endif
 
 #ifdef VCZH_64
+#define REFLECTION_CORE_BIN L"ReflectionCore64.bin"
+#define REFLECTION_CORE_OUTPUT L"ReflectionCore64.txt"
+#else
+#define REFLECTION_CORE_BIN L"ReflectionCore32.bin"
+#define REFLECTION_CORE_OUTPUT L"ReflectionCore32.txt"
+#endif
+
+#ifdef VCZH_64
 #define REFLECTION_BIN L"Reflection64.bin"
 #define REFLECTION_OUTPUT L"Reflection64.txt"
-#define REFLECTION_BASELINE L"Reflection64.txt"
 #else
 #define REFLECTION_BIN L"Reflection32.bin"
 #define REFLECTION_OUTPUT L"Reflection32.txt"
-#define REFLECTION_BASELINE L"Reflection32.txt"
 #endif
 
 void GuiMain()
@@ -99,12 +96,25 @@ int main(int argc, char* argv[])
 	LoadGuiTemplateTypes();
 	LoadGuiControlTypes();
 	GetGlobalTypeManager()->Load();
+
 	{
-		FileStream fileStream(GetTestOutputPath() + REFLECTION_BIN, FileStream::WriteOnly);
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_BIN, FileStream::WriteOnly);
 		GenerateMetaonlyTypes(fileStream);
 	}
 	{
-		FileStream fileStream(GetTestOutputPath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_OUTPUT, FileStream::WriteOnly);
+		BomEncoder encoder(BomEncoder::Utf8);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
+		LogTypeManager(writer);
+	}
+
+	{
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_BIN, FileStream::WriteOnly);
+		GenerateMetaonlyTypes(fileStream);
+	}
+	{
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_OUTPUT, FileStream::WriteOnly);
 		BomEncoder encoder(BomEncoder::Utf8);
 		EncoderStream encoderStream(fileStream, encoder);
 		StreamWriter writer(encoderStream);
