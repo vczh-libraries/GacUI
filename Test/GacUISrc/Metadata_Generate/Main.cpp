@@ -119,11 +119,11 @@ int main(int argc, char* argv[])
 	LoadDarkSkinTypes();
 
 	{
-		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_BIN, FileStream::WriteOnly);
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_BIN, FileStream::WriteOnly);
 		GenerateMetaonlyTypes(fileStream);
 	}
 	{
-		FileStream fileStream(GetTestOutputPath() + REFLECTION_CORE_OUTPUT, FileStream::WriteOnly);
+		FileStream fileStream(GetTestOutputPath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
 		BomEncoder encoder(BomEncoder::Utf8);
 		EncoderStream encoderStream(fileStream, encoder);
 		StreamWriter writer(encoderStream);
