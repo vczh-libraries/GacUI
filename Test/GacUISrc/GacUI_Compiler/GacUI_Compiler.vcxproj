@@ -212,6 +212,7 @@
     <Xml Include="..\..\Resources\App\FullControlTest\Images\MiscImages.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\Images\SmallImages.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\ListViewTabPage.xml" />
+    <Xml Include="..\..\Resources\App\FullControlTest\LocalizedDialogsTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\LocalizedStringsTabPage.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\RepeatComponents.xml" />
     <Xml Include="..\..\Resources\App\FullControlTest\RepeatTabPage.xml" />

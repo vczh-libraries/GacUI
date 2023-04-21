@@ -177,5 +177,8 @@
     <Xml Include="..\..\..\Source\Utilities\FakeServices\Dialogs\FileDialog.xml">
       <Filter>Resource Files\Dialogs</Filter>
     </Xml>
+    <Xml Include="..\..\Resources\App\FullControlTest\LocalizedDialogsTabPage.xml">
+      <Filter>Resource Files\FullControlTest</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

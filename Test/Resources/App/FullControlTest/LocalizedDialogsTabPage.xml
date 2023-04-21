@@ -1,0 +1,162 @@
+<Folder>
+  <LocalizedStrings name="DialogStringsInjection">
+    <LocalizedStringsInjection ref.Class="demo::DialogStringsInjection" ref.InjectInto="gaclib_controls::DialogStrings">
+      <Strings Locales="zh-CN">
+        <String Name="OK" Text="确定"/>
+        <String Name="Cancel" Text="取消"/>
+        <String Name="Yes" Text="是"/>
+        <String Name="No" Text="否"/>
+        <String Name="Retry" Text="重试"/>
+        <String Name="Abort" Text="关于"/>
+        <String Name="Ignore" Text="忽略"/>
+        <String Name="TryAgain" Text="再试一次"/>
+        <String Name="Continue" Text="继续"/>
+
+        <String Name="ColorDialogTitle" Text="选择颜色"/>
+        <String Name="Red" Text="红色："/>
+        <String Name="Green" Text="绿色："/>
+        <String Name="Blue" Text="蓝色："/>
+        <String Name="Color" Text="颜色："/>
+
+        <String Name="FontDialogTitle" Text="选择字体"/>
+        <String Name="FontNameGroup" Text="字体："/>
+        <String Name="FontSizeGroup" Text="尺寸："/>
+        <String Name="FontEffectGroup" Text="效果："/>
+        <String Name="FontColorGroup" Text="颜色："/>
+        <String Name="FontColorGroup2" Text="选择颜色："/>
+        <String Name="FontPreviewGroup" Text="预览："/>
+        <String Name="Bold" Text="粗体"/>
+        <String Name="Italic" Text="斜体"/>
+        <String Name="Underline" Text="下划线"/>
+        <String Name="HAA" Text="水平抗锯齿"/>
+        <String Name="VAA" Text="垂直抗锯齿"/>
+
+        <String Name="FileDialogFileName" Text="文件名："/>
+        <String Name="FileDialogOpen" Text="打开"/>
+        <String Name="FileDialogSave" Text="保存"/>
+
+        <String Name="FileDialogTextLoadingFolders" Text="（正在加载……）"/>
+        <String Name="FileDialogTextLoadingFiles" Text="(正在加载文件夹和文件……)"/>
+        <String Name="FileDialogErrorEmptySelection" Text="应该选中至少一个文件。"/>
+        <String Name="FileDialogErrorFileNotExist" Text="下列文件不存在："/>
+        <String Name="FileDialogErrorFileExpected" Text="下列文件夹不应该被选中："/>
+        <String Name="FileDialogErrorFolderNotExist" Text="文件夹不存在："/>
+        <String Name="FileDialogErrorMultipleSelectionNotEnabled" Text="本对话框不支持多选。"/>
+        <String Name="FileDialogAskCreateFile" Text="你确定想要创建下列文件吗？"/>
+        <String Name="FileDialogAskOverrideFile" Text="你确定想要覆盖下列文件吗？"/>
+      </Strings>
+    </LocalizedStringsInjection>
+  </LocalizedStrings>
+  
+  <Instance name="LocalizedDialogsTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedDialogsTabPage" xmlns:demo="demo::*">
+      <ref.Members>
+        <![CDATA[
+          func GetLocaleIndex(locale: Locale): int
+          {
+            for (i in range (0, listLocales.Items.Count))
+            {
+              if (listLocales.Items[i].Text == locale)
+              {
+                return i;
+              }
+            }
+            return 0;
+          }
+        ]]>
+      </ref.Members>
+      <TabPage ref.Name="self" Text="Dialogs">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text="Locale only works in FakeDialogService (default in Hosted Mode)" VerticalAlignment="Center"/>
+          </Cell>
+
+          <Cell Site="row:0 column:1">
+            <ComboBox ref.Name="comboLocales">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
+              <ev.SelectedIndexChanged-eval>
+                <![CDATA[
+                  {
+                    var index = comboLocales.SelectedIndex;
+                    if (index == -1)
+                    {
+                      index = 0;
+                    }
+                    Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
+                  }
+                ]]>
+              </ev.SelectedIndexChanged-eval>
+              <att.ListControl>
+                <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <_ Text="en-US"/>
+                    <_ Text="zh-CN"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+            </ComboBox>
+          </Cell>
+
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <Tab>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Pages>
+                <demo:LocalizedMessageDialogTabPage/>
+                <demo:LocalizedColorDialogTabPage/>
+                <demo:LocalizedFontDialogTabPage/>
+                <demo:LocalizedOpenFileDialogTabPage/>
+                <demo:LocalizedSaveFileDialogTabPage/>
+              </att.Pages>
+            </Tab>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="LocalizedMessageDialogTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedMessageDialogTabPage">
+      <TabPage ref.Name="self" Text="MessageDialog">
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="LocalizedColorDialogTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedColorDialogTabPage">
+      <TabPage ref.Name="self" Text="ColorDialog">
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="LocalizedFontDialogTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedFontDialogTabPage">
+      <TabPage ref.Name="self" Text="FontDialog">
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="LocalizedOpenFileDialogTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedOpenFileDialogTabPage">
+      <TabPage ref.Name="self" Text="OpenFileDialog">
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="LocalizedSaveFileDialogTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedSaveFileDialogTabPage">
+      <TabPage ref.Name="self" Text="SaveFileDialog">
+      </TabPage>
+    </Instance>
+  </Instance>
+</Folder>

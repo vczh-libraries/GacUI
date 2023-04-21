@@ -6,6 +6,7 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
 - GacUI_Host
   - ComboBox doesn't display the selected item when it is opened in a datagrid.
+  - Localization tab can't change back from `zh-CN`.
 
 ## Progressing
 
@@ -13,8 +14,6 @@
   - Add HostedWindow theme.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
-- Tutorial
-  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
 
 ## Optional
 
@@ -55,6 +54,8 @@
   - Remove SysKey callbacks, merge into Key callbacks.
 - GacGen
   - Add DarkSkin and Dialog in Reflection(32|64).bin
+- Tutorial
+  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
 
 ## OS Provider Features
 
