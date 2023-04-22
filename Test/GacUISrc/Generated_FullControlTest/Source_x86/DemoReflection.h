@@ -85,6 +85,8 @@ namespace vl
 			DECL_TYPE_INFO(::demo::IStringResourceStrings)
 			DECL_TYPE_INFO(::demo::ListViewTabPage)
 			DECL_TYPE_INFO(::demo::ListViewTabPageConstructor)
+			DECL_TYPE_INFO(::demo::LocaleSelector)
+			DECL_TYPE_INFO(::demo::LocaleSelectorConstructor)
 			DECL_TYPE_INFO(::demo::LocalizedColorDialogTabPage)
 			DECL_TYPE_INFO(::demo::LocalizedColorDialogTabPageConstructor)
 			DECL_TYPE_INFO(::demo::LocalizedDialogsTabPage)
