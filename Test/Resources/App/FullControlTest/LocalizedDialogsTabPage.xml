@@ -258,6 +258,35 @@
   <Instance name="LocalizedColorDialogTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedColorDialogTabPage">
       <TabPage ref.Name="self" Text="ColorDialog">
+        <ColorDialog ref.Name="dialog" EnabledCustomColor="true"/>
+        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:Absolute absolute:30</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:Absolute absolute:100</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <SolidBackground ref.Name="background" Color="#FFFFFF"/>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <Button Text="Show Dialog">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  dialog.SelectedColor = background.Color;
+                  if (dialog.ShowDialog())
+                  {
+                    background.Color = dialog.SelectedColor;
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
       </TabPage>
     </Instance>
   </Instance>

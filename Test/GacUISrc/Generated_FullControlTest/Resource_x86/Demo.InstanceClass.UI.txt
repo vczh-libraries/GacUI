@@ -19115,11 +19115,97 @@ namespace demo
         var self : ::demo::LocalizedColorDialogTabPage* = null of (::demo::LocalizedColorDialogTabPage*);
 
         @cpp:Protected
+        var dialog : ::presentation::controls::GuiColorDialog* = null of (::presentation::controls::GuiColorDialog*);
+
+        @cpp:Protected
+        var background : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
         func <demo-LocalizedColorDialogTabPage>Initialize(<this> : ::demo::LocalizedColorDialogTabPage*) : (::system::Void)
         {
             (self = <this>);
             {
                 (self.Text = "ColorDialog");
+            }
+            (dialog = new (::presentation::controls::GuiColorDialog*)());
+            {
+                (dialog.EnabledCustomColor = true);
+            }
+            {
+                self.AddComponent(dialog);
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.BorderVisible = true);
+            }
+            {
+                (<precompile>0.CellPadding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(2, 2);
+                <precompile>0.SetRowOption(0, {composeType : Absolute; absolute : 30;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : Absolute; absolute : 100;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>1.SetSite(0, 0, 1, 1);
+            }
+            (background = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (background.Color = (cast (::presentation::Color) "#FFFFFF"));
+            }
+            {
+                (<precompile>1.OwnedElement = background);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>2.SetSite(1, 0, 1, 1);
+            }
+            {
+                (<precompile>3 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>3.Text = "Show Dialog");
+            }
+            {
+                <precompile>2.AddChild(<precompile>3.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>2);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (dialog.SelectedColor = background.Color);
+                    if (dialog.ShowDialog())
+                    {
+                        (background.Color = dialog.SelectedColor);
+                    }
+                };
+                attach(<precompile>3.Clicked, <event-handler>);
             }
         }
 
