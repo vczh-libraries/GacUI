@@ -3348,108 +3348,32 @@ WfRuntimeThreadContext (Operators)
 				Value first, second;
 				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-				bool result = first.GetValueType() != Value::BoxedValue && second.GetValueType() != Value::BoxedValue && first.GetRawPtr() == second.GetRawPtr();
+
+				bool result = false;
+				if (first.GetValueType() == Value::Null || second.GetValueType() == Value::Null)
+				{
+					result = first.GetValueType() == Value::Null && second.GetValueType() == Value::Null;
+				}
+				else if (first.GetValueType() == Value::BoxedValue || second.GetValueType() == Value::BoxedValue)
+				{
+					INTERNAL_ERROR(L"CompareReference instruction can only apply on null or pointers.");
+				}
+				else
+				{
+					result = first.GetRawPtr() == second.GetRawPtr();
+				}
 				CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
 
 			//-------------------------------------------------------------------------------
 
-			bool OPERATOR_OpCompareValue(const Value& a, const Value& b);
-
-			bool OPERATOR_OpCompareValue(const WfStructInstance& as, const WfStructInstance& bs)
-			{
-				if (as.fieldValues.Count() == 0 && bs.fieldValues.Count() == 0) return true;
-				auto td = as.fieldValues.Count() > 0 ? as.fieldValues.Keys()[0]->GetOwnerTypeDescriptor() : bs.fieldValues.Keys()[0]->GetOwnerTypeDescriptor();
-
-				vint ai = 0;
-				vint bi = 0;
-				while (ai < as.fieldValues.Count() || bi < bs.fieldValues.Count())
-				{
-					Value af, bf;
-					auto ap = ai < as.fieldValues.Count() ? as.fieldValues.Keys()[ai] : nullptr;
-					auto bp = bi < bs.fieldValues.Count() ? bs.fieldValues.Keys()[bi] : nullptr;
-					auto p =
-						ap == nullptr ? bp :
-						bp == nullptr ? ap :
-						ap < bp ? ap : bp;
-
-					if (p == ap)
-					{
-						af = as.fieldValues.Values()[ai];
-					}
-					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
-					{
-						af = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
-					}
-
-					if (p == bp)
-					{
-						bf = bs.fieldValues.Values()[bi];
-					}
-					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
-					{
-						bf = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
-					}
-
-					if (!OPERATOR_OpCompareValue(af, bf)) return false;
-
-					if (p == ap) ai++;
-					if (p == bp) bi++;
-				}
-
-				return true;
-			}
-
-			bool OPERATOR_OpCompareValue(const Value& a, const Value& b)
-			{
-				auto avt = a.GetValueType();
-				auto bvt = b.GetValueType();
-
-				if (avt == Value::RawPtr || avt == Value::SharedPtr)
-				{
-					if (bvt == Value::RawPtr || bvt == Value::SharedPtr)
-					{
-						auto pa = a.GetRawPtr();
-						auto pb = b.GetRawPtr();
-						return pa == pb;
-					}
-				}
-
-				if (avt != bvt)
-				{
-					return avt == bvt;
-				}
-
-				if (avt == Value::BoxedValue)
-				{
-					if (auto as = a.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>())
-					{
-						auto bs = b.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
-						if (!bs) return false;
-						if (a.GetTypeDescriptor() != b.GetTypeDescriptor()) return false;
-						return OPERATOR_OpCompareValue(as->value, bs->value);
-					}
-					if (auto ae = a.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>())
-					{
-						auto be = b.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
-						if (!be) return false;
-						return ae->value.value == be->value.value;
-					}
-					return a == b;
-				}
-
-				return true;
-			}
-
 			WfRuntimeExecutionAction OPERATOR_OpCompareValue(WfRuntimeThreadContext& context)
 			{
 				Value first, second;
 				CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
 				CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
-
-				bool result = OPERATOR_OpCompareValue(first, second);
-
+				bool result = first == second;
 				CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
 				return WfRuntimeExecutionAction::ExecuteInstruction;
 			}
@@ -5212,19 +5136,19 @@ WfStructField
 			Value WfStructField::GetValueInternal(const Value& thisObject)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				auto structValue = thisObject.GetBoxedValue().Cast<WfStructInstance>();
 				if (!structValue)
 				{
 					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
 				}
-				vint index = structValue->value.fieldValues.Keys().IndexOf(this);
+				vint index = structValue->fieldValues.Keys().IndexOf(this);
 				if (index == -1)
 				{
 					return returnInfo->GetTypeDescriptor()->GetValueType()->CreateDefault();
 				}
 				else
 				{
-					return structValue->value.fieldValues.Values()[index];
+					return structValue->fieldValues.Values()[index];
 				}
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
@@ -5234,12 +5158,12 @@ WfStructField
 			void WfStructField::SetValueInternal(Value& thisObject, const Value& newValue)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto structValue = thisObject.GetBoxedValue().Cast<IValueType::TypedBox<WfStructInstance>>();
+				auto structValue = thisObject.GetBoxedValue().Cast<WfStructInstance>();
 				if (!structValue)
 				{
 					throw ArgumentTypeMismtatchException(L"thisObject", GetOwnerTypeDescriptor(), Value::BoxedValue, thisObject);
 				}
-				structValue->value.fieldValues.Set(this, newValue);
+				structValue->fieldValues.Set(this, newValue);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -5458,7 +5382,7 @@ WfStruct
 			Value WfStruct::WfValueType::CreateDefault()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				return Value::From(Ptr(new IValueType::TypedBox<WfStructInstance>), owner);
+				return Value::From(Ptr(new WfStructInstance(owner)), owner);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -5554,8 +5478,8 @@ WfEnum::WfEnumType
 			Value WfEnum::WfEnumType::ToEnum(vuint64_t value)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto boxedValue = Ptr(new IValueType::TypedBox<WfEnumInstance>);
-				boxedValue->value.value = value;
+				auto boxedValue = Ptr(new WfEnumInstance(owner));
+				boxedValue->value = value;
 				return Value::From(boxedValue, owner);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
@@ -5565,12 +5489,12 @@ WfEnum::WfEnumType
 			vuint64_t WfEnum::WfEnumType::FromEnum(const Value& value)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				auto enumValue = value.GetBoxedValue().Cast<IValueType::TypedBox<WfEnumInstance>>();
+				auto enumValue = value.GetBoxedValue().Cast<WfEnumInstance>();
 				if (!enumValue)
 				{
 					throw ArgumentTypeMismtatchException(L"enumValue", owner, Value::BoxedValue, value);
 				}
-				return enumValue->value.value;
+				return enumValue->value;
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -5588,7 +5512,7 @@ WfEnum
 			Value WfEnum::WfValueType::CreateDefault()
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				return Value::From(Ptr(new IValueType::TypedBox<WfEnumInstance>), owner);
+				return Value::From(Ptr(new WfEnumInstance(owner)), owner);
 #else
 				CHECK_FAIL(L"Not Implemented under VCZH_DEBUG_METAONLY_REFLECTION!");
 #endif
@@ -5693,6 +5617,115 @@ WfInterfaceInstance
 			Ptr<IValueInterfaceProxy> WfInterfaceInstance::GetProxy()
 			{
 				return proxy;
+			}
+
+/***********************************************************************
+WfStructInstance
+***********************************************************************/
+
+			WfStructInstance::WfStructInstance(reflection::description::ITypeDescriptor* _typeDescriptor)
+				: typeDescriptor(_typeDescriptor)
+			{
+			}
+
+			PredefinedBoxableType WfStructInstance::GetBoxableType()
+			{
+				return PredefinedBoxableType::PBT_Unknown;
+			}
+
+			Ptr<IBoxedValue> WfStructInstance::Copy()
+			{
+				auto instance = Ptr(new WfStructInstance(typeDescriptor));
+				CopyFrom(instance->fieldValues, fieldValues);
+				return instance;
+			}
+
+			IBoxedValue::CompareResult WfStructInstance::ComparePrimitive(Ptr<IBoxedValue> boxedValue)
+			{
+				auto instance = boxedValue.Cast<WfStructInstance>();
+				if (!instance) return IBoxedValue::NotComparable;
+				if (typeDescriptor != instance->typeDescriptor) return IBoxedValue::NotComparable;
+				
+				auto&& as = fieldValues;
+				auto&& bs = instance->fieldValues;
+				if (as.Count() == 0 && bs.Count() == 0) return IBoxedValue::Equal;
+
+				vint ai = 0;
+				vint bi = 0;
+				while (ai < as.Count() || bi < bs.Count())
+				{
+					Value af, bf;
+					auto ap = ai < as.Count() ? as.Keys()[ai] : nullptr;
+					auto bp = bi < bs.Count() ? bs.Keys()[bi] : nullptr;
+					auto p =
+						ap == nullptr ? bp :
+						bp == nullptr ? ap :
+						ap < bp ? ap : bp;
+
+					if (p == ap)
+					{
+						af = as.Values()[ai];
+					}
+					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					{
+						af = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+					}
+
+					if (p == bp)
+					{
+						bf = bs.Values()[bi];
+					}
+					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					{
+						bf = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+					}
+
+					auto result = af <=> bf;
+					if (result < 0) return IBoxedValue::Smaller;
+					if (result > 0) return IBoxedValue::Greater;
+					if constexpr (std::is_same_v<decltype(result), std::partial_ordering>)
+					{
+						if (result == std::partial_ordering::unordered) return IBoxedValue::NotComparable;
+					}
+
+					if (p == ap) ai++;
+					if (p == bp) bi++;
+				}
+
+				return IBoxedValue::Equal;
+			}
+
+/***********************************************************************
+WfEnumInstance
+***********************************************************************/
+
+			WfEnumInstance::WfEnumInstance(reflection::description::ITypeDescriptor* _typeDescriptor)
+				: typeDescriptor(_typeDescriptor)
+			{
+			}
+
+			PredefinedBoxableType WfEnumInstance::GetBoxableType()
+			{
+				return PredefinedBoxableType::PBT_Unknown;
+			}
+
+			Ptr<IBoxedValue> WfEnumInstance::Copy()
+			{
+				auto instance = Ptr(new WfEnumInstance(typeDescriptor));
+				instance->value = value;
+				return instance;
+			}
+
+			IBoxedValue::CompareResult WfEnumInstance::ComparePrimitive(Ptr<IBoxedValue> boxedValue)
+			{
+				auto instance = boxedValue.Cast<WfEnumInstance>();
+				if (!instance) return IBoxedValue::NotComparable;
+				if (typeDescriptor != instance->typeDescriptor) return IBoxedValue::NotComparable;
+				
+				auto result = value <=> instance->value;
+				if (result < 0) return IBoxedValue::Smaller;
+				if (result > 0) return IBoxedValue::Greater;
+				return IBoxedValue::Equal;
 			}
 
 /***********************************************************************

@@ -801,34 +801,32 @@ Instance
 				Ptr<IValueInterfaceProxy>				GetProxy();
 			};
 
-			struct WfStructInstance
+			class WfStructInstance : public Object, public reflection::description::IBoxedValue
 			{
 				using FieldValueMap = collections::Dictionary<WfStructField*, reflection::description::Value>;
 
-				FieldValueMap							fieldValues;
+			public:
+				reflection::description::ITypeDescriptor*		typeDescriptor = nullptr;
+				FieldValueMap									fieldValues;
 
-				WfStructInstance()
-				{
-				}
+				WfStructInstance(reflection::description::ITypeDescriptor* _typeDescriptor);
 
-				WfStructInstance(const WfStructInstance& si)
-				{
-					CopyFrom(fieldValues, si.fieldValues);
-				}
-
-				WfStructInstance& operator=(const WfStructInstance& si)
-				{
-					if (this != &si)
-					{
-						CopyFrom(fieldValues, si.fieldValues);
-					}
-					return *this;
-				}
+				reflection::description::PredefinedBoxableType	GetBoxableType() override;
+				Ptr<IBoxedValue>								Copy() override;
+				CompareResult									ComparePrimitive(Ptr<IBoxedValue> boxedValue) override;
 			};
 
-			struct WfEnumInstance
+			class WfEnumInstance : public Object, public reflection::description::IBoxedValue
 			{
-				vuint64_t								value = 0;
+			public:
+				reflection::description::ITypeDescriptor*		typeDescriptor = nullptr;
+				vuint64_t										value = 0;
+
+				WfEnumInstance(reflection::description::ITypeDescriptor* _typeDescriptor);
+
+				reflection::description::PredefinedBoxableType	GetBoxableType() override;
+				Ptr<IBoxedValue>								Copy() override;
+				CompareResult									ComparePrimitive(Ptr<IBoxedValue> boxedValue) override;
 			};
 
 /***********************************************************************

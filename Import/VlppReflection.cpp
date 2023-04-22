@@ -2854,7 +2854,7 @@ description::Value
 #undef DEFINE_PBT_MATRIX1
 #undef DEFINE_PBT_MATRI2
 
-					std::partial_ordering::unordered;
+					return std::partial_ordering::unordered;
 				}
 
 				return std::partial_ordering::equivalent;
