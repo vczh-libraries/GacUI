@@ -160,7 +160,15 @@
           "SelectContinue";
         };
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          self.comboInput.SelectedIndex = 0;
+          self.comboDefaultButton.SelectedIndex = 0;
+          self.comboIcon.SelectedIndex = 0;
+        }
+      ]]></ref.Ctor>
       <TabPage ref.Name="self" Text="MessageDialog">
+        <MessageDialog ref.Name="dialog"/>
         <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
             <_>composeType:MinSize</_>
@@ -174,6 +182,7 @@
           <att.Columns>
             <_>composeType:MinSize</_>
             <_>composeType:Absolute absolute:200</_>
+            <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
 
           <Cell Site="row:0 column:0"><Label Text="Title:"/></Cell>
@@ -196,28 +205,28 @@
           </Cell>
 
           <Cell Site="row:2 column:1">
-            <ComboBox ref.Name="comboInput" SelectedIndex="0">
+            <ComboBox ref.Name="comboInput">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
-                <BindableTextList ItemSource-eval="self.inputTexts" TextProperty-eval="[cast string $1]"/>
+                <BindableTextList ItemSource-eval="self.inputTexts" TextProperty-eval="[cast string $1]" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
               </att.ListControl>
             </ComboBox>
           </Cell>
 
           <Cell Site="row:3 column:1">
-            <ComboBox ref.Name="comboDefaultButton" SelectedIndex="0">
+            <ComboBox ref.Name="comboDefaultButton">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
-                <BindableTextList ItemSource-eval="self.defaultButtonTexts" TextProperty-eval="[cast string $1]"/>
+                <BindableTextList ItemSource-eval="self.defaultButtonTexts" TextProperty-eval="[cast string $1]" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
               </att.ListControl>
             </ComboBox>
           </Cell>
 
           <Cell Site="row:4 column:1">
-            <ComboBox ref.Name="comboIcon" SelectedIndex="0">
+            <ComboBox ref.Name="comboIcon">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ListControl>
-                <BindableTextList ItemSource-eval="self.iconTexts" TextProperty-eval="[cast string $1]"/>
+                <BindableTextList ItemSource-eval="self.iconTexts" TextProperty-eval="[cast string $1]" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false"/>
               </att.ListControl>
             </ComboBox>
           </Cell>
@@ -230,6 +239,13 @@
             <Button Text="Show Dialog">
               <ev.Clicked-eval><![CDATA[
                 {
+                  dialog.Title = txtTitle.Text;
+                  dialog.Text = txtText.Text;
+                  dialog.Input = self.inputValues[comboInput.SelectedIndex];
+                  dialog.DefaultButton = self.defaultButtonValues[comboDefaultButton.SelectedIndex];
+                  dialog.Icon = self.iconValues[comboIcon.SelectedIndex];
+                  var result = dialog.ShowDialog();
+                  lblOutput.Text = self.outputTexts[self.outputValues.IndexOf(result)];
                 }
               ]]></ev.Clicked-eval>
             </Button>
