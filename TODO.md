@@ -7,6 +7,7 @@
 - GacUI_Host
   - ComboBox doesn't display the selected item when it is opened in a datagrid.
   - Localization tab can't change back from `zh-CN`.
+    - Cause: In Workflow or Reflection, `string == Locale` could be implemented incorrectly, while `string == cast string Locale` works.
 
 ## Progressing
 

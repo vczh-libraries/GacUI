@@ -7,7 +7,7 @@
           {
             for (i in range (0, listLocales.Items.Count))
             {
-              if (listLocales.Items[i].Text == locale)
+              if (listLocales.Items[i].Text == cast string locale)
               {
                 return i;
               }
