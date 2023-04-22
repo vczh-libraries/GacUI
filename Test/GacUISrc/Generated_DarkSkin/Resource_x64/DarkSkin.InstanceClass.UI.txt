@@ -31633,6 +31633,9 @@ namespace darkskin
         var <precompile>33 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
+        var <precompile>34 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+
+        @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
@@ -31640,9 +31643,6 @@ namespace darkskin
 
         @cpp:Protected
         var contentTable : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
-
-        @cpp:Protected
-        var <precompile>34 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
 
         @cpp:Protected
         var <precompile>35 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
