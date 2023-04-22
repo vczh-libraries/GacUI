@@ -34,21 +34,9 @@
   </LocalizedStrings>
   
   <Instance name="LocalizedStringsTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedStringsTabPage">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedStringsTabPage" xmlns:demo="demo::*">
       <ref.Members>
         <![CDATA[
-          func GetLocaleIndex(locale: Locale): int
-          {
-            for (i in range (0, listLocales.Items.Count))
-            {
-              if (listLocales.Items[i].Text == locale)
-              {
-                return i;
-              }
-            }
-            return 0;
-          }
-          
           var dateTime: DateTime = Sys::GetLocalTime();
           var number: int = 2147483647;
           var currency: double = 1342177.28;
@@ -72,30 +60,9 @@
           </Cell>
 
           <Cell Site="row:0 column:1">
-            <ComboBox ref.Name="comboLocales">
-              <att.BoundsComposition-set PreferredMinSize="x:120"/>
-              <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
-              <ev.SelectedIndexChanged-eval>
-                <![CDATA[
-                  {
-                    var index = comboLocales.SelectedIndex;
-                    if (index == -1)
-                    {
-                      index = 0;
-                    }
-                    Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
-                  }
-                ]]>
-              </ev.SelectedIndexChanged-eval>
-              <att.ListControl>
-                <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
-                  <att.Items>
-                    <_ Text="en-US"/>
-                    <_ Text="zh-CN"/>
-                  </att.Items>
-                </TextList>
-              </att.ListControl>
-            </ComboBox>
+            <demo:LocaleSelector>
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </demo:LocaleSelector>
           </Cell>
 
           <Cell Site="row:1 column:0 columnSpan:3">

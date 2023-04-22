@@ -18,7 +18,7 @@
       </ref.Members>
       <CustomControl ref.Name="self">
         <ComboBox ref.Name="comboLocales">
-          <att.BoundsComposition-set PreferredMinSize="x:120"/>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:120"/>
           <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
           <ev.SelectedIndexChanged-eval>
             <![CDATA[
