@@ -28,6 +28,7 @@
         <String Name="Bold" Text="粗体"/>
         <String Name="Italic" Text="斜体"/>
         <String Name="Underline" Text="下划线"/>
+        <String Name="Strikeline" Text="删除线"/>
         <String Name="HAA" Text="水平抗锯齿"/>
         <String Name="VAA" Text="垂直抗锯齿"/>
 

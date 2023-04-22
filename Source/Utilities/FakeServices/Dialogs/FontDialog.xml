@@ -268,6 +268,7 @@
           checkBold.Selected = ViewModel.Font.bold;
           checkItalic.Selected = ViewModel.Font.italic;
           checkUnderline.Selected = ViewModel.Font.underline;
+          checkStrikeline.Selected = ViewModel.Font.strikeline;
           checkHAA.Selected = ViewModel.Font.antialias;
           checkVAA.Selected = ViewModel.Font.verticalAntialias;
         }
@@ -324,6 +325,7 @@
                     <StackItem><CheckBox Alt="B" ref.Name="checkBold" Text-str="Bold()"/></StackItem>
                     <StackItem><CheckBox Alt="I" ref.Name="checkItalic" Text-str="Italic()"/></StackItem>
                     <StackItem><CheckBox Alt="U" ref.Name="checkUnderline" Text-str="Underline()"/></StackItem>
+                    <StackItem><CheckBox Alt="U" ref.Name="checkStrikeline" Text-str="Strikeline()"/></StackItem>
                     <StackItem><CheckBox Alt="H" ref.Name="checkHAA" Text-str="HAA()"/></StackItem>
                     <StackItem><CheckBox Alt="V" ref.Name="checkVAA" Text-str="VAA()"/></StackItem>
                   </Stack>
@@ -401,6 +403,7 @@
                         bold:              checkBold.Selected
                         italic:            checkItalic.Selected
                         underline:         checkUnderline.Selected
+                        strikeline:        checkStrikeline.Selected
                         antialias:         checkHAA.Selected
                         verticalAntialias: checkVAA.Selected
                       })
@@ -423,6 +426,7 @@
                     bold:              checkBold.Selected
                     italic:            checkItalic.Selected
                     underline:         checkUnderline.Selected
+                    strikeline:        checkStrikeline.Selected
                     antialias:         checkHAA.Selected
                     verticalAntialias: checkVAA.Selected
                   };
