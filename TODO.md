@@ -6,6 +6,8 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
 - GacUI_Host
   - ComboBox doesn't display the selected item when it is opened in a datagrid.
+    - Cause: Workflow struct and enum needs to implement `IBoxedValue::ComparePrimitive`, cannot use `IValueType::TypedBox<T>`.
+    - This could be repro by calling `IValueList::IndexOf` instead of comparing them directly.
   - Localization tab can't change back from `zh-CN`.
     - Cause: In Workflow or Reflection, `string == Locale` could be implemented incorrectly, while `string == cast string Locale` works.
 
