@@ -11,6 +11,9 @@
   - Add HostedWindow theme.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
+- Tutorial:
+  - Dialog.
+  - Global shortcut key.
 
 ## Optional
 
@@ -169,9 +172,9 @@
     - following a naming convention, e.g. `GuiTableComposition`'s rows/columns properties.
     - searching for correct default control templates.
 - Incremental build inside single resource.
-  -  Calculate dependencies by only parsing.
-  -  Cache workflow assembly per resource in file.
-  -  Codegen c++ from multiple workflow assembly.
+  - Calculate dependencies by only parsing.
+  - Cache workflow assembly per resource in file.
+  - Codegen c++ from multiple workflow assembly.
 
 ## MISC
 
