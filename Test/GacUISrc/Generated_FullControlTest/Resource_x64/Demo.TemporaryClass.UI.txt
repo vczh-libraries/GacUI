@@ -1705,6 +1705,22 @@ namespace demo
 {
     class LocalizedMessageDialogTabPage : ::presentation::controls::GuiTabPage
     {
+        var inputValues : INativeDialogService::MessageBoxButtonsInput[] = {INativeDialogService::MessageBoxButtonsInput::DisplayOK; INativeDialogService::MessageBoxButtonsInput::DisplayOKCancel; INativeDialogService::MessageBoxButtonsInput::DisplayYesNo; INativeDialogService::MessageBoxButtonsInput::DisplayYesNoCancel; INativeDialogService::MessageBoxButtonsInput::DisplayRetryCancel; INativeDialogService::MessageBoxButtonsInput::DisplayAbortRetryIgnore; INativeDialogService::MessageBoxButtonsInput::DisplayCancelTryAgainContinue;};
+
+        var inputTexts : string[] = {"DisplayOK"; "DisplayOKCancel"; "DisplayYesNo"; "DisplayYesNoCancel"; "DisplayRetryCancel"; "DisplayAbortRetryIgnore"; "DisplayCancelTryAgainContinue";};
+
+        var defaultButtonValues : INativeDialogService::MessageBoxDefaultButton[] = {INativeDialogService::MessageBoxDefaultButton::DefaultFirst; INativeDialogService::MessageBoxDefaultButton::DefaultSecond; INativeDialogService::MessageBoxDefaultButton::DefaultThird;};
+
+        var defaultButtonTexts : string[] = {"DefaultFirst"; "DefaultSecond"; "DefaultThird";};
+
+        var iconValues : INativeDialogService::MessageBoxIcons[] = {INativeDialogService::MessageBoxIcons::IconNone; INativeDialogService::MessageBoxIcons::IconError; INativeDialogService::MessageBoxIcons::IconQuestion; INativeDialogService::MessageBoxIcons::IconWarning; INativeDialogService::MessageBoxIcons::IconInformation;};
+
+        var iconTexts : string[] = {"IconNone"; "IconError"; "IconQuestion"; "IconWarning"; "IconInformation";};
+
+        var outputValues : INativeDialogService::MessageBoxButtonsOutput[] = {INativeDialogService::MessageBoxButtonsOutput::SelectOK; INativeDialogService::MessageBoxButtonsOutput::SelectCancel; INativeDialogService::MessageBoxButtonsOutput::SelectYes; INativeDialogService::MessageBoxButtonsOutput::SelectNo; INativeDialogService::MessageBoxButtonsOutput::SelectRetry; INativeDialogService::MessageBoxButtonsOutput::SelectAbort; INativeDialogService::MessageBoxButtonsOutput::SelectIgnore; INativeDialogService::MessageBoxButtonsOutput::SelectTryAgain; INativeDialogService::MessageBoxButtonsOutput::SelectContinue;};
+
+        var outputTexts : string[] = {"SelectOK"; "SelectCancel"; "SelectYes"; "SelectNo"; "SelectRetry"; "SelectAbort"; "SelectIgnore"; "SelectTryAgain"; "SelectContinue";};
+
         new* ()
             :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
         {
