@@ -19059,7 +19059,7 @@ namespace demo
                 while ((i <= <for-end>i))
                 {
                     {
-                        if ((listLocales.Items[i].Text == (cast (string) locale)))
+                        if ((listLocales.Items[i].Text == locale))
                         {
                             return i;
                         }
