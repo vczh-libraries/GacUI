@@ -19596,11 +19596,132 @@ namespace demo
         var self : ::demo::LocalizedFontDialogTabPage* = null of (::demo::LocalizedFontDialogTabPage*);
 
         @cpp:Protected
+        var dialog : ::presentation::controls::GuiFontDialog* = null of (::presentation::controls::GuiFontDialog*);
+
+        @cpp:Protected
+        var label : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+
+        @cpp:Protected
+        var checkEffect : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
+        var <precompile>0 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+
+        @cpp:Protected
+        var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+
+        @cpp:Protected
+        var <precompile>4 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
         func <demo-LocalizedFontDialogTabPage>Initialize(<this> : ::demo::LocalizedFontDialogTabPage*) : (::system::Void)
         {
             (self = <this>);
             {
                 (self.Text = "FontDialog");
+            }
+            (dialog = new (::presentation::controls::GuiFontDialog*)());
+            {
+                (dialog.ForceFontExist = true);
+            }
+            {
+                self.AddComponent(dialog);
+            }
+            (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>0.BorderVisible = true);
+            }
+            {
+                (<precompile>0.CellPadding = 5 of (::system::Int64));
+            }
+            {
+                (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>0.SetRowsAndColumns(3, 2);
+                <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetRowOption(2, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>0.SetColumnOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>1.SetSite(0, 0, 1, 1);
+            }
+            (label = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (label.Color = (cast (::presentation::Color) "#FFFFFF"));
+            }
+            {
+                (label.Text = "Sample Text");
+            }
+            {
+                (<precompile>1.OwnedElement = label);
+            }
+            {
+                <precompile>0.AddChild(<precompile>1);
+            }
+            (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>2.SetSite(1, 0, 1, 1);
+            }
+            {
+                (checkEffect = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+            }
+            {
+                (checkEffect.Selected = false);
+            }
+            {
+                (checkEffect.Text = "Effect");
+            }
+            {
+                <precompile>2.AddChild(checkEffect.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>2);
+            }
+            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>3.SetSite(2, 0, 1, 1);
+            }
+            {
+                (<precompile>4 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>4.Text = "Show Dialog");
+            }
+            {
+                <precompile>3.AddChild(<precompile>4.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>3);
+            }
+            {
+                self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                (label.Font = self.DisplayFont);
+            }
+            {
+                var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                {
+                    (dialog.ShowEffect = checkEffect.Selected);
+                    (dialog.SelectedFont = label.Font);
+                    (dialog.SelectedColor = label.Color);
+                    if (dialog.ShowDialog())
+                    {
+                        (label.Font = dialog.SelectedFont);
+                        (label.Color = dialog.SelectedColor);
+                    }
+                };
+                attach(<precompile>4.Clicked, <event-handler>);
             }
         }
 

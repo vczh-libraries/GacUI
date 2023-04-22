@@ -294,6 +294,43 @@
   <Instance name="LocalizedFontDialogTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedFontDialogTabPage">
       <TabPage ref.Name="self" Text="FontDialog">
+        <FontDialog ref.Name="dialog" ForceFontExist="true"/>
+        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0">
+            <SolidLabel ref.Name="label" Font-eval="self.DisplayFont" Color="#FFFFFF" Text="Sample Text"/>
+          </Cell>
+
+          <Cell Site="row:1 column:0">
+            <CheckBox ref.Name="checkEffect" Text="Effect" Selected="false"/>
+          </Cell>
+
+          <Cell Site="row:2 column:0">
+            <Button Text="Show Dialog">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  dialog.ShowEffect = checkEffect.Selected;
+                  dialog.SelectedFont = label.Font;
+                  dialog.SelectedColor = label.Color;
+                  if (dialog.ShowDialog())
+                  {
+                    label.Font = dialog.SelectedFont;
+                    label.Color = dialog.SelectedColor;
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
       </TabPage>
     </Instance>
   </Instance>
