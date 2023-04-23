@@ -18,8 +18,12 @@
 
 ## Known Issues
 
+- Hosted Mode
+  - Main window dragging top/left border moves the whole window downwards/rightwards after reaching minimum size.
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
+- Workflow
+  - Lack of char escaping when generating C++ files.
 
 ## Progressing
 
