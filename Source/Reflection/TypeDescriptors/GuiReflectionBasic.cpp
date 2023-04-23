@@ -401,6 +401,7 @@ Type Declaration
 
 			BEGIN_ENUM_ITEM_MERGABLE(INativeDialogService::FileDialogOptions)
 				ENUM_ITEM_NAMESPACE(INativeDialogService)
+				ENUM_NAMESPACE_ITEM(None)
 				ENUM_NAMESPACE_ITEM(FileDialogAllowMultipleSelection)
 				ENUM_NAMESPACE_ITEM(FileDialogFileMustExist)
 				ENUM_NAMESPACE_ITEM(FileDialogShowReadOnlyCheckBox)

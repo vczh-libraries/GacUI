@@ -1570,10 +1570,12 @@ INativeDialogService
 			};
 
 			/// <summary>
-			/// File dialog options.
+			/// File dialog option flags.
 			/// </summary>
 			enum FileDialogOptions
 			{
+				/// <summary>No option are selected.</summary>
+				None = 0,
 				/// <summary>Allow multiple selection.</summary>
 				FileDialogAllowMultipleSelection = 1,
 				/// <summary>Prevent the user to select unexisting files.</summary>

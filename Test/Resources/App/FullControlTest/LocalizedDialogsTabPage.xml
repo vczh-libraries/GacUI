@@ -347,7 +347,7 @@
           dialog.FilterIndex = (cast int txtFilterIndex.Text) ?? 0;
           dialog.DefaultExtension = txtDefaultExtension.Text;
 
-          var options = cast INativeDialogService::FileDialogOptions 0;
+          var options : INativeDialogService::FileDialogOptions = None;
           if (chkFileDialogAllowMultipleSelection.Selected) { options = options | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection; }
           if (chkFileDialogFileMustExist.Selected)          { options = options | INativeDialogService::FileDialogOptions::FileDialogFileMustExist;          }
           if (chkFileDialogShowReadOnlyCheckBox.Selected)   { options = options | INativeDialogService::FileDialogOptions::FileDialogShowReadOnlyCheckBox;   }

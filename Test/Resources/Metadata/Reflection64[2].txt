@@ -1834,27 +1834,28 @@ class gaclib_controls::FullFontDialogWindowConstructor : system::ReferenceType {
     property __vwsn_precompile_12 : presentation::compositions::GuiStackItemComposition*;
     property __vwsn_precompile_13 : presentation::compositions::GuiStackItemComposition*;
     property __vwsn_precompile_14 : presentation::compositions::GuiStackItemComposition*;
-    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_16 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_17 : presentation::controls::GuiControl*;
-    property __vwsn_precompile_18 : presentation::elements::Gui3DBorderElement^;
-    property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiStackItemComposition*;
+    property __vwsn_precompile_16 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_18 : presentation::controls::GuiControl*;
+    property __vwsn_precompile_19 : presentation::elements::Gui3DBorderElement^;
     property __vwsn_precompile_2 : presentation::compositions::GuiTableComposition*;
     property __vwsn_precompile_20 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_21 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_22 : presentation::controls::GuiControl*;
-    property __vwsn_precompile_23 : presentation::compositions::GuiTableComposition*;
-    property __vwsn_precompile_24 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_25 : presentation::controls::GuiLabel*;
-    property __vwsn_precompile_26 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_22 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_23 : presentation::controls::GuiControl*;
+    property __vwsn_precompile_24 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_26 : presentation::controls::GuiLabel*;
     property __vwsn_precompile_27 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_28 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_29 : presentation::controls::GuiButton*;
+    property __vwsn_precompile_28 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_29 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_30 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_31 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_32 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_33 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_30 : presentation::controls::GuiButton*;
+    property __vwsn_precompile_31 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_32 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_33 : presentation::controls::GuiButton*;
+    property __vwsn_precompile_34 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_4 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
@@ -1864,6 +1865,7 @@ class gaclib_controls::FullFontDialogWindowConstructor : system::ReferenceType {
     property checkBold : presentation::controls::GuiSelectableButton*;
     property checkHAA : presentation::controls::GuiSelectableButton*;
     property checkItalic : presentation::controls::GuiSelectableButton*;
+    property checkStrikeline : presentation::controls::GuiSelectableButton*;
     property checkUnderline : presentation::controls::GuiSelectableButton*;
     property checkVAA : presentation::controls::GuiSelectableButton*;
     property colorBackground : presentation::elements::GuiSolidBackgroundElement^;
@@ -1913,6 +1915,7 @@ interface gaclib_controls::IDialogStringsStrings : system::Interface {
     function OK() : system::String;
     function Red() : system::String;
     function Retry() : system::String;
+    function Strikeline() : system::String;
     function TryAgain() : system::String;
     function Underline() : system::String;
     function VAA() : system::String;
@@ -2611,6 +2614,7 @@ enum presentation::INativeDialogService::FileDialogOptions {
     FileDialogPromptOverwriteFile = 64,
     FileDialogShowNetworkButton = 16,
     FileDialogShowReadOnlyCheckBox = 4,
+    None = 0,
 }
 
 @ValueType
@@ -8591,6 +8595,7 @@ enum system::reflection::TypeDescriptorFlags {
     Object = 1,
     Primitive = 16,
     Struct = 32,
+    Undefined = 0,
 }
 
 @FullName:vl::reflection::description::ITypeInfo
