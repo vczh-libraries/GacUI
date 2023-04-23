@@ -110,7 +110,7 @@
           "DisplayAbortRetryIgnore";
           "DisplayCancelTryAgainContinue";
         };
-        
+
         var defaultButtonValues : INativeDialogService::MessageBoxDefaultButton[] = {
           INativeDialogService::MessageBoxDefaultButton::DefaultFirst;
           INativeDialogService::MessageBoxDefaultButton::DefaultSecond;
@@ -121,7 +121,7 @@
           "DefaultSecond";
           "DefaultThird";
         };
-        
+
         var iconValues : INativeDialogService::MessageBoxIcons[] = {
           INativeDialogService::MessageBoxIcons::IconNone;
           INativeDialogService::MessageBoxIcons::IconError;
@@ -136,7 +136,7 @@
           "IconWarning";
           "IconInformation";
         };
-        
+
         var outputValues : INativeDialogService::MessageBoxButtonsOutput[] = {
           INativeDialogService::MessageBoxButtonsOutput::SelectOK;
           INativeDialogService::MessageBoxButtonsOutput::SelectCancel;
@@ -338,7 +338,7 @@
   <Instance name="LocalizedFileDialogTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedFileDialogTabPage">
       <ref.Members><![CDATA[
-        func SetDialogProperties(dialog : GuiDialog*)
+        func SetDialogProperties(dialog : GuiFileDialogBase*) : void
         {
           dialog.Title = txtTitle.Text;
           dialog.Directory = txtDirectory.Text;
@@ -348,15 +348,15 @@
           dialog.DefaultExtension = txtDefaultExtension.Text;
 
           var options = cast INativeDialogService::FileDialogOptions 0;
-          if (chkFileDialogAllowMultipleSelection.Selected) { options = options | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelectio; }
-          if (chkFileDialogFileMustExist.Selected)          { options = options | INativeDialogService::FileDialogOptions::FileDialogFileMustExist;         }
-          if (chkFileDialogShowReadOnlyCheckBox.Selected)   { options = options | INativeDialogService::FileDialogOptions::FileDialogShowReadOnlyCheckBo;   }
-          if (chkFileDialogDereferenceLinks.Selected)       { options = options | INativeDialogService::FileDialogOptions::FileDialogDereferenceLink;       }
-          if (chkFileDialogShowNetworkButton.Selected)      { options = options | INativeDialogService::FileDialogOptions::FileDialogShowNetworkButton;     }
-          if (chkFileDialogPromptCreateFile.Selected)       { options = options | INativeDialogService::FileDialogOptions::FileDialogPromptCreateFil;       }
-          if (chkFileDialogPromptOverwriteFile.Selected)    { options = options | INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile;   }
-          if (chkFileDialogDirectoryMustExist.Selected)     { options = options | INativeDialogService::FileDialogOptions::FileDialogDirectoryMustExis;     }
-          if (chkFileDialogAddToRecent.Selected)            { options = options | INativeDialogService::FileDialogOptions::FileDialogAddToRecent;           }
+          if (chkFileDialogAllowMultipleSelection.Selected) { options = options | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelection; }
+          if (chkFileDialogFileMustExist.Selected)          { options = options | INativeDialogService::FileDialogOptions::FileDialogFileMustExist;          }
+          if (chkFileDialogShowReadOnlyCheckBox.Selected)   { options = options | INativeDialogService::FileDialogOptions::FileDialogShowReadOnlyCheckBox;   }
+          if (chkFileDialogDereferenceLinks.Selected)       { options = options | INativeDialogService::FileDialogOptions::FileDialogDereferenceLinks;       }
+          if (chkFileDialogShowNetworkButton.Selected)      { options = options | INativeDialogService::FileDialogOptions::FileDialogShowNetworkButton;      }
+          if (chkFileDialogPromptCreateFile.Selected)       { options = options | INativeDialogService::FileDialogOptions::FileDialogPromptCreateFile;       }
+          if (chkFileDialogPromptOverwriteFile.Selected)    { options = options | INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile;    }
+          if (chkFileDialogDirectoryMustExist.Selected)     { options = options | INativeDialogService::FileDialogOptions::FileDialogDirectoryMustExist;     }
+          if (chkFileDialogAddToRecent.Selected)            { options = options | INativeDialogService::FileDialogOptions::FileDialogAddToRecent;            }
           dialog.Options = options;
         }
       ]]></ref.Members>
@@ -443,8 +443,8 @@
             <Button Text="Show Open File Dialog">
               <ev.Clicked-eval><![CDATA[
                 {
-                  self.SetDialogProperties(openFileDialog);
-                  if (openFileDialog.ShowDialog())
+                  self.SetDialogProperties(dialogOpen);
+                  if (dialogOpen.ShowDialog())
                   {
                   }
                 }
@@ -456,8 +456,8 @@
             <Button Text="Show Save File Dialog">
               <ev.Clicked-eval><![CDATA[
                 {
-                  self.SetDialogProperties(saveFileDialog);
-                  if (saveFileDialog.ShowDialog())
+                  self.SetDialogProperties(dialogSave);
+                  if (dialogSave.ShowDialog())
                   {
                   }
                 }
