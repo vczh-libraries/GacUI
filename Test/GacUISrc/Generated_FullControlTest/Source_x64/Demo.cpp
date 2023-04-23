@@ -21206,7 +21206,7 @@ Class (::demo::LocalizedFileDialogTabPageConstructor)
 			::vl::__vwsn::This(this->__vwsn_precompile_22)->SetAlignmentToParent([&](){ ::vl::presentation::Margin __vwsn_temp__; __vwsn_temp__.left = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.top = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.right = static_cast<::vl::vint64_t>(0L); __vwsn_temp__.bottom = static_cast<::vl::vint64_t>(0L); return __vwsn_temp__; }());
 		}
 		{
-			::vl::__vwsn::This(this->txtFilter)->SetText(::vl::WString::Unmanaged(L"Text Files (*.txt)|*.txt|All Files (*.*)|*.*"));
+			::vl::__vwsn::This(this->txtFilter)->SetText(::vl::WString::Unmanaged(L"Text Files (*.txt)|*.txt|XML Files (*.xml)|*.xml|All Files (*.*)|*.*"));
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_21)->AddChild(static_cast<::vl::presentation::compositions::GuiGraphicsComposition*>(::vl::__vwsn::This(this->txtFilter)->GetBoundsComposition()));

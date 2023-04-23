@@ -23,6 +23,7 @@
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
+  - Extensions not applied before checking file existance.
 
 ## Progressing
 

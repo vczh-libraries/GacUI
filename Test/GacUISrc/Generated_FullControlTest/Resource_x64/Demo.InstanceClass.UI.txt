@@ -20003,7 +20003,7 @@ namespace demo
                 (<precompile>22.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (txtFilter.Text = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*");
+                (txtFilter.Text = "Text Files (*.txt)|*.txt|XML Files (*.xml)|*.xml|All Files (*.*)|*.*");
             }
             {
                 <precompile>21.AddChild(txtFilter.BoundsComposition);
