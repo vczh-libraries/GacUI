@@ -1,0 +1,47 @@
+<Folder>
+  <Instance name="LocaleSelectorResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocaleSelector">
+      <ref.Members>
+        <![CDATA[
+          func GetLocaleIndex(locale: Locale): int
+          {
+            for (i in range (0, listLocales.Items.Count))
+            {
+              if (listLocales.Items[i].Text == locale)
+              {
+                return i;
+              }
+            }
+            return 0;
+          }
+        ]]>
+      </ref.Members>
+      <CustomControl ref.Name="self">
+        <ComboBox ref.Name="comboLocales">
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0" PreferredMinSize="x:120"/>
+          <att.SelectedIndex-bind>self.GetLocaleIndex(Application::GetApplication().Locale)</att.SelectedIndex-bind>
+          <ev.SelectedIndexChanged-eval>
+            <![CDATA[
+              {
+                var index = comboLocales.SelectedIndex;
+                if (index == -1)
+                {
+                  index = 0;
+                }
+                Application::GetApplication().Locale = cast Locale listLocales.Items[index].Text;
+              }
+            ]]>
+          </ev.SelectedIndexChanged-eval>
+          <att.ListControl>
+            <TextList ref.Name="listLocales" HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+              <att.Items>
+                <_ Text="en-US"/>
+                <_ Text="zh-CN"/>
+              </att.Items>
+            </TextList>
+          </att.ListControl>
+        </ComboBox>
+      </CustomControl>
+    </Instance>
+  </Instance>
+</Folder>

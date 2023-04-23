@@ -200,6 +200,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Retry);
 				}
+				::vl::WString Strikeline() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(Strikeline);
+				}
 				::vl::WString TryAgain() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(TryAgain);

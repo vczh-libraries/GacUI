@@ -19611,6 +19611,7 @@ WfGenerateExpressionVisitor
 						auto c = node->value.value[i];
 						switch (c)
 						{
+						case L'\\': writer.WriteString(L"\\\\"); break;
 						case L'\'': writer.WriteString(L"\\\'"); break;
 						case L'\"': writer.WriteString(L"\\\""); break;
 						case L'\r': writer.WriteString(L"\\r"); break;
@@ -25550,9 +25551,11 @@ GenerateInstructions(Expression)
 								auto secondResult = context.manager->expressionResolvings[node->second.Obj()];
 								auto firstType = firstResult.expectedType ? firstResult.expectedType : firstResult.type;
 								auto secondType = secondResult.expectedType ? secondResult.expectedType : secondResult.type;
+								mergedType = GetMergedType(firstType, secondType);
+
 								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
 								{
-									if (firstType->GetDecorator() == ITypeInfo::RawPtr || firstType->GetDecorator() == ITypeInfo::SharedPtr)
+									if (mergedType->GetDecorator() == ITypeInfo::RawPtr || mergedType->GetDecorator() == ITypeInfo::SharedPtr)
 									{
 										GenerateExpressionInstructions(context, node->first);
 										GenerateExpressionInstructions(context, node->second);
@@ -25561,19 +25564,22 @@ GenerateInstructions(Expression)
 										{
 											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
 										}
-										return;
 									}
-								}
-
-								mergedType = GetMergedType(firstType, secondType);
-								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
-								{
-									GenerateExpressionInstructions(context, node->first);
-									GenerateExpressionInstructions(context, node->second);
-									INSTRUCTION(Ins::CompareValue());
-									if (node->op == WfBinaryOperator::NE)
+									else
 									{
-										INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+										Ptr<ITypeInfo> mergedToStringType;
+										if (mergedType->GetDecorator() == ITypeInfo::TypeDescriptor && mergedType->GetTypeDescriptor() == description::GetTypeDescriptor<WString>())
+										{
+											mergedToStringType = mergedType;
+										}
+
+										GenerateExpressionInstructions(context, node->first, mergedToStringType);
+										GenerateExpressionInstructions(context, node->second, mergedToStringType);
+										INSTRUCTION(Ins::CompareValue());
+										if (node->op == WfBinaryOperator::NE)
+										{
+											INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+										}
 									}
 									return;
 								}

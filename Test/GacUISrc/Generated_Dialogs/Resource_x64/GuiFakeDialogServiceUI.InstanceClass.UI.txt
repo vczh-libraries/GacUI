@@ -3530,12 +3530,12 @@ namespace gaclib_controls
                 {
                     var fragment = (cast (::presentation::IFileDialogFolder^) <for-enumerator>fragment.GetCurrent());
                     {
+                        (currentNode.Expanding = true);
+                        (currentNode = currentNode.GetChild(fragment.Index));
                         if (currentNode is null)
                         {
                             return;
                         }
-                        (currentNode.Expanding = true);
-                        (currentNode = currentNode.GetChild(fragment.Index));
                     }
                 }
             }
@@ -4869,6 +4869,9 @@ namespace gaclib_controls
         var checkUnderline : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
+        var checkStrikeline : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
+        @cpp:Protected
         var checkHAA : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
@@ -4926,61 +4929,64 @@ namespace gaclib_controls
         var <precompile>14 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>15 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>15 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>16 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>16 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>17 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+        var <precompile>17 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::elements::Gui3DBorderElement^ = null of (::presentation::elements::Gui3DBorderElement^);
+        var <precompile>18 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
-        var <precompile>19 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>19 : ::presentation::elements::Gui3DBorderElement^ = null of (::presentation::elements::Gui3DBorderElement^);
 
         @cpp:Protected
         var <precompile>20 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>21 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>21 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>22 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
+        var <precompile>22 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>23 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
+        var <precompile>23 : ::presentation::controls::GuiControl* = null of (::presentation::controls::GuiControl*);
 
         @cpp:Protected
-        var <precompile>24 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>24 : ::presentation::compositions::GuiTableComposition* = null of (::presentation::compositions::GuiTableComposition*);
 
         @cpp:Protected
-        var <precompile>25 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
+        var <precompile>25 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>26 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>26 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>27 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>28 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>28 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>29 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>29 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>30 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>30 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
-        var <precompile>31 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>31 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>32 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>32 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>33 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>33 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>34 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <gaclib_controls-FullFontDialogWindow>Initialize(<this> : ::gaclib_controls::FullFontDialogWindow*) : (::system::Void)
@@ -5086,9 +5092,9 @@ namespace gaclib_controls
             {
                 (<precompile>8 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>15 = <precompile>8.BoundsComposition);
+            (<precompile>16 = <precompile>8.BoundsComposition);
             {
-                (<precompile>15.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>16.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (<precompile>9 = new (::presentation::compositions::GuiStackComposition*)());
             {
@@ -5141,18 +5147,31 @@ namespace gaclib_controls
             }
             (<precompile>13 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
+                (checkStrikeline = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
+            }
+            {
+                (checkStrikeline.Alt = "U");
+            }
+            {
+                <precompile>13.AddChild(checkStrikeline.BoundsComposition);
+            }
+            {
+                <precompile>9.AddChild(<precompile>13);
+            }
+            (<precompile>14 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
                 (checkHAA = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
                 (checkHAA.Alt = "H");
             }
             {
-                <precompile>13.AddChild(checkHAA.BoundsComposition);
+                <precompile>14.AddChild(checkHAA.BoundsComposition);
             }
             {
-                <precompile>9.AddChild(<precompile>13);
+                <precompile>9.AddChild(<precompile>14);
             }
-            (<precompile>14 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>15 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkVAA = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
@@ -5160,10 +5179,10 @@ namespace gaclib_controls
                 (checkVAA.Alt = "V");
             }
             {
-                <precompile>14.AddChild(checkVAA.BoundsComposition);
+                <precompile>15.AddChild(checkVAA.BoundsComposition);
             }
             {
-                <precompile>9.AddChild(<precompile>14);
+                <precompile>9.AddChild(<precompile>15);
             }
             {
                 <precompile>8.ContainerComposition.AddChild(<precompile>9);
@@ -5174,16 +5193,16 @@ namespace gaclib_controls
             {
                 <precompile>2.AddChild(<precompile>7);
             }
-            (<precompile>16 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>17 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>16.SetSite(2, 1, 1, 1);
+                <precompile>17.SetSite(2, 1, 1, 1);
             }
             {
-                (<precompile>17 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
+                (<precompile>18 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>20 = <precompile>17.BoundsComposition);
+            (<precompile>21 = <precompile>18.BoundsComposition);
             {
-                (<precompile>20.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>21.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             (colorBounds = new (::presentation::compositions::GuiBoundsComposition*)());
             {
@@ -5192,35 +5211,35 @@ namespace gaclib_controls
             {
                 (colorBounds.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
-            (<precompile>18 = new (::presentation::elements::Gui3DBorderElement^)());
+            (<precompile>19 = new (::presentation::elements::Gui3DBorderElement^)());
             {
-                (<precompile>18.Color2 = (cast (::presentation::Color) "#AAAAAA"));
+                (<precompile>19.Color2 = (cast (::presentation::Color) "#AAAAAA"));
             }
             {
-                (<precompile>18.Color1 = (cast (::presentation::Color) "#444444"));
+                (<precompile>19.Color1 = (cast (::presentation::Color) "#444444"));
             }
             {
-                (colorBounds.OwnedElement = <precompile>18);
+                (colorBounds.OwnedElement = <precompile>19);
             }
-            (<precompile>19 = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>20 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>19.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (<precompile>20.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             (colorBackground = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>19.OwnedElement = colorBackground);
+                (<precompile>20.OwnedElement = colorBackground);
             }
             {
-                colorBounds.AddChild(<precompile>19);
+                colorBounds.AddChild(<precompile>20);
             }
             {
-                <precompile>17.ContainerComposition.AddChild(colorBounds);
+                <precompile>18.ContainerComposition.AddChild(colorBounds);
             }
             {
-                <precompile>16.AddChild(<precompile>17.BoundsComposition);
+                <precompile>17.AddChild(<precompile>18.BoundsComposition);
             }
             {
-                <precompile>2.AddChild(<precompile>16);
+                <precompile>2.AddChild(<precompile>17);
             }
             {
                 <precompile>1.AddChild(<precompile>2);
@@ -5228,113 +5247,113 @@ namespace gaclib_controls
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>21 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>22 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>21.PreferredMinSize = {y : 48;} of (::presentation::Size));
+                (<precompile>22.PreferredMinSize = {y : 48;} of (::presentation::Size));
             }
             {
-                <precompile>21.SetSite(1, 0, 1, 3);
+                <precompile>22.SetSite(1, 0, 1, 3);
             }
             {
-                (<precompile>22 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
+                (<precompile>23 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>27 = <precompile>22.BoundsComposition);
+            (<precompile>28 = <precompile>23.BoundsComposition);
+            {
+                (<precompile>28.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            (<precompile>24 = new (::presentation::compositions::GuiTableComposition*)());
+            {
+                (<precompile>24.BorderVisible = false);
+            }
+            {
+                (<precompile>24.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>24.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>24.SetRowsAndColumns(3, 3);
+                <precompile>24.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>24.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>24.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>24.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+                <precompile>24.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
+                <precompile>24.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
+            }
+            (<precompile>25 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>25.SetSite(1, 1, 1, 1);
+            }
+            {
+                (<precompile>26 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
+            }
+            (<precompile>27 = <precompile>26.BoundsComposition);
             {
                 (<precompile>27.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
-            (<precompile>23 = new (::presentation::compositions::GuiTableComposition*)());
             {
-                (<precompile>23.BorderVisible = false);
+                (<precompile>26.Text = "ABCxyz");
             }
             {
-                (<precompile>23.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>25.AddChild(<precompile>26.BoundsComposition);
             }
             {
-                (<precompile>23.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+                <precompile>24.AddChild(<precompile>25);
             }
             {
-                <precompile>23.SetRowsAndColumns(3, 3);
-                <precompile>23.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>23.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>23.SetRowOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>23.SetColumnOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-                <precompile>23.SetColumnOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
-                <precompile>23.SetColumnOption(2, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
-            }
-            (<precompile>24 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>24.SetSite(1, 1, 1, 1);
+                <precompile>23.ContainerComposition.AddChild(<precompile>24);
             }
             {
-                (<precompile>25 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
-            }
-            (<precompile>26 = <precompile>25.BoundsComposition);
-            {
-                (<precompile>26.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                <precompile>22.AddChild(<precompile>23.BoundsComposition);
             }
             {
-                (<precompile>25.Text = "ABCxyz");
+                <precompile>0.AddChild(<precompile>22);
+            }
+            (<precompile>29 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                <precompile>29.SetSite(2, 1, 1, 1);
             }
             {
-                <precompile>24.AddChild(<precompile>25.BoundsComposition);
+                (<precompile>30 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>31 = <precompile>30.BoundsComposition);
+            {
+                (<precompile>31.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
             }
             {
-                <precompile>23.AddChild(<precompile>24);
+                (<precompile>31.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>22.ContainerComposition.AddChild(<precompile>23);
+                (<precompile>30.Alt = "O");
             }
             {
-                <precompile>21.AddChild(<precompile>22.BoundsComposition);
+                <precompile>29.AddChild(<precompile>30.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>21);
+                <precompile>0.AddChild(<precompile>29);
             }
-            (<precompile>28 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>32 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>28.SetSite(2, 1, 1, 1);
-            }
-            {
-                (<precompile>29 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            (<precompile>30 = <precompile>29.BoundsComposition);
-            {
-                (<precompile>30.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
+                <precompile>32.SetSite(2, 2, 1, 1);
             }
             {
-                (<precompile>30.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>33 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            (<precompile>34 = <precompile>33.BoundsComposition);
+            {
+                (<precompile>34.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
             }
             {
-                (<precompile>29.Alt = "O");
+                (<precompile>34.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                <precompile>28.AddChild(<precompile>29.BoundsComposition);
+                (<precompile>33.Alt = "C");
             }
             {
-                <precompile>0.AddChild(<precompile>28);
-            }
-            (<precompile>31 = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                <precompile>31.SetSite(2, 2, 1, 1);
+                <precompile>32.AddChild(<precompile>33.BoundsComposition);
             }
             {
-                (<precompile>32 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            (<precompile>33 = <precompile>32.BoundsComposition);
-            {
-                (<precompile>33.PreferredMinSize = {x : 80; y : 24;} of (::presentation::Size));
-            }
-            {
-                (<precompile>33.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>32.Alt = "C");
-            }
-            {
-                <precompile>31.AddChild(<precompile>32.BoundsComposition);
-            }
-            {
-                <precompile>0.AddChild(<precompile>31);
+                <precompile>0.AddChild(<precompile>32);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -5555,6 +5574,79 @@ namespace gaclib_controls
                         return;
                     }
                     (checkUnderline.Text = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::gaclib_controls::FullFontDialogWindow* = null of (::gaclib_controls::FullFontDialogWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = <bind-cache>0.Strings.Strikeline();
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0() : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (<this> ?? null of (::gaclib_controls::FullFontDialogWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.StringsChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.StringsChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::gaclib_controls::FullFontDialogWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkStrikeline.Text;
+                    var <new> = (cast (::system::String) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkStrikeline.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -5856,13 +5948,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>17.Text;
+                    var <old> = <precompile>18.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>17.Text = <new>);
+                    (<precompile>18.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -5887,6 +5979,8 @@ namespace gaclib_controls
 
                     var <bind-cache>8 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
+                    var <bind-cache>9 : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
+
                     var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
                     var <bind-handler>1_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
@@ -5905,13 +5999,15 @@ namespace gaclib_controls
 
                     var <bind-handler>8_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
 
+                    var <bind-handler>9_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
                     var <bind-opened> : ::system::Boolean = false;
 
                     var <bind-closed> : ::system::Boolean = false;
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = let defaultFont = INativeController::GetCurrentController().ResourceService().DefaultFont in ({fontFamily : ViewModel.FontList.Contains(<bind-cache>0.Value) ? <bind-cache>1.Value : defaultFont.fontFamily; size : (<bind-cache>2.Value > 0) ? <bind-cache>3.Value : defaultFont.size; bold : <bind-cache>4.Selected; italic : <bind-cache>5.Selected; underline : <bind-cache>6.Selected; antialias : <bind-cache>7.Selected; verticalAntialias : <bind-cache>8.Selected;}) of (::presentation::FontProperties?);
+                        var <bind-activator-result> = let defaultFont = INativeController::GetCurrentController().ResourceService().DefaultFont in ({fontFamily : ViewModel.FontList.Contains(<bind-cache>0.Value) ? <bind-cache>1.Value : defaultFont.fontFamily; size : (<bind-cache>2.Value > 0) ? <bind-cache>3.Value : defaultFont.size; bold : <bind-cache>4.Selected; italic : <bind-cache>5.Selected; underline : <bind-cache>6.Selected; strikeline : <bind-cache>7.Selected; antialias : <bind-cache>8.Selected; verticalAntialias : <bind-cache>9.Selected;}) of (::presentation::FontProperties?);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -5960,6 +6056,11 @@ namespace gaclib_controls
                         <bind-activator>();
                     }
 
+                    func <bind-callback>9_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
                     override func Open() : (::system::Boolean)
                     {
                         if ((!<bind-opened>))
@@ -5972,8 +6073,9 @@ namespace gaclib_controls
                             (<bind-cache>4 = (checkBold ?? null of (::presentation::controls::GuiSelectableButton*)));
                             (<bind-cache>5 = (checkItalic ?? null of (::presentation::controls::GuiSelectableButton*)));
                             (<bind-cache>6 = (checkUnderline ?? null of (::presentation::controls::GuiSelectableButton*)));
-                            (<bind-cache>7 = (checkHAA ?? null of (::presentation::controls::GuiSelectableButton*)));
-                            (<bind-cache>8 = (checkVAA ?? null of (::presentation::controls::GuiSelectableButton*)));
+                            (<bind-cache>7 = (checkStrikeline ?? null of (::presentation::controls::GuiSelectableButton*)));
+                            (<bind-cache>8 = (checkHAA ?? null of (::presentation::controls::GuiSelectableButton*)));
+                            (<bind-cache>9 = (checkVAA ?? null of (::presentation::controls::GuiSelectableButton*)));
                             (<bind-handler>0_0 = (attach(<bind-cache>0.ValueChanged, <bind-callback>0_0) ?? null));
                             (<bind-handler>1_0 = (attach(<bind-cache>1.ValueChanged, <bind-callback>1_0) ?? null));
                             (<bind-handler>2_0 = (attach(<bind-cache>2.ValueChanged, <bind-callback>2_0) ?? null));
@@ -5983,6 +6085,7 @@ namespace gaclib_controls
                             (<bind-handler>6_0 = (attach(<bind-cache>6.SelectedChanged, <bind-callback>6_0) ?? null));
                             (<bind-handler>7_0 = (attach(<bind-cache>7.SelectedChanged, <bind-callback>7_0) ?? null));
                             (<bind-handler>8_0 = (attach(<bind-cache>8.SelectedChanged, <bind-callback>8_0) ?? null));
+                            (<bind-handler>9_0 = (attach(<bind-cache>9.SelectedChanged, <bind-callback>9_0) ?? null));
                             return true;
                         }
                         return false;
@@ -6048,6 +6151,11 @@ namespace gaclib_controls
                                 detach(<bind-cache>8.SelectedChanged, <bind-handler>8_0);
                                 (<bind-handler>8_0 = null);
                             }
+                            if (<bind-handler>9_0 is not null)
+                            {
+                                detach(<bind-cache>9.SelectedChanged, <bind-handler>9_0);
+                                (<bind-handler>9_0 = null);
+                            }
                             (<bind-cache>0 = null of (::gaclib_controls::FontNameControl*));
                             (<bind-cache>1 = null of (::gaclib_controls::FontNameControl*));
                             (<bind-cache>2 = null of (::gaclib_controls::FontSizeControl*));
@@ -6057,6 +6165,7 @@ namespace gaclib_controls
                             (<bind-cache>6 = null of (::presentation::controls::GuiSelectableButton*));
                             (<bind-cache>7 = null of (::presentation::controls::GuiSelectableButton*));
                             (<bind-cache>8 = null of (::presentation::controls::GuiSelectableButton*));
+                            (<bind-cache>9 = null of (::presentation::controls::GuiSelectableButton*));
                             (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>1_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>2_0 = null of (::system::reflection::EventHandler^));
@@ -6066,6 +6175,7 @@ namespace gaclib_controls
                             (<bind-handler>6_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>7_0 = null of (::system::reflection::EventHandler^));
                             (<bind-handler>8_0 = null of (::system::reflection::EventHandler^));
+                            (<bind-handler>9_0 = null of (::system::reflection::EventHandler^));
                             return true;
                         }
                         return false;
@@ -6073,13 +6183,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>25.Font;
+                    var <old> = <precompile>26.Font;
                     var <new> = (cast (::presentation::FontProperties?) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>25.Font = <new>);
+                    (<precompile>26.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -6146,13 +6256,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>22.Text;
+                    var <old> = <precompile>23.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>22.Text = <new>);
+                    (<precompile>23.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -6219,13 +6329,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>29.Text;
+                    var <old> = <precompile>30.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>29.Text = <new>);
+                    (<precompile>30.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -6310,13 +6420,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>29.Enabled;
+                    var <old> = <precompile>30.Enabled;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>29.Enabled = <new>);
+                    (<precompile>30.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -6324,10 +6434,10 @@ namespace gaclib_controls
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     (ViewModel.Confirmed = true);
-                    (ViewModel.Font = {fontFamily : nameControl.Value; size : sizeControl.Value; bold : checkBold.Selected; italic : checkItalic.Selected; underline : checkUnderline.Selected; antialias : checkHAA.Selected; verticalAntialias : checkVAA.Selected;});
+                    (ViewModel.Font = {fontFamily : nameControl.Value; size : sizeControl.Value; bold : checkBold.Selected; italic : checkItalic.Selected; underline : checkUnderline.Selected; strikeline : checkStrikeline.Selected; antialias : checkHAA.Selected; verticalAntialias : checkVAA.Selected;});
                     self.Close();
                 };
-                attach(<precompile>29.Clicked, <event-handler>);
+                attach(<precompile>30.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -6392,13 +6502,13 @@ namespace gaclib_controls
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>32.Text;
+                    var <old> = <precompile>33.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>32.Text = <new>);
+                    (<precompile>33.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -6407,7 +6517,7 @@ namespace gaclib_controls
                 {
                     self.Close();
                 };
-                attach(<precompile>32.Clicked, <event-handler>);
+                attach(<precompile>33.Clicked, <event-handler>);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -6637,6 +6747,7 @@ namespace gaclib_controls
             (checkBold.Selected = ViewModel.Font.bold);
             (checkItalic.Selected = ViewModel.Font.italic);
             (checkUnderline.Selected = ViewModel.Font.underline);
+            (checkStrikeline.Selected = ViewModel.Font.strikeline);
             (checkHAA.Selected = ViewModel.Font.antialias);
             (checkVAA.Selected = ViewModel.Font.verticalAntialias);
         }
@@ -8535,6 +8646,8 @@ namespace gaclib_controls
 
         func Retry() : (::system::String);
 
+        func Strikeline() : (::system::String);
+
         func TryAgain() : (::system::String);
 
         func Underline() : (::system::String);
@@ -8726,6 +8839,11 @@ namespace gaclib_controls
                 override func Retry() : (::system::String)
                 {
                     return "Retry";
+                }
+
+                override func Strikeline() : (::system::String)
+                {
+                    return "Strike-through";
                 }
 
                 override func TryAgain() : (::system::String)

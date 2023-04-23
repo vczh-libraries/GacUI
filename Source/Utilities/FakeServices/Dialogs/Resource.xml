@@ -48,6 +48,7 @@
         <String Name="Bold" Text="Bold"/>
         <String Name="Italic" Text="Italic"/>
         <String Name="Underline" Text="Underline"/>
+        <String Name="Strikeline" Text="Strike-through"/>
         <String Name="HAA" Text="Horizontal Antialias"/>
         <String Name="VAA" Text="Vertical Antialias"/>
 

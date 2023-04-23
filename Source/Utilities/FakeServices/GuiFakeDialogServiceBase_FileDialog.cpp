@@ -669,12 +669,14 @@ View Model (IFileDialogViewModel)
 					);
 
 				Nullable<WString> extension;
+				bool extensionFromFilter = false;
 				if (selectedFilter)
 				{
 					extension = selectedFilter->GetDefaultExtension();
+					extensionFromFilter = extension;
 				}
 
-				if (!extension && defaultExtension!=WString::Empty)
+				if (!extensionFromFilter && defaultExtension != WString::Empty)
 				{
 					extension = defaultExtension;
 				}
@@ -687,9 +689,20 @@ View Model (IFileDialogViewModel)
 					for (vint i = 0; i < confirmedSelection.Count(); i++)
 					{
 						WString& selection = confirmedSelection[i];
-						if (selection.Length() >= lExt && selection.Right(lExt) == sExt)
+						if (extensionFromFilter)
 						{
-							continue;
+							if (selection.Length() >= lExt && selection.Right(lExt) == sExt)
+							{
+								continue;
+							}
+						}
+						else
+						{
+							auto selectedFileName = filesystem::FilePath(selection).GetName();
+							if (INVLOC.FindFirst(selectedFileName, WString::Unmanaged(L"."), Locale::None).key != -1)
+							{
+								continue;
+							}
 						}
 						selection += sExt;
 					}

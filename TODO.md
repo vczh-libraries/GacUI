@@ -1,11 +1,29 @@
 # TODO
 
+## Done but not Released
+
+- `GuiVirtualTreeListControl` handles `LEFT` and `RIGHT` for item navigation.
+- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
+- Workflow
+  - Disallow struct `X` contains `X?` field.
+  - `static{}` initialization.
+  - Comparing two string and serializable type values becomes unequal, but `==` and `!=` operator will cast one side to string, if types are known at compile time.
+- GacUI
+  - Fix GacUI compiler failure when compiled with reflection.
+  - Remove SysKey callbacks, merge into Key callbacks.
+- GacGen
+  - Add DarkSkin and Dialog in Reflection(32|64).bin
+- Tutorial
+  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
+
 ## Known Issues
 
+- Hosted Mode
+  - Main window dragging top/left border moves the whole window downwards/rightwards after reaching minimum size.
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
-- GacUI_Host
-  - ComboBox doesn't display the selected item when it is opened in a datagrid.
+  - Specify multiple extensions in one filter, exactly like Win32 API.
+  - Extensions not applied before checking file existance.
 
 ## Progressing
 
@@ -13,8 +31,9 @@
   - Add HostedWindow theme.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
-- Tutorial
-  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
+- Tutorial:
+  - Dialog.
+  - Global shortcut key.
 
 ## Optional
 
@@ -42,19 +61,6 @@
 - Fix document for control signal event if already exists.
 - Add `static` keyword (method and init) in workflow document.
 - Add `static{}` in workflow document.
-
-## Done but not Released
-
-- `GuiVirtualTreeListControl` handles `LEFT` and `RIGHT` for item navigation.
-- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
-- Workflow
-  - Disallow struct `X` contains `X?` field.
-  - `static{}` initialization.
-- GacUI
-  - Fix GacUI compiler failure when compiled with reflection.
-  - Remove SysKey callbacks, merge into Key callbacks.
-- GacGen
-  - Add DarkSkin and Dialog in Reflection(32|64).bin
 
 ## OS Provider Features
 
@@ -170,9 +176,9 @@
     - following a naming convention, e.g. `GuiTableComposition`'s rows/columns properties.
     - searching for correct default control templates.
 - Incremental build inside single resource.
-  -  Calculate dependencies by only parsing.
-  -  Cache workflow assembly per resource in file.
-  -  Codegen c++ from multiple workflow assembly.
+  - Calculate dependencies by only parsing.
+  - Cache workflow assembly per resource in file.
+  - Codegen c++ from multiple workflow assembly.
 
 ## MISC
 

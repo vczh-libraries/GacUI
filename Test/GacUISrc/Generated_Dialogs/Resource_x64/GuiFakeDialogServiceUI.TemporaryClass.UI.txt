@@ -1005,6 +1005,8 @@ namespace gaclib_controls
 
         func Retry() : (::system::String);
 
+        func Strikeline() : (::system::String);
+
         func TryAgain() : (::system::String);
 
         func Underline() : (::system::String);
@@ -1196,6 +1198,11 @@ namespace gaclib_controls
                 override func Retry() : (::system::String)
                 {
                     return "Retry";
+                }
+
+                override func Strikeline() : (::system::String)
+                {
+                    return "Strike-through";
                 }
 
                 override func TryAgain() : (::system::String)

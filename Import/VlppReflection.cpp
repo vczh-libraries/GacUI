@@ -2854,7 +2854,7 @@ description::Value
 #undef DEFINE_PBT_MATRIX1
 #undef DEFINE_PBT_MATRI2
 
-					std::partial_ordering::unordered;
+					return std::partial_ordering::unordered;
 				}
 
 				return std::partial_ordering::equivalent;
@@ -4928,6 +4928,7 @@ LoadPredefinedTypes
 			END_INTERFACE_MEMBER(IMethodGroupInfo)
 
 			BEGIN_ENUM_ITEM_MERGABLE(TypeDescriptorFlags)
+				ENUM_CLASS_ITEM(Undefined)
 				ENUM_CLASS_ITEM(Object)
 				ENUM_CLASS_ITEM(IDescriptable)
 				ENUM_CLASS_ITEM(Class)

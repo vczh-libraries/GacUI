@@ -44,12 +44,12 @@
           var currentNode = treeView.NodeRootProvider.RootNode;
           for (fragment in reversed fragments)
           {
+            currentNode.Expanding = true;
+            currentNode = currentNode.GetChild(fragment.Index);
             if (currentNode is null)
             {
               return;
             }
-            currentNode.Expanding = true;
-            currentNode = currentNode.GetChild(fragment.Index);
           }
 
           var index = treeView.NodeItemView.CalculateNodeVisibilityIndex(cast * currentNode);
