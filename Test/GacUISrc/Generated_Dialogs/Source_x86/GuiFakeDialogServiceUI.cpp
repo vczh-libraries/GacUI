@@ -6783,12 +6783,12 @@ Class (::gaclib_controls::FilePickerControl)
 			{
 				auto fragment = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::presentation::IFileDialogFolder>>(::vl::__vwsn::This(__vwsn_for_enumerator_fragment.Obj())->GetCurrent());
 				{
+					::vl::__vwsn::This(currentNode.Obj())->SetExpanding(true);
+					(currentNode = ::vl::__vwsn::This(currentNode.Obj())->GetChild(::vl::__vwsn::This(fragment.Obj())->GetIndex()));
 					if ((! static_cast<bool>(currentNode)))
 					{
 						return;
 					}
-					::vl::__vwsn::This(currentNode.Obj())->SetExpanding(true);
-					(currentNode = ::vl::__vwsn::This(currentNode.Obj())->GetChild(::vl::__vwsn::This(fragment.Obj())->GetIndex()));
 				}
 			}
 		}

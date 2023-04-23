@@ -3530,12 +3530,12 @@ namespace gaclib_controls
                 {
                     var fragment = (cast (::presentation::IFileDialogFolder^) <for-enumerator>fragment.GetCurrent());
                     {
+                        (currentNode.Expanding = true);
+                        (currentNode = currentNode.GetChild(fragment.Index));
                         if (currentNode is null)
                         {
                             return;
                         }
-                        (currentNode.Expanding = true);
-                        (currentNode = currentNode.GetChild(fragment.Index));
                     }
                 }
             }
