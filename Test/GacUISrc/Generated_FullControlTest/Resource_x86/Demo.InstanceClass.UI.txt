@@ -19753,19 +19753,34 @@ namespace demo
         var chkFileDialogAddToRecent : ::presentation::controls::GuiSelectableButton* = null of (::presentation::controls::GuiSelectableButton*);
 
         @cpp:Protected
-        var <precompile>39 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+        var lstFiles : ::presentation::controls::GuiBindableTextList* = null of (::presentation::controls::GuiBindableTextList*);
+
+        @cpp:Protected
+        var <precompile>39 : ::presentation::controls::GuiLabel* = null of (::presentation::controls::GuiLabel*);
 
         @cpp:Protected
         var <precompile>40 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>41 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>41 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var <precompile>42 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
 
         @cpp:Protected
-        var <precompile>43 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+        var <precompile>43 : ::presentation::compositions::GuiStackComposition* = null of (::presentation::compositions::GuiStackComposition*);
+
+        @cpp:Protected
+        var <precompile>44 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>45 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
+
+        @cpp:Protected
+        var <precompile>46 : ::presentation::compositions::GuiStackItemComposition* = null of (::presentation::compositions::GuiStackItemComposition*);
+
+        @cpp:Protected
+        var <precompile>47 : ::presentation::controls::GuiButton* = null of (::presentation::controls::GuiButton*);
 
         @cpp:Protected
         func <demo-LocalizedFileDialogTabPage>Initialize(<this> : ::demo::LocalizedFileDialogTabPage*) : (::system::Void)
@@ -20180,53 +20195,92 @@ namespace demo
                 <precompile>0.AddChild(<precompile>1);
             }
             (<precompile>38 = new (::presentation::compositions::GuiStackItemComposition*)());
-            (<precompile>39 = new (::presentation::compositions::GuiStackComposition*)());
             {
-                (<precompile>39.Padding = 5 of (::system::Int32));
+                (<precompile>39 = new (::presentation::controls::GuiLabel*)(::presentation::theme::ThemeName::Label));
             }
             {
-                (<precompile>39.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+                (<precompile>39.Text = "Selected Files:");
             }
             {
-                (<precompile>39.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (<precompile>39.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>40 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>41 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>41.Text = "Show Open File Dialog");
-            }
-            {
-                <precompile>40.AddChild(<precompile>41.BoundsComposition);
-            }
-            {
-                <precompile>39.AddChild(<precompile>40);
-            }
-            (<precompile>42 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>43 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
-            }
-            {
-                (<precompile>43.Text = "Show Save File Dialog");
-            }
-            {
-                <precompile>42.AddChild(<precompile>43.BoundsComposition);
-            }
-            {
-                <precompile>39.AddChild(<precompile>42);
-            }
-            {
-                <precompile>38.AddChild(<precompile>39);
+                <precompile>38.AddChild(<precompile>39.BoundsComposition);
             }
             {
                 <precompile>0.AddChild(<precompile>38);
             }
+            (<precompile>40 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (lstFiles = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
+            }
+            {
+                (lstFiles.HorizontalAlwaysVisible = false);
+            }
+            {
+                (lstFiles.VerticalAlwaysVisible = false);
+            }
+            (<precompile>41 = lstFiles.BoundsComposition);
+            {
+                (<precompile>41.PreferredMinSize = {y : 80;} of (::presentation::Size));
+            }
+            {
+                (<precompile>41.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                <precompile>40.AddChild(lstFiles.BoundsComposition);
+            }
+            {
+                <precompile>0.AddChild(<precompile>40);
+            }
+            (<precompile>42 = new (::presentation::compositions::GuiStackItemComposition*)());
+            (<precompile>43 = new (::presentation::compositions::GuiStackComposition*)());
+            {
+                (<precompile>43.Padding = 5 of (::system::Int32));
+            }
+            {
+                (<precompile>43.Direction = Horizontal of (::presentation::compositions::GuiStackComposition::Direction));
+            }
+            {
+                (<precompile>43.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>43.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>44 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>45 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>45.Text = "Show Open File Dialog");
+            }
+            {
+                <precompile>44.AddChild(<precompile>45.BoundsComposition);
+            }
+            {
+                <precompile>43.AddChild(<precompile>44);
+            }
+            (<precompile>46 = new (::presentation::compositions::GuiStackItemComposition*)());
+            {
+                (<precompile>47 = new (::presentation::controls::GuiButton*)(::presentation::theme::ThemeName::Button));
+            }
+            {
+                (<precompile>47.Text = "Show Save File Dialog");
+            }
+            {
+                <precompile>46.AddChild(<precompile>47.BoundsComposition);
+            }
+            {
+                <precompile>43.AddChild(<precompile>46);
+            }
+            {
+                <precompile>42.AddChild(<precompile>43);
+            }
+            {
+                <precompile>0.AddChild(<precompile>42);
+            }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
+            }
+            {
+                (lstFiles.TextProperty = [(cast (string) $1)]);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -20234,9 +20288,10 @@ namespace demo
                     self.SetDialogProperties(dialogOpen);
                     if (dialogOpen.ShowDialog())
                     {
+                        (lstFiles.ItemSource = dialogOpen.FileNames);
                     }
                 };
-                attach(<precompile>41.Clicked, <event-handler>);
+                attach(<precompile>45.Clicked, <event-handler>);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -20244,9 +20299,10 @@ namespace demo
                     self.SetDialogProperties(dialogSave);
                     if (dialogSave.ShowDialog())
                     {
+                        (lstFiles.ItemSource = {dialogSave.FileName;} of (string[]));
                     }
                 };
-                attach(<precompile>43.Clicked, <event-handler>);
+                attach(<precompile>47.Clicked, <event-handler>);
             }
         }
 
