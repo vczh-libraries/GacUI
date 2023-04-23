@@ -15,6 +15,7 @@
   - Add DarkSkin and Dialog in Reflection(32|64).bin
 - Tutorial
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
+  - `GacUI_Controls/Dialogs`.
 
 ## Known Issues
 
@@ -32,7 +33,6 @@
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 - Tutorial:
-  - Dialog.
   - Global shortcut key.
 
 ## Optional
