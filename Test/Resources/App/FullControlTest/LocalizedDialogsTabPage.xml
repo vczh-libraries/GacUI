@@ -80,8 +80,7 @@
                 <demo:LocalizedMessageDialogTabPage Alt="M"/>
                 <demo:LocalizedColorDialogTabPage Alt="C"/>
                 <demo:LocalizedFontDialogTabPage Alt="F"/>
-                <demo:LocalizedOpenFileDialogTabPage Alt="O"/>
-                <demo:LocalizedSaveFileDialogTabPage Alt="S"/>
+                <demo:LocalizedFileDialogTabPage Alt="F"/>
               </att.Pages>
             </Tab>
           </Cell>
@@ -336,16 +335,136 @@
     </Instance>
   </Instance>
 
-  <Instance name="LocalizedOpenFileDialogTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedOpenFileDialogTabPage">
-      <TabPage ref.Name="self" Text="OpenFileDialog">
-      </TabPage>
-    </Instance>
-  </Instance>
+  <Instance name="LocalizedFileDialogTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedFileDialogTabPage">
+      <ref.Members><![CDATA[
+        func SetDialogProperties(dialog : GuiDialog*)
+        {
+          dialog.Title = txtTitle.Text;
+          dialog.Directory = txtDirectory.Text;
+          dialog.FileName = txtFileName.Text;
+          dialog.Filter = txtFilter.Text;
+          dialog.FilterIndex = (cast int txtFilterIndex.Text) ?? 0;
+          dialog.DefaultExtension = txtDefaultExtension.Text;
 
-  <Instance name="LocalizedSaveFileDialogTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedSaveFileDialogTabPage">
-      <TabPage ref.Name="self" Text="SaveFileDialog">
+          var options = cast INativeDialogService::FileDialogOptions 0;
+          if (chkFileDialogAllowMultipleSelection.Selected) { options = options | INativeDialogService::FileDialogOptions::FileDialogAllowMultipleSelectio; }
+          if (chkFileDialogFileMustExist.Selected)          { options = options | INativeDialogService::FileDialogOptions::FileDialogFileMustExist;         }
+          if (chkFileDialogShowReadOnlyCheckBox.Selected)   { options = options | INativeDialogService::FileDialogOptions::FileDialogShowReadOnlyCheckBo;   }
+          if (chkFileDialogDereferenceLinks.Selected)       { options = options | INativeDialogService::FileDialogOptions::FileDialogDereferenceLink;       }
+          if (chkFileDialogShowNetworkButton.Selected)      { options = options | INativeDialogService::FileDialogOptions::FileDialogShowNetworkButton;     }
+          if (chkFileDialogPromptCreateFile.Selected)       { options = options | INativeDialogService::FileDialogOptions::FileDialogPromptCreateFil;       }
+          if (chkFileDialogPromptOverwriteFile.Selected)    { options = options | INativeDialogService::FileDialogOptions::FileDialogPromptOverwriteFile;   }
+          if (chkFileDialogDirectoryMustExist.Selected)     { options = options | INativeDialogService::FileDialogOptions::FileDialogDirectoryMustExis;     }
+          if (chkFileDialogAddToRecent.Selected)            { options = options | INativeDialogService::FileDialogOptions::FileDialogAddToRecent;           }
+          dialog.Options = options;
+        }
+      ]]></ref.Members>
+      <TabPage ref.Name="self" Text="Open/Save FileDialog">
+        <OpenFileDialog ref.Name="dialogOpen"/>
+        <SaveFileDialog ref.Name="dialogSave"/>
+        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:Absolute absolute:200</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+
+          <Cell Site="row:0 column:0"><Label Text="Title:"/></Cell>
+          <Cell Site="row:1 column:0"><Label Text="Directory:"/></Cell>
+          <Cell Site="row:2 column:0"><Label Text="FileName:"/></Cell>
+          <Cell Site="row:3 column:0"><Label Text="Filter:"/></Cell>
+          <Cell Site="row:4 column:0"><Label Text="FilterIndex:"/></Cell>
+          <Cell Site="row:5 column:0"><Label Text="DefaultExtension:"/></Cell>
+          <Cell Site="row:6 column:0"><Label Text="Options:"/></Cell>
+
+          <Cell Site="row:0 column:1">
+            <SinglelineTextBox ref.Name="txtTitle" Text="The Title">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:1 column:1">
+            <SinglelineTextBox ref.Name="txtDirectory" Text="C:\">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:2 column:1">
+            <SinglelineTextBox ref.Name="txtFileName" Text="C:\File.txt">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:3 column:1">
+            <SinglelineTextBox ref.Name="txtFilter" Text="Text Files (*.txt)|*.txt|All Files (*.*)|*.*">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:4 column:1">
+            <SinglelineTextBox ref.Name="txtFilterIndex" Text="0">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:5 column:1">
+            <SinglelineTextBox ref.Name="txtDefaultExtension" Text="txt">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </SinglelineTextBox>
+          </Cell>
+
+          <Cell Site="row:6 column:1">
+            <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+              <StackItem><CheckBox ref.Name="chkFileDialogAllowMultipleSelection" Text="FileDialogAllowMultipleSelection"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogFileMustExist" Text="FileDialogFileMustExist"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogShowReadOnlyCheckBox" Text="FileDialogShowReadOnlyCheckBox"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogDereferenceLinks" Text="FileDialogDereferenceLinks"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogShowNetworkButton" Text="FileDialogShowNetworkButton"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogPromptCreateFile" Text="FileDialogPromptCreateFile"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogPromptOverwriteFile" Text="FileDialogPromptOverwriteFile"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogDirectoryMustExist" Text="FileDialogDirectoryMustExist"/></StackItem>
+              <StackItem><CheckBox ref.Name="chkFileDialogAddToRecent" Text="FileDialogAddToRecent"/></StackItem>
+            </Stack>
+          </Cell>
+
+          <Cell Site="row:7 column:1">
+            <Button Text="Show Open File Dialog">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.SetDialogProperties(openFileDialog);
+                  if (openFileDialog.ShowDialog())
+                  {
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+
+          <Cell Site="row:8 column:1">
+            <Button Text="Show Save File Dialog">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.SetDialogProperties(saveFileDialog);
+                  if (saveFileDialog.ShowDialog())
+                  {
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+        </Table>
       </TabPage>
     </Instance>
   </Instance>
