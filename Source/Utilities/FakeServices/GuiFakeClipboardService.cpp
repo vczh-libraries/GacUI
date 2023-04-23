@@ -83,6 +83,7 @@ FakeClipboardWriter
 				service->reader = reader;
 				reader = nullptr;
 				service = nullptr;
+				GetCurrentController()->CallbackService()->Invoker()->InvokeClipboardUpdated();
 				return true;
 			}
 		};

@@ -23,8 +23,6 @@
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - File dialog append default extension to files that has extensions.
-- FakeClipboardService
-  - `INativeClipboardWriter::Submit` doesn't trigger `INativeControllerListener::ClipboardUpdated`.
 
 ## Progressing
 
