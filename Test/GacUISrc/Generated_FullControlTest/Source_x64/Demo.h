@@ -2156,9 +2156,9 @@ namespace demo
 #endif
 	protected:
 		::demo::LocalizedFileDialogTabPage* self;
-		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::presentation::controls::GuiLabel* __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_0;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_2;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
 		::vl::presentation::controls::GuiLabel* __vwsn_precompile_4;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_5;
@@ -2194,7 +2194,7 @@ namespace demo
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_35;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_36;
 		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_37;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_38;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_38;
 		::vl::presentation::controls::GuiOpenFileDialog* dialogOpen;
 		::vl::presentation::controls::GuiSinglelineTextBox* txtTitle;
 		::vl::presentation::controls::GuiSaveFileDialog* dialogSave;
@@ -2212,9 +2212,11 @@ namespace demo
 		::vl::presentation::controls::GuiSelectableButton* chkFileDialogPromptOverwriteFile;
 		::vl::presentation::controls::GuiSelectableButton* chkFileDialogDirectoryMustExist;
 		::vl::presentation::controls::GuiSelectableButton* chkFileDialogAddToRecent;
-		::vl::presentation::controls::GuiButton* __vwsn_precompile_39;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_40;
+		::vl::presentation::compositions::GuiStackComposition* __vwsn_precompile_39;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_40;
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_41;
+		::vl::presentation::compositions::GuiStackItemComposition* __vwsn_precompile_42;
+		::vl::presentation::controls::GuiButton* __vwsn_precompile_43;
 		void __vwsn_demo_LocalizedFileDialogTabPage_Initialize(::demo::LocalizedFileDialogTabPage* __vwsn_this_);
 	public:
 		LocalizedFileDialogTabPageConstructor();
