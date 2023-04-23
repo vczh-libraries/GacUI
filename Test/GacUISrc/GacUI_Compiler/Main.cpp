@@ -30,8 +30,8 @@ const wchar_t* REFLECTION_BIN()
 {
 	switch (targetCpuArchitecture)
 	{
-	case GuiResourceCpuArchitecture::x86: return L"Metadata/Reflection32.bin";
-	case GuiResourceCpuArchitecture::x64: return L"Metadata/Reflection64.bin";
+	case GuiResourceCpuArchitecture::x86: return L"Metadata/ReflectionCore32.bin";
+	case GuiResourceCpuArchitecture::x64: return L"Metadata/ReflectionCore64.bin";
 	default: CHECK_FAIL(L"The target CPU architecture is unspecified.");
 	}
 }
@@ -136,30 +136,30 @@ Compiler
 void GuiMain()
 {
 	List<WString> dependencies;
-	//LoadResource(CompileResources(
-	//	targetCpuArchitecture,
-	//	L"GuiFakeDialogServiceUI",
-	//	L"GacGen.exe Resource.xml",
-	//	L"../../../../GacUI.h",
-	//	L"../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
-	//	dependencies,
-	//	(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Resource.xml"),
-	//	(GetResourcePath() / DIALOGS_BINARY_FOLDER()),
-	//	(GetResourcePath() / DIALOGS_SOURCE_FOLDER()),
-	//	false
-	//));
-	//LoadResource(CompileResources(
-	//	targetCpuArchitecture,
-	//	L"DarkSkin",
-	//	L"Source: Generated_DarkSkin.vcxitems",
-	//	L"../../../../Source/GacUI.h",
-	//	L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
-	//	dependencies,
-	//	(GetResourcePath() / L"App/DarkSkin/Resource.xml"),
-	//	(GetResourcePath() / DARKSKIN_BINARY_FOLDER()),
-	//	(GetResourcePath() / DARKSKIN_SOURCE_FOLDER()),
-	//	true
-	//));
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"GuiFakeDialogServiceUI",
+		L"GacGen.exe Resource.xml",
+		L"../../../../GacUI.h",
+		L"../../../../Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		dependencies,
+		(GetResourcePath() / L"../../Source/Utilities/FakeServices/Dialogs/Resource.xml"),
+		(GetResourcePath() / DIALOGS_BINARY_FOLDER()),
+		(GetResourcePath() / DIALOGS_SOURCE_FOLDER()),
+		false
+	));
+	LoadResource(CompileResources(
+		targetCpuArchitecture,
+		L"DarkSkin",
+		L"Source: Generated_DarkSkin.vcxitems",
+		L"../../../../Source/GacUI.h",
+		L"../../../../Source/Reflection/TypeDescriptors/GuiReflectionPlugin.h",
+		dependencies,
+		(GetResourcePath() / L"App/DarkSkin/Resource.xml"),
+		(GetResourcePath() / DARKSKIN_BINARY_FOLDER()),
+		(GetResourcePath() / DARKSKIN_SOURCE_FOLDER()),
+		true
+	));
 	LoadResource(CompileResources(
 		targetCpuArchitecture,
 		L"Demo",
