@@ -1,4 +1,4 @@
-﻿================================(1/54)================================
+﻿================================(1/53)================================
 module <instance>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -38,7 +38,7 @@ namespace demo
     }
 }
 
-================================(2/54)================================
+================================(2/53)================================
 module <instance>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -76,7 +76,7 @@ namespace demo
     }
 }
 
-================================(3/54)================================
+================================(3/53)================================
 module <instance>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -116,7 +116,7 @@ namespace demo
     }
 }
 
-================================(4/54)================================
+================================(4/53)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -157,7 +157,7 @@ namespace demo
     }
 }
 
-================================(5/54)================================
+================================(5/53)================================
 module <instance>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -195,7 +195,7 @@ namespace demo
     }
 }
 
-================================(6/54)================================
+================================(6/53)================================
 module <instance>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -235,7 +235,7 @@ namespace demo
     }
 }
 
-================================(7/54)================================
+================================(7/53)================================
 module <instance>demo::SystemFrameWindowTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -272,7 +272,7 @@ namespace demo
     }
 }
 
-================================(8/54)================================
+================================(8/53)================================
 module <instance>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -314,7 +314,7 @@ namespace demo
     }
 }
 
-================================(9/54)================================
+================================(9/53)================================
 module <instance>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -354,7 +354,7 @@ namespace demo
     }
 }
 
-================================(10/54)================================
+================================(10/53)================================
 module <instance>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -423,7 +423,7 @@ namespace demo
     }
 }
 
-================================(11/54)================================
+================================(11/53)================================
 module <animation>demo::ColorAnimation;
 
 namespace demo
@@ -526,7 +526,7 @@ namespace demo
     }
 }
 
-================================(12/54)================================
+================================(12/53)================================
 module <instance>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -563,7 +563,7 @@ namespace demo
     }
 }
 
-================================(13/54)================================
+================================(13/53)================================
 module <instance>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -626,7 +626,7 @@ namespace demo
     }
 }
 
-================================(14/54)================================
+================================(14/53)================================
 module <instance>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -663,7 +663,7 @@ namespace demo
     }
 }
 
-================================(15/54)================================
+================================(15/53)================================
 module <instance>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -722,7 +722,7 @@ namespace demo
     }
 }
 
-================================(16/54)================================
+================================(16/53)================================
 module <instance>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -761,7 +761,7 @@ namespace demo
     }
 }
 
-================================(17/54)================================
+================================(17/53)================================
 module <instance>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -805,7 +805,7 @@ namespace demo
     }
 }
 
-================================(18/54)================================
+================================(18/53)================================
 module <instance>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -842,7 +842,7 @@ namespace demo
     }
 }
 
-================================(19/54)================================
+================================(19/53)================================
 module <instance>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -901,7 +901,7 @@ namespace demo
     }
 }
 
-================================(20/54)================================
+================================(20/53)================================
 module <instance>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -940,7 +940,7 @@ namespace demo
     }
 }
 
-================================(21/54)================================
+================================(21/53)================================
 module <instance>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -984,7 +984,7 @@ namespace demo
     }
 }
 
-================================(22/54)================================
+================================(22/53)================================
 module <instance>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1021,7 +1021,7 @@ namespace demo
     }
 }
 
-================================(23/54)================================
+================================(23/53)================================
 module <instance>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1059,7 +1059,7 @@ namespace demo
     }
 }
 
-================================(24/54)================================
+================================(24/53)================================
 module <instance>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1118,7 +1118,7 @@ namespace demo
     }
 }
 
-================================(25/54)================================
+================================(25/53)================================
 module <instance>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1305,7 +1305,7 @@ namespace demo
     }
 }
 
-================================(26/54)================================
+================================(26/53)================================
 module <instance>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1442,7 +1442,7 @@ namespace demo
     }
 }
 
-================================(27/54)================================
+================================(27/53)================================
 module <instance>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1486,7 +1486,7 @@ namespace demo
     }
 }
 
-================================(28/54)================================
+================================(28/53)================================
 module <instance>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1523,7 +1523,7 @@ namespace demo
     }
 }
 
-================================(29/54)================================
+================================(29/53)================================
 module <instance>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1566,7 +1566,7 @@ namespace demo
     }
 }
 
-================================(30/54)================================
+================================(30/53)================================
 module <instance>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1604,7 +1604,7 @@ namespace demo
     }
 }
 
-================================(31/54)================================
+================================(31/53)================================
 module <instance>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1642,7 +1642,50 @@ namespace demo
     }
 }
 
-================================(32/54)================================
+================================(32/53)================================
+module <instance>demo::LocalizedFileDialogTabPage;
+using presentation::controls::Gui*;
+using presentation::elements::Gui*Element;
+using presentation::compositions::Gui*Composition;
+using presentation::compositions::Gui*;
+using presentation::templates::Gui*;
+using system::*;
+using system::reflection::*;
+using presentation::*;
+using presentation::Gui*;
+using presentation::controls::*;
+using presentation::controls::list::*;
+using presentation::controls::tree::*;
+using presentation::elements::*;
+using presentation::elements::Gui*;
+using presentation::elements::text::*;
+using presentation::compositions::*;
+using presentation::templates::*;
+using presentation::theme::*;
+
+namespace demo
+{
+    class LocalizedFileDialogTabPage : ::presentation::controls::GuiTabPage
+    {
+        func SetDialogProperties(dialog : GuiFileDialogBase*) : (void)
+        {
+            raise "Not Implemented";
+        }
+
+        new* ()
+            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
+        {
+            raise "Not Implemented";
+        }
+
+        delete
+        {
+            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
+        }
+    }
+}
+
+================================(33/53)================================
 module <instance>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1680,7 +1723,7 @@ namespace demo
     }
 }
 
-================================(33/54)================================
+================================(34/53)================================
 module <instance>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1734,83 +1777,7 @@ namespace demo
     }
 }
 
-================================(34/54)================================
-module <instance>demo::LocalizedOpenFileDialogTabPage;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace demo
-{
-    class LocalizedOpenFileDialogTabPage : ::presentation::controls::GuiTabPage
-    {
-        new* ()
-            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
-        {
-            raise "Not Implemented";
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
-        }
-    }
-}
-
-================================(35/54)================================
-module <instance>demo::LocalizedSaveFileDialogTabPage;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace demo
-{
-    class LocalizedSaveFileDialogTabPage : ::presentation::controls::GuiTabPage
-    {
-        new* ()
-            :::presentation::controls::GuiTabPage((cast (::presentation::theme::ThemeName) (cast (::system::UInt64) 0)))
-        {
-            raise "Not Implemented";
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::controls::GuiCustomControl*));
-        }
-    }
-}
-
-================================(36/54)================================
+================================(35/53)================================
 module <instance>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1875,7 +1842,7 @@ namespace demo
     }
 }
 
-================================(37/54)================================
+================================(36/53)================================
 module <instance>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1962,7 +1929,7 @@ namespace demo
     }
 }
 
-================================(38/54)================================
+================================(37/53)================================
 module <instance>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2032,7 +1999,7 @@ namespace demo
     }
 }
 
-================================(39/54)================================
+================================(38/53)================================
 module <instance>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2076,7 +2043,7 @@ namespace demo
     }
 }
 
-================================(40/54)================================
+================================(39/53)================================
 module <instance>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2120,7 +2087,7 @@ namespace demo
     }
 }
 
-================================(41/54)================================
+================================(40/53)================================
 module <instance>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2164,7 +2131,7 @@ namespace demo
     }
 }
 
-================================(42/54)================================
+================================(41/53)================================
 module <instance>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2202,7 +2169,7 @@ namespace demo
     }
 }
 
-================================(43/54)================================
+================================(42/53)================================
 module <instance>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2240,7 +2207,7 @@ namespace demo
     }
 }
 
-================================(44/54)================================
+================================(43/53)================================
 module <instance>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2278,7 +2245,7 @@ namespace demo
     }
 }
 
-================================(45/54)================================
+================================(44/53)================================
 module <instance>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2316,7 +2283,7 @@ namespace demo
     }
 }
 
-================================(46/54)================================
+================================(45/53)================================
 module <instance>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2375,7 +2342,7 @@ namespace demo
     }
 }
 
-================================(47/54)================================
+================================(46/53)================================
 module <instance>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2434,7 +2401,7 @@ namespace demo
     }
 }
 
-================================(48/54)================================
+================================(47/53)================================
 module <instance>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2485,7 +2452,7 @@ namespace demo
     }
 }
 
-================================(49/54)================================
+================================(48/53)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -2785,7 +2752,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(50/54)================================
+================================(49/53)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -3039,7 +3006,7 @@ namespace demo
     }
 }
 
-================================(51/54)================================
+================================(50/53)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -3183,7 +3150,7 @@ namespace demo
     }
 }
 
-================================(52/54)================================
+================================(51/53)================================
 module ribbonscript;
 using presentation::*;
 
@@ -3222,7 +3189,7 @@ namespace demo
     }
 }
 
-================================(53/54)================================
+================================(52/53)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -3449,7 +3416,7 @@ namespace demo
     }
 }
 
-================================(54/54)================================
+================================(53/53)================================
 module fontHelper;
 using presentation::*;
 
