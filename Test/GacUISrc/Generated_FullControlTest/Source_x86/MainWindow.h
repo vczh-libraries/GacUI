@@ -46,7 +46,7 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf45_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf46_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf47_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize__;
+		friend struct ::vl_workflow_global::__vwsnf48_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf49_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf50_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf51_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
@@ -59,7 +59,6 @@ namespace demo
 		friend struct ::vl_workflow_global::__vwsnf58_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf59_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 		friend struct ::vl_workflow_global::__vwsnf60_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
-		friend struct ::vl_workflow_global::__vwsnf61_Demo_demo_MainWindowConstructor___vwsn_demo_MainWindow_Initialize_;
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<MainWindow>;
 #endif
