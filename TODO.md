@@ -11,6 +11,7 @@
 - GacUI
   - Fix GacUI compiler failure when compiled with reflection.
   - Remove SysKey callbacks, merge into Key callbacks.
+  - `ThemeName::(System|Custom)FrameWindow`.
 - GacGen
   - Add DarkSkin and Dialog in Reflection(32|64).bin
 - Tutorial
@@ -29,10 +30,6 @@
 
 ## Progressing
 
-- Theme
-  - Add HostedWindow theme.
-  - Add `SystemFrameWindowTemplate` and `CustomFrameWindowTemplate` theme.
-  - The `WindowTemplate` theme becomes a placeholder, it will check theme's `Nullable<bool> PreferCustomFrameWindow` and FrameConfig's `CustomFrameEnabled` options to decide which template to load.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 - Tutorial:
