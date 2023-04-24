@@ -4,6 +4,7 @@ namespace vl
 {
 	namespace presentation
 	{
+		const const NativeWindowFrameConfig NativeWindowFrameConfig::Default = {};
 
 /***********************************************************************
 INativeWindowListener

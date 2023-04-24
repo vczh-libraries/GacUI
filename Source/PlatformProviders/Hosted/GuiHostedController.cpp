@@ -914,6 +914,21 @@ GuiHostedController::INativeScreen
 GuiHostedController::INativeWindowService
 ***********************************************************************/
 
+		const NativeWindowFrameConfig& GuiHostedController::GetMainWindowFrameConfig()
+		{
+			return nativeController->WindowService()->GetMainWindowFrameConfig();
+		}
+
+		const NativeWindowFrameConfig& GuiHostedController::GetNonMainWindowFrameConfig()
+		{
+			static const NativeWindowFrameConfig config = {
+				.MaximizedBoxOption = BoolOption::AlwaysFalse,
+				.MinimizedBoxOption = BoolOption::AlwaysFalse,
+				.CustomFrameEnabled = BoolOption::AlwaysTrue,
+			};
+			return config;
+		}
+
 		INativeWindow* GuiHostedController::CreateNativeWindow(INativeWindow::WindowMode windowMode)
 		{
 			auto hostedWindow = Ptr(new GuiHostedWindow(this, windowMode));

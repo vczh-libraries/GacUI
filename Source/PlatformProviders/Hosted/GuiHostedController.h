@@ -207,7 +207,9 @@ GuiHostedController
 			// =============================================================
 			// INativeWindowService
 			// =============================================================
-
+			
+			const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+			const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
 			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
 			void							DestroyNativeWindow(INativeWindow* window) override;
 			INativeWindow*					GetMainWindow() override;

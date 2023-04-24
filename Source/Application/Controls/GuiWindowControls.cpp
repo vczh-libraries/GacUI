@@ -668,7 +668,7 @@ GuiWindow
 
 				UpdateIcon(window, ct);
 				UpdateCustomFramePadding(window, ct);
-				SyncNativeWindowProperties();
+				SetNativeWindowFrameProperties();
 			}
 
 			void GuiWindow::UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct)
@@ -688,7 +688,7 @@ GuiWindow
 				}
 			}
 
-			void GuiWindow::SyncNativeWindowProperties()
+			void GuiWindow::SetNativeWindowFrameProperties()
 			{
 				if (auto window = GetNativeWindow())
 				{
@@ -757,7 +757,7 @@ GuiWindow
 
 			void GuiWindow::OnNativeWindowChanged()
 			{
-				SyncNativeWindowProperties();
+				SetNativeWindowFrameProperties();
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
@@ -792,6 +792,7 @@ GuiWindow
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
+				FrameConfigChanged.SetAssociatedComposition(boundsComposition);
 
 				WindowActivated.AttachMethod(this, &GuiWindow::OnWindowActivated);
 				WindowDeactivated.AttachMethod(this, &GuiWindow::OnWindowDeactivated);
@@ -847,6 +848,11 @@ GuiWindow
 						);
 					}
 				}
+			}
+
+			const NativeWindowFrameConfig& GuiWindow::GetFrameConfig()
+			{
+				return frameConfig ? *frameConfig : NativeWindowFrameConfig::Default;
 			}
 
 #define IMPL_WINDOW_PROPERTY(VARIABLE, NAME, CONDITION_BREAK) \

@@ -66,6 +66,8 @@ INativeWindow
 
 			std::strong_ordering operator<=>(const NativeWindowFrameConfig&) const = default;
 			bool operator==(const NativeWindowFrameConfig&) const = default;
+
+			static const NativeWindowFrameConfig Default;
 		};
 		
 		/// <summary>
@@ -1266,19 +1268,19 @@ INativeScreenService
 			/// Get the number of all available screens.
 			/// </summary>
 			///  <returns>The number of all available screens.</returns>
-			virtual vint					GetScreenCount()=0;
+			virtual vint							GetScreenCount()=0;
 			/// <summary>
 			/// Get the screen object by a specified screen index.
 			/// </summary>
 			/// <returns>The screen object.</returns>
 			/// <param name="index">The specified screen index.</param>
-			virtual INativeScreen*			GetScreen(vint index)=0;
+			virtual INativeScreen*					GetScreen(vint index)=0;
 			/// <summary>
 			/// Get the screen object where the main part of the specified window is inside.
 			/// </summary>
 			/// <returns>The screen object.</returns>
 			/// <param name="window">The specified window.</param>
-			virtual INativeScreen*			GetScreen(INativeWindow* window)=0;
+			virtual INativeScreen*					GetScreen(INativeWindow* window)=0;
 		};
 
 /***********************************************************************
@@ -1291,6 +1293,18 @@ INativeWindowService
 		class INativeWindowService : public virtual Interface
 		{
 		public:
+			/// <summary>
+			/// Get the frame configuration for the main window.
+			/// It limit values of frame properties and control template of the main window.
+			/// </summary>
+			/// <returns>The frame configuration for the main window.</returns>
+			virtual const NativeWindowFrameConfig&	GetMainWindowFrameConfig()=0;
+			/// <summary>
+			/// Get the frame configuration for non-main windows.
+			/// It limit values of frame properties and control template of all non-main windows.
+			/// </summary>
+			/// <returns>The frame configuration for non-main windows.</returns>
+			virtual const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig()=0;
 			/// <summary>
 			/// Create a window.
 			/// </summary>
