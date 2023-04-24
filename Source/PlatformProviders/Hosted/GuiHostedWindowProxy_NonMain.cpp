@@ -15,6 +15,7 @@ GuiNonMainHostedWindowProxy
 		{
 		protected:
 			GuiHostedWindowData*			data = nullptr;
+			bool							calledAssignFrameConfig = false;
 
 		public:
 
@@ -35,17 +36,21 @@ GuiNonMainHostedWindowProxy
 					L"Border, SizeBox, TitleBar.");
 			}
 
+			void CallAssignFrameConfigIfNever()
+			{
+				if (calledAssignFrameConfig) return;
+				for (auto listener : data->listeners)
+				{
+					listener->AssignFrameConfig(data->controller->WindowService()->GetNonMainWindowFrameConfig());
+					calledAssignFrameConfig = true;
+				}
+			}
+
 			void CheckAndSyncProperties() override
 			{
-				if (data->windowMaximizedBox || data->windowMinimizedBox)
-				{
-					data->windowMaximizedBox = false;
-					data->windowMinimizedBox = false;
-					for (auto listener : data->listeners)
-					{
-						listener->AssignFrameConfig(data->controller->WindowService()->GetNonMainWindowFrameConfig());
-					}
-				}
+				data->windowMaximizedBox = false;
+				data->windowMinimizedBox = false;
+				CallAssignFrameConfigIfNever();
 				EnsureNoSystemBorderWhenVisible();
 			}
 
@@ -146,6 +151,7 @@ GuiNonMainHostedWindowProxy
 
 			void Show() override
 			{
+				CallAssignFrameConfigIfNever();
 				data->wmWindow.SetVisible(true);
 				data->wmWindow.Activate();
 				EnsureNoSystemBorderWhenVisible();
@@ -153,6 +159,7 @@ GuiNonMainHostedWindowProxy
 
 			void ShowDeactivated() override
 			{
+				CallAssignFrameConfigIfNever();
 				data->wmWindow.SetVisible(true);
 				EnsureNoSystemBorderWhenVisible();
 			}

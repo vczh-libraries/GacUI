@@ -792,21 +792,6 @@ GuiWindow
 				frameConfig = &config;
 				FrameConfigChanged.Execute(GetNotifyEventArguments());
 				ApplyFrameConfig();
-
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::AssignFrameConfig(const NativeWindowFrameConfig&)#"
-				auto ct = TypedControlTemplateObject(true);
-				CHECK_ERROR(ct->GetMaximizedBoxOption() != BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MaximizedBox for non-main hosted windows must be able to config to false.");
-				CHECK_ERROR(ct->GetMinimizedBoxOption() != BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MinimizedBox for non-main hosted windows must be able to config to false.");
-				if (hasMaximizedBox || hasMinimizedBox)
-				{
-					hasMaximizedBox = false;
-					hasMinimizedBox = false;
-
-					ct->SetMaximizedBox(false);
-					ct->SetMinimizedBox(false);
-					UpdateCustomFramePadding(GetNativeWindow(), ct);
-				}
-#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
