@@ -634,10 +634,10 @@ GuiWindow
 #define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
 				switch (ct->Get ## NAME ## Option()) \
 				{ \
-				case templates::BoolOption::AlwaysTrue: \
+				case BoolOption::AlwaysTrue: \
 					VARIABLE = true; \
 					break; \
-				case templates::BoolOption::AlwaysFalse: \
+				case BoolOption::AlwaysFalse: \
 					VARIABLE = false; \
 					break; \
 				default:; \
@@ -741,8 +741,8 @@ GuiWindow
 			{
 #define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::BecomeNonMainHostedWindow()#"
 				auto ct = TypedControlTemplateObject(true);
-				CHECK_ERROR(ct->GetMaximizedBoxOption() != templates::BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MaximizedBox for non-main hosted windows must be able to config to false.");
-				CHECK_ERROR(ct->GetMinimizedBoxOption() != templates::BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MinimizedBox for non-main hosted windows must be able to config to false.");
+				CHECK_ERROR(ct->GetMaximizedBoxOption() != BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MaximizedBox for non-main hosted windows must be able to config to false.");
+				CHECK_ERROR(ct->GetMinimizedBoxOption() != BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MinimizedBox for non-main hosted windows must be able to config to false.");
 				if (hasMaximizedBox || hasMinimizedBox)
 				{
 					hasMaximizedBox = false;
@@ -857,7 +857,7 @@ GuiWindow
 			void GuiWindow::Set ## NAME(bool visible) \
 			{ \
 				auto ct = TypedControlTemplateObject(true); \
-				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
+				if (ct->Get ## NAME ## Option() == BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \
 					ct->Set ## NAME(visible); \

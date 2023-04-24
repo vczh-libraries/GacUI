@@ -20,6 +20,13 @@ enum presentation::AxisDirection {
 }
 
 @ValueType
+enum presentation::BoolOption {
+    AlwaysFalse = 1,
+    AlwaysTrue = 0,
+    Customizable = 2,
+}
+
+@ValueType
 @Serializable
 struct presentation::Color {
     property a : system::UInt8;
@@ -859,6 +866,17 @@ struct presentation::NativeRect {
 struct presentation::NativeSize {
     property x : presentation::NativeCoordinate;
     property y : presentation::NativeCoordinate;
+}
+
+@ValueType
+struct presentation::NativeWindowFrameConfig {
+    property BorderOption : presentation::BoolOption;
+    property CustomFrameEnabled : presentation::BoolOption;
+    property IconVisibleOption : presentation::BoolOption;
+    property MaximizedBoxOption : presentation::BoolOption;
+    property MinimizedBoxOption : presentation::BoolOption;
+    property SizeBoxOption : presentation::BoolOption;
+    property TitleBarOption : presentation::BoolOption;
 }
 
 @ValueType
@@ -4456,13 +4474,6 @@ struct presentation::helper_types::SiteValue {
     property rowSpan : system::Int64;
 }
 
-@ValueType
-enum presentation::templates::BoolOption {
-    AlwaysFalse = 1,
-    AlwaysTrue = 0,
-    Customizable = 2,
-}
-
 class presentation::templates::GuiButtonTemplate : presentation::templates::GuiControlTemplate {
     event StateChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         State,
@@ -5448,61 +5459,61 @@ class presentation::templates::GuiWindowTemplate : presentation::templates::GuiC
 
     property Activated : system::Boolean { get:GetActivated set:SetActivated event:ActivatedChanged }
     property Border : system::Boolean { get:GetBorder set:SetBorder event:BorderChanged }
-    property BorderOption : presentation::templates::BoolOption { get:GetBorderOption set:SetBorderOption event:BorderOptionChanged }
+    property BorderOption : presentation::BoolOption { get:GetBorderOption set:SetBorderOption event:BorderOptionChanged }
     property CustomFrameEnabled : system::Boolean { get:GetCustomFrameEnabled set:SetCustomFrameEnabled event:CustomFrameEnabledChanged }
     property CustomFramePadding : presentation::Margin { get:GetCustomFramePadding set:SetCustomFramePadding event:CustomFramePaddingChanged }
     property Icon : presentation::GuiImageData^ { get:GetIcon set:SetIcon event:IconChanged }
     property IconVisible : system::Boolean { get:GetIconVisible set:SetIconVisible event:IconVisibleChanged }
-    property IconVisibleOption : presentation::templates::BoolOption { get:GetIconVisibleOption set:SetIconVisibleOption event:IconVisibleOptionChanged }
+    property IconVisibleOption : presentation::BoolOption { get:GetIconVisibleOption set:SetIconVisibleOption event:IconVisibleOptionChanged }
     property Maximized : system::Boolean { get:GetMaximized set:SetMaximized event:MaximizedChanged }
     property MaximizedBox : system::Boolean { get:GetMaximizedBox set:SetMaximizedBox event:MaximizedBoxChanged }
-    property MaximizedBoxOption : presentation::templates::BoolOption { get:GetMaximizedBoxOption set:SetMaximizedBoxOption event:MaximizedBoxOptionChanged }
+    property MaximizedBoxOption : presentation::BoolOption { get:GetMaximizedBoxOption set:SetMaximizedBoxOption event:MaximizedBoxOptionChanged }
     property MinimizedBox : system::Boolean { get:GetMinimizedBox set:SetMinimizedBox event:MinimizedBoxChanged }
-    property MinimizedBoxOption : presentation::templates::BoolOption { get:GetMinimizedBoxOption set:SetMinimizedBoxOption event:MinimizedBoxOptionChanged }
+    property MinimizedBoxOption : presentation::BoolOption { get:GetMinimizedBoxOption set:SetMinimizedBoxOption event:MinimizedBoxOptionChanged }
     property ShortcutKeyTemplate : system::Function<presentation::templates::GuiLabelTemplate*, system::Object>^ { get:GetShortcutKeyTemplate set:SetShortcutKeyTemplate event:ShortcutKeyTemplateChanged }
     property SizeBox : system::Boolean { get:GetSizeBox set:SetSizeBox event:SizeBoxChanged }
-    property SizeBoxOption : presentation::templates::BoolOption { get:GetSizeBoxOption set:SetSizeBoxOption event:SizeBoxOptionChanged }
+    property SizeBoxOption : presentation::BoolOption { get:GetSizeBoxOption set:SetSizeBoxOption event:SizeBoxOptionChanged }
     property TitleBar : system::Boolean { get:GetTitleBar set:SetTitleBar event:TitleBarChanged }
-    property TitleBarOption : presentation::templates::BoolOption { get:GetTitleBarOption set:SetTitleBarOption event:TitleBarOptionChanged }
+    property TitleBarOption : presentation::BoolOption { get:GetTitleBarOption set:SetTitleBarOption event:TitleBarOptionChanged }
     property TooltipTemplate : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^ { get:GetTooltipTemplate set:SetTooltipTemplate event:TooltipTemplateChanged }
 
     function GetActivated() : system::Boolean;
     function GetBorder() : system::Boolean;
-    function GetBorderOption() : presentation::templates::BoolOption;
+    function GetBorderOption() : presentation::BoolOption;
     function GetCustomFrameEnabled() : system::Boolean;
     function GetCustomFramePadding() : presentation::Margin;
     function GetIcon() : presentation::GuiImageData^;
     function GetIconVisible() : system::Boolean;
-    function GetIconVisibleOption() : presentation::templates::BoolOption;
+    function GetIconVisibleOption() : presentation::BoolOption;
     function GetMaximized() : system::Boolean;
     function GetMaximizedBox() : system::Boolean;
-    function GetMaximizedBoxOption() : presentation::templates::BoolOption;
+    function GetMaximizedBoxOption() : presentation::BoolOption;
     function GetMinimizedBox() : system::Boolean;
-    function GetMinimizedBoxOption() : presentation::templates::BoolOption;
+    function GetMinimizedBoxOption() : presentation::BoolOption;
     function GetShortcutKeyTemplate() : system::Function<presentation::templates::GuiLabelTemplate*, system::Object>^;
     function GetSizeBox() : system::Boolean;
-    function GetSizeBoxOption() : presentation::templates::BoolOption;
+    function GetSizeBoxOption() : presentation::BoolOption;
     function GetTitleBar() : system::Boolean;
-    function GetTitleBarOption() : presentation::templates::BoolOption;
+    function GetTitleBarOption() : presentation::BoolOption;
     function GetTooltipTemplate() : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^;
     function SetActivated(value : system::Boolean) : system::Void;
     function SetBorder(value : system::Boolean) : system::Void;
-    function SetBorderOption(value : presentation::templates::BoolOption) : system::Void;
+    function SetBorderOption(value : presentation::BoolOption) : system::Void;
     function SetCustomFrameEnabled(value : system::Boolean) : system::Void;
     function SetCustomFramePadding(value : presentation::Margin) : system::Void;
     function SetIcon(value : presentation::GuiImageData^) : system::Void;
     function SetIconVisible(value : system::Boolean) : system::Void;
-    function SetIconVisibleOption(value : presentation::templates::BoolOption) : system::Void;
+    function SetIconVisibleOption(value : presentation::BoolOption) : system::Void;
     function SetMaximized(value : system::Boolean) : system::Void;
     function SetMaximizedBox(value : system::Boolean) : system::Void;
-    function SetMaximizedBoxOption(value : presentation::templates::BoolOption) : system::Void;
+    function SetMaximizedBoxOption(value : presentation::BoolOption) : system::Void;
     function SetMinimizedBox(value : system::Boolean) : system::Void;
-    function SetMinimizedBoxOption(value : presentation::templates::BoolOption) : system::Void;
+    function SetMinimizedBoxOption(value : presentation::BoolOption) : system::Void;
     function SetShortcutKeyTemplate(value : system::Function<presentation::templates::GuiLabelTemplate*, system::Object>^) : system::Void;
     function SetSizeBox(value : system::Boolean) : system::Void;
-    function SetSizeBoxOption(value : presentation::templates::BoolOption) : system::Void;
+    function SetSizeBoxOption(value : presentation::BoolOption) : system::Void;
     function SetTitleBar(value : system::Boolean) : system::Void;
-    function SetTitleBarOption(value : presentation::templates::BoolOption) : system::Void;
+    function SetTitleBarOption(value : presentation::BoolOption) : system::Void;
     function SetTooltipTemplate(value : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^) : system::Void;
 
     constructor () : presentation::templates::GuiWindowTemplate*;

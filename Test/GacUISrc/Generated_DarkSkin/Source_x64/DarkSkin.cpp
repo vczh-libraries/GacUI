@@ -30106,7 +30106,7 @@ Class (::darkskin::RibbonToolstripMenuTemplateConstructor)
 	{
 		(this->__vwsn_precompile_0 = __vwsn_this_);
 		{
-			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetSizeBoxOption(::vl::presentation::templates::BoolOption::AlwaysTrue);
+			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetSizeBoxOption(::vl::presentation::BoolOption::AlwaysTrue);
 		}
 		{
 			::vl::__vwsn::This(this->__vwsn_precompile_0)->SetMinSizeLimitation(::vl::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation::LimitToElementAndChildren);

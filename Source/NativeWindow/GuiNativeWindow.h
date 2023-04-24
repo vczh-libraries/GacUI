@@ -46,6 +46,27 @@ INativeWindow
 		class DocumentModel;
 		class INativeCursor;
 		class INativeWindowListener;
+
+		enum class BoolOption
+		{
+			AlwaysTrue,
+			AlwaysFalse,
+			Customizable,
+		};
+
+		struct NativeWindowFrameConfig
+		{
+			BoolOption MaximizedBoxOption = BoolOption::Customizable;
+			BoolOption MinimizedBoxOption = BoolOption::Customizable;
+			BoolOption BorderOption = BoolOption::Customizable;
+			BoolOption SizeBoxOption = BoolOption::Customizable;
+			BoolOption IconVisibleOption = BoolOption::Customizable;
+			BoolOption TitleBarOption = BoolOption::Customizable;
+			BoolOption CustomFrameEnabled = BoolOption::Customizable;
+
+			std::strong_ordering operator<=>(const NativeWindowFrameConfig&) const = default;
+			bool operator==(const NativeWindowFrameConfig&) const = default;
+		};
 		
 		/// <summary>
 		/// Represents a window.

@@ -193,6 +193,22 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(SizeWE)
 			END_ENUM_ITEM(INativeCursor::SystemCursorType)
 
+			BEGIN_ENUM_ITEM(BoolOption)
+				ENUM_CLASS_ITEM(AlwaysTrue)
+				ENUM_CLASS_ITEM(AlwaysFalse)
+				ENUM_CLASS_ITEM(Customizable)
+			END_ENUM_ITEM(BoolOption)
+
+			BEGIN_STRUCT_MEMBER(NativeWindowFrameConfig)
+				STRUCT_MEMBER(MaximizedBoxOption)
+				STRUCT_MEMBER(MinimizedBoxOption)
+				STRUCT_MEMBER(BorderOption)
+				STRUCT_MEMBER(SizeBoxOption)
+				STRUCT_MEMBER(IconVisibleOption)
+				STRUCT_MEMBER(TitleBarOption)
+				STRUCT_MEMBER(CustomFrameEnabled)
+			END_STRUCT_MEMBER(NativeWindowFrameConfig)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeWindow)
 				CLASS_MEMBER_PROPERTY_FAST(Bounds)
 				CLASS_MEMBER_PROPERTY_FAST(ClientSize)

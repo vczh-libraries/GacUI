@@ -101,13 +101,6 @@ Core Themes
 			F(GuiLabelTemplate,					GuiControlTemplate)			\
 			F(GuiWindowTemplate,				GuiControlTemplate)			\
 
-			enum class BoolOption
-			{
-				AlwaysTrue,
-				AlwaysFalse,
-				Customizable,
-			};
-
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
