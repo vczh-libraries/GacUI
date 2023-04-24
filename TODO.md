@@ -37,6 +37,12 @@
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 - Tutorial:
   - Global shortcut key.
+- DarkSkin Color Theme.
+  - Move all hardcoded colors to Style.xml or a general place.
+  - Move all colors from Style.xml to a general place.
+  - Export darkskin control template colors.
+  - Allow changing colors.
+  - A window can be called to update all its controls' and components' template.
 
 ## Optional
 
@@ -99,7 +105,6 @@
 
 - New skin.
   - New default control templates with animation, written in XML generated C++ code.
-  - A window can be called to update all its controls' and components' template.
 - UI Automation.
 - Test Automation on virtual command line mode by comparing characters rendered on a very small viewport.
 - Test Automation on Tutorials.

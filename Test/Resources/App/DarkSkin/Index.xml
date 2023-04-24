@@ -1,6 +1,7 @@
 <Instance ref.CodeBehind="false" ref.Class="darkskin::Theme" xmlns:x="darkskin::*">
   <ThemeTemplates Name="DarkSkin">
-    <att.Window>x:WindowTemplate</att.Window>
+    <att.SystemFrameWindow>x:SystemFrameWindowTemplate</att.SystemFrameWindow>
+    <att.CustomFrameWindow>x:CustomFrameWindowTemplate</att.CustomFrameWindow>
     <att.CustomControl>x:CustomControlTemplate</att.CustomControl>
     <att.Tooltip>x:TooltipTemplate</att.Tooltip>
     <att.Label>x:LabelTemplate</att.Label>

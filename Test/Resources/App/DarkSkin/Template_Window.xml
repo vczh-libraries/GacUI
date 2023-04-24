@@ -17,8 +17,17 @@
     </Instance>
   </Instance>
 
-  <Instance name="WindowTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="darkskin::WindowTemplate" ref.Styles="res://DarkSkin/Style">
+  <Instance name="SystemFrameWindowTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::SystemFrameWindowTemplate" ref.Styles="res://DarkSkin/Style">
+      <WindowTemplate ContainerComposition-ref="container" CustomFrameEnabled="false" MinSizeLimitation="LimitToElementAndChildren">
+        <SolidBackground Color="#2D2D30"/>
+        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+      </WindowTemplate>
+    </Instance>
+  </Instance>
+
+  <Instance name="CustomFrameWindowTemplateResource">
+    <Instance ref.CodeBehind="false" ref.Class="darkskin::CustomFrameWindowTemplate" ref.Styles="res://DarkSkin/Style">
       <WindowTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <att.CustomFrameEnabled>true</att.CustomFrameEnabled>
         <att.TooltipTemplate>darkskin::TooltipTemplate</att.TooltipTemplate>
