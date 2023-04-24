@@ -18,6 +18,7 @@
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - `GacUI_Controls/Dialogs`.
   - Add `<LocalizedStringsInjection/>` to GacUI_Controls/Localization.
+  - Update `GacUI_ControlTemplate/WindowSkin` to use new theme name.
 
 ## Known Issues
 
