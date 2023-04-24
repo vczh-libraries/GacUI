@@ -156,11 +156,7 @@ INativeWindowListener
 		{
 		}
 
-		void INativeWindowListener::BecomeMainHostedWindow()
-		{
-		}
-
-		void INativeWindowListener::BecomeNonMainHostedWindow()
+		void INativeWindowListener::AssignFrameConfig(const NativeWindowFrameConfig& config)
 		{
 		}
 

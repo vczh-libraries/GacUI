@@ -764,16 +764,10 @@ INativeWindow
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
 			virtual void				ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice);
 			/// <summary>
-			/// Called when the window becomes a main window in hosted mode.
-			/// This callback is only called once on the main window.
+			/// Called when the frame config of a window is decided.
+			/// This callback is only called once on a window.
 			/// </summary>
-			virtual void				BecomeMainHostedWindow();
-			/// <summary>
-			/// Called when the window becomes a non-main window in hosted mode.
-			/// It requires MaximizedBox and MinimizedBox to be disabled.
-			/// This callback could be called more than once on a window.
-			/// </summary>
-			virtual void				BecomeNonMainHostedWindow();
+			virtual void				AssignFrameConfig(const NativeWindowFrameConfig& config);
 		};
 
 /***********************************************************************

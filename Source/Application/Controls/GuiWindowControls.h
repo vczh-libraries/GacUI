@@ -254,12 +254,15 @@ Window
 				
 				void									UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
+				void									SetControlTemplateProperties();
 				void									SetNativeWindowFrameProperties();
+				bool									ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable);
+				void									ApplyFrameConfig();
 
 				void									Moved()override;
 				void									Opened()override;
 				void									DpiChanged(bool preparing)override;
-				void									BecomeNonMainHostedWindow()override;
+				void									AssignFrameConfig(const NativeWindowFrameConfig& config)override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				
