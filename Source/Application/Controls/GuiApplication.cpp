@@ -17,6 +17,29 @@ namespace vl
 			using namespace description;
 
 /***********************************************************************
+GuiGlobalShortcutKeyManager
+***********************************************************************/
+
+			class GuiGlobalShortcutKeyManager : public GuiShortcutKeyManager
+			{
+			protected:
+
+				bool IsGlobal() override
+				{
+					return true;
+				}
+
+				bool OnCreatingShortcut(GuiShortcutKeyItem* item) override
+				{
+					return true;
+				}
+
+				void OnDestroyingShortcut(GuiShortcutKeyItem* item) override
+				{
+				}
+			};
+
+/***********************************************************************
 GuiApplication
 ***********************************************************************/
 
@@ -45,6 +68,7 @@ GuiApplication
 			GuiApplication::GuiApplication()
 				:locale(Locale::UserDefault())
 			{
+				globalShortcutKeyManager = Ptr(new GuiGlobalShortcutKeyManager);
 				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
 
@@ -254,6 +278,11 @@ GuiApplication
 				if(!sharedTooltipControl) return 0;
 				if(!sharedTooltipControl->GetTemporaryContentControl()) return 0;
 				return sharedTooltipOwner;
+			}
+
+			compositions::IGuiShortcutKeyManager* GuiApplication::GetGlobalShortcutKeyManager()
+			{
+				return globalShortcutKeyManager.Obj();
 			}
 
 			WString GuiApplication::GetExecutablePath()

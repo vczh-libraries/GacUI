@@ -11,7 +11,7 @@ namespace vl
 GuiShortcutKeyItem
 ***********************************************************************/
 
-			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key)
+			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, VKEY _key)
 				:shortcutKeyManager(_shortcutKeyManager)
 				,ctrl(_ctrl)
 				,shift(_shift)
@@ -32,10 +32,12 @@ GuiShortcutKeyItem
 			WString GuiShortcutKeyItem::GetName()
 			{
 				WString name;
-				if(ctrl) name+=L"Ctrl+";
-				if(shift) name+=L"Shift+";
-				if(alt) name+=L"Alt+";
-				name+=GetCurrentController()->InputService()->GetKeyName(key);
+				if (global) name += L"{";
+				if (ctrl) name += L"Ctrl+";
+				if (shift) name += L"Shift+";
+				if (alt) name += L"Alt+";
+				name += GetCurrentController()->InputService()->GetKeyName(key);
+				if (global) name += L"}";
 				return name;
 			}
 
@@ -61,9 +63,24 @@ GuiShortcutKeyItem
 GuiShortcutKeyManager
 ***********************************************************************/
 
+			bool GuiShortcutKeyManager::IsGlobal()
+			{
+				return false;
+			}
+
+			bool GuiShortcutKeyManager::OnCreatingShortcut(GuiShortcutKeyItem* item)
+			{
+				return true;
+			}
+
+			void GuiShortcutKeyManager::OnDestroyingShortcut(GuiShortcutKeyItem* item)
+			{
+			}
+
 			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutInternal(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				auto item = Ptr(new GuiShortcutKeyItem(this, ctrl, shift, alt, key));
+				auto item = Ptr(new GuiShortcutKeyItem(this, IsGlobal(), ctrl, shift, alt, key));
+				if (!OnCreatingShortcut(item.Obj())) return nullptr;
 				shortcutKeyItems.Add(item);
 				return item.Obj();
 			}
@@ -74,6 +91,10 @@ GuiShortcutKeyManager
 
 			GuiShortcutKeyManager::~GuiShortcutKeyManager()
 			{
+				for (auto item : shortcutKeyItems)
+				{
+					OnDestroyingShortcut(item.Obj());
+				}
 			}
 
 			vint GuiShortcutKeyManager::GetItemCount()
@@ -135,7 +156,14 @@ GuiShortcutKeyManager
 			{
 				if (!item) return false;
 				if (item->GetManager() != this) return false;
-				return shortcutKeyItems.Remove(dynamic_cast<GuiShortcutKeyItem*>(item));
+
+				auto skItem = dynamic_cast<GuiShortcutKeyItem*>(item);
+				if (!skItem) return false;
+
+				vint index = shortcutKeyItems.IndexOf(skItem);
+				if (index == -1) return false;
+				OnDestroyingShortcut(skItem);
+				return shortcutKeyItems.RemoveAt(index);
 			}
 		}
 	}

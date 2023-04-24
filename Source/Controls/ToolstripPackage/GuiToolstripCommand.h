@@ -18,6 +18,7 @@ namespace vl
 		namespace compositions
 		{
 			class IGuiShortcutKeyItem;
+			class IGuiShortcutKeyManager;
 		}
 
 		namespace controls
@@ -30,10 +31,11 @@ namespace vl
 				{
 				public:
 					WString									text;
-					bool									ctrl;
-					bool									shift;
-					bool									alt;
-					VKEY									key;
+					bool									global = false;
+					bool									ctrl = false;
+					bool									shift = false;
+					bool									alt = false;
+					VKEY									key = VKEY::KEY_UNKNOWN;
 				};
 			protected:
 				Ptr<GuiImageData>							image;
@@ -46,13 +48,15 @@ namespace vl
 				Ptr<ShortcutBuilder>						shortcutBuilder;
 
 				GuiInstanceRootObject*						attachedRootObject = nullptr;
+				GuiControlHost*								attachedControlHost = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	renderTargetChangedHandler;
-				GuiControlHost*								shortcutOwner = nullptr;
 
 				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										InvokeDescriptionChanged();
-				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder);
+
+				compositions::IGuiShortcutKeyManager*		GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder);
+				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value);
 				void										BuildShortcut(const WString& builderText);
 				void										UpdateShortcutOwner();
 			public:
@@ -90,9 +94,6 @@ namespace vl
 				/// <summary>Get the shortcut key item for this command.</summary>
 				/// <returns>The shortcut key item for this command.</returns>
 				compositions::IGuiShortcutKeyItem*			GetShortcut();
-				/// <summary>Set the shortcut key item for this command.</summary>
-				/// <param name="value">The shortcut key item for this command.</param>
-				void										SetShortcut(compositions::IGuiShortcutKeyItem* value);
 				/// <summary>Get the shortcut builder for this command.</summary>
 				/// <returns>The shortcut builder for this command.</returns>
 				WString										GetShortcutBuilder();
