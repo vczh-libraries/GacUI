@@ -5540,64 +5540,67 @@ interface presentation::theme::ITheme : system::Interface {
 
 @ValueType
 enum presentation::theme::ThemeName {
-    Button = 50,
-    CheckBox = 51,
-    CheckTextListItem = 20,
-    ComboBox = 9,
-    CustomControl = 2,
-    DateComboBox = 54,
-    DatePicker = 53,
-    DocumentLabel = 13,
-    DocumentTextBox = 14,
-    DocumentViewer = 12,
-    GroupBox = 7,
-    HScroll = 55,
-    HTracker = 57,
-    Label = 4,
-    ListItemBackground = 18,
-    ListView = 15,
-    Menu = 22,
-    MenuBar = 23,
-    MenuBarButton = 25,
-    MenuItemButton = 26,
-    MenuSplitter = 24,
-    MultilineTextBox = 10,
-    ProgressBar = 59,
-    RadioButton = 52,
-    RadioTextListItem = 21,
-    RibbonButtons = 36,
-    RibbonGallery = 38,
-    RibbonGalleryItemList = 41,
-    RibbonGalleryList = 40,
-    RibbonGroup = 33,
-    RibbonIconLabel = 34,
-    RibbonLargeButton = 45,
-    RibbonLargeDropdownButton = 46,
-    RibbonLargeSplitButton = 47,
-    RibbonSmallButton = 42,
-    RibbonSmallDropdownButton = 43,
-    RibbonSmallIconLabel = 35,
-    RibbonSmallSplitButton = 44,
-    RibbonSplitter = 48,
-    RibbonTab = 32,
-    RibbonToolstripHeader = 49,
-    RibbonToolstripMenu = 39,
-    RibbonToolstrips = 37,
-    ScrollView = 6,
-    ShortcutKey = 5,
-    SinglelineTextBox = 11,
-    Tab = 8,
-    TextList = 17,
-    ToolstripButton = 28,
-    ToolstripDropdownButton = 29,
-    ToolstripSplitButton = 30,
-    ToolstripSplitter = 31,
-    ToolstripToolBar = 27,
-    Tooltip = 3,
-    TreeItemExpander = 19,
-    TreeView = 16,
-    VScroll = 56,
-    VTracker = 58,
+    Button = 52,
+    CheckBox = 53,
+    CheckTextListItem = 22,
+    ComboBox = 11,
+    CustomControl = 4,
+    CustomFrameWindow = 3,
+    DateComboBox = 56,
+    DatePicker = 55,
+    DocumentLabel = 15,
+    DocumentTextBox = 16,
+    DocumentViewer = 14,
+    GroupBox = 9,
+    HScroll = 57,
+    HTracker = 59,
+    Label = 6,
+    ListItemBackground = 20,
+    ListView = 17,
+    Menu = 24,
+    MenuBar = 25,
+    MenuBarButton = 27,
+    MenuItemButton = 28,
+    MenuSplitter = 26,
+    MultilineTextBox = 12,
+    ProgressBar = 61,
+    RadioButton = 54,
+    RadioTextListItem = 23,
+    RibbonButtons = 38,
+    RibbonGallery = 40,
+    RibbonGalleryItemList = 43,
+    RibbonGalleryList = 42,
+    RibbonGroup = 35,
+    RibbonIconLabel = 36,
+    RibbonLargeButton = 47,
+    RibbonLargeDropdownButton = 48,
+    RibbonLargeSplitButton = 49,
+    RibbonSmallButton = 44,
+    RibbonSmallDropdownButton = 45,
+    RibbonSmallIconLabel = 37,
+    RibbonSmallSplitButton = 46,
+    RibbonSplitter = 50,
+    RibbonTab = 34,
+    RibbonToolstripHeader = 51,
+    RibbonToolstripMenu = 41,
+    RibbonToolstrips = 39,
+    ScrollView = 8,
+    ShortcutKey = 7,
+    SinglelineTextBox = 13,
+    SystemFrameWindow = 2,
+    Tab = 10,
+    TextList = 19,
+    ToolstripButton = 30,
+    ToolstripDropdownButton = 31,
+    ToolstripSplitButton = 32,
+    ToolstripSplitter = 33,
+    ToolstripToolBar = 29,
+    Tooltip = 5,
+    TreeItemExpander = 21,
+    TreeView = 18,
+    Unknown = 0,
+    VScroll = 58,
+    VTracker = 60,
     Window = 1,
 }
 
@@ -5607,6 +5610,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property CheckTextListItem : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
     property ComboBox : system::Function<presentation::templates::GuiComboBoxTemplate*, system::Object>^;
     property CustomControl : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
+    property CustomFrameWindow : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^;
     property DateComboBox : system::Function<presentation::templates::GuiDateComboBoxTemplate*, system::Object>^;
     property DatePicker : system::Function<presentation::templates::GuiDatePickerTemplate*, system::Object>^;
     property DocumentLabel : system::Function<presentation::templates::GuiDocumentLabelTemplate*, system::Object>^;
@@ -5625,6 +5629,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property MenuSplitter : system::Function<presentation::templates::GuiControlTemplate*, system::Object>^;
     property MultilineTextBox : system::Function<presentation::templates::GuiMultilineTextBoxTemplate*, system::Object>^;
     property Name : system::String;
+    property PreferCustomFrameWindow : system::Boolean?;
     property ProgressBar : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
     property RadioButton : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
     property RadioTextListItem : system::Function<presentation::templates::GuiSelectableButtonTemplate*, system::Object>^;
@@ -5649,6 +5654,7 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property ScrollView : system::Function<presentation::templates::GuiScrollViewTemplate*, system::Object>^;
     property ShortcutKey : system::Function<presentation::templates::GuiLabelTemplate*, system::Object>^;
     property SinglelineTextBox : system::Function<presentation::templates::GuiSinglelineTextBoxTemplate*, system::Object>^;
+    property SystemFrameWindow : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^;
     property Tab : system::Function<presentation::templates::GuiTabTemplate*, system::Object>^;
     property TextList : system::Function<presentation::templates::GuiTextListTemplate*, system::Object>^;
     property ToolstripButton : system::Function<presentation::templates::GuiToolstripButtonTemplate*, system::Object>^;
@@ -5661,7 +5667,6 @@ class presentation::theme::ThemeTemplates : presentation::controls::GuiInstanceR
     property TreeView : system::Function<presentation::templates::GuiTreeViewTemplate*, system::Object>^;
     property VScroll : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
     property VTracker : system::Function<presentation::templates::GuiScrollTemplate*, system::Object>^;
-    property Window : system::Function<presentation::templates::GuiWindowTemplate*, system::Object>^;
 
     constructor () : presentation::theme::ThemeTemplates^;
 }
