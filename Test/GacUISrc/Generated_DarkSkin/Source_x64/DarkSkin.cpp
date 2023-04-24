@@ -31215,6 +31215,9 @@ Class (::darkskin::ThemeConstructor)
 	{
 		(this->__vwsn_precompile_0 = __vwsn_this_);
 		{
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->PreferCustomFrameWindow = true);
+		}
+		{
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->RibbonToolstripMenu = vl::Func(::vl_workflow_global::__vwsnf1_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
 		}
 		{
@@ -31374,7 +31377,7 @@ Class (::darkskin::ThemeConstructor)
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Label = vl::Func(::vl_workflow_global::__vwsnf53_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
 		}
 		{
-			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Window = vl::Func(::vl_workflow_global::__vwsnf54_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
+			(::vl::__vwsn::This(this->__vwsn_precompile_0)->CustomFrameWindow = vl::Func(::vl_workflow_global::__vwsnf54_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));
 		}
 		{
 			(::vl::__vwsn::This(this->__vwsn_precompile_0)->Button = vl::Func(::vl_workflow_global::__vwsnf55_DarkSkin_darkskin_ThemeConstructor___vwsn_darkskin_Theme_Initialize_(this)));

@@ -1,5 +1,5 @@
 <Instance ref.CodeBehind="false" ref.Class="darkskin::Theme" xmlns:x="darkskin::*">
-  <ThemeTemplates Name="DarkSkin">
+  <ThemeTemplates Name="DarkSkin" PreferCustomFrameWindow="true">
     <att.SystemFrameWindow>x:SystemFrameWindowTemplate</att.SystemFrameWindow>
     <att.CustomFrameWindow>x:CustomFrameWindowTemplate</att.CustomFrameWindow>
     <att.CustomControl>x:CustomControlTemplate</att.CustomControl>

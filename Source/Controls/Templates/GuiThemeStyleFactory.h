@@ -32,6 +32,7 @@ namespace vl
 				~ThemeTemplates();
 
 				WString							Name;
+				Nullable<bool>					PreferCustomFrameWindow;
 
 #define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) TemplateProperty<templates::Gui##TEMPLATE> CONTROL;
 				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
