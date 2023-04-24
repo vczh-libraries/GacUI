@@ -5471,8 +5471,12 @@ class presentation::controls::GuiVirtualTreeView : presentation::controls::GuiVi
 
 class presentation::controls::GuiWindow : presentation::controls::GuiControlHost {
     event ClipboardUpdated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^;
+    event FrameConfigChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        FrameConfig,
+    }
 
     property Border : system::Boolean { get:GetBorder set:SetBorder }
+    property FrameConfig : presentation::NativeWindowFrameConfig { get:GetFrameConfig event:FrameConfigChanged }
     property Icon : presentation::GuiImageData^ { get:GetIcon set:SetIcon }
     property IconVisible : system::Boolean { get:GetIconVisible set:SetIconVisible }
     property MaximizedBox : system::Boolean { get:GetMaximizedBox set:SetMaximizedBox }
@@ -5481,6 +5485,7 @@ class presentation::controls::GuiWindow : presentation::controls::GuiControlHost
     property TitleBar : system::Boolean { get:GetTitleBar set:SetTitleBar }
 
     function GetBorder() : system::Boolean;
+    function GetFrameConfig() : presentation::NativeWindowFrameConfig;
     function GetIcon() : presentation::GuiImageData^;
     function GetIconVisible() : system::Boolean;
     function GetMaximizedBox() : system::Boolean;

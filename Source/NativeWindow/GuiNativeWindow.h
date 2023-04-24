@@ -765,6 +765,7 @@ INativeWindow
 			virtual void				ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice);
 			/// <summary>
 			/// Called when the frame config of a window is decided.
+			/// This callback is only called in hosted mode.
 			/// This callback is only called once on a window.
 			/// </summary>
 			virtual void				AssignFrameConfig(const NativeWindowFrameConfig& config);

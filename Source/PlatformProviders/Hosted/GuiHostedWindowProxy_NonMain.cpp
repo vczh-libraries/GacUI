@@ -43,7 +43,7 @@ GuiNonMainHostedWindowProxy
 					data->windowMinimizedBox = false;
 					for (auto listener : data->listeners)
 					{
-						listener->BecomeNonMainHostedWindow();
+						listener->AssignFrameConfig(data->controller->WindowService()->GetNonMainWindowFrameConfig());
 					}
 				}
 				EnsureNoSystemBorderWhenVisible();
@@ -91,10 +91,6 @@ GuiNonMainHostedWindowProxy
 				if (data->windowMaximizedBox)
 				{
 					data->windowMaximizedBox = false;
-					for (auto listener : data->listeners)
-					{
-						listener->BecomeNonMainHostedWindow();
-					}
 				}
 			}
 
@@ -103,10 +99,6 @@ GuiNonMainHostedWindowProxy
 				if (data->windowMinimizedBox)
 				{
 					data->windowMinimizedBox = false;
-					for (auto listener : data->listeners)
-					{
-						listener->BecomeNonMainHostedWindow();
-					}
 				}
 			}
 
