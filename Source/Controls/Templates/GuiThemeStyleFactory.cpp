@@ -73,6 +73,33 @@ namespace vl
 
 				TemplateProperty<GuiControlTemplate> CreateStyle(ThemeName themeName)override
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::theme::ITheme::CreateStyle(ThemeName)#"
+					if (themeName == ThemeName::Window)
+					{
+						bool preferCustomFrameWindow = true;
+						auto current = last;
+						while (current)
+						{
+							if (current->PreferCustomFrameWindow)
+							{
+								preferCustomFrameWindow = current->PreferCustomFrameWindow.Value();
+								break;
+							}
+							current = current->previous;
+						}
+
+						CHECK_ERROR(current, ERROR_MESSAGE_PREFIX L"At least one ThemeTemplates::PreferCustomFrameWindow should be defined.");
+
+						if (preferCustomFrameWindow)
+						{
+							themeName = ThemeName::CustomFrameWindow;
+						}
+						else
+						{
+							themeName = ThemeName::SystemFrameWindow;
+						}
+					}
+
 					switch (themeName)
 					{
 #define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) \
@@ -93,8 +120,9 @@ namespace vl
 						GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
 #undef GUI_DEFINE_ITEM_PROPERTY
 					default:
-						CHECK_FAIL(L"vl::presentation::theme::ITheme::CreateStyle(ThemeName)#Unknown theme name.");
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown theme name.");
 					}
+#undef ERROR_MESSAGE_PREFIX
 				}
 			};
 

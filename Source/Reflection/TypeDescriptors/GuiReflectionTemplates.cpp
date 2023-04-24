@@ -43,12 +43,6 @@ Type Declaration (Extra)
 				ENUM_CLASS_ITEM(BottomToTop)
 			END_ENUM_ITEM(TabPageOrder)
 
-			BEGIN_ENUM_ITEM(BoolOption)
-				ENUM_CLASS_ITEM(AlwaysTrue)
-				ENUM_CLASS_ITEM(AlwaysFalse)
-				ENUM_CLASS_ITEM(Customizable)
-			END_ENUM_ITEM(BoolOption)
-
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITextBoxCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)
 

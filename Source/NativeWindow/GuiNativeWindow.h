@@ -46,6 +46,29 @@ INativeWindow
 		class DocumentModel;
 		class INativeCursor;
 		class INativeWindowListener;
+
+		enum class BoolOption
+		{
+			AlwaysTrue,
+			AlwaysFalse,
+			Customizable,
+		};
+
+		struct NativeWindowFrameConfig
+		{
+			BoolOption MaximizedBoxOption = BoolOption::Customizable;
+			BoolOption MinimizedBoxOption = BoolOption::Customizable;
+			BoolOption BorderOption = BoolOption::Customizable;
+			BoolOption SizeBoxOption = BoolOption::Customizable;
+			BoolOption IconVisibleOption = BoolOption::Customizable;
+			BoolOption TitleBarOption = BoolOption::Customizable;
+			BoolOption CustomFrameEnabled = BoolOption::Customizable;
+
+			std::strong_ordering operator<=>(const NativeWindowFrameConfig&) const = default;
+			bool operator==(const NativeWindowFrameConfig&) const = default;
+
+			static const NativeWindowFrameConfig Default;
+		};
 		
 		/// <summary>
 		/// Represents a window.
@@ -741,16 +764,11 @@ INativeWindow
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
 			virtual void				ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice);
 			/// <summary>
-			/// Called when the window becomes a main window in hosted mode.
-			/// This callback is only called once on the main window.
+			/// Called when the frame config of a window is decided.
+			/// This callback is only called in hosted mode.
+			/// This callback is only called once on a window.
 			/// </summary>
-			virtual void				BecomeMainHostedWindow();
-			/// <summary>
-			/// Called when the window becomes a non-main window in hosted mode.
-			/// It requires MaximizedBox and MinimizedBox to be disabled.
-			/// This callback could be called more than once on a window.
-			/// </summary>
-			virtual void				BecomeNonMainHostedWindow();
+			virtual void				AssignFrameConfig(const NativeWindowFrameConfig& config);
 		};
 
 /***********************************************************************
@@ -1245,19 +1263,19 @@ INativeScreenService
 			/// Get the number of all available screens.
 			/// </summary>
 			///  <returns>The number of all available screens.</returns>
-			virtual vint					GetScreenCount()=0;
+			virtual vint							GetScreenCount()=0;
 			/// <summary>
 			/// Get the screen object by a specified screen index.
 			/// </summary>
 			/// <returns>The screen object.</returns>
 			/// <param name="index">The specified screen index.</param>
-			virtual INativeScreen*			GetScreen(vint index)=0;
+			virtual INativeScreen*					GetScreen(vint index)=0;
 			/// <summary>
 			/// Get the screen object where the main part of the specified window is inside.
 			/// </summary>
 			/// <returns>The screen object.</returns>
 			/// <param name="window">The specified window.</param>
-			virtual INativeScreen*			GetScreen(INativeWindow* window)=0;
+			virtual INativeScreen*					GetScreen(INativeWindow* window)=0;
 		};
 
 /***********************************************************************
@@ -1270,6 +1288,22 @@ INativeWindowService
 		class INativeWindowService : public virtual Interface
 		{
 		public:
+			/// <summary>
+			/// Get the frame configuration for the main window.
+			/// It limit values of frame properties and control template of the main window.
+			/// This function must return "NativeWindowFrameConfig::Default",
+			/// unless it is only designed to be used under hosted mode.
+			/// </summary>
+			/// <returns>The frame configuration for the main window.</returns>
+			virtual const NativeWindowFrameConfig&	GetMainWindowFrameConfig()=0;
+			/// <summary>
+			/// Get the frame configuration for non-main windows.
+			/// It limit values of frame properties and control template of all non-main windows.
+			/// This function must return "NativeWindowFrameConfig::Default",
+			/// unless it is only designed to be used under hosted mode.
+			/// </summary>
+			/// <returns>The frame configuration for non-main windows.</returns>
+			virtual const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig()=0;
 			/// <summary>
 			/// Create a window.
 			/// </summary>

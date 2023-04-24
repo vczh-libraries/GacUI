@@ -1,4 +1,4 @@
-﻿================================(1/100)================================
+﻿================================(1/98)================================
 module <constructor>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -680,7 +680,7 @@ namespace demo
     }
 }
 
-================================(2/100)================================
+================================(2/98)================================
 module <instance>demo::DataGridTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -745,7 +745,7 @@ namespace demo
     }
 }
 
-================================(3/100)================================
+================================(3/98)================================
 module <constructor>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1466,7 +1466,7 @@ namespace demo
     }
 }
 
-================================(4/100)================================
+================================(4/98)================================
 module <instance>demo::ElementTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1508,7 +1508,7 @@ namespace demo
     }
 }
 
-================================(5/100)================================
+================================(5/98)================================
 module <constructor>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -1988,7 +1988,7 @@ namespace demo
     }
 }
 
-================================(6/100)================================
+================================(6/98)================================
 module <instance>demo::ListViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2046,7 +2046,7 @@ namespace demo
     }
 }
 
-================================(7/100)================================
+================================(7/98)================================
 module <constructor>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -2231,6 +2231,9 @@ namespace demo
         func <demo-MainWindow>Initialize(<this> : ::demo::MainWindow*) : (::system::Void)
         {
             (self = <this>);
+            {
+                (self.ControlThemeName = CustomFrameWindow of (::presentation::theme::ThemeName));
+            }
             {
                 (self.ClientSize = {x : 640; y : 480;} of (::presentation::Size));
             }
@@ -2495,9 +2498,6 @@ namespace demo
                 (checkFrame = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkFrame.Selected = true);
-            }
-            {
                 (checkFrame.Text = "Customized Frame");
             }
             {
@@ -2509,9 +2509,6 @@ namespace demo
             (<precompile>33 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMax = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
-            }
-            {
-                (checkMax.Selected = true);
             }
             {
                 (checkMax.Text = "MaximizedBox");
@@ -2527,9 +2524,6 @@ namespace demo
                 (checkMin = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkMin.Selected = true);
-            }
-            {
                 (checkMin.Text = "MinimizedBox");
             }
             {
@@ -2541,9 +2535,6 @@ namespace demo
             (<precompile>35 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBorder = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
-            }
-            {
-                (checkBorder.Selected = true);
             }
             {
                 (checkBorder.Text = "Border");
@@ -2559,9 +2550,6 @@ namespace demo
                 (checkSizeBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkSizeBox.Selected = true);
-            }
-            {
                 (checkSizeBox.Text = "SizeBox");
             }
             {
@@ -2575,9 +2563,6 @@ namespace demo
                 (checkIcon = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkIcon.Selected = true);
-            }
-            {
                 (checkIcon.Text = "IconVisible");
             }
             {
@@ -2589,9 +2574,6 @@ namespace demo
             (<precompile>38 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkTitle = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
-            }
-            {
-                (checkTitle.Selected = true);
             }
             {
                 (checkTitle.Text = "TitleBar");
@@ -2776,21 +2758,550 @@ namespace demo
                 <this>.AddSubscription(<created-subscription>);
             }
             {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::MainWindow* = null of (::demo::MainWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.CustomFrameEnabled == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::MainWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::MainWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkFrame.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkFrame.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkFrame.Selected = (self.ControlThemeName == ThemeName::CustomFrameWindow));
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     if (checkFrame.Selected)
                     {
-                        (self.ControlTemplate = null);
+                        (self.ControlThemeName = CustomFrameWindow);
                     }
                     else
                     {
-                        (self.ControlTemplate = func (context : object) : (GuiControlTemplate*)
-                        {
-                            return new (SystemFrameWindowTemplate*)();
-                        });
+                        (self.ControlThemeName = SystemFrameWindow);
                     }
                 };
                 attach(checkFrame.SelectedChanged, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::MainWindow* = null of (::demo::MainWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.MaximizedBoxOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::MainWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::MainWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkMax.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkMax.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkMax.Selected = self.MaximizedBox);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::MainWindow* = null of (::demo::MainWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.MinimizedBoxOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::MainWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::MainWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkMin.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkMin.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkMin.Selected = self.MinimizedBox);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::MainWindow* = null of (::demo::MainWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.BorderOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::MainWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::MainWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkBorder.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkBorder.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkBorder.Selected = self.Border);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::MainWindow* = null of (::demo::MainWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.SizeBoxOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::MainWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::MainWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkSizeBox.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkSizeBox.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkSizeBox.Selected = self.SizeBox);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::MainWindow* = null of (::demo::MainWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.IconVisibleOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::MainWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::MainWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkIcon.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkIcon.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkIcon.Selected = self.IconVisible);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::MainWindow* = null of (::demo::MainWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.TitleBarOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::MainWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::MainWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkTitle.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkTitle.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkTitle.Selected = self.TitleBar);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -3248,7 +3759,7 @@ namespace demo
     }
 }
 
-================================(8/100)================================
+================================(8/98)================================
 module <instance>demo::MainWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3293,7 +3804,7 @@ namespace demo
     }
 }
 
-================================(9/100)================================
+================================(9/98)================================
 module <constructor>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3943,7 +4454,7 @@ namespace demo
     }
 }
 
-================================(10/100)================================
+================================(10/98)================================
 module <instance>demo::RepeatTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -3985,7 +4496,7 @@ namespace demo
     }
 }
 
-================================(11/100)================================
+================================(11/98)================================
 module <constructor>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4069,6 +4580,9 @@ namespace demo
         {
             (self = <this>);
             {
+                (self.ControlThemeName = CustomFrameWindow of (::presentation::theme::ThemeName));
+            }
+            {
                 (self.ClientSize = {x : 240; y : 160;} of (::presentation::Size));
             }
             (<precompile>0 = new (::presentation::compositions::GuiStackComposition*)());
@@ -4089,9 +4603,6 @@ namespace demo
                 (checkFrame = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkFrame.Selected = true);
-            }
-            {
                 (checkFrame.Text = "Customized Frame");
             }
             {
@@ -4103,9 +4614,6 @@ namespace demo
             (<precompile>2 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkMax = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
-            }
-            {
-                (checkMax.Selected = true);
             }
             {
                 (checkMax.Text = "MaximizedBox");
@@ -4121,9 +4629,6 @@ namespace demo
                 (checkMin = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkMin.Selected = true);
-            }
-            {
                 (checkMin.Text = "MinimizedBox");
             }
             {
@@ -4135,9 +4640,6 @@ namespace demo
             (<precompile>4 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkBorder = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
-            }
-            {
-                (checkBorder.Selected = true);
             }
             {
                 (checkBorder.Text = "Border");
@@ -4153,9 +4655,6 @@ namespace demo
                 (checkSizeBox = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkSizeBox.Selected = true);
-            }
-            {
                 (checkSizeBox.Text = "SizeBox");
             }
             {
@@ -4169,9 +4668,6 @@ namespace demo
                 (checkIcon = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
             }
             {
-                (checkIcon.Selected = true);
-            }
-            {
                 (checkIcon.Text = "IconVisible");
             }
             {
@@ -4183,9 +4679,6 @@ namespace demo
             (<precompile>7 = new (::presentation::compositions::GuiStackItemComposition*)());
             {
                 (checkTitle = new (::presentation::controls::GuiSelectableButton*)(::presentation::theme::ThemeName::CheckBox));
-            }
-            {
-                (checkTitle.Selected = true);
             }
             {
                 (checkTitle.Text = "TitleBar");
@@ -4213,21 +4706,550 @@ namespace demo
                 self.ContainerComposition.AddChild(<precompile>0);
             }
             {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::SubWindow* = null of (::demo::SubWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.CustomFrameEnabled == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::SubWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::SubWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkFrame.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkFrame.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkFrame.Selected = (self.ControlThemeName == ThemeName::CustomFrameWindow));
+            }
+            {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
                 {
                     if (checkFrame.Selected)
                     {
-                        (self.ControlTemplate = null);
+                        (self.ControlThemeName = CustomFrameWindow);
                     }
                     else
                     {
-                        (self.ControlTemplate = func (context : object) : (GuiControlTemplate*)
-                        {
-                            return new (SystemFrameWindowTemplate*)();
-                        });
+                        (self.ControlThemeName = SystemFrameWindow);
                     }
                 };
                 attach(checkFrame.SelectedChanged, <event-handler>);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::SubWindow* = null of (::demo::SubWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.MaximizedBoxOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::SubWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::SubWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkMax.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkMax.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkMax.Selected = self.MaximizedBox);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::SubWindow* = null of (::demo::SubWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.MinimizedBoxOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::SubWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::SubWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkMin.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkMin.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkMin.Selected = self.MinimizedBox);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::SubWindow* = null of (::demo::SubWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.BorderOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::SubWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::SubWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkBorder.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkBorder.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkBorder.Selected = self.Border);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::SubWindow* = null of (::demo::SubWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.SizeBoxOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::SubWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::SubWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkSizeBox.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkSizeBox.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkSizeBox.Selected = self.SizeBox);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::SubWindow* = null of (::demo::SubWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.IconVisibleOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::SubWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::SubWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkIcon.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkIcon.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkIcon.Selected = self.IconVisible);
+            }
+            {
+                var <created-subscription> = new (::system::Subscription^)
+                {
+                    var <bind-cache>0 : ::demo::SubWindow* = null of (::demo::SubWindow*);
+
+                    var <bind-handler>0_0 : ::system::reflection::EventHandler^ = null of (::system::reflection::EventHandler^);
+
+                    var <bind-opened> : ::system::Boolean = false;
+
+                    var <bind-closed> : ::system::Boolean = false;
+
+                    func <bind-activator>() : (::system::Void)
+                    {
+                        var <bind-activator-result> = (<bind-cache>0.FrameConfig.TitleBarOption == BoolOption::Customizable) of (::system::Boolean);
+                        ValueChanged(<bind-activator-result>);
+                    }
+
+                    func <bind-callback>0_0(<bind-callback-argument>0 : ::presentation::compositions::GuiGraphicsComposition*, <bind-callback-argument>1 : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
+                    {
+                        <bind-activator>();
+                    }
+
+                    override func Open() : (::system::Boolean)
+                    {
+                        if ((!<bind-opened>))
+                        {
+                            (<bind-opened> = true);
+                            (<bind-cache>0 = (self ?? null of (::demo::SubWindow*)));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.FrameConfigChanged, <bind-callback>0_0) ?? null));
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Update() : (::system::Boolean)
+                    {
+                        if ((<bind-opened> and (!<bind-closed>)))
+                        {
+                            <bind-activator>();
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    override func Close() : (::system::Boolean)
+                    {
+                        if ((!<bind-closed>))
+                        {
+                            (<bind-closed> = true);
+                            if (<bind-handler>0_0 is not null)
+                            {
+                                detach(<bind-cache>0.FrameConfigChanged, <bind-handler>0_0);
+                                (<bind-handler>0_0 = null);
+                            }
+                            (<bind-cache>0 = null of (::demo::SubWindow*));
+                            (<bind-handler>0_0 = null of (::system::reflection::EventHandler^));
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+                attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
+                {
+                    var <old> = checkTitle.Enabled;
+                    var <new> = (cast (::system::Boolean) <value>);
+                    if ((<old> == <new>))
+                    {
+                        return;
+                    }
+                    (checkTitle.Enabled = <new>);
+                });
+                <this>.AddSubscription(<created-subscription>);
+            }
+            {
+                (checkTitle.Selected = self.TitleBar);
             }
             {
                 var <event-handler> = func (sender : ::presentation::compositions::GuiGraphicsComposition*, arguments : ::presentation::compositions::GuiEventArgs*) : (::system::Void)
@@ -4688,7 +5710,7 @@ namespace demo
     }
 }
 
-================================(12/100)================================
+================================(12/98)================================
 module <instance>demo::SubWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -4732,120 +5754,7 @@ namespace demo
     }
 }
 
-================================(13/100)================================
-module <constructor>demo::SystemFrameWindowTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace demo
-{
-    class SystemFrameWindowTemplateConstructor
-    {
-        @cpp:Protected
-        var <precompile>0 : ::demo::SystemFrameWindowTemplate* = null of (::demo::SystemFrameWindowTemplate*);
-
-        @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
-
-        @cpp:Protected
-        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
-
-        @cpp:Protected
-        func <demo-SystemFrameWindowTemplate>Initialize(<this> : ::demo::SystemFrameWindowTemplate*) : (::system::Void)
-        {
-            (<precompile>0 = <this>);
-            {
-                (<precompile>0.CustomFrameEnabled = false);
-            }
-            {
-                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>1.Color = (cast (::presentation::Color) "#2D2D30"));
-            }
-            {
-                (<precompile>0.OwnedElement = <precompile>1);
-            }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
-            {
-                (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            {
-                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
-            }
-            {
-                <precompile>0.AddChild(container);
-            }
-            {
-                (<precompile>0.ContainerComposition = container);
-            }
-        }
-
-        new ()
-        {
-        }
-    }
-}
-
-================================(14/100)================================
-module <instance>demo::SystemFrameWindowTemplate;
-using presentation::controls::Gui*;
-using presentation::elements::Gui*Element;
-using presentation::compositions::Gui*Composition;
-using presentation::compositions::Gui*;
-using presentation::templates::Gui*;
-using system::*;
-using system::reflection::*;
-using presentation::*;
-using presentation::Gui*;
-using presentation::controls::*;
-using presentation::controls::list::*;
-using presentation::controls::tree::*;
-using presentation::elements::*;
-using presentation::elements::Gui*;
-using presentation::elements::text::*;
-using presentation::compositions::*;
-using presentation::templates::*;
-using presentation::theme::*;
-
-namespace demo
-{
-    @cpp:Friend(typeof(SystemFrameWindowTemplateConstructor))
-    class SystemFrameWindowTemplate : ::presentation::templates::GuiWindowTemplate, SystemFrameWindowTemplateConstructor
-    {
-        new* ()
-        {
-            var <resource> = ::presentation::IGuiResourceManager::GetResourceManager().GetResourceFromClassName("demo::SystemFrameWindowTemplate");
-            var <resolver> = new (::presentation::GuiResourcePathResolver^)(<resource>, <resource>.WorkingDirectory);
-            this.SetResourceResolver(<resolver>);
-            this.<demo-SystemFrameWindowTemplate>Initialize(this);
-        }
-
-        delete
-        {
-            FinalizeInstanceRecursively(this of (::presentation::templates::GuiTemplate*));
-        }
-    }
-}
-
-================================(15/100)================================
+================================(13/98)================================
 module <constructor>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5522,7 +6431,7 @@ namespace demo
     }
 }
 
-================================(16/100)================================
+================================(14/98)================================
 module <instance>demo::TextListTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -5568,7 +6477,7 @@ namespace demo
     }
 }
 
-================================(17/100)================================
+================================(15/98)================================
 module <constructor>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6080,7 +6989,7 @@ namespace demo
     }
 }
 
-================================(18/100)================================
+================================(16/98)================================
 module <instance>demo::TreeViewTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6130,7 +7039,7 @@ namespace demo
     }
 }
 
-================================(19/100)================================
+================================(17/98)================================
 module <constructor>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -6808,7 +7717,7 @@ namespace demo
     }
 }
 
-================================(20/100)================================
+================================(18/98)================================
 module <instance>demo::AnimationTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7248,7 +8157,7 @@ namespace demo
     }
 }
 
-================================(21/100)================================
+================================(19/98)================================
 module <animation>demo::ColorAnimation;
 
 namespace demo
@@ -7456,7 +8365,7 @@ namespace demo
     }
 }
 
-================================(22/100)================================
+================================(20/98)================================
 module <constructor>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7661,7 +8570,7 @@ namespace demo
     }
 }
 
-================================(23/100)================================
+================================(21/98)================================
 module <instance>demo::DateEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -7702,7 +8611,7 @@ namespace demo
     }
 }
 
-================================(24/100)================================
+================================(22/98)================================
 module <constructor>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8041,7 +8950,7 @@ namespace demo
     }
 }
 
-================================(25/100)================================
+================================(23/98)================================
 module <instance>demo::DateFilter;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8143,7 +9052,7 @@ namespace demo
     }
 }
 
-================================(26/100)================================
+================================(24/98)================================
 module <constructor>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8348,7 +9257,7 @@ namespace demo
     }
 }
 
-================================(27/100)================================
+================================(25/98)================================
 module <instance>demo::TextEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8389,7 +9298,7 @@ namespace demo
     }
 }
 
-================================(28/100)================================
+================================(26/98)================================
 module <constructor>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8737,7 +9646,7 @@ namespace demo
     }
 }
 
-================================(29/100)================================
+================================(27/98)================================
 module <instance>demo::CategoryDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -8800,7 +9709,7 @@ namespace demo
     }
 }
 
-================================(30/100)================================
+================================(28/98)================================
 module <constructor>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9044,7 +9953,7 @@ namespace demo
     }
 }
 
-================================(31/100)================================
+================================(29/98)================================
 module <instance>demo::CategoryEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9087,7 +9996,7 @@ namespace demo
     }
 }
 
-================================(32/100)================================
+================================(30/98)================================
 module <constructor>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9224,7 +10133,7 @@ namespace demo
     }
 }
 
-================================(33/100)================================
+================================(31/98)================================
 module <instance>demo::CategoryItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9275,7 +10184,7 @@ namespace demo
     }
 }
 
-================================(34/100)================================
+================================(32/98)================================
 module <constructor>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9475,7 +10384,7 @@ namespace demo
     }
 }
 
-================================(35/100)================================
+================================(33/98)================================
 module <instance>demo::CategoryVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9516,7 +10425,7 @@ namespace demo
     }
 }
 
-================================(36/100)================================
+================================(34/98)================================
 module <constructor>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9655,7 +10564,7 @@ namespace demo
     }
 }
 
-================================(37/100)================================
+================================(35/98)================================
 module <instance>demo::GenderDisplayer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9718,7 +10627,7 @@ namespace demo
     }
 }
 
-================================(38/100)================================
+================================(36/98)================================
 module <constructor>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -9962,7 +10871,7 @@ namespace demo
     }
 }
 
-================================(39/100)================================
+================================(37/98)================================
 module <instance>demo::GenderEditor;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10005,7 +10914,7 @@ namespace demo
     }
 }
 
-================================(40/100)================================
+================================(38/98)================================
 module <constructor>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10069,7 +10978,7 @@ namespace demo
     }
 }
 
-================================(41/100)================================
+================================(39/98)================================
 module <instance>demo::GenderItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10120,7 +11029,7 @@ namespace demo
     }
 }
 
-================================(42/100)================================
+================================(40/98)================================
 module <constructor>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10247,7 +11156,7 @@ namespace demo
     }
 }
 
-================================(43/100)================================
+================================(41/98)================================
 module <instance>demo::GenderVisualizer;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -10288,7 +11197,7 @@ namespace demo
     }
 }
 
-================================(44/100)================================
+================================(42/98)================================
 module <constructor>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11151,7 +12060,7 @@ namespace demo
     }
 }
 
-================================(45/100)================================
+================================(43/98)================================
 module <instance>demo::DatePickerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11193,7 +12102,7 @@ namespace demo
     }
 }
 
-================================(46/100)================================
+================================(44/98)================================
 module <constructor>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11436,7 +12345,7 @@ namespace demo
     }
 }
 
-================================(47/100)================================
+================================(45/98)================================
 module <instance>demo::HyperlinkWindow;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -11499,7 +12408,7 @@ namespace demo
     }
 }
 
-================================(48/100)================================
+================================(46/98)================================
 module <constructor>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14659,7 +15568,7 @@ namespace demo
     }
 }
 
-================================(49/100)================================
+================================(47/98)================================
 module <instance>demo::DocumentEditorBase;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -14917,7 +15826,7 @@ namespace demo
     }
 }
 
-================================(50/100)================================
+================================(48/98)================================
 module <constructor>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -16960,7 +17869,7 @@ namespace demo
     }
 }
 
-================================(51/100)================================
+================================(49/98)================================
 module <instance>demo::DocumentEditorRibbon;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17177,7 +18086,7 @@ namespace demo
     }
 }
 
-================================(52/100)================================
+================================(50/98)================================
 module <constructor>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17541,7 +18450,7 @@ namespace demo
     }
 }
 
-================================(53/100)================================
+================================(51/98)================================
 module <instance>demo::StyleItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -17642,7 +18551,7 @@ namespace demo
     }
 }
 
-================================(54/100)================================
+================================(52/98)================================
 module <constructor>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18805,7 +19714,7 @@ namespace demo
     }
 }
 
-================================(55/100)================================
+================================(53/98)================================
 module <instance>demo::DocumentEditorToolstrip;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -18846,7 +19755,7 @@ namespace demo
     }
 }
 
-================================(56/100)================================
+================================(54/98)================================
 module <constructor>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19024,7 +19933,7 @@ namespace demo
     }
 }
 
-================================(57/100)================================
+================================(55/98)================================
 module <instance>demo::LocaleSelector;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19086,7 +19995,7 @@ namespace demo
     }
 }
 
-================================(58/100)================================
+================================(56/98)================================
 module <constructor>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19215,7 +20124,7 @@ namespace demo
     }
 }
 
-================================(59/100)================================
+================================(57/98)================================
 module <instance>demo::LocalizedColorDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19257,7 +20166,7 @@ namespace demo
     }
 }
 
-================================(60/100)================================
+================================(58/98)================================
 module <constructor>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19514,7 +20423,7 @@ namespace demo
     }
 }
 
-================================(61/100)================================
+================================(59/98)================================
 module <instance>demo::LocalizedDialogsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -19556,7 +20465,7 @@ namespace demo
     }
 }
 
-================================(62/100)================================
+================================(60/98)================================
 module <constructor>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20312,7 +21221,7 @@ namespace demo
     }
 }
 
-================================(63/100)================================
+================================(61/98)================================
 module <instance>demo::LocalizedFileDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20402,7 +21311,7 @@ namespace demo
     }
 }
 
-================================(64/100)================================
+================================(62/98)================================
 module <constructor>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20566,7 +21475,7 @@ namespace demo
     }
 }
 
-================================(65/100)================================
+================================(63/98)================================
 module <instance>demo::LocalizedFontDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -20608,7 +21517,7 @@ namespace demo
     }
 }
 
-================================(66/100)================================
+================================(64/98)================================
 module <constructor>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21063,7 +21972,7 @@ namespace demo
     }
 }
 
-================================(67/100)================================
+================================(65/98)================================
 module <instance>demo::LocalizedMessageDialogTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -21129,7 +22038,7 @@ namespace demo
     }
 }
 
-================================(68/100)================================
+================================(66/98)================================
 module <constructor>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22533,7 +23442,7 @@ namespace demo
     }
 }
 
-================================(69/100)================================
+================================(67/98)================================
 module <instance>demo::LocalizedStringsTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22602,7 +23511,7 @@ namespace demo
     }
 }
 
-================================(70/100)================================
+================================(68/98)================================
 module <constructor>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -22961,7 +23870,7 @@ namespace demo
     }
 }
 
-================================(71/100)================================
+================================(69/98)================================
 module <instance>demo::EnglishNumbersController;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23185,7 +24094,7 @@ namespace demo
     }
 }
 
-================================(72/100)================================
+================================(70/98)================================
 module <constructor>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23281,7 +24190,7 @@ namespace demo
     }
 }
 
-================================(73/100)================================
+================================(71/98)================================
 module <instance>demo::EnglishNumbersControllerTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23362,7 +24271,7 @@ namespace demo
     }
 }
 
-================================(74/100)================================
+================================(72/98)================================
 module <constructor>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23480,7 +24389,7 @@ namespace demo
     }
 }
 
-================================(75/100)================================
+================================(73/98)================================
 module <instance>demo::RepeatItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23531,7 +24440,7 @@ namespace demo
     }
 }
 
-================================(76/100)================================
+================================(74/98)================================
 module <constructor>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23665,7 +24574,7 @@ namespace demo
     }
 }
 
-================================(77/100)================================
+================================(75/98)================================
 module <instance>demo::SharedSizeItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23716,7 +24625,7 @@ namespace demo
     }
 }
 
-================================(78/100)================================
+================================(76/98)================================
 module <constructor>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -23987,7 +24896,7 @@ namespace demo
     }
 }
 
-================================(79/100)================================
+================================(77/98)================================
 module <instance>demo::SharedSizeTextItemTemplate;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24038,7 +24947,7 @@ namespace demo
     }
 }
 
-================================(80/100)================================
+================================(78/98)================================
 module <constructor>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24664,7 +25573,7 @@ namespace demo
     }
 }
 
-================================(81/100)================================
+================================(79/98)================================
 module <instance>demo::ResponsiveGroupControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -24706,7 +25615,7 @@ namespace demo
     }
 }
 
-================================(82/100)================================
+================================(80/98)================================
 module <constructor>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25332,7 +26241,7 @@ namespace demo
     }
 }
 
-================================(83/100)================================
+================================(81/98)================================
 module <instance>demo::ResponsiveStackControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25374,7 +26283,7 @@ namespace demo
     }
 }
 
-================================(84/100)================================
+================================(82/98)================================
 module <constructor>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25567,7 +26476,7 @@ namespace demo
     }
 }
 
-================================(85/100)================================
+================================(83/98)================================
 module <instance>demo::ResponsiveTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -25609,7 +26518,7 @@ namespace demo
     }
 }
 
-================================(86/100)================================
+================================(84/98)================================
 module <constructor>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26520,7 +27429,7 @@ namespace demo
     }
 }
 
-================================(87/100)================================
+================================(85/98)================================
 module <instance>demo::ResponsiveViewControl;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26562,7 +27471,7 @@ namespace demo
     }
 }
 
-================================(88/100)================================
+================================(86/98)================================
 module <constructor>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -26946,7 +27855,7 @@ namespace demo
     }
 }
 
-================================(89/100)================================
+================================(87/98)================================
 module <instance>demo::DocumentBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27009,7 +27918,7 @@ namespace demo
     }
 }
 
-================================(90/100)================================
+================================(88/98)================================
 module <constructor>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27284,7 +28193,7 @@ namespace demo
     }
 }
 
-================================(91/100)================================
+================================(89/98)================================
 module <instance>demo::TextBoxSubTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27347,7 +28256,7 @@ namespace demo
     }
 }
 
-================================(92/100)================================
+================================(90/98)================================
 module <constructor>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27651,7 +28560,7 @@ namespace demo
     }
 }
 
-================================(93/100)================================
+================================(91/98)================================
 module <instance>demo::TextBoxTabPage;
 using presentation::controls::Gui*;
 using presentation::elements::Gui*Element;
@@ -27709,7 +28618,7 @@ namespace demo
     }
 }
 
-================================(94/100)================================
+================================(92/98)================================
 module <localized-strings-injection>demo::DialogStringsInjection;
 
 namespace demo
@@ -27931,7 +28840,7 @@ namespace demo
     }
 }
 
-================================(95/100)================================
+================================(93/98)================================
 module imageloader;
 using presentation::*;
 using presentation::controls::*;
@@ -28231,7 +29140,7 @@ func LoadListView(root : GuiInstanceRootObject*, callback : (func (ListViewItem^
     }
 }
 
-================================(96/100)================================
+================================(94/98)================================
 module viewmodel;
 using system::*;
 using presentation::*;
@@ -28485,7 +29394,7 @@ namespace demo
     }
 }
 
-================================(97/100)================================
+================================(95/98)================================
 module Animation;
 using system::*;
 using presentation::*;
@@ -28629,7 +29538,7 @@ namespace demo
     }
 }
 
-================================(98/100)================================
+================================(96/98)================================
 module ribbonscript;
 using presentation::*;
 
@@ -28668,7 +29577,7 @@ namespace demo
     }
 }
 
-================================(99/100)================================
+================================(97/98)================================
 module <localized-strings>demo::StringResource;
 
 namespace demo
@@ -28895,7 +29804,7 @@ namespace demo
     }
 }
 
-================================(100/100)================================
+================================(98/98)================================
 module fontHelper;
 using presentation::*;
 

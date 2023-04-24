@@ -27,6 +27,11 @@ GuiMainHostedWindowProxy
 
 			void CheckAndSyncProperties() override
 			{
+				for (auto listener : data->listeners)
+				{
+					listener->AssignFrameConfig(data->controller->WindowService()->GetMainWindowFrameConfig());
+				}
+
 				if (!data->wmWindow.visible)
 				{
 					data->wmWindow.Show();

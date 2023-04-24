@@ -54,6 +54,8 @@ Type List (Basic)
 			F(presentation::INativeImage::FormatType)\
 			F(presentation::INativeCursor)\
 			F(presentation::INativeCursor::SystemCursorType)\
+			F(presentation::BoolOption)\
+			F(presentation::NativeWindowFrameConfig)\
 			F(presentation::INativeWindow)\
 			F(presentation::INativeWindow::WindowSizeState)\
 			F(presentation::INativeWindow::WindowMode)\
@@ -238,7 +240,6 @@ Type List (Templates)
 			F(presentation::controls::ButtonState)\
 			F(presentation::controls::ColumnSortingState)\
 			F(presentation::controls::TabPageOrder)\
-			F(presentation::templates::BoolOption)\
 			F(presentation::controls::ITextBoxCommandExecutor)\
 			F(presentation::controls::IScrollCommandExecutor)\
 			F(presentation::controls::ITabCommandExecutor)\

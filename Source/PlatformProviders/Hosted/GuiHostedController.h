@@ -159,22 +159,6 @@ GuiHostedController
 			void							NativeWindowDestroying(INativeWindow* window) override;
 
 			// =============================================================
-			// INativeController
-			// =============================================================
-
-			INativeCallbackService*			CallbackService() override;
-			INativeResourceService*			ResourceService() override;
-			INativeAsyncService*			AsyncService() override;
-			INativeClipboardService*		ClipboardService() override;
-			INativeImageService*			ImageService() override;
-			INativeInputService*			InputService() override;
-			INativeDialogService*			DialogService() override;
-			WString							GetExecutablePath() override;
-			
-			INativeScreenService*			ScreenService() override;
-			INativeWindowService*			WindowService() override;
-
-			// =============================================================
 			// INativeAsyncService
 			// =============================================================
 
@@ -207,7 +191,9 @@ GuiHostedController
 			// =============================================================
 			// INativeWindowService
 			// =============================================================
-
+			
+			const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+			const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
 			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
 			void							DestroyNativeWindow(INativeWindow* window) override;
 			INativeWindow*					GetMainWindow() override;
@@ -223,6 +209,22 @@ GuiHostedController
 
 			void							Initialize();
 			void							Finalize();
+
+			// =============================================================
+			// INativeController
+			// =============================================================
+
+			INativeCallbackService*			CallbackService() override;
+			INativeResourceService*			ResourceService() override;
+			INativeAsyncService*			AsyncService() override;
+			INativeClipboardService*		ClipboardService() override;
+			INativeImageService*			ImageService() override;
+			INativeInputService*			InputService() override;
+			INativeDialogService*			DialogService() override;
+			WString							GetExecutablePath() override;
+			
+			INativeScreenService*			ScreenService() override;
+			INativeWindowService*			WindowService() override;
 		};
 	}
 }

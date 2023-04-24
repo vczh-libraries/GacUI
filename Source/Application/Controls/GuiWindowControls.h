@@ -243,6 +243,7 @@ Window
 
 			protected:
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
+				const NativeWindowFrameConfig*			frameConfig = nullptr;
 				bool									hasMaximizedBox = true;
 				bool									hasMinimizedBox = true;
 				bool									hasBorder = true;
@@ -253,12 +254,15 @@ Window
 				
 				void									UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
-				void									SyncNativeWindowProperties();
+				void									SetControlTemplateProperties();
+				void									SetNativeWindowFrameProperties();
+				bool									ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable);
+				void									ApplyFrameConfig();
 
 				void									Moved()override;
 				void									Opened()override;
 				void									DpiChanged(bool preparing)override;
-				void									BecomeNonMainHostedWindow()override;
+				void									AssignFrameConfig(const NativeWindowFrameConfig& config)override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				
@@ -279,12 +283,16 @@ Window
 
 				/// <summary>Clipboard updated event.</summary>
 				compositions::GuiNotifyEvent			ClipboardUpdated;
+				/// <summary>Frame configuration changed event.</summary>
+				compositions::GuiNotifyEvent			FrameConfigChanged;
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();
 				/// <summary>Move the window to the center of the specified screen.</summary>
 				/// <param name="screen">The screen.</param>
 				void									MoveToScreenCenter(INativeScreen* screen);
+
+				const NativeWindowFrameConfig&			GetFrameConfig();
 				
 				/// <summary>
 				/// Test is the maximize box visible.

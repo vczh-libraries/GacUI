@@ -101,13 +101,6 @@ Core Themes
 			F(GuiLabelTemplate,					GuiControlTemplate)			\
 			F(GuiWindowTemplate,				GuiControlTemplate)			\
 
-			enum class BoolOption
-			{
-				AlwaysTrue,
-				AlwaysFalse,
-				Customizable,
-			};
-
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
@@ -153,7 +146,8 @@ Theme Names
 		{
 
 #define GUI_CONTROL_TEMPLATE_TYPES(F) \
-			F(WindowTemplate,				Window)						\
+			F(WindowTemplate,				SystemFrameWindow)			\
+			F(WindowTemplate,				CustomFrameWindow)			\
 			F(ControlTemplate,				CustomControl)				\
 			F(WindowTemplate,				Tooltip)					\
 			F(LabelTemplate,				Label)						\
@@ -216,6 +210,7 @@ Theme Names
 			enum class ThemeName
 			{
 				Unknown,
+				Window,
 #define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
 				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
 #undef GUI_DEFINE_THEME_NAME

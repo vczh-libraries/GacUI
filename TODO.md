@@ -11,6 +11,7 @@
 - GacUI
   - Fix GacUI compiler failure when compiled with reflection.
   - Remove SysKey callbacks, merge into Key callbacks.
+  - `ThemeName::(System|Custom)FrameWindow`.
 - GacGen
   - Add DarkSkin and Dialog in Reflection(32|64).bin
 - Tutorial
@@ -29,12 +30,16 @@
 
 ## Progressing
 
-- Theme
-  - Add HostedWindow theme.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 - Tutorial:
   - Global shortcut key.
+- DarkSkin Color Theme.
+  - Move all hardcoded colors to Style.xml or a general place.
+  - Move all colors from Style.xml to a general place.
+  - Export darkskin control template colors.
+  - Allow changing colors.
+  - A window can be called to update all its controls' and components' template.
 
 ## Optional
 
@@ -62,6 +67,7 @@
 - Fix document for control signal event if already exists.
 - Add `static` keyword (method and init) in workflow document.
 - Add `static{}` in workflow document.
+- Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
 
 ## OS Provider Features
 
@@ -97,7 +103,6 @@
 
 - New skin.
   - New default control templates with animation, written in XML generated C++ code.
-  - A window can be called to update all its controls' and components' template.
 - UI Automation.
 - Test Automation on virtual command line mode by comparing characters rendered on a very small viewport.
 - Test Automation on Tutorials.

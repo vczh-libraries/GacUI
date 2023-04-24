@@ -630,45 +630,20 @@ GuiWindow
 
 			void GuiWindow::AfterControlTemplateInstalled_(bool initialize)
 			{
+				ApplyFrameConfig();
+
 				auto ct = TypedControlTemplateObject(true);
-#define FIX_WINDOW_PROPERTY(VARIABLE, NAME) \
-				switch (ct->Get ## NAME ## Option()) \
-				{ \
-				case templates::BoolOption::AlwaysTrue: \
-					VARIABLE = true; \
-					break; \
-				case templates::BoolOption::AlwaysFalse: \
-					VARIABLE = false; \
-					break; \
-				default:; \
-				} \
-
-				FIX_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
-				FIX_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox)
-				FIX_WINDOW_PROPERTY(hasBorder, Border)
-				FIX_WINDOW_PROPERTY(hasSizeBox, SizeBox)
-				FIX_WINDOW_PROPERTY(isIconVisible, IconVisible)
-				FIX_WINDOW_PROPERTY(hasTitleBar, TitleBar)
-
-#undef FIX_WINDOW_PROPERTY
-				ct->SetMaximizedBox(hasMaximizedBox);
-				ct->SetMinimizedBox(hasMinimizedBox);
-				ct->SetBorder(hasBorder);
-				ct->SetSizeBox(hasSizeBox);
-				ct->SetIconVisible(isIconVisible);
-				ct->SetTitleBar(hasTitleBar);
-				ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
-				ct->SetActivated(GetRenderingAsActivated());
-
 				auto window = GetNativeWindow();
+
+				SetControlTemplateProperties();
+				UpdateIcon(window, ct);
+				UpdateCustomFramePadding(window, ct);
+
 				if (window)
 				{
 					window->SetIcon(icon);
 				}
-
-				UpdateIcon(window, ct);
-				UpdateCustomFramePadding(window, ct);
-				SyncNativeWindowProperties();
+				SetNativeWindowFrameProperties();
 			}
 
 			void GuiWindow::UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct)
@@ -688,7 +663,22 @@ GuiWindow
 				}
 			}
 
-			void GuiWindow::SyncNativeWindowProperties()
+			void GuiWindow::SetControlTemplateProperties()
+			{
+				if (auto ct = TypedControlTemplateObject(false))
+				{
+					ct->SetMaximizedBox(hasMaximizedBox);
+					ct->SetMinimizedBox(hasMinimizedBox);
+					ct->SetBorder(hasBorder);
+					ct->SetSizeBox(hasSizeBox);
+					ct->SetIconVisible(isIconVisible);
+					ct->SetTitleBar(hasTitleBar);
+					ct->SetMaximized(GetNativeWindow()->GetSizeState() != INativeWindow::Maximized);
+					ct->SetActivated(GetRenderingAsActivated());
+				}
+			}
+
+			void GuiWindow::SetNativeWindowFrameProperties()
 			{
 				if (auto window = GetNativeWindow())
 				{
@@ -709,6 +699,66 @@ GuiWindow
 					window->SetIconVisible(isIconVisible);
 					window->SetTitleBar(hasTitleBar);
 				}
+			}
+
+			bool GuiWindow::ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable)
+			{
+				if (frameConfig == BoolOption::AlwaysTrue && templateConfig == BoolOption::AlwaysFalse)return false;
+				if (frameConfig == BoolOption::AlwaysFalse && templateConfig == BoolOption::AlwaysTrue) return false;
+
+				if (frameConfig == BoolOption::AlwaysTrue || templateConfig == BoolOption::AlwaysTrue)
+				{
+					variable = true;
+				}
+				else if (frameConfig == BoolOption::AlwaysFalse || templateConfig == BoolOption::AlwaysFalse)
+				{
+					variable = true;
+				}
+
+				return true;
+			}
+
+			void GuiWindow::ApplyFrameConfig()
+			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::CheckCustomFrameAndControlTemplateCompatibility#"
+
+#define FIX_WINDOW_PROPERTY(VARIABLE, NAME)\
+				CHECK_ERROR(\
+					ApplyFrameConfigOnVariable(\
+						(frameConfig ? frameConfig->NAME ## Option : BoolOption::Customizable),\
+						(ct ? ct->Get ## NAME ## Option() : BoolOption::Customizable),\
+						VARIABLE\
+						),\
+					ERROR_MESSAGE_PREFIX L"Frame configuration and control template are not compatible on property \"" L ## #NAME L"\"."\
+					);\
+
+				auto ct = TypedControlTemplateObject(false);
+				if (frameConfig && ct)
+				{
+					if (
+						(frameConfig->CustomFrameEnabled == BoolOption::AlwaysTrue && !ct->GetCustomFrameEnabled()) ||
+						(frameConfig->CustomFrameEnabled == BoolOption::AlwaysFalse && ct->GetCustomFrameEnabled())
+						)
+					{
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Frame configuration and control template are not compatible on property \"CustomFrameEnabled\".");
+					}
+				}
+
+				FIX_WINDOW_PROPERTY(hasMaximizedBox, MaximizedBox)
+				FIX_WINDOW_PROPERTY(hasMinimizedBox, MinimizedBox)
+				FIX_WINDOW_PROPERTY(hasBorder, Border)
+				FIX_WINDOW_PROPERTY(hasSizeBox, SizeBox)
+				FIX_WINDOW_PROPERTY(isIconVisible, IconVisible)
+				FIX_WINDOW_PROPERTY(hasTitleBar, TitleBar)
+
+				auto window = GetNativeWindow();
+				SetControlTemplateProperties();
+				UpdateCustomFramePadding(window, ct);
+				SetNativeWindowFrameProperties();
+
+#undef FIX_WINDOW_PROPERTY
+
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiWindow::Moved()
@@ -737,27 +787,16 @@ GuiWindow
 				}
 			}
 
-			void GuiWindow::BecomeNonMainHostedWindow()
+			void GuiWindow::AssignFrameConfig(const NativeWindowFrameConfig& config)
 			{
-#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::GuiWindow::BecomeNonMainHostedWindow()#"
-				auto ct = TypedControlTemplateObject(true);
-				CHECK_ERROR(ct->GetMaximizedBoxOption() != templates::BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MaximizedBox for non-main hosted windows must be able to config to false.");
-				CHECK_ERROR(ct->GetMinimizedBoxOption() != templates::BoolOption::AlwaysTrue, ERROR_MESSAGE_PREFIX L"MinimizedBox for non-main hosted windows must be able to config to false.");
-				if (hasMaximizedBox || hasMinimizedBox)
-				{
-					hasMaximizedBox = false;
-					hasMinimizedBox = false;
-
-					ct->SetMaximizedBox(false);
-					ct->SetMinimizedBox(false);
-					UpdateCustomFramePadding(GetNativeWindow(), ct);
-				}
-#undef ERROR_MESSAGE_PREFIX
+				frameConfig = &config;
+				FrameConfigChanged.Execute(GetNotifyEventArguments());
+				ApplyFrameConfig();
 			}
 
 			void GuiWindow::OnNativeWindowChanged()
 			{
-				SyncNativeWindowProperties();
+				SetNativeWindowFrameProperties();
 				GuiControlHost::OnNativeWindowChanged();
 			}
 
@@ -792,6 +831,7 @@ GuiWindow
 				SetNativeWindow(window);
 				GetApplication()->RegisterWindow(this);
 				ClipboardUpdated.SetAssociatedComposition(boundsComposition);
+				FrameConfigChanged.SetAssociatedComposition(boundsComposition);
 
 				WindowActivated.AttachMethod(this, &GuiWindow::OnWindowActivated);
 				WindowDeactivated.AttachMethod(this, &GuiWindow::OnWindowDeactivated);
@@ -849,6 +889,11 @@ GuiWindow
 				}
 			}
 
+			const NativeWindowFrameConfig& GuiWindow::GetFrameConfig()
+			{
+				return frameConfig ? *frameConfig : NativeWindowFrameConfig::Default;
+			}
+
 #define IMPL_WINDOW_PROPERTY(VARIABLE, NAME, CONDITION_BREAK) \
 			bool GuiWindow::Get ## NAME() \
 			{ \
@@ -857,7 +902,7 @@ GuiWindow
 			void GuiWindow::Set ## NAME(bool visible) \
 			{ \
 				auto ct = TypedControlTemplateObject(true); \
-				if (ct->Get ## NAME ## Option() == templates::BoolOption::Customizable) \
+				if (ct->Get ## NAME ## Option() == BoolOption::Customizable) \
 				{ \
 					VARIABLE = visible; \
 					ct->Set ## NAME(visible); \

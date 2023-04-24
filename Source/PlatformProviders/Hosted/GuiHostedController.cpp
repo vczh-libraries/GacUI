@@ -761,61 +761,6 @@ GuiHostedController::INativeControllerListener
 		}
 
 /***********************************************************************
-GuiHostedController::INativeController
-***********************************************************************/
-
-		INativeCallbackService* GuiHostedController::CallbackService()
-		{
-			return &callbackService;
-		}
-
-		INativeResourceService* GuiHostedController::ResourceService()
-		{
-			return nativeController->ResourceService();
-		}
-
-		INativeAsyncService* GuiHostedController::AsyncService()
-		{
-			return this;
-		}
-
-		INativeClipboardService* GuiHostedController::ClipboardService()
-		{
-			return nativeController->ClipboardService();
-		}
-
-		INativeImageService* GuiHostedController::ImageService()
-		{
-			return nativeController->ImageService();
-		}
-
-		INativeInputService* GuiHostedController::InputService()
-		{
-			return nativeController->InputService();
-		}
-
-		INativeDialogService* GuiHostedController::DialogService()
-		{
-			// Use FakeDialogServiceBase
-			return nullptr;
-		}
-
-		WString GuiHostedController::GetExecutablePath()
-		{
-			return nativeController->GetExecutablePath();
-		}
-		
-		INativeScreenService* GuiHostedController::ScreenService()
-		{
-			return this;
-		}
-
-		INativeWindowService* GuiHostedController::WindowService()
-		{
-			return this;
-		}
-
-/***********************************************************************
 GuiHostedController::INativeAsyncService
 ***********************************************************************/
 
@@ -913,6 +858,21 @@ GuiHostedController::INativeScreen
 /***********************************************************************
 GuiHostedController::INativeWindowService
 ***********************************************************************/
+
+		const NativeWindowFrameConfig& GuiHostedController::GetMainWindowFrameConfig()
+		{
+			return nativeController->WindowService()->GetMainWindowFrameConfig();
+		}
+
+		const NativeWindowFrameConfig& GuiHostedController::GetNonMainWindowFrameConfig()
+		{
+			static const NativeWindowFrameConfig config = {
+				.MaximizedBoxOption = BoolOption::AlwaysFalse,
+				.MinimizedBoxOption = BoolOption::AlwaysFalse,
+				.CustomFrameEnabled = BoolOption::AlwaysTrue,
+			};
+			return config;
+		}
 
 		INativeWindow* GuiHostedController::CreateNativeWindow(INativeWindow::WindowMode windowMode)
 		{
@@ -1091,6 +1051,61 @@ GuiHostedController
 			nativeWindowDestroyed = true;
 
 #undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+GuiHostedController::INativeController
+***********************************************************************/
+
+		INativeCallbackService* GuiHostedController::CallbackService()
+		{
+			return &callbackService;
+		}
+
+		INativeResourceService* GuiHostedController::ResourceService()
+		{
+			return nativeController->ResourceService();
+		}
+
+		INativeAsyncService* GuiHostedController::AsyncService()
+		{
+			return this;
+		}
+
+		INativeClipboardService* GuiHostedController::ClipboardService()
+		{
+			return nativeController->ClipboardService();
+		}
+
+		INativeImageService* GuiHostedController::ImageService()
+		{
+			return nativeController->ImageService();
+		}
+
+		INativeInputService* GuiHostedController::InputService()
+		{
+			return nativeController->InputService();
+		}
+
+		INativeDialogService* GuiHostedController::DialogService()
+		{
+			// Use FakeDialogServiceBase
+			return nullptr;
+		}
+
+		WString GuiHostedController::GetExecutablePath()
+		{
+			return nativeController->GetExecutablePath();
+		}
+		
+		INativeScreenService* GuiHostedController::ScreenService()
+		{
+			return this;
+		}
+
+		INativeWindowService* GuiHostedController::WindowService()
+		{
+			return this;
 		}
 	}
 }
