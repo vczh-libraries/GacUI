@@ -19876,7 +19876,7 @@ namespace darkskin
         {
             (<precompile>0 = <this>);
             {
-                (<precompile>0.SizeBoxOption = AlwaysTrue of (::presentation::templates::BoolOption));
+                (<precompile>0.SizeBoxOption = AlwaysTrue of (::presentation::BoolOption));
             }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));

@@ -31,6 +31,8 @@
 
 - Theme
   - Add HostedWindow theme.
+  - Add `SystemFrameWindowTemplate` and `CustomFrameWindowTemplate` theme.
+  - The `WindowTemplate` theme becomes a placeholder, it will check theme's `Nullable<bool> PreferCustomFrameWindow` and FrameConfig's `CustomFrameEnabled` options to decide which template to load.
 - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
   - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 - Tutorial:

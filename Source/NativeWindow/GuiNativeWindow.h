@@ -1291,12 +1291,16 @@ INativeWindowService
 			/// <summary>
 			/// Get the frame configuration for the main window.
 			/// It limit values of frame properties and control template of the main window.
+			/// This function must return "NativeWindowFrameConfig::Default",
+			/// unless it is only designed to be used under hosted mode.
 			/// </summary>
 			/// <returns>The frame configuration for the main window.</returns>
 			virtual const NativeWindowFrameConfig&	GetMainWindowFrameConfig()=0;
 			/// <summary>
 			/// Get the frame configuration for non-main windows.
 			/// It limit values of frame properties and control template of all non-main windows.
+			/// This function must return "NativeWindowFrameConfig::Default",
+			/// unless it is only designed to be used under hosted mode.
 			/// </summary>
 			/// <returns>The frame configuration for non-main windows.</returns>
 			virtual const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig()=0;
