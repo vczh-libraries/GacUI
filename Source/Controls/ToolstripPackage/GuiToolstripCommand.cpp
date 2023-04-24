@@ -40,14 +40,7 @@ GuiToolstripCommand
 					if (shortcutKeyItem)
 					{
 						shortcutKeyItem->Executed.Detach(shortcutKeyItemExecutedHandler);
-						if (shortcutBuilder)
-						{
-							auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager());
-							if (manager)
-							{
-								manager->DestroyShortcut(shortcutBuilder->ctrl, shortcutBuilder->shift, shortcutBuilder->alt, shortcutBuilder->key);
-							}
-						}
+						dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager())->DestroyShortcut(shortcutKeyItem);
 					}
 					shortcutKeyItem = nullptr;
 					shortcutKeyItemExecutedHandler = nullptr;
@@ -66,7 +59,7 @@ GuiToolstripCommand
 				List<glr::ParsingError> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
 				{
-					if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
+					if (auto builder = parser->ParseInternal(builderText, errors))
 					{
 						if (shortcutOwner)
 						{
@@ -76,14 +69,9 @@ GuiToolstripCommand
 							}
 							if (auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager()))
 							{
-								IGuiShortcutKeyItem* item = manager->TryGetShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-								if (!item)
+								if (auto item = manager->CreateShortcutIfNotExist(builder->ctrl, builder->shift, builder->alt, builder->key))
 								{
-									item = manager->CreateShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-									if (item)
-									{
-										ReplaceShortcut(item, builder);
-									}
+									ReplaceShortcut(item, builder);
 								}
 							}
 						}

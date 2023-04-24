@@ -104,6 +104,62 @@ class darkskin::CustomControlTemplateConstructor : system::ReferenceType {
     constructor () : darkskin::CustomControlTemplateConstructor^;
 }
 
+@FullName:darkskin::CustomFrameWindowTemplate
+class darkskin::CustomFrameWindowTemplate : presentation::templates::GuiWindowTemplate, darkskin::CustomFrameWindowTemplateConstructor {
+    constructor () : darkskin::CustomFrameWindowTemplate*;
+}
+
+@FullName:darkskin::CustomFrameWindowTemplateConstructor
+class darkskin::CustomFrameWindowTemplateConstructor : system::ReferenceType {
+    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_12 : presentation::controls::GuiButton*;
+    property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_14 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_16 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_18 : presentation::controls::GuiButton*;
+    property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    property __vwsn_precompile_20 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_22 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_24 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_26 : presentation::controls::GuiButton*;
+    property __vwsn_precompile_27 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_28 : presentation::compositions::GuiGraphicsComposition*;
+    property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_30 : presentation::elements::GuiPolygonElement^;
+    property __vwsn_precompile_31 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_32 : presentation::compositions::GuiTableComposition*;
+    property __vwsn_precompile_33 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_34 : presentation::elements::GuiImageFrameElement^;
+    property __vwsn_precompile_35 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_36 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_37 : presentation::elements::GuiSolidLabelElement^;
+    property __vwsn_precompile_38 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    property container : presentation::compositions::GuiBoundsComposition*;
+    property contentTable : presentation::compositions::GuiTableComposition*;
+    property frameTable : presentation::compositions::GuiTableComposition*;
+    property self : darkskin::CustomFrameWindowTemplate*;
+
+    function __vwsn_darkskin_CustomFrameWindowTemplate_Initialize(__vwsn_this_ : darkskin::CustomFrameWindowTemplate*) : system::Void;
+
+    constructor () : darkskin::CustomFrameWindowTemplateConstructor^;
+}
+
 @FullName:darkskin::DateButtonTemplate
 class darkskin::DateButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::DateButtonTemplateConstructor {
     constructor () : darkskin::DateButtonTemplate*;
@@ -1000,6 +1056,22 @@ class darkskin::SinglelineTextBoxTemplateConstructor : system::ReferenceType {
     constructor () : darkskin::SinglelineTextBoxTemplateConstructor^;
 }
 
+@FullName:darkskin::SystemFrameWindowTemplate
+class darkskin::SystemFrameWindowTemplate : presentation::templates::GuiWindowTemplate, darkskin::SystemFrameWindowTemplateConstructor {
+    constructor () : darkskin::SystemFrameWindowTemplate*;
+}
+
+@FullName:darkskin::SystemFrameWindowTemplateConstructor
+class darkskin::SystemFrameWindowTemplateConstructor : system::ReferenceType {
+    property __vwsn_precompile_0 : darkskin::SystemFrameWindowTemplate*;
+    property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    property container : presentation::compositions::GuiBoundsComposition*;
+
+    function __vwsn_darkskin_SystemFrameWindowTemplate_Initialize(__vwsn_this_ : darkskin::SystemFrameWindowTemplate*) : system::Void;
+
+    constructor () : darkskin::SystemFrameWindowTemplateConstructor^;
+}
+
 @FullName:darkskin::TabHeaderButtonTemplate
 class darkskin::TabHeaderButtonTemplate : presentation::templates::GuiSelectableButtonTemplate, darkskin::TabHeaderButtonTemplateConstructor {
     event HighlightedChanged : system::Function<system::Void>^ observing {
@@ -1393,62 +1465,6 @@ class darkskin::VTrackerTemplateConstructor : system::ReferenceType {
     function __vwsn_darkskin_VTrackerTemplate_Initialize(__vwsn_this_ : darkskin::VTrackerTemplate*) : system::Void;
 
     constructor () : darkskin::VTrackerTemplateConstructor^;
-}
-
-@FullName:darkskin::WindowTemplate
-class darkskin::WindowTemplate : presentation::templates::GuiWindowTemplate, darkskin::WindowTemplateConstructor {
-    constructor () : darkskin::WindowTemplate*;
-}
-
-@FullName:darkskin::WindowTemplateConstructor
-class darkskin::WindowTemplateConstructor : system::ReferenceType {
-    property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_12 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_13 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_14 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_15 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_16 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_17 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_18 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_19 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
-    property __vwsn_precompile_20 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_21 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_22 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_23 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_24 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_25 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_26 : presentation::controls::GuiButton*;
-    property __vwsn_precompile_27 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_28 : presentation::compositions::GuiGraphicsComposition*;
-    property __vwsn_precompile_29 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_30 : presentation::elements::GuiPolygonElement^;
-    property __vwsn_precompile_31 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_32 : presentation::compositions::GuiTableComposition*;
-    property __vwsn_precompile_33 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_34 : presentation::elements::GuiImageFrameElement^;
-    property __vwsn_precompile_35 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_36 : presentation::compositions::GuiBoundsComposition*;
-    property __vwsn_precompile_37 : presentation::elements::GuiSolidLabelElement^;
-    property __vwsn_precompile_38 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_5 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_6 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_7 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
-    property container : presentation::compositions::GuiBoundsComposition*;
-    property contentTable : presentation::compositions::GuiTableComposition*;
-    property frameTable : presentation::compositions::GuiTableComposition*;
-    property self : darkskin::WindowTemplate*;
-
-    function __vwsn_darkskin_WindowTemplate_Initialize(__vwsn_this_ : darkskin::WindowTemplate*) : system::Void;
-
-    constructor () : darkskin::WindowTemplateConstructor^;
 }
 
 @FullName:gaclib_controls::ColorComponentControl
@@ -3715,8 +3731,9 @@ class presentation::compositions::GuiSharedSizeRootComposition : presentation::c
 }
 
 class presentation::compositions::GuiShortcutKeyManager : presentation::compositions::IGuiShortcutKeyManager {
-    function CreateShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
-    function DestroyShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : system::Boolean;
+    function CreateNewShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function CreateShortcutIfNotExist(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function DestroyShortcut(ctrl : presentation::compositions::IGuiShortcutKeyItem*) : system::Boolean;
     function TryGetShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
 
     constructor () : presentation::compositions::GuiShortcutKeyManager*;

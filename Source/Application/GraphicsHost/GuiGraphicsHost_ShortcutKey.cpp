@@ -61,6 +61,13 @@ GuiShortcutKeyItem
 GuiShortcutKeyManager
 ***********************************************************************/
 
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutInternal(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				auto item = Ptr(new GuiShortcutKeyItem(this, ctrl, shift, alt, key));
+				shortcutKeyItems.Add(item);
+				return item.Obj();
+			}
+
 			GuiShortcutKeyManager::GuiShortcutKeyManager()
 			{
 			}
@@ -94,43 +101,41 @@ GuiShortcutKeyManager
 				return executed;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key)
-			{
-				for (auto item : shortcutKeyItems)
-				{
-					if(item->CanActivate(ctrl, shift, alt, key))
-					{
-						return item.Obj();
-					}
-				}
-				auto item=Ptr(new GuiShortcutKeyItem(this, ctrl, shift, alt, key));
-				shortcutKeyItems.Add(item);
-				return item.Obj();
-			}
-
-			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key)
-			{
-				for (auto item : shortcutKeyItems)
-				{
-					if(item->CanActivate(ctrl, shift, alt, key))
-					{
-						shortcutKeyItems.Remove(item.Obj());
-						return true;
-					}
-				}
-				return false;
-			}
-
 			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				for (auto item : shortcutKeyItems)
 				{
-					if(item->CanActivate(ctrl, shift, alt, key))
+					if (item->CanActivate(ctrl, shift, alt, key))
 					{
 						return item.Obj();
 					}
 				}
-				return 0;
+				return nullptr;
+			}
+
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				CHECK_ERROR(
+					TryGetShortcut(ctrl, shift, alt, key) == nullptr,
+					L"vl::presentation::compositions::GuiShortcutKeyManager::CreateNewShortcut(bool, bool, bool, VKEY)#The shortcut key exists."
+					);
+				return CreateShortcutInternal(ctrl, shift, alt, key);
+			}
+
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				if (TryGetShortcut(ctrl, shift, alt, key))
+				{
+					return nullptr;
+				}
+				return CreateShortcutInternal(ctrl, shift, alt, key);
+			}
+
+			bool GuiShortcutKeyManager::DestroyShortcut(IGuiShortcutKeyItem* item)
+			{
+				if (!item) return false;
+				if (item->GetManager() != this) return false;
+				return shortcutKeyItems.Remove(dynamic_cast<GuiShortcutKeyItem*>(item));
 			}
 		}
 	}

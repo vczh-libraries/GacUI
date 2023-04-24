@@ -1658,8 +1658,9 @@ class presentation::compositions::GuiSharedSizeRootComposition : presentation::c
 }
 
 class presentation::compositions::GuiShortcutKeyManager : presentation::compositions::IGuiShortcutKeyManager {
-    function CreateShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
-    function DestroyShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : system::Boolean;
+    function CreateNewShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function CreateShortcutIfNotExist(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function DestroyShortcut(ctrl : presentation::compositions::IGuiShortcutKeyItem*) : system::Boolean;
     function TryGetShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
 
     constructor () : presentation::compositions::GuiShortcutKeyManager*;
