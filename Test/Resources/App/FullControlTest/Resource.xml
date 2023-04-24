@@ -8,18 +8,10 @@
     </Folder>
   </Folder>
 
-  <Instance name="SystemFrameWindowTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::SystemFrameWindowTemplate">
-      <WindowTemplate ContainerComposition-ref="container" CustomFrameEnabled="false" MinSizeLimitation="LimitToElementAndChildren">
-        <SolidBackground Color="#2D2D30"/>
-        <Bounds ref.Name="container" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren"/>
-      </WindowTemplate>
-    </Instance>
-  </Instance>
-
   <InstanceStyle name="WindowManagerContentStyles">
     <Styles>
       <Style ref.Path="//Window"
+        ThemeName="CustomFrameWindow"
         MaximizedBox-bind="checkMax.Selected"
         MinimizedBox-bind="checkMin.Selected"
         Border-bind="checkBorder.Selected"
@@ -35,14 +27,11 @@
               {
                 if (checkFrame.Selected)
                 {
-                  self.ControlTemplate = null;
+                  self.ThemeName = CustomFrameWindow;
                 }
                 else
                 {
-                  self.ControlTemplate = func(context: object): GuiControlTemplate*
-                  {
-                    return new SystemFrameWindowTemplate*();
-                  };
+                  self.ThemeName = SystemFrameWindow;
                 }
               }
             ]]></ev.SelectedChanged-eval>
