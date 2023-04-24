@@ -1563,6 +1563,29 @@ INativeWindow
 		class DocumentModel;
 		class INativeCursor;
 		class INativeWindowListener;
+
+		enum class BoolOption
+		{
+			AlwaysTrue,
+			AlwaysFalse,
+			Customizable,
+		};
+
+		struct NativeWindowFrameConfig
+		{
+			BoolOption MaximizedBoxOption = BoolOption::Customizable;
+			BoolOption MinimizedBoxOption = BoolOption::Customizable;
+			BoolOption BorderOption = BoolOption::Customizable;
+			BoolOption SizeBoxOption = BoolOption::Customizable;
+			BoolOption IconVisibleOption = BoolOption::Customizable;
+			BoolOption TitleBarOption = BoolOption::Customizable;
+			BoolOption CustomFrameEnabled = BoolOption::Customizable;
+
+			std::strong_ordering operator<=>(const NativeWindowFrameConfig&) const = default;
+			bool operator==(const NativeWindowFrameConfig&) const = default;
+
+			static const NativeWindowFrameConfig Default;
+		};
 		
 		/// <summary>
 		/// Represents a window.
@@ -2258,16 +2281,11 @@ INativeWindow
 			/// <param name="cleanBeforeRender">True when the whole render target needs to be cleaned.</param>
 			virtual void				ForceRefresh(bool handleFailure, bool& updated, bool& failureByResized, bool& failureByLostDevice);
 			/// <summary>
-			/// Called when the window becomes a main window in hosted mode.
-			/// This callback is only called once on the main window.
+			/// Called when the frame config of a window is decided.
+			/// This callback is only called in hosted mode.
+			/// This callback is only called once on a window.
 			/// </summary>
-			virtual void				BecomeMainHostedWindow();
-			/// <summary>
-			/// Called when the window becomes a non-main window in hosted mode.
-			/// It requires MaximizedBox and MinimizedBox to be disabled.
-			/// This callback could be called more than once on a window.
-			/// </summary>
-			virtual void				BecomeNonMainHostedWindow();
+			virtual void				AssignFrameConfig(const NativeWindowFrameConfig& config);
 		};
 
 /***********************************************************************
@@ -2762,19 +2780,19 @@ INativeScreenService
 			/// Get the number of all available screens.
 			/// </summary>
 			///  <returns>The number of all available screens.</returns>
-			virtual vint					GetScreenCount()=0;
+			virtual vint							GetScreenCount()=0;
 			/// <summary>
 			/// Get the screen object by a specified screen index.
 			/// </summary>
 			/// <returns>The screen object.</returns>
 			/// <param name="index">The specified screen index.</param>
-			virtual INativeScreen*			GetScreen(vint index)=0;
+			virtual INativeScreen*					GetScreen(vint index)=0;
 			/// <summary>
 			/// Get the screen object where the main part of the specified window is inside.
 			/// </summary>
 			/// <returns>The screen object.</returns>
 			/// <param name="window">The specified window.</param>
-			virtual INativeScreen*			GetScreen(INativeWindow* window)=0;
+			virtual INativeScreen*					GetScreen(INativeWindow* window)=0;
 		};
 
 /***********************************************************************
@@ -2787,6 +2805,22 @@ INativeWindowService
 		class INativeWindowService : public virtual Interface
 		{
 		public:
+			/// <summary>
+			/// Get the frame configuration for the main window.
+			/// It limit values of frame properties and control template of the main window.
+			/// This function must return "NativeWindowFrameConfig::Default",
+			/// unless it is only designed to be used under hosted mode.
+			/// </summary>
+			/// <returns>The frame configuration for the main window.</returns>
+			virtual const NativeWindowFrameConfig&	GetMainWindowFrameConfig()=0;
+			/// <summary>
+			/// Get the frame configuration for non-main windows.
+			/// It limit values of frame properties and control template of all non-main windows.
+			/// This function must return "NativeWindowFrameConfig::Default",
+			/// unless it is only designed to be used under hosted mode.
+			/// </summary>
+			/// <returns>The frame configuration for non-main windows.</returns>
+			virtual const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig()=0;
 			/// <summary>
 			/// Create a window.
 			/// </summary>
@@ -8574,13 +8608,6 @@ Core Themes
 			F(GuiLabelTemplate,					GuiControlTemplate)			\
 			F(GuiWindowTemplate,				GuiControlTemplate)			\
 
-			enum class BoolOption
-			{
-				AlwaysTrue,
-				AlwaysFalse,
-				Customizable,
-			};
-
 #define GuiControlTemplate_PROPERTIES(F)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, ContainerComposition, this)\
 				F(GuiControlTemplate, compositions::GuiGraphicsComposition*, FocusableComposition, nullptr)\
@@ -8626,7 +8653,8 @@ Theme Names
 		{
 
 #define GUI_CONTROL_TEMPLATE_TYPES(F) \
-			F(WindowTemplate,				Window)						\
+			F(WindowTemplate,				SystemFrameWindow)			\
+			F(WindowTemplate,				CustomFrameWindow)			\
 			F(ControlTemplate,				CustomControl)				\
 			F(WindowTemplate,				Tooltip)					\
 			F(LabelTemplate,				Label)						\
@@ -8689,6 +8717,7 @@ Theme Names
 			enum class ThemeName
 			{
 				Unknown,
+				Window,
 #define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) CONTROL,
 				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
 #undef GUI_DEFINE_THEME_NAME
@@ -9455,6 +9484,7 @@ Window
 
 			protected:
 				compositions::IGuiAltActionHost*		previousAltHost = nullptr;
+				const NativeWindowFrameConfig*			frameConfig = nullptr;
 				bool									hasMaximizedBox = true;
 				bool									hasMinimizedBox = true;
 				bool									hasBorder = true;
@@ -9465,12 +9495,15 @@ Window
 				
 				void									UpdateIcon(INativeWindow* window, templates::GuiWindowTemplate* ct);
 				void									UpdateCustomFramePadding(INativeWindow* window, templates::GuiWindowTemplate* ct);
-				void									SyncNativeWindowProperties();
+				void									SetControlTemplateProperties();
+				void									SetNativeWindowFrameProperties();
+				bool									ApplyFrameConfigOnVariable(BoolOption frameConfig, BoolOption templateConfig, bool& variable);
+				void									ApplyFrameConfig();
 
 				void									Moved()override;
 				void									Opened()override;
 				void									DpiChanged(bool preparing)override;
-				void									BecomeNonMainHostedWindow()override;
+				void									AssignFrameConfig(const NativeWindowFrameConfig& config)override;
 				void									OnNativeWindowChanged()override;
 				void									OnVisualStatusChanged()override;
 				
@@ -9491,12 +9524,16 @@ Window
 
 				/// <summary>Clipboard updated event.</summary>
 				compositions::GuiNotifyEvent			ClipboardUpdated;
+				/// <summary>Frame configuration changed event.</summary>
+				compositions::GuiNotifyEvent			FrameConfigChanged;
 
 				/// <summary>Move the window to the center of the screen. If multiple screens exist, the window move to the screen that contains the biggest part of the window.</summary>
 				void									MoveToScreenCenter();
 				/// <summary>Move the window to the center of the specified screen.</summary>
 				/// <param name="screen">The screen.</param>
 				void									MoveToScreenCenter(INativeScreen* screen);
+
+				const NativeWindowFrameConfig&			GetFrameConfig();
 				
 				/// <summary>
 				/// Test is the maximize box visible.
@@ -15030,6 +15067,7 @@ namespace vl
 				~ThemeTemplates();
 
 				WString							Name;
+				Nullable<bool>					PreferCustomFrameWindow;
 
 #define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) TemplateProperty<templates::Gui##TEMPLATE> CONTROL;
 				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
@@ -25147,22 +25185,6 @@ GuiHostedController
 			void							NativeWindowDestroying(INativeWindow* window) override;
 
 			// =============================================================
-			// INativeController
-			// =============================================================
-
-			INativeCallbackService*			CallbackService() override;
-			INativeResourceService*			ResourceService() override;
-			INativeAsyncService*			AsyncService() override;
-			INativeClipboardService*		ClipboardService() override;
-			INativeImageService*			ImageService() override;
-			INativeInputService*			InputService() override;
-			INativeDialogService*			DialogService() override;
-			WString							GetExecutablePath() override;
-			
-			INativeScreenService*			ScreenService() override;
-			INativeWindowService*			WindowService() override;
-
-			// =============================================================
 			// INativeAsyncService
 			// =============================================================
 
@@ -25195,7 +25217,9 @@ GuiHostedController
 			// =============================================================
 			// INativeWindowService
 			// =============================================================
-
+			
+			const NativeWindowFrameConfig&	GetMainWindowFrameConfig() override;
+			const NativeWindowFrameConfig&	GetNonMainWindowFrameConfig() override;
 			INativeWindow*					CreateNativeWindow(INativeWindow::WindowMode windowMode) override;
 			void							DestroyNativeWindow(INativeWindow* window) override;
 			INativeWindow*					GetMainWindow() override;
@@ -25211,6 +25235,22 @@ GuiHostedController
 
 			void							Initialize();
 			void							Finalize();
+
+			// =============================================================
+			// INativeController
+			// =============================================================
+
+			INativeCallbackService*			CallbackService() override;
+			INativeResourceService*			ResourceService() override;
+			INativeAsyncService*			AsyncService() override;
+			INativeClipboardService*		ClipboardService() override;
+			INativeImageService*			ImageService() override;
+			INativeInputService*			InputService() override;
+			INativeDialogService*			DialogService() override;
+			WString							GetExecutablePath() override;
+			
+			INativeScreenService*			ScreenService() override;
+			INativeWindowService*			WindowService() override;
 		};
 	}
 }

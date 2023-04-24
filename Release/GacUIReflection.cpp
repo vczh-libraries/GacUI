@@ -428,6 +428,22 @@ Type Declaration
 				ENUM_NAMESPACE_ITEM(SizeWE)
 			END_ENUM_ITEM(INativeCursor::SystemCursorType)
 
+			BEGIN_ENUM_ITEM(BoolOption)
+				ENUM_CLASS_ITEM(AlwaysTrue)
+				ENUM_CLASS_ITEM(AlwaysFalse)
+				ENUM_CLASS_ITEM(Customizable)
+			END_ENUM_ITEM(BoolOption)
+
+			BEGIN_STRUCT_MEMBER(NativeWindowFrameConfig)
+				STRUCT_MEMBER(MaximizedBoxOption)
+				STRUCT_MEMBER(MinimizedBoxOption)
+				STRUCT_MEMBER(BorderOption)
+				STRUCT_MEMBER(SizeBoxOption)
+				STRUCT_MEMBER(IconVisibleOption)
+				STRUCT_MEMBER(TitleBarOption)
+				STRUCT_MEMBER(CustomFrameEnabled)
+			END_STRUCT_MEMBER(NativeWindowFrameConfig)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeWindow)
 				CLASS_MEMBER_PROPERTY_FAST(Bounds)
 				CLASS_MEMBER_PROPERTY_FAST(ClientSize)
@@ -1650,6 +1666,9 @@ Type Declaration (Extra)
 			END_CLASS_MEMBER(GuiApplication)
 
 			BEGIN_ENUM_ITEM(ThemeName)
+				ENUM_ITEM_NAMESPACE(ThemeName)
+				ENUM_CLASS_ITEM(Unknown)
+				ENUM_CLASS_ITEM(Window)
 #define GUI_DEFINE_THEME_NAME(TEMPLATE, CONTROL) ENUM_CLASS_ITEM(CONTROL)
 				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_THEME_NAME)
 #undef GUI_DEFINE_THEME_NAME
@@ -1668,6 +1687,7 @@ Type Declaration (Extra)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<ThemeTemplates>(), NO_PARAMETER)
 
 				CLASS_MEMBER_FIELD(Name)
+				CLASS_MEMBER_FIELD(PreferCustomFrameWindow)
 #define GUI_DEFINE_ITEM_PROPERTY(TEMPLATE, CONTROL) CLASS_MEMBER_FIELD(CONTROL)
 				GUI_CONTROL_TEMPLATE_TYPES(GUI_DEFINE_ITEM_PROPERTY)
 #undef GUI_DEFINE_ITEM_PROPERTY
@@ -2466,7 +2486,9 @@ Type Declaration (Class)
 				CONTROL_CONSTRUCTOR_CONTROLT_TEMPLATE(GuiWindow)
 
 				CLASS_MEMBER_GUIEVENT(ClipboardUpdated)
+				CLASS_MEMBER_GUIEVENT(FrameConfigChanged)
 
+				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(FrameConfig, FrameConfigChanged)
 				CLASS_MEMBER_PROPERTY_FAST(MaximizedBox)
 				CLASS_MEMBER_PROPERTY_FAST(MinimizedBox)
 				CLASS_MEMBER_PROPERTY_FAST(Border)
@@ -3651,12 +3673,6 @@ Type Declaration (Extra)
 				ENUM_CLASS_ITEM(TopToBottom)
 				ENUM_CLASS_ITEM(BottomToTop)
 			END_ENUM_ITEM(TabPageOrder)
-
-			BEGIN_ENUM_ITEM(BoolOption)
-				ENUM_CLASS_ITEM(AlwaysTrue)
-				ENUM_CLASS_ITEM(AlwaysFalse)
-				ENUM_CLASS_ITEM(Customizable)
-			END_ENUM_ITEM(BoolOption)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(ITextBoxCommandExecutor)
 				CLASS_MEMBER_BASE(IDescriptable)

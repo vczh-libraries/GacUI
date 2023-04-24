@@ -1298,6 +1298,7 @@ GuiVrtualTypeInstanceLoader
 					{
 #define THEME_NAME_CASE(TEMPLATE, CONTROL) case theme::ThemeName::CONTROL: refExpr->name.value = L ## #CONTROL; break;
 						GUI_CONTROL_TEMPLATE_TYPES(THEME_NAME_CASE)
+						THEME_NAME_CASE(WindowTemplate, Window)
 #undef THEME_NAME_CASE
 					default:
 						CHECK_FAIL(L"GuiTemplateControlInstanceLoader::CreateThemeName()#Unknown theme name.");

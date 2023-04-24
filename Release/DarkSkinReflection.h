@@ -61,6 +61,8 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::ComboBoxTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::CustomControlTemplate)
 			DECL_TYPE_INFO(::darkskin::CustomControlTemplateConstructor)
+			DECL_TYPE_INFO(::darkskin::CustomFrameWindowTemplate)
+			DECL_TYPE_INFO(::darkskin::CustomFrameWindowTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::DateButtonTemplate)
 			DECL_TYPE_INFO(::darkskin::DateButtonTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::DatePickerTemplate)
@@ -149,6 +151,8 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::ShortcutKeyTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::SinglelineTextBoxTemplate)
 			DECL_TYPE_INFO(::darkskin::SinglelineTextBoxTemplateConstructor)
+			DECL_TYPE_INFO(::darkskin::SystemFrameWindowTemplate)
+			DECL_TYPE_INFO(::darkskin::SystemFrameWindowTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::TabHeaderButtonTemplate)
 			DECL_TYPE_INFO(::darkskin::TabHeaderButtonTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::TabHeaderTemplate)
@@ -185,8 +189,6 @@ namespace vl
 			DECL_TYPE_INFO(::darkskin::VScrollTemplateConstructor)
 			DECL_TYPE_INFO(::darkskin::VTrackerTemplate)
 			DECL_TYPE_INFO(::darkskin::VTrackerTemplateConstructor)
-			DECL_TYPE_INFO(::darkskin::WindowTemplate)
-			DECL_TYPE_INFO(::darkskin::WindowTemplateConstructor)
 #endif
 
 			extern bool LoadDarkSkinTypes();

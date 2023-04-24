@@ -1940,6 +1940,16 @@ WindowsController
 
 				//=======================================================================
 
+				const NativeWindowFrameConfig& GetMainWindowFrameConfig()
+				{
+					return NativeWindowFrameConfig::Default;
+				}
+
+				const NativeWindowFrameConfig& GetNonMainWindowFrameConfig()
+				{
+					return NativeWindowFrameConfig::Default;
+				}
+
 				INativeWindow* CreateNativeWindow(INativeWindow::WindowMode windowMode)override
 				{
 					WindowsForm* window = new WindowsForm(godWindow, windowClass.GetName(), hInstance, windowMode);
