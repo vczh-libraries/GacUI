@@ -11,7 +11,7 @@
   <InstanceStyle name="WindowManagerContentStyles">
     <Styles>
       <Style ref.Path="//Window"
-        ThemeName="CustomFrameWindow"
+        ControlThemeName="CustomFrameWindow"
         MaximizedBox-bind="checkMax.Selected"
         MinimizedBox-bind="checkMin.Selected"
         Border-bind="checkBorder.Selected"
@@ -22,16 +22,16 @@
       
       <Style ref.Path="//*.windowManagerContent" Direction="Vertical" AlignmentToParent="left:5 top:5 right:5 bottom:5" Padding="5" MinSizeLimitation="LimitToElementAndChildren">
         <StackItem>
-          <CheckBox ref.Name="checkFrame" Text="Customized Frame" Selected="true" Enabled-bind="self.FrameConfig.CustomFrameEnabled == BoolOption::Customizable">
+          <CheckBox ref.Name="checkFrame" Text="Customized Frame" Selected-eval="self.ControlThemeName == ThemeName::CustomFrameWindow" Enabled-bind="self.FrameConfig.CustomFrameEnabled == BoolOption::Customizable">
             <ev.SelectedChanged-eval><![CDATA[
               {
                 if (checkFrame.Selected)
                 {
-                  self.ThemeName = CustomFrameWindow;
+                  self.ControlThemeName = CustomFrameWindow;
                 }
                 else
                 {
-                  self.ThemeName = SystemFrameWindow;
+                  self.ControlThemeName = SystemFrameWindow;
                 }
               }
             ]]></ev.SelectedChanged-eval>
@@ -41,7 +41,7 @@
         <StackItem><CheckBox ref.Name="checkMin"     Text="MinimizedBox" Selected-eval="self.MinimizedBox" Enabled-bind="self.FrameConfig.MinimizedBoxOption == BoolOption::Customizable" /></StackItem>
         <StackItem><CheckBox ref.Name="checkBorder"  Text="Border"       Selected-eval="self.Border"       Enabled-bind="self.FrameConfig.BorderOption == BoolOption::Customizable"       /></StackItem>
         <StackItem><CheckBox ref.Name="checkSizeBox" Text="SizeBox"      Selected-eval="self.SizeBox"      Enabled-bind="self.FrameConfig.SizeBoxOption == BoolOption::Customizable"      /></StackItem>
-        <StackItem><CheckBox ref.Name="checkIcon"    Text="IconVisible" Selected-eval="self.IconVisible"   Enabled-bind="self.FrameConfig.IconVisibleOption == BoolOption::Customizable"  /></StackItem>
+        <StackItem><CheckBox ref.Name="checkIcon"    Text="IconVisible"  Selected-eval="self.IconVisible"  Enabled-bind="self.FrameConfig.IconVisibleOption == BoolOption::Customizable"  /></StackItem>
         <StackItem><CheckBox ref.Name="checkTitle"   Text="TitleBar"     Selected-eval="self.TitleBar"     Enabled-bind="self.FrameConfig.TitleBarOption == BoolOption::Customizable"     /></StackItem>
         <StackItem>
           <Button Text="Open New Window">
