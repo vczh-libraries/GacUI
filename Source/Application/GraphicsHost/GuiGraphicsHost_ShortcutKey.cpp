@@ -41,6 +41,14 @@ GuiShortcutKeyItem
 				return name;
 			}
 
+			void GuiShortcutKeyItem::ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, VKEY& _key)
+			{
+				_ctrl = ctrl;
+				_shift = shift;
+				_alt = alt;
+				_key = key;
+			}
+
 			bool GuiShortcutKeyItem::CanActivate(const NativeWindowKeyInfo& info)
 			{
 				return
@@ -57,6 +65,12 @@ GuiShortcutKeyItem
 					_shift==shift &&
 					_alt==alt &&
 					_key==key;
+			}
+
+			void GuiShortcutKeyItem::Execute()
+			{
+				GuiEventArgs arguments;
+				Executed.Execute(arguments);
 			}
 
 /***********************************************************************
@@ -114,8 +128,7 @@ GuiShortcutKeyManager
 				{
 					if(item->CanActivate(info))
 					{
-						GuiEventArgs arguments;
-						item->Executed.Execute(arguments);
+						item->Execute();
 						executed=true;
 					}
 				}

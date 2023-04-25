@@ -1346,6 +1346,7 @@ INativeInputService
 		{
 			NotSupported = -2,
 			Occupied = -1,
+			ValidIdBegins = 0,
 		};
 		
 		/// <summary>
@@ -1403,7 +1404,7 @@ INativeInputService
 			/// <param name="alt">Set to true if the ALT key is required.</param>
 			/// <param name="key">The non-control key.</param>
 			/// <param name="id"></param>
-			/// <returns>Returns the created id. If it fails, the id equals to one of an item in <see cref="NativeGlobalShortcutKeyResult"/>.</returns>
+			/// <returns>Returns the created id. If it fails, the id equals to one of an item in <see cref="NativeGlobalShortcutKeyResult"/> except "ValidIdBegins".</returns>
 			virtual vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)=0;
 
 			/// <summary>

@@ -350,6 +350,7 @@ Type Declaration
 				ENUM_ITEM_NAMESPACE(NativeGlobalShortcutKeyResult)
 				ENUM_NAMESPACE_ITEM(NotSupported)
 				ENUM_NAMESPACE_ITEM(Occupied)
+				ENUM_NAMESPACE_ITEM(ValidIdBegins)
 			END_ENUM_ITEM(NativeGlobalShortcutKeyResult)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeInputService)

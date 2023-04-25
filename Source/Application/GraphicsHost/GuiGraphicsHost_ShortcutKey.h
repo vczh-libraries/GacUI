@@ -104,8 +104,11 @@ Shortcut Key Manager Helpers
 
 				IGuiShortcutKeyManager*			GetManager()override;
 				WString							GetName()override;
+
+				void							ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, VKEY& _key);
 				bool							CanActivate(const NativeWindowKeyInfo& info);
 				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
+				void							Execute();
 			};
 
 			/// <summary>A default implementation for <see cref="IGuiShortcutKeyManager"/>.</summary>

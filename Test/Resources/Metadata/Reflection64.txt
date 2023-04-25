@@ -2919,6 +2919,7 @@ struct presentation::NativeCoordinate {
 enum presentation::NativeGlobalShortcutKeyResult {
     NotSupported = 18446744073709551614,
     Occupied = 18446744073709551615,
+    ValidIdBegins = 0,
 }
 
 @ValueType
