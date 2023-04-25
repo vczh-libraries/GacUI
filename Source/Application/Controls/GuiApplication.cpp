@@ -65,6 +65,11 @@ GuiApplication
 				}
 			}
 
+			void GuiApplication::GlobalShortcutKeyActivated(vint id)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
 			GuiApplication::GuiApplication()
 				:locale(Locale::UserDefault())
 			{

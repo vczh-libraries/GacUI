@@ -219,6 +219,16 @@ public:
 	{
 		CHECK_FAIL(L"Not implemented!");
 	}
+
+	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	bool UnregisterGlobalShortcutKey(vint id)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
 };
 
 extern void GuiApplicationMain();

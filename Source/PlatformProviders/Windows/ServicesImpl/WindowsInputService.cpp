@@ -127,6 +127,16 @@ WindowsInputService
 				vint index = keys.Keys().IndexOf(name);
 				return index == -1 ? VKEY::KEY_UNKNOWN : keys.Values()[index];
 			}
+
+			vint WindowsInputService::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
+
+			bool WindowsInputService::UnregisterGlobalShortcutKey(vint id)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
 		}
 	}
 }

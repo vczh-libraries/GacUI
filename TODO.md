@@ -12,6 +12,7 @@
   - Fix GacUI compiler failure when compiled with reflection.
   - Remove SysKey callbacks, merge into Key callbacks.
   - `ThemeName::(System|Custom)FrameWindow`.
+  - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
 - GacGen
   - Add DarkSkin and Dialog in Reflection(32|64).bin
 - Tutorial
@@ -31,8 +32,6 @@
 
 ## Progressing
 
-- Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
-  - In input service there will be `IsGlobalShortcutKeySupported` and `RegisterGlobalShortcutKey`.
 - Tutorial:
   - Global shortcut key.
 - DarkSkin Color Theme.

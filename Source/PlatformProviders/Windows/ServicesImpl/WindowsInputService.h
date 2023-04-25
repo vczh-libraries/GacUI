@@ -40,6 +40,8 @@ namespace vl
 				bool									IsKeyToggled(VKEY code)override;
 				WString									GetKeyName(VKEY code)override;
 				VKEY									GetKey(const WString& name)override;
+				vint									RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)override;
+				bool									UnregisterGlobalShortcutKey(vint id)override;
 			};
 
 			extern bool									WinIsKeyPressing(VKEY code);

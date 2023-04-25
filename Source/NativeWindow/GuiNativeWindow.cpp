@@ -172,6 +172,10 @@ INativeControllerListener
 		{
 		}
 
+		void INativeControllerListener::GlobalShortcutKeyActivated(vint id)
+		{
+		}
+
 		void INativeControllerListener::NativeWindowCreated(INativeWindow* window)
 		{
 		}

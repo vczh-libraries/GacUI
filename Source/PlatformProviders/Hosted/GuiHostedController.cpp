@@ -750,6 +750,11 @@ GuiHostedController::INativeControllerListener
 			callbackService.InvokeClipboardUpdated();
 		}
 
+		void GuiHostedController::GlobalShortcutKeyActivated(vint id)
+		{
+			callbackService.InvokeGlobalShortcutKeyActivated(id);
+		}
+
 		void GuiHostedController::NativeWindowDestroying(INativeWindow* window)
 		{
 			if (nativeWindow == window)

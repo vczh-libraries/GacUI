@@ -64,6 +64,14 @@ SharedCallbackService
 			}
 		}
 
+		void SharedCallbackService::InvokeGlobalShortcutKeyActivated(vint id)
+		{
+			for (vint i = 0; i < listeners.Count(); i++)
+			{
+				listeners[i]->GlobalShortcutKeyActivated(id);
+			}
+		}
+
 		void SharedCallbackService::InvokeNativeWindowCreated(INativeWindow* window)
 		{
 			for(vint i=0;i<listeners.Count();i++)

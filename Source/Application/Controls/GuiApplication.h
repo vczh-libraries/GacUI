@@ -35,6 +35,7 @@ Application
 
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 				void											ClipboardUpdated()override;
+				void											GlobalShortcutKeyActivated(vint id)override;
 
 			protected:
 				using WindowMap = collections::Dictionary<INativeWindow*, GuiWindow*>;
