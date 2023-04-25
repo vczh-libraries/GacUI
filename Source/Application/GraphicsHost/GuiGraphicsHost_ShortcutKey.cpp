@@ -13,6 +13,7 @@ GuiShortcutKeyItem
 
 			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, VKEY _key)
 				:shortcutKeyManager(_shortcutKeyManager)
+				,global(_global)
 				,ctrl(_ctrl)
 				,shift(_shift)
 				,alt(_alt)
