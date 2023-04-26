@@ -646,6 +646,7 @@ GuiVirtualTreeListControl
 							}
 						}
 						break;
+					default:;
 					}
 				}
 

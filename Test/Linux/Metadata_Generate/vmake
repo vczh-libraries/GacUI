@@ -8,7 +8,12 @@ CPP_VCXPROJS=(
     "../../GacUISrc/Source_GacUI/Source_GacUI.vcxitems"
     "../../GacUISrc/Source_GacUI_Reflection/Source_GacUI_Reflection.vcxitems"
     "../../GacUISrc/Source_GacUI_Utilities/Source_GacUI_Utilities.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Controls/Source_GacUI_Utilities_Controls.vcxitems"
+    "../../GacUISrc/Source_GacUI_Utilities_Reflection/Source_GacUI_Utilities_Reflection.vcxitems"
     "../../GacUISrc/Metadata_Generate/Metadata_Generate.vcxproj"
+    )
+CPP_ADDS=(
+    "../../GacUISrc/Generated_DarkSkin/Source_x64/*.cpp"
     )
 CPP_REMOVES=(
     "../../../Import/Vlpp.Windows.cpp"
