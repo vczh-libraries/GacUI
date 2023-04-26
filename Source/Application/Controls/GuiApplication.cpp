@@ -17,6 +17,52 @@ namespace vl
 			using namespace description;
 
 /***********************************************************************
+GuiGlobalShortcutKeyManager
+***********************************************************************/
+
+			class GuiGlobalShortcutKeyManager : public GuiShortcutKeyManager
+			{
+			protected:
+				Dictionary<vint, GuiShortcutKeyItem*>		idToItemsMap;
+				Dictionary<GuiShortcutKeyItem*, vint>		itemToIdsMap;
+
+				bool IsGlobal() override
+				{
+					return true;
+				}
+
+				bool OnCreatingShortcut(GuiShortcutKeyItem* item) override
+				{
+					bool ctrl, shift, alt;
+					VKEY key;
+					item->ReadKeyConfig(ctrl, shift, alt, key);
+
+					vint id = GetCurrentController()->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, key);
+					if (id < (vint)NativeGlobalShortcutKeyResult::ValidIdBegins) return false;
+
+					idToItemsMap.Add(id, item);
+					itemToIdsMap.Add(item, id);
+					return true;
+				}
+
+				void OnDestroyingShortcut(GuiShortcutKeyItem* item) override
+				{
+					vint id = itemToIdsMap[item];
+					idToItemsMap.Remove(id);
+					itemToIdsMap.Remove(item);
+					GetCurrentController()->InputService()->UnregisterGlobalShortcutKey(id);
+				}
+
+			public:
+
+				GuiShortcutKeyItem* TryGetItemFromId(vint id)
+				{
+					vint index = idToItemsMap.Keys().IndexOf(id);
+					return index == -1 ? nullptr : idToItemsMap.Values()[index];
+				}
+			};
+
+/***********************************************************************
 GuiApplication
 ***********************************************************************/
 
@@ -42,9 +88,19 @@ GuiApplication
 				}
 			}
 
+			void GuiApplication::GlobalShortcutKeyActivated(vint id)
+			{
+				auto manager = dynamic_cast<GuiGlobalShortcutKeyManager*>(globalShortcutKeyManager.Obj());
+				if (auto item = manager->TryGetItemFromId(id))
+				{
+					item->Execute();
+				}
+			}
+
 			GuiApplication::GuiApplication()
 				:locale(Locale::UserDefault())
 			{
+				globalShortcutKeyManager = Ptr(new GuiGlobalShortcutKeyManager);
 				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
 
@@ -254,6 +310,11 @@ GuiApplication
 				if(!sharedTooltipControl) return 0;
 				if(!sharedTooltipControl->GetTemporaryContentControl()) return 0;
 				return sharedTooltipOwner;
+			}
+
+			compositions::IGuiShortcutKeyManager* GuiApplication::GetGlobalShortcutKeyManager()
+			{
+				return globalShortcutKeyManager.Obj();
 			}
 
 			WString GuiApplication::GetExecutablePath()

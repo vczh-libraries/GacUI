@@ -80,7 +80,7 @@ void OpenMainWindow()
 		//RegisterTheme(theme);
 	}
 	{
-		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::TestWindow2"));
+		auto window = UnboxValue<GuiWindow*>(Value::Create(L"demo::TestWindow"));
 		//AttachDumpCompositionMenu(window);
 		window->ForceCalculateSizeImmediately();
 		window->MoveToScreenCenter();

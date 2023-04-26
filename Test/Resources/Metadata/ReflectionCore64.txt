@@ -660,6 +660,8 @@ interface presentation::INativeInputService : system::Interface {
     function GetKeyName(code : presentation::VKEY) : system::String;
     function IsKeyPressing(code : presentation::VKEY) : system::Boolean;
     function IsKeyToggled(code : presentation::VKEY) : system::Boolean;
+    function RegisterGlobalShortcutKey(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, key : presentation::VKEY) : system::Int64;
+    function UnregisterGlobalShortcutKey(id : system::Int64) : system::Boolean;
 
 }
 
@@ -838,6 +840,13 @@ struct presentation::Margin {
 @ValueType
 struct presentation::NativeCoordinate {
     property value : system::Int64;
+}
+
+@ValueType
+enum presentation::NativeGlobalShortcutKeyResult {
+    NotSupported = 18446744073709551614,
+    Occupied = 18446744073709551615,
+    ValidIdBegins = 0,
 }
 
 @ValueType
@@ -1658,10 +1667,6 @@ class presentation::compositions::GuiSharedSizeRootComposition : presentation::c
 }
 
 class presentation::compositions::GuiShortcutKeyManager : presentation::compositions::IGuiShortcutKeyManager {
-    function CreateShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
-    function DestroyShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : system::Boolean;
-    function TryGetShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
-
     constructor () : presentation::compositions::GuiShortcutKeyManager*;
 }
 
@@ -1842,8 +1847,12 @@ interface presentation::compositions::IGuiShortcutKeyItem : system::Interface {
 interface presentation::compositions::IGuiShortcutKeyManager : system::Interface {
     property ItemCount : system::Int64 { get:GetItemCount }
 
+    function CreateNewShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function CreateShortcutIfNotExist(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
+    function DestroyShortcut(ctrl : presentation::compositions::IGuiShortcutKeyItem*) : system::Boolean;
     function GetItem(index : system::Int64) : presentation::compositions::IGuiShortcutKeyItem*;
     function GetItemCount() : system::Int64;
+    function TryGetShortcut(ctrl : system::Boolean, shift : system::Boolean, alt : system::Boolean, ket : presentation::VKEY) : presentation::compositions::IGuiShortcutKeyItem*;
 
 }
 
@@ -1909,6 +1918,7 @@ class presentation::controls::GuiApplication : system::ReferenceType {
 
     property ExecutableFolder : system::String { get:GetExecutableFolder }
     property ExecutablePath : system::String { get:GetExecutablePath }
+    property GlobalShortcutKeyManager : presentation::compositions::IGuiShortcutKeyManager* { get:GetGlobalShortcutKeyManager }
     property Locale : system::Locale { get:GetLocale set:SetLocale event:LocaleChanged }
     property MainWindow : presentation::controls::GuiWindow* { get:GetMainWindow }
     property TooltipOwner : presentation::controls::GuiControl* { get:GetTooltipOwner }
@@ -1922,6 +1932,7 @@ class presentation::controls::GuiApplication : system::ReferenceType {
     static function GetApplication() : presentation::controls::GuiApplication*;
     function GetExecutableFolder() : system::String;
     function GetExecutablePath() : system::String;
+    function GetGlobalShortcutKeyManager() : presentation::compositions::IGuiShortcutKeyManager*;
     function GetLocale() : system::Locale;
     function GetMainWindow() : presentation::controls::GuiWindow*;
     function GetTooltipOwner() : presentation::controls::GuiControl*;
@@ -3250,7 +3261,7 @@ class presentation::controls::GuiToolstripCommand : presentation::controls::GuiC
     property Image : presentation::GuiImageData^ { get:GetImage set:SetImage event:DescriptionChanged }
     property LargeImage : presentation::GuiImageData^ { get:GetLargeImage set:SetLargeImage event:DescriptionChanged }
     property Selected : system::Boolean { get:GetSelected set:SetSelected event:DescriptionChanged }
-    property Shortcut : presentation::compositions::IGuiShortcutKeyItem* { get:GetShortcut set:SetShortcut event:DescriptionChanged }
+    property Shortcut : presentation::compositions::IGuiShortcutKeyItem* { get:GetShortcut event:DescriptionChanged }
     property ShortcutBuilder : system::String { get:GetShortcutBuilder set:SetShortcutBuilder event:DescriptionChanged }
     property Text : system::String { get:GetText set:SetText event:DescriptionChanged }
 
@@ -3265,7 +3276,6 @@ class presentation::controls::GuiToolstripCommand : presentation::controls::GuiC
     function SetImage(value : presentation::GuiImageData^) : system::Void;
     function SetLargeImage(value : presentation::GuiImageData^) : system::Void;
     function SetSelected(value : system::Boolean) : system::Void;
-    function SetShortcut(value : presentation::compositions::IGuiShortcutKeyItem*) : system::Void;
     function SetShortcutBuilder(value : system::String) : system::Void;
     function SetText(value : system::String) : system::Void;
 

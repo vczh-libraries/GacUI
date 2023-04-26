@@ -346,11 +346,20 @@ Type Declaration
 				CLASS_MEMBER_METHOD_OVERLOAD(GetScreen, {L"window"}, INativeScreen*(INativeScreenService::*)(INativeWindow*))
 			END_INTERFACE_MEMBER(INativeScreenService)
 
+			BEGIN_ENUM_ITEM(NativeGlobalShortcutKeyResult)
+				ENUM_ITEM_NAMESPACE(NativeGlobalShortcutKeyResult)
+				ENUM_NAMESPACE_ITEM(NotSupported)
+				ENUM_NAMESPACE_ITEM(Occupied)
+				ENUM_NAMESPACE_ITEM(ValidIdBegins)
+			END_ENUM_ITEM(NativeGlobalShortcutKeyResult)
+
 			BEGIN_INTERFACE_MEMBER_NOPROXY(INativeInputService)
 				CLASS_MEMBER_METHOD(IsKeyPressing, { L"code" })
 				CLASS_MEMBER_METHOD(IsKeyToggled, { L"code" })
 				CLASS_MEMBER_METHOD(GetKeyName, { L"code" })
 				CLASS_MEMBER_METHOD(GetKey, { L"name" })
+				CLASS_MEMBER_METHOD(RegisterGlobalShortcutKey, { L"ctrl" _ L"shift" _ L"alt" _ L"key" })
+				CLASS_MEMBER_METHOD(UnregisterGlobalShortcutKey, { L"id" })
 			END_INTERFACE_MEMBER(INativeInputService)
 
 			BEGIN_ENUM_ITEM(INativeDialogService::MessageBoxButtonsInput)

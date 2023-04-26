@@ -1,4 +1,5 @@
 #include "GuiToolstripCommand.h"
+#include "../../Application/Controls/GuiApplication.h"
 #include "../../Application/Controls/GuiWindowControls.h"
 #include "../../Application/GraphicsHost/GuiGraphicsHost_ShortcutKey.h"
 #include "../../Resources/GuiParserManager.h"
@@ -33,25 +34,37 @@ GuiToolstripCommand
 				DescriptionChanged.Execute(arguments);
 			}
 
-			void GuiToolstripCommand::ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder)
+			compositions::IGuiShortcutKeyManager* GuiToolstripCommand::GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder)
+			{
+				if (builder->global)
+				{
+					return GetApplication()->GetGlobalShortcutKeyManager();
+				}
+				else
+				{
+					if (attachedControlHost)
+					{
+						if (!attachedControlHost->GetShortcutKeyManager())
+						{
+							attachedControlHost->SetShortcutKeyManager(new GuiShortcutKeyManager());
+						}
+						return attachedControlHost->GetShortcutKeyManager();
+					}
+				}
+				return nullptr;
+			}
+
+			void GuiToolstripCommand::ReplaceShortcut(compositions::IGuiShortcutKeyItem* value)
 			{
 				if (shortcutKeyItem != value)
 				{
 					if (shortcutKeyItem)
 					{
 						shortcutKeyItem->Executed.Detach(shortcutKeyItemExecutedHandler);
-						if (shortcutBuilder)
-						{
-							auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager());
-							if (manager)
-							{
-								manager->DestroyShortcut(shortcutBuilder->ctrl, shortcutBuilder->shift, shortcutBuilder->alt, shortcutBuilder->key);
-							}
-						}
+						shortcutKeyItem->GetManager()->DestroyShortcut(shortcutKeyItem);
 					}
 					shortcutKeyItem = nullptr;
 					shortcutKeyItemExecutedHandler = nullptr;
-					shortcutBuilder = value ? builder : nullptr;
 					if (value)
 					{
 						shortcutKeyItem = value;
@@ -66,30 +79,15 @@ GuiToolstripCommand
 				List<glr::ParsingError> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
 				{
-					if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
+					if (auto builder = parser->ParseInternal(builderText, errors))
 					{
-						if (shortcutOwner)
+						shortcutBuilder = builder;
+						if (auto shortcutKeyManager = GetShortcutManagerFromBuilder(builder))
 						{
-							if (!shortcutOwner->GetShortcutKeyManager())
+							if (auto item = shortcutKeyManager->CreateShortcutIfNotExist(builder->ctrl, builder->shift, builder->alt, builder->key))
 							{
-								shortcutOwner->SetShortcutKeyManager(new GuiShortcutKeyManager);
+								ReplaceShortcut(item);
 							}
-							if (auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager()))
-							{
-								IGuiShortcutKeyItem* item = manager->TryGetShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-								if (!item)
-								{
-									item = manager->CreateShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-									if (item)
-									{
-										ReplaceShortcut(item, builder);
-									}
-								}
-							}
-						}
-						else
-						{
-							shortcutBuilder = builder;
 						}
 					}
 				}
@@ -107,16 +105,15 @@ GuiToolstripCommand
 					host = composition->GetRelatedControlHost();
 				}
 
-				if (shortcutOwner != host)
+				if (attachedControlHost != host)
 				{
-					if (shortcutOwner)
+					attachedControlHost = host;
+					if (shortcutBuilder && !shortcutBuilder->global)
 					{
-						ReplaceShortcut(nullptr, nullptr);
-						shortcutOwner = nullptr;
-					}
-					shortcutOwner = host;
-					if (shortcutBuilder && !shortcutKeyItem)
-					{
+						if (shortcutKeyItem)
+						{
+							ReplaceShortcut(nullptr);
+						}
 						BuildShortcut(shortcutBuilder->text);
 					}
 				}
@@ -128,6 +125,10 @@ GuiToolstripCommand
 
 			GuiToolstripCommand::~GuiToolstripCommand()
 			{
+				if (shortcutBuilder && shortcutKeyItem)
+				{
+					ReplaceShortcut(nullptr);
+				}
 			}
 
 			void GuiToolstripCommand::Attach(GuiInstanceRootObject* rootObject)
@@ -221,11 +222,6 @@ GuiToolstripCommand
 				return shortcutKeyItem;
 			}
 
-			void GuiToolstripCommand::SetShortcut(compositions::IGuiShortcutKeyItem* value)
-			{
-				ReplaceShortcut(value, 0);
-			}
-
 			WString GuiToolstripCommand::GetShortcutBuilder()
 			{
 				return shortcutBuilder ? shortcutBuilder->text : L"";
@@ -273,13 +269,15 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				typedef GuiToolstripCommand::ShortcutBuilder			ShortcutBuilder;
 			public:
 				Regex						regexShortcut;
+				const vint					_global;
 				const vint					_ctrl;
 				const vint					_shift;
 				const vint					_alt;
 				const vint					_key;
 
 				GuiToolstripCommandShortcutParser()
-					: regexShortcut(L"((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					: regexShortcut(L"((<global>global:))?((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					, _global(regexShortcut.CaptureNames().IndexOf(L"global"))
 					, _ctrl(regexShortcut.CaptureNames().IndexOf(L"ctrl"))
 					, _shift(regexShortcut.CaptureNames().IndexOf(L"shift"))
 					, _alt(regexShortcut.CaptureNames().IndexOf(L"alt"))
@@ -300,6 +298,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 
 					auto builder = Ptr(new ShortcutBuilder);
 					builder->text = text;
+					builder->global = match->Groups().Contains(_global);
 					builder->ctrl = match->Groups().Contains(_ctrl);
 					builder->shift = match->Groups().Contains(_shift);
 					builder->alt = match->Groups().Contains(_alt);

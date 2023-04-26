@@ -156,6 +156,7 @@ GuiHostedController
 
 			void							GlobalTimer() override;
 			void							ClipboardUpdated() override;
+			void							GlobalShortcutKeyActivated(vint id) override;
 			void							NativeWindowDestroying(INativeWindow* window) override;
 
 			// =============================================================

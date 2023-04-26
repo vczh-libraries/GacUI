@@ -129,15 +129,15 @@ Type Declaration (Extra)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ItemCount)
 
 				CLASS_MEMBER_METHOD(GetItem, {L"index"})
+				CLASS_MEMBER_METHOD(TryGetShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
+				CLASS_MEMBER_METHOD(CreateNewShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
+				CLASS_MEMBER_METHOD(CreateShortcutIfNotExist, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
+				CLASS_MEMBER_METHOD(DestroyShortcut, { L"ctrl" _ L"shift" _ L"alt" _ L"ket" })
 			END_INTERFACE_MEMBER(IGuiShortcutKeyManager)
 
 			BEGIN_CLASS_MEMBER(GuiShortcutKeyManager)
 				CLASS_MEMBER_BASE(IGuiShortcutKeyManager)
 				CLASS_MEMBER_CONSTRUCTOR(GuiShortcutKeyManager*(), NO_PARAMETER)
-
-				CLASS_MEMBER_METHOD(CreateShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
-				CLASS_MEMBER_METHOD(DestroyShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
-				CLASS_MEMBER_METHOD(TryGetShortcut, {L"ctrl" _ L"shift" _ L"alt" _ L"ket"})
 			END_CLASS_MEMBER(GuiShortcutKeyManager)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(IGuiAltAction)

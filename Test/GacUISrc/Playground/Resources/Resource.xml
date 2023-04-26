@@ -17,15 +17,28 @@
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
+        <MessageDialog ref.Name="dialog" Title="Global Shortcut Key" Text="Executed!"/>
+        
         <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://Images/Cut" ShortcutBuilder="Ctrl+X"/>
         <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://Images/Copy" ShortcutBuilder="Ctrl+C"/>
         <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://Images/Paste" ShortcutBuilder="Ctrl+V"/>
         <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://Images/Delete"/>
+        <ToolstripCommand ref.Name="commandShowDialog" Text="Show Dialog" ShortcutBuilder="global:Ctrl+Shift+Alt+D">
+          <ev.Executed-eval><![CDATA[
+            {
+              GuiApplication::GetApplication().InvokeInMainThread(self, func():void
+              {
+                dialog.ShowDialog();
+              });
+            }
+          ]]></ev.Executed-eval>
+        </ToolstripCommand>
         <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://Images/Undo" ShortcutBuilder="Ctrl+Z"/>
         <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://Images/Redo" ShortcutBuilder="Ctrl+Y"/>
         <ToolstripCommand ref.Name="commandExportPrivate" Text="Export as Private Format" Image-uri="res://Images/FormatPrivate"/>
         <ToolstripCommand ref.Name="commandExportRtf" Text="Export as Rich Text Format" Image-uri="res://Images/FormatRtf"/>
         <ToolstripCommand ref.Name="commandExportHtml" Text="Export as HTML" Image-uri="res://Images/FormatHtml"/>
+        
         <ToolstripMenu ref.Name="menuEdit">
           <ToolstripGroupContainer>
             <ToolstripToolBar ControlTemplate="demo::MenuToolBarControlTemplate">
@@ -35,6 +48,7 @@
               <ToolstripButton Command-ref="commandDelete"/>
             </ToolstripToolBar>
             <ToolstripGroup>
+              <MenuItemButton Command-ref="commandShowDialog"/>
               <MenuItemButton Command-ref="commandUndo"/>
               <MenuItemButton Command-ref="commandRedo"/>
             </ToolstripGroup>
@@ -45,6 +59,7 @@
             </ToolstripGroup>
           </ToolstripGroupContainer>
         </ToolstripMenu>
+        
         <att.BoundsComposition-set PreferredMinSize="x:320 y:240"/>
         <Label Font="fontFamily:'Segoe UI' size:24" Text="Right click to show the menu">
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
@@ -61,35 +76,6 @@
             }
           ]]></ev.rightButtonDown-eval>
         </att.ContainerComposition-set>
-      </Window>
-    </Instance>
-  </Instance>
-
-  <Instance name="MainWindow2Resource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow2">
-      <ref.Members><![CDATA[
-        event RequestConfirm(string);
-      ]]></ref.Members>
-      <Window ref.Name="self" Text="MainWindow" ClientSize="x:400 y:300">
-        <ev.RequestConfirm-eval><![CDATA[{
-          self.Text = $"RequestConfirm($(arg1))";
-        }]]></ev.RequestConfirm-eval>
-        <att.ContainerComposition-set PreferredMinSize="x:400 y:300" />
-        <Tab>
-          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-          <att.Pages>
-            <TabPage Text="Something">
-              <Button Text="Click Me!">
-                <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:-1 bottom:-1"/>
-                <ev.Clicked-eval><![CDATA[
-                  {
-                    self.RequestConfirm(Sys::LoremIpsumTitle(20));
-                  }
-                ]]></ev.Clicked-eval>
-              </Button>
-            </TabPage>
-          </att.Pages>
-        </Tab>
       </Window>
     </Instance>
   </Instance>

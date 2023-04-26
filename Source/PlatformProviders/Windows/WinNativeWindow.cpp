@@ -1985,6 +1985,11 @@ WindowsController
 				{
 					callbackService.InvokeClipboardUpdated();
 				}
+
+				void InvokeGlobalShortcutkeyActivated(vint id)
+				{
+					callbackService.InvokeGlobalShortcutKeyActivated(id);
+				}
 			};
 
 /***********************************************************************
@@ -2017,6 +2022,12 @@ Windows Procedure
 						break;
 					case WM_CLIPBOARDUPDATE:
 						windowsController->InvokeClipboardUpdated();
+						break;
+					case WM_HOTKEY:
+						if (wParam > 0)
+						{
+							windowsController->InvokeGlobalShortcutkeyActivated((vint)wParam);
+						}
 						break;
 					}
 				}

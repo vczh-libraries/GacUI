@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUIAPPLICATION
 
 #include "GuiWindowControls.h"
+#include "../GraphicsHost/GuiGraphicsHost_ShortcutKey.h"
 
 namespace vl
 {
@@ -34,6 +35,7 @@ Application
 
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 				void											ClipboardUpdated()override;
+				void											GlobalShortcutKeyActivated(vint id)override;
 
 			protected:
 				using WindowMap = collections::Dictionary<INativeWindow*, GuiWindow*>;
@@ -48,6 +50,7 @@ Application
 				collections::List<GuiWindow*>					windows;
 				WindowMap										windowMap;
 				collections::SortedList<GuiPopup*>				openingPopups;
+				Ptr<compositions::GuiShortcutKeyManager>		globalShortcutKeyManager;
 
 				GuiApplication();
 				~GuiApplication();
@@ -104,6 +107,9 @@ Application
 				/// <summary>Get the tooltip owner. When the tooltip closed, it returns null.</summary>
 				/// <returns>The tooltip owner.</returns>
 				GuiControl*										GetTooltipOwner();
+				/// <summary>Get the <see cref="compositions::IGuiShortcutKeyManager"/> attached with this control host.</summary>
+				/// <returns>The shortcut key manager.</returns>
+				compositions::IGuiShortcutKeyManager*			GetGlobalShortcutKeyManager();
 				/// <summary>Get the file path of the current executable.</summary>
 				/// <returns>The file path of the current executable.</returns>
 				WString											GetExecutablePath();
