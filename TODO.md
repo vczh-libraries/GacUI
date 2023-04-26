@@ -2,26 +2,6 @@
 
 ## Done but not Released
 
-- `GuiVirtualTreeListControl` handles `LEFT` and `RIGHT` for item navigation.
-- Enable external injection in C++ code or `<LocalizedStringsInjection/>`.
-- Workflow
-  - Disallow struct `X` contains `X?` field.
-  - `static{}` initialization.
-  - Comparing two string and serializable type values becomes unequal, but `==` and `!=` operator will cast one side to string, if types are known at compile time.
-- GacUI
-  - Fix GacUI compiler failure when compiled with reflection.
-  - Remove SysKey callbacks, merge into Key callbacks.
-  - `ThemeName::(System|Custom)FrameWindow`.
-  - Global shortcut key: `<ToolstripCommand Shortcut="global:Ctrl+C"/>`.
-- GacGen
-  - Add DarkSkin and Dialog in Reflection(32|64).bin
-- Tutorial
-  - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
-  - `GacUI_Controls/Dialogs`.
-  - `GacUI_Controls/GlobalHotKey`.
-  - Add `<LocalizedStringsInjection/>` to GacUI_Controls/Localization.
-  - Update `GacUI_ControlTemplate/WindowSkin` to use new theme name.
-
 ## Known Issues
 
 - Hosted Mode
