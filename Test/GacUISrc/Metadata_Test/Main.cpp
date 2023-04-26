@@ -9,6 +9,7 @@
 #endif
 
 using namespace vl;
+using namespace vl::collections;
 using namespace vl::filesystem;
 using namespace vl::stream;
 using namespace vl::reflection;
@@ -113,9 +114,16 @@ void TestMetaonlyReflection()
 		LogTypeManager(writer);
 	}
 	{
-		auto first = File(GetTestOutputPath() + REFLECTION_BASELINE()).ReadAllTextByBom();
-		auto second = File(GetTestOutputPath() + REFLECTION_OUTPUT()).ReadAllTextByBom();
-		CHECK_ERROR(first == second, L"Metadata is not properly loaded!");
+		List<WString> firstLines;
+		List<WString> secondLines;
+		File(GetTestOutputPath() + REFLECTION_BASELINE()).ReadAllLinesByBom(firstLines);
+		File(GetTestOutputPath() + REFLECTION_OUTPUT()).ReadAllLinesByBom(secondLines);
+		CHECK_ERROR(firstLines.Count() == secondLines.Count(), L"Metadata is not properly loaded!");
+		for (auto [first, index] : indexed(firstLines))
+		{
+			auto second = secondLines[index];
+			CHECK_ERROR(first == second, L"Metadata is not properly loaded!");
+		}
 	}
 	{
 		GetGlobalTypeManager()->Unload();
