@@ -54,17 +54,22 @@ GuiToolstripCommand
 				return nullptr;
 			}
 
+			void GuiToolstripCommand::RemoveShortcut()
+			{
+				if (shortcutKeyItem)
+				{
+					shortcutKeyItem->Executed.Detach(shortcutKeyItemExecutedHandler);
+					shortcutKeyItem->GetManager()->DestroyShortcut(shortcutKeyItem);
+				}
+				shortcutKeyItem = nullptr;
+				shortcutKeyItemExecutedHandler = nullptr;
+			}
+
 			void GuiToolstripCommand::ReplaceShortcut(compositions::IGuiShortcutKeyItem* value)
 			{
 				if (shortcutKeyItem != value)
 				{
-					if (shortcutKeyItem)
-					{
-						shortcutKeyItem->Executed.Detach(shortcutKeyItemExecutedHandler);
-						shortcutKeyItem->GetManager()->DestroyShortcut(shortcutKeyItem);
-					}
-					shortcutKeyItem = nullptr;
-					shortcutKeyItemExecutedHandler = nullptr;
+					RemoveShortcut();
 					if (value)
 					{
 						shortcutKeyItem = value;
@@ -125,10 +130,8 @@ GuiToolstripCommand
 
 			GuiToolstripCommand::~GuiToolstripCommand()
 			{
-				if (shortcutBuilder && shortcutKeyItem)
-				{
-					ReplaceShortcut(nullptr);
-				}
+				RemoveShortcut();
+				shortcutBuilder = nullptr;
 			}
 
 			void GuiToolstripCommand::Attach(GuiInstanceRootObject* rootObject)

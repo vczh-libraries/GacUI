@@ -10427,6 +10427,7 @@ namespace vl
 				void										InvokeDescriptionChanged();
 
 				compositions::IGuiShortcutKeyManager*		GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder);
+				void										RemoveShortcut();
 				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value);
 				void										BuildShortcut(const WString& builderText);
 				void										UpdateShortcutOwner();
