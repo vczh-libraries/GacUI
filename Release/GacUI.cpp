@@ -16113,6 +16113,7 @@ GuiVirtualTreeListControl
 							}
 						}
 						break;
+					default:;
 					}
 				}
 
@@ -34318,12 +34319,12 @@ public:
 		CHECK_FAIL(L"Not implemented!");
 	}
 
-	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key) override
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}
 
-	bool UnregisterGlobalShortcutKey(vint id)
+	bool UnregisterGlobalShortcutKey(vint id) override
 	{
 		CHECK_FAIL(L"Not Implemented!");
 	}

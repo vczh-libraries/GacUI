@@ -2112,7 +2112,7 @@ namespace vl
 			protected:
 				HWND									ownerHandle;
 				bool									isTimerEnabled;
-				vint									usedHotKeys = 0;
+				vint									usedHotKeys = (vint)NativeGlobalShortcutKeyResult::ValidIdBegins;
 
 				collections::Array<WString>				keyNames;
 				collections::Dictionary<WString, VKEY>	keys;
