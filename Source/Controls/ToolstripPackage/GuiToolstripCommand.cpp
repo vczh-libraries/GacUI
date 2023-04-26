@@ -125,6 +125,10 @@ GuiToolstripCommand
 
 			GuiToolstripCommand::~GuiToolstripCommand()
 			{
+				if (shortcutBuilder && shortcutKeyItem)
+				{
+					ReplaceShortcut(nullptr);
+				}
 			}
 
 			void GuiToolstripCommand::Attach(GuiInstanceRootObject* rootObject)
