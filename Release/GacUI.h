@@ -2858,52 +2858,78 @@ INativeWindowService
 /***********************************************************************
 INativeInputService
 ***********************************************************************/
+
+		enum class NativeGlobalShortcutKeyResult : vint
+		{
+			NotSupported = -2,
+			Occupied = -1,
+			ValidIdBegins = 0,
+		};
 		
 		/// <summary>
 		/// User input service. To access this service, use [M:vl.presentation.INativeController.InputService].
 		/// </summary>
 		class INativeInputService : public virtual IDescriptable, public Description<INativeInputService>
 		{
-		public:			
+		public:
 			/// <summary>
 			/// Start to reveive global timer message.
 			/// </summary>
-			virtual void					StartTimer()=0;
+			virtual void							StartTimer()=0;
 			/// <summary>
 			/// Stop to receive global timer message.
 			/// </summary>
-			virtual void					StopTimer()=0;
+			virtual void							StopTimer()=0;
 			/// <summary>
 			/// Test is the global timer message receiving enabled.
 			/// </summary>
 			/// <returns>Returns true if the global timer message receiving is enabled.</returns>
-			virtual bool					IsTimerEnabled()=0;
+			virtual bool							IsTimerEnabled()=0;
 			
 			/// <summary>
 			/// Test is the specified key pressing.
 			/// </summary>
 			/// <returns>Returns true if the specified key is pressing.</returns>
 			/// <param name="code">The key code to test.</param>
-			virtual bool					IsKeyPressing(VKEY code)=0;
+			virtual bool							IsKeyPressing(VKEY code)=0;
 			/// <summary>
 			/// Test is the specified key toggled.
 			/// </summary>
 			/// <returns>Returns true if the specified key is toggled.</returns>
 			/// <param name="code">The key code to test.</param>
-			virtual bool					IsKeyToggled(VKEY code)=0;
+			virtual bool							IsKeyToggled(VKEY code)=0;
 
 			/// <summary>
 			/// Get the name of a key.
 			/// </summary>
 			/// <returns>The name of a key.</returns>
 			/// <param name="code">The key code.</param>
-			virtual WString					GetKeyName(VKEY code)=0;
+			virtual WString							GetKeyName(VKEY code)=0;
 			/// <summary>
 			/// Get the key from a name.
 			/// </summary>
 			/// <returns>The key, returns -1 if the key name doesn't exist.</returns>
 			/// <param name="name">Key name</param>
-			virtual VKEY					GetKey(const WString& name)=0;
+			virtual VKEY							GetKey(const WString& name)=0;
+
+			/// <summary>
+			/// Register a system-wide shortcut key that doesn't require any window to be foreground window.
+			/// If the shortcut key is activated, <see cref="INativeControllerListener::GlobalShortcutKeyActivated"/> will be called.
+			/// </summary>
+			/// <param name="ctrl">Set to true if the CTRL key is required.</param>
+			/// <param name="shift">Set to true if the SHIFT key is required.</param>
+			/// <param name="alt">Set to true if the ALT key is required.</param>
+			/// <param name="key">The non-control key.</param>
+			/// <param name="id"></param>
+			/// <returns>Returns the created id. If it fails, the id equals to one of an item in <see cref="NativeGlobalShortcutKeyResult"/> except "ValidIdBegins".</returns>
+			virtual vint							RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)=0;
+
+			/// <summary>
+			/// Unregister a system-wide shortcut key.
+			/// </summary>
+			/// <param name="id">The created id.</param>
+			/// <returns>Returns true if this operation succeeded.</returns>
+			virtual bool							UnregisterGlobalShortcutKey(vint id)=0;
 		};
 
 /***********************************************************************
@@ -2926,6 +2952,10 @@ INativeCallbackService
 			/// Invoke <see cref="INativeControllerListener::ClipboardUpdated"/> of all installed listeners.
 			/// </summary>
 			virtual void					InvokeClipboardUpdated()=0;
+			/// <summary>
+			/// Invoke <see cref="INativeControllerListener::ClipboardUpdated"/> of all installed listeners.
+			/// </summary>
+			virtual void					InvokeGlobalShortcutKeyActivated(vint id) = 0;
 			/// <summary>
 			/// Invoke <see cref="INativeControllerListener::NativeWindowCreated"/> of all installed listeners.
 			/// </summary>
@@ -3248,6 +3278,11 @@ Native Window Controller
 			/// Called when the content of the clipboard is updated.
 			/// </summary>
 			virtual void					ClipboardUpdated();
+			/// <summary>
+			/// Called when a registered system-wide shortcut key is activated.
+			/// </summary>
+			/// <param name="id"></param>
+			virtual void					GlobalShortcutKeyActivated(vint id);
 			/// <summary>
 			/// Called when a window is created.
 			/// </summary>
@@ -4514,6 +4549,32 @@ Shortcut Key Manager
 				/// <returns>Returns true if at least one shortcut key item is executed.</returns>
 				/// <param name="info">The key event info.</param>
 				virtual bool							Execute(const NativeWindowKeyInfo& info)=0;
+				
+				/// <summary>Get a shortcut key item using a key combination. If the item for the key combination does not exist, this function returns null.</summary>
+				/// <returns>The shortcut key item.</returns>
+				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
+				/// <param name="shift">Set to true if the SHIFT key is required.</param>
+				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="key">The non-control key.</param>
+				virtual IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)=0;
+				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function crashes.</summary>
+				/// <returns>The created shortcut key item.</returns>
+				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
+				/// <param name="shift">Set to true if the SHIFT key is required.</param>
+				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="key">The non-control key.</param>
+				virtual IGuiShortcutKeyItem*			CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)=0;
+				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function returns the item that is created before.</summary>
+				/// <returns>The created shortcut key item.</returns>
+				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
+				/// <param name="shift">Set to true if the SHIFT key is required.</param>
+				/// <param name="alt">Set to true if the ALT key is required.</param>
+				/// <param name="key">The non-control key.</param>
+				virtual IGuiShortcutKeyItem*			CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)=0;
+				/// <summary>Destroy a shortcut key item using a key combination</summary>
+				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
+				/// <param name="item">The shortcut key item.</param>
+				virtual bool							DestroyShortcut(IGuiShortcutKeyItem* item)=0;
 			};
 
 /***********************************************************************
@@ -4526,21 +4587,23 @@ Shortcut Key Manager Helpers
 			{
 			protected:
 				GuiShortcutKeyManager*			shortcutKeyManager;
+				bool							global;
 				bool							ctrl;
 				bool							shift;
 				bool							alt;
 				VKEY							key;
 
-				void							AttachManager(GuiShortcutKeyManager* manager);
-				void							DetachManager(GuiShortcutKeyManager* manager);
 			public:
-				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key);
+				GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, VKEY _key);
 				~GuiShortcutKeyItem();
 
 				IGuiShortcutKeyManager*			GetManager()override;
 				WString							GetName()override;
+
+				void							ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, VKEY& _key);
 				bool							CanActivate(const NativeWindowKeyInfo& info);
 				bool							CanActivate(bool _ctrl, bool _shift, bool _alt, VKEY _key);
+				void							Execute();
 			};
 
 			/// <summary>A default implementation for <see cref="IGuiShortcutKeyManager"/>.</summary>
@@ -4549,7 +4612,11 @@ Shortcut Key Manager Helpers
 				typedef collections::List<Ptr<GuiShortcutKeyItem>>		ShortcutKeyItemList;
 			protected:
 				ShortcutKeyItemList				shortcutKeyItems;
-
+				
+				virtual bool					IsGlobal();
+				virtual bool					OnCreatingShortcut(GuiShortcutKeyItem* item);
+				virtual void					OnDestroyingShortcut(GuiShortcutKeyItem* item);
+				IGuiShortcutKeyItem*			CreateShortcutInternal(bool ctrl, bool shift, bool alt, VKEY key);
 			public:
 				/// <summary>Create the shortcut key manager.</summary>
 				GuiShortcutKeyManager();
@@ -4558,28 +4625,11 @@ Shortcut Key Manager Helpers
 				vint							GetItemCount()override;
 				IGuiShortcutKeyItem*			GetItem(vint index)override;
 				bool							Execute(const NativeWindowKeyInfo& info)override;
-
-				/// <summary>Create a shortcut key item using a key combination. If the item for the key combination exists, this function returns the item that is created before.</summary>
-				/// <returns>The created shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key);
-				/// <summary>Destroy a shortcut key item using a key combination</summary>
-				/// <returns>Returns true if the manager destroyed a existing shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				bool							DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key);
-				/// <summary>Get a shortcut key item using a key combination. If the item for the key combination does not exist, this function returns null.</summary>
-				/// <returns>The shortcut key item.</returns>
-				/// <param name="ctrl">Set to true if the CTRL key is required.</param>
-				/// <param name="shift">Set to true if the SHIFT key is required.</param>
-				/// <param name="alt">Set to true if the ALT key is required.</param>
-				/// <param name="key">The non-control key.</param>
-				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key);
+				
+				IGuiShortcutKeyItem*			TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)override;
+				IGuiShortcutKeyItem*			CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)override;
+				IGuiShortcutKeyItem*			CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)override;
+				bool							DestroyShortcut(IGuiShortcutKeyItem* item)override;
 			};
 		}
 	}
@@ -9783,6 +9833,7 @@ Application
 
 				void											InvokeClipboardNotify(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 				void											ClipboardUpdated()override;
+				void											GlobalShortcutKeyActivated(vint id)override;
 
 			protected:
 				using WindowMap = collections::Dictionary<INativeWindow*, GuiWindow*>;
@@ -9797,6 +9848,7 @@ Application
 				collections::List<GuiWindow*>					windows;
 				WindowMap										windowMap;
 				collections::SortedList<GuiPopup*>				openingPopups;
+				Ptr<compositions::GuiShortcutKeyManager>		globalShortcutKeyManager;
 
 				GuiApplication();
 				~GuiApplication();
@@ -9853,6 +9905,9 @@ Application
 				/// <summary>Get the tooltip owner. When the tooltip closed, it returns null.</summary>
 				/// <returns>The tooltip owner.</returns>
 				GuiControl*										GetTooltipOwner();
+				/// <summary>Get the <see cref="compositions::IGuiShortcutKeyManager"/> attached with this control host.</summary>
+				/// <returns>The shortcut key manager.</returns>
+				compositions::IGuiShortcutKeyManager*			GetGlobalShortcutKeyManager();
 				/// <summary>Get the file path of the current executable.</summary>
 				/// <returns>The file path of the current executable.</returns>
 				WString											GetExecutablePath();
@@ -10334,6 +10389,7 @@ namespace vl
 		namespace compositions
 		{
 			class IGuiShortcutKeyItem;
+			class IGuiShortcutKeyManager;
 		}
 
 		namespace controls
@@ -10346,10 +10402,11 @@ namespace vl
 				{
 				public:
 					WString									text;
-					bool									ctrl;
-					bool									shift;
-					bool									alt;
-					VKEY									key;
+					bool									global = false;
+					bool									ctrl = false;
+					bool									shift = false;
+					bool									alt = false;
+					VKEY									key = VKEY::KEY_UNKNOWN;
 				};
 			protected:
 				Ptr<GuiImageData>							image;
@@ -10362,13 +10419,15 @@ namespace vl
 				Ptr<ShortcutBuilder>						shortcutBuilder;
 
 				GuiInstanceRootObject*						attachedRootObject = nullptr;
+				GuiControlHost*								attachedControlHost = nullptr;
 				Ptr<compositions::IGuiGraphicsEventHandler>	renderTargetChangedHandler;
-				GuiControlHost*								shortcutOwner = nullptr;
 
 				void										OnShortcutKeyItemExecuted(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnRenderTargetChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										InvokeDescriptionChanged();
-				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder);
+
+				compositions::IGuiShortcutKeyManager*		GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder);
+				void										ReplaceShortcut(compositions::IGuiShortcutKeyItem* value);
 				void										BuildShortcut(const WString& builderText);
 				void										UpdateShortcutOwner();
 			public:
@@ -10406,9 +10465,6 @@ namespace vl
 				/// <summary>Get the shortcut key item for this command.</summary>
 				/// <returns>The shortcut key item for this command.</returns>
 				compositions::IGuiShortcutKeyItem*			GetShortcut();
-				/// <summary>Set the shortcut key item for this command.</summary>
-				/// <param name="value">The shortcut key item for this command.</param>
-				void										SetShortcut(compositions::IGuiShortcutKeyItem* value);
 				/// <summary>Get the shortcut builder for this command.</summary>
 				/// <returns>The shortcut builder for this command.</returns>
 				WString										GetShortcutBuilder();
@@ -25016,6 +25072,7 @@ namespace vl
 
 			void											InvokeGlobalTimer() override;
 			void											InvokeClipboardUpdated() override;
+			void											InvokeGlobalShortcutKeyActivated(vint id) override;
 			void											InvokeNativeWindowCreated(INativeWindow* window) override;
 			void											InvokeNativeWindowDestroying(INativeWindow* window) override;
 		};
@@ -25182,6 +25239,7 @@ GuiHostedController
 
 			void							GlobalTimer() override;
 			void							ClipboardUpdated() override;
+			void							GlobalShortcutKeyActivated(vint id) override;
 			void							NativeWindowDestroying(INativeWindow* window) override;
 
 			// =============================================================

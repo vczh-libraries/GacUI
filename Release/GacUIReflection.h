@@ -147,6 +147,7 @@ Type List (Basic)
 			F(presentation::INativeClipboardWriter)\
 			F(presentation::INativeClipboardService)\
 			F(presentation::INativeScreenService)\
+			F(presentation::NativeGlobalShortcutKeyResult)\
 			F(presentation::INativeInputService)\
 			F(presentation::INativeDialogService::MessageBoxButtonsInput)\
 			F(presentation::INativeDialogService::MessageBoxButtonsOutput)\

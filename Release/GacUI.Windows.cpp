@@ -2086,6 +2086,11 @@ WindowsController
 				{
 					callbackService.InvokeClipboardUpdated();
 				}
+
+				void InvokeGlobalShortcutkeyActivated(vint id)
+				{
+					callbackService.InvokeGlobalShortcutKeyActivated(id);
+				}
 			};
 
 /***********************************************************************
@@ -2118,6 +2123,12 @@ Windows Procedure
 						break;
 					case WM_CLIPBOARDUPDATE:
 						windowsController->InvokeClipboardUpdated();
+						break;
+					case WM_HOTKEY:
+						if (wParam > 0)
+						{
+							windowsController->InvokeGlobalShortcutkeyActivated((vint)wParam);
+						}
 						break;
 					}
 				}
@@ -14350,6 +14361,25 @@ WindowsInputService
 			{
 				vint index = keys.Keys().IndexOf(name);
 				return index == -1 ? VKEY::KEY_UNKNOWN : keys.Values()[index];
+			}
+
+			vint WindowsInputService::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				UINT modifier = 0;
+				if (ctrl) modifier |= MOD_CONTROL;
+				if (shift) modifier |= MOD_SHIFT;
+				if (alt) modifier |= MOD_ALT;
+
+				vint id = ++usedHotKeys;
+				BOOL result = RegisterHotKey(ownerHandle, (int)id, modifier, (UINT)key);
+				if (result == 0) return (vint)NativeGlobalShortcutKeyResult::Occupied;
+				return id;
+			}
+
+			bool WindowsInputService::UnregisterGlobalShortcutKey(vint id)
+			{ 
+				BOOL result = UnregisterHotKey(ownerHandle, (int)id);
+				return result != 0;
 			}
 		}
 	}

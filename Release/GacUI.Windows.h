@@ -2112,6 +2112,7 @@ namespace vl
 			protected:
 				HWND									ownerHandle;
 				bool									isTimerEnabled;
+				vint									usedHotKeys = 0;
 
 				collections::Array<WString>				keyNames;
 				collections::Dictionary<WString, VKEY>	keys;
@@ -2129,6 +2130,8 @@ namespace vl
 				bool									IsKeyToggled(VKEY code)override;
 				WString									GetKeyName(VKEY code)override;
 				VKEY									GetKey(const WString& name)override;
+				vint									RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)override;
+				bool									UnregisterGlobalShortcutKey(vint id)override;
 			};
 
 			extern bool									WinIsKeyPressing(VKEY code);

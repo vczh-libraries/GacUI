@@ -186,6 +186,52 @@ namespace vl
 			using namespace description;
 
 /***********************************************************************
+GuiGlobalShortcutKeyManager
+***********************************************************************/
+
+			class GuiGlobalShortcutKeyManager : public GuiShortcutKeyManager
+			{
+			protected:
+				Dictionary<vint, GuiShortcutKeyItem*>		idToItemsMap;
+				Dictionary<GuiShortcutKeyItem*, vint>		itemToIdsMap;
+
+				bool IsGlobal() override
+				{
+					return true;
+				}
+
+				bool OnCreatingShortcut(GuiShortcutKeyItem* item) override
+				{
+					bool ctrl, shift, alt;
+					VKEY key;
+					item->ReadKeyConfig(ctrl, shift, alt, key);
+
+					vint id = GetCurrentController()->InputService()->RegisterGlobalShortcutKey(ctrl, shift, alt, key);
+					if (id < (vint)NativeGlobalShortcutKeyResult::ValidIdBegins) return false;
+
+					idToItemsMap.Add(id, item);
+					itemToIdsMap.Add(item, id);
+					return true;
+				}
+
+				void OnDestroyingShortcut(GuiShortcutKeyItem* item) override
+				{
+					vint id = itemToIdsMap[item];
+					idToItemsMap.Remove(id);
+					itemToIdsMap.Remove(item);
+					GetCurrentController()->InputService()->UnregisterGlobalShortcutKey(id);
+				}
+
+			public:
+
+				GuiShortcutKeyItem* TryGetItemFromId(vint id)
+				{
+					vint index = idToItemsMap.Keys().IndexOf(id);
+					return index == -1 ? nullptr : idToItemsMap.Values()[index];
+				}
+			};
+
+/***********************************************************************
 GuiApplication
 ***********************************************************************/
 
@@ -211,9 +257,19 @@ GuiApplication
 				}
 			}
 
+			void GuiApplication::GlobalShortcutKeyActivated(vint id)
+			{
+				auto manager = dynamic_cast<GuiGlobalShortcutKeyManager*>(globalShortcutKeyManager.Obj());
+				if (auto item = manager->TryGetItemFromId(id))
+				{
+					item->Execute();
+				}
+			}
+
 			GuiApplication::GuiApplication()
 				:locale(Locale::UserDefault())
 			{
+				globalShortcutKeyManager = Ptr(new GuiGlobalShortcutKeyManager);
 				GetCurrentController()->CallbackService()->InstallListener(this);
 			}
 
@@ -423,6 +479,11 @@ GuiApplication
 				if(!sharedTooltipControl) return 0;
 				if(!sharedTooltipControl->GetTemporaryContentControl()) return 0;
 				return sharedTooltipOwner;
+			}
+
+			compositions::IGuiShortcutKeyManager* GuiApplication::GetGlobalShortcutKeyManager()
+			{
+				return globalShortcutKeyManager.Obj();
 			}
 
 			WString GuiApplication::GetExecutablePath()
@@ -5438,8 +5499,9 @@ namespace vl
 GuiShortcutKeyItem
 ***********************************************************************/
 
-			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _ctrl, bool _shift, bool _alt, VKEY _key)
+			GuiShortcutKeyItem::GuiShortcutKeyItem(GuiShortcutKeyManager* _shortcutKeyManager, bool _global, bool _ctrl, bool _shift, bool _alt, VKEY _key)
 				:shortcutKeyManager(_shortcutKeyManager)
+				,global(_global)
 				,ctrl(_ctrl)
 				,shift(_shift)
 				,alt(_alt)
@@ -5459,11 +5521,21 @@ GuiShortcutKeyItem
 			WString GuiShortcutKeyItem::GetName()
 			{
 				WString name;
-				if(ctrl) name+=L"Ctrl+";
-				if(shift) name+=L"Shift+";
-				if(alt) name+=L"Alt+";
-				name+=GetCurrentController()->InputService()->GetKeyName(key);
+				if (global) name += L"{";
+				if (ctrl) name += L"Ctrl+";
+				if (shift) name += L"Shift+";
+				if (alt) name += L"Alt+";
+				name += GetCurrentController()->InputService()->GetKeyName(key);
+				if (global) name += L"}";
 				return name;
+			}
+
+			void GuiShortcutKeyItem::ReadKeyConfig(bool& _ctrl, bool& _shift, bool& _alt, VKEY& _key)
+			{
+				_ctrl = ctrl;
+				_shift = shift;
+				_alt = alt;
+				_key = key;
 			}
 
 			bool GuiShortcutKeyItem::CanActivate(const NativeWindowKeyInfo& info)
@@ -5484,9 +5556,37 @@ GuiShortcutKeyItem
 					_key==key;
 			}
 
+			void GuiShortcutKeyItem::Execute()
+			{
+				GuiEventArgs arguments;
+				Executed.Execute(arguments);
+			}
+
 /***********************************************************************
 GuiShortcutKeyManager
 ***********************************************************************/
+
+			bool GuiShortcutKeyManager::IsGlobal()
+			{
+				return false;
+			}
+
+			bool GuiShortcutKeyManager::OnCreatingShortcut(GuiShortcutKeyItem* item)
+			{
+				return true;
+			}
+
+			void GuiShortcutKeyManager::OnDestroyingShortcut(GuiShortcutKeyItem* item)
+			{
+			}
+
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutInternal(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				auto item = Ptr(new GuiShortcutKeyItem(this, IsGlobal(), ctrl, shift, alt, key));
+				if (!OnCreatingShortcut(item.Obj())) return nullptr;
+				shortcutKeyItems.Add(item);
+				return item.Obj();
+			}
 
 			GuiShortcutKeyManager::GuiShortcutKeyManager()
 			{
@@ -5494,6 +5594,10 @@ GuiShortcutKeyManager
 
 			GuiShortcutKeyManager::~GuiShortcutKeyManager()
 			{
+				for (auto item : shortcutKeyItems)
+				{
+					OnDestroyingShortcut(item.Obj());
+				}
 			}
 
 			vint GuiShortcutKeyManager::GetItemCount()
@@ -5513,51 +5617,55 @@ GuiShortcutKeyManager
 				{
 					if(item->CanActivate(info))
 					{
-						GuiEventArgs arguments;
-						item->Executed.Execute(arguments);
+						item->Execute();
 						executed=true;
 					}
 				}
 				return executed;
 			}
 
-			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcut(bool ctrl, bool shift, bool alt, VKEY key)
-			{
-				for (auto item : shortcutKeyItems)
-				{
-					if(item->CanActivate(ctrl, shift, alt, key))
-					{
-						return item.Obj();
-					}
-				}
-				auto item=Ptr(new GuiShortcutKeyItem(this, ctrl, shift, alt, key));
-				shortcutKeyItems.Add(item);
-				return item.Obj();
-			}
-
-			bool GuiShortcutKeyManager::DestroyShortcut(bool ctrl, bool shift, bool alt, VKEY key)
-			{
-				for (auto item : shortcutKeyItems)
-				{
-					if(item->CanActivate(ctrl, shift, alt, key))
-					{
-						shortcutKeyItems.Remove(item.Obj());
-						return true;
-					}
-				}
-				return false;
-			}
-
 			IGuiShortcutKeyItem* GuiShortcutKeyManager::TryGetShortcut(bool ctrl, bool shift, bool alt, VKEY key)
 			{
 				for (auto item : shortcutKeyItems)
 				{
-					if(item->CanActivate(ctrl, shift, alt, key))
+					if (item->CanActivate(ctrl, shift, alt, key))
 					{
 						return item.Obj();
 					}
 				}
-				return 0;
+				return nullptr;
+			}
+
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateNewShortcut(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				CHECK_ERROR(
+					TryGetShortcut(ctrl, shift, alt, key) == nullptr,
+					L"vl::presentation::compositions::GuiShortcutKeyManager::CreateNewShortcut(bool, bool, bool, VKEY)#The shortcut key exists."
+					);
+				return CreateShortcutInternal(ctrl, shift, alt, key);
+			}
+
+			IGuiShortcutKeyItem* GuiShortcutKeyManager::CreateShortcutIfNotExist(bool ctrl, bool shift, bool alt, VKEY key)
+			{
+				if (TryGetShortcut(ctrl, shift, alt, key))
+				{
+					return nullptr;
+				}
+				return CreateShortcutInternal(ctrl, shift, alt, key);
+			}
+
+			bool GuiShortcutKeyManager::DestroyShortcut(IGuiShortcutKeyItem* item)
+			{
+				if (!item) return false;
+				if (item->GetManager() != this) return false;
+
+				auto skItem = dynamic_cast<GuiShortcutKeyItem*>(item);
+				if (!skItem) return false;
+
+				vint index = shortcutKeyItems.IndexOf(skItem);
+				if (index == -1) return false;
+				OnDestroyingShortcut(skItem);
+				return shortcutKeyItems.RemoveAt(index);
 			}
 		}
 	}
@@ -18089,7 +18197,7 @@ GuiDocumentCommonInterface
 
 			void GuiDocumentCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
-				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateShortcut(true, false, false, key);
+				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateNewShortcut(true, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
 					eventHandler();
@@ -19712,7 +19820,7 @@ GuiTextBoxCommonInterface
 
 			void GuiTextBoxCommonInterface::AddShortcutCommand(VKEY key, const Func<void()>& eventHandler)
 			{
-				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateShortcut(true, false, false, key);
+				IGuiShortcutKeyItem* item=internalShortcutKeyManager->CreateNewShortcut(true, false, false, key);
 				item->Executed.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
 					eventHandler();
@@ -26058,25 +26166,37 @@ GuiToolstripCommand
 				DescriptionChanged.Execute(arguments);
 			}
 
-			void GuiToolstripCommand::ReplaceShortcut(compositions::IGuiShortcutKeyItem* value, Ptr<ShortcutBuilder> builder)
+			compositions::IGuiShortcutKeyManager* GuiToolstripCommand::GetShortcutManagerFromBuilder(Ptr<ShortcutBuilder> builder)
+			{
+				if (builder->global)
+				{
+					return GetApplication()->GetGlobalShortcutKeyManager();
+				}
+				else
+				{
+					if (attachedControlHost)
+					{
+						if (!attachedControlHost->GetShortcutKeyManager())
+						{
+							attachedControlHost->SetShortcutKeyManager(new GuiShortcutKeyManager());
+						}
+						return attachedControlHost->GetShortcutKeyManager();
+					}
+				}
+				return nullptr;
+			}
+
+			void GuiToolstripCommand::ReplaceShortcut(compositions::IGuiShortcutKeyItem* value)
 			{
 				if (shortcutKeyItem != value)
 				{
 					if (shortcutKeyItem)
 					{
 						shortcutKeyItem->Executed.Detach(shortcutKeyItemExecutedHandler);
-						if (shortcutBuilder)
-						{
-							auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager());
-							if (manager)
-							{
-								manager->DestroyShortcut(shortcutBuilder->ctrl, shortcutBuilder->shift, shortcutBuilder->alt, shortcutBuilder->key);
-							}
-						}
+						shortcutKeyItem->GetManager()->DestroyShortcut(shortcutKeyItem);
 					}
 					shortcutKeyItem = nullptr;
 					shortcutKeyItemExecutedHandler = nullptr;
-					shortcutBuilder = value ? builder : nullptr;
 					if (value)
 					{
 						shortcutKeyItem = value;
@@ -26091,30 +26211,15 @@ GuiToolstripCommand
 				List<glr::ParsingError> errors;
 				if (auto parser = GetParserManager()->GetParser<ShortcutBuilder>(L"SHORTCUT"))
 				{
-					if (Ptr<ShortcutBuilder> builder = parser->ParseInternal(builderText, errors))
+					if (auto builder = parser->ParseInternal(builderText, errors))
 					{
-						if (shortcutOwner)
+						shortcutBuilder = builder;
+						if (auto shortcutKeyManager = GetShortcutManagerFromBuilder(builder))
 						{
-							if (!shortcutOwner->GetShortcutKeyManager())
+							if (auto item = shortcutKeyManager->CreateShortcutIfNotExist(builder->ctrl, builder->shift, builder->alt, builder->key))
 							{
-								shortcutOwner->SetShortcutKeyManager(new GuiShortcutKeyManager);
+								ReplaceShortcut(item);
 							}
-							if (auto manager = dynamic_cast<GuiShortcutKeyManager*>(shortcutOwner->GetShortcutKeyManager()))
-							{
-								IGuiShortcutKeyItem* item = manager->TryGetShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-								if (!item)
-								{
-									item = manager->CreateShortcut(builder->ctrl, builder->shift, builder->alt, builder->key);
-									if (item)
-									{
-										ReplaceShortcut(item, builder);
-									}
-								}
-							}
-						}
-						else
-						{
-							shortcutBuilder = builder;
 						}
 					}
 				}
@@ -26132,16 +26237,15 @@ GuiToolstripCommand
 					host = composition->GetRelatedControlHost();
 				}
 
-				if (shortcutOwner != host)
+				if (attachedControlHost != host)
 				{
-					if (shortcutOwner)
+					attachedControlHost = host;
+					if (shortcutBuilder && !shortcutBuilder->global)
 					{
-						ReplaceShortcut(nullptr, nullptr);
-						shortcutOwner = nullptr;
-					}
-					shortcutOwner = host;
-					if (shortcutBuilder && !shortcutKeyItem)
-					{
+						if (shortcutKeyItem)
+						{
+							ReplaceShortcut(nullptr);
+						}
 						BuildShortcut(shortcutBuilder->text);
 					}
 				}
@@ -26153,6 +26257,10 @@ GuiToolstripCommand
 
 			GuiToolstripCommand::~GuiToolstripCommand()
 			{
+				if (shortcutBuilder && shortcutKeyItem)
+				{
+					ReplaceShortcut(nullptr);
+				}
 			}
 
 			void GuiToolstripCommand::Attach(GuiInstanceRootObject* rootObject)
@@ -26246,11 +26354,6 @@ GuiToolstripCommand
 				return shortcutKeyItem;
 			}
 
-			void GuiToolstripCommand::SetShortcut(compositions::IGuiShortcutKeyItem* value)
-			{
-				ReplaceShortcut(value, 0);
-			}
-
 			WString GuiToolstripCommand::GetShortcutBuilder()
 			{
 				return shortcutBuilder ? shortcutBuilder->text : L"";
@@ -26298,13 +26401,15 @@ GuiToolstripCommand::ShortcutBuilder Parser
 				typedef GuiToolstripCommand::ShortcutBuilder			ShortcutBuilder;
 			public:
 				Regex						regexShortcut;
+				const vint					_global;
 				const vint					_ctrl;
 				const vint					_shift;
 				const vint					_alt;
 				const vint					_key;
 
 				GuiToolstripCommandShortcutParser()
-					: regexShortcut(L"((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					: regexShortcut(L"((<global>global:))?((<ctrl>Ctrl)/+|(<shift>Shift)/+|(<alt>Alt)/+)*(<key>/.+)")
+					, _global(regexShortcut.CaptureNames().IndexOf(L"global"))
 					, _ctrl(regexShortcut.CaptureNames().IndexOf(L"ctrl"))
 					, _shift(regexShortcut.CaptureNames().IndexOf(L"shift"))
 					, _alt(regexShortcut.CaptureNames().IndexOf(L"alt"))
@@ -26325,6 +26430,7 @@ GuiToolstripCommand::ShortcutBuilder Parser
 
 					auto builder = Ptr(new ShortcutBuilder);
 					builder->text = text;
+					builder->global = match->Groups().Contains(_global);
 					builder->ctrl = match->Groups().Contains(_ctrl);
 					builder->shift = match->Groups().Contains(_shift);
 					builder->alt = match->Groups().Contains(_alt);
@@ -33793,6 +33899,10 @@ INativeControllerListener
 		{
 		}
 
+		void INativeControllerListener::GlobalShortcutKeyActivated(vint id)
+		{
+		}
+
 		void INativeControllerListener::NativeWindowCreated(INativeWindow* window)
 		{
 		}
@@ -34206,6 +34316,16 @@ public:
 	VKEY GetKey(const WString& name) override
 	{
 		CHECK_FAIL(L"Not implemented!");
+	}
+
+	vint RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
+	{
+		CHECK_FAIL(L"Not Implemented!");
+	}
+
+	bool UnregisterGlobalShortcutKey(vint id)
+	{
+		CHECK_FAIL(L"Not Implemented!");
 	}
 };
 
@@ -34972,6 +35092,11 @@ GuiHostedController::INativeControllerListener
 		void GuiHostedController::ClipboardUpdated()
 		{
 			callbackService.InvokeClipboardUpdated();
+		}
+
+		void GuiHostedController::GlobalShortcutKeyActivated(vint id)
+		{
+			callbackService.InvokeGlobalShortcutKeyActivated(id);
 		}
 
 		void GuiHostedController::NativeWindowDestroying(INativeWindow* window)
@@ -54630,6 +54755,14 @@ SharedCallbackService
 			for(vint i=0;i<listeners.Count();i++)
 			{
 				listeners[i]->ClipboardUpdated();
+			}
+		}
+
+		void SharedCallbackService::InvokeGlobalShortcutKeyActivated(vint id)
+		{
+			for (vint i = 0; i < listeners.Count(); i++)
+			{
+				listeners[i]->GlobalShortcutKeyActivated(id);
 			}
 		}
 
