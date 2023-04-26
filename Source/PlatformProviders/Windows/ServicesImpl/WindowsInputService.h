@@ -23,6 +23,7 @@ namespace vl
 			protected:
 				HWND									ownerHandle;
 				bool									isTimerEnabled;
+				vint									usedHotKeys = 0;
 
 				collections::Array<WString>				keyNames;
 				collections::Dictionary<WString, VKEY>	keys;

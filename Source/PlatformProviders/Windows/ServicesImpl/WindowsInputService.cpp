@@ -130,12 +130,21 @@ WindowsInputService
 
 			vint WindowsInputService::RegisterGlobalShortcutKey(bool ctrl, bool shift, bool alt, VKEY key)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				UINT modifier = 0;
+				if (ctrl) modifier |= MOD_CONTROL;
+				if (shift) modifier |= MOD_SHIFT;
+				if (alt) modifier |= MOD_ALT;
+
+				vint id = ++usedHotKeys;
+				BOOL result = RegisterHotKey(ownerHandle, (int)id, modifier, (UINT)key);
+				if (result == 0) return (vint)NativeGlobalShortcutKeyResult::Occupied;
+				return id;
 			}
 
 			bool WindowsInputService::UnregisterGlobalShortcutKey(vint id)
-			{
-				CHECK_FAIL(L"Not Implemented!");
+			{ 
+				BOOL result = UnregisterHotKey(ownerHandle, (int)id);
+				return result != 0;
 			}
 		}
 	}
