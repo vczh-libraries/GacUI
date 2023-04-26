@@ -2833,6 +2833,9 @@ Licensed under https://github.com/vczh-libraries/License
 #ifndef VCZH_REFLECTION_TYPES_TYPEDVALUESERIALIZERPROVIDER
 #define VCZH_REFLECTION_TYPES_TYPEDVALUESERIALIZERPROVIDER
 
+#ifdef VCZH_GCC
+#include <float.h>
+#endif
 
 namespace vl
 {
@@ -2841,10 +2844,87 @@ namespace vl
 		namespace description
 		{
 /***********************************************************************
+Constants
+***********************************************************************/
+
+			template<typename T>
+			struct TypedValueSerializerMinMax;
+
+			template<>
+			struct TypedValueSerializerMinMax<vint8_t>
+			{
+				static constexpr vint8_t Min = _I8_MIN;
+				static constexpr vint8_t Max = _I8_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<vint16_t>
+			{
+				static constexpr vint16_t Min = _I16_MIN;
+				static constexpr vint16_t Max = _I16_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<vint32_t>
+			{
+				static constexpr vint32_t Min = _I32_MIN;
+				static constexpr vint32_t Max = _I32_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<vint64_t>
+			{
+				static constexpr vint64_t Min = _I64_MIN;
+				static constexpr vint64_t Max = _I64_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<vuint8_t>
+			{
+				static constexpr vuint8_t Min = 0;
+				static constexpr vuint8_t Max = _UI8_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<vuint16_t>
+			{
+				static constexpr vuint16_t Min = 0;
+				static constexpr vuint16_t Max = _UI16_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<vuint32_t>
+			{
+				static constexpr vuint32_t Min = 0;
+				static constexpr vuint32_t Max = _UI32_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<vuint64_t>
+			{
+				static constexpr vuint64_t Min = 0;
+				static constexpr vuint64_t Max = _UI64_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<float>
+			{
+				static constexpr float Min = (float)-FLT_MAX;
+				static constexpr float Max = (float)FLT_MAX;
+			};
+
+			template<>
+			struct TypedValueSerializerMinMax<double>
+			{
+				static constexpr double Min = (double)-DBL_MAX;
+				static constexpr double Max = (double)DBL_MAX;
+			};
+
+/***********************************************************************
 Signed Types
 ***********************************************************************/
 
-			template<typename T, T MinValue, T MaxValue>
+			template<typename T>
 			struct TypedValueSerializerProvider_Signed
 			{
 				static T GetDefaultValue()
@@ -2860,6 +2940,8 @@ Signed Types
 
 				static bool Deserialize(const WString& input, T& output)
 				{
+					constexpr T MinValue = TypedValueSerializerMinMax<T>::Min;
+					constexpr T MaxValue = TypedValueSerializerMinMax<T>::Max;
 					bool success = false;
 					vint64_t result = wtoi64_test(input, success);
 					if (!success) return false;
@@ -2873,7 +2955,7 @@ Signed Types
 Unsigned Types
 ***********************************************************************/
 
-			template<typename T, T MaxValue>
+			template<typename T>
 			struct TypedValueSerializerProvider_Unsigned
 			{
 				static T GetDefaultValue()
@@ -2889,6 +2971,7 @@ Unsigned Types
 
 				static bool Deserialize(const WString& input, T& output)
 				{
+					constexpr T MaxValue = TypedValueSerializerMinMax<T>::Max;
 					bool success = false;
 					vuint64_t result = wtou64_test(input, success);
 					if (!success) return false;
@@ -2902,7 +2985,7 @@ Unsigned Types
 Floating Point Types
 ***********************************************************************/
 
-			template<typename T, T MaxValue>
+			template<typename T>
 			struct TypedValueSerializerProvider_FloatingPoint
 			{
 				static T GetDefaultValue()
@@ -2919,10 +3002,12 @@ Floating Point Types
 
 				static bool Deserialize(const WString& input, T& output)
 				{
+					constexpr T MinValue = TypedValueSerializerMinMax<T>::Min;
+					constexpr T MaxValue = TypedValueSerializerMinMax<T>::Max;
 					bool success = false;
 					double result = wtof_test(input, success);
 					if (!success) return false;
-					if (result < -MaxValue || result > MaxValue) return false;
+					if (result < MinValue || result > MaxValue) return false;
 					output = (T)result;
 					return true;
 				}
@@ -2932,29 +3017,29 @@ Floating Point Types
 Serializable Types
 ***********************************************************************/
 
-#define DEFINE_SIGNED_TVSP(TYPENAME, MINVALUE, MAXVALUE)\
-		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_Signed<TYPENAME, MINVALUE, MAXVALUE> {};\
+#define DEFINE_SIGNED_TVSP(TYPENAME)\
+		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_Signed<TYPENAME> {};\
 
-		DEFINE_SIGNED_TVSP(vint8_t, _I8_MIN, _I8_MAX)
-		DEFINE_SIGNED_TVSP(vint16_t, _I16_MIN, _I16_MAX)
-		DEFINE_SIGNED_TVSP(vint32_t, _I32_MIN, _I32_MAX)
-		DEFINE_SIGNED_TVSP(vint64_t, _I64_MIN, _I64_MAX)
+		DEFINE_SIGNED_TVSP(vint8_t)
+		DEFINE_SIGNED_TVSP(vint16_t)
+		DEFINE_SIGNED_TVSP(vint32_t)
+		DEFINE_SIGNED_TVSP(vint64_t)
 #undef DEFINE_SIGNED_TVSP
 
-#define DEFINE_UNSIGNED_TVSP(TYPENAME, MAXVALUE)\
-		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_Unsigned<TYPENAME, MAXVALUE> {};\
+#define DEFINE_UNSIGNED_TVSP(TYPENAME)\
+		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_Unsigned<TYPENAME> {};\
 
-		DEFINE_UNSIGNED_TVSP(vuint8_t, _UI8_MAX)
-		DEFINE_UNSIGNED_TVSP(vuint16_t, _UI16_MAX)
-		DEFINE_UNSIGNED_TVSP(vuint32_t, _UI32_MAX)
-		DEFINE_UNSIGNED_TVSP(vuint64_t, _UI64_MAX)
+		DEFINE_UNSIGNED_TVSP(vuint8_t)
+		DEFINE_UNSIGNED_TVSP(vuint16_t)
+		DEFINE_UNSIGNED_TVSP(vuint32_t)
+		DEFINE_UNSIGNED_TVSP(vuint64_t)
 #undef DEFINE_UNSIGNED_TVSP
 
-#define DEFINE_FLOAT_TVSP(TYPENAME, MAXVALUE)\
-		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_FloatingPoint<TYPENAME, MAXVALUE> {};\
+#define DEFINE_FLOAT_TVSP(TYPENAME)\
+		template<> struct TypedValueSerializerProvider<TYPENAME> : TypedValueSerializerProvider_FloatingPoint<TYPENAME> {};\
 
-		DEFINE_FLOAT_TVSP(float, (float)FLT_MAX)
-		DEFINE_FLOAT_TVSP(double, (double)DBL_MAX)
+		DEFINE_FLOAT_TVSP(float)
+		DEFINE_FLOAT_TVSP(double)
 #undef DEFINE_FLOAT_TVSP
 			
 #define DEFINE_TVSP(TYPENAME)\
