@@ -18,6 +18,7 @@
 - Tutorial
   - New tab on `FullControlTest` to show options of dialogs, with localization for `zh-CN`.
   - `GacUI_Controls/Dialogs`.
+  - `GacUI_Controls/GlobalHotKey`.
   - Add `<LocalizedStringsInjection/>` to GacUI_Controls/Localization.
   - Update `GacUI_ControlTemplate/WindowSkin` to use new theme name.
 
@@ -32,8 +33,6 @@
 
 ## Progressing
 
-- Tutorial:
-  - Global shortcut key.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
