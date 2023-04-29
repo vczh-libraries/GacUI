@@ -460,6 +460,11 @@ Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
 
+#if defined VCZH_ARM
+#elif defined VCZH_MSVC || defined VCZH_GCC
+#include <emmintrin.h>
+#endif
+
 namespace vl
 {
 
