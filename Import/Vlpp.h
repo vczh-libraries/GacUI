@@ -14,9 +14,10 @@ Licensed under https://github.com/vczh-libraries/License
 #ifndef VCZH_BASIC
 #define VCZH_BASIC
 
+#include <stdlib.h>
+
 #ifdef VCZH_CHECK_MEMORY_LEAKS
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
 #include <crtdbg.h>
 #define VCZH_CHECK_MEMORY_LEAKS_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new VCZH_CHECK_MEMORY_LEAKS_NEW
@@ -53,13 +54,6 @@ static_assert(sizeof(wchar_t) == sizeof(char32_t), "wchar_t is not UTF-32.");
 static_assert(false, "wchar_t configuration is not right.");
 #endif
 
-#if defined VCZH_ARM
-#elif defined VCZH_MSVC
-#include <intrin.h>
-#elif defined VCZH_GCC
-#include <x86intrin.h>
-#endif
-
 #if defined VCZH_GCC
 #include <stdint.h>
 #include <stddef.h>
@@ -89,9 +83,7 @@ static_assert(false, "wchar_t configuration is not right.");
 #include <utility>
 #include <compare>
 #include <new>
-
-#define L_(x) L__(x)
-#define L__(x) L ## x
+#include <atomic>
 
 namespace vl
 {
@@ -145,6 +137,11 @@ x86 and x64 Compatbility
 #endif
 	/// <summary>Signed interger representing position.</summary>
 	typedef vint64_t				pos_t;
+	/// <summary>Signed atomic integer.</summary>
+	typedef std::atomic<vint>		atomic_vint;
+
+#define INCRC(ATOMIC) ((ATOMIC)->fetch_add(1) + 1)
+#define DECRC(ATOMIC) ((ATOMIC)->fetch_sub(1) - 1)
 
 #ifdef VCZH_64
 #define ITOA_S		_i64toa_s
@@ -155,16 +152,6 @@ x86 and x64 Compatbility
 #define UITOW_S		_ui64tow_s
 #define UI64TOA_S	_ui64toa_s
 #define UI64TOW_S	_ui64tow_s
-#if defined VCZH_MSVC
-#define INCRC(x)	(_InterlockedIncrement64(x))
-#define DECRC(x)	(_InterlockedDecrement64(x))
-#elif defined VCZH_ARM
-#define INCRC(x)	(__atomic_add_fetch(x, 1, __ATOMIC_SEQ_CST))
-#define DECRC(x)	(__atomic_sub_fetch(x, 1, __ATOMIC_SEQ_CST))
-#elif defined VCZH_GCC
-#define INCRC(x)	(__sync_add_and_fetch(x, 1))
-#define DECRC(x)	(__sync_sub_and_fetch(x, 1))
-#endif
 #else
 #define ITOA_S		_itoa_s
 #define ITOW_S		_itow_s
@@ -174,16 +161,6 @@ x86 and x64 Compatbility
 #define UITOW_S		_ui64tow_s
 #define UI64TOA_S	_ui64toa_s
 #define UI64TOW_S	_ui64tow_s
-#if defined VCZH_MSVC
-#define INCRC(x)	(_InterlockedIncrement((volatile long*)(x)))
-#define DECRC(x)	(_InterlockedDecrement((volatile long*)(x)))
-#elif defined VCZH_ARM
-#define INCRC(x)	(__atomic_add_fetch(x, 1, __ATOMIC_SEQ_CST))
-#define DECRC(x)	(__atomic_sub_fetch(x, 1, __ATOMIC_SEQ_CST))
-#elif defined VCZH_GCC
-#define INCRC(x)	(__sync_add_and_fetch(x, 1))
-#define DECRC(x)	(__sync_sub_and_fetch(x, 1))
-#endif
 #endif
 
 /***********************************************************************
@@ -235,6 +212,12 @@ Basic Types
 
 	template<vint Index, typename TTuple>
 	using TypeTupleElement = typename TypeTupleItemRetriver<Index, TTuple>::Type;
+
+	template<typename T>
+	struct RemoveCVRefArrayCtad { using Type = std::remove_cvref_t<T>; };
+
+	template<typename T, vint I>
+	struct RemoveCVRefArrayCtad<T(&)[I]> { using Type = T*; };
 
 	/// <summary>
 	/// Base type of all classes.
@@ -299,6 +282,161 @@ Interface
 
 #endif
 
+
+/***********************************************************************
+.\COLLECTIONS\PAIR.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_PAIR
+#define VCZH_COLLECTIONS_PAIR
+
+
+namespace vl
+{
+	namespace collections
+	{
+		template<typename K, typename V>
+		class Pair;
+
+		namespace pair_internal
+		{
+			template<typename T>
+			struct AddConstInsideReference
+			{
+				using Type = const T;
+			};
+
+			template<typename T>
+			struct AddConstInsideReference<T&>
+			{
+				using Type = const T&;
+			};
+
+			template<vint Index, typename TPair>
+			struct TypePairElementRetriver;
+
+			template<vint Index, typename K, typename V>
+			struct TypePairElementRetriver<Index, Pair<K, V>>
+			{
+				using Type = TypeTupleElement<Index, TypeTuple<K, V>>;
+			};
+
+			template<vint Index, typename K, typename V>
+			struct TypePairElementRetriver<Index, const Pair<K, V>>
+			{
+				using Type = typename AddConstInsideReference<TypeTupleElement<Index, TypeTuple<K, V>>>::Type;
+			};
+		}
+
+		/// <summary>A type representing a pair of key and value.</summary>
+		/// <typeparam name="K">Type of the key.</typeparam>
+		/// <typeparam name="V">Type of the value.</typeparam>
+		template<typename K, typename V>
+		class Pair
+		{
+		public:
+			/// <summary>The key.</summary>
+			K				key;
+			/// <summary>The value.</summary>
+			V				value;
+
+			Pair() = default;
+			Pair(const Pair<K, V>&) = default;
+			Pair(Pair<K, V>&&) = default;
+
+			template<typename TKey, typename TValue>
+			Pair(TKey&& _key, TValue&& _value)
+				requires(std::is_constructible_v<K, TKey&&> && std::is_constructible_v<V, TValue&&>)
+				: key(std::forward<TKey&&>(_key))
+				, value(std::forward<TValue&&>(_value))
+			{
+			}
+
+			template<typename TKey, typename TValue>
+			Pair(const Pair<TKey, TValue>& p)
+				requires(std::is_constructible_v<K, const TKey&> && std::is_constructible_v<K, const TKey&>)
+				: key(p.key)
+				, value(p.value)
+			{
+			}
+
+			template<typename TKey, typename TValue>
+			Pair(Pair<TKey, TValue>&& p)
+				requires(std::is_constructible_v<K, TKey&&> && std::is_constructible_v<K, TKey&&>)
+				: key(std::move(p.key))
+				, value(std::move(p.value))
+			{
+			}
+
+			Pair<K, V>& operator=(const Pair<K, V>&) = default;
+			Pair<K, V>& operator=(Pair<K, V>&&) = default;
+
+			template<typename TKey, typename TValue>
+			std::strong_ordering operator<=>(const Pair<TKey, TValue>& p) const
+				requires(std::three_way_comparable_with<const K, const TKey, std::strong_ordering> && std::three_way_comparable_with<const V, const TValue, std::strong_ordering>)
+			{
+				std::strong_ordering
+				result = key <=> p.key; if (result != 0) return result;
+				result = value <=> p.value; if (result != 0) return result;
+				return std::strong_ordering::equal;
+			}
+
+			template<typename TKey, typename TValue>
+			bool operator==(const Pair<TKey, TValue>& p) const
+				requires(std::equality_comparable_with<const K, const TKey>&& std::equality_comparable_with<const V, const TValue>)
+			{
+				return key == p.key && value == p.value;
+			}
+
+			/////////////////////////////////////////////////////////////////////
+
+			template<size_t Index>
+			typename pair_internal::TypePairElementRetriver<Index, Pair<K, V>>::Type& get() = delete;
+
+			template<>
+			typename pair_internal::TypePairElementRetriver<0, Pair<K, V>>::Type& get<0>() { return key; }
+
+			template<>
+			typename pair_internal::TypePairElementRetriver<1, Pair<K, V>>::Type& get<1>() { return value; }
+
+			template<size_t Index>
+			typename pair_internal::TypePairElementRetriver<Index, const Pair<K, V>>::Type& get() const = delete;
+
+			template<>
+			typename pair_internal::TypePairElementRetriver<0, const Pair<K, V>>::Type& get<0>() const { return key; }
+
+			template<>
+			typename pair_internal::TypePairElementRetriver<1, const Pair<K, V>>::Type& get<1>() const { return value; }
+		};
+
+		template<typename K, typename V>
+		Pair(K&&, V&&) -> Pair<typename RemoveCVRefArrayCtad<K>::Type, typename RemoveCVRefArrayCtad<V>::Type>;
+	}
+}
+
+namespace std
+{
+	template<typename K, typename V>
+	struct tuple_size<vl::collections::Pair<K, V>> : integral_constant<size_t, 2> {};
+
+	template<size_t Index, typename K, typename V>
+	struct tuple_element<Index, vl::collections::Pair<K, V>>
+	{
+		using type = decltype(std::declval<vl::collections::Pair<K, V>>().template get<Index>());
+	};
+
+	template<size_t Index, typename K, typename V>
+	struct tuple_element<Index, const vl::collections::Pair<K, V>>
+	{
+		using type = decltype(std::declval<const vl::collections::Pair<K, V>>().template get<Index>());
+	};
+}
+
+#endif
 
 /***********************************************************************
 .\PRIMITIVES\DATETIME.H
@@ -689,15 +827,15 @@ ReferenceCounterOperator
 		/// <summary>Create the reference counter of an object.</summary>
 		/// <returns>The pointer to the reference counter.</returns>
 		/// <param name="reference">The object.</param>
-		static __forceinline volatile vint* CreateCounter(T* reference)
+		static __forceinline atomic_vint* CreateCounter(T* reference)
 		{
-			return new vint(0);
+			return new atomic_vint(0);
 		}
 
 		/// <summary>Delete the reference counter from an object.</summary>
 		/// <param name="counter">The pointer to the reference counter.</param>
 		/// <param name="reference">The object.</param>
-		static __forceinline void DeleteReference(volatile vint* counter, void* reference)
+		static __forceinline void DeleteReference(atomic_vint* counter, void* reference)
 		{
 			delete counter;
 			delete (T*)reference;
@@ -726,9 +864,9 @@ Ptr
 		template<typename X>
 		friend class Ptr;
 	protected:
-		typedef void(*Destructor)(volatile vint*, void*);
+		typedef void(*Destructor)(atomic_vint*, void*);
 
-		volatile vint*		counter = nullptr;
+		atomic_vint*		counter = nullptr;
 		T*					reference = nullptr;
 		void*				originalReference = nullptr;
 		Destructor			originalDestructor = nullptr;
@@ -764,12 +902,12 @@ Ptr
 			}
 		}
 
-		volatile vint* Counter()const
+		atomic_vint* Counter()const
 		{
 			return counter;
 		}
 
-		Ptr(volatile vint* _counter, T* _reference, void* _originalReference, Destructor _originalDestructor)
+		Ptr(atomic_vint* _counter, T* _reference, void* _originalReference, Destructor _originalDestructor)
 			:counter(_counter)
 			, reference(_reference)
 			, originalReference(_originalReference)
@@ -977,7 +1115,7 @@ ComPtr
 	class ComPtr
 	{
 	protected:
-		volatile vint* counter = nullptr;
+		atomic_vint* counter = nullptr;
 		T* reference = nullptr;
 
 		void SetEmpty()
@@ -1007,12 +1145,12 @@ ComPtr
 			}
 		}
 
-		volatile vint* Counter()const
+		atomic_vint* Counter()const
 		{
 			return counter;
 		}
 
-		ComPtr(volatile vint* _counter, T* _reference)
+		ComPtr(atomic_vint* _counter, T* _reference)
 			:counter(_counter)
 			, reference(_reference)
 		{
@@ -1027,7 +1165,7 @@ ComPtr
 		{
 			if (pointer)
 			{
-				counter = new volatile vint(1);
+				counter = new atomic_vint(1);
 				reference = pointer;
 			}
 			else
@@ -1067,7 +1205,7 @@ ComPtr
 			Dec();
 			if (pointer)
 			{
-				counter = new vint(1);
+				counter = new atomic_vint(1);
 				reference = pointer;
 			}
 			else
@@ -1165,631 +1303,6 @@ Traits
 			return key.Obj();
 		}
 	};
-}
-
-#endif
-
-/***********************************************************************
-.\PRIMITIVES\FUNCTION.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_FUNCTION
-#define VCZH_FUNCTION
-#include <memory.h>
-namespace vl
-{
-	template<typename T>
-	class Func;
- 
-/***********************************************************************
-vl::Func<R(TArgs...)>
-***********************************************************************/
-
-	namespace internal_invokers
-	{
-		template<typename R, typename ...TArgs>
-		class Invoker : public Object
-		{
-		public:
-			virtual R Invoke(TArgs&& ...args) = 0;
-		};
-
-		//------------------------------------------------------
-		
-		template<typename R, typename ...TArgs>
-		class StaticInvoker : public Invoker<R, TArgs...>
-		{
-		protected:
-			R(*function)(TArgs ...args);
-
-		public:
-			StaticInvoker(R(*_function)(TArgs...))
-				:function(_function)
-			{
-			}
-
-			R Invoke(TArgs&& ...args)override
-			{
-				return function(std::forward<TArgs>(args)...);
-			}
-		};
-
-		//------------------------------------------------------
-		
-		template<typename C, typename R, typename ...TArgs>
-		class MemberInvoker : public Invoker<R, TArgs...>
-		{
-		protected:
-			C*							sender;
-			R(C::*function)(TArgs ...args);
-
-		public:
-			MemberInvoker(C* _sender, R(C::*_function)(TArgs ...args))
-				:sender(_sender)
-				,function(_function)
-			{
-			}
-
-			R Invoke(TArgs&& ...args)override
-			{
-				return (sender->*function)(std::forward<TArgs>(args)...);
-			}
-		};
-
-		//------------------------------------------------------
-
-		template<typename C, typename R, typename ...TArgs>
-		class ObjectInvoker : public Invoker<R, TArgs...>
-		{
-		protected:
-			C							function;
-
-		public:
-			ObjectInvoker(const C& _function)
-				:function(_function)
-			{
-			}
-
-			ObjectInvoker(C&& _function)
-				:function(std::move(_function))
-			{
-			}
-
-			R Invoke(TArgs&& ...args)override
-			{
-				return function(std::forward<TArgs>(args)...);
-			}
-		};
-
-		//------------------------------------------------------
-
-		template<typename C, typename ...TArgs>
-		class ObjectInvoker<C, void, TArgs...> : public Invoker<void, TArgs...>
-		{
-		protected:
-			C							function;
-
-		public:
-			ObjectInvoker(const C& _function)
-				:function(_function)
-			{
-			}
-
-			ObjectInvoker(C&& _function)
-				:function(std::move(_function))
-			{
-			}
-
-			void Invoke(TArgs&& ...args)override
-			{
-				function(std::forward<TArgs>(args)...);
-			}
-		};
-	}
-
-	/// <summary>A type for functors.</summary>
-	/// <typeparam name="R">The return type.</typeparam>
-	/// <typeparam name="TArgs">Types of parameters.</typeparam>
-	template<typename R, typename ...TArgs>
-	class Func<R(TArgs...)> : public Object
-	{
-	protected:
-		Ptr<internal_invokers::Invoker<R, TArgs...>>		invoker;
-
-		template<typename R2, typename ...TArgs2>
-		static bool IsEmptyFunc(const Func<R2(TArgs2...)>& function)
-		{
-			return !function;
-		}
-
-		template<typename R2, typename ...TArgs2>
-		static bool IsEmptyFunc(Func<R2(TArgs2...)>& function)
-		{
-			return !function;
-		}
-
-		template<typename C>
-		static bool IsEmptyFunc(C&&)
-		{
-			return false;
-		}
-	public:
-		typedef R FunctionType(TArgs...);
-		typedef R ResultType;
-
-		/// <summary>Create a null functor.</summary>
-		Func() = default;
-
-		/// <summary>Copy a functor.</summary>
-		/// <param name="function">The functor to copy.</param>
-		Func(const Func<R(TArgs...)>& function) = default;
-
-		/// <summary>Move a functor.</summary>
-		/// <param name="function">The functor to move.</param>
-		Func(Func<R(TArgs...)>&& function) = default;
-
-		/// <summary>Create a functor from a function pointer.</summary>
-		/// <param name="function">The function pointer.</param>
-		Func(R(*function)(TArgs...))
-		{
-			invoker = Ptr(new internal_invokers::StaticInvoker<R, TArgs...>(function));
-		}
-
-		/// <summary>Create a functor from a method.</summary>
-		/// <typeparam name="C">Type of the class that this method belongs to.</typeparam>
-		/// <param name="sender">The object that this method belongs to.</param>
-		/// <param name="function">The method pointer.</param>
-		template<typename C>
-		Func(C* sender, R(C::*function)(TArgs...))
-		{
-			invoker = Ptr(new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function));
-		}
-
-		/// <summary>Create a functor from another compatible functor.</summary>
-		/// <typeparam name="C">Type of the functor to copy.</typeparam>
-		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
-		template<typename C>
-		Func(C&& function)
-			requires (
-				std::is_invocable_v<C, TArgs...>
-			) && (
-				std::is_same_v<void, R> ||
-				std::is_convertible_v<decltype(std::declval<C>()(std::declval<TArgs>()...)), R>
-			)
-		{
-			if (!IsEmptyFunc(function))
-			{
-				invoker = Ptr(new internal_invokers::ObjectInvoker<std::remove_cvref_t<C>, R, TArgs...>(std::forward<C&&>(function)));
-			}
-		}
-
-		/// <summary>Create a functor from another compatible functor.</summary>
-		/// <typeparam name="C">Type of the functor to copy.</typeparam>
-		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
-		template<typename C>
-		Func(C* function)
-			requires (
-				std::is_invocable_v<C*, TArgs...>
-			) && (
-				std::is_same_v<void, R> ||
-				std::is_convertible_v<decltype(std::declval<C*>()(std::declval<TArgs>()...)), R>
-			)
-		{
-			if (!IsEmptyFunc(function))
-			{
-				invoker = Ptr(new internal_invokers::ObjectInvoker<C*, R, TArgs...>(function));
-			}
-		}
-
-		/// <summary>Invoke the function.</summary>
-		/// <returns>Returns the function result. It crashes when the functor is null.</returns>
-		/// <param name="args">Arguments to invoke the function.</param>
-		R operator()(TArgs ...args)const
-		{
-			return invoker->Invoke(std::forward<TArgs>(args)...);
-		}
-
-		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>& function)
-		{
-			invoker = function.invoker;
-			return *this;
-		}
-
-		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>&& function)
-		{
-			invoker = std::move(function.invoker);
-			return *this;
-		}
-
-		bool operator==(const Func<R(TArgs...)>& function)const
-		{
-			return invoker == function.invoker;
-		}
-
-		bool operator!=(const Func<R(TArgs...)>& function)const
-		{
-			return invoker != function.invoker;
-		}
-
-		/// <summary>Test is the functor is non-null.</summary>
-		/// <returns>Returns true if the functor is non-null.</returns>
-		operator bool()const
-		{
-			return invoker;
-		}
-	};
- 
-/***********************************************************************
-vl::function_lambda::LambdaRetriveType<R(TArgs...)>
-***********************************************************************/
- 
-	namespace function_lambda
-	{
-		template<typename T>
-		struct LambdaRetriveType
-		{
-		};
-
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
-		{
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-			typedef TypeTuple<TArgs...> ParameterTypes;
-		};
-
-		template<typename TObject, typename R, typename ...TArgs>
-		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
-		{
-			typedef R(FunctionType)(TArgs...);
-			typedef R ResultType;
-			typedef TypeTuple<TArgs...> ParameterTypes;
-		};
-
-#define LAMBDA vl::function_lambda::Lambda
-	}
-
-	template<typename C>
-	Func(C&&) -> Func<typename function_lambda::LambdaRetriveType<decltype(&C::operator())>::FunctionType>;
-
-	template<typename R, typename... TArgs>
-	Func(R(*)(TArgs...)) -> Func<R(TArgs...)>;
-
-	template<typename C, typename R, typename... TArgs>
-	Func(C*, R(C::*)(TArgs...)) -> Func<R(TArgs...)>;
-}
-#endif
-
-/***********************************************************************
-.\PRIMITIVES\TUPLE.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-#ifndef VCZH_TUPLE
-#define VCZH_TUPLE
-
-
-namespace vl
-{
-	namespace tuple_internal
-	{
-		template<vint I, typename T>
-		struct TupleElement
-		{
-			T						element;
-
-			TupleElement() = default;
-
-			template<typename U>
-			TupleElement(U&& _element)
-				:element(std::forward<U&&>(_element))
-			{
-			}
-		};
-
-		template<typename T, typename U>
-		struct TupleElementComparison
-		{
-			const T&				t;
-			const U&				u;
-
-			TupleElementComparison(const T& _t, const U& _u)
-				: t(_t)
-				, u(_u)
-			{
-			}
-
-			friend std::strong_ordering operator*(std::strong_ordering order, const TupleElementComparison<T, U>& t)
-			{
-				if (order != 0) return order;
-				return t.t <=> t.u;
-			}
-		};
-
-		struct TupleCtorElementsTag {};
-		struct TupleCtorTupleTag {};
-
-		template<typename Is, typename ...TArgs>
-		struct TupleBase;
-
-		template<std::size_t ...Is, typename ...TArgs> requires(sizeof...(Is) == sizeof...(TArgs))
-		struct TupleBase<std::index_sequence<Is...>, TArgs...>
-			: TupleElement<Is, TArgs>...
-		{
-		private:
-			using TSelf = TupleBase<std::index_sequence<Is...>, TArgs...>;
-
-			template<typename ...UArgs> requires(sizeof...(TArgs) == sizeof...(UArgs))
-				using TCompatible = TupleBase<std::index_sequence<Is...>, UArgs...>;
-
-		public:
-			TupleBase() = default;
-
-			template<typename ...UArgs>
-			TupleBase(TupleCtorElementsTag, UArgs&& ...xs)
-				: TupleElement<Is, TArgs>(std::forward<UArgs&&>(xs)) ...
-			{
-			}
-
-			template<typename ...UArgs>
-			TupleBase(TupleCtorTupleTag, const TCompatible<UArgs...>& t)
-				: TupleElement<Is, TArgs>(static_cast<const TupleElement<Is, UArgs>&>(t).element) ...
-			{
-			}
-
-			template<typename ...UArgs>
-			TupleBase(TupleCtorTupleTag, TCompatible<UArgs...>&& t)
-				: TupleElement<Is, TArgs>(std::move(static_cast<TupleElement<Is, UArgs>&>(t).element)) ...
-			{
-			}
-
-			template<typename ...UArgs>
-			void AssignCopy(const TCompatible<UArgs...>& t)
-			{
-				((
-					static_cast<TupleElement<Is, TArgs>*>(this)->element =
-					static_cast<const TupleElement<Is, UArgs>&>(t).element
-				), ...);
-			}
-
-			template<typename ...UArgs>
-			void AssignMove(TCompatible<UArgs...>&& t)
-			{
-				((
-					static_cast<TupleElement<Is, TArgs>*>(this)->element =
-					std::move(static_cast<TupleElement<Is, UArgs>&&>(t).element)
-				), ...);
-			}
-
-			template<typename ...UArgs>
-			bool AreEqual(const TCompatible<UArgs...>& t) const
-			{
-				return (true && ... && (
-					static_cast<const TupleElement<Is, TArgs>*>(this)->element ==
-					static_cast<const TupleElement<Is, UArgs>&>(t).element
-					));
-			}
-
-			template<typename ...UArgs>
-			std::strong_ordering Compare(const TCompatible<UArgs...>& t) const
-			{
-				return (std::strong_ordering::equal * ... * (TupleElementComparison<TArgs, UArgs>(
-					static_cast<const TupleElement<Is, TArgs>*>(this)->element,
-					static_cast<const TupleElement<Is, UArgs>&>(t).element
-					)));
-			}
-		};
-	}
-
-	template<typename ...TArgs>
-	class Tuple : private tuple_internal::TupleBase<std::make_index_sequence<sizeof...(TArgs)>, TArgs...>
-	{
-		template<typename ...UArgs>
-		friend class Tuple;
-
-		using TSelf = Tuple<TArgs...>;
-		using TBase = tuple_internal::TupleBase<std::make_index_sequence<sizeof...(TArgs)>, TArgs...>;
-
-		template<typename ...UArgs> requires(sizeof...(TArgs) == sizeof...(UArgs))
-		using TCompatible = Tuple<UArgs...>;
-
-		template<typename ...UArgs> requires(sizeof...(TArgs) == sizeof...(UArgs))
-		using TCompatibleBase = tuple_internal::TupleBase<std::make_index_sequence<sizeof...(TArgs)>, UArgs...>;
-
-	public:
-		Tuple() = default;
-
-		template<typename ...UArgs>
-		Tuple(UArgs&& ...xs) requires(sizeof...(TArgs) == sizeof...(UArgs))
-			: TBase(
-				tuple_internal::TupleCtorElementsTag{},
-				std::forward<UArgs&&>(xs)...
-			)
-		{
-		}
-
-		template<typename ...UArgs>
-		Tuple(const TCompatible<UArgs...>& t) requires(sizeof...(TArgs) == sizeof...(UArgs))
-			: TBase(
-				tuple_internal::TupleCtorTupleTag{},
-				static_cast<const TCompatibleBase<UArgs...>&>(t)
-			)
-		{
-		}
-
-		template<typename ...UArgs>
-		Tuple(TCompatible<UArgs...>&& t) requires(sizeof...(TArgs) == sizeof...(UArgs))
-			: TBase(
-				tuple_internal::TupleCtorTupleTag{},
-				static_cast<TCompatibleBase<UArgs...>&&>(t)
-			)
-		{
-		}
-
-		template<typename ...UArgs>
-		TSelf& operator=(const TCompatible<UArgs...>& t)
-		{
-			AssignCopy(t);
-			return *this;
-		}
-
-		template<typename ...UArgs>
-		TSelf& operator=(TCompatible<UArgs...>&& t)
-		{
-			AssignMove(std::move(t));
-			return *this;
-		}
-
-		template<typename ...UArgs>
-		std::strong_ordering operator<=>(const TCompatible<UArgs...>& t)const
-		{
-			return this->Compare(t);
-		}
-
-		template<typename ...UArgs>
-		bool operator==(const TCompatible<UArgs...>& t)const
-		{
-			return this->AreEqual(t);
-		}
-
-		template<vint Index>
-		TypeTupleElement<Index, TypeTuple<TArgs...>>& get()
-		{
-			return static_cast<tuple_internal::TupleElement<Index, TypeTupleElement<Index, TypeTuple<TArgs...>>>*>(this)->element;
-		}
-
-		template<vint Index>
-		const TypeTupleElement<Index, TypeTuple<TArgs...>>& get()const
-		{
-			return static_cast<const tuple_internal::TupleElement<Index, TypeTupleElement<Index, TypeTuple<TArgs...>>>*>(this)->element;
-		}
-	};
-
-	template<typename T>
-	struct TupleElementCtad { using Type = std::remove_cvref_t<T>; };
-
-	template<typename T, vint I>
-	struct TupleElementCtad<T(&)[I]> { using Type = T*; };
-
-	template<typename ...TArgs>
-	Tuple(TArgs&&...) -> Tuple<typename TupleElementCtad<TArgs>::Type...>;
-
-	template<vint Index, typename ...TArgs>
-	TypeTupleElement<Index, TypeTuple<TArgs...>>& get(Tuple<TArgs...>& t)
-	{
-		return t.template get<Index>();
-	}
-	
-	template<vint Index, typename ...TArgs>
-	const TypeTupleElement<Index, TypeTuple<TArgs...>>& get(const Tuple<TArgs...>& t)
-	{
-		return t.template get<Index>();
-	}
-}
-
-namespace std
-{
-	template<typename ...TArgs>
-	struct tuple_size<vl::Tuple<TArgs...>> : integral_constant<size_t, sizeof...(TArgs)> {};
-
-	template<size_t Index, typename ...TArgs>
-	struct tuple_element<Index, vl::Tuple<TArgs...>>
-	{
-		using type = vl::TypeTupleElement<Index, vl::TypeTuple<TArgs...>>;
-	};
-}
-
-#endif
-
-/***********************************************************************
-.\COLLECTIONS\PAIR.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_PAIR
-#define VCZH_COLLECTIONS_PAIR
-
-
-namespace vl
-{
-	namespace collections
-	{
-		template<typename K, typename V>
-		class Pair;
-
-		/// <summary>A type representing a pair of key and value.</summary>
-		/// <typeparam name="K">Type of the key.</typeparam>
-		/// <typeparam name="V">Type of the value.</typeparam>
-		template<typename K, typename V>
-		class Pair
-		{
-		public:
-			/// <summary>The key.</summary>
-			K				key;
-			/// <summary>The value.</summary>
-			V				value;
-
-			Pair() = default;
-			Pair(const Pair<K, V>&) = default;
-			Pair(Pair<K, V>&&) = default;
-
-			template<typename TKey, typename TValue>
-			Pair(TKey&& _key, TValue&& _value)
-				requires(std::is_constructible_v<K, TKey&&> && std::is_constructible_v<V, TValue&&>)
-				: key(std::forward<TKey&&>(_key))
-				, value(std::forward<TValue&&>(_value))
-			{
-			}
-
-			template<typename TKey, typename TValue>
-			Pair(const Pair<TKey, TValue>& p)
-				requires(std::is_constructible_v<K, const TKey&> && std::is_constructible_v<K, const TKey&>)
-				: key(p.key)
-				, value(p.value)
-			{
-			}
-
-			template<typename TKey, typename TValue>
-			Pair(Pair<TKey, TValue>&& p)
-				requires(std::is_constructible_v<K, TKey&&> && std::is_constructible_v<K, TKey&&>)
-				: key(std::move(p.key))
-				, value(std::move(p.value))
-			{
-			}
-
-			Pair<K, V>& operator=(const Pair<K, V>&) = default;
-			Pair<K, V>& operator=(Pair<K, V>&&) = default;
-
-			template<typename TKey, typename TValue>
-			std::strong_ordering operator<=>(const Pair<TKey, TValue>& p) const
-				requires(std::three_way_comparable_with<const K, const TKey, std::strong_ordering> && std::three_way_comparable_with<const V, const TValue, std::strong_ordering>)
-			{
-				std::strong_ordering
-				result = key <=> p.key; if (result != 0) return result;
-				result = value <=> p.value; if (result != 0) return result;
-				return std::strong_ordering::equal;
-			}
-
-			template<typename TKey, typename TValue>
-			bool operator==(const Pair<TKey, TValue>& p) const
-				requires(std::equality_comparable_with<const K, const TKey>&& std::equality_comparable_with<const V, const TValue>)
-			{
-				return key == p.key && value == p.value;
-			}
-		};
-
-		template<typename K, typename V>
-		Pair(K&&, V&&) -> Pair<typename TupleElementCtad<K>::Type, typename TupleElementCtad<V>::Type>;
-	}
 }
 
 #endif
@@ -4314,187 +3827,6 @@ Concat
 #endif
 
 /***********************************************************************
-.\COLLECTIONS\OPERATIONFOREACH.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_FOREACH
-#define VCZH_COLLECTIONS_FOREACH
-
-namespace vl
-{
-	namespace collections
-	{
-		struct RangeBasedForLoopEnding
-		{
-		};
-
-/***********************************************************************
-Range-Based For-Loop Iterator
-***********************************************************************/
-
-		template<typename T>
-		struct RangeBasedForLoopIterator
-		{
-		private:
-			IEnumerator<T>*			iterator;
-
-		public:
-			RangeBasedForLoopIterator(const IEnumerable<T>& enumerable)
-				: iterator(enumerable.CreateEnumerator())
-			{
-				operator++();
-			}
-
-			~RangeBasedForLoopIterator()
-			{
-				if (iterator) delete iterator;
-			}
-
-			void operator++()
-			{
-				if (!iterator->Next())
-				{
-					delete iterator;
-					iterator = nullptr;
-				}
-			}
-
-			const T& operator*() const
-			{
-				return iterator->Current();
-			}
-
-			bool operator==(const RangeBasedForLoopEnding&) const
-			{
-				return iterator == nullptr;
-			}
-
-			bool operator!=(const RangeBasedForLoopEnding&) const
-			{
-				return iterator != nullptr;
-			}
-
-			friend bool operator==(const RangeBasedForLoopEnding&, const RangeBasedForLoopIterator<T>& iterator)
-			{
-				return iterator.iterator == nullptr;
-			}
-
-			friend bool operator!=(const RangeBasedForLoopEnding&, const RangeBasedForLoopIterator<T>& iterator)
-			{
-				return iterator.iterator != nullptr;
-			}
-		};
-
-		template<typename T>
-		RangeBasedForLoopIterator<T> begin(const IEnumerable<T>& enumerable)
-		{
-			return { enumerable };
-		}
-
-		template<typename T>
-		RangeBasedForLoopEnding end(const IEnumerable<T>& enumerable)
-		{
-			return {};
-		}
-
-/***********************************************************************
-Range-Based For-Loop Iterator with Index
-***********************************************************************/
-
-		template<typename T>
-		struct RangeBasedForLoopIteratorWithIndex
-		{
-		private:
-			IEnumerator<T>*			iterator;
-			vint					index;
-
-		public:
-			RangeBasedForLoopIteratorWithIndex(const IEnumerable<T>& enumerable)
-				: iterator(enumerable.CreateEnumerator())
-				, index(-1)
-			{
-				operator++();
-			}
-
-			~RangeBasedForLoopIteratorWithIndex()
-			{
-				if (iterator) delete iterator;
-			}
-
-			void operator++()
-			{
-				if (!iterator->Next())
-				{
-					delete iterator;
-					iterator = nullptr;
-				}
-				index++;
-			}
-
-			Tuple<const T&, vint> operator*() const
-			{
-				return { iterator->Current(),index };
-			}
-
-			bool operator==(const RangeBasedForLoopEnding&) const
-			{
-				return iterator == nullptr;
-			}
-
-			bool operator!=(const RangeBasedForLoopEnding&) const
-			{
-				return iterator != nullptr;
-			}
-
-			friend bool operator==(const RangeBasedForLoopEnding&, const RangeBasedForLoopIteratorWithIndex<T>& iterator)
-			{
-				return iterator.iterator == nullptr;
-			}
-
-			friend bool operator!=(const RangeBasedForLoopEnding&, const RangeBasedForLoopIteratorWithIndex<T>& iterator)
-			{
-				return iterator.iterator != nullptr;
-			}
-		};
-
-		template<typename T>
-		struct EnumerableWithIndex
-		{
-			const IEnumerable<T>&	enumerable;
-
-			EnumerableWithIndex(const IEnumerable<T>& _enumerable)
-				: enumerable(_enumerable)
-			{
-			}
-		};
-
-		template<typename T>
-		EnumerableWithIndex<T> indexed(const IEnumerable<T>& enumerable)
-		{
-			return { enumerable };
-		}
-
-		template<typename T>
-		RangeBasedForLoopIteratorWithIndex<T> begin(const EnumerableWithIndex<T>& enumerable)
-		{
-			return { enumerable.enumerable };
-		}
-
-		template<typename T>
-		RangeBasedForLoopEnding end(const EnumerableWithIndex<T>& enumerable)
-		{
-			return {};
-		}
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\COLLECTIONS\OPERATIONPAIR.H
 ***********************************************************************/
 /***********************************************************************
@@ -4573,85 +3905,6 @@ Pairwise
 			bool Evaluated()const override
 			{
 				return enumerator1->Evaluated() && enumerator2->Evaluated();
-			}
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
-.\COLLECTIONS\OPERATIONSELECT.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_OPERATIONSELECT
-#define VCZH_COLLECTIONS_OPERATIONSELECT
-
-
-namespace vl
-{
-	namespace collections
-	{
-
-/***********************************************************************
-Select
-***********************************************************************/
-
-		template<typename T, typename K>
-		class SelectEnumerator : public virtual IEnumerator<K>
-		{
-		protected:
-			IEnumerator<T>*		enumerator;
-			Func<K(T)>			selector;
-			Nullable<K>			current;
-		public:
-			SelectEnumerator(IEnumerator<T>* _enumerator, const Func<K(T)>& _selector, Nullable<K> _current = {})
-				:enumerator(_enumerator)
-				,selector(_selector)
-				,current(_current)
-			{
-			}
-
-			~SelectEnumerator()
-			{
-				delete enumerator;
-			}
-
-			IEnumerator<K>* Clone()const override
-			{
-				return new SelectEnumerator(enumerator->Clone(), selector, current);
-			}
-
-			const K& Current()const override
-			{
-				return current.Value();
-			}
-
-			vint Index()const override
-			{
-				return enumerator->Index();
-			}
-
-			bool Next()override
-			{
-				if (enumerator->Next())
-				{
-					current = selector(enumerator->Current());
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-
-			void Reset()override
-			{
-				enumerator->Reset();
 			}
 		};
 	}
@@ -5184,86 +4437,6 @@ Intersect/Except
 #endif
 
 /***********************************************************************
-.\COLLECTIONS\OPERATIONWHERE.H
-***********************************************************************/
-/***********************************************************************
-Author: Zihan Chen (vczh)
-Licensed under https://github.com/vczh-libraries/License
-***********************************************************************/
-
-#ifndef VCZH_COLLECTIONS_OPERATIONWHERE
-#define VCZH_COLLECTIONS_OPERATIONWHERE
-
-
-namespace vl
-{
-	namespace collections
-	{
-/***********************************************************************
-Where
-***********************************************************************/
-
-		template<typename T>
-		class WhereEnumerator : public virtual IEnumerator<T>
-		{
-		protected:
-			IEnumerator<T>*			enumerator;
-			Func<bool(T)>			selector;
-			vint					index;
-
-		public:
-			WhereEnumerator(IEnumerator<T>* _enumerator, const Func<bool(T)>& _selector, vint _index=-1)
-				:enumerator(_enumerator)
-				,selector(_selector)
-				,index(_index)
-			{
-			}
-
-			~WhereEnumerator()
-			{
-				delete enumerator;
-			}
-
-			IEnumerator<T>* Clone()const override
-			{
-				return new WhereEnumerator(enumerator->Clone(), selector, index);
-			}
-
-			const T& Current()const override
-			{
-				return enumerator->Current();
-			}
-
-			vint Index()const override
-			{
-				return index;
-			}
-
-			bool Next()override
-			{
-				while(enumerator->Next())
-				{
-					if(selector(enumerator->Current()))
-					{
-						index++;
-						return true;
-					}
-				}
-				return false;
-			}
-
-			void Reset()override
-			{
-				enumerator->Reset();
-				index=-1;
-			}
-		};
-	}
-}
-
-#endif
-
-/***********************************************************************
 .\COLLECTIONS\PARTIALORDERING.H
 ***********************************************************************/
 /***********************************************************************
@@ -5752,6 +4925,458 @@ Partial Ordering
 
 
 /***********************************************************************
+.\PRIMITIVES\FUNCTION.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_FUNCTION
+#define VCZH_FUNCTION
+#include <memory.h>
+namespace vl
+{
+	template<typename T>
+	class Func;
+ 
+/***********************************************************************
+vl::Func<R(TArgs...)>
+***********************************************************************/
+
+	namespace internal_invokers
+	{
+		template<typename R, typename ...TArgs>
+		class Invoker : public Object
+		{
+		public:
+			virtual R Invoke(TArgs&& ...args) = 0;
+		};
+
+		//------------------------------------------------------
+		
+		template<typename R, typename ...TArgs>
+		class StaticInvoker : public Invoker<R, TArgs...>
+		{
+		protected:
+			R(*function)(TArgs ...args);
+
+		public:
+			StaticInvoker(R(*_function)(TArgs...))
+				:function(_function)
+			{
+			}
+
+			R Invoke(TArgs&& ...args)override
+			{
+				return function(std::forward<TArgs>(args)...);
+			}
+		};
+
+		//------------------------------------------------------
+		
+		template<typename C, typename R, typename ...TArgs>
+		class MemberInvoker : public Invoker<R, TArgs...>
+		{
+		protected:
+			C*							sender;
+			R(C::*function)(TArgs ...args);
+
+		public:
+			MemberInvoker(C* _sender, R(C::*_function)(TArgs ...args))
+				:sender(_sender)
+				,function(_function)
+			{
+			}
+
+			R Invoke(TArgs&& ...args)override
+			{
+				return (sender->*function)(std::forward<TArgs>(args)...);
+			}
+		};
+
+		//------------------------------------------------------
+
+		template<typename C, typename R, typename ...TArgs>
+		class ObjectInvoker : public Invoker<R, TArgs...>
+		{
+		protected:
+			C							function;
+
+		public:
+			ObjectInvoker(const C& _function)
+				:function(_function)
+			{
+			}
+
+			ObjectInvoker(C&& _function)
+				:function(std::move(_function))
+			{
+			}
+
+			R Invoke(TArgs&& ...args)override
+			{
+				return function(std::forward<TArgs>(args)...);
+			}
+		};
+
+		//------------------------------------------------------
+
+		template<typename C, typename ...TArgs>
+		class ObjectInvoker<C, void, TArgs...> : public Invoker<void, TArgs...>
+		{
+		protected:
+			C							function;
+
+		public:
+			ObjectInvoker(const C& _function)
+				:function(_function)
+			{
+			}
+
+			ObjectInvoker(C&& _function)
+				:function(std::move(_function))
+			{
+			}
+
+			void Invoke(TArgs&& ...args)override
+			{
+				function(std::forward<TArgs>(args)...);
+			}
+		};
+	}
+
+	/// <summary>A type for functors.</summary>
+	/// <typeparam name="R">The return type.</typeparam>
+	/// <typeparam name="TArgs">Types of parameters.</typeparam>
+	template<typename R, typename ...TArgs>
+	class Func<R(TArgs...)> : public Object
+	{
+	protected:
+		Ptr<internal_invokers::Invoker<R, TArgs...>>		invoker;
+
+		template<typename R2, typename ...TArgs2>
+		static bool IsEmptyFunc(const Func<R2(TArgs2...)>& function)
+		{
+			return !function;
+		}
+
+		template<typename R2, typename ...TArgs2>
+		static bool IsEmptyFunc(Func<R2(TArgs2...)>& function)
+		{
+			return !function;
+		}
+
+		template<typename C>
+		static bool IsEmptyFunc(C&&)
+		{
+			return false;
+		}
+	public:
+		typedef R FunctionType(TArgs...);
+		typedef R ResultType;
+
+		/// <summary>Create a null functor.</summary>
+		Func() = default;
+
+		/// <summary>Copy a functor.</summary>
+		/// <param name="function">The functor to copy.</param>
+		Func(const Func<R(TArgs...)>& function) = default;
+
+		/// <summary>Move a functor.</summary>
+		/// <param name="function">The functor to move.</param>
+		Func(Func<R(TArgs...)>&& function) = default;
+
+		/// <summary>Create a functor from a function pointer.</summary>
+		/// <param name="function">The function pointer.</param>
+		Func(R(*function)(TArgs...))
+		{
+			invoker = Ptr(new internal_invokers::StaticInvoker<R, TArgs...>(function));
+		}
+
+		/// <summary>Create a functor from a method.</summary>
+		/// <typeparam name="C">Type of the class that this method belongs to.</typeparam>
+		/// <param name="sender">The object that this method belongs to.</param>
+		/// <param name="function">The method pointer.</param>
+		template<typename C>
+		Func(C* sender, R(C::*function)(TArgs...))
+		{
+			invoker = Ptr(new internal_invokers::MemberInvoker<C, R, TArgs...>(sender, function));
+		}
+
+		/// <summary>Create a functor from another compatible functor.</summary>
+		/// <typeparam name="C">Type of the functor to copy.</typeparam>
+		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
+		template<typename C>
+		Func(C&& function)
+			requires (
+				std::is_invocable_v<C, TArgs...>
+			) && (
+				std::is_same_v<void, R> ||
+				std::is_convertible_v<decltype(std::declval<C>()(std::declval<TArgs>()...)), R>
+			)
+		{
+			if (!IsEmptyFunc(function))
+			{
+				invoker = Ptr(new internal_invokers::ObjectInvoker<std::remove_cvref_t<C>, R, TArgs...>(std::forward<C&&>(function)));
+			}
+		}
+
+		/// <summary>Create a functor from another compatible functor.</summary>
+		/// <typeparam name="C">Type of the functor to copy.</typeparam>
+		/// <param name="function">The functor to copy. It could be a lambda expression, or any types that has operator() members.</param>
+		template<typename C>
+		Func(C* function)
+			requires (
+				std::is_invocable_v<C*, TArgs...>
+			) && (
+				std::is_same_v<void, R> ||
+				std::is_convertible_v<decltype(std::declval<C*>()(std::declval<TArgs>()...)), R>
+			)
+		{
+			if (!IsEmptyFunc(function))
+			{
+				invoker = Ptr(new internal_invokers::ObjectInvoker<C*, R, TArgs...>(function));
+			}
+		}
+
+		/// <summary>Invoke the function.</summary>
+		/// <returns>Returns the function result. It crashes when the functor is null.</returns>
+		/// <param name="args">Arguments to invoke the function.</param>
+		R operator()(TArgs ...args)const
+		{
+			return invoker->Invoke(std::forward<TArgs>(args)...);
+		}
+
+		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>& function)
+		{
+			invoker = function.invoker;
+			return *this;
+		}
+
+		Func<R(TArgs...)>& operator=(const Func<R(TArgs...)>&& function)
+		{
+			invoker = std::move(function.invoker);
+			return *this;
+		}
+
+		bool operator==(const Func<R(TArgs...)>& function)const
+		{
+			return invoker == function.invoker;
+		}
+
+		bool operator!=(const Func<R(TArgs...)>& function)const
+		{
+			return invoker != function.invoker;
+		}
+
+		/// <summary>Test is the functor is non-null.</summary>
+		/// <returns>Returns true if the functor is non-null.</returns>
+		operator bool()const
+		{
+			return invoker;
+		}
+	};
+ 
+/***********************************************************************
+vl::function_lambda::LambdaRetriveType<R(TArgs...)>
+***********************************************************************/
+ 
+	namespace function_lambda
+	{
+		template<typename T>
+		struct LambdaRetriveType
+		{
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)const>
+		{
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+
+		template<typename TObject, typename R, typename ...TArgs>
+		struct LambdaRetriveType<R(__thiscall TObject::*)(TArgs...)>
+		{
+			typedef R(FunctionType)(TArgs...);
+			typedef R ResultType;
+			typedef TypeTuple<TArgs...> ParameterTypes;
+		};
+	}
+
+	template<typename C>
+	Func(C&&) -> Func<typename function_lambda::LambdaRetriveType<decltype(&C::operator())>::FunctionType>;
+
+	template<typename R, typename... TArgs>
+	Func(R(*)(TArgs...)) -> Func<R(TArgs...)>;
+
+	template<typename C, typename R, typename... TArgs>
+	Func(C*, R(C::*)(TArgs...)) -> Func<R(TArgs...)>;
+}
+#endif
+
+/***********************************************************************
+.\COLLECTIONS\OPERATIONSELECT.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_OPERATIONSELECT
+#define VCZH_COLLECTIONS_OPERATIONSELECT
+
+
+namespace vl
+{
+	namespace collections
+	{
+
+/***********************************************************************
+Select
+***********************************************************************/
+
+		template<typename T, typename K>
+		class SelectEnumerator : public virtual IEnumerator<K>
+		{
+		protected:
+			IEnumerator<T>*		enumerator;
+			Func<K(T)>			selector;
+			Nullable<K>			current;
+		public:
+			SelectEnumerator(IEnumerator<T>* _enumerator, const Func<K(T)>& _selector, Nullable<K> _current = {})
+				:enumerator(_enumerator)
+				,selector(_selector)
+				,current(_current)
+			{
+			}
+
+			~SelectEnumerator()
+			{
+				delete enumerator;
+			}
+
+			IEnumerator<K>* Clone()const override
+			{
+				return new SelectEnumerator(enumerator->Clone(), selector, current);
+			}
+
+			const K& Current()const override
+			{
+				return current.Value();
+			}
+
+			vint Index()const override
+			{
+				return enumerator->Index();
+			}
+
+			bool Next()override
+			{
+				if (enumerator->Next())
+				{
+					current = selector(enumerator->Current());
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
+			void Reset()override
+			{
+				enumerator->Reset();
+			}
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\COLLECTIONS\OPERATIONWHERE.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_OPERATIONWHERE
+#define VCZH_COLLECTIONS_OPERATIONWHERE
+
+
+namespace vl
+{
+	namespace collections
+	{
+/***********************************************************************
+Where
+***********************************************************************/
+
+		template<typename T>
+		class WhereEnumerator : public virtual IEnumerator<T>
+		{
+		protected:
+			IEnumerator<T>*			enumerator;
+			Func<bool(T)>			selector;
+			vint					index;
+
+		public:
+			WhereEnumerator(IEnumerator<T>* _enumerator, const Func<bool(T)>& _selector, vint _index=-1)
+				:enumerator(_enumerator)
+				,selector(_selector)
+				,index(_index)
+			{
+			}
+
+			~WhereEnumerator()
+			{
+				delete enumerator;
+			}
+
+			IEnumerator<T>* Clone()const override
+			{
+				return new WhereEnumerator(enumerator->Clone(), selector, index);
+			}
+
+			const T& Current()const override
+			{
+				return enumerator->Current();
+			}
+
+			vint Index()const override
+			{
+				return index;
+			}
+
+			bool Next()override
+			{
+				while(enumerator->Next())
+				{
+					if(selector(enumerator->Current()))
+					{
+						index++;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			void Reset()override
+			{
+				enumerator->Reset();
+				index=-1;
+			}
+		};
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\PRIMITIVES\EVENT.H
 ***********************************************************************/
 /***********************************************************************
@@ -5861,6 +5486,505 @@ namespace vl
 
 
 /***********************************************************************
+.\PRIMITIVES\TUPLE.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+#ifndef VCZH_TUPLE
+#define VCZH_TUPLE
+
+
+namespace vl
+{
+	namespace tuple_internal
+	{
+		template<vint I, typename T>
+		struct TupleElement
+		{
+			T						element;
+
+			TupleElement() = default;
+
+			template<typename U>
+			TupleElement(U&& _element)
+				:element(std::forward<U&&>(_element))
+			{
+			}
+
+			template<typename U>
+			void AssignCopy(const TupleElement<I, U>& value)
+			{
+				element = value.GetElement();
+			}
+
+			template<typename U>
+			void AssignMove(TupleElement<I, U>&& value)
+			{
+				element = std::move(value.GetElement());
+			}
+
+			template<typename U>
+			bool operator==(const TupleElement<I, U>& value) const
+			{
+				return element == value.GetElement();
+			}
+
+			T& GetElement()
+			{
+				return element;
+			}
+
+			const T& GetElement() const
+			{
+				return element;
+			}
+		};
+
+		template<vint I, typename T>
+		struct TupleElement<I, T&>
+		{
+			T*						element;
+
+			TupleElement() = delete;
+
+			template<typename U>
+			TupleElement(U&& _element)
+				:element(&_element)
+			{
+			}
+
+			template<typename U>
+			void AssignCopy(const TupleElement<I, U>& value)
+			{
+				element = &value.GetElement();
+			}
+
+			template<typename U>
+			void AssignMove(TupleElement<I, U>&& value)
+			{
+				element = &value.GetElement();
+			}
+
+			template<typename U>
+			bool operator==(const TupleElement<I, U>& value) const
+			{
+				return *element == value.GetElement();
+			}
+
+			T& GetElement()
+			{
+				return *element;
+			}
+
+			const T& GetElement() const
+			{
+				return *element;
+			}
+		};
+
+		template<typename T, typename U>
+		struct TupleElementComparison
+		{
+			const T&				t;
+			const U&				u;
+
+			TupleElementComparison(const T& _t, const U& _u)
+				: t(_t)
+				, u(_u)
+			{
+			}
+
+			friend std::strong_ordering operator*(std::strong_ordering order, const TupleElementComparison<T, U>& t)
+			{
+				if (order != 0) return order;
+				return t.t <=> t.u;
+			}
+		};
+
+		struct TupleCtorElementsTag {};
+		struct TupleCtorTupleTag {};
+
+		template<typename Is, typename ...TArgs>
+		struct TupleBase;
+
+		template<std::size_t ...Is, typename ...TArgs> requires(sizeof...(Is) == sizeof...(TArgs))
+		struct TupleBase<std::index_sequence<Is...>, TArgs...>
+			: TupleElement<Is, TArgs>...
+		{
+		private:
+			using TSelf = TupleBase<std::index_sequence<Is...>, TArgs...>;
+
+			template<typename ...UArgs> requires(sizeof...(TArgs) == sizeof...(UArgs))
+			using TCompatible = TupleBase<std::index_sequence<Is...>, UArgs...>;
+
+		public:
+			TupleBase() = default;
+
+			template<typename ...UArgs>
+			TupleBase(TupleCtorElementsTag, UArgs&& ...xs)
+				: TupleElement<Is, TArgs>(std::forward<UArgs&&>(xs)) ...
+			{
+			}
+
+			template<typename ...UArgs>
+			TupleBase(TupleCtorTupleTag, const TCompatible<UArgs...>& t)
+				: TupleElement<Is, TArgs>(static_cast<const TupleElement<Is, UArgs>&>(t).GetElement()) ...
+			{
+			}
+
+			template<typename ...UArgs>
+			TupleBase(TupleCtorTupleTag, TCompatible<UArgs...>&& t)
+				: TupleElement<Is, TArgs>(std::move(static_cast<TupleElement<Is, UArgs>&>(t).GetElement())) ...
+			{
+			}
+
+			template<typename ...UArgs>
+			void AssignCopy(const TCompatible<UArgs...>& t)
+			{
+				((
+					static_cast<TupleElement<Is, TArgs>*>(this)->AssignCopy
+					(
+						static_cast<const TupleElement<Is, UArgs>&>(t)
+					)
+				), ...);
+			}
+
+			template<typename ...UArgs>
+			void AssignMove(TCompatible<UArgs...>&& t)
+			{
+				((
+					static_cast<TupleElement<Is, TArgs>*>(this)->AssignMove
+					(
+						std::move(static_cast<TupleElement<Is, UArgs>&&>(t))
+					)
+				), ...);
+			}
+
+			template<typename ...UArgs>
+			bool AreEqual(const TCompatible<UArgs...>& t) const
+			{
+				return (true && ... && (
+					*static_cast<const TupleElement<Is, TArgs>*>(this) == static_cast<const TupleElement<Is, UArgs>&>(t)
+					));
+			}
+
+			template<typename ...UArgs>
+			std::strong_ordering Compare(const TCompatible<UArgs...>& t) const
+			{
+				return (std::strong_ordering::equal * ... * (TupleElementComparison<TArgs, UArgs>(
+					static_cast<const TupleElement<Is, TArgs>*>(this)->GetElement(),
+					static_cast<const TupleElement<Is, UArgs>&>(t).GetElement()
+					)));
+			}
+		};
+	}
+
+	template<typename ...TArgs>
+	class Tuple : private tuple_internal::TupleBase<std::make_index_sequence<sizeof...(TArgs)>, TArgs...>
+	{
+		template<typename ...UArgs>
+		friend class Tuple;
+
+		using TSelf = Tuple<TArgs...>;
+		using TBase = tuple_internal::TupleBase<std::make_index_sequence<sizeof...(TArgs)>, TArgs...>;
+
+		template<typename ...UArgs> requires(sizeof...(TArgs) == sizeof...(UArgs))
+		using TCompatible = Tuple<UArgs...>;
+
+		template<typename ...UArgs> requires(sizeof...(TArgs) == sizeof...(UArgs))
+		using TCompatibleBase = tuple_internal::TupleBase<std::make_index_sequence<sizeof...(TArgs)>, UArgs...>;
+
+	public:
+		Tuple() = default;
+
+		template<typename ...UArgs>
+		Tuple(UArgs&& ...xs) requires(sizeof...(TArgs) == sizeof...(UArgs))
+			: TBase(
+				tuple_internal::TupleCtorElementsTag{},
+				std::forward<UArgs&&>(xs)...
+			)
+		{
+		}
+
+		template<typename ...UArgs>
+		Tuple(const TCompatible<UArgs...>& t) requires(sizeof...(TArgs) == sizeof...(UArgs))
+			: TBase(
+				tuple_internal::TupleCtorTupleTag{},
+				static_cast<const TCompatibleBase<UArgs...>&>(t)
+			)
+		{
+		}
+
+		template<typename ...UArgs>
+		Tuple(TCompatible<UArgs...>&& t) requires(sizeof...(TArgs) == sizeof...(UArgs))
+			: TBase(
+				tuple_internal::TupleCtorTupleTag{},
+				static_cast<TCompatibleBase<UArgs...>&&>(t)
+			)
+		{
+		}
+
+		template<typename ...UArgs>
+		TSelf& operator=(const TCompatible<UArgs...>& t)
+		{
+			this->AssignCopy(t);
+			return *this;
+		}
+
+		template<typename ...UArgs>
+		TSelf& operator=(TCompatible<UArgs...>&& t)
+		{
+			this->AssignMove(std::move(t));
+			return *this;
+		}
+
+		template<typename ...UArgs>
+		std::strong_ordering operator<=>(const TCompatible<UArgs...>& t)const
+		{
+			return this->Compare(t);
+		}
+
+		template<typename ...UArgs>
+		bool operator==(const TCompatible<UArgs...>& t)const
+		{
+			return this->AreEqual(t);
+		}
+
+		template<vint Index>
+		decltype(auto) get()
+		{
+			using TElement = tuple_internal::TupleElement<Index, TypeTupleElement<Index, TypeTuple<TArgs...>>>;
+			return static_cast<TElement*>(this)->GetElement();
+		}
+
+		template<vint Index>
+		decltype(auto) get() const
+		{
+			using TElement = tuple_internal::TupleElement<Index, TypeTupleElement<Index, TypeTuple<TArgs...>>>;
+			return static_cast<const TElement*>(this)->GetElement();
+		}
+	};
+
+	template<typename ...TArgs>
+	Tuple(TArgs&&...) -> Tuple<typename RemoveCVRefArrayCtad<TArgs>::Type...>;
+
+	template<vint Index, typename ...TArgs>
+	decltype(auto) get(Tuple<TArgs...>& t)
+	{
+		return t.template get<Index>();
+	}
+	
+	template<vint Index, typename ...TArgs>
+	decltype(auto) get(const Tuple<TArgs...>& t)
+	{
+		return t.template get<Index>();
+	}
+}
+
+namespace std
+{
+	template<typename ...TArgs>
+	struct tuple_size<vl::Tuple<TArgs...>> : integral_constant<size_t, sizeof...(TArgs)> {};
+
+	template<size_t Index, typename ...TArgs>
+	struct tuple_element<Index, vl::Tuple<TArgs...>>
+	{
+		using type = decltype(std::declval<vl::Tuple<TArgs...>>().template get<Index>());
+	};
+
+	template<size_t Index, typename ...TArgs>
+	struct tuple_element<Index, const vl::Tuple<TArgs...>>
+	{
+		using type = decltype(std::declval<const vl::Tuple<TArgs...>>().template get<Index>());
+	};
+}
+
+#endif
+
+/***********************************************************************
+.\COLLECTIONS\OPERATIONFOREACH.H
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+#ifndef VCZH_COLLECTIONS_FOREACH
+#define VCZH_COLLECTIONS_FOREACH
+
+namespace vl
+{
+	namespace collections
+	{
+		struct RangeBasedForLoopEnding
+		{
+		};
+
+/***********************************************************************
+Range-Based For-Loop Iterator
+***********************************************************************/
+
+		template<typename T>
+		struct RangeBasedForLoopIterator
+		{
+		private:
+			IEnumerator<T>*			iterator;
+
+		public:
+			RangeBasedForLoopIterator(const IEnumerable<T>& enumerable)
+				: iterator(enumerable.CreateEnumerator())
+			{
+				operator++();
+			}
+
+			~RangeBasedForLoopIterator()
+			{
+				if (iterator) delete iterator;
+			}
+
+			void operator++()
+			{
+				if (!iterator->Next())
+				{
+					delete iterator;
+					iterator = nullptr;
+				}
+			}
+
+			const T& operator*() const
+			{
+				return iterator->Current();
+			}
+
+			bool operator==(const RangeBasedForLoopEnding&) const
+			{
+				return iterator == nullptr;
+			}
+
+			bool operator!=(const RangeBasedForLoopEnding&) const
+			{
+				return iterator != nullptr;
+			}
+
+			friend bool operator==(const RangeBasedForLoopEnding&, const RangeBasedForLoopIterator<T>& iterator)
+			{
+				return iterator.iterator == nullptr;
+			}
+
+			friend bool operator!=(const RangeBasedForLoopEnding&, const RangeBasedForLoopIterator<T>& iterator)
+			{
+				return iterator.iterator != nullptr;
+			}
+		};
+
+		template<typename T>
+		RangeBasedForLoopIterator<T> begin(const IEnumerable<T>& enumerable)
+		{
+			return { enumerable };
+		}
+
+		template<typename T>
+		RangeBasedForLoopEnding end(const IEnumerable<T>& enumerable)
+		{
+			return {};
+		}
+
+/***********************************************************************
+Range-Based For-Loop Iterator with Index
+***********************************************************************/
+
+		template<typename T>
+		struct RangeBasedForLoopIteratorWithIndex
+		{
+		private:
+			IEnumerator<T>*			iterator;
+			vint					index;
+
+		public:
+			RangeBasedForLoopIteratorWithIndex(const IEnumerable<T>& enumerable)
+				: iterator(enumerable.CreateEnumerator())
+				, index(-1)
+			{
+				operator++();
+			}
+
+			~RangeBasedForLoopIteratorWithIndex()
+			{
+				if (iterator) delete iterator;
+			}
+
+			void operator++()
+			{
+				if (!iterator->Next())
+				{
+					delete iterator;
+					iterator = nullptr;
+				}
+				index++;
+			}
+
+			Tuple<const T&, vint> operator*() const
+			{
+				return { iterator->Current(),index };
+			}
+
+			bool operator==(const RangeBasedForLoopEnding&) const
+			{
+				return iterator == nullptr;
+			}
+
+			bool operator!=(const RangeBasedForLoopEnding&) const
+			{
+				return iterator != nullptr;
+			}
+
+			friend bool operator==(const RangeBasedForLoopEnding&, const RangeBasedForLoopIteratorWithIndex<T>& iterator)
+			{
+				return iterator.iterator == nullptr;
+			}
+
+			friend bool operator!=(const RangeBasedForLoopEnding&, const RangeBasedForLoopIteratorWithIndex<T>& iterator)
+			{
+				return iterator.iterator != nullptr;
+			}
+		};
+
+		template<typename T>
+		struct EnumerableWithIndex
+		{
+			const IEnumerable<T>&	enumerable;
+
+			EnumerableWithIndex(const IEnumerable<T>& _enumerable)
+				: enumerable(_enumerable)
+			{
+			}
+		};
+
+		template<typename T>
+		EnumerableWithIndex<T> indexed(const IEnumerable<T>& enumerable)
+		{
+			return { enumerable };
+		}
+
+		template<typename T>
+		RangeBasedForLoopIteratorWithIndex<T> begin(const EnumerableWithIndex<T>& enumerable)
+		{
+			return { enumerable.enumerable };
+		}
+
+		template<typename T>
+		RangeBasedForLoopEnding end(const EnumerableWithIndex<T>& enumerable)
+		{
+			return {};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
 .\STRINGS\STRING.H
 ***********************************************************************/
 /***********************************************************************
@@ -5888,7 +6012,7 @@ namespace vl
 		static const T				zero;
 
 		mutable T*					buffer = (T*)&zero;
-		mutable volatile vint*		counter = nullptr;
+		mutable atomic_vint*		counter = nullptr;
 		mutable vint				start = 0;
 		mutable vint				length = 0;
 		mutable vint				realLength = 0;
@@ -5983,7 +6107,7 @@ namespace vl
 			if (index == 0 && count == length) return source;
 
 			ObjectString<T> str;
-			str.counter = new vint(1);
+			str.counter = new atomic_vint(1);
 			str.start = 0;
 			str.length = length - count + source.length;
 			str.realLength = str.length;
@@ -6039,7 +6163,7 @@ namespace vl
 		ObjectString(const T* _buffer)
 		{
 			CHECK_ERROR(_buffer != 0, L"ObjectString<T>::ObjectString(const T*)#Cannot construct a string from nullptr.");
-			counter = new vint(1);
+			counter = new atomic_vint(1);
 			start = 0;
 			length = CalculateLength(_buffer);
 			buffer = new T[length + 1];
@@ -6056,7 +6180,7 @@ namespace vl
 			CHECK_ERROR(_length >= 0, L"ObjectString<T>::TakeOver(T*, vint)#Length should not be negative.");
 			CHECK_ERROR(_buffer[_length] == 0, L"ObjectString<T>::TakeOver(T*, vint)#Buffer is not properly zero-terminated.");
 			ObjectString<T> str;
-			str.counter = new vint(1);
+			str.counter = new atomic_vint(1);
 			str.length = _length;
 			str.realLength = _length;
 			str.buffer = _buffer;
@@ -6087,7 +6211,7 @@ namespace vl
 				str.buffer = new T[_length + 1];
 				memcpy(str.buffer, _buffer, _length * sizeof(T));
 				str.buffer[_length] = 0;
-				str.counter = new vint(1);
+				str.counter = new atomic_vint(1);
 				str.start = 0;
 				str.length = _length;
 				str.realLength = _length;
@@ -6150,7 +6274,7 @@ namespace vl
 				newBuffer[length]=0;
 				Dec();
 				buffer=newBuffer;
-				counter=new vint(1);
+				counter=new atomic_vint(1);
 				start=0;
 				realLength=length;
 			}
@@ -6403,52 +6527,52 @@ namespace vl
 	extern double				wtof_test(const WString& string, bool& success);
 
 	/// <summary>Convert a string to a signed integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atoi_test"/> instead.</remarks>
 	extern vint					atoi(const AString& string);
 	/// <summary>Convert a string to a signed integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtoi_test"/> instead.</remarks>
 	extern vint					wtoi(const WString& string);
 	/// <summary>Convert a string to a signed 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atoi64_test"/> instead.</remarks>
 	extern vint64_t				atoi64(const AString& string);
 	/// <summary>Convert a string to a signed 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtoi64_test"/> instead.</remarks>
 	extern vint64_t				wtoi64(const WString& string);
 	/// <summary>Convert a string to an usigned integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atou_test"/> instead.</remarks>
 	extern vuint				atou(const AString& string);
 	/// <summary>Convert a string to an usigned integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtou_test"/> instead.</remarks>
 	extern vuint				wtou(const WString& string);
 	/// <summary>Convert a string to an usigned 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atou64_test"/> instead.</remarks>
 	extern vuint64_t			atou64(const AString& string);
 	/// <summary>Convert a string to an usigned 64-bits integer.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtou64_test"/> instead.</remarks>
 	extern vuint64_t			wtou64(const WString& string);
 	/// <summary>Convert a string to a 64-bits floating point number.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="atof_test"/> instead.</remarks>
 	extern double				atof(const AString& string);
 	/// <summary>Convert a string to a 64-bits floating point number.</summary>
-	/// <returns>The converted number. If the conversion failed, the result is undefined.</returns>
+	/// <returns>The converted number. If the conversion failed, the result is 0.</returns>
 	/// <param name="string">The string to convert.</param>
 	/// <remarks>If you need to know whether the conversion is succeeded or not, please use <see cref="wtof_test"/> instead.</remarks>
 	extern double				wtof(const WString& string);
@@ -6804,7 +6928,14 @@ LazyList
 
 			IEnumerator<T>* xs()const
 			{
-				return enumeratorPrototype->Clone();
+				if (enumeratorPrototype)
+				{
+					return enumeratorPrototype->Clone();
+				}
+				else
+				{
+					return new EmptyEnumerator<T>();
+				}
 			}
 
 			using TInput = decltype(std::declval<IEnumerator<T>>().Current());
@@ -6857,7 +6988,6 @@ LazyList
 			
 			/// <summary>Create an empty lazy list.</summary>
 			LazyList()
-				:enumeratorPrototype(new EmptyEnumerator<T>())
 			{
 			}
 
@@ -6877,7 +7007,7 @@ LazyList
 
 			IEnumerator<T>* CreateEnumerator()const
 			{
-				return enumeratorPrototype->Clone();
+				return xs();
 			}
 
 			//-------------------------------------------------------
@@ -7429,7 +7559,11 @@ LazyList
 			/// </remarks>
 			LazyList<T> Evaluate(bool forceCopy = false)const
 			{
-				if (!forceCopy && enumeratorPrototype->Evaluated())
+				if (!enumeratorPrototype)
+				{
+					return *this;
+				}
+				else if (!forceCopy && enumeratorPrototype->Evaluated())
 				{
 					return *this;
 				}
@@ -8396,7 +8530,7 @@ namespace vl
 			try{STATEMENT; throw ::vl::unittest::UnitTestAssertError(L"Expect an error but nothing occurred: " #STATEMENT);}\
 			catch(const ::vl::Error&){}\
 			catch(const ::vl::unittest::UnitTestAssertError&) { throw; }\
-			catch (const ::vl::unittest::UnitTestConfigError&) { throw; }\
+			catch(const ::vl::unittest::UnitTestConfigError&) { throw; }\
 		}while(0)\
 
 #define TEST_EXCEPTION(STATEMENT,EXCEPTION,ASSERT_FUNCTION)\

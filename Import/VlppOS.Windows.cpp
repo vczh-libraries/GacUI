@@ -1711,55 +1711,6 @@ ConditionVariable
 	}
 
 /***********************************************************************
-SpinLock
-***********************************************************************/
-
-	SpinLock::Scope::Scope(SpinLock& _spinLock)
-		:spinLock(&_spinLock)
-	{
-		spinLock->Enter();
-	}
-
-	SpinLock::Scope::~Scope()
-	{
-		spinLock->Leave();
-	}
-			
-	SpinLock::SpinLock()
-		:token(0)
-	{
-	}
-
-	SpinLock::~SpinLock()
-	{
-	}
-
-	bool SpinLock::TryEnter()
-	{
-		return _InterlockedExchange(&token, 1)==0;
-	}
-
-	void SpinLock::Enter()
-	{
-		while(_InterlockedCompareExchange(&token, 1, 0)!=0)
-		{
-			while (token != 0)
-			{
-#ifdef VCZH_ARM
-				__yield();
-#else
-				_mm_pause();
-#endif
-			}
-		}
-	}
-
-	void SpinLock::Leave()
-	{
-		_InterlockedExchange(&token, 0);
-	}
-
-/***********************************************************************
 ThreadLocalStorage
 ***********************************************************************/
 
