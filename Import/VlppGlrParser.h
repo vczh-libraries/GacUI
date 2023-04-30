@@ -154,10 +154,21 @@ ParsingTextRange
 			{
 			}
 
-			bool operator==(const ParsingTextRange& range)const { return start == range.start && end == range.end; }
-			bool operator!=(const ParsingTextRange& range)const { return start != range.start || end != range.end; }
 			bool Contains(const ParsingTextPos& pos)const { return start <= pos && pos <= end; }
 			bool Contains(const ParsingTextRange& range)const { return start <= range.start && range.end <= end; }
+
+			friend std::strong_ordering operator<=>(const ParsingTextRange& a, const ParsingTextRange& b)
+			{
+				std::strong_ordering
+					result = a.start <=> b.start; if (result != 0) return result;
+				result = a.end <=> b.end; if (result != 0) return result;
+				return std::strong_ordering::equal;
+			}
+
+			friend bool operator==(const ParsingTextRange& a, const ParsingTextRange& b)
+			{
+				return (a <=> b) == 0;
+			}
 		};
 
 /***********************************************************************

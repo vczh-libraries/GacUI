@@ -23422,8 +23422,7 @@ namespace vl
 					{
 						writer.WriteLine(L"");
 					}
-					writer.WriteLine(prefix + L"\tstd::strong_ordering operator<=>(const " + name + L"&) const = default;");
-					writer.WriteLine(prefix + L"\tbool operator==(const " + name + L"&) const = default;");
+					writer.WriteLine(prefix + L"\tauto operator<=>(const " + name + L"&) const = default;");
 					writer.WriteLine(prefix + L"};");
 				}
 				else

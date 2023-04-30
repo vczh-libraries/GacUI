@@ -5681,12 +5681,12 @@ WfStructInstance
 					}
 
 					auto result = af <=> bf;
-					if (result < 0) return IBoxedValue::Smaller;
-					if (result > 0) return IBoxedValue::Greater;
 					if constexpr (std::is_same_v<decltype(result), std::partial_ordering>)
 					{
 						if (result == std::partial_ordering::unordered) return IBoxedValue::NotComparable;
 					}
+					if (result < 0) return IBoxedValue::Smaller;
+					if (result > 0) return IBoxedValue::Greater;
 
 					if (p == ap) ai++;
 					if (p == bp) bi++;

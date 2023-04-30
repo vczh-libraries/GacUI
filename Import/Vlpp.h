@@ -259,6 +259,41 @@ Type Traits
 		}
 	};
 
+	namespace ordering_decision
+	{
+		template<bool PO, bool WO, bool SO>
+		struct OrderingSelection
+		{
+			using Type = std::partial_ordering;
+		};
+
+		template<bool SO>
+		struct OrderingSelection<false, true, SO>
+		{
+			using Type = std::weak_ordering;
+		};
+
+		template<bool WO, bool SO>
+		struct OrderingSelection<true, WO, SO>
+		{
+			using Type = std::partial_ordering;
+		};
+
+		template<typename... TOrderings>
+		struct OrderingDecision
+		{
+			static constexpr const vint POs = (0 + ... + (std::is_same_v<std::remove_cvref_t<TOrderings>, std::partial_ordering>));
+			static constexpr const vint WOs = (0 + ... + (std::is_same_v<std::remove_cvref_t<TOrderings>, std::weak_ordering>));
+			static constexpr const vint SOs = (0 + ... + (std::is_same_v<std::remove_cvref_t<TOrderings>, std::strong_ordering>));
+			static_assert(POs + WOs + SOs == sizeof...(TOrderings), "vl::OrderingDecision can only be used on std::(strong|weak|partial)_ordering.");
+
+			using Type = typename OrderingSelection<(POs > 0), (WOs > 0), (SOs > 0)>::Type;
+		};
+	}
+
+	template<typename... TOrderings>
+	using OrderingOf = typename ordering_decision::OrderingDecision<TOrderings...>::Type;
+
 /***********************************************************************
 Interface
 ***********************************************************************/
@@ -376,13 +411,13 @@ namespace vl
 			Pair<K, V>& operator=(Pair<K, V>&&) = default;
 
 			template<typename TKey, typename TValue>
-			std::strong_ordering operator<=>(const Pair<TKey, TValue>& p) const
-				requires(std::three_way_comparable_with<const K, const TKey, std::strong_ordering> && std::three_way_comparable_with<const V, const TValue, std::strong_ordering>)
+			auto operator<=>(const Pair<TKey, TValue>& p) const
+				requires(std::three_way_comparable_with<const K, const TKey> && std::three_way_comparable_with<const V, const TValue>)
 			{
-				std::strong_ordering
-				result = key <=> p.key; if (result != 0) return result;
-				result = value <=> p.value; if (result != 0) return result;
-				return std::strong_ordering::equal;
+				using TOrdering = OrderingOf<decltype(key <=> p.key), decltype(value <=> p.value)>;
+				{ auto result = key <=> p.key; if (result != 0) return (TOrdering)result; }
+				{ auto result = value <=> p.value; if (result != 0) return (TOrdering)result; }
+				return (TOrdering)std::strong_ordering::equal;
 			}
 
 			template<typename TKey, typename TValue>
@@ -543,7 +578,7 @@ Date and Time
 
 		bool operator==(const DateTime& value) const
 		{
-			return operator<=>(value) == 0;
+			return filetime == value.filetime;
 		}
 	};
 }
@@ -744,20 +779,23 @@ namespace vl
 
 		/// <summary>Comparing two nullable values.</summary>
 		/// <returns>
-		/// Returns std::strong_ordering indicating the order of the two values.
+		/// Returns a value indicating the order of the two values, the type is decided by T.
 		/// When one is null and another one is not, the non-null one is greater.
 		/// </returns>
 		/// <param name="a">The first nullable value to compare.</param>
 		/// <param name="b">The second nullable value to compare.</param>
-		std::strong_ordering operator<=>(const Nullable<T>& b)const
+		auto operator<=>(const Nullable<T>& b) const
+			requires(std::three_way_comparable<T>)
 		{
+			using TOrdering = decltype(object <=> b.object);
 			if (initialized && b.initialized) return object <=> b.object;
-			if (initialized) return std::strong_ordering::greater;
-			if (b.initialized) return std::strong_ordering::less;
-			return std::strong_ordering::equal;
+			if (initialized) return (TOrdering)std::strong_ordering::greater;
+			if (b.initialized) return (TOrdering)std::strong_ordering::less;
+			return (TOrdering)std::strong_ordering::equal;
 		}
 
 		bool operator==(const Nullable<T>& b)const
+			requires(std::equality_comparable<T>)
 		{
 			if (initialized && b.initialized) return object == b.object;
 			return initialized == b.initialized;
@@ -1072,14 +1110,14 @@ Ptr
 			return reference <=> pointer.reference;
 		}
 
-		bool operator==(const T* value) const
+		bool operator==(const T* pointer) const
 		{
-			return operator<=>(value) == 0;
+			return reference == pointer;
 		}
 
-		bool operator==(const Ptr<T>& value) const
+		bool operator==(const Ptr<T>& pointer) const
 		{
-			return operator<=>(value) == 0;
+			return reference == pointer.reference;
 		}
 
 		/// <summary>Test if it is an empty shared pointer.</summary>
@@ -2245,17 +2283,23 @@ SortedList
 				while (start <= end)
 				{
 					index = start + (end - start) / 2;
-					if (this->buffer[index] == item)
+					auto ordering = this->buffer[index] <=> item;
+					if constexpr (std::is_same_v<decltype(ordering), std::partial_ordering>)
 					{
-						return index;
+						CHECK_ERROR(ordering != std::partial_ordering::unordered, L"vl::collections::SortedList<T>::IndexOfInternal(Key&, vint&)#This function could not apply on elements in partial ordering.");
 					}
-					else if (this->buffer[index] > item)
+
+					if (ordering < 0)
+					{
+						start = index + 1;
+					}
+					else if (ordering > 0)
 					{
 						end = index - 1;
 					}
 					else
 					{
-						start = index + 1;
+						return index;
 					}
 				}
 				return -1;
@@ -3678,7 +3722,7 @@ CompareEnumerable
 		/// In other cases, the results represents the comparison result of the first pair of inequal values in enumerables.
 		/// </remarks>
 		template<typename T, typename U>
-		std::strong_ordering CompareEnumerable(const IEnumerable<T>& a, const IEnumerable<U>& b)
+		auto CompareEnumerable(const IEnumerable<T>& a, const IEnumerable<U>& b) -> decltype(std::declval<T>() <=> std::declval<T>())
 		{
 			auto ator = Ptr(a.CreateEnumerator());
 			auto btor = Ptr(b.CreateEnumerator());
@@ -3692,7 +3736,7 @@ CompareEnumerable
 
 				const T& ac = ator->Current();
 				const U& bc = btor->Current();
-				std::strong_ordering ordering = ac <=> bc;
+				auto ordering = ac <=> bc;
 				if (ordering != 0) return ordering;
 			}
 			return std::strong_ordering::equal;
@@ -5584,7 +5628,7 @@ namespace vl
 			}
 		};
 
-		template<typename T, typename U>
+		template<typename TOrdering, typename T, typename U>
 		struct TupleElementComparison
 		{
 			const T&				t;
@@ -5596,10 +5640,11 @@ namespace vl
 			{
 			}
 
-			friend std::strong_ordering operator*(std::strong_ordering order, const TupleElementComparison<T, U>& t)
+			template<typename TPreviousOrdering>
+			friend TOrdering operator*(TPreviousOrdering order, const TupleElementComparison<TOrdering, T, U>& t)
 			{
-				if (order != 0) return order;
-				return t.t <=> t.u;
+				if (order != 0) return (TOrdering)order;
+				return (TOrdering)(t.t <=> t.u);
 			}
 		};
 
@@ -5671,12 +5716,14 @@ namespace vl
 			}
 
 			template<typename ...UArgs>
-			std::strong_ordering Compare(const TCompatible<UArgs...>& t) const
+			auto Compare(const TCompatible<UArgs...>& t) const
 			{
-				return (std::strong_ordering::equal * ... * (TupleElementComparison<TArgs, UArgs>(
-					static_cast<const TupleElement<Is, TArgs>*>(this)->GetElement(),
-					static_cast<const TupleElement<Is, UArgs>&>(t).GetElement()
-					)));
+#define LEFT_ELEMENT (static_cast<const TupleElement<Is, TArgs>*>(this)->GetElement())
+#define RIGHT_ELEMENT (static_cast<const TupleElement<Is, UArgs>&>(t).GetElement())
+				using TOrdering = OrderingOf<decltype(LEFT_ELEMENT <=> RIGHT_ELEMENT)...>;
+				return (std::strong_ordering::equal * ... * (TupleElementComparison<TOrdering, TArgs, UArgs>(LEFT_ELEMENT, RIGHT_ELEMENT)));
+#undef LEFT_ELEMENT
+#undef RIGHT_ELEMENT
 			}
 		};
 	}
@@ -5741,13 +5788,15 @@ namespace vl
 		}
 
 		template<typename ...UArgs>
-		std::strong_ordering operator<=>(const TCompatible<UArgs...>& t)const
+		auto operator<=>(const TCompatible<UArgs...>& t)const
+			requires (true && ... && std::three_way_comparable_with<TArgs, UArgs>)
 		{
 			return this->Compare(t);
 		}
 
 		template<typename ...UArgs>
 		bool operator==(const TCompatible<UArgs...>& t)const
+			requires (true && ... && std::equality_comparable_with<TArgs, UArgs>)
 		{
 			return this->AreEqual(t);
 		}
@@ -6785,7 +6834,7 @@ Quick Sort
 		/// <param name="items">Pointer to element array to sort.</param>
 		/// <param name="length">The number of elements to sort.</param>
 		/// <param name="orderer">
-		/// The comparar for two elements returning std::string_ordering.
+		/// The comparar for two elements returning std::(strong|weak|partial)_ordering.
 		/// </param>
 		template<typename T, typename F>
 		void SortLambda(T* items, vint length, F&& orderer)
@@ -6806,10 +6855,13 @@ Quick Sort
 						vint candidate = (flag ? left : length - right - 1);
 						vint factor = (flag ? -1 : 1);
 
-						if (
-							std::strong_ordering ordering = orderer(items[pivot], items[candidate]);
-							(factor == 1 && ordering <= 0) || (factor == -1 && ordering >= 0)
-							)
+						auto ordering = orderer(items[pivot], items[candidate]);
+						if constexpr (std::is_same_v<decltype(ordering), std::partial_ordering>)
+						{
+							CHECK_ERROR(ordering != std::partial_ordering::unordered, L"vl::collections::SortLambda(T*, vint, F&&)#This function could not apply on elements in partial ordering.");
+						}
+
+						if ((factor == 1 && ordering <= 0) || (factor == -1 && ordering >= 0))
 						{
 							mine++;
 						}
@@ -6830,10 +6882,13 @@ Quick Sort
 					vint writing = reading;
 					while (reading >= 0)
 					{
-						if (
-							std::strong_ordering ordering = orderer(items[pivot], items[reading]);
-							ordering == 0
-							)
+						auto ordering = orderer(items[pivot], items[reading]);
+						if constexpr (std::is_same_v<decltype(ordering), std::partial_ordering>)
+						{
+							CHECK_ERROR(ordering != std::partial_ordering::unordered, L"vl::collections::SortLambda(T*, vint, F&&)#This function could not apply on elements in partial ordering.");
+						}
+
+						if (ordering == 0)
 						{
 							if (reading != writing)
 							{
@@ -6887,7 +6942,7 @@ Quick Sort
 		/// <param name="items">Pointer to element array to sort.</param>
 		/// <param name="length">The number of elements to sort.</param>
 		/// <param name="orderer">
-		/// The comparar for two elements returning std::string_ordering.
+		/// The comparar for two elements returning std::(strong|weak|partial)_ordering.
 		/// </param>
 		template<typename T, typename F>
 		void Sort(T* items, vint length, F&& orderer)
@@ -7081,7 +7136,7 @@ LazyList
 			/// <typeparam name="F">Type of the comparer.</typeparam>
 			/// <returns>The created lazy list.</returns>
 			/// <param name="f">
-			/// The comparar for two elements returning std::string_ordering.
+			/// The comparar for two elements returning std::(strong|weak|partial)_ordering.
 			/// </param>
 			/// <example><![CDATA[
 			/// int main()

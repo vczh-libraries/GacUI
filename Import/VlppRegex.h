@@ -1387,11 +1387,11 @@ CharRange
 				return begin == cr.begin && end == cr.end;
 			}
 
-			std::strong_ordering operator<=>(char32_t item)const
+			std::weak_ordering operator<=>(char32_t item)const
 			{
-				if (end < item) return std::strong_ordering::less;
-				if (begin > item) return std::strong_ordering::greater;
-				return std::strong_ordering::equal;
+				if (end < item) return std::weak_ordering::less;
+				if (begin > item) return std::weak_ordering::greater;
+				return std::weak_ordering::equivalent;
 			}
 
 			bool operator==(char32_t item)const
