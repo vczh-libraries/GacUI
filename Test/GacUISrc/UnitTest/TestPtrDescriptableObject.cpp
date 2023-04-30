@@ -24,8 +24,8 @@ TEST_FILE
 			});
 		bounds->AddChild(control->GetBoundsComposition());
 
-		volatile vint* rc1 = ReferenceCounterOperator<GuiBoundsComposition>::CreateCounter(bounds);
-		volatile vint* rc2 = ReferenceCounterOperator<GuiControl>::CreateCounter(control);
+		auto rc1 = ReferenceCounterOperator<GuiBoundsComposition>::CreateCounter(bounds);
+		auto rc2 = ReferenceCounterOperator<GuiControl>::CreateCounter(control);
 
 		TEST_ASSERT(*rc1 == 0);
 		auto a1 = Ptr(bounds);

@@ -5107,7 +5107,7 @@ Flow Compositions
 				/// <summary>The distance value.</summary>
 				vint								distance = 0;
 
-				bool operator==(const GuiFlowOption& value) const = default;
+				GUI_DEFINE_COMPARE_OPERATORS(GuiFlowOption)
 			};
 			
 			/// <summary>
@@ -5934,7 +5934,7 @@ Table Compositions
 				{
 				}
 
-				bool operator==(const GuiCellOption& value) const = default;
+				GUI_DEFINE_COMPARE_OPERATORS(GuiCellOption)
 
 				/// <summary>Creates an absolute sizing option</summary>
 				/// <returns>The created option.</returns>
@@ -6490,13 +6490,15 @@ Helpers
 				{\
 					TVALUE							resource;\
 					vint							counter;\
-					bool operator==(const Package& package)const{return false;}\
+					std::partial_ordering operator<=>(const Package&) const { return std::partial_ordering::unordered; }\
+					bool operator==(const Package&)const{return false;}\
 				};\
 				struct DeadPackage\
 				{\
 					TKEY							key;\
 					TVALUE							value;\
-					bool operator==(const DeadPackage& package)const{return false;}\
+					std::partial_ordering operator<=>(const DeadPackage&) const { return std::partial_ordering::unordered; }\
+					bool operator==(const DeadPackage&)const{return false;}\
 				};\
 				Dictionary<TKEY, Package>			aliveResources;\
 				List<DeadPackage>					deadResources;\
@@ -10919,7 +10921,7 @@ Elements
 				int						radiusX = 0;
 				int						radiusY = 0;
 
-				bool operator==(const ElementShape& value) const = default;
+				GUI_DEFINE_COMPARE_OPERATORS(ElementShape)
 			};
 
 			/// <summary>
@@ -11911,6 +11913,8 @@ Colorized Plain Text (model)
 					~TextLine();
 
 					static vint						CalculateBufferLength(vint dataLength);
+
+					std::partial_ordering			operator<=>(const TextLine&) const { return std::partial_ordering::unordered; }
 					bool							operator==(const TextLine& value) const { return false; }
 
 					/// <summary>
@@ -14276,7 +14280,8 @@ TextItemProvider
 					TextItem(const WString& _text, bool _checked=false);
 					~TextItem();
 
-					bool										operator==(const TextItem& value)const;
+					std::strong_ordering operator<=>(const TextItem& value) const { return text <=> value.text; }
+					bool operator==(const TextItem& value) const { return text == value.text; }
 					
 					/// <summary>Get the text of this item.</summary>
 					/// <returns>The text of this item.</returns>
@@ -21681,6 +21686,8 @@ namespace vl
 				vint					column = 0;
 				vint					rowSpan = 1;
 				vint					columnSpan = 1;
+
+				auto operator<=>(const SiteValue&) const = default;
 			};
 
 			class LocalizedStrings

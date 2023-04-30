@@ -15259,11 +15259,6 @@ TextItem
 				{
 				}
 
-				bool TextItem::operator==(const TextItem& value)const
-				{
-					return text == value.text;
-				}
-
 				const WString& TextItem::GetText()
 				{
 					return text;

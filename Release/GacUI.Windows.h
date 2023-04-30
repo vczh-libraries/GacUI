@@ -461,6 +461,7 @@ Renderers
 					ColorItemResource			selectedFocused;
 					ColorItemResource			selectedUnfocused;
 
+					std::partial_ordering		operator<=>(const ColorEntryResource&) const { return std::partial_ordering::unordered; }
 					bool						operator==(const ColorEntryResource& value) const { return false; }
 				};
 
@@ -1687,8 +1688,8 @@ Renderers
 					ColorItemResource			selectedFocused;
 					ColorItemResource			selectedUnfocused;
 
+					std::partial_ordering		operator<=>(const ColorEntryResource&) const { return std::partial_ordering::unordered; }
 					bool						operator==(const ColorEntryResource& value){return false;}
-					bool						operator!=(const ColorEntryResource& value){return true;}
 				};
 
 				typedef collections::Array<ColorEntryResource>			ColorArray;

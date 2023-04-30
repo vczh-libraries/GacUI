@@ -31,6 +31,8 @@ namespace vl
 				vint					column = 0;
 				vint					rowSpan = 1;
 				vint					columnSpan = 1;
+
+				auto operator<=>(const SiteValue&) const = default;
 			};
 
 			class LocalizedStrings
