@@ -52,7 +52,7 @@ Table Compositions
 				{
 				}
 
-				bool operator==(const GuiCellOption& value) const = default;
+				GUI_DEFINE_COMPARE_OPERATORS(GuiCellOption)
 
 				/// <summary>Creates an absolute sizing option</summary>
 				/// <returns>The created option.</returns>

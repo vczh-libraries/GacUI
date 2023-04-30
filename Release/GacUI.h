@@ -74,8 +74,7 @@ Enumerations
 		};
 
 #define GUI_DEFINE_COMPARE_OPERATORS(TYPE)\
-		std::strong_ordering operator<=>(const TYPE&) const = default;\
-		bool operator==(const TYPE&) const = default;\
+		auto operator<=>(const TYPE&) const = default;\
 
 /***********************************************************************
 TextPos
@@ -1581,8 +1580,7 @@ INativeWindow
 			BoolOption TitleBarOption = BoolOption::Customizable;
 			BoolOption CustomFrameEnabled = BoolOption::Customizable;
 
-			std::strong_ordering operator<=>(const NativeWindowFrameConfig&) const = default;
-			bool operator==(const NativeWindowFrameConfig&) const = default;
+			auto operator<=>(const NativeWindowFrameConfig&) const = default;
 
 			static const NativeWindowFrameConfig Default;
 		};
@@ -10540,8 +10538,7 @@ Rich Content Document (style)
 			static DocumentFontSize			Parse(const WString& value);
 			WString							ToString()const;
 
-			std::partial_ordering operator<=>(const DocumentFontSize&) const = default;
-			bool operator==(const DocumentFontSize&) const = default;
+			auto operator<=>(const DocumentFontSize&) const = default;
 		};
 
 		/// <summary>Represents a text style.</summary>

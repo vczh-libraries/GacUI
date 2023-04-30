@@ -239,13 +239,15 @@ Helpers
 				{\
 					TVALUE							resource;\
 					vint							counter;\
-					bool operator==(const Package& package)const{return false;}\
+					std::partial_ordering operator<=>(const Package&) const { return std::partial_ordering::unordered; }\
+					bool operator==(const Package&)const{return false;}\
 				};\
 				struct DeadPackage\
 				{\
 					TKEY							key;\
 					TVALUE							value;\
-					bool operator==(const DeadPackage& package)const{return false;}\
+					std::partial_ordering operator<=>(const DeadPackage&) const { return std::partial_ordering::unordered; }\
+					bool operator==(const DeadPackage&)const{return false;}\
 				};\
 				Dictionary<TKEY, Package>			aliveResources;\
 				List<DeadPackage>					deadResources;\

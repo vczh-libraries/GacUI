@@ -64,8 +64,7 @@ INativeWindow
 			BoolOption TitleBarOption = BoolOption::Customizable;
 			BoolOption CustomFrameEnabled = BoolOption::Customizable;
 
-			std::strong_ordering operator<=>(const NativeWindowFrameConfig&) const = default;
-			bool operator==(const NativeWindowFrameConfig&) const = default;
+			auto operator<=>(const NativeWindowFrameConfig&) const = default;
 
 			static const NativeWindowFrameConfig Default;
 		};

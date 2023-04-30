@@ -103,7 +103,8 @@ TextItemProvider
 					TextItem(const WString& _text, bool _checked=false);
 					~TextItem();
 
-					bool										operator==(const TextItem& value)const;
+					std::strong_ordering operator<=>(const TextItem& value) const { return text <=> value.text; }
+					bool operator==(const TextItem& value) const { return text == value.text; }
 					
 					/// <summary>Get the text of this item.</summary>
 					/// <returns>The text of this item.</returns>

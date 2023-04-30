@@ -61,8 +61,7 @@ Enumerations
 		};
 
 #define GUI_DEFINE_COMPARE_OPERATORS(TYPE)\
-		std::strong_ordering operator<=>(const TYPE&) const = default;\
-		bool operator==(const TYPE&) const = default;\
+		auto operator<=>(const TYPE&) const = default;\
 
 /***********************************************************************
 TextPos

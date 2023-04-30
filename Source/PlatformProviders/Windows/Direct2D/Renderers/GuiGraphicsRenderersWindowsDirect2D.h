@@ -225,6 +225,7 @@ Renderers
 					ColorItemResource			selectedFocused;
 					ColorItemResource			selectedUnfocused;
 
+					std::partial_ordering		operator<=>(const ColorEntryResource&) const { return std::partial_ordering::unordered; }
 					bool						operator==(const ColorEntryResource& value) const { return false; }
 				};
 

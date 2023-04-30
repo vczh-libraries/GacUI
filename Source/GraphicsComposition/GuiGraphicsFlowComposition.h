@@ -136,7 +136,7 @@ Flow Compositions
 				/// <summary>The distance value.</summary>
 				vint								distance = 0;
 
-				bool operator==(const GuiFlowOption& value) const = default;
+				GUI_DEFINE_COMPARE_OPERATORS(GuiFlowOption)
 			};
 			
 			/// <summary>

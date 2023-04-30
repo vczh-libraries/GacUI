@@ -81,6 +81,8 @@ Colorized Plain Text (model)
 					~TextLine();
 
 					static vint						CalculateBufferLength(vint dataLength);
+
+					std::partial_ordering			operator<=>(const TextLine&) const { return std::partial_ordering::unordered; }
 					bool							operator==(const TextLine& value) const { return false; }
 
 					/// <summary>

@@ -46,7 +46,7 @@ Elements
 				int						radiusX = 0;
 				int						radiusY = 0;
 
-				bool operator==(const ElementShape& value) const = default;
+				GUI_DEFINE_COMPARE_OPERATORS(ElementShape)
 			};
 
 			/// <summary>
