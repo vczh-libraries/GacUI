@@ -754,6 +754,7 @@ GuiRibbonToolstripsGroupCollection
 GuiRibbonToolstrips
 ***********************************************************************/
 
+// TODO: (enumerable) foreach
 #define ARRLEN(X) sizeof(X) / sizeof(*X)
 
 			void GuiRibbonToolstrips::BeforeControlTemplateUninstalled_()
@@ -798,6 +799,7 @@ GuiRibbonToolstrips
 				if (groups.Count() <= count)
 				{
 					auto containers = viewIndex == 0 ? longContainers : shortContainers;
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < groups.Count(); i++)
 					{
 						containers[i]->GetToolstripItems().Add(groups[i]);
@@ -858,6 +860,7 @@ GuiRibbonToolstrips
 
 					vint minMiddle = firstGroupCount;
 					vint maxMiddle = groups.Count() - lastGroupCount - 1;
+					// TODO: (enumerable) foreach:indexed
 					for (vint j = 0; j < groups.Count(); j++)
 					{
 						shortContainers[
@@ -881,6 +884,7 @@ GuiRibbonToolstrips
 							.Aggregate([](vint a, vint b) {return a + b; });
 						vint delta = abs(count2 - count1);
 
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < groups.Count(); i++)
 						{
 							auto groupCount = groups[i]->GetToolstripItems().Count();
@@ -900,6 +904,7 @@ GuiRibbonToolstrips
 						}
 					}
 
+					// TODO: (enumerable) foreach:indexed
 					for (vint j = 0; j < groups.Count(); j++)
 					{
 						longContainers[j < firstGroupCount ? 0 : 1]->GetToolstripItems().Add(groups[j]);
@@ -917,6 +922,7 @@ GuiRibbonToolstrips
 				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonToolstrips::OnBeforeSwitchingView);
 
 				vint toolbarIndex = 0;
+				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < sizeof(views) / sizeof(*views); i++)
 				{
 					auto containers = i == 0 ? longContainers : shortContainers;

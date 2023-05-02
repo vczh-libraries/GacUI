@@ -157,6 +157,7 @@ GuiTextBoxCommonInterface
 					arguments.newBegin = newBegin;
 					arguments.newEnd = newEnd;
 					arguments.editVersion = editVersion;
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < textEditCallbacks.Count(); i++)
 					{
 						textEditCallbacks[i]->TextCaretChanged(arguments);
@@ -187,6 +188,7 @@ GuiTextBoxCommonInterface
 						arguments.inputText=inputText;
 						arguments.editVersion=editVersion;
 						arguments.keyInput=asKeyInput;
+						// TODO: (enumerable) foreach
 						for(vint i=0;i<textEditCallbacks.Count();i++)
 						{
 							textEditCallbacks[i]->TextEditPreview(arguments);
@@ -220,6 +222,7 @@ GuiTextBoxCommonInterface
 						arguments.inputText=inputText;
 						arguments.editVersion=editVersion;
 						arguments.keyInput=asKeyInput;
+						// TODO: (enumerable) foreach
 						for(vint i=0;i<textEditCallbacks.Count();i++)
 						{
 							textEditCallbacks[i]->TextEditNotify(arguments);
@@ -228,6 +231,7 @@ GuiTextBoxCommonInterface
 
 					Move(end, false);
 					
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<textEditCallbacks.Count();i++)
 					{
 						textEditCallbacks[i]->TextEditFinished(editVersion);
@@ -536,6 +540,7 @@ GuiTextBoxCommonInterface
 				focusableComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiTextBoxCommonInterface::OnKeyDown);
 				focusableComposition->GetEventReceiver()->charInput.AttachMethod(this, &GuiTextBoxCommonInterface::OnCharInput);
 
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<textEditCallbacks.Count();i++)
 				{
 					textEditCallbacks[i]->Attach(textElement, elementModifyLock, textComposition ,editVersion);
@@ -645,6 +650,7 @@ GuiTextBoxCommonInterface
 					undoRedoProcessor=0;
 				}
 
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<textEditCallbacks.Count();i++)
 				{
 					textEditCallbacks[i]->Detach();

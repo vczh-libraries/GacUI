@@ -310,6 +310,7 @@ GuiBindableRibbonGalleryList
 				auto pos = IndexToGalleryPos(itemList->GetSelectedItemIndex());
 				if (pos.group != -1 && pos.item != -1)
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < groupedItemSource.Count(); i++)
 					{
 						auto group = groupedItemSource[i];
@@ -351,6 +352,7 @@ GuiBindableRibbonGalleryList
 				auto bounds = boundsComposition->GetBounds();
 				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(bounds.Width() + 20, 1));
 
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < groupedItemSource.Count(); i++)
 				{
 					auto group = groupedItemSource[i];

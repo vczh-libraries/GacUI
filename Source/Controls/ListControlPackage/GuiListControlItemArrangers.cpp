@@ -95,6 +95,7 @@ RangedItemArrangerBase
 					startIndex = 0;
 					if (callback)
 					{
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < visibleStyles.Count(); i++)
 						{
 							DeleteStyle(visibleStyles[i]);
@@ -136,6 +137,7 @@ RangedItemArrangerBase
 					}
 
 					vint newEndIndex = newStartIndex + newVisibleStyles.Count() - 1;
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
 						vint index = startIndex + i;
@@ -158,6 +160,7 @@ RangedItemArrangerBase
 				{
 					vint newStartIndex = startIndex;
 					BeginPlaceItem(false, viewBounds, newStartIndex);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
 						auto style = visibleStyles[i];
@@ -249,6 +252,7 @@ RangedItemArrangerBase
 							}
 
 							visibleStyles.RemoveRange(0, visibleCount);
+							// TODO: (enumerable) foreach:indexed
 							for (vint i = 0; i < visibleStyles.Count(); i++)
 							{
 								visibleStyles[i].key->SetIndex(startIndex + i);
@@ -313,6 +317,7 @@ RangedItemArrangerBase
 
 				vint RangedItemArrangerBase::GetVisibleIndex(GuiListControl::ItemStyle* style)
 				{
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < visibleStyles.Count(); i++)
 					{
 						if (visibleStyles[i].key == style)
@@ -370,6 +375,7 @@ FreeHeightItemArranger
 					EnsureOffsetForItem(heights.Count() - 1);
 					if (forMoving)
 					{
+						// TODO: (enumerable) foreach:indexed
 						for (vint i = 0; i < heights.Count(); i++)
 						{
 							if (offsets[i] + heights[i] >= newBounds.Top())

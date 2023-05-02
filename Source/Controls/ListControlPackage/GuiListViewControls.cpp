@@ -201,6 +201,7 @@ ListViewColumnItemArranger
 
 				void ListViewColumnItemArranger::DeleteColumnButtons()
 				{
+					// TODO: (enumerable) foreach:reversed
 					for(vint i=columnHeaders->GetStackItems().Count()-1;i>=0;i--)
 					{
 						GuiStackItemComposition* item=columnHeaders->GetStackItems().Get(i);
@@ -597,6 +598,7 @@ ListViewItemProvider
 
 				void ListViewItemProvider::NotifyAllColumnsUpdate()
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < columnItemViewCallbacks.Count(); i++)
 					{
 						columnItemViewCallbacks[i]->OnColumnChanged();

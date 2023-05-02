@@ -328,6 +328,7 @@ GuiBindableListView::ItemSource
 
 			void GuiBindableListView::ItemSource::NotifyAllColumnsUpdate()
 			{
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < columnItemViewCallbacks.Count(); i++)
 				{
 					columnItemViewCallbacks[i]->OnColumnChanged();

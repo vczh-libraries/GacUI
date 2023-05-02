@@ -51,6 +51,7 @@ GuiListControl::ItemCallback
 
 			void GuiListControl::ItemCallback::ClearCache()
 			{
+				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < installedStyles.Count(); i++)
 				{
 					auto style = UninstallStyle(i);
@@ -854,6 +855,7 @@ ItemProviderBase
 				{
 					CHECK_ERROR(!callingOnItemModified, L"ItemProviderBase::InvokeOnItemModified(vint, vint, vint)#Canning modify the observable data source during its item modified event, which will cause this event to be executed recursively.");
 					callingOnItemModified = true;
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < callbacks.Count(); i++)
 					{
 						callbacks[i]->OnItemModified(start, count, newCount);
@@ -867,6 +869,7 @@ ItemProviderBase
 
 				ItemProviderBase::~ItemProviderBase()
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<callbacks.Count();i++)
 					{
 						callbacks[i]->OnAttached(0);

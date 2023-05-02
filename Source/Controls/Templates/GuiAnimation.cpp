@@ -203,6 +203,7 @@ IGuiAnimationCoroutine
 					{
 						waitingAnimation->Pause();
 					}
+					// TODO: (enumerable) foreach on group
 					for (vint i = 0; i < groupAnimations.Count(); i++)
 					{
 						for (auto animation : groupAnimations.GetByIndex(i))
@@ -218,6 +219,7 @@ IGuiAnimationCoroutine
 					{
 						waitingAnimation->Resume();
 					}
+					// TODO: (enumerable) foreach on group
 					for (vint i = 0; i < groupAnimations.Count(); i++)
 					{
 						for (auto animation : groupAnimations.GetByIndex(i))
@@ -240,6 +242,7 @@ IGuiAnimationCoroutine
 						}
 					}
 
+					// TODO: (enumerable) foreach:reversed on group
 					for (vint i = groupAnimations.Count() - 1; i >= 0; i--)
 					{
 						auto& animations = groupAnimations.GetByIndex(i);

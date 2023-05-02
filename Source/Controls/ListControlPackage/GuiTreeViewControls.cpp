@@ -461,6 +461,7 @@ NodeRootProviderBase
 
 				void NodeRootProviderBase::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<callbacks.Count();i++)
 					{
 						callbacks[i]->OnBeforeItemModified(parentNode, start, count, newCount);
@@ -469,6 +470,7 @@ NodeRootProviderBase
 
 				void NodeRootProviderBase::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<callbacks.Count();i++)
 					{
 						callbacks[i]->OnAfterItemModified(parentNode, start, count, newCount);
@@ -477,6 +479,7 @@ NodeRootProviderBase
 
 				void NodeRootProviderBase::OnItemExpanded(INodeProvider* node)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<callbacks.Count();i++)
 					{
 						callbacks[i]->OnItemExpanded(node);
@@ -485,6 +488,7 @@ NodeRootProviderBase
 
 				void NodeRootProviderBase::OnItemCollapsed(INodeProvider* node)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<callbacks.Count();i++)
 					{
 						callbacks[i]->OnItemCollapsed(node);

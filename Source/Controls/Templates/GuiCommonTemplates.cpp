@@ -169,6 +169,7 @@ GuiCommonDatePickerLook
 
 			void GuiCommonDatePickerLook::SelectDay(vint day)
 			{
+				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < dateDays.Count(); i++)
 				{
 					const DateTime& dt = dateDays[i];

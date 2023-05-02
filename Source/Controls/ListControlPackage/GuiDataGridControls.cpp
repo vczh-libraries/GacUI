@@ -188,6 +188,7 @@ DefaultDataGridItemTemplate
 							cell->AddChild(composition);
 						}
 
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < dataVisualizers.Count(); i++)
 						{
 							dataVisualizers[i]->BeforeVisualizeCell(dataGrid->GetItemProvider(), itemIndex, i);
