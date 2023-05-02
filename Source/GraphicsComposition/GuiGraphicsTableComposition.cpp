@@ -265,6 +265,7 @@ GuiTableComposition
 				{
 					double totalPercentage = 0;
 					vint percentageCount = 0;
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < dimOptions.Count(); i++)
 					{
 						GuiCellOption option = dimOptions[i];
@@ -276,6 +277,7 @@ GuiTableComposition
 					}
 					if (percentageCount > 0 && totalPercentage > 0.001)
 					{
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < dimOptions.Count(); i++)
 						{
 							GuiCellOption option = dimOptions[i];
@@ -359,6 +361,7 @@ GuiTableComposition
 				}
 				rows = _rows;
 				columns = _columns;
+				// TODO: (enumerable) foreach
 				vint childCount = Children().Count();
 				for (vint i = 0; i < childCount; i++)
 				{

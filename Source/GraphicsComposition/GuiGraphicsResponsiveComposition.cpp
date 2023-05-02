@@ -257,6 +257,7 @@ GuiResponsiveViewComposition
 				else
 				{
 					levelCount = 0;
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < views.Count(); i++)
 					{
 						auto view = views[i];
@@ -283,6 +284,7 @@ GuiResponsiveViewComposition
 			{
 				vint old = currentLevel;
 				currentLevel = 0;
+				// TODO: (enumerable) foreach:reversed
 				for (vint i = views.Count() - 1; i >= 0; i--)
 				{
 					auto view = views[i];

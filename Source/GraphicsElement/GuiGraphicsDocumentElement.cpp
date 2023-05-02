@@ -258,6 +258,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 			void GuiDocumentElement::GuiDocumentElementRenderer::RenderTargetChangedInternal(IGuiGraphicsRenderTarget* oldRenderTarget, IGuiGraphicsRenderTarget* newRenderTarget)
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<paragraphCaches.Count();i++)
 				{
 					ParagraphCache* cache=paragraphCaches[i].Obj();
@@ -310,6 +311,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 			bool GuiDocumentElement::GuiDocumentElementRenderer::GetParagraphIndexFromPoint(Point point, vint& top, vint& index)
 			{
 				vint y=0;
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<paragraphHeights.Count();i++)
 				{
 					vint paragraphHeight=paragraphHeights[i];
@@ -359,6 +361,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 
 					lastMaxWidth=maxWidth;
 
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<paragraphHeights.Count();i++)
 					{
 						vint paragraphHeight=paragraphHeights[i];
@@ -390,6 +393,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 							renderingParagraph = -1;
 
 							bool resized = false;
+							// TODO: (enumerable) foreach
 							for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
 							{
 								auto eo = cache->embeddedObjects.Values()[j];
@@ -516,6 +520,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 						{
 							if (auto cache = oldCaches[index + i])
 							{
+								// TODO: (enumerable) foreach on dictionary
 								for (vint j = 0; j < cache->embeddedObjects.Count(); j++)
 								{
 									auto id = cache->embeddedObjects.Keys()[j];
@@ -597,6 +602,7 @@ GuiDocumentElement::GuiDocumentElementRenderer
 				}
 
 				if (!renderTarget) return;
+				// TODO: (enumerable) foreach:indexed
 				for(vint i=0;i<paragraphCaches.Count();i++)
 				{
 					if(begin.row<=i && i<=end.row)

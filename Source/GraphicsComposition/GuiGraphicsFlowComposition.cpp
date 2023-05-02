@@ -309,6 +309,7 @@ GuiFlowComposition
 			{
 				if (!needUpdate)
 				{
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < flowItems.Count(); i++)
 					{
 						if (flowItemBounds[i].GetSize() != flowItems[i]->GetMinSize())
