@@ -287,6 +287,7 @@ DocumentModel
 				stylesElement->name.value=L"Styles";
 				doc->subNodes.Add(stylesElement);
 
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<styles.Count();i++)
 				{
 					WString name=styles.Keys()[i];

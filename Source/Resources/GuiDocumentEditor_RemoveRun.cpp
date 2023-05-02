@@ -31,6 +31,7 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 				void VisitContainer(DocumentContainerRun* run)
 				{
 					if (start == end) return;
+					// TODO: (enumerable) foreach:indexed(alterable(reversed))
 					for (vint i = run->runs.Count() - 1; i >= 0; i--)
 					{
 						Ptr<DocumentRun> subRun = run->runs[i];
@@ -44,6 +45,7 @@ If a run decides that itself should be removed, then replacedRuns contains all r
 							if (replacedRuns.Count() == 0 || subRun != replacedRuns[0])
 							{
 								run->runs.RemoveAt(i);
+								// TODO: (enumerable) foreach
 								for (vint j = 0; j<replacedRuns.Count(); j++)
 								{
 									run->runs.Insert(i + j, replacedRuns[j]);

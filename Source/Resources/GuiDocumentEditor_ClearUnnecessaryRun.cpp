@@ -25,6 +25,7 @@ Clear all runs that have an empty length
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
+					// TODO: (enumerable) foreach:indexed(alterable(reversed))
 					for (vint i = run->runs.Count() - 1; i >= 0; i--)
 					{
 						vint oldStart = start;
@@ -109,6 +110,7 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
+					// TODO: (enumerable) foreach:indexed(alterable)
 					for (vint i = 0; i < run->runs.Count(); i++)
 					{
 						Ptr<DocumentRun> subRun = run->runs[i];
@@ -117,6 +119,7 @@ Remove DocumentStylePropertiesRun if it is empty or contains no text run
 						if (replacedRuns.Count() > 0)
 						{
 							run->runs.RemoveAt(i);
+							// TODO: (enumerable) foreach
 							for (vint j = 0; j < replacedRuns.Count(); j++)
 							{
 								run->runs.Insert(i + j, replacedRuns[j]);
@@ -333,6 +336,7 @@ Merge sibling runs if they are exactly the same
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
+					// TODO: (enumerable) foreach:indexed(alterable(reversed))
 					for (vint i = 0; i < run->runs.Count() - 1; i++)
 					{
 						auto currentRun = run->runs[i];
@@ -350,6 +354,7 @@ Merge sibling runs if they are exactly the same
 						}
 					}
 
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < run->runs.Count() - 1; i++)
 					{
 						run->runs[i]->Accept(this);

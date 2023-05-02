@@ -50,6 +50,7 @@ SharedCallbackService
 
 		void SharedCallbackService::InvokeGlobalTimer()
 		{
+			// TODO: (enumerable) foreach
 			for(vint i=0;i<listeners.Count();i++)
 			{
 				listeners[i]->GlobalTimer();
@@ -58,6 +59,7 @@ SharedCallbackService
 
 		void SharedCallbackService::InvokeClipboardUpdated()
 		{
+			// TODO: (enumerable) foreach
 			for(vint i=0;i<listeners.Count();i++)
 			{
 				listeners[i]->ClipboardUpdated();
@@ -66,6 +68,7 @@ SharedCallbackService
 
 		void SharedCallbackService::InvokeGlobalShortcutKeyActivated(vint id)
 		{
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < listeners.Count(); i++)
 			{
 				listeners[i]->GlobalShortcutKeyActivated(id);
@@ -74,6 +77,7 @@ SharedCallbackService
 
 		void SharedCallbackService::InvokeNativeWindowCreated(INativeWindow* window)
 		{
+			// TODO: (enumerable) foreach
 			for(vint i=0;i<listeners.Count();i++)
 			{
 				listeners[i]->NativeWindowCreated(window);
@@ -82,6 +86,7 @@ SharedCallbackService
 
 		void SharedCallbackService::InvokeNativeWindowDestroying(INativeWindow* window)
 		{
+			// TODO: (enumerable) foreach
 			for(vint i=0;i<listeners.Count();i++)
 			{
 				listeners[i]->NativeWindowDestroying(window);

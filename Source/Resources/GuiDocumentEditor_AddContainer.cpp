@@ -36,6 +36,7 @@ AddStyleNameVisitor	: Apply a style name on the specified range
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
+					// TODO: (enumerable) foreach:indexed(alterable(reversed))
 					for (vint i = run->runs.Count() - 1; i >= 0; i--)
 					{
 						Ptr<DocumentRun> subRun = run->runs[i];

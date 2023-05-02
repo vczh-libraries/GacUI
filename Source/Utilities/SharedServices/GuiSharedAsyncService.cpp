@@ -99,6 +99,7 @@ SharedAsyncService
 			{
 				CopyFrom(items, taskItems);
 				taskItems.RemoveRange(0, items.Count());
+				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for(vint i=delayItems.Count()-1;i>=0;i--)
 				{
 					Ptr<DelayItem> item=delayItems[i];

@@ -266,6 +266,7 @@ Clone the current run with its children
 				textRun->text = text;
 
 				CloneRunVisitor visitor(textRun);
+				// TODO: (enumerable) foreach:reversed
 				for (vint i = styleRuns.Count() - 1; i >= 0; i--)
 				{
 					styleRuns[i]->Accept(&visitor);

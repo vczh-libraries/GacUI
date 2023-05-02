@@ -68,6 +68,7 @@ WindowsImageFrame
 
 			WindowsImageFrame::~WindowsImageFrame()
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<caches.Count();i++)
 				{
 					caches.Values().Get(i)->OnDetach(this);
@@ -368,6 +369,7 @@ WindowsImage
 						{
 							if ((vint)actualCount > colorContexts.Count())
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < colorContexts.Count(); i++) colorContexts[i]->Release();
 								colorContexts.Resize((vint)actualCount);
 								bitmapDecoder->GetColorContexts(actualCount, &colorContexts[0], &actualCount);

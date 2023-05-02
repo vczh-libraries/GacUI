@@ -64,10 +64,12 @@ GuiPluginManager
 				{
 					vint count = pluginsToLoad.Count();
 					{
+						// TODO: (enumerable) foreach:alterable(reversed) on dictionary
 						for (auto [name, index] : indexed(pluginsToLoad.Keys()))
 						{
 							if (!loading.Keys().Contains(name))
 							{
+								// TODO: (enumerable) foreach:alterable(reversed) on group
 								for (vint i = loading.Count() - 1; i >= 0; i--)
 								{
 									loading.Remove(loading.Keys()[i], name);

@@ -100,6 +100,7 @@ Calculate if all text in the specified range has some common styles
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
+					// TODO: (enumerable) foreach:reversed
 					for (vint i = run->runs.Count() - 1; i >= 0; i--)
 					{
 						Ptr<DocumentRun> subRun = run->runs[i];
@@ -222,6 +223,7 @@ Calculate if all text in the specified range has a common style name
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
+					// TODO: (enumerable) foreach:reversed
 					for (vint i = run->runs.Count() - 1; i >= 0; i--)
 					{
 						Ptr<DocumentRun> subRun = run->runs[i];

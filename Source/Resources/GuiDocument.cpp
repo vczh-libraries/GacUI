@@ -346,6 +346,7 @@ DocumentModel
 
 		void DocumentModel::GetText(stream::TextWriter& writer, bool skipNonTextContent)
 		{
+			// TODO: (enumerable) Linq:Aggregate
 			for(vint i=0;i<paragraphs.Count();i++)
 			{
 				Ptr<DocumentParagraphRun> paragraph=paragraphs[i];

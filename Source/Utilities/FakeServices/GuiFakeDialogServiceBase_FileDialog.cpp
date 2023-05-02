@@ -325,6 +325,7 @@ View Model (IFileDialogViewModel)
 				}
 
 				auto folder = rootFolder;
+				// TODO: (enumerable) foreach:reversed
 				for (vint i = fragments.Count() - 1; i >= 0; i--)
 				{
 					auto fragment = fragments[i];
@@ -589,6 +590,7 @@ View Model (IFileDialogViewModel)
 							}
 						}
 
+						// TODO: (enumerable) foreach:indexed(alterable(reversed))
 						for (vint i = folderOfUnexistings.Count() - 1; i >= 0; i--)
 						{
 							if (filesystem::Folder(folderOfUnexistings[i]).Exists())
@@ -686,6 +688,7 @@ View Model (IFileDialogViewModel)
 					auto&& sExt = WString::Unmanaged(L".") + extension.Value();
 					vint lExt = sExt.Length();
 
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < confirmedSelection.Count(); i++)
 					{
 						WString& selection = confirmedSelection[i];

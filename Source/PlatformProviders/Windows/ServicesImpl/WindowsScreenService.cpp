@@ -90,6 +90,7 @@ WindowsScreenService
 
 			void WindowsScreenService::RefreshScreenInformation()
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<screens.Count();i++)
 				{
 					screens[i]->monitor=NULL;
@@ -121,6 +122,7 @@ WindowsScreenService
 					HMONITOR monitor=MonitorFromWindow(hwnd, MONITOR_DEFAULTTONULL);
 					if(monitor!=NULL)
 					{
+						// TODO: (enumerable) foreach
 						for(vint i=0;i<screens.Count();i++)
 						{
 							if(screens[i]->monitor==monitor)

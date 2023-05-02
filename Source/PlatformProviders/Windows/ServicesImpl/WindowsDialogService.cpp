@@ -205,6 +205,7 @@ WindowsDialogService
 
 				Array<wchar_t> filterBuffer(filter.Length()+2);
 				vint index=0;
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<filterSeparators.Count();i++)
 				{
 					vint end=filterSeparators[i];

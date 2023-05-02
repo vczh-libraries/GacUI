@@ -63,6 +63,7 @@ If a run decides that itself should be cut, then leftRun and rightRun contains n
 
 					Ptr<DocumentContainerRun> leftContainer = CopyRun(run).Cast<DocumentContainerRun>();
 					Ptr<DocumentContainerRun> rightContainer = CopyRun(run).Cast<DocumentContainerRun>();
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i<run->runs.Count(); i++)
 					{
 						(i<leftCount ? leftContainer : rightContainer)->runs.Add(run->runs[i]);

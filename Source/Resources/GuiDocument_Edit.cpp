@@ -85,6 +85,7 @@ DocumentModel::EditRangeOperations
 				CollectStyleName(paragraph.Obj(), styleNames);
 			}
 
+			// TODO: (enumerable) foreach:alterable
 			for(vint i=0;i<styleNames.Count();i++)
 			{
 				WString styleName=styleNames[i];
@@ -229,6 +230,7 @@ DocumentModel::EditRun
 			List<WString> oldNames, newNames;
 			CopyFrom(oldNames, model->styles.Keys());
 			CopyFrom(newNames, model->styles.Keys());
+			// TODO: (enumerable) foreach:indexed(allow-set)
 			for(vint i=0;i<newNames.Count();i++)
 			{
 				WString name=newNames[i];
@@ -328,11 +330,14 @@ DocumentModel::EditRun
 				{
 					endParagraph->alignment = newEndRuns->alignment;
 				}
+
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<newEndRuns->runs.Count();i++)
 				{
 					endParagraph->runs.Insert(i, newEndRuns->runs[i]);
 				}
 
+				// TODO: (enumerable) foreach:indexed
 				for(vint i=1;i<runs.Count()-1;i++)
 				{
 					paragraphs.Insert(begin.row+i, runs[i]);
@@ -383,6 +388,7 @@ DocumentModel::EditText
 
 			// create paragraphs
 			Array<Ptr<DocumentParagraphRun>> runs(text.Count());
+			// TODO: (enumerable) foreach:indexed
 			for(vint i=0;i<text.Count();i++)
 			{
 				Ptr<DocumentRun> paragraph=CopyStyledText(styleRuns, text[i]);

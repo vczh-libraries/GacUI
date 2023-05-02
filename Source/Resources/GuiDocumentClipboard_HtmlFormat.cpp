@@ -235,6 +235,7 @@ namespace vl
 				StreamWriter writer(encoderStream);
 				GenerateHtmlVisitor visitor(model.Obj(), writer);
 
+				// TODO: (enumerable) foreach
 				for (auto paragraph : model->paragraphs)
 				{
 					writer.WriteString(L"<p style=\"text-align:");

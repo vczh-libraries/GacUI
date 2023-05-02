@@ -33,6 +33,7 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 
 				void VisitContainer(DocumentContainerRun* run)
 				{
+					// TODO: (enumerable) foreach:indexed(alterable(reversed))
 					for (vint i = run->runs.Count() - 1; i >= 0; i--)
 					{
 						Ptr<DocumentRun> subRun = run->runs[i];
@@ -44,6 +45,7 @@ ClearStyleVisitor		: Remove all styles that intersect with the specified range
 							if (replacedRuns.Count() != 1 || replacedRuns[0] != subRun)
 							{
 								run->runs.RemoveAt(i);
+								// TODO: (enumerable) foreach
 								for (vint j = 0; j<replacedRuns.Count(); j++)
 								{
 									run->runs.Insert(i + j, replacedRuns[j]);

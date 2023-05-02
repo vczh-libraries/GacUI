@@ -68,6 +68,7 @@ namespace vl
 
 				void VisitContainer(DocumentContainerRun* run)override
 				{
+					// TODO: (enumerable) foreach:indexed(alterable(reversed))
 					for (vint i = run->runs.Count() - 1; i >= 0; i--)
 					{
 						auto childRun = run->runs[i];
