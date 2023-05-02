@@ -618,6 +618,7 @@ GuiDefaultInstanceLoader
 										block->statements.Add(stat);
 									}
 
+									// TODO: (enumerable) foreach
 									for (vint i = 0; i < values.Count(); i++)
 									{
 										auto refCollection = Ptr(new WfReferenceExpression);
@@ -1000,6 +1001,7 @@ GuiInstanceLoaderManager
 
 			void GetVirtualTypes(collections::List<GlobalStringKey>& typeNames)override
 			{
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < typeInfos.Count(); i++)
 				{
 					if (typeInfos.Values()[i]->parentTypeName != GlobalStringKey::Empty)

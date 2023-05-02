@@ -330,6 +330,7 @@ GuiInstanceGradientAnimation::InitStruct
 				tds.Add(td);
 				auto ref = Ptr(new WfConstructorExpression);
 
+				// TODO: (enumerable) foreach:alterable
 				for (vint i = 0; i < tds.Count(); i++)
 				{
 					auto currentTd = tds[i];

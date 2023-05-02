@@ -101,6 +101,7 @@ GuiDocumentItemInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
@@ -192,6 +193,7 @@ GuiDocumentInstanceLoaderBase
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);

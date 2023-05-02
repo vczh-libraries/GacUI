@@ -31,6 +31,7 @@ GuiGraphicsTimerManager
 
 			void GuiGraphicsTimerManager::Play()
 			{
+				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for (vint i = callbacks.Count() - 1; i >= 0; i--)
 				{
 					auto callback = callbacks[i];
@@ -54,6 +55,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::DisconnectCompositionInternal(GuiGraphicsComposition* composition)
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<composition->Children().Count();i++)
 				{
 					DisconnectCompositionInternal(composition->Children().Get(i));
@@ -110,6 +112,7 @@ GuiGraphicsHost
 				GuiCharEventArgs arguments(composition);
 				(NativeWindowCharInfo&)arguments=info;
 
+				// TODO: (enumerable) foreach:reversed
 				for(vint i=compositions.Count()-1;i>=0;i--)
 				{
 					compositions[i]->GetEventReceiver()->previewCharInput.Execute(arguments);
@@ -119,6 +122,7 @@ GuiGraphicsHost
 					}
 				}
 
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<compositions.Count();i++)
 				{
 					(compositions[i]->GetEventReceiver()->*eventReceiverEvent).Execute(arguments);
@@ -147,6 +151,7 @@ GuiGraphicsHost
 				GuiKeyEventArgs arguments(composition);
 				(NativeWindowKeyInfo&)arguments = info;
 
+				// TODO: (enumerable) foreach:reversed
 				for (vint i = compositions.Count() - 1; i >= 0; i--)
 				{
 					compositions[i]->GetEventReceiver()->previewKey.Execute(arguments);
@@ -156,6 +161,7 @@ GuiGraphicsHost
 					}
 				}
 
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < compositions.Count(); i++)
 				{
 					(compositions[i]->GetEventReceiver()->*eventReceiverEvent).Execute(arguments);
@@ -421,6 +427,7 @@ GuiGraphicsHost
 				}
 
 				vint firstDifferentIndex = mouseEnterCompositions.Count();
+				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < mouseEnterCompositions.Count(); i++)
 				{
 					if (i == newCompositions.Count())
@@ -435,6 +442,7 @@ GuiGraphicsHost
 					}
 				}
 
+				// TODO: (enumerable) foreach:reversed Linq:Take
 				for (vint i = mouseEnterCompositions.Count() - 1; i >= firstDifferentIndex; i--)
 				{
 					GuiGraphicsComposition* composition = mouseEnterCompositions[i];
@@ -445,6 +453,7 @@ GuiGraphicsHost
 				}
 
 				CopyFrom(mouseEnterCompositions, newCompositions);
+				// TODO: (enumerable) foreach Linq:Skip
 				for (vint i = firstDifferentIndex; i < mouseEnterCompositions.Count(); i++)
 				{
 					GuiGraphicsComposition* composition = mouseEnterCompositions[i];
@@ -477,6 +486,7 @@ GuiGraphicsHost
 
 			void GuiGraphicsHost::MouseLeaved()
 			{
+				// TODO: (enumerable) foreach:reversed
 				for(vint i=mouseEnterCompositions.Count()-1;i>=0;i--)
 				{
 					GuiGraphicsComposition* composition=mouseEnterCompositions[i];
@@ -642,6 +652,7 @@ GuiGraphicsHost
 						ProcList procs;
 						CopyFrom(procs, afterRenderProcs);
 						afterRenderProcs.Clear();
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < procs.Count(); i++)
 						{
 							procs[i]();
@@ -651,6 +662,7 @@ GuiGraphicsHost
 						ProcMap procs;
 						CopyFrom(procs, afterRenderKeyedProcs);
 						afterRenderKeyedProcs.Clear();
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < procs.Count(); i++)
 						{
 							procs.Values()[i]();

@@ -205,6 +205,7 @@ GuiAltActionManager
 			{
 				if (currentAltHost)
 				{
+					// TODO: (enumerable) foreach on group (key, value[])
 					vint count = actions.Count();
 					for (vint i = 0; i < count; i++)
 					{
@@ -248,6 +249,7 @@ GuiAltActionManager
 						}
 					}
 
+					// TODO: (enumerable) foreach on dictionary
 					count = currentActiveAltActions.Count();
 					auto window = dynamic_cast<GuiWindow*>(currentAltHost->GetAltComposition()->GetRelatedControlHost());
 					for (vint i = 0; i < count; i++)
@@ -271,6 +273,7 @@ GuiAltActionManager
 
 			vint GuiAltActionManager::FilterTitles()
 			{
+				// TODO: (enumerable) foreach on dictionary
 				vint count = currentActiveAltTitles.Count();
 				vint visibles = 0;
 				for (vint i = 0; i < count; i++)

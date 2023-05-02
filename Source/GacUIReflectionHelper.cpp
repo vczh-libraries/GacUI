@@ -145,6 +145,7 @@ External Functions (Compositions)
 			{
 				Group<WString, IGuiAltAction*> group;
 				host->CollectAltActions(group);
+				// TODO: (enumerable) Linq:SelectMany
 				for (vint i = 0; i < group.Count(); i++)
 				{
 					CopyFrom(actions, group.GetByIndex(i), true);

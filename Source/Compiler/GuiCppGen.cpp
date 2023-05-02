@@ -88,6 +88,7 @@ namespace vl
 				return nullptr;
 			}
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [fileName, index] : indexed(output->cppFiles.Keys()))
 			{
 				WString code = output->cppFiles.Values()[index];

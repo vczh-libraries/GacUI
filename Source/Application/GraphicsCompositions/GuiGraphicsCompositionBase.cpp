@@ -81,6 +81,7 @@ GuiGraphicsComposition
 				}
 				else
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<children.Count();i++)
 					{
 						children[i]->OnControlParentChanged(control);
@@ -105,6 +106,7 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::OnParentLineChanged()
 			{
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < children.Count(); i++)
 				{
 					children[i]->OnParentLineChanged();
@@ -128,6 +130,7 @@ GuiGraphicsComposition
 					}
 				}
 
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < children.Count(); i++)
 				{
 					children[i]->UpdateRelatedHostRecord(record);
@@ -149,6 +152,7 @@ GuiGraphicsComposition
 			{
 				if (associatedControl)
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < children.Count(); i++)
 					{
 						children[i]->OnControlParentChanged(0);
@@ -157,6 +161,7 @@ GuiGraphicsComposition
 				associatedControl = control;
 				if (associatedControl)
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < children.Count(); i++)
 					{
 						children[i]->OnControlParentChanged(associatedControl);
@@ -190,6 +195,7 @@ GuiGraphicsComposition
 
 			GuiGraphicsComposition::~GuiGraphicsComposition()
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<children.Count();i++)
 				{
 					delete children[i];
@@ -380,6 +386,7 @@ GuiGraphicsComposition
 								renderTarget->PushClipper(bounds);
 								if (!renderTarget->IsClipperCoverWholeTarget())
 								{
+									// TODO: (enumerable) foreach
 									for (vint i = 0; i < children.Count(); i++)
 									{
 										children[i]->Render(Size(bounds.x1, bounds.y1));
@@ -415,6 +422,7 @@ GuiGraphicsComposition
 				if (relativeBounds.Contains(location))
 				{
 					Rect clientArea = GetClientArea();
+					// TODO: (enumerable) foreach:reversed
 					for (vint i = children.Count() - 1; i >= 0; i--)
 					{
 						GuiGraphicsComposition* child = children[i];
@@ -604,6 +612,7 @@ GuiGraphicsComposition
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
 			{
 				isRendering = true;
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < children.Count(); i++)
 				{
 					children[i]->ForceCalculateSizeImmediately();
@@ -670,6 +679,7 @@ GuiGraphicsSite
 				}
 				if (minSizeLimitation == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
+					// TODO: (enumerable) foreach
 					vint childCount = Children().Count();
 					for (vint i = 0; i < childCount; i++)
 					{
@@ -755,6 +765,7 @@ Helper Functions
 
 					if (!finalized)
 					{
+						// TODO: (enumerable) foreach
 						vint count = value->Children().Count();
 						for (vint i = 0; i < count; i++)
 						{
@@ -795,6 +806,7 @@ Helper Functions
 					}
 					else
 					{
+						// TODO: (enumerable) foreach:reversed
 						for (vint i = value->Children().Count() - 1; i >= 0; i--)
 						{
 							SafeDeleteCompositionInternal(value->Children().Get(i));

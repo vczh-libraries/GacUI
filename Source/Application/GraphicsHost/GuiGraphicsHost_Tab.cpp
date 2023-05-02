@@ -41,6 +41,7 @@ GuiTabActionManager
 
 				void InsertPrioritized(List<GuiControl*>& controls, vint index, Group<vuint64_t, GuiControl*>& prioritized)
 				{
+					// TODO: (enumerable) Linq:SelectMany
 					vint count = prioritized.Count();
 					for (vint i = 0; i < count; i++)
 					{
@@ -63,6 +64,7 @@ GuiTabActionManager
 					InsertPrioritized(controlsInOrder, 0, prioritized);
 				}
 
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < controlsInOrder.Count(); i++)
 				{
 					Group<vuint64_t, GuiControl*> prioritized;

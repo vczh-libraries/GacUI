@@ -148,6 +148,7 @@ GuiControl
 					arguments.controlSignal = ControlSignal::ParentLineChanged;
 					ControlSignalTrigerred.Execute(arguments);
 				}
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<children.Count();i++)
 				{
 					children[i]->OnParentLineChanged();
@@ -161,6 +162,7 @@ GuiControl
 					arguments.controlSignal = ControlSignal::ServiceAdded;
 					ControlSignalTrigerred.Execute(arguments);
 				}
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<children.Count();i++)
 				{
 					children[i]->OnParentLineChanged();
@@ -176,6 +178,7 @@ GuiControl
 
 			void GuiControl::OnBeforeReleaseGraphicsHost()
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<children.Count();i++)
 				{
 					children[i]->OnBeforeReleaseGraphicsHost();
@@ -194,6 +197,7 @@ GuiControl
 					}
 					VisuallyEnabledChanged.Execute(GetNotifyEventArguments());
 
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < children.Count(); i++)
 					{
 						children[i]->UpdateVisuallyEnabled();
@@ -217,6 +221,7 @@ GuiControl
 					}
 					DisplayFontChanged.Execute(GetNotifyEventArguments());
 
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < children.Count(); i++)
 					{
 						children[i]->UpdateDisplayFont();
@@ -397,6 +402,7 @@ GuiControl
 					delete tooltipControl;
 				}
 
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < children.Count(); i++)
 				{
 					delete children[i];

@@ -328,6 +328,7 @@ GuiInstanceLocalizedStringsBase
 				}
 				else
 				{
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < textDesc->parameters.Count(); i++)
 					{
 						auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
@@ -407,6 +408,7 @@ GuiInstanceLocalizedStringsBase
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = functionName;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < textDesc->positions.Count(); i++)
 			{
 				auto type = textDesc->parameters[textDesc->positions[i]];
@@ -544,6 +546,7 @@ GuiInstanceLocalizedStringsBase
 
 			auto block = Ptr(new WfBlockStatement);
 
+			// TODO: (enumerable) foreach:indexed
 			for (vint i = 0; i < textDesc->parameters.Count(); i++)
 			{
 				auto varDesc = Ptr(new WfVariableDeclaration);
@@ -561,6 +564,7 @@ GuiInstanceLocalizedStringsBase
 
 			{
 				Ptr<WfExpression> resultExpr;
+				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < textDesc->texts.Count(); i++)
 				{
 					if (textDesc->texts[i] != L"")

@@ -184,6 +184,7 @@ GuiTreeViewInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Nodes)
@@ -360,6 +361,7 @@ GuiTreeNodeInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == GlobalStringKey::Empty)

@@ -152,6 +152,7 @@ namespace vl
 					codes.Add(code);
 				};
 
+				// TODO: (enumerable) Linq:Select
 				for (vint i = 0; i < compiled->modules.Count(); i++)
 				{
 					manager->AddModule(compiled->modules[i].module);
@@ -175,6 +176,7 @@ namespace vl
 				}
 				else
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < compiled->modules.Count(); i++)
 					{
 						auto module = compiled->modules[i];
@@ -184,6 +186,7 @@ namespace vl
 					}
 
 					auto sp = Workflow_GetScriptPosition(context);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < manager->errors.Count(); i++)
 					{
 						auto error = manager->errors[i];
@@ -284,6 +287,7 @@ Shared Script Type Resolver (Script)
 					Workflow_GenerateAssembly(context, Path_Shared, errors, false, context.compilerCallback);
 					if (auto compiled = Workflow_GetModule(context, Path_Shared, {}))
 					{
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < compiled->modules.Count(); i++)
 						{
 							auto& module = compiled->modules[i];
@@ -446,6 +450,7 @@ Instance Type Resolver (Instance)
 									L"\" should have the class name specified in the ref.Class attribute."));
 							}
 
+							// TODO: (enumerable) Linq:Take
 							for (auto [localized, index] :
 								indexed(From(obj->localizeds).Where([](Ptr<GuiInstanceLocalized> ls) {return ls->defaultStrings; }))
 								)

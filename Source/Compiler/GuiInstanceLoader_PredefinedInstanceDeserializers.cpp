@@ -779,6 +779,7 @@ GuiDataProcessorDeserializer
 						inferExpr->type = funcType;
 
 						funcType->result = CopyType(decl->returnType);
+						// TODO: (enumerable) Linq:Select
 						for (vint i = 0; i < decl->arguments.Count(); i++)
 						{
 							funcType->arguments.Add(CopyType(itemType));

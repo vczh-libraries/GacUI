@@ -238,6 +238,7 @@ GuiApplication
 				INativeWindow* nativeWindow = GetCurrentController()->WindowService()->GetWindow(location);
 				if (nativeWindow)
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < windows.Count(); i++)
 					{
 						GuiWindow* window = windows[i];

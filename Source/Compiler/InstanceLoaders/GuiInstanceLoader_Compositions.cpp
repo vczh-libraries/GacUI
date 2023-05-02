@@ -134,6 +134,7 @@ GuiCompositionInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
@@ -292,6 +293,7 @@ GuiTableCompositionInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Rows)
@@ -326,6 +328,7 @@ GuiTableCompositionInstanceLoader
 									block->statements.Add(stat);
 								}
 
+								// TODO: (enumerable) foreach:indexed
 								for (vint i = 0; i < rows.Count(); i++)
 								{
 									auto refComposition = Ptr(new WfReferenceExpression);
@@ -348,6 +351,7 @@ GuiTableCompositionInstanceLoader
 									block->statements.Add(stat);
 								}
 
+								// TODO: (enumerable) foreach:indexed
 								for (vint i = 0; i < columns.Count(); i++)
 								{
 									auto refComposition = Ptr(new WfReferenceExpression);
@@ -421,6 +425,7 @@ GuiCellCompositionInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Site)

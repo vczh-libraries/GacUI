@@ -53,6 +53,7 @@ GuiInstanceRootObject
 				{
 					if (alive)
 					{
+						// TODO: (enumerable) foreach:indexed(alterable(reversed))
 						for (vint i = rootObject->runningAnimations.Count() - 1; i >= 0; i--)
 						{
 							auto animation = rootObject->runningAnimations[i];
@@ -151,6 +152,7 @@ GuiInstanceRootObject
 					}
 
 					subscriptions.Clear();
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i<components.Count(); i++)
 					{
 						delete components[i];

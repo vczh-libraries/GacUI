@@ -52,6 +52,7 @@ GuiAttSetterRepr
 		{
 			GuiValueRepr::CloneBody(repr);
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [name, index] : indexed(setters.Keys()))
 			{
 				auto src = setters.Values()[index];
@@ -67,6 +68,7 @@ GuiAttSetterRepr
 				repr->setters.Add(name, dst);
 			}
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [name, index] : indexed(eventHandlers.Keys()))
 			{
 				auto src = eventHandlers.Values()[index];
@@ -81,6 +83,7 @@ GuiAttSetterRepr
 				repr->eventHandlers.Add(name, dst);
 			}
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [name, index] : indexed(environmentVariables.Keys()))
 			{
 				auto src = environmentVariables.Values()[index];
@@ -117,6 +120,7 @@ GuiAttSetterRepr
 					xml->attributes.Add(attName);
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < setters.Count(); i++)
 				{
 					auto key = setters.Keys()[i];
@@ -178,6 +182,7 @@ GuiAttSetterRepr
 					}
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < eventHandlers.Count(); i++)
 				{
 					auto key = eventHandlers.Keys()[i];
@@ -198,6 +203,7 @@ GuiAttSetterRepr
 					}
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < environmentVariables.Count(); i++)
 				{
 					auto key = environmentVariables.Keys()[i];
@@ -757,6 +763,7 @@ GuiInstanceContext
 			attClass->value.value = className;
 			xmlInstance->attributes.Add(attClass);
 
+			// TODO: (enumerable) foreach on dictionary
 			for (vint i = 0; i < namespaces.Count(); i++)
 			{
 				auto key = namespaces.Keys()[i];
@@ -770,6 +777,7 @@ GuiInstanceContext
 				}
 				xmlInstance->attributes.Add(xmlns);
 
+				// TODO: (enumerable) Linq:Aggregate
 				for (vint j = 0; j < value->namespaces.Count(); j++)
 				{
 					auto ns = value->namespaces[j];
@@ -843,6 +851,7 @@ GuiInstanceContext
 				attStyles->name.value = L"ref.Styles";
 				xmlInstance->attributes.Add(attStyles);
 
+				// TODO: (enumerable) Linq:Aggregate
 				for (vint j = 0; j < stylePaths.Count(); j++)
 				{
 					if (j != 0)
