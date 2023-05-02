@@ -222,6 +222,7 @@ WorkflowGenerateCreatingVisitor
 				else if (errorCount == errors.Count())
 				{
 					WString propNames;
+					// TODO: (enumerable) Linq:Aggregate
 					for (auto [pairedProp, propIndex] : indexed(pairedProps))
 					{
 						if (propIndex > 0)propNames += L", ";
@@ -252,6 +253,7 @@ WorkflowGenerateCreatingVisitor
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
 					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
+					// TODO: (enumerable) foreach:reversed on dictionary
 					for (auto prop : From(repr->setters.Keys()).Reverse())
 					{
 						auto setter = repr->setters[prop];
@@ -302,6 +304,7 @@ WorkflowGenerateCreatingVisitor
 			{
 				WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [prop, index] : indexed(repr->setters.Keys()))
 				{
 					auto setter = repr->setters.Values()[index];

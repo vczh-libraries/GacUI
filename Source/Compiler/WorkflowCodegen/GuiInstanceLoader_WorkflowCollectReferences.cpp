@@ -258,6 +258,7 @@ WorkflowReferenceNamesVisitor
 			
 				auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					List<types::PropertyResolving> possibleInfos;
@@ -549,6 +550,7 @@ WorkflowReferenceNamesVisitor
 					for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 					{
 						const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+						// TODO: (enumerable) foreach
 						for (vint j = 0; j < typeInfos.Count(); j++)
 						{
 							if (resolvedTypeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(typeInfos[j]->GetTypeDescriptor()))
@@ -572,9 +574,11 @@ WorkflowReferenceNamesVisitor
 							+ resolvedTypeInfo.typeName.ToString()
 							+ L"\" because it only accepts value of the following types: ";
 						
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 						{
 							const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+							// TODO: (enumerable) LinqLAggregate
 							for (vint j = 0; j < typeInfos.Count(); j++)
 							{
 								if (i != 0 || j != 0)
@@ -637,6 +641,7 @@ WorkflowReferenceNamesVisitor
 								{
 									List<GlobalStringKey> propertyNames;
 									loader->GetPropertyNames(precompileContext, resolvedTypeInfo, propertyNames);
+									// TODO: (enumerable) foreach:indexed(alterable(reversed))
 									for (vint i = propertyNames.Count() - 1; i >= 0; i--)
 									{
 										auto info = loader->GetPropertyType(precompileContext, { resolvedTypeInfo, propertyNames[i] });

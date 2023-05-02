@@ -171,6 +171,7 @@ WorkflowEventNamesVisitor
 
 			void Visit(GuiAttSetterRepr* repr)override
 			{
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
@@ -209,6 +210,7 @@ WorkflowEventNamesVisitor
 					}
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 				{
 					if (handler->binding == GlobalStringKey::Empty)
@@ -564,6 +566,7 @@ Workflow_GenerateInstanceClass
 					CopyFrom(unprocessed, memberDecls);
 
 					ReplaceDeclImplVisitor visitor(notImplemented, unprocessed);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < unprocessed.Count(); i++)
 					{
 						unprocessed[i]->Accept(&visitor);
@@ -589,6 +592,7 @@ Workflow_GenerateInstanceClass
 				call->type = CopyType(instanceClass->baseTypes[0]);
 				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
 
+				// TODO: (enumerable) foreach
 				for (auto parameter : baseTypeContext->parameters)
 				{
 					auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());

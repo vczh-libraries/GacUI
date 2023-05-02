@@ -46,6 +46,7 @@ ExecuteQueryVisitor
 			{
 				if (setter)
 				{
+					// TODO: (enumerable) foreach on group
 					for (auto [attribute, index] : indexed(setter->setters.Keys()))
 					{
 						auto setterValue = setter->setters.Values()[index];
@@ -157,6 +158,7 @@ ApplyStyle
 
 		void ApplyStyleInternal(Ptr<GuiAttSetterRepr> src, Ptr<GuiAttSetterRepr> dst)
 		{
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [attribute, srcIndex] : indexed(src->setters.Keys()))
 			{
 				auto srcValue = src->setters.Values()[srcIndex];
@@ -182,6 +184,7 @@ ApplyStyle
 				}
 			}
 
+			// TODO: (enumerable) foreach
 			for (auto [eventName, srcIndex] : indexed(src->eventHandlers.Keys()))
 			{
 				if (!dst->eventHandlers.Keys().Contains(eventName))
@@ -191,6 +194,7 @@ ApplyStyle
 				}
 			}
 
+			// TODO: (enumerable) foreach
 			for (auto [varName, srcIndex] : indexed(src->environmentVariables.Keys()))
 			{
 				if (!dst->environmentVariables.Keys().Contains(varName))

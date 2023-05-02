@@ -66,6 +66,7 @@ DataMultipleFilter
 				void DataMultipleFilter::SetCallback(IDataProcessorCallback* value)
 				{
 					DataFilterBase::SetCallback(value);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < filters.Count(); i++)
 					{
 						filters[i]->SetCallback(value);
@@ -820,6 +821,7 @@ DataProvider
 						currentSorter = nullptr;
 					}
 
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < columns.Count(); i++)
 					{
 						columns[i]->sortingState =
@@ -834,6 +836,7 @@ DataProvider
 
 				vint DataProvider::GetSortedColumn()
 				{
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < columns.Count(); i++)
 					{
 						auto state = columns[i]->sortingState;
@@ -847,6 +850,7 @@ DataProvider
 
 				bool DataProvider::IsSortOrderAscending()
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < columns.Count(); i++)
 					{
 						auto state = columns[i]->sortingState;

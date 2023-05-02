@@ -23,6 +23,7 @@ Parser
 
 			if (availableAfter.row != 0 || availableAfter.column != 0)
 			{
+				// TODO: (enumerable) Linq:Skip
 				for (vint i = errorCount; i < errors.Count(); i++)
 				{
 					auto& error = errors[i];

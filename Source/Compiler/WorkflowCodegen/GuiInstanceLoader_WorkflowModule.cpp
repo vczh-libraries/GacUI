@@ -198,6 +198,7 @@ Variable
 		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult)
 		{
 			const auto& typeInfos = resolvingResult.typeInfos;
+			// TODO: (enumerable) foreach on dictionary
 			for (vint i = 0; i < typeInfos.Count(); i++)
 			{
 				auto key = typeInfos.Keys()[i];

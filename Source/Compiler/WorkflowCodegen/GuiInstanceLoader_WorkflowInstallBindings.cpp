@@ -364,6 +364,7 @@ Workflow_GenerateEventHandler
 					auto expectedType = GetTypeDescriptor<GuiEventArgs>();
 					List<ITypeDescriptor*> types;
 					types.Add(argumentType);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < types.Count(); i++)
 					{
 						auto type = types[i];

@@ -261,6 +261,7 @@ GuiSelectableButton::GroupController
 
 			GuiSelectableButton::GroupController::~GroupController()
 			{
+				// TODO: (enumerable) foreach:reversed
 				for(vint i=buttons.Count()-1;i>=0;i--)
 				{
 					buttons[i]->SetGroupController(0);
@@ -298,6 +299,7 @@ GuiSelectableButton::MutexGroupController
 				if(!suppress)
 				{
 					suppress=true;
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<buttons.Count();i++)
 					{
 						buttons[i]->SetSelected(buttons[i]==button);

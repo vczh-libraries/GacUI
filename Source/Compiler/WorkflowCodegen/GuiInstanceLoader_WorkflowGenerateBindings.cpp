@@ -149,6 +149,7 @@ WorkflowGenerateBindingVisitor
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
+					// TODO: (enumerable) foreach on dictionary
 					for (auto [setter, index] : indexed(repr->setters.Values()))
 					{
 						auto propertyName = repr->setters.Keys()[index];
@@ -169,6 +170,7 @@ WorkflowGenerateBindingVisitor
 						}
 					}
 
+					// TODO: (enumerable) foreach on dictionary
 					for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 					{
 						if (reprTypeInfo.typeInfo)
