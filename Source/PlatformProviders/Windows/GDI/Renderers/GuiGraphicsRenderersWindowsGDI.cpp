@@ -847,6 +847,7 @@ GuiColorizedTextElementRenderer
 			void GuiColorizedTextElementRenderer::DestroyColors()
 			{
 				auto resourceManager=GetWindowsGDIResourceManager();
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<colors.Count();i++)
 				{
 					resourceManager->DestroyGdiBrush(colors[i].normal.background);
@@ -860,6 +861,7 @@ GuiColorizedTextElementRenderer
 				auto resourceManager=GetWindowsGDIResourceManager();
 				ColorArray newColors;
 				newColors.Resize(element->GetColors().Count());
+				// TODO: (enumerable) foreach:indexed
 				for(vint i=0;i<newColors.Count();i++)
 				{
 					text::ColorEntry entry=element->GetColors().Get(i);

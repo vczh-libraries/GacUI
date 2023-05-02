@@ -685,6 +685,7 @@ GuiHostedController::INativeControllerListener
 					bool failureByResized = false;
 					bool failureByLostDevice = false;
 
+					// TODO: (enumerable) foreach:reversed
 					for (vint i = wmManager->ordinaryWindowsInOrder.Count() - 1; i >= 0; i--)
 					{
 						auto hostedWindow = wmManager->ordinaryWindowsInOrder[i]->id;
@@ -699,6 +700,7 @@ GuiHostedController::INativeControllerListener
 							}
 						}
 					}
+					// TODO: (enumerable) foreach:reversed
 					for (vint i = wmManager->topMostedWindowsInOrder.Count() - 1; i >= 0; i--)
 					{
 						auto hostedWindow = wmManager->topMostedWindowsInOrder[i]->id;
@@ -978,6 +980,7 @@ GuiHostedController::INativeWindowService
 			{
 				wmManager->Stop();
 
+				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for (vint i = createdWindows.Count() - 1; i >= 0; i--)
 				{
 					auto hostedWindow = createdWindows[i];

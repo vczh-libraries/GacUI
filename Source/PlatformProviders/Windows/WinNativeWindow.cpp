@@ -287,6 +287,7 @@ WindowsForm
 
 				static void ClosePopupsOf(WindowsForm* owner, SortedList<WindowsForm*>& exceptions)
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < owner->childWindows.Count(); i++)
 					{
 						auto popup = owner->childWindows[i];
@@ -355,6 +356,7 @@ WindowsForm
 							List<IWindowsForm*> allRootWindows;
 							GetAllCreatedWindows(allRootWindows, true);
 
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < allRootWindows.Count(); i++)
 							{
 								if (auto windowsForm = dynamic_cast<WindowsForm*>(allRootWindows[i]))
@@ -374,6 +376,7 @@ WindowsForm
 						{
 							LPRECT rawBounds=(LPRECT)lParam;
 							NativeRect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Moving(bounds, false, (uMsg == WM_SIZING));
@@ -393,6 +396,7 @@ WindowsForm
 						break;
 					case WM_MOVE:case WM_SIZE:
 						{
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Moved();
@@ -407,11 +411,13 @@ WindowsForm
 							auto newRect = (RECT*)lParam;
 							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
 
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								listeners[i]->DpiChanged(true);
 							}
 
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								listeners[i]->DpiChanged(false);
@@ -421,6 +427,7 @@ WindowsForm
 					// ************************************** state
 					case WM_ENABLE:
 						{
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								if(wParam==TRUE)
@@ -443,6 +450,7 @@ WindowsForm
 						break;
 					case WM_ACTIVATE:
 						{
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
@@ -463,6 +471,7 @@ WindowsForm
 						{
 							if (wParam == TRUE)
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Opened();
@@ -470,6 +479,7 @@ WindowsForm
 							}
 							else
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Closed();
@@ -480,12 +490,14 @@ WindowsForm
 					case WM_CLOSE:
 						{
 							bool cancel = false;
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								listeners[i]->BeforeClosing(cancel);
 							}
 							if (!cancel)
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->AfterClosing();
@@ -501,6 +513,7 @@ WindowsForm
 					case WM_LBUTTONDOWN:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->LeftButtonDown(info);
@@ -513,6 +526,7 @@ WindowsForm
 					case WM_LBUTTONUP:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->LeftButtonUp(info);
@@ -525,6 +539,7 @@ WindowsForm
 					case WM_LBUTTONDBLCLK:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->LeftButtonDoubleClick(info);
@@ -537,6 +552,7 @@ WindowsForm
 					case WM_RBUTTONDOWN:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->RightButtonDown(info);
@@ -549,6 +565,7 @@ WindowsForm
 					case WM_RBUTTONUP:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->RightButtonUp(info);
@@ -561,6 +578,7 @@ WindowsForm
 					case WM_RBUTTONDBLCLK:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->RightButtonDoubleClick(info);
@@ -573,6 +591,7 @@ WindowsForm
 					case WM_MBUTTONDOWN:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MiddleButtonDown(info);
@@ -585,6 +604,7 @@ WindowsForm
 					case WM_MBUTTONUP:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MiddleButtonUp(info);
@@ -597,6 +617,7 @@ WindowsForm
 					case WM_MBUTTONDBLCLK:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MiddleButtonDoubleClick(info);
@@ -614,12 +635,14 @@ WindowsForm
 								if(!mouseHoving)
 								{
 									mouseHoving=true;
+									// TODO: (enumerable) foreach
 									for(vint i=0;i<listeners.Count();i++)
 									{
 										listeners[i]->MouseEntered();
 									}
 									TrackMouse(true);
 								}
+								// TODO: (enumerable) foreach
 								for(vint i=0;i<listeners.Count();i++)
 								{
 									listeners[i]->MouseMoving(info);
@@ -631,6 +654,7 @@ WindowsForm
 					case WM_MOUSEHWHEEL:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->HorizontalWheel(info);
@@ -640,6 +664,7 @@ WindowsForm
 					case WM_MOUSEWHEEL:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->VerticalWheel(info);
@@ -655,6 +680,7 @@ WindowsForm
 							mouseLastX=-1;
 							mouseLastY=-1;
 							mouseHoving=false;
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MouseLeaved();
@@ -672,6 +698,7 @@ WindowsForm
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
 							info.autoRepeatKeyDown = false;
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyUp(info);
@@ -681,6 +708,7 @@ WindowsForm
 					case WM_KEYDOWN:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyDown(info);
@@ -709,6 +737,7 @@ WindowsForm
 							{
 								break;
 							}
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyDown(info);
@@ -718,6 +747,7 @@ WindowsForm
 					case WM_CHAR:
 						{
 							NativeWindowCharInfo info=ConvertChar(wParam);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Char(info);
@@ -727,6 +757,7 @@ WindowsForm
 					// ************************************** painting
 					case WM_PAINT:
 						{
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Paint();
@@ -870,6 +901,7 @@ WindowsForm
 						case WM_LBUTTONUP:
 							{
 								POINTS location = MAKEPOINTS(lParam);
+								// TODO: (enumerable) this for-loop needs to be removed, because it is not looping, just leave the body
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									switch (PerformHitTest(From(listeners), { location.x,location.y }))
@@ -964,6 +996,7 @@ WindowsForm
 					{
 						parentWindow->childWindows.Remove(this);
 					}
+					// TODO: (enumerable) foreach
 					for (vint i = childWindows.Count() - 1; i >= 0; i--)
 					{
 						childWindows[i]->SetParent(parentWindow);
@@ -972,6 +1005,7 @@ WindowsForm
 					*flagDisposed.Obj() = true;
 					List<INativeWindowListener*> copiedListeners;
 					CopyFrom(copiedListeners, listeners);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < copiedListeners.Count(); i++)
 					{
 						INativeWindowListener* listener = copiedListeners[i];
@@ -990,6 +1024,7 @@ WindowsForm
 
 				void InvokeDestroying()
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<listeners.Count();i++)
 					{
 						listeners[i]->Destroying();
@@ -1119,6 +1154,7 @@ WindowsForm
 				void SetBounds(const NativeRect& bounds)override
 				{
 					NativeRect newBounds=bounds;
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<listeners.Count();i++)
 					{
 						listeners[i]->Moving(newBounds, true, false);
@@ -1825,6 +1861,7 @@ WindowsController
 							{
 								DestroyNativeWindow(window);
 							}
+							// TODO: (enumerable) foreach:reversed
 							for (vint i = windows.Count() - 1; i >= 0; i--)
 							{
 								auto window = windows.Values()[i];

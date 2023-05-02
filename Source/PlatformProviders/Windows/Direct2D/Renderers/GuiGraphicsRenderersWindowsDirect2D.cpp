@@ -1081,6 +1081,7 @@ GuiPolygonElementRenderer
 					p.x = (FLOAT)(oldPoints[0].x + offset.x) + 0.5f;
 					p.y = (FLOAT)(oldPoints[0].y + offset.y) + 0.5f;
 					pgs->BeginFigure(p, D2D1_FIGURE_BEGIN_FILLED);
+					// TODO: (enumerable) foreach
 					for (vint i = 1; i < oldPoints.Count(); i++)
 					{
 						p.x = (FLOAT)(oldPoints[i].x + offset.x) + 0.5f;
@@ -1184,6 +1185,7 @@ GuiPolygonElementRenderer
 				}
 				else
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<oldPoints.Count();i++)
 					{
 						if(oldPoints[i]!=element->GetPoint(i))
@@ -1209,6 +1211,7 @@ GuiColorizedTextElementRenderer
 				if(_renderTarget)
 				{
 					colors.Resize(element->GetColors().Count());
+					// TODO: (enumerable) foreach:indexed
 					for(vint i=0;i<colors.Count();i++)
 					{
 						text::ColorEntry entry=element->GetColors().Get(i);
@@ -1235,6 +1238,7 @@ GuiColorizedTextElementRenderer
 			{
 				if(_renderTarget)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<colors.Count();i++)
 					{
 						_renderTarget->DestroyDirect2DBrush(colors[i].normal.text);

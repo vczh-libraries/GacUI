@@ -362,6 +362,7 @@ Window
 
 						CopyFrom(remainings, orderedWindows);
 						orderedWindows.Clear();
+						// TODO: (enumerable) foreach:reversed
 						for (vint i = windows.Count() - 1; i >= 0; i--)
 						{
 							orderedWindows.Add(windows[i]);

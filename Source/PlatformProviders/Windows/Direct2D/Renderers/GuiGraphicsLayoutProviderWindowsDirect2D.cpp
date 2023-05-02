@@ -263,6 +263,7 @@ WindowsDirect2DParagraph (Ranges)
 				void CutMap(Dictionary<TextRange, T>& map, vint start, vint length)
 				{
 					vint end=start+length;
+					// TODO: (enumerable) foreach:alterable(reversed) on group
 					for(vint i=map.Count()-1;i>=0;i--)
 					{
 						TextRange key=map.Keys()[i];
@@ -296,6 +297,7 @@ WindowsDirect2DParagraph (Ranges)
 				void UpdateOverlappedMap(Dictionary<TextRange, T>& map, vint start, vint length, const T& value)
 				{
 					vint end=start+length;
+					// TODO: (enumerable) foreach:alterable(reversed)) on dictionary
 					for(vint i=map.Count()-1;i>=0;i--)
 					{
 						TextRange key=map.Keys()[i];
@@ -311,6 +313,7 @@ WindowsDirect2DParagraph (Ranges)
 				{
 					vint lastIndex=map.Count()-1;
 					T lastValue=map.Values()[lastIndex];
+					// TODO: (enumerable) foreach:indexed(alterable(reversed)) on dictionary
 					for(vint i=map.Count()-2;i>=-1;i--)
 					{
 						if(i==-1 || map.Values()[i]!=lastValue)
@@ -392,6 +395,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 							lineTops.Resize(lineCount);
 							vint start=0;
 							FLOAT top=0;
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<lineMetrics.Count();i++)
 							{
 								DWRITE_LINE_METRICS& metrics=lineMetrics[i];
@@ -415,6 +419,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 						{
 							vint textPos=0;
 							hitTestMetrics.Resize(clusterMetrics.Count());
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<hitTestMetrics.Count();i++)
 							{
 								FLOAT x=0;
@@ -426,6 +431,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 						}
 						{
 							charHitTestMap.Resize(paragraphText.Length());
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<hitTestMetrics.Count();i++)
 							{
 								DWRITE_HIT_TEST_METRICS& metrics=hitTestMetrics[i];
@@ -650,6 +656,7 @@ WindowsDirect2DParagraph (Formatting)
 					{
 						return false;
 					}
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<inlineElements.Count();i++)
 					{
 						ComPtr<WindowsDirect2DElementInlineObject> inlineObject=inlineElements.Values().Get(i);
@@ -825,6 +832,7 @@ WindowsDirect2DParagraph (Rendering)
 						BackgroundRenderer backgroundRenderer;
 						backgroundRenderer.renderTarget = renderTarget;
 
+						// TODO: (enumerable) foreach on dictionary
 						for (vint i = 0; i < backgroundColors.Count(); i++)
 						{
 							TextRange key = backgroundColors.Keys()[i];

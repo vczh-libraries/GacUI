@@ -368,6 +368,7 @@ ControllerListener
 
 				~Direct2DWindowsNativeControllerListener()
 				{
+					// TODO: (enumerable) foreach on dictionary
 					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
 					{
 						auto window = nativeWindowListeners.Keys()[i];
