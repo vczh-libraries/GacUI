@@ -13,6 +13,10 @@
 
 ## Progressing
 
+- Unit Test
+  - Test against more code as many as possible in UnitTest project
+    - If a test case can be written without the hosted CLI renderer, than write it directly.
+    - If a unit test only hosted CLI renderer cannot be just running in that project, open a new unit test project.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
