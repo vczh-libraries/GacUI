@@ -49,6 +49,48 @@ TEST_FILE
 
 	TEST_CASE(L"Test single <Bounds> layout")
 	{
+		auto bounds = new GuiBoundsComposition();
+
+		bounds->SetMargin(Margin(1, 2, 3, 4));
+		TEST_ASSERT(bounds->GetMargin() == Margin(1, 2, 3, 4));
+		TEST_ASSERT(bounds->GetClientArea() == Rect({ 1,2 }, { 0,0 }));
+		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 4,6 }));
+		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 4,6 }));
+
+		bounds->SetInternalMargin(Margin(10, 20, 30, 40));
+		TEST_ASSERT(bounds->GetInternalMargin() == Margin(10, 20, 30, 40));
+		TEST_ASSERT(bounds->GetClientArea() == Rect({ 11,22 }, { 0,0 }));
+		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 44,66 }));
+		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 44,66 }));
+
+		bounds->SetPreferredMinSize(Size(100, 200));
+		TEST_ASSERT(bounds->GetPreferredMinSize() == Size(100, 200));
+		TEST_ASSERT(bounds->GetClientArea() == Rect({ 11,22 }, { 100,200 }));
+		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 144,266 }));
+		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 144,266 }));
+
+		bounds->SetBounds(Rect({ 300,400 }, { 10,20 }));
+		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 100,200 }));
+		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 144,266 }));
+		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 144,266 }));
+
+		bounds->SetBounds(Rect({ 300,400 }, { 100,200 }));
+		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 100,200 }));
+		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 144,266 }));
+		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 144,266 }));
+
+		bounds->SetBounds(Rect({ 300,400 }, { 1000,2000 }));
+		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 1000-11-33,2000-22-44 }));
+		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 1000,2000 }));
+		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 1000,2000 }));
+
+		SafeDeleteComposition(bounds);
 	});
 
 	TEST_CASE(L"Test <Bounds> children operations")
