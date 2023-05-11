@@ -146,14 +146,13 @@ int wmain(int argc, wchar_t* argv[])
 {
 	UT_argc = argc;
 	UT_argv = argv;
-	SetupWindowsDirect2DRenderer();
+	SetupGacGenNativeController();
 #if defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
 	return UT_result;
 }
 #elif defined VCZH_GCC
-extern int SetupGacGenNativeController();
 int main(int argc, char* argv[])
 {
 	UT_argc = argc;
