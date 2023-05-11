@@ -183,19 +183,23 @@ TEST_FILE
 	{
 	});
 
-	TEST_CASE(L"Test multiple <Bounds> layout")
+	TEST_CASE(L"Test single child <Bounds> layout")
 	{
 	});
 
-	TEST_CASE(L"Test multiple <Bounds> visibility")
+	TEST_CASE(L"Test nested <Bounds> layout")
 	{
 	});
 
-	TEST_CASE(L"Test multiple <Bounds> hit test")
+	TEST_CASE(L"Test nested <Bounds> visibility")
 	{
 	});
 
-	TEST_CASE(L"Test multiple <Bounds> associated resources")
+	TEST_CASE(L"Test nested <Bounds> hit test")
+	{
+	});
+
+	TEST_CASE(L"Test nested <Bounds> associated resources")
 	{
 	});
 }
