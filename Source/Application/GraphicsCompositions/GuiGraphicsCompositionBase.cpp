@@ -77,10 +77,9 @@ GuiGraphicsComposition
 				}
 				else
 				{
-					// TODO: (enumerable) foreach
-					for(vint i=0;i<children.Count();i++)
+					for (auto child : children)
 					{
-						children[i]->OnControlParentChanged(control);
+						child->OnControlParentChanged(control);
 					}
 				}
 			}
@@ -102,10 +101,9 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::OnParentLineChanged()
 			{
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < children.Count(); i++)
+				for (auto child : children)
 				{
-					children[i]->OnParentLineChanged();
+					child->OnParentLineChanged();
 				}
 			}
 
@@ -126,10 +124,9 @@ GuiGraphicsComposition
 					}
 				}
 
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < children.Count(); i++)
+				for (auto child : children)
 				{
-					children[i]->UpdateRelatedHostRecord(record);
+					child->UpdateRelatedHostRecord(record);
 				}
 
 				if (HasEventReceiver())
@@ -148,19 +145,17 @@ GuiGraphicsComposition
 			{
 				if (associatedControl)
 				{
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < children.Count(); i++)
+					for (auto child : children)
 					{
-						children[i]->OnControlParentChanged(0);
+						child->OnControlParentChanged(nullptr);
 					}
 				}
 				associatedControl = control;
 				if (associatedControl)
 				{
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < children.Count(); i++)
+					for (auto child : children)
 					{
-						children[i]->OnControlParentChanged(associatedControl);
+						child->OnControlParentChanged(associatedControl);
 					}
 				}
 			}
@@ -191,10 +186,9 @@ GuiGraphicsComposition
 
 			GuiGraphicsComposition::~GuiGraphicsComposition()
 			{
-				// TODO: (enumerable) foreach
-				for(vint i=0;i<children.Count();i++)
+				for (auto child : children)
 				{
-					delete children[i];
+					delete child;
 				}
 			}
 
@@ -382,10 +376,9 @@ GuiGraphicsComposition
 								renderTarget->PushClipper(bounds);
 								if (!renderTarget->IsClipperCoverWholeTarget())
 								{
-									// TODO: (enumerable) foreach
-									for (vint i = 0; i < children.Count(); i++)
+									for (auto child : children)
 									{
-										children[i]->Render(Size(bounds.x1, bounds.y1));
+										child->Render(Size(bounds.x1, bounds.y1));
 									}
 								}
 								renderTarget->PopClipper();
@@ -619,10 +612,9 @@ GuiGraphicsComposition
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
 			{
 				isRendering = true;
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < children.Count(); i++)
+				for (auto child : children)
 				{
-					children[i]->ForceCalculateSizeImmediately();
+					child->ForceCalculateSizeImmediately();
 				}
 				isRendering = false;
 				InvokeOnCompositionStateChanged();
@@ -685,11 +677,8 @@ GuiGraphicsSite
 				}
 				if (minSizeLimitation == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					// TODO: (enumerable) foreach
-					vint childCount = Children().Count();
-					for (vint i = 0; i < childCount; i++)
+					for (auto child : children)
 					{
-						GuiGraphicsComposition* child = children[i];
 						if (child->IsSizeAffectParent())
 						{
 							Rect childBounds = InvokeGetPreferredBoundsInternal(child, considerPreferredMinSize);
@@ -771,11 +760,9 @@ Helper Functions
 
 					if (!finalized)
 					{
-						// TODO: (enumerable) foreach
-						vint count = value->Children().Count();
-						for (vint i = 0; i < count; i++)
+						for (auto child : value->Children())
 						{
-							NotifyFinalizeInstance(value->Children()[i]);
+							NotifyFinalizeInstance(child);
 						}
 					}
 				}

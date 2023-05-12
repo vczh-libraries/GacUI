@@ -10,6 +10,9 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
+- Composition
+  - Margin should be outside of the composition, but it is currently in.
+    - Or just remove this property, since `AlignmentToParent` is enough.
 
 ## Progressing
 
