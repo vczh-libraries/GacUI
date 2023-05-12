@@ -342,6 +342,29 @@ TEST_FILE
 		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
 		TEST_ASSERT(childB->GetBounds() == Rect({ 11,22 }, { 300,400 }));
 
+		// childA:Bounds
+		childA->SetBounds(Rect(Point(222, 222), {}));
+		TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 322,500 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(322, 500));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 366,566 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 366,566 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 222,222 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 233,244 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 11,22 }, { 300,400 }));
+
+		// childB:AlignmentToParent(left)
+		childA->SetBounds({});
+		childB->SetAlignmentToParent(Margin(222, -1, -1, -1));
+		TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 522,500 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(522, 500));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 566,566 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 566,566 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 11,22 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 222,0 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 233,22 }, { 300,400 }));
+
 		SafeDeleteComposition(root);
 	});
 
