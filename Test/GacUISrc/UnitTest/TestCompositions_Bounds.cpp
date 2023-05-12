@@ -366,19 +366,17 @@ TEST_FILE
 		TEST_ASSERT(childB->GetBounds() == Rect({ 222,22 }, { 300,400 }));
 
 		// childB:AlignmentToParent(top)
-		//childA->SetBounds({});
-		//childB->SetAlignmentToParent(Margin(-1, 222, -1, -1));
-		//TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 300,500 }));
-		//TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 500));
-		//TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 344,566 }));
-		//TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 344,566 }));
-		//TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
-		//TEST_ASSERT(childA->GetBounds() == Rect({ 11,22 }, { 100,200 }));
-		//TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
-		//TEST_ASSERT(childB->GetBounds() == Rect({ 11,22 }, { 300,400 }));
+		childB->SetAlignmentToParent(Margin(-1, 222, -1, -1));
+		TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 300,622 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 622));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 344,688 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 344,688 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 11,22 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,222 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 11,222 }, { 300,400 }));
 
 		// childB:AlignmentToParent(right)
-		//childA->SetBounds({});
 		//childB->SetAlignmentToParent(Margin(-1, -1, 222, -1));
 		//TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 300,500 }));
 		//TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 500));
@@ -390,7 +388,6 @@ TEST_FILE
 		//TEST_ASSERT(childB->GetBounds() == Rect({ 11,22 }, { 300,400 }));
 
 		// childB:AlignmentToParent(bottom)
-		//childA->SetBounds({});
 		//childB->SetAlignmentToParent(Margin(-1, -1, -1, 222));
 		//TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 300,500 }));
 		//TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 500));
@@ -402,7 +399,6 @@ TEST_FILE
 		//TEST_ASSERT(childB->GetBounds() == Rect({ 11,22 }, { 300,400 }));
 
 		// childB:AlignmentToParent(all)
-		childA->SetBounds({});
 		childB->SetAlignmentToParent(Margin(222, 222, 222, 222));
 		TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 744,844 }));
 		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(744, 844));

@@ -15,6 +15,8 @@
     - Or just remove this property, since `AlignmentToParent` is enough.
   - Do not need to test Margin for compositions.
   - TODO in `TestCompositions_Bounds.cpp`.
+    - `AlignmentToParent` should not consider parent's `InternalMargin`.
+  - Fix document.
 
 ## Progressing
 
@@ -36,12 +38,13 @@
       - If the min size of the element is changed, flagged(C).
     - If flagged(C), `ForceCalculateSizeImmediately`.
   - `GuiGraphicsComposition` remove `GetBounds` and `GetGlobalBounds`, add `GetCachedBounds`, `GetCachedGlobalBounds`, `GetCachedMinSize`, etc.
-    - `SetBounds` -> `GetPreferredLocation` and `SetPreferredLocation`. This is relative to parent's client area.
   - `GuiGraphicsComposition` during `ForceCalculateSizeImmediately`, all cached values are updated.
     - From root, passes its bounds and other informations to children recursively, update all cached min size related values.
     - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.
     - If any cached values are changed, flagged(C).
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
+  - `GuiBoundsCompositions` remove `SetBounds`, `AlignmentToParent` is enough.
+  - Fix document.
 
 
 ## Optional
