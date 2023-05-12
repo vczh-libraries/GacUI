@@ -268,6 +268,59 @@ TEST_FILE
 
 	TEST_CASE(L"Test single child <Bounds> layout")
 	{
+		auto root = new GuiBoundsComposition();
+		auto childA = new GuiBoundsComposition();
+		auto childB = new GuiBoundsComposition();
+		root->AddChild(childA);
+		root->AddChild(childB);
+
+		childA->SetPreferredMinSize(Size(100, 200));
+		childB->SetPreferredMinSize(Size(300, 400));
+
+		// NoLimit
+		TEST_ASSERT(root->GetClientArea() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 0,0 }, { 300,400 }));
+
+		// LimitToElement
+		root->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+		TEST_ASSERT(root->GetClientArea() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(0, 0));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 0,0 }, { 300,400 }));
+
+		// LimitToElementAndChildren
+		root->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		TEST_ASSERT(root->GetClientArea() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 400));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 0,0 }, { 300,400 }));
+
+		// Element
+		root->SetOwnedElement(Ptr(new FakeElement(Size(200, 500))));
+		TEST_ASSERT(root->GetClientArea() == Rect({ 0,0 }, { 300,500 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 500));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 300,500 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 300,500 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 0,0 }, { 300,400 }));
+
+		SafeDeleteComposition(root);
 	});
 
 	TEST_CASE(L"Test nested <Bounds> layout")
