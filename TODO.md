@@ -23,7 +23,20 @@
   - Export darkskin control template colors.
   - Allow changing colors.
   - A window can be called to update all its controls' and components' template.
-- Remove `GuiGraphicsSite`.
+- Refactor compositions (after unit test for compositions are finished)
+  - When properties of a composition is changed, flagged(C), request refresh.
+  - When properties of an element is changed, flagged(E), request refresh.
+  - When global timer triggered.
+    - if flagged(E), render.
+      - If the min size of the element is changed, flagged(C).
+    - If flagged(C), `ForceCalculateSizeImmediately`.
+  - `GuiGraphicsComposition` remove `GetBounds` and `GetGlobalBounds`, add `GetCachedBounds`, `GetCachedGlobalBounds`, `GetCachedMinSize`, etc.
+  - `GuiGraphicsComposition` during `ForceCalculateSizeImmediately`, all cached values are updated.
+    - From root, passes its bounds and other informations to children recursively, update all cached min size related values.
+    - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.
+    - If any cached values are changed, flagged(C).
+  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
+
 
 ## Optional
 
