@@ -181,6 +181,89 @@ TEST_FILE
 
 	TEST_CASE(L"Test <Bounds> children operations")
 	{
+		auto root = new GuiBoundsComposition();
+		auto childA = new GuiBoundsComposition();
+		auto childAA = new GuiBoundsComposition();
+		auto childAB = new GuiBoundsComposition();
+		auto childB = new GuiBoundsComposition();
+
+		TEST_ASSERT(root->GetParent() == nullptr);
+		TEST_ASSERT(childA->GetParent() == nullptr);
+		TEST_ASSERT(childAA->GetParent() == nullptr);
+		TEST_ASSERT(childAB->GetParent() == nullptr);
+		TEST_ASSERT(childB->GetParent() == nullptr);
+
+		// root{ A{ AA, AB }, B }
+		TEST_ASSERT(root->AddChild(childA) == true);
+		TEST_ASSERT(root->AddChild(childB) == true);
+		TEST_ASSERT(childA->InsertChild(0, childAB) == true);
+		TEST_ASSERT(childA->InsertChild(0, childAA) == true);
+
+		TEST_ASSERT(root->GetParent() == nullptr);
+		TEST_ASSERT(childA->GetParent() == root);
+		TEST_ASSERT(childAA->GetParent() == childA);
+		TEST_ASSERT(childAB->GetParent() == childA);
+		TEST_ASSERT(childB->GetParent() == root);
+
+		TEST_ASSERT(root->Children().Count() == 2);
+		TEST_ASSERT(root->Children()[0] == childA);
+		TEST_ASSERT(root->Children()[1] == childB);
+		TEST_ASSERT(childA->Children().Count() == 2);
+		TEST_ASSERT(childA->Children()[0] == childAA);
+		TEST_ASSERT(childA->Children()[1] == childAB);
+
+		// root{ A{ AB, AA }, B }
+		TEST_ASSERT(childA->MoveChild(childAB, 0) == true);
+		TEST_ASSERT(childAA->GetParent() == childA);
+		TEST_ASSERT(childAB->GetParent() == childA);
+		TEST_ASSERT(childA->Children().Count() == 2);
+		TEST_ASSERT(childA->Children()[0] == childAB);
+		TEST_ASSERT(childA->Children()[1] == childAA);
+
+		// no-op
+		TEST_ASSERT(root->AddChild(nullptr) == false);
+		TEST_ASSERT(root->InsertChild(0, nullptr) == false);
+		TEST_ASSERT(root->MoveChild(nullptr, 0) == false);
+		TEST_ASSERT(root->AddChild(childAA) == false);
+		TEST_ASSERT(root->InsertChild(0, childAA) == false);
+		TEST_ASSERT(root->MoveChild(childAA, 0) == false);
+		TEST_ASSERT(childA->AddChild(childAA) == false);
+		TEST_ASSERT(childA->InsertChild(0, childAA) == false);
+
+		TEST_ASSERT(root->GetParent() == nullptr);
+		TEST_ASSERT(childA->GetParent() == root);
+		TEST_ASSERT(childAA->GetParent() == childA);
+		TEST_ASSERT(childAB->GetParent() == childA);
+		TEST_ASSERT(childB->GetParent() == root);
+
+		TEST_ASSERT(root->Children().Count() == 2);
+		TEST_ASSERT(root->Children()[0] == childA);
+		TEST_ASSERT(root->Children()[1] == childB);
+		TEST_ASSERT(childA->Children().Count() == 2);
+		TEST_ASSERT(childA->Children()[0] == childAB);
+		TEST_ASSERT(childA->Children()[1] == childAA);
+
+		// root{ B }
+		// A{ AB, AA }
+		TEST_ASSERT(root->RemoveChild(childA) == true);
+
+		TEST_ASSERT(root->GetParent() == nullptr);
+		TEST_ASSERT(childA->GetParent() == nullptr);
+		TEST_ASSERT(childAA->GetParent() == childA);
+		TEST_ASSERT(childAB->GetParent() == childA);
+		TEST_ASSERT(childB->GetParent() == root);
+
+		TEST_ASSERT(root->Children().Count() == 1);
+		TEST_ASSERT(root->Children()[0] == childB);
+		TEST_ASSERT(childA->Children().Count() == 2);
+		TEST_ASSERT(childA->Children()[0] == childAB);
+		TEST_ASSERT(childA->Children()[1] == childAA);
+
+		TEST_ASSERT(childAA->Children().Count() == 0);
+		TEST_ASSERT(childAB->Children().Count() == 0);
+
+		SafeDeleteComposition(root);
+		SafeDeleteComposition(childA);
 	});
 
 	TEST_CASE(L"Test single child <Bounds> layout")
