@@ -10,13 +10,6 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
-- Composition
-  - Margin should be outside of the composition, but it is currently in.
-    - Or just remove this property, since `AlignmentToParent` is enough.
-  - Do not need to test Margin for compositions.
-  - TODO in `TestCompositions_Bounds.cpp`.
-    - `AlignmentToParent` should not consider parent's `InternalMargin`.
-  - Fix document.
 
 ## Progressing
 
@@ -24,12 +17,13 @@
   - Test against more code as many as possible in UnitTest project
     - If a test case can be written without the hosted CLI renderer, than write it directly.
     - If a unit test only hosted CLI renderer cannot be just running in that project, open a new unit test project.
-- DarkSkin Color Theme.
-  - Move all hardcoded colors to Style.xml or a general place.
-  - Move all colors from Style.xml to a general place.
-  - Export darkskin control template colors.
-  - Allow changing colors.
-  - A window can be called to update all its controls' and components' template.
+- Refactor compositions (after unit test for `<Bounds>` are finished)
+  - `GuiGraphicsCompositions` remove `Margin`.
+  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
+  - `GuiBoundsCompositions` remove `SetBounds`, `AlignmentToParent` is enough.
+  - TODO in `TestCompositions_Bounds.cpp`.
+    - `AlignmentToParent` should not consider parent's `InternalMargin`.
+  - Fix document
 - Refactor compositions (after unit test for compositions are finished)
   - When properties of a composition is changed, flagged(C), request refresh.
   - When properties of an element is changed, flagged(E), request refresh.
@@ -42,9 +36,13 @@
     - From root, passes its bounds and other informations to children recursively, update all cached min size related values.
     - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.
     - If any cached values are changed, flagged(C).
-  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
-  - `GuiBoundsCompositions` remove `SetBounds`, `AlignmentToParent` is enough.
   - Fix document.
+- DarkSkin Color Theme.
+  - Move all hardcoded colors to Style.xml or a general place.
+  - Move all colors from Style.xml to a general place.
+  - Export darkskin control template colors.
+  - Allow changing colors.
+  - A window can be called to update all its controls' and components' template.
 
 
 ## Optional
