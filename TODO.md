@@ -13,6 +13,8 @@
 - Composition
   - Margin should be outside of the composition, but it is currently in.
     - Or just remove this property, since `AlignmentToParent` is enough.
+  - Do not need to test Margin for compositions.
+  - TODO in `TestCompositions_Bounds.cpp`.
 
 ## Progressing
 
