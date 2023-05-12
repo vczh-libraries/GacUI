@@ -320,6 +320,17 @@ TEST_FILE
 		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
 		TEST_ASSERT(childB->GetBounds() == Rect({ 0,0 }, { 300,400 }));
 
+		// Margin + Element
+		root->SetMargin(Margin(1, 2, 3, 4));
+		TEST_ASSERT(root->GetClientArea() == Rect({ 1,2 }, { 300,500 }));
+		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 500));
+		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 304,506 }));
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 304,506 }));
+		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
+		TEST_ASSERT(childA->GetBounds() == Rect({ 1,2 }, { 100,200 }));
+		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 1,2 }, { 300,400 }));
+
 		SafeDeleteComposition(root);
 	});
 
