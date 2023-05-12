@@ -363,7 +363,7 @@ TEST_FILE
 		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
 		TEST_ASSERT(childA->GetBounds() == Rect({ 11,22 }, { 100,200 }));
 		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 222,0 }, { 300,400 }));
-		TEST_ASSERT(childB->GetBounds() == Rect({ 233,22 }, { 300,400 }));
+		TEST_ASSERT(childB->GetBounds() == Rect({ 222,22 }, { 300,400 }));
 
 		SafeDeleteComposition(root);
 	});
