@@ -23,6 +23,7 @@
   - Export darkskin control template colors.
   - Allow changing colors.
   - A window can be called to update all its controls' and components' template.
+- Remove `GuiGraphicsSite`.
 
 ## Optional
 

@@ -58,10 +58,6 @@ GuiWindowComposition
 				return bounds;
 			}
 
-			void GuiWindowComposition::SetMargin(Margin value)
-			{
-			}
-
 /***********************************************************************
 GuiGraphicsComposition
 ***********************************************************************/
@@ -601,12 +597,23 @@ GuiGraphicsComposition
 
 			Rect GuiGraphicsComposition::GetClientArea()
 			{
-				Rect bounds=GetBounds();
-				bounds.x1+=margin.left+internalMargin.left;
-				bounds.y1+=margin.top+internalMargin.top;
-				bounds.x2-=margin.right+internalMargin.right;
-				bounds.y2-=margin.bottom+internalMargin.bottom;
+				Rect bounds = GetBounds();
+				Margin clientMargin = GetClientAreaMargin();
+				bounds.x1 += clientMargin.left;
+				bounds.y1 += clientMargin.top;
+				bounds.x2 -= clientMargin.right;
+				bounds.y2 -= clientMargin.bottom;
 				return bounds;
+			}
+
+			Margin GuiGraphicsComposition::GetClientAreaMargin()
+			{
+				return Margin(
+					margin.left + internalMargin.left,
+					margin.top + internalMargin.top,
+					margin.right + internalMargin.right,
+					margin.bottom + internalMargin.bottom
+					);
 			}
 
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()

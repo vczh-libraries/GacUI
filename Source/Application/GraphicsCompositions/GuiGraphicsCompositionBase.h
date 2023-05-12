@@ -229,25 +229,28 @@ Basic Construction
 				
 				/// <summary>Get the margin.</summary>
 				/// <returns>The margin.</returns>
-				virtual Margin								GetMargin();
+				Margin										GetMargin();
 				/// <summary>Set the margin.</summary>
 				/// <param name="value">The margin.</param>
-				virtual void								SetMargin(Margin value);
+				void										SetMargin(Margin value);
 				/// <summary>Get the internal margin.</summary>
 				/// <returns>The internal margin.</returns>
-				virtual Margin								GetInternalMargin();
+				Margin										GetInternalMargin();
 				/// <summary>Set the internal margin.</summary>
 				/// <param name="value">The internal margin.</param>
-				virtual void								SetInternalMargin(Margin value);
+				void										SetInternalMargin(Margin value);
 				/// <summary>Get the preferred minimum size.</summary>
 				/// <returns>The preferred minimum size.</returns>
-				virtual Size								GetPreferredMinSize();
+				Size										GetPreferredMinSize();
 				/// <summary>Set the preferred minimum size.</summary>
 				/// <param name="value">The preferred minimum size.</param>
-				virtual void								SetPreferredMinSize(Size value);
+				void										SetPreferredMinSize(Size value);
 				/// <summary>Get the client area.</summary>
 				/// <returns>The client area.</returns>
-				virtual Rect								GetClientArea();
+				Rect										GetClientArea();
+				/// <summary>Get the client area margin, which is the distance between the client area and the bounds.</summary>
+				/// <returns>The client area margin.</returns>
+				Margin										GetClientAreaMargin();
 				/// <summary>Force to calculate layout and size immediately</summary>
 				virtual void								ForceCalculateSizeImmediately();
 
@@ -307,7 +310,6 @@ Basic Construction
 				~GuiWindowComposition();
 
 				Rect								GetBounds()override;
-				void								SetMargin(Margin value)override;
 			};
 
 /***********************************************************************
