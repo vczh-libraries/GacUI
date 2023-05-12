@@ -638,12 +638,6 @@ GuiGraphicsSite
 			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize)
 			{
 				Size minSize = GetMinPreferredClientSizeInternal(considerPreferredMinSize);
-				if (considerPreferredMinSize)
-				{
-					if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
-					if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
-				}
-
 				minSize.x += margin.left + margin.right + internalMargin.left + internalMargin.right;
 				minSize.y += margin.top + margin.bottom + internalMargin.top + internalMargin.bottom;
 				vint w = expectedBounds.Width();
@@ -666,6 +660,9 @@ GuiGraphicsSite
 			Size GuiGraphicsSite::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
 				Size minSize;
+				if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
+				if (minSize.y < preferredMinSize.y) minSize.y = preferredMinSize.y;
+
 				if (minSizeLimitation != GuiGraphicsComposition::NoLimit)
 				{
 					if (ownedElement)
@@ -673,7 +670,9 @@ GuiGraphicsSite
 						IGuiGraphicsRenderer* renderer = ownedElement->GetRenderer();
 						if (renderer)
 						{
-							minSize = renderer->GetMinSize();
+							auto elementSize = renderer->GetMinSize();
+							if (minSize.x < elementSize.x) minSize.x = elementSize.x;
+							if (minSize.y < elementSize.y) minSize.y = elementSize.y;
 						}
 					}
 				}
