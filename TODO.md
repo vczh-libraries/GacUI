@@ -25,6 +25,15 @@
     - `AlignmentToParent` should not consider parent's `InternalMargin`.
   - Fix document
 - Refactor compositions (after unit test for compositions are finished)
+  - Remove all friend and existing virtual functions.
+  - `IsParentSizeAffected` -> `IsSpecializedChildComposition`, returns true only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
+  - `CalculateMinimumParentClientSize`, returns the minimum size of its client area assuming `LimitToElementAndChildren`.
+  - `CalculateMinimumClientSize`, calls `CalculateMinimumParentClientSize` on each non-specialized child composition.
+  - `CalculateBounds(parentClientBounds, callUpdateBounds)`.
+  - `GetBounds` -> `GetUpdatedBounds`.
+  - `ForceCalculateSizeImmediately` calls all these functions.
+  - Fix document.
+- Refactor compositions (after unit test for compositions are finished)
   - When properties of a composition is changed, flagged(C), request refresh.
   - When properties of an element is changed, flagged(E), request refresh.
   - When global timer triggered.
