@@ -64,7 +64,6 @@ TEST_FILE
 		TEST_ASSERT(bounds->GetRelatedCursor() == nullptr);
 
 		TEST_ASSERT(bounds->GetGlobalBounds() == Rect(0, 0, 0, 0));
-		TEST_ASSERT(bounds->GetMargin() == Margin(0, 0, 0, 0));
 		TEST_ASSERT(bounds->GetInternalMargin() == Margin(0, 0, 0, 0));
 		TEST_ASSERT(bounds->GetPreferredMinSize() == Size(0, 0));
 		TEST_ASSERT(bounds->GetAlignmentToParent() == Margin(-1, -1, -1, -1));
@@ -81,23 +80,15 @@ TEST_FILE
 	{
 		auto bounds = new GuiBoundsComposition();
 
-		// Margin
-		bounds->SetMargin(Margin(1, 2, 3, 4));
-		TEST_ASSERT(bounds->GetMargin() == Margin(1, 2, 3, 4));
-		TEST_ASSERT(bounds->GetClientArea() == Rect({ 1,2 }, { 0,0 }));
-		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
-		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 4,6 }));
-		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 4,6 }));
-
-		// Margin + InternalMargin
-		bounds->SetInternalMargin(Margin(10, 20, 30, 40));
-		TEST_ASSERT(bounds->GetInternalMargin() == Margin(10, 20, 30, 40));
+		// InternalMargin
+		bounds->SetInternalMargin(Margin(11, 22, 33, 44));
+		TEST_ASSERT(bounds->GetInternalMargin() == Margin(11, 22, 33, 44));
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 11,22 }, { 0,0 }));
 		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(0, 0));
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 44,66 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 44,66 }));
 
-		// Margin + InternalMargin + PreferredMinSize
+		// InternalMargin + PreferredMinSize
 		bounds->SetPreferredMinSize(Size(100, 200));
 		TEST_ASSERT(bounds->GetPreferredMinSize() == Size(100, 200));
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 11,22 }, { 100,200 }));
@@ -105,7 +96,7 @@ TEST_FILE
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 144,266 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 144,266 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Element(disabled)
+		// InternalMargin + PreferredMinSize + Element(disabled)
 		auto element = Ptr(new FakeElement({ 300,400 }));
 		bounds->SetOwnedElement(element);
 		TEST_ASSERT(bounds->GetOwnedElement() == element);
@@ -115,7 +106,7 @@ TEST_FILE
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 144,266 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 144,266 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Element
+		// InternalMargin + PreferredMinSize + Element
 		bounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 		TEST_ASSERT(bounds->GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElement);
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 11,22 }, { 300,400 }));
@@ -123,7 +114,7 @@ TEST_FILE
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 344,466 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 344,466 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Element
+		// InternalMargin + PreferredMinSize + Element
 		bounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		TEST_ASSERT(bounds->GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren);
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 11,22 }, { 300,400 }));
@@ -131,14 +122,14 @@ TEST_FILE
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 0,0 }, { 344,466 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 0,0 }, { 344,466 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Bounds(too small) + Element
+		// InternalMargin + PreferredMinSize + Bounds(too small) + Element
 		bounds->SetBounds(Rect({ 300,400 }, { 10,20 }));
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 300,400 }));
 		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(300, 400));
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 344,466 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 344,466 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Bounds(too small) + Element(disabled)
+		// InternalMargin + PreferredMinSize + Bounds(too small) + Element(disabled)
 		bounds->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
 		TEST_ASSERT(bounds->GetMinSizeLimitation() == GuiGraphicsComposition::NoLimit);
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 100,200 }));
@@ -146,14 +137,14 @@ TEST_FILE
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 144,266 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 144,266 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Bounds(just enough) + Element(disabled)
+		// InternalMargin + PreferredMinSize + Bounds(just enough) + Element(disabled)
 		bounds->SetBounds(Rect({ 300,400 }, { 100,200 }));
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 100,200 }));
 		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(100, 200));
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 144,266 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 144,266 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Bounds(just enough) + Element
+		// InternalMargin + PreferredMinSize + Bounds(just enough) + Element
 		bounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
 		TEST_ASSERT(bounds->GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElement);
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 300,400 }));
@@ -161,14 +152,14 @@ TEST_FILE
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 344,466 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 344,466 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Bounds + Element
+		// InternalMargin + PreferredMinSize + Bounds + Element
 		bounds->SetBounds(Rect({ 300,400 }, { 1000,2000 }));
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 1000 - 11 - 33,2000 - 22 - 44 }));
 		TEST_ASSERT(bounds->GetMinPreferredClientSize() == Size(300, 400));
 		TEST_ASSERT(bounds->GetPreferredBounds() == Rect({ 300,400 }, { 1000,2000 }));
 		TEST_ASSERT(bounds->GetBounds() == Rect({ 300,400 }, { 1000,2000 }));
 
-		// Margin + InternalMargin + PreferredMinSize + Bounds + Element(disabled)
+		// InternalMargin + PreferredMinSize + Bounds + Element(disabled)
 		bounds->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
 		TEST_ASSERT(bounds->GetMinSizeLimitation() == GuiGraphicsComposition::NoLimit);
 		TEST_ASSERT(bounds->GetClientArea() == Rect({ 311,422 }, { 1000 - 11 - 33,2000 - 22 - 44 }));
@@ -320,19 +311,8 @@ TEST_FILE
 		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
 		TEST_ASSERT(childB->GetBounds() == Rect({ 0,0 }, { 300,400 }));
 
-		// Margin + Element
-		root->SetMargin(Margin(1, 2, 3, 4));
-		TEST_ASSERT(root->GetClientArea() == Rect({ 1,2 }, { 300,500 }));
-		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300, 500));
-		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 304,506 }));
-		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 304,506 }));
-		TEST_ASSERT(childA->GetPreferredBounds() == Rect({ 0,0 }, { 100,200 }));
-		TEST_ASSERT(childA->GetBounds() == Rect({ 1,2 }, { 100,200 }));
-		TEST_ASSERT(childB->GetPreferredBounds() == Rect({ 0,0 }, { 300,400 }));
-		TEST_ASSERT(childB->GetBounds() == Rect({ 1,2 }, { 300,400 }));
-
-		// Margin + Element + InternalMargin
-		root->SetInternalMargin(Margin(10, 20, 30, 40));
+		// Element + InternalMargin
+		root->SetInternalMargin(Margin(11, 22, 33, 44));
 		TEST_ASSERT(root->GetClientArea() == Rect({ 11,22 }, { 300,500 }));
 		TEST_ASSERT(root->GetMinPreferredClientSize() == Size(300,500));
 		TEST_ASSERT(root->GetPreferredBounds() == Rect({ 0,0 }, { 344,566 }));

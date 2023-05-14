@@ -441,10 +441,10 @@ GuiTableComposition
 			{
 				Rect bounds(Point(0, 0), GuiBoundsComposition::GetBounds().GetSize());
 				vint borderThickness = borderVisible ? cellPadding : 0;
-				bounds.x1 += margin.left + internalMargin.left + borderThickness;
-				bounds.y1 += margin.top + internalMargin.top + borderThickness;
-				bounds.x2 -= margin.right + internalMargin.right + borderThickness;
-				bounds.y2 -= margin.bottom + internalMargin.bottom + borderThickness;
+				bounds.x1 += internalMargin.left + borderThickness;
+				bounds.y1 += internalMargin.top + borderThickness;
+				bounds.x2 -= internalMargin.right + borderThickness;
+				bounds.y2 -= internalMargin.bottom + borderThickness;
 				if (bounds.x2 < bounds.x1) bounds.x2 = bounds.x1;
 				if (bounds.y2 < bounds.y1) bounds.y2 = bounds.y1;
 				return bounds;

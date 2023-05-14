@@ -2,6 +2,10 @@
 
 ## Done but not Released
 
+- Composition refactoring
+  - `GuiGraphicsComposition`
+    - Remove `Margin` property.
+
 ## Known Issues
 
 - Hosted Mode
@@ -20,7 +24,6 @@
 - Refactor compositions (after unit test for `<Bounds>` are finished)
   - `GuiGraphicsCompositions` remove `Margin`.
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
-  - `GuiBoundsCompositions` remove `SetBounds`, `AlignmentToParent` is enough.
   - TODO in `TestCompositions_Bounds.cpp`.
     - `AlignmentToParent` should not consider parent's `InternalMargin`.
   - Fix document

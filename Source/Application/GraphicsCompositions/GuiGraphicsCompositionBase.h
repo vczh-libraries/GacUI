@@ -94,7 +94,6 @@ Basic Construction
 				INativeCursor*								associatedCursor = nullptr;
 				INativeWindowListener::HitTestResult		associatedHitTestResult = INativeWindowListener::NoDecision;
 
-				Margin										margin;
 				Margin										internalMargin;
 				Size										preferredMinSize;
 
@@ -227,12 +226,6 @@ Basic Construction
 				/// <returns>The related cursor.</returns>
 				INativeCursor*								GetRelatedCursor();
 				
-				/// <summary>Get the margin.</summary>
-				/// <returns>The margin.</returns>
-				Margin										GetMargin();
-				/// <summary>Set the margin.</summary>
-				/// <param name="value">The margin.</param>
-				void										SetMargin(Margin value);
 				/// <summary>Get the internal margin.</summary>
 				/// <returns>The internal margin.</returns>
 				Margin										GetInternalMargin();
@@ -248,9 +241,6 @@ Basic Construction
 				/// <summary>Get the client area.</summary>
 				/// <returns>The client area.</returns>
 				Rect										GetClientArea();
-				/// <summary>Get the client area margin, which is the distance between the client area and the bounds.</summary>
-				/// <returns>The client area margin.</returns>
-				Margin										GetClientAreaMargin();
 				/// <summary>Force to calculate layout and size immediately</summary>
 				virtual void								ForceCalculateSizeImmediately();
 

@@ -343,11 +343,6 @@ GuiGraphicsComposition
 				if (visible && renderTarget && !renderTarget->IsClipperCoverWholeTarget())
 				{
 					Rect bounds = GetBounds();
-					bounds.x1 += margin.left;
-					bounds.y1 += margin.top;
-					bounds.x2 -= margin.right;
-					bounds.y2 -= margin.bottom;
-
 					if (bounds.x1 <= bounds.x2 && bounds.y1 <= bounds.y2)
 					{
 						bounds.x1 += offset.x;
@@ -546,20 +541,6 @@ GuiGraphicsComposition
 				return nullptr;
 			}
 
-			Margin GuiGraphicsComposition::GetMargin()
-			{
-				return margin;
-			}
-
-			void GuiGraphicsComposition::SetMargin(Margin value)
-			{
-				if (margin != value)
-				{
-					margin = value;
-					InvokeOnCompositionStateChanged();
-				}
-			}
-
 			Margin GuiGraphicsComposition::GetInternalMargin()
 			{
 				return internalMargin;
@@ -591,22 +572,11 @@ GuiGraphicsComposition
 			Rect GuiGraphicsComposition::GetClientArea()
 			{
 				Rect bounds = GetBounds();
-				Margin clientMargin = GetClientAreaMargin();
-				bounds.x1 += clientMargin.left;
-				bounds.y1 += clientMargin.top;
-				bounds.x2 -= clientMargin.right;
-				bounds.y2 -= clientMargin.bottom;
+				bounds.x1 += internalMargin.left;
+				bounds.y1 += internalMargin.top;
+				bounds.x2 -= internalMargin.right;
+				bounds.y2 -= internalMargin.bottom;
 				return bounds;
-			}
-
-			Margin GuiGraphicsComposition::GetClientAreaMargin()
-			{
-				return Margin(
-					margin.left + internalMargin.left,
-					margin.top + internalMargin.top,
-					margin.right + internalMargin.right,
-					margin.bottom + internalMargin.bottom
-					);
 			}
 
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
@@ -637,8 +607,8 @@ GuiGraphicsSite
 			Rect GuiGraphicsSite::GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize)
 			{
 				Size minSize = GetMinPreferredClientSizeInternal(considerPreferredMinSize);
-				minSize.x += margin.left + margin.right + internalMargin.left + internalMargin.right;
-				minSize.y += margin.top + margin.bottom + internalMargin.top + internalMargin.bottom;
+				minSize.x += internalMargin.left + internalMargin.right;
+				minSize.y += internalMargin.top + internalMargin.bottom;
 				vint w = expectedBounds.Width();
 				vint h = expectedBounds.Height();
 				if (minSize.x < w) minSize.x = w;
