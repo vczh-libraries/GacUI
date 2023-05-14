@@ -22,7 +22,6 @@
     - If a test case can be written without the hosted CLI renderer, than write it directly.
     - If a unit test only hosted CLI renderer cannot be just running in that project, open a new unit test project.
 - Refactor compositions (after unit test for `<Bounds>` are finished)
-  - `GuiGraphicsCompositions` remove `Margin`.
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
   - TODO in `TestCompositions_Bounds.cpp`.
     - `AlignmentToParent` should not consider parent's `InternalMargin`.
