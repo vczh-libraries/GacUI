@@ -71,10 +71,11 @@ GuiBoundsComposition
 
 				if (GetParent())
 				{
-					result.x1 += internalMargin.left;
-					result.x2 += internalMargin.left;
-					result.y1 += internalMargin.top;
-					result.y2 += internalMargin.top;
+					Margin clientMargin = GetParent()->GetInternalMargin();
+					result.x1 += clientMargin.left;
+					result.x2 += clientMargin.left;
+					result.y1 += clientMargin.top;
+					result.y2 += clientMargin.top;
 
 					if (IsAlignedToParent())
 					{
