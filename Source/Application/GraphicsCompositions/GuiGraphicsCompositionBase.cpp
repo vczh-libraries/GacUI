@@ -243,6 +243,7 @@ GuiGraphicsComposition
 			GuiGraphicsComposition::GuiGraphicsComposition()
 			{
 				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
+				BoundsChanged.SetAssociatedComposition(this);
 			}
 
 			GuiGraphicsComposition::~GuiGraphicsComposition()
@@ -667,24 +668,6 @@ GuiGraphicsComposition
 			}
 
 			Rect GuiGraphicsComposition::GetPreviousCalculatedBounds()
-			{
-				return previousBounds;
-			}
-
-/***********************************************************************
-GuiGraphicsSite
-***********************************************************************/
-
-			GuiGraphicsSite::GuiGraphicsSite()
-			{
-				BoundsChanged.SetAssociatedComposition(this);
-			}
-
-			GuiGraphicsSite::~GuiGraphicsSite()
-			{
-			}
-
-			Rect GuiGraphicsSite::GetPreviousCalculatedBounds()
 			{
 				return previousBounds;
 			}

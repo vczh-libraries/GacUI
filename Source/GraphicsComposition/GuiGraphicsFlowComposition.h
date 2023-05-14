@@ -142,7 +142,7 @@ Flow Compositions
 			/// <summary>
 			/// Represents a flow item composition of a <see cref="GuiFlowComposition"/>.
 			/// </summary>
-			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
+			class GuiFlowItemComposition : public GuiGraphicsComposition, public Description<GuiFlowItemComposition>
 			{
 				friend class GuiFlowComposition;
 			protected:

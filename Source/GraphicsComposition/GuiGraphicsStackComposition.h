@@ -109,7 +109,7 @@ Stack Compositions
 			/// <summary>
 			/// Represents a stack item composition of a <see cref="GuiStackComposition"/>.
 			/// </summary>
-			class GuiStackItemComposition : public GuiGraphicsSite, public Description<GuiStackItemComposition>
+			class GuiStackItemComposition : public GuiGraphicsComposition, public Description<GuiStackItemComposition>
 			{
 				friend class GuiStackComposition;
 			protected:

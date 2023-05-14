@@ -185,7 +185,6 @@ Type List (Compositions)
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
 			F(presentation::compositions::GuiGraphicsComposition)\
-			F(presentation::compositions::GuiGraphicsSite)\
 			F(presentation::compositions::GuiWindowComposition)\
 			F(presentation::compositions::GuiBoundsComposition)\
 			F(presentation::compositions::GuiStackComposition)\

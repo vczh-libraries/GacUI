@@ -617,7 +617,7 @@ GuiCellComposition
 
 			void GuiCellComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				if (tableParent)
 				{
 					ClearSitedCells(tableParent);
@@ -740,7 +740,7 @@ GuiTableSplitterCompositionBase
 
 			void GuiTableSplitterCompositionBase::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
 			}
 

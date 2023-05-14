@@ -211,7 +211,7 @@ Table Compositions
 			/// <summary>
 			/// Represents a cell composition of a <see cref="GuiTableComposition"/>.
 			/// </summary>
-			class GuiCellComposition : public GuiGraphicsSite, public Description<GuiCellComposition>
+			class GuiCellComposition : public GuiGraphicsComposition, public Description<GuiCellComposition>
 			{
 				friend class GuiTableComposition;
 			protected:
@@ -259,7 +259,7 @@ Table Compositions
 				Rect								GetBounds()override;
 			};
 
-			class GuiTableSplitterCompositionBase : public GuiGraphicsSite, public Description<GuiTableSplitterCompositionBase>
+			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition, public Description<GuiTableSplitterCompositionBase>
 			{
 			protected:
 				GuiTableComposition*				tableParent;

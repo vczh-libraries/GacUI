@@ -292,7 +292,7 @@ GuiStackItemComposition
 
 			void GuiStackItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				stackParent = newParent == 0 ? 0 : dynamic_cast<GuiStackComposition*>(newParent);
 			}
 

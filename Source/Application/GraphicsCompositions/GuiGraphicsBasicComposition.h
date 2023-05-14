@@ -25,7 +25,7 @@ Basic Compositions
 			/// <summary>
 			/// Represents a composition that is free to change the expected bounds.
 			/// </summary>
-			class GuiBoundsComposition : public GuiGraphicsSite, public Description<GuiBoundsComposition>
+			class GuiBoundsComposition : public GuiGraphicsComposition, public Description<GuiBoundsComposition>
 			{
 			protected:
 				bool								sizeAffectParent = true;

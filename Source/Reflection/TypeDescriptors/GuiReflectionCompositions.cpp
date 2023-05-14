@@ -232,7 +232,8 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientArea)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(MinPreferredClientSize)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreferredBounds)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(Bounds)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousCalculatedBounds)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Bounds)
 
 				CLASS_MEMBER_METHOD_RENAME(GetChildren, Children, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
@@ -247,20 +248,13 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD(IsSizeAffectParent, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiGraphicsComposition)
 
-			BEGIN_CLASS_MEMBER(GuiGraphicsSite)
-				CLASS_MEMBER_BASE(GuiGraphicsComposition)
-
-				CLASS_MEMBER_PROPERTY_GUIEVENT_READONLY_FAST(Bounds)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(PreviousCalculatedBounds)
-			END_CLASS_MEMBER(GuiGraphicsSite)
-
 			BEGIN_CLASS_MEMBER(GuiWindowComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiWindowComposition*(), NO_PARAMETER)
 			END_CLASS_MEMBER(GuiWindowComposition)
 
 			BEGIN_CLASS_MEMBER(GuiBoundsComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBoundsComposition*(), NO_PARAMETER)
 
 				CLASS_MEMBER_PROPERTY_FAST(SizeAffectParent)
@@ -286,7 +280,7 @@ Type Declaration (Class)
 			END_CLASS_MEMBER(GuiStackComposition)
 
 			BEGIN_CLASS_MEMBER(GuiStackItemComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiStackItemComposition*(), NO_PARAMETER)
 
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
@@ -320,7 +314,7 @@ Type Declaration (Class)
 			END_CLASS_MEMBER(GuiTableComposition)
 
 			BEGIN_CLASS_MEMBER(GuiCellComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiCellComposition*(), NO_PARAMETER)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TableParent)
@@ -333,7 +327,7 @@ Type Declaration (Class)
 			END_CLASS_MEMBER(GuiCellComposition)
 
 			BEGIN_CLASS_MEMBER(GuiTableSplitterCompositionBase)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(TableParent)
 			END_CLASS_MEMBER(GuiRowSplitterComposition)
@@ -367,7 +361,7 @@ Type Declaration (Class)
 			END_CLASS_MEMBER(GuiFlowComposition)
 
 			BEGIN_CLASS_MEMBER(GuiFlowItemComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiFlowItemComposition*(), NO_PARAMETER)
 
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
@@ -376,7 +370,7 @@ Type Declaration (Class)
 			END_CLASS_MEMBER(GuiFlowItemComposition)
 
 			BEGIN_CLASS_MEMBER(GuiSideAlignedComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiSideAlignedComposition*(), NO_PARAMETER)
 				
 				CLASS_MEMBER_PROPERTY_FAST(Direction)
@@ -385,7 +379,7 @@ Type Declaration (Class)
 			END_CLASS_MEMBER(GuiSideAlignedComposition)
 
 			BEGIN_CLASS_MEMBER(GuiPartialViewComposition)
-				CLASS_MEMBER_BASE(GuiGraphicsSite)
+				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiPartialViewComposition*(), NO_PARAMETER)
 				
 				CLASS_MEMBER_PROPERTY_FAST(WidthRatio)

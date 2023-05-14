@@ -335,7 +335,7 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
 			}
 
