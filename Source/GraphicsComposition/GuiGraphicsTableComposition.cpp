@@ -646,11 +646,7 @@ GuiCellComposition
 			}
 
 			GuiCellComposition::GuiCellComposition()
-				:row(-1)
-				,column(-1)
-				,rowSpan(1)
-				,columnSpan(1)
-				,tableParent(0)
+				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
@@ -882,7 +878,7 @@ GuiTableSplitterCompositionBase
 			}
 			
 			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
-				:tableParent(0)
+				: GuiGraphicsComposition(false)
 				, dragging(false)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));

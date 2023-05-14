@@ -302,18 +302,13 @@ GuiStackItemComposition
 			}
 
 			GuiStackItemComposition::GuiStackItemComposition()
-				:stackParent(0)
+				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
 			GuiStackItemComposition::~GuiStackItemComposition()
 			{
-			}
-
-			bool GuiStackItemComposition::IsSizeAffectParent()
-			{
-				return false;
 			}
 
 			Rect GuiStackItemComposition::GetBounds()

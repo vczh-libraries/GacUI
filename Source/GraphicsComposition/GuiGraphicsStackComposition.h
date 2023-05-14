@@ -113,7 +113,7 @@ Stack Compositions
 			{
 				friend class GuiStackComposition;
 			protected:
-				GuiStackComposition*				stackParent;
+				GuiStackComposition*				stackParent = nullptr;
 				Rect								bounds;
 				Margin								extraMargin;
 
@@ -123,7 +123,6 @@ Stack Compositions
 				GuiStackItemComposition();
 				~GuiStackItemComposition();
 				
-				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 				/// <summary>Set the expected bounds of a stack item. In most of the cases only the size of the bounds is used.</summary>
 				/// <param name="value">The expected bounds of a stack item.</param>

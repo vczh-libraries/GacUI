@@ -38,6 +38,7 @@ namespace vl
 
 		namespace compositions
 		{
+			class GuiWindowComposition;
 			class GuiGraphicsHost;
 
 /***********************************************************************
@@ -53,6 +54,7 @@ Basic Construction
 				typedef collections::List<GuiGraphicsComposition*> CompositionList;
 
 				friend class controls::GuiControl;
+				friend class GuiWindowComposition;
 				friend class GuiGraphicsHost;
 				friend void InvokeOnCompositionStateChanged(GuiGraphicsComposition* composition);
 				friend Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
@@ -81,7 +83,10 @@ Basic Construction
 					INativeWindow*							nativeWindow = nullptr;
 				};
 
-			protected:
+			private:
+				bool										isRendering = false;
+				bool										isTrivialComposition = true;
+
 				CompositionList								children;
 				GuiGraphicsComposition*						parent = nullptr;
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
@@ -95,10 +100,9 @@ Basic Construction
 				INativeCursor*								associatedCursor = nullptr;
 				INativeWindowListener::HitTestResult		associatedHitTestResult = INativeWindowListener::NoDecision;
 
+			protected:
 				Margin										internalMargin;
 				Size										preferredMinSize;
-
-				bool										isRendering = false;
 
 				virtual void								OnControlParentChanged(controls::GuiControl* control);
 				virtual void								OnChildInserted(GuiGraphicsComposition* child);
@@ -127,13 +131,17 @@ Basic Construction
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 
 			public:
-				GuiGraphicsComposition();
+				GuiGraphicsComposition(bool _isTrivialComposition);
 				~GuiGraphicsComposition();
 
 				/// <summary>Event that will be raised when the final bounds is changed.</summary>
 				compositions::GuiNotifyEvent				BoundsChanged;
 
 				bool										IsRendering();
+
+				/// <summary>Test is this composition a trivial composition. A trivial composition means its parent doesn't do the layout for it.</summary>
+				/// <returns>Returns true if it is a trivial composition.</returns>
+				bool										IsTrivialComposition();
 
 				/// <summary>Get the parent composition.</summary>
 				/// <returns>The parent composition.</returns>
@@ -265,10 +273,6 @@ Basic Construction
 				/// <summary>Get the preferred bounds.</summary>
 				/// <returns>The preferred bounds.</returns>
 				Rect										GetPreferredBounds();
-				
-				/// <summary>Test is the size calculation affected by the parent.</summary>
-				/// <returns>Returns true if the size calculation is affected by the parent.</returns>
-				virtual bool								IsSizeAffectParent();
 
 				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
 				/// <returns>The previous calculated bounds.</returns>

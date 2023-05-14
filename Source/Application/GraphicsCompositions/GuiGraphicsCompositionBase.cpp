@@ -37,6 +37,7 @@ GuiWindowComposition
 ***********************************************************************/
 
 			GuiWindowComposition::GuiWindowComposition()
+				: GuiGraphicsComposition(true)
 			{
 			}
 
@@ -213,7 +214,7 @@ GuiGraphicsComposition
 				{
 					for (auto child : children)
 					{
-						if (child->IsSizeAffectParent())
+						if (child->IsTrivialComposition())
 						{
 							Rect childBounds = InvokeGetPreferredBoundsInternal(child, considerPreferredMinSize);
 							if (minSize.x < childBounds.x2) minSize.x = childBounds.x2;
@@ -240,7 +241,8 @@ GuiGraphicsComposition
 				return true;
 			}
 
-			GuiGraphicsComposition::GuiGraphicsComposition()
+			GuiGraphicsComposition::GuiGraphicsComposition(bool _isTrivialComposition)
+				: isTrivialComposition(_isTrivialComposition)
 			{
 				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
 				BoundsChanged.SetAssociatedComposition(this);
@@ -257,6 +259,11 @@ GuiGraphicsComposition
 			bool GuiGraphicsComposition::IsRendering()
 			{
 				return isRendering;
+			}
+
+			bool GuiGraphicsComposition::IsTrivialComposition()
+			{
+				return isTrivialComposition;
 			}
 
 			GuiGraphicsComposition* GuiGraphicsComposition::GetParent()
@@ -660,11 +667,6 @@ GuiGraphicsComposition
 			Rect GuiGraphicsComposition::GetPreferredBounds()
 			{
 				return GetPreferredBoundsInternal(true);
-			}
-
-			bool GuiGraphicsComposition::IsSizeAffectParent()
-			{
-				return true;
 			}
 
 			Rect GuiGraphicsComposition::GetPreviousCalculatedBounds()

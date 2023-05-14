@@ -28,7 +28,6 @@ Basic Compositions
 			class GuiBoundsComposition : public GuiGraphicsComposition, public Description<GuiBoundsComposition>
 			{
 			protected:
-				bool								sizeAffectParent = true;
 				Rect								compositionBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
 
@@ -36,15 +35,7 @@ Basic Compositions
 			public:
 				GuiBoundsComposition();
 				~GuiBoundsComposition();
-
-				/// <summary>Get if the parent composition's size calculation is aware of the configuration of this composition. If you want to bind Bounds, PreferredMinSize, AlignmentToParent or other similar properties to some properties of parent compositions, this property should be set to false to prevent from infinite size glowing.</summary>
-				/// <returns>Returns true if it is awared.</returns>
-				bool								GetSizeAffectParent();
-				/// <summary>Set if the parent composition's size calculation is aware of the configuration of this composition.</summary>
-				/// <param name="value">Set to true to be awared.</param>
-				void								SetSizeAffectParent(bool value);
 				
-				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 				/// <summary>Set the expected bounds.</summary>
 				/// <param name="value">The expected bounds.</param>

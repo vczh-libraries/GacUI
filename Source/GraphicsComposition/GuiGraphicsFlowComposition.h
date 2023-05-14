@@ -157,7 +157,6 @@ Flow Compositions
 				GuiFlowItemComposition();
 				~GuiFlowItemComposition();
 				
-				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 				void								SetBounds(Rect value);
 				

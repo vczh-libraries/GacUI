@@ -5,6 +5,7 @@
 - Composition refactoring
   - `GuiGraphicsComposition`
     - Remove `Margin` property.
+    - `IsParentSizeAffected` -> `IsTrivialComposition`, returns false only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
 
 ## Known Issues
@@ -28,7 +29,6 @@
   - Fix document
 - Refactor compositions (after unit test for compositions are finished)
   - Remove all friend and existing virtual functions.
-  - `IsParentSizeAffected` -> `IsSpecializedChildComposition`, returns true only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
   - `CalculateMinimumParentClientSize`, returns the minimum size of its client area assuming `LimitToElementAndChildren`.
   - `CalculateMinimumClientSize`, calls `CalculateMinimumParentClientSize` on each non-specialized child composition.
   - `CalculateBounds(parentClientBounds, callUpdateBounds)`.

@@ -43,26 +43,12 @@ GuiBoundsComposition
 			}
 
 			GuiBoundsComposition::GuiBoundsComposition()
+				: GuiGraphicsComposition(true)
 			{
 			}
 
 			GuiBoundsComposition::~GuiBoundsComposition()
 			{
-			}
-
-			bool GuiBoundsComposition::GetSizeAffectParent()
-			{
-				return sizeAffectParent;
-			}
-
-			void GuiBoundsComposition::SetSizeAffectParent(bool value)
-			{
-				sizeAffectParent = value;
-			}
-
-			bool GuiBoundsComposition::IsSizeAffectParent()
-			{
-				return sizeAffectParent;
 			}
 
 			Rect GuiBoundsComposition::GetBounds()

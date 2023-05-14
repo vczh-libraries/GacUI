@@ -345,17 +345,13 @@ GuiFlowItemComposition
 			}
 
 			GuiFlowItemComposition::GuiFlowItemComposition()
+				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
 			GuiFlowItemComposition::~GuiFlowItemComposition()
 			{
-			}
-			
-			bool GuiFlowItemComposition::IsSizeAffectParent()
-			{
-				return false;
 			}
 
 			Rect GuiFlowItemComposition::GetBounds()

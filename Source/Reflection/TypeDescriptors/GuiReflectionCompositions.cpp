@@ -238,6 +238,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD_RENAME(GetChildren, Children, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
 
+				CLASS_MEMBER_METHOD(IsTrivialComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(AddChild, {L"child"})
 				CLASS_MEMBER_METHOD(InsertChild, {L"index" _ L"child"})
 				CLASS_MEMBER_METHOD(RemoveChild, {L"child"})
@@ -245,7 +246,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD(Render, {L"size"})
 				CLASS_MEMBER_METHOD(FindComposition, {L"location" _ L"forMouseEvent"})
 				CLASS_MEMBER_METHOD(ForceCalculateSizeImmediately, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(IsSizeAffectParent, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiGraphicsComposition)
 
 			BEGIN_CLASS_MEMBER(GuiWindowComposition)
@@ -257,7 +257,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBoundsComposition*(), NO_PARAMETER)
 
-				CLASS_MEMBER_PROPERTY_FAST(SizeAffectParent)
 				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
 				

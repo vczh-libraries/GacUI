@@ -215,11 +215,11 @@ Table Compositions
 			{
 				friend class GuiTableComposition;
 			protected:
-				vint								row;
-				vint								rowSpan;
-				vint								column;
-				vint								columnSpan;
-				GuiTableComposition*				tableParent;
+				vint								row = -1;
+				vint								rowSpan = 1;
+				vint								column = -1;
+				vint								columnSpan = 1;
+				GuiTableComposition*				tableParent = nullptr;
 				Size								lastPreferredSize;
 				
 				void								ClearSitedCells(GuiTableComposition* table);
@@ -262,7 +262,7 @@ Table Compositions
 			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition, public Description<GuiTableSplitterCompositionBase>
 			{
 			protected:
-				GuiTableComposition*				tableParent;
+				GuiTableComposition*				tableParent = nullptr;
 
 				bool								dragging;
 				Point								draggingPoint;
@@ -305,7 +305,7 @@ Table Compositions
 			class GuiRowSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiRowSplitterComposition>
 			{
 			protected:
-				vint								rowsToTheTop;
+				vint								rowsToTheTop = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 			public:
@@ -328,7 +328,7 @@ Table Compositions
 			class GuiColumnSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiColumnSplitterComposition>
 			{
 			protected:
-				vint								columnsToTheLeft;
+				vint								columnsToTheLeft = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 			public:
