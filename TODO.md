@@ -57,7 +57,6 @@
   - Allow changing colors.
   - A window can be called to update all its controls' and components' template.
 
-
 ## Optional
 
 - `INativeWindow` add callback for state changing.
