@@ -5,6 +5,7 @@
 - Composition refactoring
   - `GuiGraphicsComposition`
     - Remove `Margin` property.
+  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
 
 ## Known Issues
 
@@ -22,7 +23,6 @@
     - If a test case can be written without the hosted CLI renderer, than write it directly.
     - If a unit test only hosted CLI renderer cannot be just running in that project, open a new unit test project.
 - Refactor compositions (after unit test for `<Bounds>` are finished)
-  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
   - TODO in `TestCompositions_Bounds.cpp`.
     - `AlignmentToParent` should not consider parent's `InternalMargin`.
   - Fix document
@@ -42,7 +42,9 @@
     - if flagged(E), render.
       - If the min size of the element is changed, flagged(C).
     - If flagged(C), `ForceCalculateSizeImmediately`.
-  - `GuiGraphicsComposition` remove `GetBounds` and `GetGlobalBounds`, add `GetCachedBounds`, `GetCachedGlobalBounds`, `GetCachedMinSize`, etc.
+  - `GuiGraphicsComposition`
+    - Remove `GetBounds` and `GetGlobalBounds` and `GetPreviousCalculatedBounds`
+    - Add `GetCachedBounds`, `GetCachedGlobalBounds`, `GetCachedMinSize`, etc.
   - `GuiGraphicsComposition` during `ForceCalculateSizeImmediately`, all cached values are updated.
     - From root, passes its bounds and other informations to children recursively, update all cached min size related values.
     - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.

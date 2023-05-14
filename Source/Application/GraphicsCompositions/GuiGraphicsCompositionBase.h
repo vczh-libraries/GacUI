@@ -57,6 +57,7 @@ Basic Construction
 				friend void InvokeOnCompositionStateChanged(GuiGraphicsComposition* composition);
 				friend Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
 				friend Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
+				friend Rect InvokeGetBoundsInternal(GuiGraphicsComposition* composition, Rect expectedBounds, bool considerPreferredMinSize);
 			public:
 				/// <summary>
 				/// Minimum size limitation.
@@ -110,13 +111,27 @@ Basic Construction
 				void										SetAssociatedControl(controls::GuiControl* control);
 				void										InvokeOnCompositionStateChanged();
 
-				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize) = 0;
-				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize) = 0;
+			protected:
+				Rect										previousBounds;
 
+				void										UpdatePreviousBounds(Rect bounds);
+
+				/// <summary>Calculate the final bounds from an expected bounds.</summary>
+				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
+				/// <param name="expectedBounds">The expected bounds.</param>
+				virtual Rect								GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
+				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize);
+				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize);
+
+			protected:
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
+
 			public:
 				GuiGraphicsComposition();
 				~GuiGraphicsComposition();
+
+				/// <summary>Event that will be raised when the final bounds is changed.</summary>
+				compositions::GuiNotifyEvent				BoundsChanged;
 
 				bool										IsRendering();
 
@@ -253,47 +268,20 @@ Basic Construction
 				
 				/// <summary>Test is the size calculation affected by the parent.</summary>
 				/// <returns>Returns true if the size calculation is affected by the parent.</returns>
-				virtual bool								IsSizeAffectParent()=0;
-				/// <summary>Get the bounds.</summary>
-				/// <returns>The bounds.</returns>
-				virtual Rect								GetBounds()=0;
-			};
-
-			/// <summary>
-			/// A general implementation for <see cref="GuiGraphicsComposition"/>.
-			/// </summary>
-			class GuiGraphicsSite : public GuiGraphicsComposition, public Description<GuiGraphicsSite>
-			{
-				friend Rect							InvokeGetBoundsInternal(GuiGraphicsSite* composition, Rect expectedBounds, bool considerPreferredMinSize);
-			protected:
-				Rect								previousBounds;
-
-				/// <summary>Calculate the final bounds from an expected bounds.</summary>
-				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
-				/// <param name="expectedBounds">The expected bounds.</param>
-				virtual Rect						GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
-
-				void								UpdatePreviousBounds(Rect bounds);
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
-				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
-			public:
-				GuiGraphicsSite();
-				~GuiGraphicsSite();
-
-				/// <summary>Event that will be raised when the final bounds is changed.</summary>
-				compositions::GuiNotifyEvent		BoundsChanged;
-				
-				bool								IsSizeAffectParent()override;
+				virtual bool								IsSizeAffectParent();
 
 				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
 				/// <returns>The previous calculated bounds.</returns>
-				Rect								GetPreviousCalculatedBounds();
+				Rect										GetPreviousCalculatedBounds();
+				/// <summary>Get the bounds.</summary>
+				/// <returns>The bounds.</returns>
+				virtual Rect								GetBounds() = 0;
 			};
 			
 			/// <summary>
 			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
 			/// </summary>
-			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
+			class GuiWindowComposition : public GuiGraphicsComposition, public Description<GuiWindowComposition>
 			{
 			public:
 				GuiWindowComposition();
