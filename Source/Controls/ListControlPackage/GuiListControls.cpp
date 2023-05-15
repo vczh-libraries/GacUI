@@ -839,6 +839,8 @@ GuiSelectableListControl
 				if(selectedItems.Count()>0)
 				{
 					selectedItems.Clear();
+					selectedItemIndexStart = -1;
+					selectedItemIndexEnd = -1;
 					OnItemSelectionCleared();
 					NotifySelectionChanged();
 				}
