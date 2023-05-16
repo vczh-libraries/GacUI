@@ -773,6 +773,10 @@ GuiGraphicsHost
 				{
 					return false;
 				}
+				if(focusedComposition == composition)
+				{
+					return true;
+				}
 				if(focusedComposition && focusedComposition->HasEventReceiver())
 				{
 					GuiEventArgs arguments;
