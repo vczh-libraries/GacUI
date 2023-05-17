@@ -17,6 +17,9 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
+- FullControlTest
+  - Crash: Layout -> Repeat -> SharedSize (TextList) -> Add 10 items
+  - LevelUp/LevelDown not working correctly: Layout -> Responsize -> first row
 
 ## Progressing
 

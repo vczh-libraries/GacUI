@@ -173,27 +173,28 @@ GuiFlowComposition
 			
 			Size GuiFlowComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				Size minFlowSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
+					minFlowSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
 					for (auto item : flowItems)
 					{
 						auto itemSize = InvokeGetPreferredBoundsInternal(item, considerPreferredMinSize).GetSize();
-						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
-						if (clientSize.y < itemSize.y) clientSize.y = itemSize.y;
+						if (minFlowSize.x < itemSize.x) minFlowSize.x = itemSize.x;
+						if (minFlowSize.y < itemSize.y) minFlowSize.y = itemSize.y;
 					}
-					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
-					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
 				}
 
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
+				if (extraMargin.left > 0) minFlowSize.x += extraMargin.left;
+				if (extraMargin.right > 0) minFlowSize.x += extraMargin.right;
+				if (extraMargin.top > 0) minFlowSize.y += extraMargin.top;
+				if (extraMargin.bottom > 0) minFlowSize.y += extraMargin.bottom;
+
+				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				return Size(
+					minFlowSize.x > minClientSize.x ? minFlowSize.x : minClientSize.x,
+					minFlowSize.y > minClientSize.y ? minFlowSize.y : minClientSize.y
+					);
 			}
 
 			GuiFlowComposition::GuiFlowComposition()
