@@ -19,6 +19,7 @@
   - Extensions not applied before checking file existance.
 - FullControlTest
   - Crash: Layout -> Repeat -> SharedSize (TextList) -> Add 10 items
+    - Stack overflow, should be automatically fixed after refactoring
   - LevelUp/LevelDown not working correctly: Layout -> Responsize -> first row
 
 ## Progressing
