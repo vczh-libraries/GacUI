@@ -42,6 +42,9 @@
     <ClCompile Include="TestCompositions_Stack.cpp">
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
+    <ClCompile Include="TestCompositions_Flow.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">

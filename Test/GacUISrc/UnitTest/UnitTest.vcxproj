@@ -181,6 +181,7 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TestCompositions_Bounds.cpp" />
+    <ClCompile Include="TestCompositions_Flow.cpp" />
     <ClCompile Include="TestCompositions_Stack.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />

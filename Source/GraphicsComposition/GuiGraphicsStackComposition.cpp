@@ -219,12 +219,15 @@ GuiStackComposition
 
 			Rect GuiStackComposition::GetBounds()
 			{
-				for (vint i = 0; i < stackItems.Count(); i++)
+				if (!needUpdate)
 				{
-					if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
+					for (vint i = 0; i < stackItems.Count(); i++)
 					{
-						needUpdate = true;
-						break;
+						if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
+						{
+							needUpdate = true;
+							break;
+						}
 					}
 				}
 
