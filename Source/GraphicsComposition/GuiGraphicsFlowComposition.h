@@ -31,6 +31,8 @@ Flow Compositions
 				Left,
 				/// <summary>Align to the center.</summary>
 				Center,
+				/// <summary>Align to the Right.</summary>
+				Right,
 				/// <summary>Extend to the entire row.</summary>
 				Extend,
 			};

@@ -7,6 +7,7 @@
     - Remove `Margin` property.
     - `IsParentSizeAffected` -> `IsTrivialComposition`, returns false only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
+  - `FlowAlignment::Right`.
 
 ## Known Issues
 
@@ -50,6 +51,7 @@
     - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.
     - If any cached values are changed, flagged(C).
   - Fix document.
+- `FlowAlignment::Right` in demo.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.

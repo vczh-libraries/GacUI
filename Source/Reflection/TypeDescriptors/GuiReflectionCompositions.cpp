@@ -103,6 +103,7 @@ Type Declaration (Extra)
 			BEGIN_ENUM_ITEM(FlowAlignment)
 				ENUM_CLASS_ITEM(Left)
 				ENUM_CLASS_ITEM(Center)
+				ENUM_CLASS_ITEM(Right)
 				ENUM_CLASS_ITEM(Extend)
 			END_ENUM_ITEM(FlowAlignment)
 

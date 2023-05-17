@@ -8,7 +8,7 @@ TEST_FILE
 		TestBoundsWithTrivialChildren<GuiFlowComposition>();
 	});
 
-	TEST_CASE(L"Test <Flow> with <FlowItem>")
+	TEST_CASE(L"Test <Flow> with <FlowItem> in different direction")
 	{
 		auto flow = new GuiFlowComposition;
 
@@ -18,6 +18,8 @@ TEST_FILE
 		TEST_ASSERT(flow->GetExtraMargin() == Margin(0, 0, 0, 0));
 		TEST_ASSERT(flow->GetRowPadding() == 0);
 		TEST_ASSERT(flow->GetColumnPadding() == 0);
+		TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Left);
+		TEST_ASSERT(flow->GetAxis().Cast<GuiDefaultAxis>());
 		flow->SetPreferredMinSize(Size(200, 200));
 		flow->SetExtraMargin(Margin(11, 22, 33, 44));
 		flow->SetRowPadding(10);
@@ -26,7 +28,7 @@ TEST_FILE
 		TEST_ASSERT(flow->GetRowPadding() == 10);
 		TEST_ASSERT(flow->GetColumnPadding() == 20);
 
-		GuiFlowItemComposition* flowItems[5];
+		GuiFlowItemComposition* flowItems[6];
 		const vint ITEM_COUNT = sizeof(flowItems) / sizeof(*flowItems);
 		for (vint i = 0; i < ITEM_COUNT; i++)
 		{
@@ -49,6 +51,14 @@ TEST_FILE
 		testAllDirections(true);
 
 		SafeDeleteComposition(flow);
+	});
+
+	TEST_CASE(L"Test <Flow> with different <Flow> alignment")
+	{
+	});
+
+	TEST_CASE(L"Test <Flow> with different <FlowItem> option")
+	{
 	});
 
 	TEST_CASE(L"Test <Stack> with clipped <StackItem>")

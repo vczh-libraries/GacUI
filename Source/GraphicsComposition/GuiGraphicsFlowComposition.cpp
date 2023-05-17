@@ -108,6 +108,9 @@ GuiFlowComposition
 							case FlowAlignment::Center:
 								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth) / 2;
 								break;
+							case FlowAlignment::Right:
+								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth);
+								break;
 							case FlowAlignment::Extend:
 								if (i == 0)
 								{
