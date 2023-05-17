@@ -181,6 +181,7 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TestCompositions_Bounds.cpp" />
+    <ClCompile Include="TestCompositions_Stack.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />
@@ -237,6 +238,9 @@
     <ProjectReference Include="..\Lib_GacUI_Reflection\Lib_GacUI_Reflection.vcxproj">
       <Project>{543b32d9-e229-472a-9d11-9bf12c7982bd}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TestCompositions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

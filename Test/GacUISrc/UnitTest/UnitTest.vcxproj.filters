@@ -39,6 +39,9 @@
     <ClCompile Include="TestCompositions_Bounds.cpp">
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
+    <ClCompile Include="TestCompositions_Stack.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">
@@ -169,5 +172,10 @@
     <Xml Include="..\..\Resources\Resource.FailedInstance.Inheriting2.xml">
       <Filter>Resource Files</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TestCompositions.h">
+      <Filter>Source Files\Compositions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
