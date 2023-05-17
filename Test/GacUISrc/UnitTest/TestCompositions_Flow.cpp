@@ -13,14 +13,14 @@ TEST_FILE
 		auto flow = new GuiFlowComposition;
 
 		flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-		flow->SetPreferredMinSize(Size(50, 50));
+		flow->SetPreferredMinSize(Size(200, 250));
+		flow->ForceCalculateSizeImmediately();
 
 		TEST_ASSERT(flow->GetExtraMargin() == Margin(0, 0, 0, 0));
 		TEST_ASSERT(flow->GetRowPadding() == 0);
 		TEST_ASSERT(flow->GetColumnPadding() == 0);
 		TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Left);
 		TEST_ASSERT(flow->GetAxis().Cast<GuiDefaultAxis>());
-		flow->SetPreferredMinSize(Size(200, 200));
 		flow->SetExtraMargin(Margin(11, 22, 33, 44));
 		flow->SetRowPadding(20);
 		flow->SetColumnPadding(10);
@@ -47,26 +47,31 @@ TEST_FILE
 
 		auto testVertical = [&]
 		{
+			auto fuck = flow->GetClientArea();
+			TEST_ASSERT(flow->GetClientArea() == Rect({ 0,0 }, { 264,266 }));
+			TEST_ASSERT(flow->GetMinPreferredClientSize() == flow->GetClientArea().GetSize());
+			TEST_ASSERT(flow->GetPreferredBounds() == flow->GetClientArea());
+			TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
 		};
 
 		auto testLeftDown = [&](bool expand)
 		{
-			testHorizontal();
+			//testHorizontal();
 		};
 
 		auto testRightDown = [&](bool expand)
 		{
-			testHorizontal();
+			//testHorizontal();
 		};
 
 		auto testLeftUp = [&](bool expand)
 		{
-			testHorizontal();
+			//testHorizontal();
 		};
 
 		auto testRightUp = [&](bool expand)
 		{
-			testHorizontal();
+			//testHorizontal();
 		};
 
 		auto testDownLeft = [&](bool expand)

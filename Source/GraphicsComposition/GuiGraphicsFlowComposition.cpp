@@ -25,7 +25,11 @@ GuiFlowComposition
 					if (clientMargin.right < 0) clientMargin.right = 0;
 					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
 
+					auto preferredFullSize = GetPreferredBounds().GetSize();
 					auto realFullSize = previousBounds.GetSize();
+					if (realFullSize.x < preferredFullSize.x) realFullSize.x = preferredFullSize.x;
+					if (realFullSize.y < preferredFullSize.y) realFullSize.y = preferredFullSize.y;
+
 					auto clientSize = axis->RealSizeToVirtualSize(realFullSize);
 					clientSize.x -= (clientMargin.left + clientMargin.right);
 					clientSize.y -= (clientMargin.top + clientMargin.bottom);
