@@ -37,7 +37,7 @@ TEST_FILE
 			flow->InsertFlowItem(i, flowItems[i]);
 		}
 
-		auto testLeftDown = [&](bool expand)
+		auto testHorizontal = [&]
 		{
 			TEST_ASSERT(flow->GetClientArea() == Rect({ 0,0 }, { 200,386 }));
 			TEST_ASSERT(flow->GetMinPreferredClientSize() == flow->GetClientArea().GetSize());
@@ -45,32 +45,48 @@ TEST_FILE
 			TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
 		};
 
+		auto testVertical = [&]
+		{
+		};
+
+		auto testLeftDown = [&](bool expand)
+		{
+			testHorizontal();
+		};
+
 		auto testRightDown = [&](bool expand)
 		{
+			testHorizontal();
 		};
 
 		auto testLeftUp = [&](bool expand)
 		{
+			testHorizontal();
 		};
 
 		auto testRightUp = [&](bool expand)
 		{
+			testHorizontal();
 		};
 
 		auto testDownLeft = [&](bool expand)
 		{
+			testVertical();
 		};
 
 		auto testDownRight = [&](bool expand)
 		{
+			testVertical();
 		};
 
 		auto testUpLeft = [&](bool expand)
 		{
+			testVertical();
 		};
 
 		auto testUpRight = [&](bool expand)
 		{
+			testVertical();
 		};
 
 		auto testAllDirections = [&](bool expand)
