@@ -49,6 +49,12 @@ TEST_FILE
 			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
 			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
 			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				vint offset = 33 + (100 + 10) * i + 10 * i * (i - 1) / 2;
+				offset = 64 + 330 - offset - (100 + i * 10);
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ offset,22}, {100 + i * 10,140}));
+			}
 
 			stack->SetDirection(GuiStackComposition::Vertical);
 			TEST_ASSERT(stack->GetDirection() == GuiStackComposition::Vertical);
@@ -57,6 +63,11 @@ TEST_FILE
 			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
 			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
 			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				vint offset = 22 + (100 + 10) * i + 20 * i * (i - 1) / 2;
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 11,offset }, { 120,100 + i * 20 }));
+			}
 
 			stack->SetDirection(GuiStackComposition::ReversedVertical);
 			TEST_ASSERT(stack->GetDirection() == GuiStackComposition::ReversedVertical);
@@ -64,6 +75,12 @@ TEST_FILE
 			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
 			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
 			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				vint offset = 44 + (100 + 10) * i + 20 * i * (i - 1) / 2;
+				offset = 86 + 360 - offset - (100 + i * 20);
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 11,offset }, { 120,100 + i * 20 }));
+			}
 		}
 
 		SafeDeleteComposition(stack);
