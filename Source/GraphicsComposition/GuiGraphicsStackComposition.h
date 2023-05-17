@@ -44,12 +44,13 @@ Stack Compositions
 					ReversedVertical,
 				};
 			protected:
-				Direction							direction = Horizontal;
 				ItemCompositionList					stackItems;
 				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
-				
-				vint								padding = 0;
 				vint								adjustment = 0;
+				bool								needUpdate = false;
+
+				Direction							direction = Horizontal;
+				vint								padding = 0;
 				Margin								extraMargin;
 
 				collections::Array<Rect>			stackItemBounds;

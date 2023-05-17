@@ -195,6 +195,7 @@ GuiStackComposition
 			void GuiStackComposition::SetDirection(Direction value)
 			{
 				direction = value;
+				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 
@@ -206,6 +207,7 @@ GuiStackComposition
 			void GuiStackComposition::SetPadding(vint value)
 			{
 				padding = value;
+				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 
@@ -221,9 +223,14 @@ GuiStackComposition
 				{
 					if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
 					{
-						UpdateStackItemBounds();
+						needUpdate = true;
 						break;
 					}
+				}
+
+				if (needUpdate)
+				{
+					UpdateStackItemBounds();
 				}
 
 				Rect bounds = GuiBoundsComposition::GetBounds();
@@ -239,7 +246,8 @@ GuiStackComposition
 
 			void GuiStackComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin=value;
+				extraMargin = value;
+				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 

@@ -45,12 +45,25 @@ TEST_FILE
 
 			stack->SetDirection(GuiStackComposition::ReversedHorizontal);
 			TEST_ASSERT(stack->GetDirection() == GuiStackComposition::ReversedHorizontal);
+			TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 64 + 330,66 + 140 }));
+			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
+			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
+			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
 
 			stack->SetDirection(GuiStackComposition::Vertical);
 			TEST_ASSERT(stack->GetDirection() == GuiStackComposition::Vertical);
+			auto fuck = stack->GetClientArea();
+			TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 44 + 120,86 + 360 }));
+			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
+			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
+			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
 
 			stack->SetDirection(GuiStackComposition::ReversedVertical);
 			TEST_ASSERT(stack->GetDirection() == GuiStackComposition::ReversedVertical);
+			TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 44 + 120,86 + 360 }));
+			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
+			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
+			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
 		}
 
 		SafeDeleteComposition(stack);
