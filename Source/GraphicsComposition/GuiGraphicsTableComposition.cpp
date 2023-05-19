@@ -318,7 +318,13 @@ GuiTableComposition
 			Size GuiTableComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
 				vint offset = (borderVisible ? 2 * cellPadding : 0);
-				return Size(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
+				Size minTableSize(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
+
+				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				return Size(
+					minTableSize.x > minClientSize.x ? minTableSize.x : minClientSize.x,
+					minTableSize.y > minClientSize.y ? minTableSize.y : minClientSize.y
+					);
 			}
 
 			GuiTableComposition::GuiTableComposition()
