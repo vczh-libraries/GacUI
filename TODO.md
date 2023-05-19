@@ -55,6 +55,7 @@
     - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.
     - If any cached values are changed, flagged(C).
   - Fix document.
+- Fill empty test cases after composition refactoring.
 - `FlowAlignment::Right` in demo.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
