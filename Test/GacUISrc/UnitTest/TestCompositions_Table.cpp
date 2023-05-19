@@ -179,7 +179,8 @@ TEST_FILE
 			for (vint c = 0; c < 3; c++)
 			{
 				auto cell = new GuiCellComposition;
-				cell->SetPreferredMinSize(Size(10 + r * 3 + c, 10 + c * 3 + r));
+				cell->SetSite(r, c, 1, 1);
+				cell->SetPreferredMinSize(Size(10 + r * 3 + c, 10 + c * 4 + r));
 				table->AddChild(cell);
 			}
 		}
@@ -193,20 +194,27 @@ TEST_FILE
 			}
 		}
 
-		TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 73,73 }));
+		TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
 		TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
 		TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
 		TEST_ASSERT(table->GetBounds() == table->GetClientArea());
 
-		TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(0, 2)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(1, 0)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(1, 1)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(1, 2)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(2, 0)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(2, 1)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(table->GetSitedCell(2, 2)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		{
+			vint xs[3] = { 10,36,63 };
+			vint ys[3] = { 10,38,67 };
+			vint ws[3] = { 16,17,18 };
+			vint hs[3] = { 18,19,20 };
+
+			TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ xs[0],ys[0] }, { ws[0],hs[0] }));
+			TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ xs[1],ys[0] }, { ws[1],hs[0] }));
+			TEST_ASSERT(table->GetSitedCell(0, 2)->GetBounds() == Rect({ xs[2],ys[0] }, { ws[2],hs[0] }));
+			TEST_ASSERT(table->GetSitedCell(1, 0)->GetBounds() == Rect({ xs[0],ys[1] }, { ws[0],hs[1] }));
+			TEST_ASSERT(table->GetSitedCell(1, 1)->GetBounds() == Rect({ xs[1],ys[1] }, { ws[1],hs[1] }));
+			TEST_ASSERT(table->GetSitedCell(1, 2)->GetBounds() == Rect({ xs[2],ys[1] }, { ws[2],hs[1] }));
+			TEST_ASSERT(table->GetSitedCell(2, 0)->GetBounds() == Rect({ xs[0],ys[2] }, { ws[0],hs[2] }));
+			TEST_ASSERT(table->GetSitedCell(2, 1)->GetBounds() == Rect({ xs[1],ys[2] }, { ws[1],hs[2] }));
+			TEST_ASSERT(table->GetSitedCell(2, 2)->GetBounds() == Rect({ xs[2],ys[2] }, { ws[2],hs[2] }));
+		}
 
 		SafeDeleteComposition(table);
 	});
