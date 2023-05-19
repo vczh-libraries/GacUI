@@ -161,6 +161,19 @@ TEST_FILE
 		SafeDeleteComposition(table);
 	});
 
+	auto test3x3Cells = [](GuiTableComposition* table, vint(&xs)[3], vint(&ys)[3], vint(&ws)[3], vint(&hs)[3])
+	{
+		TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ xs[0],ys[0] }, { ws[0],hs[0] }));
+		TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ xs[1],ys[0] }, { ws[1],hs[0] }));
+		TEST_ASSERT(table->GetSitedCell(0, 2)->GetBounds() == Rect({ xs[2],ys[0] }, { ws[2],hs[0] }));
+		TEST_ASSERT(table->GetSitedCell(1, 0)->GetBounds() == Rect({ xs[0],ys[1] }, { ws[0],hs[1] }));
+		TEST_ASSERT(table->GetSitedCell(1, 1)->GetBounds() == Rect({ xs[1],ys[1] }, { ws[1],hs[1] }));
+		TEST_ASSERT(table->GetSitedCell(1, 2)->GetBounds() == Rect({ xs[2],ys[1] }, { ws[2],hs[1] }));
+		TEST_ASSERT(table->GetSitedCell(2, 0)->GetBounds() == Rect({ xs[0],ys[2] }, { ws[0],hs[2] }));
+		TEST_ASSERT(table->GetSitedCell(2, 1)->GetBounds() == Rect({ xs[1],ys[2] }, { ws[1],hs[2] }));
+		TEST_ASSERT(table->GetSitedCell(2, 2)->GetBounds() == Rect({ xs[2],ys[2] }, { ws[2],hs[2] }));
+	};
+
 	TEST_CASE(L"Test <Table> with MinSize only")
 	{
 		auto table = new GuiTableComposition;
@@ -194,26 +207,32 @@ TEST_FILE
 			}
 		}
 
-		TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
-		TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
-		TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
-		TEST_ASSERT(table->GetBounds() == table->GetClientArea());
-
 		{
+			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
+			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
 			vint xs[3] = { 10,36,63 };
 			vint ys[3] = { 10,38,67 };
 			vint ws[3] = { 16,17,18 };
 			vint hs[3] = { 18,19,20 };
+			test3x3Cells(table, xs, ys, ws, hs);
+		}
 
-			TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ xs[0],ys[0] }, { ws[0],hs[0] }));
-			TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ xs[1],ys[0] }, { ws[1],hs[0] }));
-			TEST_ASSERT(table->GetSitedCell(0, 2)->GetBounds() == Rect({ xs[2],ys[0] }, { ws[2],hs[0] }));
-			TEST_ASSERT(table->GetSitedCell(1, 0)->GetBounds() == Rect({ xs[0],ys[1] }, { ws[0],hs[1] }));
-			TEST_ASSERT(table->GetSitedCell(1, 1)->GetBounds() == Rect({ xs[1],ys[1] }, { ws[1],hs[1] }));
-			TEST_ASSERT(table->GetSitedCell(1, 2)->GetBounds() == Rect({ xs[2],ys[1] }, { ws[2],hs[1] }));
-			TEST_ASSERT(table->GetSitedCell(2, 0)->GetBounds() == Rect({ xs[0],ys[2] }, { ws[0],hs[2] }));
-			TEST_ASSERT(table->GetSitedCell(2, 1)->GetBounds() == Rect({ xs[1],ys[2] }, { ws[1],hs[2] }));
-			TEST_ASSERT(table->GetSitedCell(2, 2)->GetBounds() == Rect({ xs[2],ys[2] }, { ws[2],hs[2] }));
+		table->SetBorderVisible(false);
+		table->SetPreferredMinSize(Size(100, 200));
+		{
+			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
+			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
+			vint xs[3] = { 0,26,53 };
+			vint ys[3] = { 0,28,57 };
+			vint ws[3] = { 16,17,47 };
+			vint hs[3] = { 18,19,143 };
+			test3x3Cells(table, xs, ys, ws, hs);
 		}
 
 		SafeDeleteComposition(table);
