@@ -10,7 +10,25 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test <Flow> with <FlowItem> in different directions")
 	{
-		auto testHorizontalDirections = []<vint ITEM_COUNT>(GuiFlowComposition * flow, GuiFlowItemComposition * (&flowItems)[ITEM_COUNT])
+		constexpr vint ITEM_COUNT = 6;
+
+		auto testFlowItemBounds = [&](GuiFlowItemComposition*(&flowItems)[ITEM_COUNT], Rect(&flowItemBounds)[ITEM_COUNT], bool expand)
+		{
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				auto expected = flowItemBounds[i];
+				if (expand)
+				{
+					expected.x1 -= 1 * i;
+					expected.y1 -= 2 * i;
+					expected.x2 += 3 * i;
+					expected.y2 += 4 * i;
+				}
+				TEST_ASSERT(flowItems[i]->GetBounds() == flowItemBounds[i]);
+			}
+		};
+
+		auto testHorizontalDirections = [&](GuiFlowComposition* flow, GuiFlowItemComposition*(&flowItems)[ITEM_COUNT])
 		{
 			auto testHorizontal = [&]
 			{
@@ -22,7 +40,17 @@ TEST_FILE
 
 			auto testLeftDown = [&](bool expand)
 			{
+				Rect flowItemBounds[ITEM_COUNT] = {
+					{{ 11,62 }, { 30,20 }},
+					{{ 51,42 }, { 40,40 }},
+					{{ 101,22 }, { 50,60 }},
+					{{ 11,122 }, { 60,80 }},
+					{{ 81,102 }, { 70,100 }},
+					{{ 11,222 }, { 80,120 }},
+				};
+
 				testHorizontal();
+				testFlowItemBounds(flowItems, flowItemBounds, expand);
 			};
 
 			auto testRightDown = [&](bool expand)
@@ -73,7 +101,7 @@ TEST_FILE
 			testAllDirections(true);
 		};
 
-		auto testVerticalDirections = []<vint ITEM_COUNT>(GuiFlowComposition * flow, GuiFlowItemComposition * (&flowItems)[ITEM_COUNT])
+		auto testVerticalDirections = [&]<vint ITEM_COUNT>(GuiFlowComposition* flow, GuiFlowItemComposition*(&flowItems)[ITEM_COUNT])
 		{
 			auto testVertical = [&]
 			{
@@ -161,8 +189,7 @@ TEST_FILE
 			TEST_ASSERT(flow->GetRowPadding() == 20);
 			TEST_ASSERT(flow->GetColumnPadding() == 10);
 
-			GuiFlowItemComposition* flowItems[6];
-			const vint ITEM_COUNT = sizeof(flowItems) / sizeof(*flowItems);
+			GuiFlowItemComposition* flowItems[ITEM_COUNT];
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
 				flowItems[i] = new GuiFlowItemComposition;
