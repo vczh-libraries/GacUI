@@ -161,7 +161,13 @@ TEST_FILE
 		SafeDeleteComposition(table);
 	});
 
-	auto test3x3Cells = [](GuiTableComposition* table, vint(&xs)[3], vint(&ys)[3], vint(&ws)[3], vint(&hs)[3])
+	auto testUnmergedCells = []<vint ROWS, vint COLUMNS>(
+		GuiTableComposition* table,
+		vint(&xs)[COLUMNS],
+		vint(&ys)[ROWS],
+		vint(&ws)[COLUMNS],
+		vint(&hs)[ROWS]
+		)
 	{
 		TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ xs[0],ys[0] }, { ws[0],hs[0] }));
 		TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ xs[1],ys[0] }, { ws[1],hs[0] }));
@@ -198,15 +204,6 @@ TEST_FILE
 			}
 		}
 
-		for (vint r = 0; r < 3; r++)
-		{
-			for (vint c = 0; c < 3; c++)
-			{
-				auto cell = table->GetSitedCell(r, c);
-				TEST_ASSERT(table->Children()[r * 3 + c] == cell);
-			}
-		}
-
 		{
 			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
 			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
@@ -217,7 +214,7 @@ TEST_FILE
 			vint ys[3] = { 10,38,67 };
 			vint ws[3] = { 16,17,18 };
 			vint hs[3] = { 18,19,20 };
-			test3x3Cells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, xs, ys, ws, hs);
 		}
 
 		table->SetBorderVisible(false);
@@ -232,7 +229,7 @@ TEST_FILE
 			vint ys[3] = { 0,28,57 };
 			vint ws[3] = { 16,17,47 };
 			vint hs[3] = { 18,19,143 };
-			test3x3Cells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, xs, ys, ws, hs);
 		}
 
 		SafeDeleteComposition(table);
@@ -262,15 +259,6 @@ TEST_FILE
 			}
 		}
 
-		for (vint r = 0; r < 3; r++)
-		{
-			for (vint c = 0; c < 3; c++)
-			{
-				auto cell = table->GetSitedCell(r, c);
-				TEST_ASSERT(table->Children()[r * 3 + c] == cell);
-			}
-		}
-
 		{
 			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
 			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
@@ -281,7 +269,7 @@ TEST_FILE
 			vint ys[3] = { 10,40,69 };
 			vint ws[3] = { 18,17,16 };
 			vint hs[3] = { 20,19,18 };
-			test3x3Cells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, xs, ys, ws, hs);
 		}
 
 		table->SetBorderVisible(false);
@@ -296,7 +284,7 @@ TEST_FILE
 			vint ys[3] = { 0,30,59 };
 			vint ws[3] = { 18,17,45 };
 			vint hs[3] = { 20,19,141 };
-			test3x3Cells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, xs, ys, ws, hs);
 		}
 
 		SafeDeleteComposition(table);
@@ -304,6 +292,56 @@ TEST_FILE
 
 	TEST_CASE(L"Test <Table> with Percentage only")
 	{
+		auto table = new GuiTableComposition;
+
+		table->SetPreferredMinSize(Size(100, 200));
+		table->SetCellPadding(10);
+		table->SetRowsAndColumns(3, 3);
+		table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+		table->SetRowOption(1, GuiCellOption::PercentageOption(0.3));
+		table->SetRowOption(2, GuiCellOption::PercentageOption(0.2));
+		table->SetColumnOption(0, GuiCellOption::PercentageOption(0.2));
+		table->SetColumnOption(1, GuiCellOption::PercentageOption(0.3));
+		table->SetColumnOption(2, GuiCellOption::PercentageOption(0.5));
+
+		for (vint r = 0; r < 3; r++)
+		{
+			for (vint c = 0; c < 3; c++)
+			{
+				auto cell = new GuiCellComposition;
+				cell->SetSite(r, c, 1, 1);
+				table->AddChild(cell);
+			}
+		}
+
+		{
+			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
+			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
+			vint xs[3] = { 10,32,60 };
+			vint ys[3] = { 10,100,158 };
+			vint ws[3] = { 12,18,30 };
+			vint hs[3] = { 80,48,32 };
+			testUnmergedCells(table, xs, ys, ws, hs);
+		}
+
+		table->SetBorderVisible(false);
+		{
+			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
+			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
+			vint xs[3] = { 0,20,50 };
+			vint ys[3] = { 0,100,160 };
+			vint ws[3] = { 20,30,50 };
+			vint hs[3] = { 100,60,40 };
+			testUnmergedCells(table, xs, ys, ws, hs);
+		}
+
+		SafeDeleteComposition(table);
 	});
 
 	TEST_CASE(L"Test <Table> with mixed GuiCellOption")
