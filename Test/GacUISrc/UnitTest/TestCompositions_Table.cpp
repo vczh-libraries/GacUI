@@ -240,6 +240,66 @@ TEST_FILE
 
 	TEST_CASE(L"Test <Table> with Absolute only")
 	{
+		auto table = new GuiTableComposition;
+
+		table->SetCellPadding(10);
+		table->SetRowsAndColumns(3, 3);
+		table->SetRowOption(0, GuiCellOption::AbsoluteOption(20));
+		table->SetRowOption(1, GuiCellOption::AbsoluteOption(19));
+		table->SetRowOption(2, GuiCellOption::AbsoluteOption(18));
+		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(18));
+		table->SetColumnOption(1, GuiCellOption::AbsoluteOption(17));
+		table->SetColumnOption(2, GuiCellOption::AbsoluteOption(16));
+
+		for (vint r = 0; r < 3; r++)
+		{
+			for (vint c = 0; c < 3; c++)
+			{
+				auto cell = new GuiCellComposition;
+				cell->SetSite(r, c, 1, 1);
+				cell->SetPreferredMinSize(Size(10 + r * 3 + c, 10 + c * 4 + r));
+				table->AddChild(cell);
+			}
+		}
+
+		for (vint r = 0; r < 3; r++)
+		{
+			for (vint c = 0; c < 3; c++)
+			{
+				auto cell = table->GetSitedCell(r, c);
+				TEST_ASSERT(table->Children()[r * 3 + c] == cell);
+			}
+		}
+
+		{
+			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
+			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
+			vint xs[3] = { 10,38,65 };
+			vint ys[3] = { 10,40,69 };
+			vint ws[3] = { 18,17,16 };
+			vint hs[3] = { 20,19,18 };
+			test3x3Cells(table, xs, ys, ws, hs);
+		}
+
+		table->SetBorderVisible(false);
+		table->SetPreferredMinSize(Size(100, 200));
+		{
+			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
+			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
+			vint xs[3] = { 0,28,55 };
+			vint ys[3] = { 0,30,59 };
+			vint ws[3] = { 18,17,45 };
+			vint hs[3] = { 20,19,141 };
+			test3x3Cells(table, xs, ys, ws, hs);
+		}
+
+		SafeDeleteComposition(table);
 	});
 
 	TEST_CASE(L"Test <Table> with Percentage only")
