@@ -24,6 +24,7 @@ TEST_FILE
 					expected.x2 += 3 * i;
 					expected.y2 += 4 * i;
 				}
+				auto fuck = flowItems[i]->GetBounds();
 				TEST_ASSERT(flowItems[i]->GetBounds() == flowItemBounds[i]);
 			}
 		};
@@ -38,7 +39,7 @@ TEST_FILE
 				TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
 			};
 
-			auto testLeftDown = [&](bool expand)
+			auto testRightDown = [&](bool expand)
 			{
 				Rect flowItemBounds[ITEM_COUNT] = {
 					{{ 11,62 }, { 30,20 }},
@@ -53,12 +54,7 @@ TEST_FILE
 				testFlowItemBounds(flowItems, flowItemBounds, expand);
 			};
 
-			auto testRightDown = [&](bool expand)
-			{
-				testHorizontal();
-			};
-
-			auto testLeftUp = [&](bool expand)
+			auto testLeftDown = [&](bool expand)
 			{
 				testHorizontal();
 			};
@@ -68,27 +64,32 @@ TEST_FILE
 				testHorizontal();
 			};
 
+			auto testLeftUp = [&](bool expand)
+			{
+				testHorizontal();
+			};
+
 			auto testAllDirections = [&](bool expand)
 			{
 				flow->SetAxis(Ptr(new GuiDefaultAxis));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiDefaultAxis>());
-				testLeftDown(expand);
-
-				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
-				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::LeftDown);
-				testLeftDown(expand);
+				testRightDown(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::RightDown);
 				testRightDown(expand);
 
-				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
-				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::LeftUp);
-				testLeftUp(expand);
+				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::LeftDown);
+				testLeftDown(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::RightUp);
 				testRightUp(expand);
+
+				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::LeftUp);
+				testLeftUp(expand);
 			};
 
 			testAllDirections(false);
@@ -112,17 +113,12 @@ TEST_FILE
 				TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
 			};
 
-			auto testDownLeft = [&](bool expand)
-			{
-				testVertical();
-			};
-
 			auto testDownRight = [&](bool expand)
 			{
 				testVertical();
 			};
 
-			auto testUpLeft = [&](bool expand)
+			auto testDownLeft = [&](bool expand)
 			{
 				testVertical();
 			};
@@ -132,23 +128,28 @@ TEST_FILE
 				testVertical();
 			};
 
+			auto testUpLeft = [&](bool expand)
+			{
+				testVertical();
+			};
+
 			auto testAllDirections = [&](bool expand)
 			{
-				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
-				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::DownLeft);
-				testDownLeft(expand);
-
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::DownRight);
 				testDownRight(expand);
 
-				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
-				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::UpLeft);
-				testUpLeft(expand);
+				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::DownLeft);
+				testDownLeft(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::UpRight);
 				testUpRight(expand);
+
+				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::UpLeft);
+				testUpLeft(expand);
 			};
 
 			testAllDirections(false);
