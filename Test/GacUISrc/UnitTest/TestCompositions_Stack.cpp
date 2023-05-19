@@ -77,7 +77,6 @@ TEST_FILE
 
 			stack->SetDirection(GuiStackComposition::Vertical);
 			TEST_ASSERT(stack->GetDirection() == GuiStackComposition::Vertical);
-			auto fuck = stack->GetClientArea();
 			TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 44 + 120,86 + 360 }));
 			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
 			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());

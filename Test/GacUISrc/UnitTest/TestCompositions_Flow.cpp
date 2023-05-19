@@ -135,7 +135,6 @@ TEST_FILE
 		{
 			auto testVertical = [&]
 			{
-				auto fuck = flow->GetClientArea();
 				TEST_ASSERT(flow->GetClientArea() == Rect({ 0,0 }, { 386,200 }));
 				TEST_ASSERT(flow->GetMinPreferredClientSize() == flow->GetClientArea().GetSize());
 				TEST_ASSERT(flow->GetPreferredBounds() == flow->GetClientArea());

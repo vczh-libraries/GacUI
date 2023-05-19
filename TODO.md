@@ -39,6 +39,7 @@
   - `CalculateBounds(parentClientBounds, callUpdateBounds)`.
   - `GetBounds` -> `GetUpdatedBounds`.
   - `ForceCalculateSizeImmediately` calls all these functions.
+  - `GuiTableComposition` remove `UpdateCellBounds`.
   - Fix document.
 - Refactor compositions (after unit test for compositions are finished)
   - When properties of a composition is changed, flagged(C), request refresh.
