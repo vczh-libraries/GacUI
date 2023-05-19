@@ -37,11 +37,12 @@ namespace composition_bounds_tests
 	};
 
 	template<typename T>
-	void TestBoundsWithTrivialChildren()
+	void TestBoundsWithTrivialChildren(void(*init)(T*) = nullptr)
 	{
 		TEST_CASE(L"Test <Bounds> default properties")
 		{
 			auto bounds = new T;
+			if (init) init(bounds);
 
 			TEST_ASSERT(bounds->GetParent() == nullptr);
 			TEST_ASSERT(bounds->Children().Count() == 0);
@@ -77,7 +78,8 @@ namespace composition_bounds_tests
 
 		TEST_CASE(L"Test single <Bounds> layout")
 		{
-			auto bounds = new T();
+			auto bounds = new T;
+			if (init) init(bounds);
 
 			// InternalMargin
 			bounds->SetInternalMargin(Margin(11, 22, 33, 44));
@@ -171,7 +173,9 @@ namespace composition_bounds_tests
 
 		TEST_CASE(L"Test <Bounds> children operations")
 		{
-			auto root = new T();
+			auto root = new T;
+			if (init) init(root);
+
 			auto childA = new GuiBoundsComposition();
 			auto childAA = new GuiBoundsComposition();
 			auto childAB = new GuiBoundsComposition();
@@ -258,7 +262,9 @@ namespace composition_bounds_tests
 
 		TEST_CASE(L"Test child <Bounds> layout")
 		{
-			auto root = new T();
+			auto root = new T;
+			if (init) init(root);
+
 			auto childA = new GuiBoundsComposition();
 			auto childB = new GuiBoundsComposition();
 			root->AddChild(childA);
@@ -396,6 +402,10 @@ namespace composition_bounds_tests
 
 		TEST_CASE(L"Test nested <Bounds> layout")
 		{
+			auto root = new T;
+			if (init) init(root);
+
+			SafeDeleteComposition(root);
 		});
 	}
 }
