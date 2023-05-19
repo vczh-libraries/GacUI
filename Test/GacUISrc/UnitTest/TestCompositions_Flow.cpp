@@ -24,8 +24,7 @@ TEST_FILE
 					expected.x2 += 3 * i;
 					expected.y2 += 4 * i;
 				}
-				auto fuck = flowItems[i]->GetBounds();
-				TEST_ASSERT(flowItems[i]->GetBounds() == flowItemBounds[i]);
+				TEST_ASSERT(flowItems[i]->GetBounds() == expected);
 			}
 		};
 
@@ -56,17 +55,47 @@ TEST_FILE
 
 			auto testLeftDown = [&](bool expand)
 			{
+				Rect flowItemBounds[ITEM_COUNT] = {
+					{{ 137,62 }, { 30,20 }},
+					{{ 87,42 }, { 40,40 }},
+					{{ 27,22 }, { 50,60 }},
+					{{ 107,122 }, { 60,80 }},
+					{{ 27,102 }, { 70,100 }},
+					{{ 87,222 }, { 80,120 }},
+				};
+
 				testHorizontal();
+				testFlowItemBounds(flowItems, flowItemBounds, expand);
 			};
 
 			auto testRightUp = [&](bool expand)
 			{
+				Rect flowItemBounds[ITEM_COUNT] = {
+					{{ 11,282 }, { 30,20 }},
+					{{ 51,282 }, { 40,40 }},
+					{{ 101,282 }, { 50,60 }},
+					{{ 11,162 }, { 60,80 }},
+					{{ 81,162 }, { 70,100 }},
+					{{ 11,22 }, { 80,120 }},
+				};
+
 				testHorizontal();
+				testFlowItemBounds(flowItems, flowItemBounds, expand);
 			};
 
 			auto testLeftUp = [&](bool expand)
 			{
+				Rect flowItemBounds[ITEM_COUNT] = {
+					{{ 137,282 }, { 30,20 }},
+					{{ 87,282 }, { 40,40 }},
+					{{ 27,282 }, { 50,60 }},
+					{{ 107,162 }, { 60,80 }},
+					{{ 27,162 }, { 70,100 }},
+					{{ 87,22 }, { 80,120 }},
+				};
+
 				testHorizontal();
+				testFlowItemBounds(flowItems, flowItemBounds, expand);
 			};
 
 			auto testAllDirections = [&](bool expand)
