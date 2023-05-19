@@ -163,6 +163,52 @@ TEST_FILE
 
 	TEST_CASE(L"Test <Table> with MinSize only")
 	{
+		auto table = new GuiTableComposition;
+
+		table->SetCellPadding(10);
+		table->SetRowsAndColumns(3, 3);
+		table->SetRowOption(0, GuiCellOption::MinSizeOption());
+		table->SetRowOption(1, GuiCellOption::MinSizeOption());
+		table->SetRowOption(2, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+
+		for (vint r = 0; r < 3; r++)
+		{
+			for (vint c = 0; c < 3; c++)
+			{
+				auto cell = new GuiCellComposition;
+				cell->SetPreferredMinSize(Size(10 + r * 3 + c, 10 + c * 3 + r));
+				table->AddChild(cell);
+			}
+		}
+
+		for (vint r = 0; r < 3; r++)
+		{
+			for (vint c = 0; c < 3; c++)
+			{
+				auto cell = table->GetSitedCell(r, c);
+				TEST_ASSERT(table->Children()[r * 3 + c] == cell);
+			}
+		}
+
+		TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 73,73 }));
+		TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+		TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+		TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
+		TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(0, 2)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(1, 0)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(1, 1)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(1, 2)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(2, 0)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(2, 1)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(table->GetSitedCell(2, 2)->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+
+		SafeDeleteComposition(table);
 	});
 
 	TEST_CASE(L"Test <Table> with Absolute only")
