@@ -128,8 +128,7 @@ Table Compositions
 														vint (*getLocation)(GuiCellComposition*),
 														vint (*getSpan)(GuiCellComposition*),
 														vint (*getRow)(vint, vint),
-														vint (*getCol)(vint, vint),
-														vint maxPass
+														vint (*getCol)(vint, vint)
 														);
 				void								UpdateCellBoundsPercentages(
 														collections::Array<vint>& dimSizes,

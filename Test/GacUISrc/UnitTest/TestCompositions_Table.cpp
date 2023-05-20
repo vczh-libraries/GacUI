@@ -334,10 +334,10 @@ TEST_FILE
 			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
 			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
 
-			vint xs[3] = { 0,20,50 };
-			vint ys[3] = { 0,100,160 };
-			vint ws[3] = { 20,30,50 };
-			vint hs[3] = { 100,60,40 };
+			vint xs[3] = { 0,26,60 };
+			vint ys[3] = { 0,100,164 };
+			vint ws[3] = { 16,24,40 };
+			vint hs[3] = { 90,54,36 };
 			testUnmergedCells(table, xs, ys, ws, hs);
 		}
 
