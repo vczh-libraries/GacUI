@@ -27,14 +27,22 @@ Table Compositions
 			/// </summary>
 			struct GuiCellOption
 			{
-				/// <summary>Sizing algorithm</summary>
+				/// <summary>Size configuration</summary>
 				enum ComposeType
 				{
-					/// <summary>Set the size to an absolute value.</summary>
+					/// <summary>
+					/// Set the size to an absolute value.
+					/// The size will not change even if affected cell's minimum size is bigger that this.
+					/// </summary>
 					Absolute,
-					/// <summary>Set the size to a percentage number of the whole table.</summary>
+					/// <summary>
+					/// Set the size to a percentage number of the whole table.
+					/// </summary>
 					Percentage,
-					/// <summary>Set the size to the minimum size of the cell element.</summary>
+					/// <summary>
+					/// Set the size to the minimum size of the cell element.
+					/// Only cells that take one row or column at this position are considered.
+					/// </summary>
 					MinSize,
 				};
 

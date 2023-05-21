@@ -365,8 +365,107 @@ TEST_FILE
 		SafeDeleteComposition(table);
 	});
 
-	TEST_CASE(L"Test <Table> with merged cells and MinSize only")
+	TEST_CATEGORY(L"Test <Table> with merged cells and MinSize only")
 	{
+		auto table = new GuiTableComposition;
+		table->SetCellPadding(10);
+		table->SetRowsAndColumns(2, 2);
+		table->SetRowOption(0, GuiCellOption::MinSizeOption());
+		table->SetRowOption(1, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(1, GuiCellOption::MinSizeOption());
+
+		auto cell1 = new GuiCellComposition;
+		auto cell2 = new GuiCellComposition;
+		auto cell3 = new GuiCellComposition;
+		auto cell4 = new GuiCellComposition;
+
+		TEST_CASE(L"A1B2")
+		{
+			cell1->SetSite(0, 0, 2, 2);
+			cell1->SetPreferredMinSize(Size(50, 60));
+			table->AddChild(cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == cell1);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell1);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(30, 30));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 10,10 }));
+		});
+
+
+		TEST_CASE(L"A1A1, B1B2")
+		{
+			cell1->SetSite(0, 0, 1, 1);
+			cell2->SetSite(0, 1, 2, 1);
+			cell2->SetPreferredMinSize(Size(70, 80));
+			table->AddChild(cell2);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(150, 90));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 50,60 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 70,10 }, { 70,70 }));
+		});
+
+		TEST_CASE(L"A1A1, A2B2")
+		{
+			cell2->SetSite(1, 0, 1, 2);
+			cell2->SetPreferredMinSize(Size(70, 80));
+			table->AddChild(cell2);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(80, 170));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 50,60 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 10,80 }, { 60,80 }));
+		});
+
+		TEST_CASE(L"A1A1, B1B2, C2C2, B3B3")
+		{
+			table->SetRowsAndColumns(3, 3);
+			table->SetRowOption(2, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+
+			cell2->SetSite(0, 1, 2, 1);
+			cell3->SetSite(1, 2, 1, 1);
+			cell3->SetPreferredMinSize(Size(1, 2));
+			table->AddChild(cell3);
+			cell4->SetSite(2, 1, 1, 1);
+			cell4->SetPreferredMinSize(Size(3, 4));
+			table->AddChild(cell4);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == cell2);
+			TEST_ASSERT(table->GetSitedCell(0, 2) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 2) == cell3);
+			TEST_ASSERT(table->GetSitedCell(2, 0) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(2, 1) == cell4);
+			TEST_ASSERT(table->GetSitedCell(2, 2) == nullptr);
+		});
+
+		TEST_CASE(L"A1A1, A2B2, C2C2, B3B3")
+		{
+			table->SetRowsAndColumns(3, 3);
+			table->SetRowOption(2, GuiCellOption::MinSizeOption());
+			table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+
+			cell2->SetSite(1, 0, 1, 2);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(0, 2) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 2) == cell3);
+			TEST_ASSERT(table->GetSitedCell(2, 0) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(2, 1) == cell4);
+			TEST_ASSERT(table->GetSitedCell(2, 2) == nullptr);
+		});
+
+		SafeDeleteComposition(table);
 	});
 
 	TEST_CASE(L"Test <Table> with merged cells and Absolute only")
