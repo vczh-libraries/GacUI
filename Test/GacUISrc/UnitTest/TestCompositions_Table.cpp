@@ -445,6 +445,11 @@ TEST_FILE
 			TEST_ASSERT(table->GetSitedCell(2, 0) == nullptr);
 			TEST_ASSERT(table->GetSitedCell(2, 1) == cell4);
 			TEST_ASSERT(table->GetSitedCell(2, 2) == nullptr);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(161, 106));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 50,60 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 70,10 }, { 70,72 }));
+			TEST_ASSERT(cell3->GetBounds() == Rect({ 150,80 }, { 1,2 }));
+			TEST_ASSERT(cell4->GetBounds() == Rect({ 70,92 }, { 70,4 }));
 		});
 
 		TEST_CASE(L"A1A1, A2B2, C2C2, B3B3")
@@ -463,6 +468,11 @@ TEST_FILE
 			TEST_ASSERT(table->GetSitedCell(2, 0) == nullptr);
 			TEST_ASSERT(table->GetSitedCell(2, 1) == cell4);
 			TEST_ASSERT(table->GetSitedCell(2, 2) == nullptr);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(94, 184));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 50,60 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 10,80 }, { 63,80 }));
+			TEST_ASSERT(cell3->GetBounds() == Rect({ 83,80 }, { 1,80 }));
+			TEST_ASSERT(cell4->GetBounds() == Rect({ 70,170 }, { 3,4 }));
 		});
 
 		SafeDeleteComposition(table);
