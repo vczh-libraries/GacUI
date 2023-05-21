@@ -347,19 +347,19 @@ TEST_FILE
 
 		{
 			vint xs[4] = { 10,45,85,120 };
-			vint ys[4] = { 10,45,80,115 };
+			vint ys[4] = { 10,45,75,110 };
 			vint ws[4] = { 25,30,25,25 };
-			vint hs[4] = { 25,25,25,100 };
-			testUnmergedCells(table, { 155,225 }, xs, ys, ws, hs);
+			vint hs[4] = { 25,20,25,100 };
+			testUnmergedCells(table, { 155,220 }, xs, ys, ws, hs);
 		}
 
 		table->SetBorderVisible(false);
 		{
 			vint xs[4] = { 0,35,75,110 };
-			vint ys[4] = { 0,35,70,105 };
+			vint ys[4] = { 0,35,65,100 };
 			vint ws[4] = { 25,30,25,25 };
-			vint hs[4] = { 25,25,25,100 };
-			testUnmergedCells(table, { 135,205 }, xs, ys, ws, hs);
+			vint hs[4] = { 25,20,25,100 };
+			testUnmergedCells(table, { 135,200 }, xs, ys, ws, hs);
 		}
 
 		SafeDeleteComposition(table);

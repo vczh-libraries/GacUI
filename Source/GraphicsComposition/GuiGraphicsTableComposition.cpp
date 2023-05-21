@@ -164,20 +164,6 @@ GuiTableComposition
 						}
 					}
 
-					vint percentageTotalSize = 0;
-					for (vint i = 0; i < this->*dim1; i++)
-					{
-						GuiCellOption option = dimOptions[i];
-						if (option.composeType == GuiCellOption::Percentage)
-						{
-							vint size = (vint)ceil(dimSizes[i] / option.percentage);
-							if (percentageTotalSize < size)
-							{
-								percentageTotalSize = size;
-							}
-						}
-					}
-
 					double totalPercentage = 0;
 					for (vint i = 0; i < this->*dim1; i++)
 					{
@@ -188,12 +174,26 @@ GuiTableComposition
 						}
 					}
 
+					vint percentageTotalSize = 0;
 					for (vint i = 0; i < this->*dim1; i++)
 					{
 						GuiCellOption option = dimOptions[i];
 						if (option.composeType == GuiCellOption::Percentage)
 						{
-							vint size = (vint)ceil(percentageTotalSize*option.percentage / totalPercentage);
+							vint size = (vint)ceil(dimSizes[i] * totalPercentage / option.percentage);
+							if (percentageTotalSize < size)
+							{
+								percentageTotalSize = size;
+							}
+						}
+					}
+
+					for (vint i = 0; i < this->*dim1; i++)
+					{
+						GuiCellOption option = dimOptions[i];
+						if (option.composeType == GuiCellOption::Percentage)
+						{
+							vint size = (vint)ceil(percentageTotalSize * option.percentage / totalPercentage);
 							if (dimSizes[i] < size)
 							{
 								dimSizes[i] = size;
