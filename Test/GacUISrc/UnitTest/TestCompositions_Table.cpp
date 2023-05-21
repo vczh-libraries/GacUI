@@ -175,15 +175,13 @@ TEST_FILE
 		TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
 		TEST_ASSERT(table->GetBounds() == table->GetClientArea());
 
-		TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ xs[0],ys[0] }, { ws[0],hs[0] }));
-		TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ xs[1],ys[0] }, { ws[1],hs[0] }));
-		TEST_ASSERT(table->GetSitedCell(0, 2)->GetBounds() == Rect({ xs[2],ys[0] }, { ws[2],hs[0] }));
-		TEST_ASSERT(table->GetSitedCell(1, 0)->GetBounds() == Rect({ xs[0],ys[1] }, { ws[0],hs[1] }));
-		TEST_ASSERT(table->GetSitedCell(1, 1)->GetBounds() == Rect({ xs[1],ys[1] }, { ws[1],hs[1] }));
-		TEST_ASSERT(table->GetSitedCell(1, 2)->GetBounds() == Rect({ xs[2],ys[1] }, { ws[2],hs[1] }));
-		TEST_ASSERT(table->GetSitedCell(2, 0)->GetBounds() == Rect({ xs[0],ys[2] }, { ws[0],hs[2] }));
-		TEST_ASSERT(table->GetSitedCell(2, 1)->GetBounds() == Rect({ xs[1],ys[2] }, { ws[1],hs[2] }));
-		TEST_ASSERT(table->GetSitedCell(2, 2)->GetBounds() == Rect({ xs[2],ys[2] }, { ws[2],hs[2] }));
+		for (vint r = 0; r < ROWS; r++)
+		{
+			for (vint c = 0; c < COLUMNS; c++)
+			{
+				TEST_ASSERT(table->GetSitedCell(r, c)->GetBounds() == Rect({ xs[c],ys[r] }, { ws[c],hs[r] }));
+			}
+		}
 	};
 
 	TEST_CASE(L"Test <Table> with MinSize only")
@@ -322,6 +320,49 @@ TEST_FILE
 
 	TEST_CASE(L"Test <Table> with mixed GuiCellOption")
 	{
+		auto table = new GuiTableComposition;
+
+		table->SetPreferredMinSize(Size(100, 200));
+		table->SetCellPadding(10);
+		table->SetRowsAndColumns(4, 4);
+		table->SetRowOption(0, GuiCellOption::MinSizeOption());
+		table->SetRowOption(1, GuiCellOption::AbsoluteOption(20));
+		table->SetRowOption(2, GuiCellOption::PercentageOption(0.2));
+		table->SetRowOption(3, GuiCellOption::PercentageOption(0.8));
+		table->SetColumnOption(0, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(1, GuiCellOption::AbsoluteOption(30));
+		table->SetColumnOption(2, GuiCellOption::PercentageOption(0.2));
+		table->SetColumnOption(3, GuiCellOption::PercentageOption(0.2));
+
+		for (vint r = 0; r < 4; r++)
+		{
+			for (vint c = 0; c < 4; c++)
+			{
+				auto cell = new GuiCellComposition;
+				cell->SetSite(r, c, 1, 1);
+				cell->SetPreferredMinSize(Size(25, 25));
+				table->AddChild(cell);
+			}
+		}
+
+		{
+			vint xs[4] = { 10,45,85,120 };
+			vint ys[4] = { 10,45,80,115 };
+			vint ws[4] = { 25,30,25,25 };
+			vint hs[4] = { 25,25,25,100 };
+			testUnmergedCells(table, { 155,225 }, xs, ys, ws, hs);
+		}
+
+		table->SetBorderVisible(false);
+		{
+			vint xs[4] = { 0,35,75,110 };
+			vint ys[4] = { 0,35,70,105 };
+			vint ws[4] = { 25,30,25,25 };
+			vint hs[4] = { 25,25,25,100 };
+			testUnmergedCells(table, { 135,205 }, xs, ys, ws, hs);
+		}
+
+		SafeDeleteComposition(table);
 	});
 
 	TEST_CASE(L"Test <Table> with merged cells and MinSize only")
