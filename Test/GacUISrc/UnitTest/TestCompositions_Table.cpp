@@ -539,23 +539,12 @@ TEST_FILE
 		table->SetColumnOption(1, GuiCellOption::PercentageOption(2));
 
 		auto cell1 = new GuiCellComposition; cell1->SetPreferredMinSize(Size(60, 70));
-		//auto cell2 = new GuiCellComposition; cell2->SetPreferredMinSize(Size(70, 80));
-
-		TEST_CASE(L"A1A1")
-		{
-			cell1->SetSite(0, 0, 1, 1);
-			table->AddChild(cell1);
-			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
-			TEST_ASSERT(table->GetSitedCell(0, 1) == nullptr);
-			TEST_ASSERT(table->GetSitedCell(1, 0) == nullptr);
-			TEST_ASSERT(table->GetSitedCell(1, 1) == nullptr);
-			TEST_ASSERT(table->GetBounds().GetSize() == Size(130, 240));
-			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 60,70 }));
-		});
+		auto cell2 = new GuiCellComposition; cell2->SetPreferredMinSize(Size(100, 100));
 
 		TEST_CASE(L"A1B2")
 		{
 			cell1->SetSite(0, 0, 2, 2);
+			table->AddChild(cell1);
 			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
 			TEST_ASSERT(table->GetSitedCell(0, 1) == cell1);
 			TEST_ASSERT(table->GetSitedCell(1, 0) == cell1);
@@ -564,32 +553,42 @@ TEST_FILE
 			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 60,70 }));
 		});
 
-		//TEST_CASE(L"A1A1, B1B2")
-		//{
-		//	cell1->SetSite(0, 0, 1, 1);
-		//	cell2->SetSite(0, 1, 2, 1);
-		//	table->AddChild(cell2);
-		//	TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
-		//	TEST_ASSERT(table->GetSitedCell(0, 1) == cell2);
-		//	TEST_ASSERT(table->GetSitedCell(1, 0) == nullptr);
-		//	TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
-		//	TEST_ASSERT(table->GetBounds().GetSize() == Size(37, 33));
-		//	TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 3,1 }));
-		//	TEST_ASSERT(cell2->GetBounds() == Rect({ 23,10 }, { 4,13 }));
-		//});
-		//
-		//TEST_CASE(L"A1A1, A2B2")
-		//{
-		//	cell2->SetSite(1, 0, 1, 2);
-		//	table->AddChild(cell2);
-		//	TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
-		//	TEST_ASSERT(table->GetSitedCell(0, 1) == nullptr);
-		//	TEST_ASSERT(table->GetSitedCell(1, 0) == cell2);
-		//	TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
-		//	TEST_ASSERT(table->GetBounds().GetSize() == Size(37, 33));
-		//	TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 3,1 }));
-		//	TEST_ASSERT(cell2->GetBounds() == Rect({ 10,21 }, { 17,2 }));
-		//});
+		TEST_CASE(L"A1A1")
+		{
+			cell1->SetSite(0, 0, 1, 1);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == nullptr);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(130, 240));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 60,70 }));
+		});
+
+		TEST_CASE(L"A1A1, B1B2")
+		{
+			cell2->SetSite(0, 1, 2, 1);
+			table->AddChild(cell2);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(280, 240));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 150,70 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 170,10 }, { 100,220 }));
+		});
+		
+		TEST_CASE(L"A1A1, A2B2")
+		{
+			cell2->SetSite(1, 0, 1, 2);
+			table->AddChild(cell2);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(130, 240));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 60,70 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 10,90 }, { 110,140 }));
+		});
 
 		SafeDeleteComposition(table);
 	});
