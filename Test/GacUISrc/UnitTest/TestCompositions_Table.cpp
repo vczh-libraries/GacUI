@@ -375,15 +375,14 @@ TEST_FILE
 		table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 		table->SetColumnOption(1, GuiCellOption::MinSizeOption());
 
-		auto cell1 = new GuiCellComposition;
-		auto cell2 = new GuiCellComposition;
-		auto cell3 = new GuiCellComposition;
-		auto cell4 = new GuiCellComposition;
+		auto cell1 = new GuiCellComposition; cell1->SetPreferredMinSize(Size(50, 60));
+		auto cell2 = new GuiCellComposition; cell2->SetPreferredMinSize(Size(70, 80));
+		auto cell3 = new GuiCellComposition; cell3->SetPreferredMinSize(Size(1, 2));
+		auto cell4 = new GuiCellComposition; cell4->SetPreferredMinSize(Size(3, 4));
 
 		TEST_CASE(L"A1B2")
 		{
 			cell1->SetSite(0, 0, 2, 2);
-			cell1->SetPreferredMinSize(Size(50, 60));
 			table->AddChild(cell1);
 			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
 			TEST_ASSERT(table->GetSitedCell(0, 1) == cell1);
@@ -393,12 +392,10 @@ TEST_FILE
 			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 10,10 }));
 		});
 
-
 		TEST_CASE(L"A1A1, B1B2")
 		{
 			cell1->SetSite(0, 0, 1, 1);
 			cell2->SetSite(0, 1, 2, 1);
-			cell2->SetPreferredMinSize(Size(70, 80));
 			table->AddChild(cell2);
 			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
 			TEST_ASSERT(table->GetSitedCell(0, 1) == cell2);
@@ -431,10 +428,8 @@ TEST_FILE
 
 			cell2->SetSite(0, 1, 2, 1);
 			cell3->SetSite(1, 2, 1, 1);
-			cell3->SetPreferredMinSize(Size(1, 2));
 			table->AddChild(cell3);
 			cell4->SetSite(2, 1, 1, 1);
-			cell4->SetPreferredMinSize(Size(3, 4));
 			table->AddChild(cell4);
 			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
 			TEST_ASSERT(table->GetSitedCell(0, 1) == cell2);
@@ -478,15 +473,67 @@ TEST_FILE
 		SafeDeleteComposition(table);
 	});
 
-	TEST_CASE(L"Test <Table> with merged cells and Absolute only")
+	TEST_CATEGORY(L"Test <Table> with merged cells and Absolute only")
+	{
+		auto table = new GuiTableComposition;
+		table->SetCellPadding(10);
+		table->SetRowsAndColumns(2, 2);
+		table->SetRowOption(0, GuiCellOption::AbsoluteOption(1));
+		table->SetRowOption(1, GuiCellOption::AbsoluteOption(2));
+		table->SetColumnOption(0, GuiCellOption::AbsoluteOption(3));
+		table->SetColumnOption(1, GuiCellOption::AbsoluteOption(4));
+
+		auto cell1 = new GuiCellComposition; cell1->SetPreferredMinSize(Size(50, 60));
+		auto cell2 = new GuiCellComposition; cell2->SetPreferredMinSize(Size(70, 80));
+
+		TEST_CASE(L"A1B2")
+		{
+			cell1->SetSite(0, 0, 2, 2);
+			cell1->SetPreferredMinSize(Size(50, 60));
+			table->AddChild(cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == cell1);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell1);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(37, 33));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 17,13 }));
+		});
+
+		TEST_CASE(L"A1A1, B1B2")
+		{
+			cell1->SetSite(0, 0, 1, 1);
+			cell2->SetSite(0, 1, 2, 1);
+			table->AddChild(cell2);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(37, 33));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 3,1 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 23,10 }, { 4,13 }));
+		});
+
+		TEST_CASE(L"A1A1, A2B2")
+		{
+			cell2->SetSite(1, 0, 1, 2);
+			table->AddChild(cell2);
+			TEST_ASSERT(table->GetSitedCell(0, 0) == cell1);
+			TEST_ASSERT(table->GetSitedCell(0, 1) == nullptr);
+			TEST_ASSERT(table->GetSitedCell(1, 0) == cell2);
+			TEST_ASSERT(table->GetSitedCell(1, 1) == cell2);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(37, 33));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 10,10 }, { 3,1 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 10,21 }, { 17,2 }));
+		});
+
+		SafeDeleteComposition(table);
+	});
+
+	TEST_CATEGORY(L"Test <Table> with merged cells and Percentage only")
 	{
 	});
 
-	TEST_CASE(L"Test <Table> with merged cells and Percentage only")
-	{
-	});
-
-	TEST_CASE(L"Test <Table> with merged cells and mixed GuiCellOption")
+	TEST_CATEGORY(L"Test <Table> with merged cells and mixed GuiCellOption")
 	{
 	});
 }
