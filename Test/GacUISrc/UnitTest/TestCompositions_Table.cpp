@@ -163,12 +163,18 @@ TEST_FILE
 
 	auto testUnmergedCells = []<vint ROWS, vint COLUMNS>(
 		GuiTableComposition* table,
+		Size tableSize,
 		vint(&xs)[COLUMNS],
 		vint(&ys)[ROWS],
 		vint(&ws)[COLUMNS],
 		vint(&hs)[ROWS]
 		)
 	{
+		TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, tableSize));
+		TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
+		TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
+		TEST_ASSERT(table->GetBounds() == table->GetClientArea());
+
 		TEST_ASSERT(table->GetSitedCell(0, 0)->GetBounds() == Rect({ xs[0],ys[0] }, { ws[0],hs[0] }));
 		TEST_ASSERT(table->GetSitedCell(0, 1)->GetBounds() == Rect({ xs[1],ys[0] }, { ws[1],hs[0] }));
 		TEST_ASSERT(table->GetSitedCell(0, 2)->GetBounds() == Rect({ xs[2],ys[0] }, { ws[2],hs[0] }));
@@ -205,31 +211,21 @@ TEST_FILE
 		}
 
 		{
-			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
-			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
-			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
-			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
-
 			vint xs[3] = { 10,36,63 };
 			vint ys[3] = { 10,38,67 };
 			vint ws[3] = { 16,17,18 };
 			vint hs[3] = { 18,19,20 };
-			testUnmergedCells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, { 91,97 }, xs, ys, ws, hs);
 		}
 
 		table->SetBorderVisible(false);
 		table->SetPreferredMinSize(Size(100, 200));
 		{
-			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
-			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
-			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
-			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
-
 			vint xs[3] = { 0,26,53 };
 			vint ys[3] = { 0,28,57 };
 			vint ws[3] = { 16,17,47 };
 			vint hs[3] = { 18,19,143 };
-			testUnmergedCells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, { 100,200 }, xs, ys, ws, hs);
 		}
 
 		SafeDeleteComposition(table);
@@ -260,31 +256,21 @@ TEST_FILE
 		}
 
 		{
-			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 91,97 }));
-			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
-			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
-			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
-
 			vint xs[3] = { 10,38,65 };
 			vint ys[3] = { 10,40,69 };
 			vint ws[3] = { 18,17,16 };
 			vint hs[3] = { 20,19,18 };
-			testUnmergedCells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, { 91,97 }, xs, ys, ws, hs);
 		}
 
 		table->SetBorderVisible(false);
 		table->SetPreferredMinSize(Size(100, 200));
 		{
-			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
-			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
-			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
-			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
-
 			vint xs[3] = { 0,28,55 };
 			vint ys[3] = { 0,30,59 };
 			vint ws[3] = { 18,17,45 };
 			vint hs[3] = { 20,19,141 };
-			testUnmergedCells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, { 100,200 }, xs, ys, ws, hs);
 		}
 
 		SafeDeleteComposition(table);
@@ -315,30 +301,20 @@ TEST_FILE
 		}
 
 		{
-			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
-			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
-			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
-			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
-
 			vint xs[3] = { 10,32,60 };
 			vint ys[3] = { 10,100,158 };
 			vint ws[3] = { 12,18,30 };
 			vint hs[3] = { 80,48,32 };
-			testUnmergedCells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, { 100,200 }, xs, ys, ws, hs);
 		}
 
 		table->SetBorderVisible(false);
 		{
-			TEST_ASSERT(table->GetClientArea() == Rect({ 0,0 }, { 100,200 }));
-			TEST_ASSERT(table->GetMinPreferredClientSize() == table->GetClientArea().GetSize());
-			TEST_ASSERT(table->GetPreferredBounds() == table->GetClientArea());
-			TEST_ASSERT(table->GetBounds() == table->GetClientArea());
-
 			vint xs[3] = { 0,26,60 };
 			vint ys[3] = { 0,100,164 };
 			vint ws[3] = { 16,24,40 };
 			vint hs[3] = { 90,54,36 };
-			testUnmergedCells(table, xs, ys, ws, hs);
+			testUnmergedCells(table, { 100,200 }, xs, ys, ws, hs);
 		}
 
 		SafeDeleteComposition(table);
