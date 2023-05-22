@@ -75,6 +75,7 @@
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
 - Theme
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
+  - Add minimum size control to `<PartialView>`.
 - GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.

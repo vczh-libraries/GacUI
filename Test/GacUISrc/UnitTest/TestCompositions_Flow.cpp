@@ -302,4 +302,8 @@ TEST_FILE
 	TEST_CASE(L"Test <Flow> with different <FlowItem> option")
 	{
 	});
+
+	TEST_CASE(L"Test <RepeatFlow>")
+	{
+	});
 }

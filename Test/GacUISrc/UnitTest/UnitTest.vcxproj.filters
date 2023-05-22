@@ -48,6 +48,15 @@
     <ClCompile Include="TestCompositions_Table.cpp">
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
+    <ClCompile Include="TestCompositions_Responsive.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCompositions_SharedSize.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
+    <ClCompile Include="TestCompositions_Specialized.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">

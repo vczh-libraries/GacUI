@@ -182,6 +182,9 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TestCompositions_Bounds.cpp" />
     <ClCompile Include="TestCompositions_Flow.cpp" />
+    <ClCompile Include="TestCompositions_Responsive.cpp" />
+    <ClCompile Include="TestCompositions_SharedSize.cpp" />
+    <ClCompile Include="TestCompositions_Specialized.cpp" />
     <ClCompile Include="TestCompositions_Stack.cpp" />
     <ClCompile Include="TestCompositions_Table.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />

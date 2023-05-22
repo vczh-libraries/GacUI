@@ -132,4 +132,8 @@ TEST_FILE
 	TEST_CASE(L"Test <Stack> with clipped <StackItem>")
 	{
 	});
+
+	TEST_CASE(L"Test <RepeatStack>")
+	{
+	});
 }
