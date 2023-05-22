@@ -595,5 +595,43 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test <Table> with merged cells and mixed GuiCellOption")
 	{
+		auto table = new GuiTableComposition;
+		table->SetBorderVisible(false);
+		table->SetCellPadding(10);
+		table->SetRowsAndColumns(5, 5);
+		table->SetRowOption(0, GuiCellOption::PercentageOption(1));
+		table->SetRowOption(1, GuiCellOption::PercentageOption(2));
+		table->SetRowOption(2, GuiCellOption::MinSizeOption());
+		table->SetRowOption(3, GuiCellOption::AbsoluteOption(20));
+		table->SetRowOption(4, GuiCellOption::PercentageOption(3));
+		table->SetColumnOption(0, GuiCellOption::PercentageOption(1));
+		table->SetColumnOption(1, GuiCellOption::PercentageOption(2));
+		table->SetColumnOption(2, GuiCellOption::MinSizeOption());
+		table->SetColumnOption(3, GuiCellOption::AbsoluteOption(20));
+		table->SetColumnOption(4, GuiCellOption::PercentageOption(3));
+
+		auto cell1 = new GuiCellComposition; cell1->SetPreferredMinSize(Size(150, 150));
+		auto cell2 = new GuiCellComposition; cell2->SetPreferredMinSize(Size(50, 50));
+		cell2->SetSite(2, 2, 1, 1);
+		table->AddChild(cell2);
+
+		TEST_CASE(L"A2E2: P1[P2;M;A20;P3]")
+		{
+			cell1->SetSite(0, 1, 1, 4);
+			table->AddChild(cell1);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(170, 1010));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 20,0 }, { 150,150 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 50,470 }, { 50,50 }));
+		});
+
+		TEST_CASE(L"A2A5: P1[P2;M;A20;P3]")
+		{
+			cell1->SetSite(1, 0, 4, 1);
+			TEST_ASSERT(table->GetBounds().GetSize() == Size(1010, 170));
+			TEST_ASSERT(cell1->GetBounds() == Rect({ 0,20 }, { 150,150 }));
+			TEST_ASSERT(cell2->GetBounds() == Rect({ 470,50 }, { 50,50 }));
+		});
+
+		SafeDeleteComposition(table);
 	});
 }
