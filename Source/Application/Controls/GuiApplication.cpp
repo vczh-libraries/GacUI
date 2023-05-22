@@ -386,7 +386,8 @@ GuiApplication
 Helpers
 ***********************************************************************/
 
-			GuiApplication* application=0;
+			GuiApplication* application = nullptr;
+			bool GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES = false;
 
 			GuiApplication* GetApplication()
 			{
@@ -460,7 +461,10 @@ GuiApplicationMain
 
 				DestroyPluginManager();
 				theme::FinalizeTheme();
-				ThreadLocalStorage::DisposeStorages();
+				if (!GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES)
+				{
+					ThreadLocalStorage::DisposeStorages();
+				}
 				FinalizeGlobalStorage();
 #ifndef VCZH_DEBUG_NO_REFLECTION
 				ResetGlobalTypeManager();

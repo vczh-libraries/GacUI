@@ -140,10 +140,18 @@ void GuiMain()
 	GuiMainProxy();
 }
 
+namespace vl::presentation::controls
+{
+	extern bool GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES;
+}
+using namespace vl::presentation::controls;
+
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 {
+	GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES = true;
 	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
+	ThreadLocalStorage::DisposeStorages();
 #if defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
@@ -152,8 +160,9 @@ int wmain(int argc, wchar_t* argv[])
 #elif defined VCZH_GCC
 int main(int argc, char* argv[])
 {
-	UT_argc = argc;
-	UT_argv = argv;
-	return unittest::UnitTest::RunAndDisposeTests(argc, argv);
+	GACUI_UNITTEST_ONLY_SKIP_THREAD_LOCAL_STORAGE_DISPOSE_STORAGES = true;
+	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
+	ThreadLocalStorage::DisposeStorages();
+	return result;
 }
 #endif
