@@ -108,14 +108,6 @@ namespace hosted_window_manager_tests
 	}
 }
 
-int UT_result = 0;
-int UT_argc = 0;
-#if defined VCZH_MSVC
-wchar_t** UT_argv = nullptr;
-#elif defined VCZH_GCC
-char** UT_argv = nullptr;
-#endif
-
 #if defined VCZH_MSVC
 TEST_FILE
 {
@@ -136,28 +128,32 @@ TEST_FILE
 }
 #endif
 
+void (*GuiMainProxy)();
+
+void SetGuiMainProxy(void(*proxy)())
+{
+	GuiMainProxy = proxy;
+}
+
 void GuiMain()
 {
-	UT_result = unittest::UnitTest::RunAndDisposeTests(UT_argc, UT_argv);
+	GuiMainProxy();
 }
 
 #if defined VCZH_MSVC
 int wmain(int argc, wchar_t* argv[])
 {
-	UT_argc = argc;
-	UT_argv = argv;
-	SetupGacGenNativeController();
+	int result = unittest::UnitTest::RunAndDisposeTests(argc, argv);
 #if defined VCZH_CHECK_MEMORY_LEAKS
 	_CrtDumpMemoryLeaks();
 #endif
-	return UT_result;
+	return result;
 }
 #elif defined VCZH_GCC
 int main(int argc, char* argv[])
 {
 	UT_argc = argc;
 	UT_argv = argv;
-	SetupGacGenNativeController();
-	return UT_result;
+	return unittest::UnitTest::RunAndDisposeTests(argc, argv);
 }
 #endif
