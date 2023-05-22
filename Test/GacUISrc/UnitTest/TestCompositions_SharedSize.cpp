@@ -10,6 +10,10 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test <SharedSizeItem> with common <Bounds> operations")
 	{
-		TestBoundsWithTrivialChildren<GuiSharedSizeItemComposition>();
+		TestBoundsWithTrivialChildren<GuiSharedSizeItemComposition>(
+			[](GuiSharedSizeItemComposition* sharedSizeItem)
+			{
+				sharedSizeItem->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+			});
 	});
 }
