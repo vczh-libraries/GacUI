@@ -308,5 +308,84 @@ TEST_FILE
 
 	TEST_CASE(L"Test <RepeatFlow>")
 	{
+		ObservableList<WString> objects;
+
+		auto flow = new GuiRepeatFlowComposition;
+		flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		flow->SetRowPadding(20);
+		flow->SetColumnPadding(10);
+		flow->SetPreferredMinSize(Size(110, 0));
+		flow->SetItemTemplate([](const Value& obj)
+		{
+			auto itemTemplate = new GuiTemplate;
+			itemTemplate->SetText(UnboxValue<WString>(obj));
+			itemTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			itemTemplate->SetPreferredMinSize(Size(50, 50));
+			return itemTemplate;
+		});
+		flow->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(objects)));
+
+		vint contextValue = -1;
+		auto checkFlowItems = [&]()
+		{
+			vint rows = (objects.Count() + 1) / 2;
+			TEST_ASSERT(flow->GetClientArea() == Rect({ 0,0 }, {
+				110,
+				(rows == 0 ? 0 : rows == 1 ? 50 : 70 * rows - 20)
+				}));
+			TEST_ASSERT(flow->GetMinPreferredClientSize() == flow->GetClientArea().GetSize());
+			TEST_ASSERT(flow->GetPreferredBounds() == flow->GetClientArea());
+			TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
+
+			TEST_ASSERT(flow->GetFlowItems().Count() == objects.Count());
+			for (auto [text, i] : indexed(objects))
+			{
+				vint row = i / 2;
+				vint column = i % 2;
+
+				auto flowItem = flow->GetFlowItems()[i];
+				TEST_ASSERT(flowItem->GetBounds() == Rect({ 60 * column,70 * row }, { 50,50 }));
+				TEST_ASSERT(flowItem->Children().Count() == 1);
+				auto itemTemplate = dynamic_cast<GuiTemplate*>(flowItem->Children()[0]);
+				TEST_ASSERT(itemTemplate->GetText() == text);
+				TEST_ASSERT(itemTemplate->GetBounds() == Rect({ 0,0 }, { 50,50 }));
+
+				if (contextValue == -1)
+				{
+					TEST_ASSERT(itemTemplate->GetContext().IsNull());
+				}
+				else
+				{
+					TEST_ASSERT(UnboxValue<vint>(itemTemplate->GetContext()) == contextValue);
+				}
+			}
+
+			contextValue++;
+			flow->SetContext(BoxValue(contextValue));
+			TEST_ASSERT(UnboxValue<vint>(flow->GetContext()) == contextValue);
+		};
+
+		checkFlowItems();
+		objects.Add(L"A");
+		checkFlowItems();
+		objects.Insert(0, L"B");
+		checkFlowItems();
+		objects.Insert(1, L"C");
+		checkFlowItems();
+		objects.RemoveAt(1);
+		checkFlowItems();
+		objects.RemoveRange(0, 2);
+		checkFlowItems();
+
+		objects.Add(L"A");
+		objects.Add(L"B");
+		objects.Add(L"C");
+		checkFlowItems();
+		objects.Clear();
+		checkFlowItems();
+
+		TEST_ASSERT(flow->Children().Count() == 0);
+
+		SafeDeleteComposition(flow);
 	});
 }
