@@ -26,10 +26,12 @@
 
 ## Progressing
 
-- Unit Test
-  - Test against more code as many as possible in UnitTest project
-    - If a test case can be written without the hosted CLI renderer, than write it directly.
-    - If a unit test only hosted CLI renderer cannot be just running in that project, open a new unit test project.
+- UnitTest.vcxproj
+  - Test compositions
+  - Test controls with a unit test only platform provider running in hosted mode
+    - Each character takes exactly `FontSize x FontSize`
+    - Deal with `\r` and `\n` when multiline is enabled
+  - Test against more code as many as possible
 - Refactor compositions (after unit test for `<Bounds>` are finished)
   - TODO in `TestCompositions_Bounds.cpp`.
     - `AlignmentToParent` should not consider parent's `InternalMargin`.
@@ -41,6 +43,7 @@
   - `CalculateBounds(parentClientBounds, callUpdateBounds)`.
   - `GetBounds` -> `GetUpdatedBounds`.
   - `ForceCalculateSizeImmediately` calls all these functions.
+    - Call it in `GuiGraphicsHost::Render` before `auto bounds = windowComposition->GetBounds();`.
   - `GuiTableComposition` remove `UpdateCellBounds`.
   - Fix document.
 - Refactor compositions (after unit test for compositions are finished)
