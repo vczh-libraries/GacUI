@@ -159,9 +159,45 @@ TEST_FILE
 			{
 				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60,0 }, { 50,70 }));
 			}
+
+			stack->EnsureVisible(5);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60 - 180,0 }, { 50,70 }));
+			}
+
+			stack->EnsureVisible(9);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60 - 420,0 }, { 50,70 }));
+			}
+
+			stack->EnsureVisible(0);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60,0 }, { 50,70 }));
+			}
 		}
 		{
 			stack->SetDirection(GuiStackComposition::ReversedHorizontal);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 120 - i * 60,0 }, { 50,70 }));
+			}
+
+			stack->EnsureVisible(5);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 600 - i * 60,0 }, { 50,70 }));
+			}
+
+			stack->EnsureVisible(9);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 540 - i * 60,0 }, { 50,70 }));
+			}
+
+			stack->EnsureVisible(0);
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
 				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 120 - i * 60,0 }, { 50,70 }));
@@ -179,9 +215,45 @@ TEST_FILE
 			{
 				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 }, { 70,50 }));
 			}
+
+			stack->EnsureVisible(5);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 - 180 }, { 70,50 }));
+			}
+
+			stack->EnsureVisible(9);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 - 420 }, { 70,50 }));
+			}
+
+			stack->EnsureVisible(0);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 }, { 70,50 }));
+			}
 		}
 		{
 			stack->SetDirection(GuiStackComposition::ReversedVertical);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,120 - i * 60 }, { 70,50 }));
+			}
+
+			stack->EnsureVisible(5);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,600 - i * 60 }, { 70,50 }));
+			}
+
+			stack->EnsureVisible(9);
+			for (vint i = 0; i < ITEM_COUNT; i++)
+			{
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,540 - i * 60 }, { 70,50 }));
+			}
+
+			stack->EnsureVisible(0);
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
 				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,120 - i * 60 }, { 70,50 }));
