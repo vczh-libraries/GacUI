@@ -27,6 +27,7 @@ namespace vl
 			protected:
 				ItemStyleProperty									itemTemplate;
 				Ptr<IValueList>										itemSource;
+				description::Value									itemContext;
 				Ptr<EventHandler>									itemChangedHandler;
 
 				virtual vint										GetRepeatCompositionCount() = 0;
@@ -47,6 +48,8 @@ namespace vl
 				GuiItemNotifyEvent									ItemInserted;
 				/// <summary>An event called before a new item is removed.</summary>
 				GuiItemNotifyEvent									ItemRemoved;
+				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
+				GuiNotifyEvent										ContextChanged;
 
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
@@ -61,6 +64,13 @@ namespace vl
 				/// <summary>Set the item source.</summary>
 				/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<IValueEnumerable> value);
+
+				/// <summary>Get the context of this composition. The all item templates (if it has) will see this context property.</summary>
+				/// <returns>The context of this composition.</returns>
+				description::Value									GetContext();
+				/// <summary>Set the context of this composition.</summary>
+				/// <param name="value">The context of this composition.</param>
+				void												SetContext(const description::Value& value);
 			};
 
 			/// <summary>Bindable stack composition.</summary>
@@ -71,7 +81,10 @@ namespace vl
 				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+
 			public:
+				GuiRepeatStackComposition();
+				~GuiRepeatStackComposition();
 			};
 
 			/// <summary>Bindable flow composition.</summary>
@@ -82,7 +95,10 @@ namespace vl
 				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+
 			public:
+				GuiRepeatFlowComposition();
+				~GuiRepeatFlowComposition();
 			};
 		}
 	}

@@ -182,6 +182,7 @@ Type List (Compositions)
 			F(presentation::compositions::IGuiAltActionContainer)\
 			F(presentation::compositions::IGuiAltActionHost)\
 			F(presentation::compositions::IGuiTabAction)\
+			F(presentation::compositions::GuiRepeatCompositionBase)\
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
 			F(presentation::compositions::GuiGraphicsComposition)\
@@ -200,7 +201,6 @@ Type List (Compositions)
 			F(presentation::compositions::GuiPartialViewComposition)\
 			F(presentation::compositions::GuiSharedSizeItemComposition)\
 			F(presentation::compositions::GuiSharedSizeRootComposition)\
-			F(presentation::compositions::GuiRepeatCompositionBase)\
 			F(presentation::compositions::GuiRepeatStackComposition)\
 			F(presentation::compositions::GuiRepeatFlowComposition)\
 			F(presentation::compositions::GuiResponsiveCompositionBase)\

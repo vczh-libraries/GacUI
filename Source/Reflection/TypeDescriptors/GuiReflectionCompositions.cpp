@@ -403,11 +403,11 @@ Type Declaration (Class)
 			END_CLASS_MEMBER(GuiSharedSizeRootComposition)
 
 			BEGIN_CLASS_MEMBER(GuiRepeatCompositionBase)
-				CLASS_MEMBER_BASE(GuiBoundsComposition)
 				CLASS_MEMBER_GUIEVENT(ItemInserted)
 				CLASS_MEMBER_GUIEVENT(ItemRemoved)
 				CLASS_MEMBER_PROPERTY_FAST(ItemTemplate)
 				CLASS_MEMBER_PROPERTY_FAST(ItemSource)
+				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(Context)
 			END_CLASS_MEMBER(GuiRepeatCompositionBase)
 
 			BEGIN_CLASS_MEMBER(GuiRepeatStackComposition)

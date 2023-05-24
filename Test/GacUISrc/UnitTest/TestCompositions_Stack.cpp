@@ -283,6 +283,7 @@ TEST_FILE
 		});
 		stack->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(objects)));
 
+		vint contextValue = -1;
 		auto checkStackItems = [&]()
 		{
 			TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, {
@@ -302,7 +303,20 @@ TEST_FILE
 				auto itemTemplate = dynamic_cast<GuiTemplate*>(stackItem->Children()[0]);
 				TEST_ASSERT(itemTemplate->GetText() == text);
 				TEST_ASSERT(itemTemplate->GetBounds() == Rect({ 0,0 }, { 50,50 }));
+
+				if (contextValue == -1)
+				{
+					TEST_ASSERT(itemTemplate->GetContext().IsNull());
+				}
+				else
+				{
+					TEST_ASSERT(UnboxValue<vint>(itemTemplate->GetContext()) == contextValue);
+				}
 			}
+
+			contextValue++;
+			stack->SetContext(BoxValue(contextValue));
+			TEST_ASSERT(UnboxValue<vint>(stack->GetContext()) == contextValue);
 		};
 
 		checkStackItems();

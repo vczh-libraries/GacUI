@@ -8,6 +8,8 @@
     - `IsParentSizeAffected` -> `IsTrivialComposition`, returns false only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
   - `FlowAlignment::Right`.
+  - `GuiRepeatCompositionBase`
+    - Add `Context` property.
 
 ## Known Issues
 
@@ -93,6 +95,7 @@
 - Add `static` keyword (method and init) in workflow document.
 - Add `static{}` in workflow document.
 - Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
+- Add `GuiRepeatCompositionBase::Context` property.
 
 ## OS Provider Features
 
