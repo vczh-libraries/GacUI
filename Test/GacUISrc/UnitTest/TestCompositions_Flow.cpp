@@ -1,4 +1,7 @@
 #include "TestCompositions.h"
+
+using namespace vl::collections;
+using namespace vl::presentation::templates;
 using namespace composition_bounds_tests;
 
 TEST_FILE

@@ -1,4 +1,7 @@
 #include "TestCompositions.h"
+
+using namespace vl::collections;
+using namespace vl::presentation::templates;
 using namespace composition_bounds_tests;
 
 TEST_FILE
@@ -188,7 +191,7 @@ TEST_FILE
 			stack->EnsureVisible(5);
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 600 - i * 60,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 300 - i * 60,0 }, { 50,70 }));
 			}
 
 			stack->EnsureVisible(9);
@@ -244,7 +247,7 @@ TEST_FILE
 			stack->EnsureVisible(5);
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,600 - i * 60 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,300 - i * 60 }, { 70,50 }));
 			}
 
 			stack->EnsureVisible(9);
@@ -265,5 +268,64 @@ TEST_FILE
 
 	TEST_CASE(L"Test <RepeatStack>")
 	{
+		ObservableList<WString> objects;
+
+		auto stack = new GuiRepeatStackComposition;
+		stack->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		stack->SetPadding(10);
+		stack->SetItemTemplate([](const Value& obj)
+		{
+			auto itemTemplate = new GuiTemplate;
+			itemTemplate->SetText(UnboxValue<WString>(obj));
+			itemTemplate->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			itemTemplate->SetPreferredMinSize(Size(50, 50));
+			return itemTemplate;
+		});
+		stack->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(objects)));
+
+		auto checkStackItems = [&]()
+		{
+			TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, {
+				(objects.Count() == 0 ? 0 : 60 * objects.Count() - 10),
+				(objects.Count() == 0 ? 0 : 50)
+				}));
+			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
+			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
+			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+
+			TEST_ASSERT(stack->GetStackItems().Count() == objects.Count());
+			for (auto [text, i] : indexed(objects))
+			{
+				auto stackItem = stack->GetStackItems()[i];
+				TEST_ASSERT(stackItem->GetBounds() == Rect({ 60 * i,0 }, { 50,50 }));
+				TEST_ASSERT(stackItem->Children().Count() == 1);
+				auto itemTemplate = dynamic_cast<GuiTemplate*>(stackItem->Children()[0]);
+				TEST_ASSERT(itemTemplate->GetText() == text);
+				TEST_ASSERT(itemTemplate->GetBounds() == Rect({ 0,0 }, { 50,50 }));
+			}
+		};
+
+		checkStackItems();
+		objects.Add(L"A");
+		checkStackItems();
+		objects.Insert(0, L"B");
+		checkStackItems();
+		objects.Insert(1, L"C");
+		checkStackItems();
+		objects.RemoveAt(1);
+		checkStackItems();
+		objects.RemoveRange(0, 2);
+		checkStackItems();
+
+		objects.Add(L"A");
+		objects.Add(L"B");
+		objects.Add(L"C");
+		checkStackItems();
+		objects.Clear();
+		checkStackItems();
+
+		TEST_ASSERT(stack->Children().Count() == 0);
+
+		SafeDeleteComposition(stack);
 	});
 }
