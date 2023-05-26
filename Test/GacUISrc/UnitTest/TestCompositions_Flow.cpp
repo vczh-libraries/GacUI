@@ -578,6 +578,86 @@ TEST_FILE
 		TEST_CASE(L"Extend")
 		{
 			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Extend);
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ c * 55,r * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - c * 55,r * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ c * 55,110 - r * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - c * 55,110 - r * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ r * 50,c * 55 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - r * 50,c * 55 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ r * 50,110 - c * 55 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - r * 50,110 - c * 55 }, { 50,50 }));
+				}
+			}
 		});
 
 		SafeDeleteComposition(flow);
