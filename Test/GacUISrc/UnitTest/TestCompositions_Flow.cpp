@@ -302,8 +302,213 @@ TEST_FILE
 	{
 	});
 
-	TEST_CASE(L"Test <Flow> with different <FlowItem> option")
+	TEST_CATEGORY(L"Test <Flow> with different <FlowItem> option")
 	{
+		TEST_CASE(L"Horizontal directions")
+		{
+			auto flow = new GuiFlowComposition;
+
+			flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			flow->SetPreferredMinSize(Size(160, 0));
+			flow->ForceCalculateSizeImmediately();
+
+			const vint ITEM_ROWS = 2;
+			const vint ITEM_COLUMNS = 4;
+
+			GuiFlowItemComposition* flowItems[ITEM_ROWS * ITEM_COLUMNS];
+			for (vint i = 0; i < ITEM_ROWS * ITEM_COLUMNS; i++)
+			{
+				flowItems[i] = new GuiFlowItemComposition;
+				vint row = i / ITEM_COLUMNS;
+				vint column = i % ITEM_COLUMNS;
+				flowItems[i]->SetPreferredMinSize(Size(40, column == 0 ? 40 : 20));
+				flow->AddChild(flowItems[i]);
+
+				switch (column)
+				{
+				case 1:
+					flowItems[i]->SetFlowOption({ .baseline = GuiFlowOption::FromBottom,.distance = -5 });
+					break;
+				case 2:
+					flowItems[i]->SetFlowOption({ .baseline = GuiFlowOption::FromTop,.distance = 35 });
+					break;
+				case 3:
+					flowItems[i]->SetFlowOption({ .baseline = GuiFlowOption::Percentage,.percentage = 1.6 });
+					break;
+				}
+			}
+			{
+				AxisDirection directions[] = {
+					AxisDirection::RightDown,
+					AxisDirection::LeftDown,
+				};
+				for (auto direction : directions)
+				{
+					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					for (vint i = 0; i < ITEM_ROWS; i++)
+					{
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							TEST_ASSERT(bounds.Width() == 40);
+							TEST_ASSERT(bounds.y1 == baseline.y1 + 15);
+							TEST_ASSERT(bounds.y2 == baseline.y2 - 5);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							TEST_ASSERT(bounds.Width() == 40);
+							TEST_ASSERT(bounds.y1 == baseline.y1 + 5);
+							TEST_ASSERT(bounds.y2 == baseline.y2 - 15);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							TEST_ASSERT(bounds.Width() == 40);
+							TEST_ASSERT(bounds.y1 == baseline.y1 + 8);
+							TEST_ASSERT(bounds.y2 == baseline.y2 - 12);
+						}
+					}
+				}
+			}
+			{
+				AxisDirection directions[] = {
+					AxisDirection::RightUp,
+					AxisDirection::LeftUp,
+				};
+				for (auto direction : directions)
+				{
+					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					for (vint i = 0; i < ITEM_ROWS; i++)
+					{
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							TEST_ASSERT(bounds.Width() == 40);
+							TEST_ASSERT(bounds.y1 == baseline.y1 + 5);
+							TEST_ASSERT(bounds.y2 == baseline.y2 - 15);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							TEST_ASSERT(bounds.Width() == 40);
+							TEST_ASSERT(bounds.y1 == baseline.y1 + 15);
+							TEST_ASSERT(bounds.y2 == baseline.y2 - 5);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							TEST_ASSERT(bounds.Width() == 40);
+							TEST_ASSERT(bounds.y1 == baseline.y1 + 12);
+							TEST_ASSERT(bounds.y2 == baseline.y2 - 8);
+						}
+					}
+				}
+			}
+
+			SafeDeleteComposition(flow);
+		});
+
+		TEST_CASE(L"Vertical directions")
+		{
+			auto flow = new GuiFlowComposition;
+
+			flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+			flow->SetPreferredMinSize(Size(0, 160));
+			flow->ForceCalculateSizeImmediately();
+
+			const vint ITEM_ROWS = 2;
+			const vint ITEM_COLUMNS = 4;
+
+			GuiFlowItemComposition* flowItems[ITEM_ROWS * ITEM_COLUMNS];
+			for (vint i = 0; i < ITEM_ROWS * ITEM_COLUMNS; i++)
+			{
+				flowItems[i] = new GuiFlowItemComposition;
+				vint row = i / ITEM_COLUMNS;
+				vint column = i % ITEM_COLUMNS;
+				flowItems[i]->SetPreferredMinSize(Size(column == 0 ? 40 : 20, 40));
+				flow->AddChild(flowItems[i]);
+
+				switch (column)
+				{
+				case 1:
+					flowItems[i]->SetFlowOption({ .baseline = GuiFlowOption::FromBottom,.distance = -5 });
+					break;
+				case 2:
+					flowItems[i]->SetFlowOption({ .baseline = GuiFlowOption::FromTop,.distance = 35 });
+					break;
+				case 3:
+					flowItems[i]->SetFlowOption({ .baseline = GuiFlowOption::Percentage,.percentage = 1.6 });
+					break;
+				}
+			}
+			{
+				AxisDirection directions[] = {
+					AxisDirection::DownRight,
+					AxisDirection::UpRight,
+				};
+				for (auto direction : directions)
+				{
+					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					for (vint i = 0; i < ITEM_ROWS; i++)
+					{
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							TEST_ASSERT(bounds.Height() == 40);
+							TEST_ASSERT(bounds.x1 == baseline.x1 + 15);
+							TEST_ASSERT(bounds.x2 == baseline.x2 - 5);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							TEST_ASSERT(bounds.Height() == 40);
+							TEST_ASSERT(bounds.x1 == baseline.x1 + 5);
+							TEST_ASSERT(bounds.x2 == baseline.x2 - 15);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							TEST_ASSERT(bounds.Height() == 40);
+							TEST_ASSERT(bounds.x1 == baseline.x1 + 8);
+							TEST_ASSERT(bounds.x2 == baseline.x2 - 12);
+						}
+					}
+				}
+			}
+			{
+				AxisDirection directions[] = {
+					AxisDirection::DownLeft,
+					AxisDirection::UpLeft,
+				};
+				for (auto direction : directions)
+				{
+					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					for (vint i = 0; i < ITEM_ROWS; i++)
+					{
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							TEST_ASSERT(bounds.Height() == 40);
+							TEST_ASSERT(bounds.x1 == baseline.x1 + 5);
+							TEST_ASSERT(bounds.x2 == baseline.x2 - 15);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							TEST_ASSERT(bounds.Height() == 40);
+							TEST_ASSERT(bounds.x1 == baseline.x1 + 15);
+							TEST_ASSERT(bounds.x2 == baseline.x2 - 5);
+						}
+						{
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							TEST_ASSERT(bounds.Height() == 40);
+							TEST_ASSERT(bounds.x1 == baseline.x1 + 12);
+							TEST_ASSERT(bounds.x2 == baseline.x2 - 8);
+						}
+					}
+				}
+			}
+
+			SafeDeleteComposition(flow);
+		});
 	});
 
 	TEST_CASE(L"Test <RepeatFlow>")

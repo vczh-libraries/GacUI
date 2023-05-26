@@ -120,14 +120,17 @@ Flow Compositions
 			/// </summary>
 			struct GuiFlowOption
 			{
-				/// <summary>Base line calculation algorithm</summary>
+				/// <summary>
+				/// Specify the the relationship between this item and the baseline of the row that this item currently belongs to.
+				/// The height of a row is the maximum value of minimum heights of all items in it.
+				/// </summary>
 				enum BaselineType
 				{
-					/// <summary>By percentage of the height from the top.</summary>
+					/// <summary>Top of this item is "percentage" times of the item height above the baseline.</summary>
 					Percentage,
-					/// <summary>By a distance from the top.</summary>
+					/// <summary>Top of this item is "distance" above the baseline.</summary>
 					FromTop,
-					/// <summary>By a distance from the bottom.</summary>
+					/// <summary>Bottom of this item is "distance" below the baseline.</summary>
 					FromBottom,
 				};
 				
