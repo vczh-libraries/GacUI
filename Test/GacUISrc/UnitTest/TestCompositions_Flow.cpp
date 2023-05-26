@@ -365,24 +365,34 @@ TEST_FILE
 			TEST_ASSERT(UnboxValue<vint>(flow->GetContext()) == contextValue);
 		};
 
-		checkFlowItems();
-		objects.Add(L"A");
-		checkFlowItems();
-		objects.Insert(0, L"B");
-		checkFlowItems();
-		objects.Insert(1, L"C");
-		checkFlowItems();
-		objects.RemoveAt(1);
-		checkFlowItems();
-		objects.RemoveRange(0, 2);
-		checkFlowItems();
+		vint eventInsertCount = 0;
+		vint eventRemoveCount = 0;
+		vint eventContextCount = 0;
+		vint eventIndex = -1;
 
-		objects.Add(L"A");
-		objects.Add(L"B");
-		objects.Add(L"C");
-		checkFlowItems();
-		objects.Clear();
-		checkFlowItems();
+		flow->ItemInserted.AttachLambda([&](auto self, GuiItemEventArgs& arguments) { eventInsertCount++; eventIndex = arguments.itemIndex; });
+		flow->ItemRemoved.AttachLambda([&](auto self, GuiItemEventArgs& arguments) { eventRemoveCount++; eventIndex = arguments.itemIndex; });
+		flow->ContextChanged.AttachLambda([&](auto self, auto& arguments) { eventContextCount++; eventIndex = -1; });
+#define ASSERT_EVENT(IC, RC, CC, I) TEST_ASSERT(eventInsertCount == IC && eventRemoveCount == RC && eventContextCount == CC && eventIndex == I);
+
+		checkFlowItems();				ASSERT_EVENT(0, 0, 1, -1);
+		objects.Add(L"A");				ASSERT_EVENT(1, 0, 1, 0);
+		checkFlowItems();				ASSERT_EVENT(1, 0, 2, -1);
+		objects.Insert(0, L"B");		ASSERT_EVENT(2, 0, 2, 0);
+		checkFlowItems();				ASSERT_EVENT(2, 0, 3, -1);
+		objects.Insert(1, L"C");		ASSERT_EVENT(3, 0, 3, 1);
+		checkFlowItems();				ASSERT_EVENT(3, 0, 4, -1);
+		objects.RemoveAt(1);			ASSERT_EVENT(3, 1, 4, 1);
+		checkFlowItems();				ASSERT_EVENT(3, 1, 5, -1);
+		objects.RemoveRange(0, 2);		ASSERT_EVENT(3, 3, 5, 0);
+		checkFlowItems();				ASSERT_EVENT(3, 3, 6, -1);
+
+		objects.Add(L"A");				ASSERT_EVENT(4, 3, 6, 0);
+		objects.Add(L"B");				ASSERT_EVENT(5, 3, 6, 1);
+		objects.Add(L"C");				ASSERT_EVENT(6, 3, 6, 2);
+		checkFlowItems();				ASSERT_EVENT(6, 3, 7, -1);
+		objects.Clear();				ASSERT_EVENT(6, 6, 7, 0);
+		checkFlowItems();				ASSERT_EVENT(6, 6, 8, -1);
 
 		TEST_ASSERT(flow->Children().Count() == 0);
 

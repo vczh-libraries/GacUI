@@ -319,24 +319,34 @@ TEST_FILE
 			TEST_ASSERT(UnboxValue<vint>(stack->GetContext()) == contextValue);
 		};
 
-		checkStackItems();
-		objects.Add(L"A");
-		checkStackItems();
-		objects.Insert(0, L"B");
-		checkStackItems();
-		objects.Insert(1, L"C");
-		checkStackItems();
-		objects.RemoveAt(1);
-		checkStackItems();
-		objects.RemoveRange(0, 2);
-		checkStackItems();
+		vint eventInsertCount = 0;
+		vint eventRemoveCount = 0;
+		vint eventContextCount = 0;
+		vint eventIndex = -1;
 
-		objects.Add(L"A");
-		objects.Add(L"B");
-		objects.Add(L"C");
-		checkStackItems();
-		objects.Clear();
-		checkStackItems();
+		stack->ItemInserted.AttachLambda([&](auto self, GuiItemEventArgs& arguments) { eventInsertCount++; eventIndex = arguments.itemIndex; });
+		stack->ItemRemoved.AttachLambda([&](auto self, GuiItemEventArgs& arguments) { eventRemoveCount++; eventIndex = arguments.itemIndex; });
+		stack->ContextChanged.AttachLambda([&](auto self, auto& arguments) { eventContextCount++; eventIndex = -1; });
+#define ASSERT_EVENT(IC, RC, CC, I) TEST_ASSERT(eventInsertCount == IC && eventRemoveCount == RC && eventContextCount == CC && eventIndex == I);
+
+		checkStackItems();				ASSERT_EVENT(0, 0, 1, -1);
+		objects.Add(L"A");				ASSERT_EVENT(1, 0, 1, 0);
+		checkStackItems();				ASSERT_EVENT(1, 0, 2, -1);
+		objects.Insert(0, L"B");		ASSERT_EVENT(2, 0, 2, 0);
+		checkStackItems();				ASSERT_EVENT(2, 0, 3, -1);
+		objects.Insert(1, L"C");		ASSERT_EVENT(3, 0, 3, 1);
+		checkStackItems();				ASSERT_EVENT(3, 0, 4, -1);
+		objects.RemoveAt(1);			ASSERT_EVENT(3, 1, 4, 1);
+		checkStackItems();				ASSERT_EVENT(3, 1, 5, -1);
+		objects.RemoveRange(0, 2);		ASSERT_EVENT(3, 3, 5, 0);
+		checkStackItems();				ASSERT_EVENT(3, 3, 6, -1);
+
+		objects.Add(L"A");				ASSERT_EVENT(4, 3, 6, 0);
+		objects.Add(L"B");				ASSERT_EVENT(5, 3, 6, 1);
+		objects.Add(L"C");				ASSERT_EVENT(6, 3, 6, 2);
+		checkStackItems();				ASSERT_EVENT(6, 3, 7, -1);
+		objects.Clear();				ASSERT_EVENT(6, 6, 7, 0);
+		checkStackItems();				ASSERT_EVENT(6, 6, 8, -1);
 
 		TEST_ASSERT(stack->Children().Count() == 0);
 
