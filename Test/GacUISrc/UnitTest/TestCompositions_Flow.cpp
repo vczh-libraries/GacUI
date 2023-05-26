@@ -298,8 +298,129 @@ TEST_FILE
 		});
 	});
 
-	TEST_CASE(L"Test <Flow> with different <Flow> alignment")
+	TEST_CATEGORY(L"Test <Flow> with different <Flow> alignment")
 	{
+		auto flow = new GuiFlowComposition;
+
+		flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		flow->SetPreferredMinSize(Size(160, 160));
+		flow->ForceCalculateSizeImmediately();
+
+		const vint ITEM_ROWS = 3;
+		const vint ITEM_COLUMNS = 3;
+
+		GuiFlowItemComposition* flowItems[ITEM_ROWS * ITEM_COLUMNS];
+		for (vint i = 0; i < ITEM_ROWS * ITEM_COLUMNS; i++)
+		{
+			flowItems[i] = new GuiFlowItemComposition;
+			flowItems[i]->SetPreferredMinSize(Size(50, 50));
+			flow->AddChild(flowItems[i]);
+		}
+
+		TEST_CASE(L"Left")
+		{
+			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Left);
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ c * 50,r * 50}, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - c * 50,r * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ c * 50,110 - r * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - c * 50,110 - r * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ r * 50,c * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - r * 50,c * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ r * 50,110 - c * 50 }, { 50,50 }));
+				}
+			}
+
+			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			for (vint r = 0; r < ITEM_ROWS; r++)
+			{
+				for (vint c = 0; c < ITEM_COLUMNS; c++)
+				{
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					TEST_ASSERT(bounds == Rect({ 110 - r * 50,110 - c * 50 }, { 50,50 }));
+				}
+			}
+		});
+
+		flow->SetAlignment(FlowAlignment::Center);
+		TEST_CASE(L"Center")
+		{
+			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Center);
+		});
+
+		flow->SetAlignment(FlowAlignment::Right);
+		TEST_CASE(L"Right")
+		{
+			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Right);
+		});
+
+		flow->SetAlignment(FlowAlignment::Extend);
+		TEST_CASE(L"Extend")
+		{
+			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Extend);
+		});
+
+		SafeDeleteComposition(flow);
 	});
 
 	TEST_CATEGORY(L"Test <Flow> with different <FlowItem> option")
