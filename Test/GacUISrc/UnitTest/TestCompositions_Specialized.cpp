@@ -73,5 +73,28 @@ TEST_FILE
 
 	TEST_CASE(L"Test <PartialView>")
 	{
+		auto bounds = new GuiBoundsComposition;
+		bounds->SetPreferredMinSize(Size(100, 50));
+
+		auto partialView = new GuiPartialViewComposition;
+		bounds->AddChild(partialView);
+
+		TEST_ASSERT(partialView->GetWidthRatio() == 0.0);
+		TEST_ASSERT(partialView->GetWidthPageSize() == 1.0);
+		TEST_ASSERT(partialView->GetHeightRatio() == 0.0);
+		TEST_ASSERT(partialView->GetHeightPageSize() == 1.0);
+
+		partialView->SetWidthRatio(0.2);
+		partialView->SetWidthPageSize(0.3);
+		partialView->SetHeightRatio(0.4);
+		partialView->SetHeightPageSize(0.5);
+		TEST_ASSERT(partialView->GetWidthRatio() == 0.2);
+		TEST_ASSERT(partialView->GetWidthPageSize() == 0.3);
+		TEST_ASSERT(partialView->GetHeightRatio() == 0.4);
+		TEST_ASSERT(partialView->GetHeightPageSize() == 0.5);
+
+		TEST_ASSERT(partialView->GetBounds() == Rect({ 20,20 }, { 30,25 }));
+
+		SafeDeleteComposition(bounds);
 	});
 }
