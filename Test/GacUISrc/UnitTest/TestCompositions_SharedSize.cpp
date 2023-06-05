@@ -16,4 +16,49 @@ TEST_FILE
 				sharedSizeItem->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
 			});
 	});
+
+	TEST_CASE(L"Test <SharedSizeRoot> with widths")
+	{
+		auto root = new GuiSharedSizeRootComposition;
+
+		GuiSharedSizeItemComposition* items[2][3];
+		for (vint group = 0; group < 2; group++)
+		{
+			for (vint item = 0; item < 3; item++)
+			{
+				auto bounds = new GuiBoundsComposition;
+				root->AddChild(bounds);
+
+				auto shared = new GuiSharedSizeItemComposition;
+				shared->SetGroup(itow(group));
+				shared->SetSharedWidth(true);
+				bounds->AddChild(shared);
+
+				auto content = new GuiBoundsComposition;
+				content->SetPreferredMinSize(Size((group * 3 + item + 1) * 10, 10));
+				shared->AddChild(content);
+
+				items[group][item] = shared;
+			}
+		}
+
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		for (vint group = 0; group < 2; group++)
+		{
+			for (vint item = 0; item < 3; item++)
+			{
+				TEST_ASSERT(items[group][item]->GetBounds() == Rect({ 0,0 }, { (group + 1) * 30,10 }));
+			}
+		}
+
+		SafeDeleteComposition(root);
+	});
+
+	TEST_CASE(L"Test <SharedSizeRoot> with heights")
+	{
+	});
+
+	TEST_CASE(L"Test <SharedSizeRoot> with widths and heights")
+	{
+	});
 }
