@@ -35,7 +35,7 @@ TEST_FILE
 				bounds->AddChild(shared);
 
 				auto content = new GuiBoundsComposition;
-				content->SetPreferredMinSize(Size((group * 3 + item + 1) * 10, 10));
+				content->SetPreferredMinSize(Size((group * 3 + item + 1) * 10, (item + 1) * 10));
 				shared->AddChild(content);
 
 				items[group][item] = shared;
@@ -47,7 +47,7 @@ TEST_FILE
 		{
 			for (vint item = 0; item < 3; item++)
 			{
-				TEST_ASSERT(items[group][item]->GetBounds() == Rect({ 0,0 }, { (group + 1) * 30,10 }));
+				TEST_ASSERT(items[group][item]->GetBounds() == Rect({ 0,0 }, { (group + 1) * 30,(item + 1) * 10 }));
 			}
 		}
 
@@ -72,7 +72,7 @@ TEST_FILE
 				bounds->AddChild(shared);
 
 				auto content = new GuiBoundsComposition;
-				content->SetPreferredMinSize(Size(10, (group * 3 + item + 1) * 10));
+				content->SetPreferredMinSize(Size((item + 1) * 10, (group * 3 + item + 1) * 10));
 				shared->AddChild(content);
 
 				items[group][item] = shared;
@@ -84,7 +84,7 @@ TEST_FILE
 		{
 			for (vint item = 0; item < 3; item++)
 			{
-				TEST_ASSERT(items[group][item]->GetBounds() == Rect({ 0,0 }, { 10,(group + 1) * 30 }));
+				TEST_ASSERT(items[group][item]->GetBounds() == Rect({ 0,0 }, { (item + 1) * 10,(group + 1) * 30 }));
 			}
 		}
 
