@@ -93,5 +93,47 @@ TEST_FILE
 
 	TEST_CASE(L"Test <SharedSizeRoot> with widths and heights")
 	{
+		auto root = new GuiSharedSizeRootComposition;
+
+		auto itemW = new GuiSharedSizeItemComposition;
+		{
+			itemW->SetGroup(L"group");
+			itemW->SetSharedWidth(true);
+			root->AddChild(itemW);
+
+			auto bounds = new GuiBoundsComposition;
+			bounds->SetPreferredMinSize(Size(10, 10));
+			itemW->AddChild(bounds);
+		}
+
+		auto itemH = new GuiSharedSizeItemComposition;
+		{
+			itemH->SetGroup(L"group");
+			itemH->SetSharedHeight(true);
+			root->AddChild(itemH);
+
+			auto bounds = new GuiBoundsComposition;
+			bounds->SetPreferredMinSize(Size(20, 20));
+			itemH->AddChild(bounds);
+		}
+
+		auto itemWH = new GuiSharedSizeItemComposition;
+		{
+			itemWH->SetGroup(L"group");
+			itemWH->SetSharedWidth(true);
+			itemWH->SetSharedHeight(true);
+			root->AddChild(itemWH);
+
+			auto bounds = new GuiBoundsComposition;
+			bounds->SetPreferredMinSize(Size(30, 30));
+			itemWH->AddChild(bounds);
+		}
+
+		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(itemW->GetBounds() == Rect({ 0,0 }, { 30,10 }));
+		TEST_ASSERT(itemH->GetBounds() == Rect({ 0,0 }, { 20,30 }));
+		TEST_ASSERT(itemWH->GetBounds() == Rect({ 0,0 }, { 30,30 }));
+
+		SafeDeleteComposition(root);
 	});
 }
