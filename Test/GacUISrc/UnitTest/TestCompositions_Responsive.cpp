@@ -256,6 +256,19 @@ TEST_FILE
 	{
 		auto view = new GuiResponsiveViewComposition;
 
+		auto control1 = new GuiControl(theme::ThemeName::CustomControl);
+		auto control2 = new GuiControl(theme::ThemeName::CustomControl);
+
+		auto controlTemplate = [](const Value&)
+		{
+			return new templates::GuiControlTemplate;
+		};
+		control1->SetControlTemplate(controlTemplate);
+		control2->SetControlTemplate(controlTemplate);
+
+		view->GetSharedControls().Add(control1);
+		view->GetSharedControls().Add(control2);
+
 		auto fixedA = new GuiResponsiveFixedComposition;
 		auto fixedB = new GuiResponsiveFixedComposition;
 		auto fixedC = new GuiResponsiveFixedComposition;
@@ -267,9 +280,6 @@ TEST_FILE
 		auto sharedA2 = new GuiResponsiveSharedComposition;
 		auto sharedB2 = new GuiResponsiveSharedComposition;
 		auto sharedC2 = new GuiResponsiveSharedComposition;
-
-		auto control1 = new GuiControl(theme::ThemeName::CustomControl);
-		auto control2 = new GuiControl(theme::ThemeName::CustomControl);
 
 		sharedA1->SetShared(control1);
 		sharedB1->SetShared(control1);
@@ -288,8 +298,6 @@ TEST_FILE
 		view->GetViews().Add(fixedA);
 		view->GetViews().Add(fixedB);
 		view->GetViews().Add(fixedC);
-		view->GetSharedControls().Add(control1);
-		view->GetSharedControls().Add(control2);
 
 		TEST_ASSERT(view->GetLevelCount() == 3);
 		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedA1);
@@ -320,5 +328,9 @@ TEST_FILE
 		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedA2);
 
 		SafeDeleteComposition(view);
+	});
+
+	TEST_CASE(L"Test <ResponsiveContainer>")
+	{
 	});
 }

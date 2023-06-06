@@ -349,8 +349,12 @@ GuiControl
 
 			GuiControl::GuiControl(theme::ThemeName themeName)
 				:controlThemeName(themeName)
-				, displayFont(GetCurrentController()->ResourceService()->GetDefaultFont())
 			{
+				if (auto controller = GetCurrentController())
+				{
+					displayFont = controller->ResourceService()->GetDefaultFont();
+				}
+
 				{
 					boundsComposition = new GuiBoundsComposition;
 					boundsComposition->SetAssociatedControl(this);
