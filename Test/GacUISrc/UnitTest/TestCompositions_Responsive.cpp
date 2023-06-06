@@ -144,122 +144,46 @@ TEST_FILE
 			stack->AddChild(viewB);
 			stack->AddChild(viewC);
 
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 3);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 2);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAA);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+#define TEST_ASSERT_RESPONSIVE(L, LA, VA, LB, VB, LC, VC)			\
+			TEST_ASSERT(stack->GetLevelCount() == 4);				\
+			TEST_ASSERT(stack->GetCurrentLevel() == L);				\
+			TEST_ASSERT(viewA->GetLevelCount() == 3);				\
+			TEST_ASSERT(viewA->GetCurrentLevel() == LA);			\
+			TEST_ASSERT(viewA->GetCurrentView() == fixed ## VA);	\
+			TEST_ASSERT(viewB->GetLevelCount() == 2);				\
+			TEST_ASSERT(viewB->GetCurrentLevel() == LB);			\
+			TEST_ASSERT(viewB->GetCurrentView() == fixed ## VB);	\
+			TEST_ASSERT(viewC->GetLevelCount() == 1);				\
+			TEST_ASSERT(viewC->GetCurrentLevel() == LC);			\
+			TEST_ASSERT(viewC->GetCurrentView() == fixed ## VC)	\
+
+			TEST_ASSERT_RESPONSIVE(3, 2, AA, 1, BA, 0, CA);
 
 			TEST_ASSERT(stack->LevelDown() == true);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 2);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAB);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(2, 1, AB, 1, BA, 0, CA);
 
 			TEST_ASSERT(stack->LevelDown() == true);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAC);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(1, 0, AC, 1, BA, 0, CA);
 
 			TEST_ASSERT(stack->LevelDown() == true);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAC);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(0, 0, AC, 0, BB, 0, CA);
 
 			TEST_ASSERT(stack->LevelDown() == false);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAC);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(0, 0, AC, 0, BB, 0, CA);
 
 			TEST_ASSERT(stack->LevelUp() == true);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAB);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(1, 1, AB, 0, BB, 0, CA);
 
 			TEST_ASSERT(stack->LevelUp() == true);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 2);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 2);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAA);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(2, 2, AA, 0, BB, 0, CA);
 
 			TEST_ASSERT(stack->LevelUp() == true);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 3);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 2);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAA);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(3, 2, AA, 1, BA, 0, CA);
 
 			TEST_ASSERT(stack->LevelUp() == false);
-			TEST_ASSERT(stack->GetLevelCount() == 4);
-			TEST_ASSERT(stack->GetCurrentLevel() == 3);
-			TEST_ASSERT(viewA->GetLevelCount() == 3);
-			TEST_ASSERT(viewA->GetCurrentLevel() == 2);
-			TEST_ASSERT(viewA->GetCurrentView() == fixedAA);
-			TEST_ASSERT(viewB->GetLevelCount() == 2);
-			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
-			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
-			TEST_ASSERT(viewC->GetLevelCount() == 1);
-			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
-			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+			TEST_ASSERT_RESPONSIVE(3, 2, AA, 1, BA, 0, CA);
 
+#undef TEST_ASSERT_RESPONSIVE
 			SafeDeleteComposition(stack);
 		});
 
