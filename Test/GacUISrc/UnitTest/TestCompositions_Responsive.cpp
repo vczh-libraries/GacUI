@@ -156,6 +156,110 @@ TEST_FILE
 			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
 			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
 
+			TEST_ASSERT(stack->LevelDown() == true);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 2);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAB);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
+			TEST_ASSERT(stack->LevelDown() == true);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAC);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
+			TEST_ASSERT(stack->LevelDown() == true);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAC);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
+			TEST_ASSERT(stack->LevelDown() == false);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAC);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
+			TEST_ASSERT(stack->LevelUp() == true);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAB);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
+			TEST_ASSERT(stack->LevelUp() == true);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 2);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 2);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAA);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBB);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
+			TEST_ASSERT(stack->LevelUp() == true);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 3);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 2);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAA);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
+			TEST_ASSERT(stack->LevelUp() == false);
+			TEST_ASSERT(stack->GetLevelCount() == 4);
+			TEST_ASSERT(stack->GetCurrentLevel() == 3);
+			TEST_ASSERT(viewA->GetLevelCount() == 3);
+			TEST_ASSERT(viewA->GetCurrentLevel() == 2);
+			TEST_ASSERT(viewA->GetCurrentView() == fixedAA);
+			TEST_ASSERT(viewB->GetLevelCount() == 2);
+			TEST_ASSERT(viewB->GetCurrentLevel() == 1);
+			TEST_ASSERT(viewB->GetCurrentView() == fixedBA);
+			TEST_ASSERT(viewC->GetLevelCount() == 1);
+			TEST_ASSERT(viewC->GetCurrentLevel() == 0);
+			TEST_ASSERT(viewC->GetCurrentView() == fixedCA);
+
 			SafeDeleteComposition(stack);
 		});
 
