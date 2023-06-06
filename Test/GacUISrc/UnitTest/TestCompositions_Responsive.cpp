@@ -189,6 +189,65 @@ TEST_FILE
 
 		TEST_CASE(L"Test <ResponsiveGroup>")
 		{
+			auto group = new GuiResponsiveGroupComposition;
+
+			auto viewA = new GuiResponsiveViewComposition;
+			auto viewB = new GuiResponsiveViewComposition;
+			auto viewC = new GuiResponsiveViewComposition;
+
+			auto fixedAA = new GuiResponsiveFixedComposition;
+			auto fixedAB = new GuiResponsiveFixedComposition;
+			auto fixedAC = new GuiResponsiveFixedComposition;
+			auto fixedBA = new GuiResponsiveFixedComposition;
+			auto fixedBB = new GuiResponsiveFixedComposition;
+			auto fixedCA = new GuiResponsiveFixedComposition;
+
+			viewA->GetViews().Add(fixedAA);
+			viewA->GetViews().Add(fixedAB);
+			viewA->GetViews().Add(fixedAC);
+			viewB->GetViews().Add(fixedBA);
+			viewB->GetViews().Add(fixedBB);
+			viewC->GetViews().Add(fixedCA);
+
+			group->AddChild(viewA);
+			group->AddChild(viewB);
+			group->AddChild(viewC);
+
+#define TEST_ASSERT_RESPONSIVE(L, LA, VA, LB, VB, LC, VC)			\
+			TEST_ASSERT(group->GetLevelCount() == 3);				\
+			TEST_ASSERT(group->GetCurrentLevel() == L);				\
+			TEST_ASSERT(viewA->GetLevelCount() == 3);				\
+			TEST_ASSERT(viewA->GetCurrentLevel() == LA);			\
+			TEST_ASSERT(viewA->GetCurrentView() == fixed ## VA);	\
+			TEST_ASSERT(viewB->GetLevelCount() == 2);				\
+			TEST_ASSERT(viewB->GetCurrentLevel() == LB);			\
+			TEST_ASSERT(viewB->GetCurrentView() == fixed ## VB);	\
+			TEST_ASSERT(viewC->GetLevelCount() == 1);				\
+			TEST_ASSERT(viewC->GetCurrentLevel() == LC);			\
+			TEST_ASSERT(viewC->GetCurrentView() == fixed ## VC)	\
+
+			TEST_ASSERT_RESPONSIVE(2, 2, AA, 1, BA, 0, CA);
+
+			TEST_ASSERT(group->LevelDown() == true);
+			TEST_ASSERT_RESPONSIVE(1, 1, AB, 1, BA, 0, CA);
+
+			TEST_ASSERT(group->LevelDown() == true);
+			TEST_ASSERT_RESPONSIVE(0, 0, AC, 0, BB, 0, CA);
+
+			TEST_ASSERT(group->LevelDown() == false);
+			TEST_ASSERT_RESPONSIVE(0, 0, AC, 0, BB, 0, CA);
+
+			TEST_ASSERT(group->LevelUp() == true);
+			TEST_ASSERT_RESPONSIVE(1, 1, AB, 1, BA, 0, CA);
+
+			TEST_ASSERT(group->LevelUp() == true);
+			TEST_ASSERT_RESPONSIVE(2, 2, AA, 1, BA, 0, CA);
+
+			TEST_ASSERT(group->LevelUp() == false);
+			TEST_ASSERT_RESPONSIVE(2, 2, AA, 1, BA, 0, CA);
+
+#undef TEST_ASSERT_RESPONSIVE
+			SafeDeleteComposition(group);
 		});
 
 		TEST_CASE(L"Test Stack -> Group -> View -> Fixed")
