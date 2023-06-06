@@ -1,4 +1,5 @@
 #include "TestCompositions.h"
+using namespace vl::presentation::controls;
 using namespace composition_bounds_tests;
 
 TEST_FILE
@@ -249,17 +250,75 @@ TEST_FILE
 #undef TEST_ASSERT_RESPONSIVE
 			SafeDeleteComposition(group);
 		});
-
-		TEST_CASE(L"Test Stack -> Group -> View -> Fixed")
-		{
-		});
-
-		TEST_CASE(L"Test Stack -> Shared -> View -> Fixed")
-		{
-		});
 	});
 
-	TEST_CATEGORY(L"Test shared controls management")
+	TEST_CASE(L"Test shared controls management")
 	{
+		auto view = new GuiResponsiveViewComposition;
+
+		auto fixedA = new GuiResponsiveFixedComposition;
+		auto fixedB = new GuiResponsiveFixedComposition;
+		auto fixedC = new GuiResponsiveFixedComposition;
+
+		auto sharedA1 = new GuiResponsiveSharedComposition;
+		auto sharedB1 = new GuiResponsiveSharedComposition;
+		auto sharedC1 = new GuiResponsiveSharedComposition;
+
+		auto sharedA2 = new GuiResponsiveSharedComposition;
+		auto sharedB2 = new GuiResponsiveSharedComposition;
+		auto sharedC2 = new GuiResponsiveSharedComposition;
+
+		auto control1 = new GuiControl(theme::ThemeName::CustomControl);
+		auto control2 = new GuiControl(theme::ThemeName::CustomControl);
+
+		sharedA1->SetShared(control1);
+		sharedB1->SetShared(control1);
+		sharedC1->SetShared(control1);
+		sharedA2->SetShared(control2);
+		sharedB2->SetShared(control2);
+		sharedC2->SetShared(control2);
+
+		fixedA->AddChild(sharedA1);
+		fixedA->AddChild(sharedA2);
+		fixedB->AddChild(sharedB1);
+		fixedB->AddChild(sharedB2);
+		fixedC->AddChild(sharedC1);
+		fixedC->AddChild(sharedC2);
+
+		view->GetViews().Add(fixedA);
+		view->GetViews().Add(fixedB);
+		view->GetViews().Add(fixedC);
+		view->GetSharedControls().Add(control1);
+		view->GetSharedControls().Add(control2);
+
+		TEST_ASSERT(view->GetLevelCount() == 3);
+		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedA1);
+		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedA2);
+
+		TEST_ASSERT(view->LevelDown() == true);
+		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedB1);
+		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedB2);
+
+		TEST_ASSERT(view->LevelDown() == true);
+		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedC1);
+		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedC2);
+
+		TEST_ASSERT(view->LevelDown() == false);
+		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedC1);
+		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedC2);
+
+		TEST_ASSERT(view->LevelUp() == true);
+		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedB1);
+		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedB2);
+
+		TEST_ASSERT(view->LevelUp() == true);
+		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedA1);
+		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedA2);
+
+		TEST_ASSERT(view->LevelUp() == false);
+		TEST_ASSERT(control1->GetBoundsComposition()->GetParent() == sharedA1);
+		TEST_ASSERT(control2->GetBoundsComposition()->GetParent() == sharedA2);
+
+		SafeDeleteComposition(view);
 	});
 }
