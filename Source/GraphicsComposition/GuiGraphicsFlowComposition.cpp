@@ -25,7 +25,11 @@ GuiFlowComposition
 					if (clientMargin.right < 0) clientMargin.right = 0;
 					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
 
+					auto preferredFullSize = GetPreferredBounds().GetSize();
 					auto realFullSize = previousBounds.GetSize();
+					if (realFullSize.x < preferredFullSize.x) realFullSize.x = preferredFullSize.x;
+					if (realFullSize.y < preferredFullSize.y) realFullSize.y = preferredFullSize.y;
+
 					auto clientSize = axis->RealSizeToVirtualSize(realFullSize);
 					clientSize.x -= (clientMargin.left + clientMargin.right);
 					clientSize.y -= (clientMargin.top + clientMargin.bottom);
@@ -108,6 +112,9 @@ GuiFlowComposition
 							case FlowAlignment::Center:
 								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth) / 2;
 								break;
+							case FlowAlignment::Right:
+								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth);
+								break;
 							case FlowAlignment::Extend:
 								if (i == 0)
 								{
@@ -170,27 +177,28 @@ GuiFlowComposition
 			
 			Size GuiFlowComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				Size minFlowSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					auto clientSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
+					minFlowSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
 					for (auto item : flowItems)
 					{
 						auto itemSize = InvokeGetPreferredBoundsInternal(item, considerPreferredMinSize).GetSize();
-						if (clientSize.x < itemSize.x) clientSize.x = itemSize.x;
-						if (clientSize.y < itemSize.y) clientSize.y = itemSize.y;
+						if (minFlowSize.x < itemSize.x) minFlowSize.x = itemSize.x;
+						if (minFlowSize.y < itemSize.y) minFlowSize.y = itemSize.y;
 					}
-					if (minSize.x < clientSize.x) minSize.x = clientSize.x;
-					if (minSize.y < clientSize.y) minSize.y = clientSize.y;
 				}
 
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
+				if (extraMargin.left > 0) minFlowSize.x += extraMargin.left;
+				if (extraMargin.right > 0) minFlowSize.x += extraMargin.right;
+				if (extraMargin.top > 0) minFlowSize.y += extraMargin.top;
+				if (extraMargin.bottom > 0) minFlowSize.y += extraMargin.bottom;
+
+				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				return Size(
+					minFlowSize.x > minClientSize.x ? minFlowSize.x : minClientSize.x,
+					minFlowSize.y > minClientSize.y ? minFlowSize.y : minClientSize.y
+					);
 			}
 
 			GuiFlowComposition::GuiFlowComposition()
@@ -335,7 +343,7 @@ GuiFlowItemComposition
 
 			void GuiFlowItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
 			}
 
@@ -345,17 +353,13 @@ GuiFlowItemComposition
 			}
 
 			GuiFlowItemComposition::GuiFlowItemComposition()
+				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
 			GuiFlowItemComposition::~GuiFlowItemComposition()
 			{
-			}
-			
-			bool GuiFlowItemComposition::IsSizeAffectParent()
-			{
-				return false;
 			}
 
 			Rect GuiFlowItemComposition::GetBounds()

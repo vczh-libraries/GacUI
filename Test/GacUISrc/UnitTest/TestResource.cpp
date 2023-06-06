@@ -86,29 +86,36 @@ Ptr<GuiResource> LoadResource(const WString& resourceName)
 
 #undef PRINT_ERROR
 
+extern void SetGuiMainProxy(void(*proxy)());
+
 TEST_FILE
 {
-	LoadResource(L"Resource.NotExists.xml");
-	LoadResource(L"Resource.WrongSyntax.xml");
-	LoadResource(L"Resource.WrongSyntax2.xml");
-	LoadResource(L"Resource.WrongDoc.xml");
-	LoadResource(L"Resource.WrongInstanceStyle.xml");
-	LoadResource(L"Resource.WrongInstance.xml");
-	LoadResource(L"Resource.FailedInstance.Ctor1.xml");
-	LoadResource(L"Resource.FailedInstance.Ctor2.xml");
-	LoadResource(L"Resource.FailedInstance.Ctor2_r.xml");
-	LoadResource(L"Resource.FailedInstance.Ctor3.xml");
-	LoadResource(L"Resource.FailedInstance.Ctor4.xml");
-	LoadResource(L"Resource.FailedInstance.Ctor5.xml");
-	LoadResource(L"Resource.FailedInstance.Control.xml");
-	LoadResource(L"Resource.FailedInstance.Inheriting1.xml");
-	LoadResource(L"Resource.FailedInstance.Inheriting2.xml");
-	LoadResource(L"Resource.FailedScript.Workflow.xml");
-	LoadResource(L"Resource.FailedScript.Properties.xml");
-	LoadResource(L"Resource.FailedScript.Animations.xml");
-	LoadResource(L"Resource.FailedScript.Animations2.xml");
-	LoadResource(L"Resource.FailedScript.Strings.xml");
-	LoadResource(L"Resource.FailedScript.Strings2.xml");
-	LoadResource(L"Resource.FailedScript.Strings3.xml");
-	LoadResource(L"Resource.FailedScript.Strings4.xml");
+	SetGuiMainProxy([]()
+	{
+		LoadResource(L"Resource.NotExists.xml");
+		LoadResource(L"Resource.WrongSyntax.xml");
+		LoadResource(L"Resource.WrongSyntax2.xml");
+		LoadResource(L"Resource.WrongDoc.xml");
+		LoadResource(L"Resource.WrongInstanceStyle.xml");
+		LoadResource(L"Resource.WrongInstance.xml");
+		LoadResource(L"Resource.FailedInstance.Ctor1.xml");
+		LoadResource(L"Resource.FailedInstance.Ctor2.xml");
+		LoadResource(L"Resource.FailedInstance.Ctor2_r.xml");
+		LoadResource(L"Resource.FailedInstance.Ctor3.xml");
+		LoadResource(L"Resource.FailedInstance.Ctor4.xml");
+		LoadResource(L"Resource.FailedInstance.Ctor5.xml");
+		LoadResource(L"Resource.FailedInstance.Control.xml");
+		LoadResource(L"Resource.FailedInstance.Inheriting1.xml");
+		LoadResource(L"Resource.FailedInstance.Inheriting2.xml");
+		LoadResource(L"Resource.FailedScript.Workflow.xml");
+		LoadResource(L"Resource.FailedScript.Properties.xml");
+		LoadResource(L"Resource.FailedScript.Animations.xml");
+		LoadResource(L"Resource.FailedScript.Animations2.xml");
+		LoadResource(L"Resource.FailedScript.Strings.xml");
+		LoadResource(L"Resource.FailedScript.Strings2.xml");
+		LoadResource(L"Resource.FailedScript.Strings3.xml");
+		LoadResource(L"Resource.FailedScript.Strings4.xml");
+	});
+	SetupGacGenNativeController();
+	SetGuiMainProxy(nullptr);
 }

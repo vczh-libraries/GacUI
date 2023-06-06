@@ -2,6 +2,15 @@
 
 ## Done but not Released
 
+- Composition refactoring
+  - `GuiGraphicsComposition`
+    - Remove `Margin` property.
+    - `IsParentSizeAffected` -> `IsTrivialComposition`, returns false only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
+  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
+  - `FlowAlignment::Right`.
+  - `GuiRepeatCompositionBase`
+    - Add `Context` property.
+
 ## Known Issues
 
 - Hosted Mode
@@ -10,13 +19,50 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
+- FullControlTest
+  - Crash: Layout -> Repeat -> SharedSize (TextList) -> Add 10 items
+    - Stack overflow, should be automatically fixed after refactoring
+  - LevelUp/LevelDown not working correctly: Layout -> Responsize -> first row
 
 ## Progressing
 
-- Unit Test
-  - Test against more code as many as possible in UnitTest project
-    - If a test case can be written without the hosted CLI renderer, than write it directly.
-    - If a unit test only hosted CLI renderer cannot be just running in that project, open a new unit test project.
+- UnitTest.vcxproj
+  - Test compositions
+  - Test controls with a unit test only platform provider running in hosted mode
+    - Each character takes exactly `FontSize x FontSize`
+    - Deal with `\r` and `\n` when multiline is enabled
+  - Test against more code as many as possible
+- Refactor compositions (after unit test for `<Bounds>` are finished)
+  - TODO in `TestCompositions_Bounds.cpp`.
+    - `AlignmentToParent` should not consider parent's `InternalMargin`.
+  - Fix document
+- Refactor compositions (after unit test for compositions are finished)
+  - Remove all friend and existing virtual functions.
+  - `CalculateMinimumParentClientSize`, returns the minimum size of its client area assuming `LimitToElementAndChildren`.
+  - `CalculateMinimumClientSize`, calls `CalculateMinimumParentClientSize` on each non-specialized child composition.
+  - `CalculateBounds(parentClientBounds, callUpdateBounds)`.
+  - `GetBounds` -> `GetUpdatedBounds`.
+  - `ForceCalculateSizeImmediately` calls all these functions.
+    - Call it in `GuiGraphicsHost::Render` before `auto bounds = windowComposition->GetBounds();`.
+  - `GuiTableComposition` remove `UpdateCellBounds`.
+  - Fix document.
+- Refactor compositions (after unit test for compositions are finished)
+  - When properties of a composition is changed, flagged(C), request refresh.
+  - When properties of an element is changed, flagged(E), request refresh.
+  - When global timer triggered.
+    - if flagged(E), render.
+      - If the min size of the element is changed, flagged(C).
+    - If flagged(C), `ForceCalculateSizeImmediately`.
+  - `GuiGraphicsComposition`
+    - Remove `GetBounds` and `GetGlobalBounds` and `GetPreviousCalculatedBounds`
+    - Add `GetCachedBounds`, `GetCachedGlobalBounds`, `GetCachedMinSize`, etc.
+  - `GuiGraphicsComposition` during `ForceCalculateSizeImmediately`, all cached values are updated.
+    - From root, passes its bounds and other informations to children recursively, update all cached min size related values.
+    - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.
+    - If any cached values are changed, flagged(C).
+  - Fix document.
+- Fill empty test cases after composition refactoring.
+- `FlowAlignment::Right` in demo.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
@@ -34,6 +80,7 @@
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
 - Theme
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
+  - Add minimum size control to `<PartialView>`.
 - GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
@@ -51,6 +98,7 @@
 - Add `static` keyword (method and init) in workflow document.
 - Add `static{}` in workflow document.
 - Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
+- Add `GuiRepeatCompositionBase::Context` property.
 
 ## OS Provider Features
 

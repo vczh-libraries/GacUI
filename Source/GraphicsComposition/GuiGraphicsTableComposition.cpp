@@ -80,113 +80,38 @@ GuiTableComposition
 				vint(*getLocation)(GuiCellComposition*),
 				vint(*getSpan)(GuiCellComposition*),
 				vint(*getRow)(vint, vint),
-				vint(*getCol)(vint, vint),
-				vint maxPass
+				vint(*getCol)(vint, vint)
 			)
 			{
-				for (vint pass = 0; pass < maxPass; pass++)
+				for (vint i = 0; i < this->*dim1; i++)
 				{
-					for (vint i = 0; i < this->*dim1; i++)
-					{
-						GuiCellOption option = dimOptions[i];
-						if (pass == 0)
-						{
-							dimSizes[i] = 0;
-						}
-						switch (option.composeType)
-						{
-						case GuiCellOption::Absolute:
-							{
-								dimSizes[i] = option.absolute;
-							}
-							break;
-						case GuiCellOption::MinSize:
-							{
-								for (vint j = 0; j < this->*dim2; j++)
-								{
-									GuiCellComposition* cell = GetSitedCell(getRow(i, j), getCol(i, j));
-									if (cell)
-									{
-										bool accept = false;
-										if (pass == 0)
-										{
-											accept = getSpan(cell) == 1;
-										}
-										else
-										{
-											accept = getLocation(cell) + getSpan(cell) == i + 1;
-										}
-										if (accept)
-										{
-											vint size = getSize(cell->GetPreferredBounds().GetSize());
-											vint span = getSpan(cell);
-											for (vint k = 1; k < span; k++)
-											{
-												size -= dimSizes[i - k] + cellPadding;
-											}
-											if (dimSizes[i] < size)
-											{
-												dimSizes[i] = size;
-											}
-										}
-									}
-								}
-							}
-							break;
-						default:;
-						}
-					}
+					dimSizes[i] = 0;
 				}
 
-				bool percentageExists = false;
 				for (vint i = 0; i < this->*dim1; i++)
 				{
 					GuiCellOption option = dimOptions[i];
-					if (option.composeType == GuiCellOption::Percentage)
+					switch (option.composeType)
 					{
-						if (0.001 < option.percentage)
+					case GuiCellOption::Absolute:
 						{
-							percentageExists = true;
+							dimSizes[i] = option.absolute;
 						}
-					}
-				}
-
-				if (percentageExists)
-				{
-					for (vint i = 0; i < this->*dim1; i++)
-					{
-						GuiCellOption option = dimOptions[i];
-						if (option.composeType == GuiCellOption::Percentage)
+						break;
+					case GuiCellOption::MinSize:
 						{
-							if (0.001 < option.percentage)
+							for (vint j = 0; j < this->*dim2; j++)
 							{
-								for (vint j = 0; j < this->*dim2; j++)
+								if (auto cell = GetSitedCell(getRow(i, j), getCol(i, j)))
 								{
-									GuiCellComposition* cell = GetSitedCell(getRow(i, j), getCol(i, j));
-									if (cell)
+									if (getSpan(cell) == 1)
 									{
 										vint size = getSize(cell->GetPreferredBounds().GetSize());
-										vint start = getLocation(cell);
 										vint span = getSpan(cell);
-										size -= (span - 1)*cellPadding;
-										double totalPercentage = 0;
-
-										for (vint k = start; k < start + span; k++)
+										for (vint k = 1; k < span; k++)
 										{
-											if (dimOptions[k].composeType == GuiCellOption::Percentage)
-											{
-												if (0.001 < dimOptions[k].percentage)
-												{
-													totalPercentage += dimOptions[k].percentage;
-												}
-											}
-											else
-											{
-												size -= dimSizes[k];
-											}
+											size -= dimSizes[i - k] + cellPadding;
 										}
-
-										size = (vint)ceil(size*option.percentage / totalPercentage);
 										if (dimSizes[i] < size)
 										{
 											dimSizes[i] = size;
@@ -195,20 +120,45 @@ GuiTableComposition
 								}
 							}
 						}
+						break;
+					default:;
 					}
+				}
 
-					vint percentageTotalSize = 0;
+				{
 					for (vint i = 0; i < this->*dim1; i++)
 					{
 						GuiCellOption option = dimOptions[i];
 						if (option.composeType == GuiCellOption::Percentage)
 						{
-							if (0.001 < option.percentage)
+							for (vint j = 0; j < this->*dim2; j++)
 							{
-								vint size = (vint)ceil(dimSizes[i] / option.percentage);
-								if (percentageTotalSize < size)
+								GuiCellComposition* cell = GetSitedCell(getRow(i, j), getCol(i, j));
+								if (cell)
 								{
-									percentageTotalSize = size;
+									vint size = getSize(cell->GetPreferredBounds().GetSize());
+									vint start = getLocation(cell);
+									vint span = getSpan(cell);
+									size -= (span - 1)*cellPadding;
+									double totalPercentage = 0;
+
+									for (vint k = start; k < start + span; k++)
+									{
+										if (dimOptions[k].composeType == GuiCellOption::Percentage)
+										{
+											totalPercentage += dimOptions[k].percentage;
+										}
+										else
+										{
+											size -= dimSizes[k];
+										}
+									}
+
+									size = (vint)ceil(size*option.percentage / totalPercentage);
+									if (dimSizes[i] < size)
+									{
+										dimSizes[i] = size;
+									}
 								}
 							}
 						}
@@ -220,9 +170,20 @@ GuiTableComposition
 						GuiCellOption option = dimOptions[i];
 						if (option.composeType == GuiCellOption::Percentage)
 						{
-							if (0.001 < option.percentage)
+							totalPercentage += option.percentage;
+						}
+					}
+
+					vint percentageTotalSize = 0;
+					for (vint i = 0; i < this->*dim1; i++)
+					{
+						GuiCellOption option = dimOptions[i];
+						if (option.composeType == GuiCellOption::Percentage)
+						{
+							vint size = (vint)ceil(dimSizes[i] * totalPercentage / option.percentage);
+							if (percentageTotalSize < size)
 							{
-								totalPercentage += option.percentage;
+								percentageTotalSize = size;
 							}
 						}
 					}
@@ -232,13 +193,10 @@ GuiTableComposition
 						GuiCellOption option = dimOptions[i];
 						if (option.composeType == GuiCellOption::Percentage)
 						{
-							if (0.001 < option.percentage)
+							vint size = (vint)ceil(percentageTotalSize * option.percentage / totalPercentage);
+							if (dimSizes[i] < size)
 							{
-								vint size = (vint)ceil(percentageTotalSize*option.percentage / totalPercentage);
-								if (dimSizes[i] < size)
-								{
-									dimSizes[i] = size;
-								}
+								dimSizes[i] = size;
 							}
 						}
 					}
@@ -275,7 +233,7 @@ GuiTableComposition
 							percentageCount++;
 						}
 					}
-					if (percentageCount > 0 && totalPercentage > 0.001)
+					if (percentageCount > 0 && totalPercentage > 0)
 					{
 						// TODO: (enumerable) foreach
 						for (vint i = 0; i < dimOptions.Count(); i++)
@@ -318,7 +276,13 @@ GuiTableComposition
 			Size GuiTableComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
 				vint offset = (borderVisible ? 2 * cellPadding : 0);
-				return Size(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
+				Size minTableSize(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
+
+				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				return Size(
+					minTableSize.x > minClientSize.x ? minTableSize.x : minClientSize.x,
+					minTableSize.y > minClientSize.y ? minTableSize.y : minClientSize.y
+					);
 			}
 
 			GuiTableComposition::GuiTableComposition()
@@ -388,6 +352,11 @@ GuiTableComposition
 
 			void GuiTableComposition::SetRowOption(vint _row, GuiCellOption option)
 			{
+				if (option.composeType == GuiCellOption::Percentage && option.percentage < 0.001)
+				{
+					option.percentage = 0;
+				}
+
 				if (rowOptions[_row] != option)
 				{
 					rowOptions[_row] = option;
@@ -403,6 +372,11 @@ GuiTableComposition
 
 			void GuiTableComposition::SetColumnOption(vint _column, GuiCellOption option)
 			{
+				if (option.composeType == GuiCellOption::Percentage && option.percentage < 0.001)
+				{
+					option.percentage = 0;
+				}
+
 				if (columnOptions[_column] != option)
 				{
 					columnOptions[_column] = option;
@@ -441,10 +415,10 @@ GuiTableComposition
 			{
 				Rect bounds(Point(0, 0), GuiBoundsComposition::GetBounds().GetSize());
 				vint borderThickness = borderVisible ? cellPadding : 0;
-				bounds.x1 += margin.left + internalMargin.left + borderThickness;
-				bounds.y1 += margin.top + internalMargin.top + borderThickness;
-				bounds.x2 -= margin.right + internalMargin.right + borderThickness;
-				bounds.y2 -= margin.bottom + internalMargin.bottom + borderThickness;
+				bounds.x1 += internalMargin.left + borderThickness;
+				bounds.y1 += internalMargin.top + borderThickness;
+				bounds.x2 -= internalMargin.right + borderThickness;
+				bounds.y2 -= internalMargin.bottom + borderThickness;
 				if (bounds.x2 < bounds.x1) bounds.x2 = bounds.x1;
 				if (bounds.y2 < bounds.y1) bounds.y2 = bounds.y1;
 				return bounds;
@@ -473,8 +447,7 @@ GuiTableComposition
 					&RL,
 					&RS,
 					&First,
-					&Second,
-					1
+					&Second
 				);
 				UpdateCellBoundsInternal(
 					columnSizes,
@@ -487,8 +460,7 @@ GuiTableComposition
 					&CL,
 					&CS,
 					&Second,
-					&First,
-					1
+					&First
 				);
 
 				Rect area = GetCellArea();
@@ -617,7 +589,7 @@ GuiCellComposition
 
 			void GuiCellComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				if (tableParent)
 				{
 					ClearSitedCells(tableParent);
@@ -646,11 +618,7 @@ GuiCellComposition
 			}
 
 			GuiCellComposition::GuiCellComposition()
-				:row(-1)
-				,column(-1)
-				,rowSpan(1)
-				,columnSpan(1)
-				,tableParent(0)
+				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
@@ -740,7 +708,7 @@ GuiTableSplitterCompositionBase
 
 			void GuiTableSplitterCompositionBase::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
 			}
 
@@ -882,7 +850,7 @@ GuiTableSplitterCompositionBase
 			}
 			
 			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
-				:tableParent(0)
+				: GuiGraphicsComposition(false)
 				, dragging(false)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));

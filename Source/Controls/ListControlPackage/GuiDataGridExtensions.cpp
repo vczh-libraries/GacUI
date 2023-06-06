@@ -274,12 +274,16 @@ MainColumnVisualizerTemplate
 						GuiCellComposition* cell = new GuiCellComposition;
 						table->AddChild(cell);
 						cell->SetSite(0, 1, 3, 1);
-						cell->SetMargin(Margin(0, 0, 8, 0));
+
+						auto textBounds = new GuiBoundsComposition;
+						cell->AddChild(textBounds);
+						textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+						textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
 
 						text = GuiSolidLabelElement::Create();
 						text->SetAlignments(Alignment::Left, Alignment::Center);
 						text->SetEllipse(true);
-						cell->SetOwnedElement(Ptr(text));
+						textBounds->SetOwnedElement(Ptr(text));
 					}
 					table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 
@@ -322,13 +326,18 @@ SubColumnVisualizerTemplate
 
 				void SubColumnVisualizerTemplate::Initialize(bool fixTextColor)
 				{
+
+					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+
+					auto textBounds = new GuiBoundsComposition;
+					AddChild(textBounds);
+					textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+					textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+
 					text = GuiSolidLabelElement::Create();
 					text->SetVerticalAlignment(Alignment::Center);
 					text->SetEllipse(true);
-
-					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-					SetMargin(Margin(8, 0, 8, 0));
-					SetOwnedElement(Ptr(text));
+					textBounds->SetOwnedElement(Ptr(text));
 
 					TextChanged.AttachMethod(this, &SubColumnVisualizerTemplate::OnTextChanged);
 					FontChanged.AttachMethod(this, &SubColumnVisualizerTemplate::OnFontChanged);

@@ -25,7 +25,7 @@ Specialized Compositions
 			/// <summary>
 			/// Represents a composition that is aligned to one border of the parent composition.
 			/// </summary>
-			class GuiSideAlignedComposition : public GuiGraphicsSite, public Description<GuiSideAlignedComposition>
+			class GuiSideAlignedComposition : public GuiGraphicsComposition, public Description<GuiSideAlignedComposition>
 			{
 			public:
 				/// <summary>The border to align.</summary>
@@ -67,14 +67,13 @@ Specialized Compositions
 				/// <param name="value">The maximum ratio to limit the size according to the size of the parent.</param>
 				void								SetMaxRatio(double value);
 				
-				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 			};
 
 			/// <summary>
 			/// Represents a composition that its location and size are decided by the client area of the parent composition by setting ratios.
 			/// </summary>
-			class GuiPartialViewComposition : public GuiGraphicsSite, public Description<GuiPartialViewComposition>
+			class GuiPartialViewComposition : public GuiGraphicsComposition, public Description<GuiPartialViewComposition>
 			{
 			protected:
 				double								wRatio;
@@ -111,7 +110,6 @@ Specialized Compositions
 				/// <param name="value">The page size to decide the vertical size.</param>
 				void								SetHeightPageSize(double value);
 				
-				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 			};
 		}

@@ -49,6 +49,7 @@ GuiRepeatCompositionBase
 				auto item = InsertRepeatComposition(index);
 
 				templateItem->SetAlignmentToParent(Margin(0, 0, 0, 0));
+				templateItem->SetContext(itemContext);
 				item->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				item->AddChild(templateItem);
 
@@ -59,7 +60,8 @@ GuiRepeatCompositionBase
 
 			void GuiRepeatCompositionBase::ClearItems()
 			{
-				for (vint i = GetRepeatCompositionCount() - 1; i >= 0; i--)
+				vint count = GetRepeatCompositionCount();
+				for (vint i = count - 1; i >= 0; i--)
 				{
 					RemoveItem(i);
 				}
@@ -136,6 +138,29 @@ GuiRepeatCompositionBase
 				}
 			}
 
+			description::Value GuiRepeatCompositionBase::GetContext()
+			{
+				return itemContext;
+			}
+
+			void GuiRepeatCompositionBase::SetContext(const description::Value& value)
+			{
+				if (itemContext != value)
+				{
+					itemContext = value;
+					vint count = GetRepeatCompositionCount();
+					for (vint i = 0; i < count; i++)
+					{
+						auto rc = GetRepeatComposition(i);
+						auto it = dynamic_cast<templates::GuiTemplate*>(rc->Children()[0]);
+						it->SetContext(itemContext);
+					}
+
+					GuiEventArgs arguments(dynamic_cast<GuiGraphicsComposition*>(this));
+					ContextChanged.Execute(arguments);
+				}
+			}
+
 /***********************************************************************
 GuiRepeatStackComposition
 ***********************************************************************/
@@ -165,6 +190,17 @@ GuiRepeatStackComposition
 				return item;
 			}
 
+			GuiRepeatStackComposition::GuiRepeatStackComposition()
+			{
+				ItemInserted.SetAssociatedComposition(this);
+				ItemRemoved.SetAssociatedComposition(this);
+				ContextChanged.SetAssociatedComposition(this);
+			}
+
+			GuiRepeatStackComposition::~GuiRepeatStackComposition()
+			{
+			}
+
 /***********************************************************************
 GuiRepeatFlowComposition
 ***********************************************************************/
@@ -192,6 +228,17 @@ GuiRepeatFlowComposition
 				auto item = flowItems[index];
 				RemoveChild(item);
 				return item;
+			}
+
+			GuiRepeatFlowComposition::GuiRepeatFlowComposition()
+			{
+				ItemInserted.SetAssociatedComposition(this);
+				ItemRemoved.SetAssociatedComposition(this);
+				ContextChanged.SetAssociatedComposition(this);
+			}
+
+			GuiRepeatFlowComposition::~GuiRepeatFlowComposition()
+			{
 			}
 		}
 	}

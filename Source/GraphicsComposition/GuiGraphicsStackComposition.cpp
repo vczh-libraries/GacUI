@@ -131,32 +131,29 @@ GuiStackComposition
 			
 			Size GuiStackComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
 			{
-				Size minSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				Size minStackSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
 					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
 					{
-						if (minSize.x < stackItemTotalSize.x)
-						{
-							minSize.x = stackItemTotalSize.x;
-						}
+						minStackSize.x = stackItemTotalSize.x;
 					}
 					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
 					{
-						if (minSize.y < stackItemTotalSize.y)
-						{
-							minSize.y = stackItemTotalSize.y;
-						}
+						minStackSize.y = stackItemTotalSize.y;
 					}
 				}
 
-				vint x = 0;
-				vint y = 0;
-				if (extraMargin.left > 0) x += extraMargin.left;
-				if (extraMargin.right > 0) x += extraMargin.right;
-				if (extraMargin.top > 0) y += extraMargin.top;
-				if (extraMargin.bottom > 0) y += extraMargin.bottom;
-				return minSize + Size(x, y);
+				if (extraMargin.left > 0) minStackSize.x += extraMargin.left;
+				if (extraMargin.right > 0) minStackSize.x += extraMargin.right;
+				if (extraMargin.top > 0) minStackSize.y += extraMargin.top;
+				if (extraMargin.bottom > 0) minStackSize.y += extraMargin.bottom;
+
+				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				return Size(
+					minStackSize.x > minClientSize.x ? minStackSize.x : minClientSize.x,
+					minStackSize.y > minClientSize.y ? minStackSize.y : minClientSize.y
+					);
 			}
 
 			GuiStackComposition::GuiStackComposition()
@@ -195,6 +192,7 @@ GuiStackComposition
 			void GuiStackComposition::SetDirection(Direction value)
 			{
 				direction = value;
+				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 
@@ -206,6 +204,7 @@ GuiStackComposition
 			void GuiStackComposition::SetPadding(vint value)
 			{
 				padding = value;
+				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 
@@ -217,13 +216,21 @@ GuiStackComposition
 
 			Rect GuiStackComposition::GetBounds()
 			{
-				for (vint i = 0; i < stackItems.Count(); i++)
+				if (!needUpdate)
 				{
-					if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
+					for (vint i = 0; i < stackItems.Count(); i++)
 					{
-						UpdateStackItemBounds();
-						break;
+						if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
+						{
+							needUpdate = true;
+							break;
+						}
 					}
+				}
+
+				if (needUpdate)
+				{
+					UpdateStackItemBounds();
 				}
 
 				Rect bounds = GuiBoundsComposition::GetBounds();
@@ -239,7 +246,8 @@ GuiStackComposition
 
 			void GuiStackComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin=value;
+				extraMargin = value;
+				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 
@@ -292,7 +300,7 @@ GuiStackItemComposition
 
 			void GuiStackItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
-				GuiGraphicsSite::OnParentChanged(oldParent, newParent);
+				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
 				stackParent = newParent == 0 ? 0 : dynamic_cast<GuiStackComposition*>(newParent);
 			}
 
@@ -302,18 +310,13 @@ GuiStackItemComposition
 			}
 
 			GuiStackItemComposition::GuiStackItemComposition()
-				:stackParent(0)
+				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
 			GuiStackItemComposition::~GuiStackItemComposition()
 			{
-			}
-
-			bool GuiStackItemComposition::IsSizeAffectParent()
-			{
-				return false;
 			}
 
 			Rect GuiStackItemComposition::GetBounds()

@@ -27,14 +27,22 @@ Table Compositions
 			/// </summary>
 			struct GuiCellOption
 			{
-				/// <summary>Sizing algorithm</summary>
+				/// <summary>Size configuration</summary>
 				enum ComposeType
 				{
-					/// <summary>Set the size to an absolute value.</summary>
+					/// <summary>
+					/// Set the size to an absolute value.
+					/// The size will not change even if affected cell's minimum size is bigger that this.
+					/// </summary>
 					Absolute,
-					/// <summary>Set the size to a percentage number of the whole table.</summary>
+					/// <summary>
+					/// Set the size to a percentage number of the whole table.
+					/// </summary>
 					Percentage,
-					/// <summary>Set the size to the minimum size of the cell element.</summary>
+					/// <summary>
+					/// Set the size to the minimum size of the cell element.
+					/// Only cells that take one row or column at this position are considered.
+					/// </summary>
 					MinSize,
 				};
 
@@ -128,8 +136,7 @@ Table Compositions
 														vint (*getLocation)(GuiCellComposition*),
 														vint (*getSpan)(GuiCellComposition*),
 														vint (*getRow)(vint, vint),
-														vint (*getCol)(vint, vint),
-														vint maxPass
+														vint (*getCol)(vint, vint)
 														);
 				void								UpdateCellBoundsPercentages(
 														collections::Array<vint>& dimSizes,
@@ -211,15 +218,15 @@ Table Compositions
 			/// <summary>
 			/// Represents a cell composition of a <see cref="GuiTableComposition"/>.
 			/// </summary>
-			class GuiCellComposition : public GuiGraphicsSite, public Description<GuiCellComposition>
+			class GuiCellComposition : public GuiGraphicsComposition, public Description<GuiCellComposition>
 			{
 				friend class GuiTableComposition;
 			protected:
-				vint								row;
-				vint								rowSpan;
-				vint								column;
-				vint								columnSpan;
-				GuiTableComposition*				tableParent;
+				vint								row = -1;
+				vint								rowSpan = 1;
+				vint								column = -1;
+				vint								columnSpan = 1;
+				GuiTableComposition*				tableParent = nullptr;
 				Size								lastPreferredSize;
 				
 				void								ClearSitedCells(GuiTableComposition* table);
@@ -259,10 +266,10 @@ Table Compositions
 				Rect								GetBounds()override;
 			};
 
-			class GuiTableSplitterCompositionBase : public GuiGraphicsSite, public Description<GuiTableSplitterCompositionBase>
+			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition, public Description<GuiTableSplitterCompositionBase>
 			{
 			protected:
-				GuiTableComposition*				tableParent;
+				GuiTableComposition*				tableParent = nullptr;
 
 				bool								dragging;
 				Point								draggingPoint;
@@ -305,7 +312,7 @@ Table Compositions
 			class GuiRowSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiRowSplitterComposition>
 			{
 			protected:
-				vint								rowsToTheTop;
+				vint								rowsToTheTop = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 			public:
@@ -328,7 +335,7 @@ Table Compositions
 			class GuiColumnSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiColumnSplitterComposition>
 			{
 			protected:
-				vint								columnsToTheLeft;
+				vint								columnsToTheLeft = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
 			public:

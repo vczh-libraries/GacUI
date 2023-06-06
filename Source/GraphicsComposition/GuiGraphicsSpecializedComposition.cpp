@@ -12,9 +12,10 @@ GuiSideAlignedComposition
 ***********************************************************************/
 
 			GuiSideAlignedComposition::GuiSideAlignedComposition()
-				:direction(Top)
-				,maxLength(10)
-				,maxRatio(1.0)
+				: GuiGraphicsComposition(false)
+				, direction(Top)
+				, maxLength(10)
+				, maxRatio(1.0)
 			{
 			}
 
@@ -66,11 +67,6 @@ GuiSideAlignedComposition
 				}
 			}
 
-			bool GuiSideAlignedComposition::IsSizeAffectParent()
-			{
-				return false;
-			}
-
 			Rect GuiSideAlignedComposition::GetBounds()
 			{
 				Rect result;
@@ -116,10 +112,11 @@ GuiPartialViewComposition
 ***********************************************************************/
 
 			GuiPartialViewComposition::GuiPartialViewComposition()
-				:wRatio(0.0)
-				,wPageSize(1.0)
-				,hRatio(0.0)
-				,hPageSize(1.0)
+				: GuiGraphicsComposition(false)
+				, wRatio(0.0)
+				, wPageSize(1.0)
+				, hRatio(0.0)
+				, hPageSize(1.0)
 			{
 			}
 
@@ -181,11 +178,6 @@ GuiPartialViewComposition
 					hPageSize = value;
 					InvokeOnCompositionStateChanged();
 				}
-			}
-
-			bool GuiPartialViewComposition::IsSizeAffectParent()
-			{
-				return false;
 			}
 
 			Rect GuiPartialViewComposition::GetBounds()

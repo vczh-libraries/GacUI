@@ -43,6 +43,7 @@ GuiBoundsComposition
 			}
 
 			GuiBoundsComposition::GuiBoundsComposition()
+				: GuiGraphicsComposition(true)
 			{
 			}
 
@@ -50,61 +51,56 @@ GuiBoundsComposition
 			{
 			}
 
-			bool GuiBoundsComposition::GetSizeAffectParent()
-			{
-				return sizeAffectParent;
-			}
-
-			void GuiBoundsComposition::SetSizeAffectParent(bool value)
-			{
-				sizeAffectParent = value;
-			}
-
-			bool GuiBoundsComposition::IsSizeAffectParent()
-			{
-				return sizeAffectParent;
-			}
-
 			Rect GuiBoundsComposition::GetBounds()
 			{
 				Rect result = GetPreferredBounds();
-				if (GetParent() && IsAlignedToParent())
-				{
-					Size clientSize = GetParent()->GetClientArea().GetSize();
-					if (alignmentToParent.left >= 0 && alignmentToParent.right >= 0)
-					{
-						result.x1 = alignmentToParent.left;
-						result.x2 = clientSize.x - alignmentToParent.right;
-					}
-					else if (alignmentToParent.left >= 0)
-					{
-						vint width = result.Width();
-						result.x1 = alignmentToParent.left;
-						result.x2 = result.x1 + width;
-					}
-					else if (alignmentToParent.right >= 0)
-					{
-						vint width = result.Width();
-						result.x2 = clientSize.x - alignmentToParent.right;
-						result.x1 = result.x2 - width;
-					}
 
-					if (alignmentToParent.top >= 0 && alignmentToParent.bottom >= 0)
+				if (GetParent())
+				{
+					Margin clientMargin = GetParent()->GetInternalMargin();
+					result.x1 += clientMargin.left;
+					result.x2 += clientMargin.left;
+					result.y1 += clientMargin.top;
+					result.y2 += clientMargin.top;
+
+					if (IsAlignedToParent())
 					{
-						result.y1 = alignmentToParent.top;
-						result.y2 = clientSize.y - alignmentToParent.bottom;
-					}
-					else if (alignmentToParent.top >= 0)
-					{
-						vint height = result.Height();
-						result.y1 = alignmentToParent.top;
-						result.y2 = result.y1 + height;
-					}
-					else if (alignmentToParent.bottom >= 0)
-					{
-						vint height = result.Height();
-						result.y2 = clientSize.y - alignmentToParent.bottom;
-						result.y1 = result.y2 - height;
+						Size clientSize = GetParent()->GetClientArea().GetSize();
+						if (alignmentToParent.left >= 0 && alignmentToParent.right >= 0)
+						{
+							result.x1 = alignmentToParent.left;
+							result.x2 = clientSize.x - alignmentToParent.right;
+						}
+						else if (alignmentToParent.left >= 0)
+						{
+							vint width = result.Width();
+							result.x1 = alignmentToParent.left;
+							result.x2 = result.x1 + width;
+						}
+						else if (alignmentToParent.right >= 0)
+						{
+							vint width = result.Width();
+							result.x2 = clientSize.x - alignmentToParent.right;
+							result.x1 = result.x2 - width;
+						}
+
+						if (alignmentToParent.top >= 0 && alignmentToParent.bottom >= 0)
+						{
+							result.y1 = alignmentToParent.top;
+							result.y2 = clientSize.y - alignmentToParent.bottom;
+						}
+						else if (alignmentToParent.top >= 0)
+						{
+							vint height = result.Height();
+							result.y1 = alignmentToParent.top;
+							result.y2 = result.y1 + height;
+						}
+						else if (alignmentToParent.bottom >= 0)
+						{
+							vint height = result.Height();
+							result.y2 = clientSize.y - alignmentToParent.bottom;
+							result.y1 = result.y2 - height;
+						}
 					}
 				}
 				UpdatePreviousBounds(result);

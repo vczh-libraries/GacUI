@@ -303,7 +303,7 @@ Basic Construction
 				/// <returns>The font to render the text.</returns>
 				virtual const FontProperties&			GetDisplayFont();
 				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
-				/// <returns>The context of this context.</returns>
+				/// <returns>The context of this control.</returns>
 				virtual description::Value				GetContext();
 				/// <summary>Set the context of this control.</summary>
 				/// <param name="value">The context of this control.</param>

@@ -38,6 +38,7 @@ namespace vl
 
 		namespace compositions
 		{
+			class GuiWindowComposition;
 			class GuiGraphicsHost;
 
 /***********************************************************************
@@ -53,10 +54,12 @@ Basic Construction
 				typedef collections::List<GuiGraphicsComposition*> CompositionList;
 
 				friend class controls::GuiControl;
+				friend class GuiWindowComposition;
 				friend class GuiGraphicsHost;
 				friend void InvokeOnCompositionStateChanged(GuiGraphicsComposition* composition);
 				friend Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
 				friend Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
+				friend Rect InvokeGetBoundsInternal(GuiGraphicsComposition* composition, Rect expectedBounds, bool considerPreferredMinSize);
 			public:
 				/// <summary>
 				/// Minimum size limitation.
@@ -80,7 +83,10 @@ Basic Construction
 					INativeWindow*							nativeWindow = nullptr;
 				};
 
-			protected:
+			private:
+				bool										isRendering = false;
+				bool										isTrivialComposition = true;
+
 				CompositionList								children;
 				GuiGraphicsComposition*						parent = nullptr;
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
@@ -94,11 +100,9 @@ Basic Construction
 				INativeCursor*								associatedCursor = nullptr;
 				INativeWindowListener::HitTestResult		associatedHitTestResult = INativeWindowListener::NoDecision;
 
-				Margin										margin;
+			protected:
 				Margin										internalMargin;
 				Size										preferredMinSize;
-
-				bool										isRendering = false;
 
 				virtual void								OnControlParentChanged(controls::GuiControl* control);
 				virtual void								OnChildInserted(GuiGraphicsComposition* child);
@@ -111,15 +115,33 @@ Basic Construction
 				void										SetAssociatedControl(controls::GuiControl* control);
 				void										InvokeOnCompositionStateChanged();
 
-				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize) = 0;
-				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize) = 0;
+			protected:
+				Rect										previousBounds;
 
+				void										UpdatePreviousBounds(Rect bounds);
+
+				/// <summary>Calculate the final bounds from an expected bounds.</summary>
+				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
+				/// <param name="expectedBounds">The expected bounds.</param>
+				virtual Rect								GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
+				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize);
+				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize);
+
+			protected:
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
+
 			public:
-				GuiGraphicsComposition();
+				GuiGraphicsComposition(bool _isTrivialComposition);
 				~GuiGraphicsComposition();
 
+				/// <summary>Event that will be raised when the final bounds is changed.</summary>
+				compositions::GuiNotifyEvent				BoundsChanged;
+
 				bool										IsRendering();
+
+				/// <summary>Test is this composition a trivial composition. A trivial composition means its parent doesn't do the layout for it.</summary>
+				/// <returns>Returns true if it is a trivial composition.</returns>
+				bool										IsTrivialComposition();
 
 				/// <summary>Get the parent composition.</summary>
 				/// <returns>The parent composition.</returns>
@@ -227,27 +249,21 @@ Basic Construction
 				/// <returns>The related cursor.</returns>
 				INativeCursor*								GetRelatedCursor();
 				
-				/// <summary>Get the margin.</summary>
-				/// <returns>The margin.</returns>
-				virtual Margin								GetMargin();
-				/// <summary>Set the margin.</summary>
-				/// <param name="value">The margin.</param>
-				virtual void								SetMargin(Margin value);
 				/// <summary>Get the internal margin.</summary>
 				/// <returns>The internal margin.</returns>
-				virtual Margin								GetInternalMargin();
+				Margin										GetInternalMargin();
 				/// <summary>Set the internal margin.</summary>
 				/// <param name="value">The internal margin.</param>
-				virtual void								SetInternalMargin(Margin value);
+				void										SetInternalMargin(Margin value);
 				/// <summary>Get the preferred minimum size.</summary>
 				/// <returns>The preferred minimum size.</returns>
-				virtual Size								GetPreferredMinSize();
+				Size										GetPreferredMinSize();
 				/// <summary>Set the preferred minimum size.</summary>
 				/// <param name="value">The preferred minimum size.</param>
-				virtual void								SetPreferredMinSize(Size value);
+				void										SetPreferredMinSize(Size value);
 				/// <summary>Get the client area.</summary>
 				/// <returns>The client area.</returns>
-				virtual Rect								GetClientArea();
+				Rect										GetClientArea();
 				/// <summary>Force to calculate layout and size immediately</summary>
 				virtual void								ForceCalculateSizeImmediately();
 
@@ -257,57 +273,25 @@ Basic Construction
 				/// <summary>Get the preferred bounds.</summary>
 				/// <returns>The preferred bounds.</returns>
 				Rect										GetPreferredBounds();
-				
-				/// <summary>Test is the size calculation affected by the parent.</summary>
-				/// <returns>Returns true if the size calculation is affected by the parent.</returns>
-				virtual bool								IsSizeAffectParent()=0;
-				/// <summary>Get the bounds.</summary>
-				/// <returns>The bounds.</returns>
-				virtual Rect								GetBounds()=0;
-			};
-
-			/// <summary>
-			/// A general implementation for <see cref="GuiGraphicsComposition"/>.
-			/// </summary>
-			class GuiGraphicsSite : public GuiGraphicsComposition, public Description<GuiGraphicsSite>
-			{
-				friend Rect							InvokeGetBoundsInternal(GuiGraphicsSite* composition, Rect expectedBounds, bool considerPreferredMinSize);
-			protected:
-				Rect								previousBounds;
-
-				/// <summary>Calculate the final bounds from an expected bounds.</summary>
-				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
-				/// <param name="expectedBounds">The expected bounds.</param>
-				virtual Rect						GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
-
-				void								UpdatePreviousBounds(Rect bounds);
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
-				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
-			public:
-				GuiGraphicsSite();
-				~GuiGraphicsSite();
-
-				/// <summary>Event that will be raised when the final bounds is changed.</summary>
-				compositions::GuiNotifyEvent		BoundsChanged;
-				
-				bool								IsSizeAffectParent()override;
 
 				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
 				/// <returns>The previous calculated bounds.</returns>
-				Rect								GetPreviousCalculatedBounds();
+				Rect										GetPreviousCalculatedBounds();
+				/// <summary>Get the bounds.</summary>
+				/// <returns>The bounds.</returns>
+				virtual Rect								GetBounds() = 0;
 			};
 			
 			/// <summary>
 			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
 			/// </summary>
-			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
+			class GuiWindowComposition : public GuiGraphicsComposition, public Description<GuiWindowComposition>
 			{
 			public:
 				GuiWindowComposition();
 				~GuiWindowComposition();
 
 				Rect								GetBounds()override;
-				void								SetMargin(Margin value)override;
 			};
 
 /***********************************************************************

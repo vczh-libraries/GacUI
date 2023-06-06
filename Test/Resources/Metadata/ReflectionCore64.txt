@@ -1386,6 +1386,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     property Bounds : presentation::Rect { get:GetBounds }
     property Children : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^ { get:GetChildren }
     property ClientArea : presentation::Rect { get:GetClientArea }
+    property ClientAreaMargin : presentation::Margin { get:GetClientAreaMargin }
     property EventuallyVisible : system::Boolean { get:GetEventuallyVisible }
     property GlobalBounds : presentation::Rect { get:GetGlobalBounds }
     property InternalMargin : presentation::Margin { get:GetInternalMargin set:SetInternalMargin }
@@ -1413,6 +1414,7 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Children)
     function GetChildren() : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^;
     function GetClientArea() : presentation::Rect;
+    function GetClientAreaMargin() : presentation::Margin;
     function GetEventuallyVisible() : system::Boolean;
     function GetGlobalBounds() : presentation::Rect;
     function GetInternalMargin() : presentation::Margin;

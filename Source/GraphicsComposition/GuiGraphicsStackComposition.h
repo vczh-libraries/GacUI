@@ -44,12 +44,13 @@ Stack Compositions
 					ReversedVertical,
 				};
 			protected:
-				Direction							direction = Horizontal;
 				ItemCompositionList					stackItems;
 				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
-				
-				vint								padding = 0;
 				vint								adjustment = 0;
+				bool								needUpdate = false;
+
+				Direction							direction = Horizontal;
+				vint								padding = 0;
 				Margin								extraMargin;
 
 				collections::Array<Rect>			stackItemBounds;
@@ -109,11 +110,11 @@ Stack Compositions
 			/// <summary>
 			/// Represents a stack item composition of a <see cref="GuiStackComposition"/>.
 			/// </summary>
-			class GuiStackItemComposition : public GuiGraphicsSite, public Description<GuiStackItemComposition>
+			class GuiStackItemComposition : public GuiGraphicsComposition, public Description<GuiStackItemComposition>
 			{
 				friend class GuiStackComposition;
 			protected:
-				GuiStackComposition*				stackParent;
+				GuiStackComposition*				stackParent = nullptr;
 				Rect								bounds;
 				Margin								extraMargin;
 
@@ -123,7 +124,6 @@ Stack Compositions
 				GuiStackItemComposition();
 				~GuiStackItemComposition();
 				
-				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 				/// <summary>Set the expected bounds of a stack item. In most of the cases only the size of the bounds is used.</summary>
 				/// <param name="value">The expected bounds of a stack item.</param>

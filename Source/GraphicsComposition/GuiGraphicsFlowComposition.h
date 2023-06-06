@@ -31,6 +31,8 @@ Flow Compositions
 				Left,
 				/// <summary>Align to the center.</summary>
 				Center,
+				/// <summary>Align to the Right.</summary>
+				Right,
 				/// <summary>Extend to the entire row.</summary>
 				Extend,
 			};
@@ -118,14 +120,17 @@ Flow Compositions
 			/// </summary>
 			struct GuiFlowOption
 			{
-				/// <summary>Base line calculation algorithm</summary>
+				/// <summary>
+				/// Specify the the relationship between this item and the baseline of the row that this item currently belongs to.
+				/// The height of a row is the maximum value of minimum heights of all items in it.
+				/// </summary>
 				enum BaselineType
 				{
-					/// <summary>By percentage of the height from the top.</summary>
+					/// <summary>Top of this item is "percentage" times of the item height above the baseline.</summary>
 					Percentage,
-					/// <summary>By a distance from the top.</summary>
+					/// <summary>Top of this item is "distance" above the baseline.</summary>
 					FromTop,
-					/// <summary>By a distance from the bottom.</summary>
+					/// <summary>Bottom of this item is "distance" below the baseline.</summary>
 					FromBottom,
 				};
 				
@@ -142,7 +147,7 @@ Flow Compositions
 			/// <summary>
 			/// Represents a flow item composition of a <see cref="GuiFlowComposition"/>.
 			/// </summary>
-			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
+			class GuiFlowItemComposition : public GuiGraphicsComposition, public Description<GuiFlowItemComposition>
 			{
 				friend class GuiFlowComposition;
 			protected:
@@ -157,7 +162,6 @@ Flow Compositions
 				GuiFlowItemComposition();
 				~GuiFlowItemComposition();
 				
-				bool								IsSizeAffectParent()override;
 				Rect								GetBounds()override;
 				void								SetBounds(Rect value);
 				

@@ -218,11 +218,15 @@ ListListViewItemTemplate
 							auto cell = new GuiCellComposition;
 							table->AddChild(cell);
 							cell->SetSite(0, 1, 3, 1);
-							cell->SetMargin(Margin(0, 0, 16, 0));
+
+							auto textBounds = new GuiBoundsComposition;
+							cell->AddChild(textBounds);
+							textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+							textBounds->SetAlignmentToParent(Margin(0, 0, 16, 0));
 
 							text = GuiSolidLabelElement::Create();
 							text->SetAlignments(Alignment::Left, Alignment::Center);
-							cell->SetOwnedElement(Ptr(text));
+							textBounds->SetOwnedElement(Ptr(text));
 						}
 					}
 
@@ -596,12 +600,16 @@ DetailListViewItemTemplate
 								auto cell = new GuiCellComposition;
 								table->AddChild(cell);
 								cell->SetSite(0, 1, 3, 1);
-								cell->SetMargin(Margin(0, 0, 8, 0));
+
+								auto textBounds = new GuiBoundsComposition;
+								cell->AddChild(textBounds);
+								textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+								textBounds->SetAlignmentToParent(Margin(0, 0, 8, 0));
 
 								text = GuiSolidLabelElement::Create();
 								text->SetAlignments(Alignment::Left, Alignment::Center);
 								text->SetEllipse(true);
-								cell->SetOwnedElement(Ptr(text));
+								textBounds->SetOwnedElement(Ptr(text));
 							}
 						}
 					}
@@ -631,7 +639,11 @@ DetailListViewItemTemplate
 								auto cell = new GuiCellComposition;
 								textTable->AddChild(cell);
 								cell->SetSite(0, i + 1, 1, 1);
-								cell->SetMargin(Margin(8, 0, 8, 0));
+
+								auto textBounds = new GuiBoundsComposition;
+								cell->AddChild(textBounds);
+								textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+								textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
 
 								subItems[i] = GuiSolidLabelElement::Create();
 								subItems[i]->SetAlignments(Alignment::Left, Alignment::Center);
@@ -639,7 +651,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetEllipse(true);
 								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
 								subItems[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-								cell->SetOwnedElement(Ptr(subItems[i]));
+								textBounds->SetOwnedElement(Ptr(subItems[i]));
 							}
 							OnColumnChanged();
 						}
