@@ -27,13 +27,12 @@
 ## Progressing
 
 - UnitTest.vcxproj
-  - Test compositions
   - Test controls with a unit test only platform provider running in hosted mode
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
 - Refactor compositions (after unit test for `<Bounds>` are finished)
-  - TODO in `TestCompositions_Bounds.cpp`.
+  - TODO in `TestCompositions.h`.
     - `AlignmentToParent` should not consider parent's `InternalMargin`.
   - Fix document
 - Refactor compositions (after unit test for compositions are finished)
@@ -62,6 +61,9 @@
     - If any cached values are changed, flagged(C).
   - Fix document.
 - Fill empty test cases after composition refactoring.
+  - `TestCompositions_Bounds.cpp`.
+  - `TestCompositions_Table.cpp`.
+  - `TestCompositions_Responsive.cpp`.
 - `FlowAlignment::Right` in demo.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.

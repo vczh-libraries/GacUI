@@ -634,4 +634,12 @@ TEST_FILE
 
 		SafeDeleteComposition(table);
 	});
+
+	TEST_CASE(L"Test <RowSplitter>")
+	{
+	});
+
+	TEST_CASE(L"Test <ColumnSplitter>")
+	{
+	});
 }
