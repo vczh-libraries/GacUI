@@ -15,7 +15,7 @@ namespace composition_bounds_tests
 		GuiGraphicsComposition*			ownerComposition = nullptr;
 		Size							size;
 
-		void SetOwnerComposition(compositions::GuiGraphicsComposition* composition)
+		void SetOwnerComposition(compositions::GuiGraphicsComposition* composition) override
 		{
 			ownerComposition = composition;
 		}
