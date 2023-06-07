@@ -10,26 +10,6 @@ namespace vl
 		{
 			using namespace elements;
 
-			void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
-			{
-				composition->InvokeOnCompositionStateChanged();
-			}
-
-			Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize)
-			{
-				return composition->GetMinPreferredClientSizeInternal(considerPreferredMinSize);
-			}
-
-			Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize)
-			{
-				return composition->GetPreferredBoundsInternal(considerPreferredMinSize);
-			}
-
-			Rect InvokeGetBoundsInternal(GuiGraphicsComposition* composition, Rect expectedBounds, bool considerPreferredMinSize)
-			{
-				return composition->GetBoundsInternal(expectedBounds, considerPreferredMinSize);
-			}
-
 /***********************************************************************
 GuiGraphicsComposition
 ***********************************************************************/

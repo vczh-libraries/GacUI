@@ -56,10 +56,6 @@ Basic Construction
 				friend class controls::GuiControl;
 				friend class GuiWindowComposition;
 				friend class GuiGraphicsHost;
-				friend void InvokeOnCompositionStateChanged(GuiGraphicsComposition* composition);
-				friend Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
-				friend Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
-				friend Rect InvokeGetBoundsInternal(GuiGraphicsComposition* composition, Rect expectedBounds, bool considerPreferredMinSize);
 			public:
 				/// <summary>
 				/// Minimum size limitation.
@@ -116,26 +112,11 @@ Basic Construction
 				void										InvokeOnCompositionStateChanged();
 
 			protected:
-				Rect										previousBounds;
-
-				void										UpdatePreviousBounds(Rect bounds);
-
-				/// <summary>Calculate the final bounds from an expected bounds.</summary>
-				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
-				/// <param name="expectedBounds">The expected bounds.</param>
-				virtual Rect								GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
-				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize);
-				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize);
-
-			protected:
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 
 			public:
 				GuiGraphicsComposition(bool _isTrivialComposition);
 				~GuiGraphicsComposition();
-
-				/// <summary>Event that will be raised when the final bounds is changed.</summary>
-				compositions::GuiNotifyEvent				BoundsChanged;
 
 				bool										IsRendering();
 
@@ -261,25 +242,38 @@ Basic Construction
 				/// <summary>Set the preferred minimum size.</summary>
 				/// <param name="value">The preferred minimum size.</param>
 				void										SetPreferredMinSize(Size value);
-				/// <summary>Get the client area.</summary>
-				/// <returns>The client area.</returns>
-				Rect										GetClientArea();
-				/// <summary>Force to calculate layout and size immediately</summary>
-				virtual void								ForceCalculateSizeImmediately();
 
-				/// <summary>Get the preferred minimum client size.</summary>
-				/// <returns>The preferred minimum client size.</returns>
-				Size										GetMinPreferredClientSize();
-				/// <summary>Get the preferred bounds.</summary>
-				/// <returns>The preferred bounds.</returns>
-				Rect										GetPreferredBounds();
+			protected:
+				Size										cachedMinSize;
+				Rect										cachedBounds;
 
-				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
-				/// <returns>The previous calculated bounds.</returns>
-				Rect										GetPreviousCalculatedBounds();
-				/// <summary>Get the bounds.</summary>
-				/// <returns>The bounds.</returns>
-				virtual Rect								GetBounds() = 0;
+			public:
+
+				/// <summary>Event that will be raised when the bounds is updated.</summary>
+				compositions::GuiNotifyEvent				CachedBoundsChanged;
+
+				virtual Size								CalculateMinSize();
+				virtual Size								CalculateMinClientSizeForParent(Margin parentInternalMargin);
+				virtual Rect								CalculateBounds(Rect parentBounds);
+
+				void										UpdateMinSize();
+				void										UpdateBounds(Rect parentBounds);
+
+				/// <summary>Get the updated minimum size.</summary>
+				/// <returns>The updated minimum size.</returns>
+				Rect										GetCachedMinSize();
+
+				/// <summary>Get the updated minimum client size. It is the minimum size removing the internal margin.</summary>
+				/// <returns>The updated minimum client size.</returns>
+				Rect										GetCachedMinClientSize();
+
+				/// <summary>Get the updated bounds.</summary>
+				/// <returns>The updated bounds.</returns>
+				Rect										GetCachedBounds();
+
+				/// <summary>Get the updated client bounds. It is the bounds removing the internal margin.</summary>
+				/// <returns>The updated client bounds.</returns>
+				Rect										GetCachedClientArea();
 			};
 
 /***********************************************************************
