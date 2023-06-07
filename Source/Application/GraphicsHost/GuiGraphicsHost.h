@@ -12,7 +12,7 @@ Interfaces:
 #include "GuiGraphicsHost_ShortcutKey.h"
 #include "GuiGraphicsHost_Alt.h"
 #include "GuiGraphicsHost_Tab.h"
-#include "../GraphicsCompositions/GuiGraphicsCompositionBase.h"
+#include "../GraphicsCompositions/GuiGraphicsWindowComposition.h"
 
 namespace vl
 {

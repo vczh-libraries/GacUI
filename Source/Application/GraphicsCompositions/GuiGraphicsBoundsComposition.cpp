@@ -1,4 +1,4 @@
-#include "GuiGraphicsBasicComposition.h"
+#include "GuiGraphicsBoundsComposition.h"
 
 namespace vl
 {

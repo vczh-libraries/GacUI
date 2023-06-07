@@ -6,8 +6,8 @@ GacUI::Composition System
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
-#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
+#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITION
+#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITION
 
 #include "../../GraphicsElement/GuiGraphicsElementInterfaces.h"
 #include "GuiGraphicsEventReceiver.h"
@@ -280,18 +280,6 @@ Basic Construction
 				/// <summary>Get the bounds.</summary>
 				/// <returns>The bounds.</returns>
 				virtual Rect								GetBounds() = 0;
-			};
-			
-			/// <summary>
-			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
-			/// </summary>
-			class GuiWindowComposition : public GuiGraphicsComposition, public Description<GuiWindowComposition>
-			{
-			public:
-				GuiWindowComposition();
-				~GuiWindowComposition();
-
-				Rect								GetBounds()override;
 			};
 
 /***********************************************************************

@@ -1,6 +1,6 @@
-#include "GuiGraphicsCompositionBase.h"
-#include "../Controls/GuiWindowControls.h"
+#include "GuiGraphicsComposition.h"
 #include "../GraphicsHost/GuiGraphicsHost.h"
+#include "../Controls/GuiWindowControls.h"
 
 namespace vl
 {
@@ -30,33 +30,6 @@ namespace vl
 			Rect InvokeGetBoundsInternal(GuiGraphicsComposition* composition, Rect expectedBounds, bool considerPreferredMinSize)
 			{
 				return composition->GetBoundsInternal(expectedBounds, considerPreferredMinSize);
-			}
-
-/***********************************************************************
-GuiWindowComposition
-***********************************************************************/
-
-			GuiWindowComposition::GuiWindowComposition()
-				: GuiGraphicsComposition(true)
-			{
-			}
-
-			GuiWindowComposition::~GuiWindowComposition()
-			{
-			}
-
-			Rect GuiWindowComposition::GetBounds()
-			{
-				Rect bounds;
-				if (relatedHostRecord)
-				{
-					if (auto window = relatedHostRecord->host->GetNativeWindow())
-					{
-						bounds = Rect(Point(0, 0), window->Convert(window->GetClientSize()));
-					}
-				}
-				UpdatePreviousBounds(bounds);
-				return bounds;
 			}
 
 /***********************************************************************

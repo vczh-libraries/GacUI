@@ -1,7 +1,7 @@
 #include "GuiInstanceRootObject.h"
 #include "GuiWindowControls.h"
 #include "../GraphicsHost/GuiGraphicsHost.h"
-#include "../GraphicsCompositions/GuiGraphicsCompositionBase.h"
+#include "../GraphicsCompositions/GuiGraphicsComposition.h"
 
 namespace vl
 {

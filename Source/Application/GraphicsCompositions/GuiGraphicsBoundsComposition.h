@@ -6,10 +6,10 @@ GacUI::Composition System
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBASICCOMPOSITION
-#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBASICCOMPOSITION
+#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBOUNDSCOMPOSITION
+#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBOUNDSCOMPOSITION
 
-#include "../GraphicsCompositions/GuiGraphicsCompositionBase.h"
+#include "../GraphicsCompositions/GuiGraphicsComposition.h"
 
 namespace vl
 {
