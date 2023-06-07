@@ -101,5 +101,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsWindowComposition.cpp">
       <Filter>Application\GraphicsCompositions</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition_Helpers.cpp">
+      <Filter>Application\GraphicsCompositions</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition_Layout.cpp">
+      <Filter>Application\GraphicsCompositions</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

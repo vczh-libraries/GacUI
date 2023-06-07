@@ -1,6 +1,6 @@
 #include "GuiGraphicsComposition.h"
 #include "../GraphicsHost/GuiGraphicsHost.h"
-#include "../Controls/GuiWindowControls.h"
+#include "../Controls/GuiBasicControls.h"
 
 namespace vl
 {
@@ -8,8 +8,6 @@ namespace vl
 	{
 		namespace compositions
 		{
-			using namespace collections;
-			using namespace controls;
 			using namespace elements;
 
 			void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
@@ -645,120 +643,6 @@ GuiGraphicsComposition
 			Rect GuiGraphicsComposition::GetPreviousCalculatedBounds()
 			{
 				return previousBounds;
-			}
-
-/***********************************************************************
-Helper Functions
-***********************************************************************/
-
-			void NotifyFinalizeInstance(controls::GuiControl* value)
-			{
-				if (value)
-				{
-					NotifyFinalizeInstance(value->GetBoundsComposition());
-				}
-			}
-
-			void NotifyFinalizeInstance(GuiGraphicsComposition* value)
-			{
-				if (value)
-				{
-					bool finalized = false;
-					if (auto root = dynamic_cast<GuiInstanceRootObject*>(value))
-					{
-						if (root->IsFinalized())
-						{
-							finalized = true;
-						}
-						else
-						{
-							root->FinalizeInstance();
-						}
-					}
-
-					if (auto control = value->GetAssociatedControl())
-					{
-						if (auto root = dynamic_cast<GuiInstanceRootObject*>(control))
-						{
-							if (root->IsFinalized())
-							{
-								finalized = true;
-							}
-							else
-							{
-								root->FinalizeInstance();
-							}
-						}
-					}
-
-					if (!finalized)
-					{
-						for (auto child : value->Children())
-						{
-							NotifyFinalizeInstance(child);
-						}
-					}
-				}
-			}
-
-			void SafeDeleteControlInternal(controls::GuiControl* value)
-			{
-				if(value)
-				{
-					if (value->GetRelatedControlHost() != value)
-					{
-						GuiGraphicsComposition* bounds = value->GetBoundsComposition();
-						if (bounds->GetParent())
-						{
-							bounds->GetParent()->RemoveChild(bounds);
-						}
-					}
-					delete value;
-				}
-			}
-
-			void SafeDeleteCompositionInternal(GuiGraphicsComposition* value)
-			{
-				if (value)
-				{
-					if (value->GetParent())
-					{
-						value->GetParent()->RemoveChild(value);
-					}
-
-					if (value->GetAssociatedControl())
-					{
-						SafeDeleteControlInternal(value->GetAssociatedControl());
-					}
-					else
-					{
-						// TODO: (enumerable) foreach:reversed
-						for (vint i = value->Children().Count() - 1; i >= 0; i--)
-						{
-							SafeDeleteCompositionInternal(value->Children().Get(i));
-						}
-						delete value;
-					}
-				}
-			}
-
-			void SafeDeleteControl(controls::GuiControl* value)
-			{
-				if (auto controlHost = dynamic_cast<controls::GuiControlHost*>(value))
-				{
-					controlHost->DeleteAfterProcessingAllEvents({});
-				}
-				else
-				{
-					NotifyFinalizeInstance(value);
-					SafeDeleteControlInternal(value);
-				}
-			}
-
-			void SafeDeleteComposition(GuiGraphicsComposition* value)
-			{
-				NotifyFinalizeInstance(value);
-				SafeDeleteCompositionInternal(value);
 			}
 		}
 	}
