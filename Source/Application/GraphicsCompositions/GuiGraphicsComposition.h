@@ -194,9 +194,6 @@ Basic Construction
 				/// <summary>Set is the composition transparent to mouse events.</summary>
 				/// <param name="value">Set to true to make this composition transparent to mouse events.</param>
 				void										SetTransparentToMouse(bool value);
-				/// <summary>Get the bounds in the top composition space.</summary>
-				/// <returns>The bounds in the top composition space.</returns>
-				Rect										GetGlobalBounds();
 
 				/// <summary>Get the associated control. A control is associated to a composition only when the composition represents the bounds of this control. Such a composition usually comes from a control template.</summary>
 				/// <returns>The associated control.</returns>
@@ -277,6 +274,10 @@ Basic Construction
 				/// <summary>Get the updated client bounds. It is the bounds removing the internal margin.</summary>
 				/// <returns>The updated client bounds.</returns>
 				Rect										GetCachedClientArea();
+
+				/// <summary>Get the bounds in the top composition space.</summary>
+				/// <returns>The bounds in the top composition space.</returns>
+				Rect										GetGlobalBounds();
 			};
 
 /***********************************************************************
