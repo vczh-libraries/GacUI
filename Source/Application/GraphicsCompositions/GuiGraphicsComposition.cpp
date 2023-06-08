@@ -196,7 +196,8 @@ GuiGraphicsComposition
 				: isTrivialComposition(_isTrivialComposition)
 			{
 				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
-				BoundsChanged.SetAssociatedComposition(this);
+				CachedMinSizeChanged.SetAssociatedComposition(this);
+				CachedBoundsChanged.SetAssociatedComposition(this);
 			}
 
 			GuiGraphicsComposition::~GuiGraphicsComposition()

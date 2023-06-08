@@ -247,25 +247,28 @@ Basic Construction
 				Size										cachedMinSize;
 				Rect										cachedBounds;
 
+				virtual Size								Layout_CalculateMinSize();
+				virtual Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin);
+				virtual Rect								Layout_CalculateBounds(Rect parentBounds);
+				void										Layout_SetCachedMinSize(Size value);
+				void										Layout_SetCachedBounds(Rect value);
+				void										Layout_UpdateMinSize();
+				void										Layout_UpdateBounds(Rect parentBounds);
 			public:
+
+				/// <summary>Event that will be raised when the minimum size is updated.</summary>
+				compositions::GuiNotifyEvent				CachedMinSizeChanged;
 
 				/// <summary>Event that will be raised when the bounds is updated.</summary>
 				compositions::GuiNotifyEvent				CachedBoundsChanged;
 
-				virtual Size								CalculateMinSize();
-				virtual Size								CalculateMinClientSizeForParent(Margin parentInternalMargin);
-				virtual Rect								CalculateBounds(Rect parentBounds);
-
-				void										UpdateMinSize();
-				void										UpdateBounds(Rect parentBounds);
-
 				/// <summary>Get the updated minimum size.</summary>
 				/// <returns>The updated minimum size.</returns>
-				Rect										GetCachedMinSize();
+				Size										GetCachedMinSize();
 
 				/// <summary>Get the updated minimum client size. It is the minimum size removing the internal margin.</summary>
 				/// <returns>The updated minimum client size.</returns>
-				Rect										GetCachedMinClientSize();
+				Size										GetCachedMinClientSize();
 
 				/// <summary>Get the updated bounds.</summary>
 				/// <returns>The updated bounds.</returns>
