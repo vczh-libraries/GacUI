@@ -25,7 +25,7 @@ Specialized Compositions
 			/// <summary>
 			/// Represents a composition that is aligned to one border of the parent composition.
 			/// </summary>
-			class GuiSideAlignedComposition : public GuiGraphicsComposition, public Description<GuiSideAlignedComposition>
+			class GuiSideAlignedComposition : public GuiGraphicsComposition_Specialized, public Description<GuiSideAlignedComposition>
 			{
 			public:
 				/// <summary>The border to align.</summary>
@@ -41,12 +41,15 @@ Specialized Compositions
 					Bottom,
 				};
 			protected:
-				Direction							direction;
-				vint								maxLength;
-				double								maxRatio;
+				Direction							direction = Top;
+				vint								maxLength = 10;
+				double								maxRatio = 1.0;
+
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+
 			public:
-				GuiSideAlignedComposition();
-				~GuiSideAlignedComposition();
+				GuiSideAlignedComposition() = default;
+				~GuiSideAlignedComposition() = default;
 				
 				/// <summary>Get the border to align.</summary>
 				/// <returns>The border to align.</returns>
@@ -66,24 +69,24 @@ Specialized Compositions
 				/// <summary>Set the maximum ratio to limit the size according to the size of the parent.</summary>
 				/// <param name="value">The maximum ratio to limit the size according to the size of the parent.</param>
 				void								SetMaxRatio(double value);
-				
-				Rect								GetBounds()override;
 			};
 
 			/// <summary>
 			/// Represents a composition that its location and size are decided by the client area of the parent composition by setting ratios.
 			/// </summary>
-			class GuiPartialViewComposition : public GuiGraphicsComposition, public Description<GuiPartialViewComposition>
+			class GuiPartialViewComposition : public GuiGraphicsComposition_Specialized, public Description<GuiPartialViewComposition>
 			{
 			protected:
-				double								wRatio;
-				double								wPageSize;
-				double								hRatio;
-				double								hPageSize;
+				double								wRatio = 0.0;
+				double								wPageSize = 1.0;
+				double								hRatio = 0.0;
+				double								hPageSize = 1.0;
+
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 
 			public:
-				GuiPartialViewComposition();
-				~GuiPartialViewComposition();
+				GuiPartialViewComposition() = default;
+				~GuiPartialViewComposition() = default;
 				
 				/// <summary>Get the width ratio to decided the horizontal location. Value in [0, 1-pageSize].</summary>
 				/// <returns>The width ratio to decided the horizontal location.</returns>
@@ -109,8 +112,6 @@ Specialized Compositions
 				/// <summary>Set the page size to decide the vertical size. Value in [0, 1].</summary>
 				/// <param name="value">The page size to decide the vertical size.</param>
 				void								SetHeightPageSize(double value);
-				
-				Rect								GetBounds()override;
 			};
 		}
 	}
