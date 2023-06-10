@@ -38,6 +38,9 @@ namespace vl
 
 		namespace compositions
 		{
+			class GuiGraphicsComposition_Trivial;
+			class GuiGraphicsComposition_Controlled;
+			class GuiGraphicsComposition_Specialized;
 			class GuiWindowComposition;
 			class GuiGraphicsHost;
 
@@ -53,8 +56,11 @@ Basic Construction
 			{
 				typedef collections::List<GuiGraphicsComposition*> CompositionList;
 
-				friend class controls::GuiControl;
+				friend class GuiGraphicsComposition_Trivial;
+				friend class GuiGraphicsComposition_Controlled;
+				friend class GuiGraphicsComposition_Specialized;
 				friend class GuiWindowComposition;
+				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
 			public:
 				/// <summary>
@@ -81,7 +87,6 @@ Basic Construction
 
 			private:
 				bool										isRendering = false;
-				bool										isTrivialComposition = true;
 
 				CompositionList								children;
 				GuiGraphicsComposition*						parent = nullptr;
@@ -111,18 +116,14 @@ Basic Construction
 				void										SetAssociatedControl(controls::GuiControl* control);
 				void										InvokeOnCompositionStateChanged();
 
-			protected:
+			private:
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
 
+				GuiGraphicsComposition();
 			public:
-				GuiGraphicsComposition(bool _isTrivialComposition);
 				~GuiGraphicsComposition();
 
 				bool										IsRendering();
-
-				/// <summary>Test is this composition a trivial composition. A trivial composition means its parent doesn't do the layout for it.</summary>
-				/// <returns>Returns true if it is a trivial composition.</returns>
-				bool										IsTrivialComposition();
 
 				/// <summary>Get the parent composition.</summary>
 				/// <returns>The parent composition.</returns>
@@ -245,8 +246,8 @@ Basic Construction
 				Rect										cachedBounds;
 
 				virtual Size								Layout_CalculateMinSize();
-				virtual Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin);
-				virtual Rect								Layout_CalculateBounds(Rect parentBounds);
+				virtual Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) = 0;
+				virtual Rect								Layout_CalculateBounds(Rect parentBounds) = 0;
 				void										Layout_SetCachedMinSize(Size value);
 				void										Layout_SetCachedBounds(Rect value);
 				void										Layout_UpdateMinSize();
@@ -278,6 +279,57 @@ Basic Construction
 				/// <summary>Get the bounds in the top composition space.</summary>
 				/// <returns>The bounds in the top composition space.</returns>
 				Rect										GetGlobalBounds();
+			};
+
+/***********************************************************************
+Categories
+***********************************************************************/
+
+			/// <summary>
+			/// A trivial composition is a composition that can be placed anywhere needed.
+			/// This class is not reflectable, it is for classification only.
+			/// </summary>
+			class GuiGraphicsComposition_Trivial : public GuiGraphicsComposition
+			{
+			protected:
+				GuiGraphicsComposition_Trivial() = default;
+			};
+
+			/// <summary>
+			/// A controlled composition is a composition that must be placed inside a certain type of parent composition.
+			/// Its layout calculation are controlled by its parent.
+			/// This class is not reflectable, it is for classification only.
+			/// </summary>
+			class GuiGraphicsComposition_Controlled : public GuiGraphicsComposition
+			{
+			protected:
+				GuiGraphicsComposition_Controlled() = default;
+
+				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
+				{
+					return { 0,0 };
+				}
+
+				Rect Layout_CalculateBounds(Rect parentBounds) override
+				{
+					return cachedBounds;
+				}
+			};
+
+			/// <summary>
+			/// A specialized composition is a composition that can be placed anywhere needed.
+			/// But its layout calculation are designed for special purposes.
+			/// This class is not reflectable, it is for classification only.
+			/// </summary>
+			class GuiGraphicsComposition_Specialized : public GuiGraphicsComposition
+			{
+			protected:
+				GuiGraphicsComposition_Specialized() = default;
+
+				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
+				{
+					return { 0,0 };
+				}
 			};
 
 /***********************************************************************

@@ -131,8 +131,7 @@ GuiGraphicsComposition
 				return true;
 			}
 
-			GuiGraphicsComposition::GuiGraphicsComposition(bool _isTrivialComposition)
-				: isTrivialComposition(_isTrivialComposition)
+			GuiGraphicsComposition::GuiGraphicsComposition()
 			{
 				sharedPtrDestructorProc = &GuiGraphicsComposition::SharedPtrDestructorProc;
 				CachedMinSizeChanged.SetAssociatedComposition(this);
@@ -150,11 +149,6 @@ GuiGraphicsComposition
 			bool GuiGraphicsComposition::IsRendering()
 			{
 				return isRendering;
-			}
-
-			bool GuiGraphicsComposition::IsTrivialComposition()
-			{
-				return isTrivialComposition;
 			}
 
 			GuiGraphicsComposition* GuiGraphicsComposition::GetParent()

@@ -38,26 +38,13 @@ GuiGraphicsComposition
 					vint offsetH = internalMargin.top + internalMargin.bottom;
 					for (auto child : children)
 					{
-						if (child->IsTrivialComposition())
-						{
-							Size minClientSize = child->Layout_CalculateMinClientSizeForParent(internalMargin);
-							Size minBoundsSize(minClientSize.x + offsetW, minClientSize.y + offsetH);
-							if (minSize.x < minBoundsSize.x) minSize.x = minBoundsSize.x;
-							if (minSize.y < minBoundsSize.y) minSize.y = minBoundsSize.y;
-						}
+						Size minClientSize = child->Layout_CalculateMinClientSizeForParent(internalMargin);
+						Size minBoundsSize(minClientSize.x + offsetW, minClientSize.y + offsetH);
+						if (minSize.x < minBoundsSize.x) minSize.x = minBoundsSize.x;
+						if (minSize.y < minBoundsSize.y) minSize.y = minBoundsSize.y;
 					}
 				}
 				return minSize;
-			}
-
-			Size GuiGraphicsComposition::Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin)
-			{
-				return { 0,0 };
-			}
-
-			Rect GuiGraphicsComposition::Layout_CalculateBounds(Rect parentBounds)
-			{
-				CHECK_FAIL(L"Not Implemented!");
 			}
 
 			void GuiGraphicsComposition::Layout_SetCachedMinSize(Size value)
@@ -82,12 +69,17 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Layout_UpdateMinSize()
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				Layout_SetCachedMinSize(Layout_CalculateMinSize());
 			}
 
 			void GuiGraphicsComposition::Layout_UpdateBounds(Rect parentBounds)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				auto bounds = Layout_CalculateBounds(parentBounds);
+				for (auto child : children)
+				{
+					child->Layout_UpdateBounds(bounds);
+				}
+				Layout_SetCachedBounds(bounds);
 			}
 
 			Size GuiGraphicsComposition::GetCachedMinSize()
