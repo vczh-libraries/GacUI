@@ -79,12 +79,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Layout_UpdateBounds(Rect parentBounds)
 			{
-				auto bounds = Layout_CalculateBounds(parentBounds);
+				Layout_SetCachedBounds(Layout_CalculateBounds(parentBounds));
 				for (auto child : children)
 				{
-					child->Layout_UpdateBounds(bounds);
+					child->Layout_UpdateBounds(cachedBounds);
 				}
-				Layout_SetCachedBounds(bounds);
 			}
 
 			Size GuiGraphicsComposition::GetCachedMinSize()

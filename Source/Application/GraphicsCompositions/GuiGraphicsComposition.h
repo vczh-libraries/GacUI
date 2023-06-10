@@ -245,13 +245,39 @@ Basic Construction
 				Size										cachedMinSize;
 				Rect										cachedBounds;
 
-				Size										Layout_CalculateMinSizeHelper();
 				virtual Size								Layout_CalculateMinSize() = 0;
 				virtual Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) = 0;
 				virtual Rect								Layout_CalculateBounds(Rect parentBounds) = 0;
+
+				/// <summary>
+				/// Calculate a proper minimum size using all configurations in this class.
+				/// All children's <see cref="Layout_UpdateMinSize"/> will be called.
+				/// All children's <see cref="Layout_CalculateMinClientSizeForParent"/> will be called.
+				/// </summary>
+				/// <returns></returns>
+				Size										Layout_CalculateMinSizeHelper();
+
+				/// <summary>
+				/// Update a size that affects <see cref="GetCachedMinSize"/> and <see cref="GetCachedMinClientSize"/>.
+				/// </summary>
+				/// <param name="value">The minimum size to update</param>
 				void										Layout_SetCachedMinSize(Size value);
+
+				/// <summary>
+				/// Update a bounds that affects <see cref="GetCachedBounds"/> and <see cref="GetCachedClientArea"/> and <see cref="GetGlobalBounds"/>.
+				/// </summary>
+				/// <param name="value">The minimum size to update</param>
 				void										Layout_SetCachedBounds(Rect value);
+
+				/// <summary>
+				/// Call <see cref="Layout_CalculateMinSize"/> and <see cref="Layout_SetCachedMinSize"/>.
+				/// </summary>
 				void										Layout_UpdateMinSize();
+
+				/// <summary>
+				/// Call <see cref="Layout_CalculateBounds"/> and <see cref="Layout_SetCachedBounds"/> and all children's <see cref="Layout_UpdateBounds"/>.
+				/// </summary>
+				/// <param name="parentBounds"></param>
 				void										Layout_UpdateBounds(Rect parentBounds);
 			public:
 
@@ -289,13 +315,15 @@ Categories
 			/// <summary>
 			/// A trivial composition is a composition that can be placed anywhere needed.
 			/// This class is not reflectable, it is for classification only.
+			/// All controlled children's minimum sizes are supposed to be done in <see cref="Layout_CalculateMinSize"/>.
+			/// All controlled children's bounds are supposed to be done in <see cref="Layout_CalculateBounds"/>.
 			/// </summary>
 			class GuiGraphicsComposition_Trivial : public GuiGraphicsComposition
 			{
 			protected:
 				GuiGraphicsComposition_Trivial() = default;
 
-				Size Layout_CalculateMinSize()override
+				Size Layout_CalculateMinSize() override
 				{
 					return Layout_CalculateMinSizeHelper();
 				}
@@ -303,7 +331,7 @@ Categories
 
 			/// <summary>
 			/// A controlled composition is a composition that must be placed inside a certain type of parent composition.
-			/// Its layout calculation are controlled by its parent.
+			/// Its layout calculation are taken over by its parent.
 			/// This class is not reflectable, it is for classification only.
 			/// </summary>
 			class GuiGraphicsComposition_Controlled : public GuiGraphicsComposition
@@ -313,16 +341,20 @@ Categories
 
 				Size Layout_CalculateMinSize()override
 				{
+					// Making Layout_UpdateMinSize does nothing
 					return cachedMinSize;
 				}
 
 				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
 				{
+					// A controlled composition could affect its parent's layout
+					// but it is done inside the parent
 					return { 0,0 };
 				}
 
 				Rect Layout_CalculateBounds(Rect parentBounds) override
 				{
+					// Making Layout_UpdateBounds does nothing
 					return cachedBounds;
 				}
 			};
@@ -344,6 +376,7 @@ Categories
 
 				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
 				{
+					// A controlled composition could not affect its parent's layout
 					return { 0,0 };
 				}
 			};
