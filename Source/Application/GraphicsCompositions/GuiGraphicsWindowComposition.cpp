@@ -12,16 +12,7 @@ namespace vl
 GuiWindowComposition
 ***********************************************************************/
 
-			GuiWindowComposition::GuiWindowComposition()
-				: GuiGraphicsComposition(true)
-			{
-			}
-
-			GuiWindowComposition::~GuiWindowComposition()
-			{
-			}
-
-			Rect GuiWindowComposition::GetBounds()
+			Rect GuiWindowComposition::Layout_CalculateBounds(Rect parentBounds)
 			{
 				Rect bounds;
 				if (relatedHostRecord)
@@ -31,7 +22,6 @@ GuiWindowComposition
 						bounds = Rect(Point(0, 0), window->Convert(window->GetClientSize()));
 					}
 				}
-				UpdatePreviousBounds(bounds);
 				return bounds;
 			}
 		}

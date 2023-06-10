@@ -69,6 +69,10 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Layout_UpdateMinSize()
 			{
+				for (auto child : children)
+				{
+					child->Layout_UpdateMinSize();
+				}
 				Layout_SetCachedMinSize(Layout_CalculateMinSize());
 			}
 

@@ -25,21 +25,24 @@ Basic Compositions
 			/// <summary>
 			/// Represents a composition that is free to change the expected bounds.
 			/// </summary>
-			class GuiBoundsComposition : public GuiGraphicsComposition, public Description<GuiBoundsComposition>
+			class GuiBoundsComposition : public GuiGraphicsComposition_Trivial, public Description<GuiBoundsComposition>
 			{
 			protected:
-				Rect								compositionBounds;
+				Rect								expectedBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
 
-				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
+				Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override;
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
-				GuiBoundsComposition();
-				~GuiBoundsComposition();
-				
-				Rect								GetBounds()override;
+				GuiBoundsComposition() = default;
+				~GuiBoundsComposition() = default;
+
+				/// <summary>Get the expected bounds.</summary>
+				/// <returns>The expected bounds.</returns>
+				Rect								GetExpectedBounds();
 				/// <summary>Set the expected bounds.</summary>
 				/// <param name="value">The expected bounds.</param>
-				void								SetBounds(Rect value);
+				void								SetExpectedBounds(Rect value);
 
 				/// <summary>Get the alignment to its parent. -1 in each alignment component means that the corressponding side is not aligned to its parent.</summary>
 				/// <returns>The alignment to its parent.</returns>

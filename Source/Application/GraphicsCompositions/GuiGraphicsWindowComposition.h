@@ -20,13 +20,14 @@ namespace vl
 			/// <summary>
 			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
 			/// </summary>
-			class GuiWindowComposition : public GuiGraphicsComposition, public Description<GuiWindowComposition>
+			class GuiWindowComposition : public GuiGraphicsComposition_Specialized, public Description<GuiWindowComposition>
 			{
-			public:
-				GuiWindowComposition();
-				~GuiWindowComposition();
+			protected:
+				Rect						Layout_CalculateBounds(Rect parentBounds) override;
 
-				Rect								GetBounds()override;
+			public:
+				GuiWindowComposition() = default;
+				~GuiWindowComposition() = default;
 			};
 		}
 	}

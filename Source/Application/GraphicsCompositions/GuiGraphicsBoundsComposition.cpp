@@ -13,49 +13,38 @@ namespace vl
 GuiBoundsComposition
 ***********************************************************************/
 
-			Rect GuiBoundsComposition::GetPreferredBoundsInternal(bool considerPreferredMinSize)
+			Size GuiBoundsComposition::Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin)
 			{
-				Rect result = GetBoundsInternal(compositionBounds, considerPreferredMinSize);
-				if (GetParent() && IsAlignedToParent())
+				vint offsetW = 0;
+				vint offsetH = 0;
+
+				if (alignmentToParent.left >= 0)
 				{
-					if (alignmentToParent.left >= 0)
-					{
-						vint offset = alignmentToParent.left - result.x1;
-						result.x1 += offset;
-						result.x2 += offset;
-					}
-					if (alignmentToParent.top >= 0)
-					{
-						vint offset = alignmentToParent.top - result.y1;
-						result.y1 += offset;
-						result.y2 += offset;
-					}
-					if (alignmentToParent.right >= 0)
-					{
-						result.x2 += alignmentToParent.right;
-					}
-					if (alignmentToParent.bottom >= 0)
-					{
-						result.y2 += alignmentToParent.bottom;
-					}
+					offsetW += alignmentToParent.left - parentInternalMargin.left;
 				}
-				return result;
+				if (alignmentToParent.right >= 0)
+				{
+					offsetW += alignmentToParent.right - parentInternalMargin.right;
+				}
+				if (alignmentToParent.top >= 0)
+				{
+					offsetH += alignmentToParent.top - parentInternalMargin.top;
+				}
+				if (alignmentToParent.bottom >= 0)
+				{
+					offsetH += alignmentToParent.bottom - parentInternalMargin.bottom;
+				}
+
+				return { cachedMinSize.x + offsetW,cachedMinSize.y + offsetH };
 			}
 
-			GuiBoundsComposition::GuiBoundsComposition()
-				: GuiGraphicsComposition(true)
+			Rect GuiBoundsComposition::Layout_CalculateBounds(Rect parentBounds)
 			{
-			}
+				Rect result = expectedBounds;
+				if (result.Width() < cachedMinSize.x) result.x2 = result.x1 + cachedMinSize.x;
+				if (result.Height() < cachedMinSize.y) result.y2 = result.y1 + cachedMinSize.y;
 
-			GuiBoundsComposition::~GuiBoundsComposition()
-			{
-			}
-
-			Rect GuiBoundsComposition::GetBounds()
-			{
-				Rect result = GetPreferredBounds();
-
-				if (GetParent())
+				if (auto parent = GetParent())
 				{
 					Margin clientMargin = GetParent()->GetInternalMargin();
 					result.x1 += clientMargin.left;
@@ -63,55 +52,57 @@ GuiBoundsComposition
 					result.y1 += clientMargin.top;
 					result.y2 += clientMargin.top;
 
-					if (IsAlignedToParent())
+					Size clientSize = GetParent()->GetCachedClientArea().GetSize();
+					if (alignmentToParent.left >= 0 && alignmentToParent.right >= 0)
 					{
-						Size clientSize = GetParent()->GetClientArea().GetSize();
-						if (alignmentToParent.left >= 0 && alignmentToParent.right >= 0)
-						{
-							result.x1 = alignmentToParent.left;
-							result.x2 = clientSize.x - alignmentToParent.right;
-						}
-						else if (alignmentToParent.left >= 0)
-						{
-							vint width = result.Width();
-							result.x1 = alignmentToParent.left;
-							result.x2 = result.x1 + width;
-						}
-						else if (alignmentToParent.right >= 0)
-						{
-							vint width = result.Width();
-							result.x2 = clientSize.x - alignmentToParent.right;
-							result.x1 = result.x2 - width;
-						}
+						result.x1 = alignmentToParent.left;
+						result.x2 = clientSize.x - alignmentToParent.right;
+					}
+					else if (alignmentToParent.left >= 0)
+					{
+						vint width = result.Width();
+						result.x1 = alignmentToParent.left;
+						result.x2 = result.x1 + width;
+					}
+					else if (alignmentToParent.right >= 0)
+					{
+						vint width = result.Width();
+						result.x2 = clientSize.x - alignmentToParent.right;
+						result.x1 = result.x2 - width;
+					}
 
-						if (alignmentToParent.top >= 0 && alignmentToParent.bottom >= 0)
-						{
-							result.y1 = alignmentToParent.top;
-							result.y2 = clientSize.y - alignmentToParent.bottom;
-						}
-						else if (alignmentToParent.top >= 0)
-						{
-							vint height = result.Height();
-							result.y1 = alignmentToParent.top;
-							result.y2 = result.y1 + height;
-						}
-						else if (alignmentToParent.bottom >= 0)
-						{
-							vint height = result.Height();
-							result.y2 = clientSize.y - alignmentToParent.bottom;
-							result.y1 = result.y2 - height;
-						}
+					if (alignmentToParent.top >= 0 && alignmentToParent.bottom >= 0)
+					{
+						result.y1 = alignmentToParent.top;
+						result.y2 = clientSize.y - alignmentToParent.bottom;
+					}
+					else if (alignmentToParent.top >= 0)
+					{
+						vint height = result.Height();
+						result.y1 = alignmentToParent.top;
+						result.y2 = result.y1 + height;
+					}
+					else if (alignmentToParent.bottom >= 0)
+					{
+						vint height = result.Height();
+						result.y2 = clientSize.y - alignmentToParent.bottom;
+						result.y1 = result.y2 - height;
 					}
 				}
-				UpdatePreviousBounds(result);
+
 				return result;
 			}
 
-			void GuiBoundsComposition::SetBounds(Rect value)
+			Rect GuiBoundsComposition::GetExpectedBounds()
 			{
-				if (compositionBounds != value)
+				return expectedBounds;
+			}
+
+			void GuiBoundsComposition::SetExpectedBounds(Rect value)
+			{
+				if (expectedBounds != value)
 				{
-					compositionBounds = value;
+					expectedBounds = value;
 					InvokeOnCompositionStateChanged();
 				}
 			}
