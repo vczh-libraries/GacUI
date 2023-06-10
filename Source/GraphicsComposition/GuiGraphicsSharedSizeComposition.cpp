@@ -15,15 +15,6 @@ namespace vl
 GuiSharedSizeItemComposition
 ***********************************************************************/
 
-			void GuiSharedSizeItemComposition::Update()
-			{
-				if (parentRoot)
-				{
-					parentRoot->ForceCalculateSizeImmediately();
-				}
-				InvokeOnCompositionStateChanged();
-			}
-
 			void GuiSharedSizeItemComposition::OnParentLineChanged()
 			{
 				GuiBoundsComposition::OnParentLineChanged();
@@ -72,13 +63,19 @@ GuiSharedSizeItemComposition
 				}
 			}
 
+			Size GuiSharedSizeItemComposition::Layout_CalculateMinSize()
+			{
+				return cachedMinSize;
+			}
+
+			Size GuiSharedSizeItemComposition::Layout_CalculateOriginalMinSize()
+			{
+				return GuiBoundsComposition::Layout_CalculateMinSize();
+			}
+
 			GuiSharedSizeItemComposition::GuiSharedSizeItemComposition()
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-			}
-
-			GuiSharedSizeItemComposition::~GuiSharedSizeItemComposition()
-			{
 			}
 
 			const WString& GuiSharedSizeItemComposition::GetGroup()
@@ -91,7 +88,7 @@ GuiSharedSizeItemComposition
 				if (group != value)
 				{
 					group = value;
-					Update();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -105,7 +102,7 @@ GuiSharedSizeItemComposition
 				if (sharedWidth != value)
 				{
 					sharedWidth = value;
-					Update();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -119,7 +116,7 @@ GuiSharedSizeItemComposition
 				if (sharedHeight != value)
 				{
 					sharedHeight = value;
-					Update();
+					InvokeOnCompositionStateChanged();
 				}
 			}
 
@@ -140,24 +137,27 @@ GuiSharedSizeRootComposition
 				}
 			}
 
+			void GuiSharedSizeRootComposition::CalculateOriginalMinSizes()
+			{
+				for (auto item : childItems)
+				{
+					item->originalMinSize = item->Layout_CalculateOriginalMinSize();
+				}
+			}
+
 			void GuiSharedSizeRootComposition::CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights)
 			{
 				for (auto item : childItems)
 				{
 					auto group = item->GetGroup();
-					auto minSize = item->GetPreferredMinSize();
-					auto size = InvokeGetPreferredBoundsInternal(item, false).GetSize();
-
 					if (item->GetSharedWidth())
 					{
-						AddSizeComponent(widths, group, size.x);
+						AddSizeComponent(widths, group, item->originalMinSize.x);
 					}
 					if (item->GetSharedHeight())
 					{
-						AddSizeComponent(heights, group, size.y);
+						AddSizeComponent(heights, group, item->originalMinSize.y);
 					}
-
-					item->SetPreferredMinSize(minSize);
 				}
 			}
 
@@ -166,7 +166,7 @@ GuiSharedSizeRootComposition
 				for (auto item : childItems)
 				{
 					auto group = item->GetGroup();
-					auto size = item->GetPreferredMinSize();
+					auto size = item->originalMinSize;
 
 					if (item->GetSharedWidth())
 					{
@@ -177,42 +177,18 @@ GuiSharedSizeRootComposition
 						size.y = heights[group];
 					}
 
-					item->SetPreferredMinSize(size);
+					item->Layout_SetCachedMinSize(size);
 				}
 			}
 
-			GuiSharedSizeRootComposition::GuiSharedSizeRootComposition()
-			{
-			}
-
-			GuiSharedSizeRootComposition::~GuiSharedSizeRootComposition()
-			{
-			}
-
-			void GuiSharedSizeRootComposition::ForceCalculateSizeImmediately()
+			Size GuiSharedSizeRootComposition::Layout_CalculateMinSize()
 			{
 				itemWidths.Clear();
 				itemHeights.Clear();
-
+				CalculateOriginalMinSizes();
 				CollectSizes(itemWidths, itemHeights);
 				AlignSizes(itemWidths, itemHeights);
-				GuiBoundsComposition::ForceCalculateSizeImmediately();
-			}
-
-			Rect GuiSharedSizeRootComposition::GetBounds()
-			{
-				Dictionary<WString, vint> widths, heights;
-				CollectSizes(widths, heights);
-				bool minSizeModified = CompareEnumerable(itemWidths, widths) != 0 || CompareEnumerable(itemHeights, heights) != 0;
-
-				if (minSizeModified)
-				{
-					CopyFrom(itemWidths, widths);
-					CopyFrom(itemHeights, heights);
-					AlignSizes(itemWidths, itemHeights);
-					GuiBoundsComposition::ForceCalculateSizeImmediately();
-				}
-				return GuiBoundsComposition::GetBounds();
+				return GuiBoundsComposition::Layout_CalculateMinSize();
 			}
 		}
 	}
