@@ -12,7 +12,7 @@ namespace vl
 GuiGraphicsComposition
 ***********************************************************************/
 
-			Size GuiGraphicsComposition::Layout_CalculateMinSize()
+			Size GuiGraphicsComposition::Layout_CalculateMinSizeHelper()
 			{
 				Size minSize;
 				if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
@@ -30,6 +30,11 @@ GuiGraphicsComposition
 							if (minSize.y < elementSize.y) minSize.y = elementSize.y;
 						}
 					}
+				}
+
+				for (auto child : children)
+				{
+					child->Layout_UpdateMinSize();
 				}
 
 				if (minSizeLimitation == GuiGraphicsComposition::LimitToElementAndChildren)
@@ -69,10 +74,6 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Layout_UpdateMinSize()
 			{
-				for (auto child : children)
-				{
-					child->Layout_UpdateMinSize();
-				}
 				Layout_SetCachedMinSize(Layout_CalculateMinSize());
 			}
 

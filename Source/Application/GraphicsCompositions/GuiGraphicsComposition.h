@@ -245,7 +245,8 @@ Basic Construction
 				Size										cachedMinSize;
 				Rect										cachedBounds;
 
-				virtual Size								Layout_CalculateMinSize();
+				Size										Layout_CalculateMinSizeHelper();
+				virtual Size								Layout_CalculateMinSize() = 0;
 				virtual Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) = 0;
 				virtual Rect								Layout_CalculateBounds(Rect parentBounds) = 0;
 				void										Layout_SetCachedMinSize(Size value);
@@ -293,6 +294,11 @@ Categories
 			{
 			protected:
 				GuiGraphicsComposition_Trivial() = default;
+
+				Size Layout_CalculateMinSize()override
+				{
+					return Layout_CalculateMinSizeHelper();
+				}
 			};
 
 			/// <summary>
@@ -304,6 +310,11 @@ Categories
 			{
 			protected:
 				GuiGraphicsComposition_Controlled() = default;
+
+				Size Layout_CalculateMinSize()override
+				{
+					return cachedMinSize;
+				}
 
 				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
 				{
@@ -325,6 +336,11 @@ Categories
 			{
 			protected:
 				GuiGraphicsComposition_Specialized() = default;
+
+				Size Layout_CalculateMinSize()override
+				{
+					return Layout_CalculateMinSizeHelper();
+				}
 
 				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
 				{
