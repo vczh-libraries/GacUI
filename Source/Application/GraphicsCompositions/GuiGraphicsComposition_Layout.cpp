@@ -6,20 +6,13 @@ namespace vl
 	{
 		namespace compositions
 		{
+			using namespace elements;
 
-			Rect GuiGraphicsComposition::GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize)
-			{
-				Size minSize = GetMinPreferredClientSizeInternal(considerPreferredMinSize);
-				minSize.x += internalMargin.left + internalMargin.right;
-				minSize.y += internalMargin.top + internalMargin.bottom;
-				vint w = expectedBounds.Width();
-				vint h = expectedBounds.Height();
-				if (minSize.x < w) minSize.x = w;
-				if (minSize.y < h) minSize.y = h;
-				return Rect(expectedBounds.LeftTop(), minSize);
-			}
+/***********************************************************************
+GuiGraphicsComposition
+***********************************************************************/
 
-			Size GuiGraphicsComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+			Size GuiGraphicsComposition::Layout_CalculateMinSize()
 			{
 				Size minSize;
 				if (minSize.x < preferredMinSize.x) minSize.x = preferredMinSize.x;
@@ -38,33 +31,28 @@ namespace vl
 						}
 					}
 				}
+
 				if (minSizeLimitation == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
+					vint offsetW = internalMargin.left + internalMargin.right;
+					vint offsetH = internalMargin.top + internalMargin.bottom;
 					for (auto child : children)
 					{
 						if (child->IsTrivialComposition())
 						{
-							Rect childBounds = InvokeGetPreferredBoundsInternal(child, considerPreferredMinSize);
-							if (minSize.x < childBounds.x2) minSize.x = childBounds.x2;
-							if (minSize.y < childBounds.y2) minSize.y = childBounds.y2;
+							Size minClientSize = child->Layout_CalculateMinClientSizeForParent(internalMargin);
+							Size minBoundsSize(minClientSize.x + offsetW, minClientSize.y + offsetH);
+							if (minSize.x < minBoundsSize.x) minSize.x = minBoundsSize.x;
+							if (minSize.y < minBoundsSize.y) minSize.y = minBoundsSize.y;
 						}
 					}
 				}
 				return minSize;
 			}
 
-/***********************************************************************
-GuiGraphicsComposition
-***********************************************************************/
-
-			Size GuiGraphicsComposition::Layout_CalculateMinSize()
-			{
-				CHECK_FAIL(L"Not Implemented!");
-			}
-
 			Size GuiGraphicsComposition::Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				return { 0,0 };
 			}
 
 			Rect GuiGraphicsComposition::Layout_CalculateBounds(Rect parentBounds)
