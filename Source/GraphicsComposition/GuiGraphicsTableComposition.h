@@ -266,7 +266,7 @@ Table Compositions
 				Rect								GetBounds()override;
 			};
 
-			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition, public Description<GuiTableSplitterCompositionBase>
+			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition_Specialized, public Description<GuiTableSplitterCompositionBase>
 			{
 			protected:
 				GuiTableComposition*				tableParent = nullptr;
@@ -315,6 +315,7 @@ Table Compositions
 				vint								rowsToTheTop = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
 				GuiRowSplitterComposition();
 				~GuiRowSplitterComposition();
@@ -325,8 +326,6 @@ Table Compositions
 				/// <summary>Set the number of rows that above the splitter.</summary>
 				/// <param name="value">The number of rows that above the splitter</param>
 				void								SetRowsToTheTop(vint value);
-
-				Rect								GetBounds()override;
 			};
 			
 			/// <summary>
@@ -338,6 +337,7 @@ Table Compositions
 				vint								columnsToTheLeft = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
 				GuiColumnSplitterComposition();
 				~GuiColumnSplitterComposition();
@@ -348,8 +348,6 @@ Table Compositions
 				/// <summary>Set the number of columns that before the splitter.</summary>
 				/// <param name="value">The number of columns that before the splitter</param>
 				void								SetColumnsToTheLeft(vint value);
-
-				Rect								GetBounds()override;
 			};
 		}
 	}

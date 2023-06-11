@@ -882,6 +882,20 @@ GuiRowSplitterComposition
 					&GuiTableComposition::SetRowOption
 					);
 			}
+
+			Rect GuiRowSplitterComposition::Layout_CalculateBounds(Rect parentBounds)
+			{
+				return GetBoundsHelper(
+					rowsToTheTop,
+					&GuiTableComposition::rows,
+					&Rect::Width,
+					tableParent->rowOffsets,
+					&Rect::x1,
+					&Rect::x2,
+					&Rect::y1,
+					&Rect::y2
+					);
+			}
 			
 			GuiRowSplitterComposition::GuiRowSplitterComposition()
 				:rowsToTheTop(0)
@@ -908,20 +922,6 @@ GuiRowSplitterComposition
 				}
 			}
 
-			Rect GuiRowSplitterComposition::GetBounds()
-			{
-				return GetBoundsHelper(
-					rowsToTheTop,
-					&GuiTableComposition::rows,
-					&Rect::Width,
-					tableParent->rowOffsets,
-					&Rect::x1,
-					&Rect::x2,
-					&Rect::y1,
-					&Rect::y2
-					);
-			}
-
 /***********************************************************************
 GuiColumnSplitterComposition
 ***********************************************************************/
@@ -935,6 +935,20 @@ GuiColumnSplitterComposition
 					arguments.x - draggingPoint.x,
 					&GuiTableComposition::GetColumnOption,
 					&GuiTableComposition::SetColumnOption
+					);
+			}
+
+			Rect GuiColumnSplitterComposition::Layout_CalculateBounds(Rect parentBounds)
+			{
+				return GetBoundsHelper(
+					columnsToTheLeft,
+					&GuiTableComposition::columns,
+					&Rect::Height,
+					tableParent->columnOffsets,
+					&Rect::y1,
+					&Rect::y2,
+					&Rect::x1,
+					&Rect::x2
 					);
 			}
 			
@@ -961,20 +975,6 @@ GuiColumnSplitterComposition
 					columnsToTheLeft = value;
 					InvokeOnCompositionStateChanged();
 				}
-			}
-
-			Rect GuiColumnSplitterComposition::GetBounds()
-			{
-				return GetBoundsHelper(
-					columnsToTheLeft,
-					&GuiTableComposition::columns,
-					&Rect::Height,
-					tableParent->columnOffsets,
-					&Rect::y1,
-					&Rect::y2,
-					&Rect::x1,
-					&Rect::x2
-					);
 			}
 		}
 	}
