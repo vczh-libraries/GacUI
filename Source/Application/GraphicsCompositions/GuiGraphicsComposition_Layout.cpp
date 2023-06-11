@@ -129,6 +129,18 @@ GuiGraphicsComposition
 				}
 				return bounds;
 			}
+
+			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
+			{
+				Rect parentBounds;
+				if (parent)
+				{
+					parentBounds = parent->cachedBounds;
+				}
+
+				Layout_UpdateMinSize();
+				Layout_UpdateBounds(parentBounds);
+			}
 		}
 	}
 }

@@ -306,6 +306,11 @@ Basic Construction
 				/// <summary>Get the bounds in the top composition space.</summary>
 				/// <returns>The bounds in the top composition space.</returns>
 				Rect										GetGlobalBounds();
+
+				/// <summary>
+				/// Force this composition calculate its layout.
+				/// </summary>
+				void										ForceCalculateSizeImmediately();
 			};
 
 /***********************************************************************
