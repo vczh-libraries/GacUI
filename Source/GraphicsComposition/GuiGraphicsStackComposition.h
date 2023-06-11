@@ -47,7 +47,6 @@ Stack Compositions
 				ItemCompositionList					stackItems;
 				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
 				vint								adjustment = 0;
-				bool								needUpdate = false;
 
 				Direction							direction = Horizontal;
 				vint								padding = 0;
@@ -59,13 +58,13 @@ Stack Compositions
 
 				void								UpdateStackItemBounds();
 				void								EnsureStackItemVisible();
-				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
-				void								OnChildInserted(GuiGraphicsComposition* child)override;
-				void								OnChildRemoved(GuiGraphicsComposition* child)override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				void								OnChildInserted(GuiGraphicsComposition* child) override;
+				void								OnChildRemoved(GuiGraphicsComposition* child) override;
+				Size								Layout_CalculateMinSize() override;
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
 				GuiStackComposition();
-				~GuiStackComposition();
+				~GuiStackComposition() = default;
 
 				/// <summary>Get all stack items inside the stack composition.</summary>
 				/// <returns>All stack items inside the stack composition.</returns>
@@ -89,9 +88,6 @@ Stack Compositions
 				/// <param name="value">The stack item padding.</param>
 				void								SetPadding(vint value);
 				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
-				
 				/// <summary>Get the extra margin inside the stack composition.</summary>
 				/// <returns>The extra margin inside the stack composition.</returns>
 				Margin								GetExtraMargin();
@@ -114,11 +110,9 @@ Stack Compositions
 			{
 				friend class GuiStackComposition;
 			protected:
-				GuiStackComposition*				stackParent = nullptr;
 				Rect								bounds;
 				Margin								extraMargin;
 
-				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
 				void								Layout_SetStackItemBounds(GuiStackComposition* stackParent, Rect bounds);
 			public:
 				GuiStackItemComposition();

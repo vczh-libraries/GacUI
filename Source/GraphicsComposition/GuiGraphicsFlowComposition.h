@@ -56,7 +56,6 @@ Flow Compositions
 				collections::Array<Rect>			flowItemBounds;
 				Rect								bounds;
 				vint								minHeight = 0;
-				bool								needUpdate = false;
 
 				void								UpdateFlowItemBounds(bool forceUpdate);
 				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
@@ -151,12 +150,10 @@ Flow Compositions
 			{
 				friend class GuiFlowComposition;
 			protected:
-				GuiFlowComposition*					flowParent;
 				Rect								bounds;
 				Margin								extraMargin;
 				GuiFlowOption						option;
 
-				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
 				void								Layout_SetFlowItemBounds(GuiFlowComposition* flowParent, Rect bounds);
 			public:
 				GuiFlowItemComposition();

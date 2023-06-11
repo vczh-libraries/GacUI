@@ -24,7 +24,7 @@ GuiStackComposition
 				{
 					vint offsetX = 0;
 					vint offsetY = 0;
-					Size itemSize = stackItems[i]->GetMinSize();
+					Size itemSize = stackItems[i]->GetCachedMinSize();
 					stackItemBounds[i] = Rect(offset, itemSize);
 
 #define ACCUMULATE(U, V)										\
@@ -79,7 +79,7 @@ GuiStackComposition
 
 				if (ensuringVisibleStackItem)
 				{
-					Rect itemBounds = ensuringVisibleStackItem->GetBounds();
+					Rect itemBounds = ensuringVisibleStackItem->GetCachedBounds();
 					switch (direction)
 					{
 					case Horizontal:
@@ -93,11 +93,6 @@ GuiStackComposition
 					}
 				}
 #undef ADJUSTMENT
-			}
-
-			void GuiStackComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-			{
-				EnsureStackItemVisible();
 			}
 
 			void GuiStackComposition::OnChildInserted(GuiGraphicsComposition* child)
@@ -128,8 +123,8 @@ GuiStackComposition
 					UpdateStackItemBounds();
 				}
 			}
-			
-			Size GuiStackComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+
+			Size GuiStackComposition::Layout_CalculateMinSize()
 			{
 				Size minStackSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
@@ -149,20 +144,27 @@ GuiStackComposition
 				if (extraMargin.top > 0) minStackSize.y += extraMargin.top;
 				if (extraMargin.bottom > 0) minStackSize.y += extraMargin.bottom;
 
-				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
+				Size minClientSize = GuiBoundsComposition::Layout_CalculateMinSize();
 				return Size(
 					minStackSize.x > minClientSize.x ? minStackSize.x : minClientSize.x,
 					minStackSize.y > minClientSize.y ? minStackSize.y : minClientSize.y
 					);
+				return minStackSize;
+			}
+
+			Rect GuiStackComposition::Layout_CalculateBounds(Rect parentBounds)
+			{
+				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentBounds);
+				UpdateStackItemBounds();
+				return bounds;
 			}
 
 			GuiStackComposition::GuiStackComposition()
 			{
-				BoundsChanged.AttachMethod(this, &GuiStackComposition::OnBoundsChanged);
-			}
-
-			GuiStackComposition::~GuiStackComposition()
-			{
+				CachedBoundsChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				{
+					EnsureStackItemVisible();
+				});
 			}
 
 			const GuiStackComposition::ItemCompositionList& GuiStackComposition::GetStackItems()
@@ -192,7 +194,6 @@ GuiStackComposition
 			void GuiStackComposition::SetDirection(Direction value)
 			{
 				direction = value;
-				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 
@@ -204,39 +205,7 @@ GuiStackComposition
 			void GuiStackComposition::SetPadding(vint value)
 			{
 				padding = value;
-				needUpdate = true;
 				EnsureStackItemVisible();
-			}
-
-			void GuiStackComposition::ForceCalculateSizeImmediately()
-			{
-				GuiBoundsComposition::ForceCalculateSizeImmediately();
-				UpdateStackItemBounds();
-			}
-
-			Rect GuiStackComposition::GetBounds()
-			{
-				if (!needUpdate)
-				{
-					for (vint i = 0; i < stackItems.Count(); i++)
-					{
-						if (stackItemBounds[i].GetSize() != stackItems[i]->GetMinSize())
-						{
-							needUpdate = true;
-							break;
-						}
-					}
-				}
-
-				if (needUpdate)
-				{
-					UpdateStackItemBounds();
-				}
-
-				Rect bounds = GuiBoundsComposition::GetBounds();
-				previousBounds = bounds;
-				UpdatePreviousBounds(previousBounds);
-				return bounds;
 			}
 
 			Margin GuiStackComposition::GetExtraMargin()
@@ -247,13 +216,12 @@ GuiStackComposition
 			void GuiStackComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin = value;
-				needUpdate = true;
 				EnsureStackItemVisible();
 			}
 
 			bool GuiStackComposition::IsStackItemClipped()
 			{
-				Rect clientArea = GetClientArea();
+				Rect clientArea = GetCachedClientArea();
 				switch(direction)
 				{
 				case Horizontal:
@@ -297,12 +265,6 @@ GuiStackComposition
 /***********************************************************************
 GuiStackItemComposition
 ***********************************************************************/
-
-			void GuiStackItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
-			{
-				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
-				stackParent = newParent == 0 ? 0 : dynamic_cast<GuiStackComposition*>(newParent);
-			}
 
 			void GuiStackItemComposition::Layout_SetStackItemBounds(GuiStackComposition* stackParent, Rect bounds)
 			{

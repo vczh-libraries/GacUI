@@ -16,13 +16,13 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::OnControlParentChanged(controls::GuiControl* control)
 			{
-				if(associatedControl && associatedControl!=control)
+				if (associatedControl && associatedControl != control)
 				{
-					if(associatedControl->GetParent())
+					if (associatedControl->GetParent())
 					{
 						associatedControl->GetParent()->OnChildRemoved(associatedControl);
 					}
-					if(control)
+					if (control)
 					{
 						control->OnChildInserted(associatedControl);
 					}
@@ -43,7 +43,7 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::OnChildRemoved(GuiGraphicsComposition* child)
 			{
-				child->OnControlParentChanged(0);
+				child->OnControlParentChanged(nullptr);
 			}
 
 			void GuiGraphicsComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)

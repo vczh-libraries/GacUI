@@ -341,12 +341,6 @@ GuiFlowComposition
 GuiFlowItemComposition
 ***********************************************************************/
 
-			void GuiFlowItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
-			{
-				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
-				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
-			}
-
 			void GuiFlowItemComposition::Layout_SetFlowItemBounds(GuiFlowComposition* flowParent, Rect bounds)
 			{
 				Rect result = bounds;
@@ -388,7 +382,6 @@ GuiFlowItemComposition
 				if (option != value)
 				{
 					option = value;
-					if (flowParent) flowParent->needUpdate = true;
 					InvokeOnCompositionStateChanged();
 				}
 			}
