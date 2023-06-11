@@ -104,12 +104,12 @@ Table Compositions
 				friend class GuiRowSplitterComposition;
 				friend class GuiColumnSplitterComposition;
 			protected:
-				vint										rows;
-				vint										columns;
-				vint										cellPadding;
-				bool										borderVisible;
-				vint										rowExtending;
-				vint										columnExtending;
+				vint										rows = 0;
+				vint										columns = 0;
+				vint										cellPadding = 0;
+				bool										borderVisible = false;
+				vint										rowExtending = 0;
+				vint										columnExtending = 0;
 				collections::Array<GuiCellOption>			rowOptions;
 				collections::Array<GuiCellOption>			columnOptions;
 				collections::Array<GuiCellComposition*>		cellCompositions;
@@ -122,6 +122,7 @@ Table Compositions
 
 				Size										tableContentMinSize;
 
+				Rect								CalculateCellArea(Rect tableBounds);
 				vint								GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
 				void								SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
 
@@ -149,12 +150,12 @@ Table Compositions
 														collections::Array<vint>& sizes,
 														vint max
 														);
-				
-				void								OnRenderContextChanged()override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+
+				Size								Layout_CalculateMinSize() override;
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
 				GuiTableComposition();
-				~GuiTableComposition();
+				~GuiTableComposition() = default;
 
 				/// <summary>Event that will be raised with row numbers, column numbers or options are changed.</summary>
 				compositions::GuiNotifyEvent		ConfigChanged;
@@ -205,14 +206,6 @@ Table Compositions
 				/// <summary>Set the border visibility.</summary>
 				/// <param name="value">Set to true to let the border thickness equal to the cell padding, otherwise zero.</param>
 				void								SetBorderVisible(bool value);
-				/// <summary>Get the cell area in the space of the table's parent composition's client area.</summary>
-				/// <returns>The cell area.</returns>
-				Rect								GetCellArea();
-				/// <summary>Update the sizing of the table and cells after all rows' and columns' sizing options are prepared.</summary>
-				void								UpdateCellBounds();
-				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
 			};
 
 			/// <summary>
@@ -263,8 +256,6 @@ Table Compositions
 				/// <param name="_rowSpan">The total numbers of acrossed rows for this cell composition.</param>
 				/// <param name="_columnSpan">The total numbers of acrossed columns for this cell composition.</param>
 				bool								SetSite(vint _row, vint _column, vint _rowSpan, vint _columnSpan);
-
-				Rect								GetBounds()override;
 			};
 
 			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition_Specialized, public Description<GuiTableSplitterCompositionBase>
