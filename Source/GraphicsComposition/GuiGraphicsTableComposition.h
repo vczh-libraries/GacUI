@@ -223,7 +223,6 @@ Table Compositions
 				vint								column = -1;
 				vint								columnSpan = 1;
 				GuiTableComposition*				tableParent = nullptr;
-				Size								lastPreferredSize;
 				
 				void								ClearSitedCells(GuiTableComposition* table);
 				void								SetSitedCells(GuiTableComposition* table);

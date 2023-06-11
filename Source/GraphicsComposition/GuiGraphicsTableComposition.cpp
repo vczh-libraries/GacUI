@@ -119,7 +119,7 @@ GuiTableComposition
 								{
 									if (getSpan(cell) == 1)
 									{
-										vint size = getSize(cell->GetPreferredBounds().GetSize());
+										vint size = getSize(cell->GetCachedMinSize());
 										vint span = getSpan(cell);
 										for (vint k = 1; k < span; k++)
 										{
@@ -149,7 +149,7 @@ GuiTableComposition
 								GuiCellComposition* cell = GetSitedCell(getRow(i, j), getCol(i, j));
 								if (cell)
 								{
-									vint size = getSize(cell->GetPreferredBounds().GetSize());
+									vint size = getSize(cell->GetCachedMinSize());
 									vint start = getLocation(cell);
 									vint span = getSpan(cell);
 									size -= (span - 1)*cellPadding;
@@ -364,18 +364,6 @@ GuiTableComposition
 				return max - right;
 			}
 
-			Size GuiTableComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
-			{
-				vint offset = (borderVisible ? 2 * cellPadding : 0);
-				Size minTableSize(tableContentMinSize.x + offset, tableContentMinSize.y + offset);
-
-				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
-				return Size(
-					minTableSize.x > minClientSize.x ? minTableSize.x : minClientSize.x,
-					minTableSize.y > minClientSize.y ? minTableSize.y : minClientSize.y
-					);
-			}
-
 			GuiTableComposition::GuiTableComposition()
 			{
 				ConfigChanged.SetAssociatedComposition(this);
@@ -490,34 +478,6 @@ GuiTableComposition
 					borderVisible = value;
 					InvokeOnCompositionStateChanged();
 				}
-			}
-
-			Rect GuiTableComposition::GetBounds()
-			{
-				Rect cached = previousBounds;
-				Rect result = GuiBoundsComposition::GetBounds();
-
-				bool cellMinSizeModified = false;
-				SortedList<GuiCellComposition*> cells;
-				for (auto cell : cellCompositions)
-				{
-					if (cell && !cells.Contains(cell))
-					{
-						cells.Add(cell);
-						Size newSize = cell->GetPreferredBounds().GetSize();
-						if (cell->lastPreferredSize != newSize)
-						{
-							cell->lastPreferredSize = newSize;
-							cellMinSizeModified = true;
-						}
-					}
-				}
-
-				if (cached != result || cellMinSizeModified)
-				{
-					UpdateCellBounds();
-				}
-				return result;
 			}
 
 /***********************************************************************
