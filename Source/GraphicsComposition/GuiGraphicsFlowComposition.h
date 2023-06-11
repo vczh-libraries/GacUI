@@ -57,14 +57,14 @@ Flow Compositions
 				Rect								bounds;
 				vint								minHeight = 0;
 
-				void								UpdateFlowItemBounds(bool forceUpdate);
-				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
+				void								UpdateFlowItemBounds(Rect flowBounds);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				Size								Layout_CalculateMinSize() override;
+				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
 				GuiFlowComposition();
-				~GuiFlowComposition();
+				~GuiFlowComposition() = default;
 				
 				/// <summary>Get all flow items inside the flow composition.</summary>
 				/// <returns>All flow items inside the flow composition.</returns>
@@ -109,9 +109,6 @@ Flow Compositions
 				/// <summary>Set the alignment for rows.</summary>
 				/// <param name="value">The alignment.</param>
 				void								SetAlignment(FlowAlignment value);
-				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
 			};
 			
 			/// <summary>
