@@ -11,21 +11,18 @@ namespace vl
 GuiStackComposition
 ***********************************************************************/
 
-			void GuiStackComposition::UpdateStackItemBounds()
+			void GuiStackComposition::UpdateStackItemMinSizes()
 			{
-				if (stackItemBounds.Count() != stackItems.Count())
+				for (auto item : stackItems)
 				{
-					stackItemBounds.Resize(stackItems.Count());
+					item->Layout_SetCachedMinSize(item->Layout_CalculateMinSizeHelper());
 				}
 
 				stackItemTotalSize = Size(0, 0);
 				Point offset;
 				for (vint i = 0; i < stackItems.Count(); i++)
 				{
-					vint offsetX = 0;
-					vint offsetY = 0;
 					Size itemSize = stackItems[i]->GetCachedMinSize();
-					stackItemBounds[i] = Rect(offset, itemSize);
 
 #define ACCUMULATE(U, V)										\
 					{											\
@@ -56,6 +53,20 @@ GuiStackComposition
 					offset.x += itemSize.x + padding;
 					offset.y += itemSize.y + padding;
 				}
+			}
+
+			void GuiStackComposition::UpdateStackItemBounds()
+			{
+				Point offset;
+				for (vint i = 0; i < stackItems.Count(); i++)
+				{
+					Size itemSize = stackItems[i]->GetCachedMinSize();
+					Rect itemBounds = Rect(offset, itemSize);
+					stackItems[i]->Layout_SetStackItemBounds(this, itemBounds);
+					offset.x += itemSize.x + padding;
+					offset.y += itemSize.y + padding;
+				}
+
 				EnsureStackItemVisible();
 			}
 
@@ -105,7 +116,6 @@ GuiStackComposition
 					{
 						stackItems.Add(item);
 					}
-					UpdateStackItemBounds();
 				}
 			}
 
@@ -120,12 +130,13 @@ GuiStackComposition
 					{
 						ensuringVisibleStackItem = 0;
 					}
-					UpdateStackItemBounds();
 				}
 			}
 
 			Size GuiStackComposition::Layout_CalculateMinSize()
 			{
+				UpdateStackItemMinSizes();
+
 				Size minStackSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{

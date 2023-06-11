@@ -159,6 +159,11 @@ GuiFlowComposition
 
 			Size GuiFlowComposition::Layout_CalculateMinSize()
 			{
+				for (auto item : flowItems)
+				{
+					item->Layout_SetCachedMinSize(item->Layout_CalculateMinSizeHelper());
+				}
+
 				Size minFlowSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{

@@ -52,10 +52,10 @@ Stack Compositions
 				vint								padding = 0;
 				Margin								extraMargin;
 
-				collections::Array<Rect>			stackItemBounds;
 				Size								stackItemTotalSize;
 				Rect								previousBounds;
 
+				void								UpdateStackItemMinSizes();
 				void								UpdateStackItemBounds();
 				void								EnsureStackItemVisible();
 				void								OnChildInserted(GuiGraphicsComposition* child) override;
