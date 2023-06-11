@@ -170,14 +170,6 @@ GuiStackComposition
 				return bounds;
 			}
 
-			GuiStackComposition::GuiStackComposition()
-			{
-				CachedBoundsChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-				{
-					EnsureStackItemVisible();
-				});
-			}
-
 			const GuiStackComposition::ItemCompositionList& GuiStackComposition::GetStackItems()
 			{
 				return stackItems;
@@ -267,10 +259,10 @@ GuiStackComposition
 				}
 				else
 				{
-					ensuringVisibleStackItem = 0;
+					ensuringVisibleStackItem = nullptr;
 				}
 				EnsureStackItemVisible();
-				return ensuringVisibleStackItem != 0;
+				return ensuringVisibleStackItem != nullptr;
 			}
 
 /***********************************************************************

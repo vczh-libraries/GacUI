@@ -63,7 +63,7 @@ Stack Compositions
 				Size								Layout_CalculateMinSize() override;
 				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
-				GuiStackComposition();
+				GuiStackComposition() = default;
 				~GuiStackComposition() = default;
 
 				/// <summary>Get all stack items inside the stack composition.</summary>

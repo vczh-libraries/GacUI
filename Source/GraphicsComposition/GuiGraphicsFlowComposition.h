@@ -50,20 +50,20 @@ Flow Compositions
 				vint								rowPadding = 0;
 				vint								columnPadding = 0;
 				FlowAlignment						alignment = FlowAlignment::Left;
-				Ptr<IGuiAxis>						axis;
+				Ptr<IGuiAxis>						axis = Ptr(new GuiDefaultAxis);
 
 				ItemCompositionList					flowItems;
-				collections::Array<Rect>			flowItemBounds;
 				Rect								bounds;
 				vint								minHeight = 0;
 
+				void								UpdateFlowItemMinSizes();
 				void								UpdateFlowItemBounds(Rect flowBounds);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
 				Size								Layout_CalculateMinSize() override;
 				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
-				GuiFlowComposition();
+				GuiFlowComposition() = default;
 				~GuiFlowComposition() = default;
 				
 				/// <summary>Get all flow items inside the flow composition.</summary>
