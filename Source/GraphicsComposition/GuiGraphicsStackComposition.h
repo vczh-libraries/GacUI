@@ -110,7 +110,7 @@ Stack Compositions
 			/// <summary>
 			/// Represents a stack item composition of a <see cref="GuiStackComposition"/>.
 			/// </summary>
-			class GuiStackItemComposition : public GuiGraphicsComposition, public Description<GuiStackItemComposition>
+			class GuiStackItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiStackItemComposition>
 			{
 				friend class GuiStackComposition;
 			protected:
@@ -119,15 +119,10 @@ Stack Compositions
 				Margin								extraMargin;
 
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				Size								GetMinSize();
+				void								Layout_SetStackItemBounds(GuiStackComposition* stackParent, Rect bounds);
 			public:
 				GuiStackItemComposition();
-				~GuiStackItemComposition();
-				
-				Rect								GetBounds()override;
-				/// <summary>Set the expected bounds of a stack item. In most of the cases only the size of the bounds is used.</summary>
-				/// <param name="value">The expected bounds of a stack item.</param>
-				void								SetBounds(Rect value);
+				~GuiStackItemComposition() = default;
 				
 				/// <summary>Get the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for deciding the stack item layout.</summary>
 				/// <returns>The extra margin for this stack item.</returns>

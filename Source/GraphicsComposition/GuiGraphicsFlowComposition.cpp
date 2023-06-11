@@ -347,51 +347,21 @@ GuiFlowItemComposition
 				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
 			}
 
-			Size GuiFlowItemComposition::GetMinSize()
+			void GuiFlowItemComposition::Layout_SetFlowItemBounds(GuiFlowComposition* flowParent, Rect bounds)
 			{
-				return GetBoundsInternal(bounds, true).GetSize();
+				Rect result = bounds;
+				result = Rect(
+					result.Left() - extraMargin.left,
+					result.Top() - extraMargin.top,
+					result.Right() + extraMargin.right,
+					result.Bottom() + extraMargin.bottom
+					);
+				Layout_SetCachedBounds(result);
 			}
 
 			GuiFlowItemComposition::GuiFlowItemComposition()
-				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-			}
-
-			GuiFlowItemComposition::~GuiFlowItemComposition()
-			{
-			}
-
-			Rect GuiFlowItemComposition::GetBounds()
-			{
-				Rect result = bounds;
-				if(flowParent)
-				{
-					flowParent->UpdateFlowItemBounds(false);
-					vint index = flowParent->flowItems.IndexOf(this);
-					if (index != -1)
-					{
-						result = flowParent->flowItemBounds[index];
-					}
-
-					result = Rect(
-						result.Left() - extraMargin.left,
-						result.Top() - extraMargin.top,
-						result.Right() + extraMargin.right,
-						result.Bottom() + extraMargin.bottom
-						);
-				}
-				UpdatePreviousBounds(result);
-				return result;
-			}
-
-			void GuiFlowItemComposition::SetBounds(Rect value)
-			{
-				if (bounds != value)
-				{
-					bounds = value;
-					InvokeOnCompositionStateChanged();
-				}
 			}
 
 			Margin GuiFlowItemComposition::GetExtraMargin()
@@ -418,11 +388,8 @@ GuiFlowItemComposition
 				if (option != value)
 				{
 					option = value;
-					if (flowParent)
-					{
-						flowParent->needUpdate = true;
-						InvokeOnCompositionStateChanged();
-					}
+					if (flowParent) flowParent->needUpdate = true;
+					InvokeOnCompositionStateChanged();
 				}
 			}
 		}

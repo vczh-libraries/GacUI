@@ -147,7 +147,7 @@ Flow Compositions
 			/// <summary>
 			/// Represents a flow item composition of a <see cref="GuiFlowComposition"/>.
 			/// </summary>
-			class GuiFlowItemComposition : public GuiGraphicsComposition, public Description<GuiFlowItemComposition>
+			class GuiFlowItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiFlowItemComposition>
 			{
 				friend class GuiFlowComposition;
 			protected:
@@ -157,13 +157,10 @@ Flow Compositions
 				GuiFlowOption						option;
 
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				Size								GetMinSize();
+				void								Layout_SetFlowItemBounds(GuiFlowComposition* flowParent, Rect bounds);
 			public:
 				GuiFlowItemComposition();
-				~GuiFlowItemComposition();
-				
-				Rect								GetBounds()override;
-				void								SetBounds(Rect value);
+				~GuiFlowItemComposition() = default;
 				
 				/// <summary>Get the extra margin for this flow item. An extra margin is used to enlarge the bounds of the flow item, but only the non-extra part will be used for deciding the flow item layout.</summary>
 				/// <returns>The extra margin for this flow item.</returns>

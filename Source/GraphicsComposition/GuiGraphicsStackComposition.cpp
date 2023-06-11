@@ -304,86 +304,57 @@ GuiStackItemComposition
 				stackParent = newParent == 0 ? 0 : dynamic_cast<GuiStackComposition*>(newParent);
 			}
 
-			Size GuiStackItemComposition::GetMinSize()
+			void GuiStackItemComposition::Layout_SetStackItemBounds(GuiStackComposition* stackParent, Rect bounds)
 			{
-				return GetBoundsInternal(bounds, true).GetSize();
+				Rect result = bounds;
+				Rect parentBounds = stackParent->cachedBounds;
+				Margin margin = stackParent->extraMargin;
+				if (margin.left <= 0) margin.left = 0;
+				if (margin.top <= 0) margin.top = 0;
+				if (margin.right <= 0) margin.right = 0;
+				if (margin.bottom <= 0) margin.bottom = 0;
+
+				auto x = result.Left();
+				auto y = result.Top();
+				auto w = result.Width();
+				auto h = result.Height();
+
+				switch (stackParent->direction)
+				{
+				case GuiStackComposition::Horizontal:
+					x += margin.left + stackParent->adjustment;
+					y = margin.top;
+					h = parentBounds.Height() - margin.top - margin.bottom;
+					break;
+				case GuiStackComposition::ReversedHorizontal:
+					x = parentBounds.Width() - margin.right - x - w + stackParent->adjustment;
+					y = margin.top;
+					h = parentBounds.Height() - margin.top - margin.bottom;
+					break;
+				case GuiStackComposition::Vertical:
+					x = margin.left;
+					y += margin.top + stackParent->adjustment;
+					w = parentBounds.Width() - margin.left - margin.right;
+					break;
+				case GuiStackComposition::ReversedVertical:
+					x = margin.left;
+					y = parentBounds.Height() - margin.bottom - y - h + stackParent->adjustment;
+					w = parentBounds.Width() - margin.left - margin.right;
+					break;
+				}
+
+				result = Rect(
+					x - extraMargin.left,
+					y - extraMargin.top,
+					x + w + extraMargin.right,
+					y + h + extraMargin.bottom
+					);
+				Layout_SetCachedBounds(result);
 			}
 
 			GuiStackItemComposition::GuiStackItemComposition()
-				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-			}
-
-			GuiStackItemComposition::~GuiStackItemComposition()
-			{
-			}
-
-			Rect GuiStackItemComposition::GetBounds()
-			{
-				Rect result = bounds;
-				if(stackParent)
-				{
-					vint index = stackParent->stackItems.IndexOf(this);
-					if (index != -1)
-					{
-						result = stackParent->stackItemBounds[index];
-					}
-
-					Rect parentBounds = stackParent->previousBounds;
-					Margin margin = stackParent->extraMargin;
-					if (margin.left <= 0) margin.left = 0;
-					if (margin.top <= 0) margin.top = 0;
-					if (margin.right <= 0) margin.right = 0;
-					if (margin.bottom <= 0) margin.bottom = 0;
-
-					auto x = result.Left();
-					auto y = result.Top();
-					auto w = result.Width();
-					auto h = result.Height();
-
-					switch (stackParent->direction)
-					{
-					case GuiStackComposition::Horizontal:
-						x += margin.left + stackParent->adjustment;
-						y = margin.top;
-						h = parentBounds.Height() - margin.top - margin.bottom;
-						break;
-					case GuiStackComposition::ReversedHorizontal:
-						x = parentBounds.Width() - margin.right - x - w + stackParent->adjustment;
-						y = margin.top;
-						h = parentBounds.Height() - margin.top - margin.bottom;
-						break;
-					case GuiStackComposition::Vertical:
-						x = margin.left;
-						y += margin.top + stackParent->adjustment;
-						w = parentBounds.Width() - margin.left - margin.right;
-						break;
-					case GuiStackComposition::ReversedVertical:
-						x = margin.left;
-						y = parentBounds.Height() - margin.bottom - y - h + stackParent->adjustment;
-						w = parentBounds.Width() - margin.left - margin.right;
-						break;
-					}
-
-					result = Rect(
-						x - extraMargin.left,
-						y - extraMargin.top,
-						x + w + extraMargin.right,
-						y + h + extraMargin.bottom
-						);
-				}
-				UpdatePreviousBounds(result);
-				return result;
-			}
-
-			void GuiStackItemComposition::SetBounds(Rect value)
-			{
-				if (bounds != value)
-				{
-					bounds = value;
-					InvokeOnCompositionStateChanged();
-				}
 			}
 
 			Margin GuiStackItemComposition::GetExtraMargin()
