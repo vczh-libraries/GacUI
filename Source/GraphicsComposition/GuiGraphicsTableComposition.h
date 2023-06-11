@@ -218,7 +218,7 @@ Table Compositions
 			/// <summary>
 			/// Represents a cell composition of a <see cref="GuiTableComposition"/>.
 			/// </summary>
-			class GuiCellComposition : public GuiGraphicsComposition, public Description<GuiCellComposition>
+			class GuiCellComposition : public GuiGraphicsComposition_Controlled, public Description<GuiCellComposition>
 			{
 				friend class GuiTableComposition;
 			protected:
@@ -235,9 +235,10 @@ Table Compositions
 				bool								SetSiteInternal(vint _row, vint _column, vint _rowSpan, vint _columnSpan);
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
 				void								OnTableRowsAndColumnsChanged();
+				void								Layout_SetCellBounds();
 			public:
 				GuiCellComposition();
-				~GuiCellComposition();
+				~GuiCellComposition() = default;
 
 				/// <summary>Get the owner table composition.</summary>
 				/// <returns>The owner table composition.</returns>
@@ -271,7 +272,7 @@ Table Compositions
 			protected:
 				GuiTableComposition*				tableParent = nullptr;
 
-				bool								dragging;
+				bool								dragging = false;
 				Point								draggingPoint;
 				
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
@@ -299,7 +300,7 @@ Table Compositions
 														);
 			public:
 				GuiTableSplitterCompositionBase();
-				~GuiTableSplitterCompositionBase();
+				~GuiTableSplitterCompositionBase() = default;
 
 				/// <summary>Get the owner table composition.</summary>
 				/// <returns>The owner table composition.</returns>
@@ -318,7 +319,7 @@ Table Compositions
 				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
 				GuiRowSplitterComposition();
-				~GuiRowSplitterComposition();
+				~GuiRowSplitterComposition() = default;
 
 				/// <summary>Get the number of rows that above the splitter.</summary>
 				/// <returns>The number of rows that above the splitter.</returns>
@@ -340,7 +341,7 @@ Table Compositions
 				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:
 				GuiColumnSplitterComposition();
-				~GuiColumnSplitterComposition();
+				~GuiColumnSplitterComposition() = default;
 
 				/// <summary>Get the number of columns that before the splitter.</summary>
 				/// <returns>The number of columns that before the splitter.</returns>

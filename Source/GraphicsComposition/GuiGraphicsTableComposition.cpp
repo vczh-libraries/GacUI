@@ -617,14 +617,44 @@ GuiCellComposition
 				}
 			}
 
-			GuiCellComposition::GuiCellComposition()
-				: GuiGraphicsComposition(false)
+			void GuiCellComposition::Layout_SetCellBounds()
 			{
-				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				Rect result;
+				if (tableParent && row != -1 && column != -1)
+				{
+					Rect bounds1, bounds2;
+					{
+						vint index = tableParent->GetSiteIndex(tableParent->rows, tableParent->columns, row, column);
+						bounds1 = tableParent->cellBounds[index];
+					}
+					{
+						vint index = tableParent->GetSiteIndex(tableParent->rows, tableParent->columns, row + rowSpan - 1, column + columnSpan - 1);
+						bounds2 = tableParent->cellBounds[index];
+						if (tableParent->GetMinSizeLimitation() == GuiGraphicsComposition::NoLimit)
+						{
+							if (row + rowSpan == tableParent->rows)
+							{
+								bounds2.y2 += tableParent->rowExtending;
+							}
+							if (column + columnSpan == tableParent->columns)
+							{
+								bounds2.x2 += tableParent->columnExtending;
+							}
+						}
+					}
+					vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
+					result = Rect(bounds1.x1 + offset, bounds1.y1 + offset, bounds2.x2 + offset, bounds2.y2 + offset);
+				}
+				else
+				{
+					result = Rect();
+				}
+				Layout_SetCachedBounds(result);
 			}
 
-			GuiCellComposition::~GuiCellComposition()
+			GuiCellComposition::GuiCellComposition()
 			{
+				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			}
 
 			GuiTableComposition* GuiCellComposition::GetTableParent()
@@ -664,42 +694,6 @@ GuiCellComposition
 					tableParent->UpdateCellBounds();
 				}
 				return true;
-			}
-
-			Rect GuiCellComposition::GetBounds()
-			{
-				Rect result;
-				if(tableParent && row!=-1 && column!=-1)
-				{
-					Rect bounds1, bounds2;
-					{
-						vint index=tableParent->GetSiteIndex(tableParent->rows, tableParent->columns, row, column);
-						bounds1=tableParent->cellBounds[index];
-					}
-					{
-						vint index=tableParent->GetSiteIndex(tableParent->rows, tableParent->columns, row+rowSpan-1, column+columnSpan-1);
-						bounds2=tableParent->cellBounds[index];
-						if(tableParent->GetMinSizeLimitation()==GuiGraphicsComposition::NoLimit)
-						{
-							if(row+rowSpan==tableParent->rows)
-							{
-								bounds2.y2+=tableParent->rowExtending;
-							}
-							if(column+columnSpan==tableParent->columns)
-							{
-								bounds2.x2+=tableParent->columnExtending;
-							}
-						}
-					}
-					vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
-					result = Rect(bounds1.x1 + offset, bounds1.y1 + offset, bounds2.x2 + offset, bounds2.y2 + offset);
-				}
-				else
-				{
-					result = Rect();
-				}
-				UpdatePreviousBounds(result);
-				return result;
 			}
 
 /***********************************************************************
@@ -833,7 +827,7 @@ GuiTableSplitterCompositionBase
 				vint Rect::* dimV2
 				)
 			{
-				Rect result(0, 0, 0, 0);
+				Rect result;
 				if (tableParent)
 				{
 					if (0 < cellsBefore && cellsBefore < tableParent->*cells)
@@ -845,21 +839,14 @@ GuiTableSplitterCompositionBase
 						result.*dimV2 = (result.*dimV1) + tableParent->cellPadding;
 					}
 				}
-				UpdatePreviousBounds(result);
 				return result;
 			}
 			
 			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
-				: GuiGraphicsComposition(false)
-				, dragging(false)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
 				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
 				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
-			}
-
-			GuiTableSplitterCompositionBase::~GuiTableSplitterCompositionBase()
-			{
 			}
 
 			GuiTableComposition* GuiTableSplitterCompositionBase::GetTableParent()
@@ -898,14 +885,9 @@ GuiRowSplitterComposition
 			}
 			
 			GuiRowSplitterComposition::GuiRowSplitterComposition()
-				:rowsToTheTop(0)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
 				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiRowSplitterComposition::OnMouseMove);
-			}
-
-			GuiRowSplitterComposition::~GuiRowSplitterComposition()
-			{
 			}
 
 			vint GuiRowSplitterComposition::GetRowsToTheTop()
@@ -953,14 +935,9 @@ GuiColumnSplitterComposition
 			}
 			
 			GuiColumnSplitterComposition::GuiColumnSplitterComposition()
-				:columnsToTheLeft(0)
 			{
 				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
 				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiColumnSplitterComposition::OnMouseMove);
-			}
-
-			GuiColumnSplitterComposition::~GuiColumnSplitterComposition()
-			{
 			}
 
 			vint GuiColumnSplitterComposition::GetColumnsToTheLeft()
