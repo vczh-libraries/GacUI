@@ -263,10 +263,88 @@ GuiTableComposition
 
 			Size GuiTableComposition::Layout_CalculateMinSize()
 			{
+				for (auto child : Children())
+				{
+					if (auto cell = dynamic_cast<GuiCellComposition*>(child))
+					{
+						cell->Layout_SetCachedMinSize(cell->Layout_CalculateMinSizeHelper());
+					}
+				}
+
+				rowOffsets.Resize(rows);
+				rowSizes.Resize(rows);
+				columnOffsets.Resize(columns);
+				columnSizes.Resize(columns);
+
+				vint rowTotal = (rows - 1) * cellPadding;
+				vint columnTotal = (columns - 1) * cellPadding;
+				vint rowTotalWithPercentage = rowTotal;
+				vint columnTotalWithPercentage = columnTotal;
+
+				UpdateCellBoundsInternal(
+					rowSizes,
+					rowTotal,
+					rowTotalWithPercentage,
+					rowOptions,
+					&GuiTableComposition::rows,
+					&GuiTableComposition::columns,
+					&Y,
+					&RL,
+					&RS,
+					&First,
+					&Second
+				);
+				UpdateCellBoundsInternal(
+					columnSizes,
+					columnTotal,
+					columnTotalWithPercentage,
+					columnOptions,
+					&GuiTableComposition::columns,
+					&GuiTableComposition::rows,
+					&X,
+					&CL,
+					&CS,
+					&Second,
+					&First
+				);
+
+				vint offset = (borderVisible ? 2 * cellPadding : 0);
+				Size minTableSize(columnTotalWithPercentage + offset, rowTotalWithPercentage + offset);
+
+				Size minClientSize = GuiBoundsComposition::Layout_CalculateMinSize();
+				return Size(
+					minTableSize.x > minClientSize.x ? minTableSize.x : minClientSize.x,
+					minTableSize.y > minClientSize.y ? minTableSize.y : minClientSize.y
+					);
 			}
 
 			Rect GuiTableComposition::Layout_CalculateBounds(Rect parentBounds)
 			{
+				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentBounds);
+				Rect area = CalculateCellArea(bounds);
+				UpdateCellBoundsPercentages(rowSizes, rowTotal, area.Height(), rowOptions);
+				UpdateCellBoundsPercentages(columnSizes, columnTotal, area.Width(), columnOptions);
+				rowExtending = UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
+				columnExtending = UpdateCellBoundsOffsets(columnOffsets, columnSizes, area.Width());
+
+				for (vint i = 0; i < rows; i++)
+				{
+					for (vint j = 0; j < columns; j++)
+					{
+						vint index = GetSiteIndex(rows, columns, i, j);
+						cellBounds[index] = Rect(Point(columnOffsets[j], rowOffsets[i]), Size(columnSizes[j], rowSizes[i]));
+					}
+				}
+
+				for (auto child : Children())
+				{
+					if (auto cell = dynamic_cast<GuiCellComposition*>(child))
+					{
+						cell->Layout_SetCellBounds();
+					}
+				}
+
+				return bounds;
 			}
 
 			vint GuiTableComposition::UpdateCellBoundsOffsets(
@@ -412,64 +490,6 @@ GuiTableComposition
 					borderVisible = value;
 					InvokeOnCompositionStateChanged();
 				}
-			}
-
-			void GuiTableComposition::UpdateCellBounds()
-			{
-				rowOffsets.Resize(rows);
-				rowSizes.Resize(rows);
-				columnOffsets.Resize(columns);
-				columnSizes.Resize(columns);
-
-				vint rowTotal = (rows - 1) * cellPadding;
-				vint columnTotal = (columns - 1) * cellPadding;
-				vint rowTotalWithPercentage = rowTotal;
-				vint columnTotalWithPercentage = columnTotal;
-
-				UpdateCellBoundsInternal(
-					rowSizes,
-					rowTotal,
-					rowTotalWithPercentage,
-					rowOptions,
-					&GuiTableComposition::rows,
-					&GuiTableComposition::columns,
-					&Y,
-					&RL,
-					&RS,
-					&First,
-					&Second
-				);
-				UpdateCellBoundsInternal(
-					columnSizes,
-					columnTotal,
-					columnTotalWithPercentage,
-					columnOptions,
-					&GuiTableComposition::columns,
-					&GuiTableComposition::rows,
-					&X,
-					&CL,
-					&CS,
-					&Second,
-					&First
-				);
-
-				Rect area = GetCellArea();
-				UpdateCellBoundsPercentages(rowSizes, rowTotal, area.Height(), rowOptions);
-				UpdateCellBoundsPercentages(columnSizes, columnTotal, area.Width(), columnOptions);
-				rowExtending = UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
-				columnExtending = UpdateCellBoundsOffsets(columnOffsets, columnSizes, area.Width());
-
-				for (vint i = 0; i < rows; i++)
-				{
-					for (vint j = 0; j < columns; j++)
-					{
-						vint index = GetSiteIndex(rows, columns, i, j);
-						cellBounds[index] = Rect(Point(columnOffsets[j], rowOffsets[i]), Size(columnSizes[j], rowSizes[i]));
-					}
-				}
-
-				tableContentMinSize = Size(columnTotalWithPercentage, rowTotalWithPercentage);
-				InvokeOnCompositionStateChanged();
 			}
 
 			Rect GuiTableComposition::GetBounds()

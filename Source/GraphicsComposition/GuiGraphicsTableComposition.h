@@ -120,7 +120,10 @@ Table Compositions
 				collections::Array<vint>					rowSizes;
 				collections::Array<vint>					columnSizes;
 
-				Size										tableContentMinSize;
+				vint										rowTotal = 0;
+				vint										columnTotal = 0;
+				vint										rowTotalWithPercentage = 0;
+				vint										columnTotalWithPercentage = 0;
 
 				Rect								CalculateCellArea(Rect tableBounds);
 				vint								GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
