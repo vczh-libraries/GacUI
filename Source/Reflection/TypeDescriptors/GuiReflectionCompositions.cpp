@@ -186,7 +186,6 @@ Type Declaration (Class)
 ***********************************************************************/
 
 			BEGIN_CLASS_MEMBER(GuiGraphicsComposition)
-
 				CLASS_MEMBER_EXTERNALMETHOD(SafeDelete, NO_PARAMETER, void(GuiGraphicsComposition::*)(), vl::presentation::compositions::SafeDeleteComposition)
 
 				CLASS_MEMBER_GUIEVENT_COMPOSITION(leftButtonDown)
@@ -233,7 +232,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD_RENAME(GetChildren, Children, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
 
-				CLASS_MEMBER_METHOD(IsTrivialComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(AddChild, {L"child"})
 				CLASS_MEMBER_METHOD(InsertChild, {L"index" _ L"child"})
 				CLASS_MEMBER_METHOD(RemoveChild, {L"child"})
@@ -259,7 +257,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiBoundsComposition*(), NO_PARAMETER)
 
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
+				CLASS_MEMBER_PROPERTY_FAST(ExpectedBounds)
 				CLASS_MEMBER_PROPERTY_FAST(AlignmentToParent)
 				
 				CLASS_MEMBER_METHOD(IsAlignedToParent, NO_PARAMETER)
@@ -284,7 +282,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiStackItemComposition*(), NO_PARAMETER)
 
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
 			END_CLASS_MEMBER(GuiStackItemComposition)
 
@@ -310,8 +307,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_METHOD(SetRowOption, {L"row" _ L"option"})
 				CLASS_MEMBER_METHOD(GetColumnOption, {L"column"})
 				CLASS_MEMBER_METHOD(SetColumnOption, {L"column" _ L"option"})
-				CLASS_MEMBER_METHOD(GetCellArea, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(UpdateCellBounds, NO_PARAMETER)
 			END_CLASS_MEMBER(GuiTableComposition)
 
 			BEGIN_CLASS_MEMBER(GuiCellComposition)
@@ -365,7 +360,6 @@ Type Declaration (Class)
 				CLASS_MEMBER_BASE(GuiGraphicsComposition)
 				CLASS_MEMBER_CONSTRUCTOR(GuiFlowItemComposition*(), NO_PARAMETER)
 
-				CLASS_MEMBER_PROPERTY_EVENT_FAST(Bounds, BoundsChanged)
 				CLASS_MEMBER_PROPERTY_FAST(ExtraMargin)
 				CLASS_MEMBER_PROPERTY_FAST(FlowOption)
 			END_CLASS_MEMBER(GuiFlowItemComposition)
