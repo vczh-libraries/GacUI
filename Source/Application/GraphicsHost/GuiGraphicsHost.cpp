@@ -636,11 +636,13 @@ GuiGraphicsHost
 					default:
 						{
 							supressPaint = true;
-							auto bounds = windowComposition->GetBounds();
-							auto preferred = windowComposition->GetPreferredBounds();
-							auto width = bounds.Width() > preferred.Width() ? bounds.Width() : preferred.Width();
-							auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
-							controlHost->UpdateClientSizeAfterRendering(preferred.GetSize(), Size(width, height));
+							auto bounds = windowComposition->GetCachedBounds();
+							windowComposition->Layout_UpdateMinSize();
+							auto preferred = windowComposition->GetCachedMinSize();
+							auto width = bounds.Width() > preferred.x ? bounds.Width() : preferred.x;
+							auto height = bounds.Height() > preferred.y ? bounds.Height() : preferred.y;
+							controlHost->UpdateClientSizeAfterRendering(preferred, Size(width, height));
+							windowComposition->Layout_UpdateBounds(Rect({ 0,0 }, { width,height }));
 							supressPaint = false;
 						}
 					}

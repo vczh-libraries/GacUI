@@ -17,11 +17,14 @@ namespace vl
 	{
 		namespace compositions
 		{
+			class GuiGraphicsHost;
+
 			/// <summary>
 			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
 			/// </summary>
 			class GuiWindowComposition : public GuiGraphicsComposition_Specialized, public Description<GuiWindowComposition>
 			{
+				friend class GuiGraphicsHost;
 			protected:
 				Rect						Layout_CalculateBounds(Rect parentBounds) override;
 
