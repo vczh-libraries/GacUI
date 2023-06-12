@@ -651,8 +651,8 @@ GuiDocumentCommonInterface
 				if (index != -1)
 				{
 					auto item = documentItems.Values()[index];
-					auto size = item->container->GetBounds().GetSize();
-					item->container->SetBounds(Rect(location.LeftTop(), Size(0, 0)));
+					auto size = item->container->GetCachedBounds().GetSize();
+					item->container->SetExpectedBounds(Rect(location.LeftTop(), Size(0, 0)));
 					item->visible = true;
 					return size;
 				}

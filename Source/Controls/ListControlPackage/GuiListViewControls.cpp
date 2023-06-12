@@ -120,10 +120,10 @@ ListViewColumnItemArranger
 					listView->ColumnClicked.Execute(args);
 				}
 
-				void ListViewColumnItemArranger::ColumnBoundsChanged(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+				void ListViewColumnItemArranger::ColumnCachedBoundsChanged(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					GuiBoundsComposition* buttonBounds=columnHeaderButtons[index]->GetBoundsComposition();
-					vint size=buttonBounds->GetBounds().Width();
+					vint size=buttonBounds->GetCachedBounds().Width();
 					if(size>columnItemView->GetColumnSize(index))
 					{
 						columnItemView->SetColumnSize(index, size);
@@ -159,11 +159,11 @@ ListViewColumnItemArranger
 						if(index!=-1)
 						{
 							GuiBoundsComposition* buttonBounds=columnHeaderButtons[index]->GetBoundsComposition();
-							Rect bounds=buttonBounds->GetBounds();
+							Rect bounds=buttonBounds->GetCachedBounds();
 							Rect newBounds(bounds.LeftTop(), Size(bounds.Width()+offset, bounds.Height()));
-							buttonBounds->SetBounds(newBounds);
+							buttonBounds->SetExpectedBounds(newBounds);
 
-							vint finalSize=buttonBounds->GetBounds().Width();
+							vint finalSize=buttonBounds->GetCachedBounds().Width();
 							columnItemView->SetColumnSize(index, finalSize);
 						}
 					}
@@ -174,12 +174,12 @@ ListViewColumnItemArranger
 					FixedHeightItemArranger::RearrangeItemBounds();
 					vint count = columnHeaders->GetParent()->Children().Count();
 					columnHeaders->GetParent()->MoveChild(columnHeaders, count - 1);
-					columnHeaders->SetBounds(Rect(Point(-viewBounds.Left(), 0), Size(0, 0)));
+					columnHeaders->SetExpectedBounds(Rect(Point(-viewBounds.Left(), 0), Size(0, 0)));
 				}
 
 				vint ListViewColumnItemArranger::GetWidth()
 				{
-					vint width=columnHeaders->GetBounds().Width()-SplitterWidth;
+					vint width=columnHeaders->GetCachedBounds().Width()-SplitterWidth;
 					if(width<SplitterWidth)
 					{
 						width=SplitterWidth;
@@ -189,7 +189,7 @@ ListViewColumnItemArranger
 
 				vint ListViewColumnItemArranger::GetYOffset()
 				{
-					return columnHeaders->GetBounds().Height();
+					return columnHeaders->GetCachedBounds().Height();
 				}
 
 				Size ListViewColumnItemArranger::OnCalculateTotalSize()
@@ -229,7 +229,7 @@ ListViewColumnItemArranger
 							button->SetText(listViewItemView->GetColumnText(i));
 							button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 							button->SetColumnSortingState(columnItemView->GetSortingState(i));
-							button->GetBoundsComposition()->SetBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
+							button->GetBoundsComposition()->SetExpectedBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
 						}
 					}
 					else
@@ -258,9 +258,9 @@ ListViewColumnItemArranger
 								button->SetText(listViewItemView->GetColumnText(i));
 								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
 								button->SetColumnSortingState(columnItemView->GetSortingState(i));
-								button->GetBoundsComposition()->SetBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
+								button->GetBoundsComposition()->SetExpectedBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
 								button->Clicked.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnClicked(i, sender, args); });
-								button->GetBoundsComposition()->BoundsChanged.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnBoundsChanged(i, sender, args); });
+								button->GetBoundsComposition()->CachedBoundsChanged.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnCachedBoundsChanged(i, sender, args); });
 								columnHeaderButtons.Add(button);
 								if (i > 0)
 								{

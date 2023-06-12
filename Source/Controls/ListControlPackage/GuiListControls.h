@@ -216,7 +216,7 @@ List Control
 
 					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition);
 					ItemStyle*									UninstallStyle(vint index);
-					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void										OnStyleCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					ItemCallback(GuiListControl* _listControl);
 					~ItemCallback();
@@ -285,7 +285,7 @@ List Control
 				collections::Dictionary<ItemStyle*, Ptr<VisibleStyleHelper>>		visibleStyles;
 
 				void											UpdateDisplayFont()override;
-				void											OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void											OnClientCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);

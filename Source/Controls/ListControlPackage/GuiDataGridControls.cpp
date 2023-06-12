@@ -290,7 +290,6 @@ DefaultDataGridItemTemplate
 						{
 							textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(dataGrid->columnItemView->GetColumnSize(i)));
 						}
-						textTable->UpdateCellBounds();
 					}
 				}
 

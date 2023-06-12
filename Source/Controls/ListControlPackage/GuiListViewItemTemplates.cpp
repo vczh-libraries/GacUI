@@ -677,7 +677,6 @@ DetailListViewItemTemplate
 							{
 								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
 							}
-							textTable->UpdateCellBounds();
 						}
 					}
 				}

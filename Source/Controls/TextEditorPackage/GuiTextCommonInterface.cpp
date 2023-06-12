@@ -44,7 +44,7 @@ GuiTextBoxCommonInterface::DefaultCallback
 
 			vint GuiTextBoxCommonInterface::DefaultCallback::GetPageRows()
 			{
-				return textComposition->GetBounds().Height()/textElement->GetLines().GetRowHeight();
+				return textComposition->GetCachedBounds().Height()/textElement->GetLines().GetRowHeight();
 			}
 
 			bool GuiTextBoxCommonInterface::DefaultCallback::BeforeModify(TextPos start, TextPos end, const WString& originalText, WString& inputText)
@@ -121,7 +121,7 @@ GuiTextBoxCommonInterface
 				}
 
 				Rect bounds = textElement->GetLines().GetRectFromTextPos(pos);
-				Rect view = Rect(textElement->GetViewPosition(), textComposition->GetBounds().GetSize());
+				Rect view = Rect(textElement->GetViewPosition(), textComposition->GetCachedBounds().GetSize());
 				Point viewPoint = view.LeftTop();
 
 				if (view.x2 > view.x1 && view.y2 > view.y1)

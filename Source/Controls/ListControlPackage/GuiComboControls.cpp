@@ -25,10 +25,10 @@ GuiComboBoxBase
 				return IGuiMenuService::Horizontal;
 			}
 
-			void GuiComboBoxBase::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiComboBoxBase::OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				Size size=GetPreferredMenuClientSize();
-				size.x=boundsComposition->GetBounds().Width();
+				size.x=boundsComposition->GetCachedBounds().Width();
 				SetPreferredMenuClientSize(size);
 			}
 
@@ -38,7 +38,7 @@ GuiComboBoxBase
 				CreateSubMenu();
 				SetCascadeAction(false);
 
-				boundsComposition->BoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnBoundsChanged);
+				boundsComposition->CachedBoundsChanged.AttachMethod(this, &GuiComboBoxBase::OnCachedBoundsChanged);
 			}
 
 			GuiComboBoxBase::~GuiComboBoxBase()
@@ -148,7 +148,7 @@ GuiComboBoxListControl
 					Size adoptedSize = containedListControl->GetAdoptedSize(expectedSize);
 
 					Size clientSize = GetPreferredMenuClientSize();
-					vint height = adoptedSize.y + subMenu->GetClientSize().y - containedListControl->GetBoundsComposition()->GetBounds().Height();
+					vint height = adoptedSize.y + subMenu->GetClientSize().y - containedListControl->GetBoundsComposition()->GetCachedBounds().Height();
 					if (clientSize.y != height)
 					{
 						clientSize.y = height;
@@ -193,7 +193,7 @@ GuiComboBoxListControl
 				AdoptSubMenuSize();
 			}
 
-			void GuiComboBoxListControl::OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiComboBoxListControl::OnListControlCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				auto flag = GetDisposedFlag();
 				GetApplication()->InvokeLambdaInMainThread(GetRelatedControlHost(), [=]()
@@ -263,7 +263,7 @@ GuiComboBoxListControl
 				containedListControl->AdoptedSizeInvalidated.AttachMethod(this, &GuiComboBoxListControl::OnListControlAdoptedSizeInvalidated);
 				containedListControl->ItemLeftButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
 				containedListControl->ItemRightButtonDown.AttachMethod(this, &GuiComboBoxListControl::OnListControlItemMouseDown);
-				boundsChangedHandler = containedListControl->GetBoundsComposition()->BoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlBoundsChanged);
+				boundsChangedHandler = containedListControl->GetBoundsComposition()->CachedBoundsChanged.AttachMethod(this, &GuiComboBoxListControl::OnListControlCachedBoundsChanged);
 				boundsComposition->GetEventReceiver()->keyDown.AttachMethod(this, &GuiComboBoxListControl::OnKeyDown);
 
 				auto itemProvider = containedListControl->GetItemProvider();
@@ -278,7 +278,7 @@ GuiComboBoxListControl
 			GuiComboBoxListControl::~GuiComboBoxListControl()
 			{
 				containedListControl->GetItemProvider()->DetachCallback(this);
-				containedListControl->GetBoundsComposition()->BoundsChanged.Detach(boundsChangedHandler);
+				containedListControl->GetBoundsComposition()->CachedBoundsChanged.Detach(boundsChangedHandler);
 				boundsChangedHandler = nullptr;
 			}
 
