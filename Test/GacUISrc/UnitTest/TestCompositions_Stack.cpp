@@ -40,10 +40,11 @@ TEST_FILE
 			{
 				stack->SetDirection(GuiStackComposition::Horizontal);
 				TEST_ASSERT(stack->GetDirection() == GuiStackComposition::Horizontal);
-				TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 64 + 330,66 + 140 }));
-				TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
-				TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
-				TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+				stack->ForceCalculateSizeImmediately();
+
+				TEST_ASSERT(stack->GetCachedClientArea() == Rect({ 0,0 }, { 64 + 330,66 + 140 }));
+				TEST_ASSERT(stack->GetCachedMinSize() == stack->GetCachedClientArea().GetSize());
+				TEST_ASSERT(stack->GetCachedBounds() == stack->GetCachedClientArea());
 				for (vint i = 0; i < ITEM_COUNT; i++)
 				{
 					vint offset = 11 + (100 + 10) * i + 10 * i * (i - 1) / 2;
@@ -55,16 +56,17 @@ TEST_FILE
 						expected.x2 += 3 * i;
 						expected.y2 += 4 * i;
 					}
-					TEST_ASSERT(stackItems[i]->GetBounds() == expected);
+					TEST_ASSERT(stackItems[i]->GetCachedBounds() == expected);
 				}
 			}
 			{
 				stack->SetDirection(GuiStackComposition::ReversedHorizontal);
 				TEST_ASSERT(stack->GetDirection() == GuiStackComposition::ReversedHorizontal);
-				TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 64 + 330,66 + 140 }));
-				TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
-				TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
-				TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+				stack->ForceCalculateSizeImmediately();
+
+				TEST_ASSERT(stack->GetCachedClientArea() == Rect({ 0,0 }, { 64 + 330,66 + 140 }));
+				TEST_ASSERT(stack->GetCachedMinSize() == stack->GetCachedClientArea().GetSize());
+				TEST_ASSERT(stack->GetCachedBounds() == stack->GetCachedClientArea());
 				for (vint i = 0; i < ITEM_COUNT; i++)
 				{
 					vint offset = 33 + (100 + 10) * i + 10 * i * (i - 1) / 2;
@@ -77,16 +79,17 @@ TEST_FILE
 						expected.x2 += 3 * i;
 						expected.y2 += 4 * i;
 					}
-					TEST_ASSERT(stackItems[i]->GetBounds() == expected);
+					TEST_ASSERT(stackItems[i]->GetCachedBounds() == expected);
 				}
 			}
 			{
 				stack->SetDirection(GuiStackComposition::Vertical);
 				TEST_ASSERT(stack->GetDirection() == GuiStackComposition::Vertical);
-				TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 44 + 120,86 + 360 }));
-				TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
-				TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
-				TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+				stack->ForceCalculateSizeImmediately();
+
+				TEST_ASSERT(stack->GetCachedClientArea() == Rect({ 0,0 }, { 44 + 120,86 + 360 }));
+				TEST_ASSERT(stack->GetCachedMinSize() == stack->GetCachedClientArea().GetSize());
+				TEST_ASSERT(stack->GetCachedBounds() == stack->GetCachedClientArea());
 				for (vint i = 0; i < ITEM_COUNT; i++)
 				{
 					vint offset = 22 + (100 + 10) * i + 20 * i * (i - 1) / 2;
@@ -98,16 +101,17 @@ TEST_FILE
 						expected.x2 += 3 * i;
 						expected.y2 += 4 * i;
 					}
-					TEST_ASSERT(stackItems[i]->GetBounds() == expected);
+					TEST_ASSERT(stackItems[i]->GetCachedBounds() == expected);
 				}
 			}
 			{
 				stack->SetDirection(GuiStackComposition::ReversedVertical);
 				TEST_ASSERT(stack->GetDirection() == GuiStackComposition::ReversedVertical);
-				TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 44 + 120,86 + 360 }));
-				TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
-				TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
-				TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+				stack->ForceCalculateSizeImmediately();
+
+				TEST_ASSERT(stack->GetCachedClientArea() == Rect({ 0,0 }, { 44 + 120,86 + 360 }));
+				TEST_ASSERT(stack->GetCachedMinSize() == stack->GetCachedClientArea().GetSize());
+				TEST_ASSERT(stack->GetCachedBounds() == stack->GetCachedClientArea());
 				for (vint i = 0; i < ITEM_COUNT; i++)
 				{
 					vint offset = 44 + (100 + 10) * i + 20 * i * (i - 1) / 2;
@@ -120,7 +124,7 @@ TEST_FILE
 						expected.x2 += 3 * i;
 						expected.y2 += 4 * i;
 					}
-					TEST_ASSERT(stackItems[i]->GetBounds() == expected);
+					TEST_ASSERT(stackItems[i]->GetCachedBounds() == expected);
 				}
 			}
 		};
@@ -152,114 +156,130 @@ TEST_FILE
 		}
 
 		stack->SetPreferredMinSize(Size(170, 70));
-		TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 170,70 }));
-		TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
-		TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
-		TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+		stack->ForceCalculateSizeImmediately();
+		TEST_ASSERT(stack->GetCachedClientArea() == Rect({ 0,0 }, { 170,70 }));
+		TEST_ASSERT(stack->GetCachedMinSize() == stack->GetCachedClientArea().GetSize());
+		TEST_ASSERT(stack->GetCachedBounds() == stack->GetCachedClientArea());
 		{
 			stack->SetDirection(GuiStackComposition::Horizontal);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ i * 60,0 }, { 50,70 }));
 			}
 
 			stack->EnsureVisible(5);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60 - 180,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ i * 60 - 180,0 }, { 50,70 }));
 			}
 
 			stack->EnsureVisible(9);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60 - 420,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ i * 60 - 420,0 }, { 50,70 }));
 			}
 
 			stack->EnsureVisible(0);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ i * 60,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ i * 60,0 }, { 50,70 }));
 			}
 		}
 		{
 			stack->SetDirection(GuiStackComposition::ReversedHorizontal);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 120 - i * 60,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 120 - i * 60,0 }, { 50,70 }));
 			}
 
 			stack->EnsureVisible(5);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 300 - i * 60,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 300 - i * 60,0 }, { 50,70 }));
 			}
 
 			stack->EnsureVisible(9);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 540 - i * 60,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 540 - i * 60,0 }, { 50,70 }));
 			}
 
 			stack->EnsureVisible(0);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 120 - i * 60,0 }, { 50,70 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 120 - i * 60,0 }, { 50,70 }));
 			}
 		}
 
 		stack->SetPreferredMinSize(Size(70, 170));
-		TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, { 70,170 }));
-		TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
-		TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
-		TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+		stack->ForceCalculateSizeImmediately();
+		TEST_ASSERT(stack->GetCachedClientArea() == Rect({ 0,0 }, { 70,170 }));
+		TEST_ASSERT(stack->GetCachedMinSize() == stack->GetCachedClientArea().GetSize());
+		TEST_ASSERT(stack->GetCachedBounds() == stack->GetCachedClientArea());
 		{
 			stack->SetDirection(GuiStackComposition::Vertical);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,i * 60 }, { 70,50 }));
 			}
 
 			stack->EnsureVisible(5);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 - 180 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,i * 60 - 180 }, { 70,50 }));
 			}
 
 			stack->EnsureVisible(9);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 - 420 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,i * 60 - 420 }, { 70,50 }));
 			}
 
 			stack->EnsureVisible(0);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,i * 60 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,i * 60 }, { 70,50 }));
 			}
 		}
 		{
 			stack->SetDirection(GuiStackComposition::ReversedVertical);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,120 - i * 60 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,120 - i * 60 }, { 70,50 }));
 			}
 
 			stack->EnsureVisible(5);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,300 - i * 60 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,300 - i * 60 }, { 70,50 }));
 			}
 
 			stack->EnsureVisible(9);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,540 - i * 60 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,540 - i * 60 }, { 70,50 }));
 			}
 
 			stack->EnsureVisible(0);
+			stack->ForceCalculateSizeImmediately();
 			for (vint i = 0; i < ITEM_COUNT; i++)
 			{
-				TEST_ASSERT(stackItems[i]->GetBounds() == Rect({ 0,120 - i * 60 }, { 70,50 }));
+				TEST_ASSERT(stackItems[i]->GetCachedBounds() == Rect({ 0,120 - i * 60 }, { 70,50 }));
 			}
 		}
 
@@ -286,23 +306,23 @@ TEST_FILE
 		vint contextValue = -1;
 		auto checkStackItems = [&]()
 		{
-			TEST_ASSERT(stack->GetClientArea() == Rect({ 0,0 }, {
+			stack->ForceCalculateSizeImmediately();
+			TEST_ASSERT(stack->GetCachedClientArea() == Rect({ 0,0 }, {
 				(objects.Count() == 0 ? 0 : 60 * objects.Count() - 10),
 				(objects.Count() == 0 ? 0 : 50)
 				}));
-			TEST_ASSERT(stack->GetMinPreferredClientSize() == stack->GetClientArea().GetSize());
-			TEST_ASSERT(stack->GetPreferredBounds() == stack->GetClientArea());
-			TEST_ASSERT(stack->GetBounds() == stack->GetClientArea());
+			TEST_ASSERT(stack->GetCachedMinSize() == stack->GetCachedClientArea().GetSize());
+			TEST_ASSERT(stack->GetCachedBounds() == stack->GetCachedClientArea());
 
 			TEST_ASSERT(stack->GetStackItems().Count() == objects.Count());
 			for (auto [text, i] : indexed(objects))
 			{
 				auto stackItem = stack->GetStackItems()[i];
-				TEST_ASSERT(stackItem->GetBounds() == Rect({ 60 * i,0 }, { 50,50 }));
+				TEST_ASSERT(stackItem->GetCachedBounds() == Rect({ 60 * i,0 }, { 50,50 }));
 				TEST_ASSERT(stackItem->Children().Count() == 1);
 				auto itemTemplate = dynamic_cast<GuiTemplate*>(stackItem->Children()[0]);
 				TEST_ASSERT(itemTemplate->GetText() == text);
-				TEST_ASSERT(itemTemplate->GetBounds() == Rect({ 0,0 }, { 50,50 }));
+				TEST_ASSERT(itemTemplate->GetCachedBounds() == Rect({ 0,0 }, { 50,50 }));
 
 				if (contextValue == -1)
 				{
