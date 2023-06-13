@@ -46,10 +46,10 @@ Stack Compositions
 
 			private:
 				bool								layout_invalid = true;
-				ItemCompositionList					stackItems;
-				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
-				vint								adjustment = 0;
-				Size								stackItemTotalSize;
+				ItemCompositionList					layout_stackItems;
+				GuiStackItemComposition*			layout_ensuringVisibleStackItem = nullptr;
+				vint								layout_adjustment = 0;
+				Size								layout_stackItemTotalSize;
 
 				void								Layout_UpdateStackItemMinSizes();
 				void								Layout_UpdateStackItemBounds(Rect contentBounds);

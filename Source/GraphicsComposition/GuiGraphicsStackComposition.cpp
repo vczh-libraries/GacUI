@@ -13,7 +13,7 @@ GuiStackComposition
 
 			void GuiStackComposition::Layout_UpdateStackItemMinSizes()
 			{
-				for (auto item : stackItems)
+				for (auto item : layout_stackItems)
 				{
 					item->Layout_SetCachedMinSize(item->Layout_CalculateMinSizeHelper());
 				}
@@ -22,44 +22,44 @@ GuiStackComposition
 				layout_invalid = false;
 
 				Point virtualOffset;
-				stackItemTotalSize = Size(0, 0);
-				for (vint i = 0; i < stackItems.Count(); i++)
+				layout_stackItemTotalSize = Size(0, 0);
+				for (auto [item, index] : indexed(layout_stackItems))
 				{
-					Size itemSize = stackItems[i]->GetCachedMinSize();
+					Size itemSize = item->GetCachedMinSize();
 
 					switch (direction)
 					{
 					case GuiStackComposition::Horizontal:
 					case GuiStackComposition::ReversedHorizontal:
 						{
-							if (stackItemTotalSize.y < itemSize.y)
+							if (layout_stackItemTotalSize.y < itemSize.y)
 							{
-								stackItemTotalSize.y = itemSize.y;
+								layout_stackItemTotalSize.y = itemSize.y;
 							}
-							if (i > 0)
+							if (index > 0)
 							{
-								stackItemTotalSize.x += padding;
+								layout_stackItemTotalSize.x += padding;
 							}
-							stackItemTotalSize.x += itemSize.x;
+							layout_stackItemTotalSize.x += itemSize.x;
 						}
 						break;
 					case GuiStackComposition::Vertical:
 					case GuiStackComposition::ReversedVertical:
 						{
-							if (stackItemTotalSize.x < itemSize.x)
+							if (layout_stackItemTotalSize.x < itemSize.x)
 							{
-								stackItemTotalSize.x = itemSize.x;
+								layout_stackItemTotalSize.x = itemSize.x;
 							}
-							if (i > 0)
+							if (index > 0)
 							{
-								stackItemTotalSize.y += padding;
+								layout_stackItemTotalSize.y += padding;
 							}
-							stackItemTotalSize.y += itemSize.y;
+							layout_stackItemTotalSize.y += itemSize.y;
 						}
 						break;
 					}
 
-					stackItems[i]->layout_virtualOffset = virtualOffset;
+					item->layout_virtualOffset = virtualOffset;
 					virtualOffset.x += itemSize.x + padding;
 					virtualOffset.y += itemSize.y + padding;
 				}
@@ -67,11 +67,11 @@ GuiStackComposition
 
 			void GuiStackComposition::Layout_UpdateStackItemBounds(Rect contentBounds)
 			{
-				if (ensuringVisibleStackItem)
+				if (layout_ensuringVisibleStackItem)
 				{
 					Rect itemBounds(
-						ensuringVisibleStackItem->layout_virtualOffset,
-						ensuringVisibleStackItem->GetCachedMinSize()
+						layout_ensuringVisibleStackItem->layout_virtualOffset,
+						layout_ensuringVisibleStackItem->GetCachedMinSize()
 					);
 
 					switch (direction)
@@ -80,14 +80,14 @@ GuiStackComposition
 					case ReversedHorizontal:
 						if (itemBounds.x1 <= 0)
 						{
-							adjustment = -itemBounds.x1;
+							layout_adjustment = -itemBounds.x1;
 						}
 						else
 						{
 							vint overflow = itemBounds.x2 - contentBounds.x2;
 							if (overflow > 0)
 							{
-								adjustment = -overflow;
+								layout_adjustment = -overflow;
 							}
 						}
 						break;
@@ -95,21 +95,21 @@ GuiStackComposition
 					case ReversedVertical:
 						if (itemBounds.y1 <= 0)
 						{
-							adjustment = -itemBounds.y1;
+							layout_adjustment = -itemBounds.y1;
 						}
 						else
 						{
 							vint overflow = itemBounds.y2 - contentBounds.y2;
 							if (overflow > 0)
 							{
-								adjustment = -overflow;
+								layout_adjustment = -overflow;
 							}
 						}
 						break;
 					}
 				}
 
-				for (auto item : stackItems)
+				for (auto item : layout_stackItems)
 				{
 					item->Layout_SetStackItemBounds(contentBounds, item->layout_virtualOffset);
 				}
@@ -121,9 +121,9 @@ GuiStackComposition
 				GuiStackItemComposition* item = dynamic_cast<GuiStackItemComposition*>(child);
 				if (item)
 				{
-					if (!stackItems.Contains(item))
+					if (!layout_stackItems.Contains(item))
 					{
-						stackItems.Add(item);
+						layout_stackItems.Add(item);
 						layout_invalid = true;
 					}
 				}
@@ -135,10 +135,10 @@ GuiStackComposition
 				GuiStackItemComposition* item = dynamic_cast<GuiStackItemComposition*>(child);
 				if (item)
 				{
-					stackItems.Remove(item);
-					if (item == ensuringVisibleStackItem)
+					layout_stackItems.Remove(item);
+					if (item == layout_ensuringVisibleStackItem)
 					{
-						ensuringVisibleStackItem = nullptr;
+						layout_ensuringVisibleStackItem = nullptr;
 					}
 					layout_invalid = true;
 				}
@@ -157,13 +157,13 @@ GuiStackComposition
 				Size minStackSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					if (!ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
+					if (!layout_ensuringVisibleStackItem || direction == Vertical || direction == ReversedVertical)
 					{
-						minStackSize.x = stackItemTotalSize.x;
+						minStackSize.x = layout_stackItemTotalSize.x;
 					}
-					if (!ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
+					if (!layout_ensuringVisibleStackItem || direction == Horizontal || direction == ReversedHorizontal)
 					{
-						minStackSize.y = stackItemTotalSize.y;
+						minStackSize.y = layout_stackItemTotalSize.y;
 					}
 				}
 
@@ -195,18 +195,18 @@ GuiStackComposition
 
 			const GuiStackComposition::ItemCompositionList& GuiStackComposition::GetStackItems()
 			{
-				return stackItems;
+				return layout_stackItems;
 			}
 
 			bool GuiStackComposition::InsertStackItem(vint index, GuiStackItemComposition* item)
 			{
-				index = stackItems.Insert(index, item);
+				index = layout_stackItems.Insert(index, item);
 				if (AddChild(item))
 				{
 					layout_invalid = true;
 					return true;
 				}
-				stackItems.RemoveAt(index);
+				layout_stackItems.RemoveAt(index);
 				return false;
 			}
 
@@ -265,14 +265,14 @@ GuiStackComposition
 				case Horizontal:
 				case ReversedHorizontal:
 					{
-						vint width = stackItemTotalSize.x + extraMargin.left + extraMargin.right;
+						vint width = layout_stackItemTotalSize.x + extraMargin.left + extraMargin.right;
 						return width > clientArea.Width();
 					}
 					break;
 				case Vertical:
 				case ReversedVertical:
 					{
-						vint height = stackItemTotalSize.y + extraMargin.top + extraMargin.bottom;
+						vint height = layout_stackItemTotalSize.y + extraMargin.top + extraMargin.bottom;
 						return height > clientArea.Height();
 					}
 					break;
@@ -282,16 +282,16 @@ GuiStackComposition
 
 			bool GuiStackComposition::EnsureVisible(vint index)
 			{
-				if (0 <= index && index < stackItems.Count())
+				if (0 <= index && index < layout_stackItems.Count())
 				{
-					ensuringVisibleStackItem = stackItems[index];
+					layout_ensuringVisibleStackItem = layout_stackItems[index];
 				}
 				else
 				{
-					ensuringVisibleStackItem = nullptr;
+					layout_ensuringVisibleStackItem = nullptr;
 				}
 				InvokeOnCompositionStateChanged();
-				return ensuringVisibleStackItem != nullptr;
+				return layout_ensuringVisibleStackItem != nullptr;
 			}
 
 /***********************************************************************
@@ -324,16 +324,16 @@ GuiStackItemComposition
 				switch (layout_stackParent->direction)
 				{
 				case GuiStackComposition::Horizontal:
-					x += layout_stackParent->adjustment;
+					x += layout_stackParent->layout_adjustment;
 					break;
 				case GuiStackComposition::ReversedHorizontal:
-					x -= layout_stackParent->adjustment;
+					x -= layout_stackParent->layout_adjustment;
 					break;
 				case GuiStackComposition::Vertical:
-					y += layout_stackParent->adjustment;
+					y += layout_stackParent->layout_adjustment;
 					break;
 				case GuiStackComposition::ReversedVertical:
-					y -= layout_stackParent->adjustment;
+					y -= layout_stackParent->layout_adjustment;
 					break;
 				}
 
