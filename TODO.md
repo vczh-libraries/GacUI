@@ -4,8 +4,25 @@
 
 - Composition refactoring
   - `GuiGraphicsComposition`
-    - Remove `Margin` property.
-    - `IsParentSizeAffected` -> `IsTrivialComposition`, returns false only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
+    - Remove
+      - `Margin` property
+      - `IsTrivialComposition`
+      - `ClientArea` property
+      - `MinPreferredClientSize` property
+      - `PreferredBounds` property
+      - `PreviousCalculatedBounds` property
+      - `Bounds` property
+    - Add
+      - `CachedMinSize` property
+      - `CachedMinClientSize` property
+      - `CachedBounds` property
+      - `CachedClientArea` property
+  - `GuiBoundsComposition`
+    - `Bounds` -> `ExpectedBounds`
+  - `GuiTableComposition`
+    - Remove
+      - `GetCellArea`
+      - `UpdateCellBounds`
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
   - `FlowAlignment::Right`.
   - `GuiRepeatCompositionBase`
@@ -84,6 +101,7 @@
 - Add `static{}` in workflow document.
 - Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
 - Add `GuiRepeatCompositionBase::Context` property.
+- Review document for **compositions** and describe the new mechanism: all calculation result are cached, will update after refreshed.
 
 ## OS Provider Features
 
