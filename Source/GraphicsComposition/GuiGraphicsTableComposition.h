@@ -107,7 +107,7 @@ Table Compositions
 				vint										rows = 0;
 				vint										columns = 0;
 				vint										cellPadding = 0;
-				bool										borderVisible = false;
+				bool										borderVisible = true;
 				vint										rowExtending = 0;
 				vint										columnExtending = 0;
 				collections::Array<GuiCellOption>			rowOptions;
