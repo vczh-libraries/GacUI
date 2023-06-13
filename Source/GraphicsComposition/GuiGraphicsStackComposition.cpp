@@ -11,7 +11,7 @@ namespace vl
 GuiStackComposition
 ***********************************************************************/
 
-			void GuiStackComposition::UpdateStackItemMinSizes()
+			void GuiStackComposition::Layout_UpdateStackItemMinSizes()
 			{
 				for (auto item : stackItems)
 				{
@@ -19,52 +19,53 @@ GuiStackComposition
 				}
 
 				stackItemTotalSize = Size(0, 0);
-				Point offset;
 				for (vint i = 0; i < stackItems.Count(); i++)
 				{
 					Size itemSize = stackItems[i]->GetCachedMinSize();
-
-#define ACCUMULATE(U, V)										\
-					{											\
-						if (stackItemTotalSize.V < itemSize.V)	\
-						{										\
-							stackItemTotalSize.V = itemSize.V;	\
-						}										\
-						if (i > 0)								\
-						{										\
-							stackItemTotalSize.U += padding;	\
-						}										\
-						stackItemTotalSize.U += itemSize.U;		\
-					}											\
 
 					switch (direction)
 					{
 					case GuiStackComposition::Horizontal:
 					case GuiStackComposition::ReversedHorizontal:
-						ACCUMULATE(x, y)
+						{
+							if (stackItemTotalSize.y < itemSize.y)
+							{
+								stackItemTotalSize.y = itemSize.y;
+							}
+							if (i > 0)
+							{
+								stackItemTotalSize.x += padding;
+							}
+							stackItemTotalSize.x += itemSize.x;
+						}
 						break;
 					case GuiStackComposition::Vertical:
 					case GuiStackComposition::ReversedVertical:
-						ACCUMULATE(y, x)
+						{
+							if (stackItemTotalSize.x < itemSize.x)
+							{
+								stackItemTotalSize.x = itemSize.x;
+							}
+							if (i > 0)
+							{
+								stackItemTotalSize.y += padding;
+							}
+							stackItemTotalSize.y += itemSize.y;
+						}
 						break;
 					}
-
-#undef ACCUMULATE
-					offset.x += itemSize.x + padding;
-					offset.y += itemSize.y + padding;
 				}
 			}
 
-			void GuiStackComposition::UpdateStackItemBounds()
+			void GuiStackComposition::Layout_UpdateStackItemBounds(Rect contentBounds)
 			{
-				Point offset;
+				Point virtualOffset;
 				for (vint i = 0; i < stackItems.Count(); i++)
 				{
 					Size itemSize = stackItems[i]->GetCachedMinSize();
-					Rect itemBounds = Rect(offset, itemSize);
-					stackItems[i]->Layout_SetStackItemBounds(this, itemBounds);
-					offset.x += itemSize.x + padding;
-					offset.y += itemSize.y + padding;
+					stackItems[i]->Layout_SetStackItemBounds(contentBounds, virtualOffset);
+					virtualOffset.x += itemSize.x + padding;
+					virtualOffset.y += itemSize.y + padding;
 				}
 
 				if (ensuringVisibleStackItem)
@@ -143,7 +144,7 @@ GuiStackComposition
 
 			Size GuiStackComposition::Layout_CalculateMinSize()
 			{
-				UpdateStackItemMinSizes();
+				Layout_UpdateStackItemMinSizes();
 
 				Size minStackSize;
 				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
@@ -158,10 +159,10 @@ GuiStackComposition
 					}
 				}
 
-				if (extraMargin.left > 0) minStackSize.x += extraMargin.left;
-				if (extraMargin.right > 0) minStackSize.x += extraMargin.right;
-				if (extraMargin.top > 0) minStackSize.y += extraMargin.top;
-				if (extraMargin.bottom > 0) minStackSize.y += extraMargin.bottom;
+				minStackSize.x += extraMargin.left;
+				minStackSize.x += extraMargin.right;
+				minStackSize.y += extraMargin.top;
+				minStackSize.y += extraMargin.bottom;
 
 				Size minClientSize = GuiBoundsComposition::Layout_CalculateMinSize();
 				return Size(
@@ -174,7 +175,13 @@ GuiStackComposition
 			Rect GuiStackComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
-				UpdateStackItemBounds();
+				Rect contentBounds(
+					extraMargin.left,
+					extraMargin.top,
+					bounds.Width() - extraMargin.right,
+					bounds.Height() - extraMargin.bottom
+				);
+				Layout_UpdateStackItemBounds(contentBounds);
 				return bounds;
 			}
 
@@ -202,8 +209,11 @@ GuiStackComposition
 
 			void GuiStackComposition::SetDirection(Direction value)
 			{
-				direction = value;
-				InvokeOnCompositionStateChanged();
+				if (direction != value)
+				{
+					direction = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			vint GuiStackComposition::GetPadding()
@@ -213,8 +223,11 @@ GuiStackComposition
 
 			void GuiStackComposition::SetPadding(vint value)
 			{
-				padding = value;
-				InvokeOnCompositionStateChanged();
+				if (padding != value)
+				{
+					padding = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			Margin GuiStackComposition::GetExtraMargin()
@@ -224,8 +237,16 @@ GuiStackComposition
 
 			void GuiStackComposition::SetExtraMargin(Margin value)
 			{
-				extraMargin = value;
-				InvokeOnCompositionStateChanged();
+				if (value.left < 0) value.left = 0;
+				if (value.top < 0) value.top = 0;
+				if (value.right < 0) value.right = 0;
+				if (value.bottom < 0) value.bottom = 0;
+
+				if (extraMargin != value)
+				{
+					extraMargin = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiStackComposition::IsStackItemClipped()
@@ -236,20 +257,14 @@ GuiStackComposition
 				case Horizontal:
 				case ReversedHorizontal:
 					{
-						vint width = stackItemTotalSize.x
-							+ (extraMargin.left > 0 ? extraMargin.left : 0)
-							+ (extraMargin.right > 0 ? extraMargin.right : 0)
-							;
+						vint width = stackItemTotalSize.x + extraMargin.left + extraMargin.right;
 						return width > clientArea.Width();
 					}
 					break;
 				case Vertical:
 				case ReversedVertical:
 					{
-						vint height = stackItemTotalSize.y
-							+ (extraMargin.top > 0 ? extraMargin.top : 0)
-							+ (extraMargin.bottom > 0 ? extraMargin.bottom : 0)
-							;
+						vint height = stackItemTotalSize.y + extraMargin.top + extraMargin.bottom;
 						return height > clientArea.Height();
 					}
 					break;
@@ -275,46 +290,48 @@ GuiStackComposition
 GuiStackItemComposition
 ***********************************************************************/
 
-			void GuiStackItemComposition::Layout_SetStackItemBounds(GuiStackComposition* stackParent, Rect bounds)
+			void GuiStackItemComposition::Layout_SetStackItemBounds(Rect contentBounds, Point virtualOffset)
 			{
-				Rect result = bounds;
-				Rect parentBounds = stackParent->cachedBounds;
-				Margin margin = stackParent->extraMargin;
-				if (margin.left <= 0) margin.left = 0;
-				if (margin.top <= 0) margin.top = 0;
-				if (margin.right <= 0) margin.right = 0;
-				if (margin.bottom <= 0) margin.bottom = 0;
+				vint x = 0;
+				vint y = 0;
+				vint w = 0;
+				vint h = 0;
 
-				auto x = result.Left();
-				auto y = result.Top();
-				auto w = result.Width();
-				auto h = result.Height();
-
-				switch (stackParent->direction)
+				switch (layout_stackParent->direction)
 				{
 				case GuiStackComposition::Horizontal:
-					x += margin.left + stackParent->adjustment;
-					y = margin.top;
-					h = parentBounds.Height() - margin.top - margin.bottom;
-					break;
 				case GuiStackComposition::ReversedHorizontal:
-					x = parentBounds.Width() - margin.right - x - w + stackParent->adjustment;
-					y = margin.top;
-					h = parentBounds.Height() - margin.top - margin.bottom;
+					w = cachedMinSize.x;
+					h = contentBounds.Height();
 					break;
 				case GuiStackComposition::Vertical:
-					x = margin.left;
-					y += margin.top + stackParent->adjustment;
-					w = parentBounds.Width() - margin.left - margin.right;
-					break;
 				case GuiStackComposition::ReversedVertical:
-					x = margin.left;
-					y = parentBounds.Height() - margin.bottom - y - h + stackParent->adjustment;
-					w = parentBounds.Width() - margin.left - margin.right;
+					w = contentBounds.Width();
+					h = cachedMinSize.y;
 					break;
 				}
 
-				result = Rect(
+				switch (layout_stackParent->direction)
+				{
+				case GuiStackComposition::Horizontal:
+					x = virtualOffset.x;
+					y = 0;
+					break;
+				case GuiStackComposition::ReversedHorizontal:
+					x = contentBounds.x2 - virtualOffset.x - w;
+					y = 0;
+					break;
+				case GuiStackComposition::Vertical:
+					x = 0;
+					y = virtualOffset.y;
+					break;
+				case GuiStackComposition::ReversedVertical:
+					x = 0;
+					y = contentBounds.y2 - virtualOffset.y - h;
+					break;
+				}
+
+				Rect result(
 					x - extraMargin.left,
 					y - extraMargin.top,
 					x + w + extraMargin.right,

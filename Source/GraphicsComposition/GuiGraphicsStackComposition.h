@@ -51,8 +51,8 @@ Stack Compositions
 				vint								adjustment = 0;
 				Size								stackItemTotalSize;
 
-				void								UpdateStackItemMinSizes();
-				void								UpdateStackItemBounds();
+				void								Layout_UpdateStackItemMinSizes();
+				void								Layout_UpdateStackItemBounds(Rect contentBounds);
 			protected:
 
 				Direction							direction = Horizontal;
@@ -114,7 +114,7 @@ Stack Compositions
 			private:
 				GuiStackComposition*				layout_stackParent = nullptr;
 
-				void								Layout_SetStackItemBounds(GuiStackComposition* stackParent, Rect bounds);
+				void								Layout_SetStackItemBounds(Rect contentBounds, Point virtualOffset);
 
 			protected:
 				Margin								extraMargin;
