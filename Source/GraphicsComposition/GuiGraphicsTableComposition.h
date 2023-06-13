@@ -155,7 +155,7 @@ Table Compositions
 														);
 
 				Size								Layout_CalculateMinSize() override;
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiTableComposition();
 				~GuiTableComposition() = default;
@@ -309,7 +309,7 @@ Table Compositions
 				vint								rowsToTheTop = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiRowSplitterComposition();
 				~GuiRowSplitterComposition() = default;
@@ -331,7 +331,7 @@ Table Compositions
 				vint								columnsToTheLeft = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiColumnSplitterComposition();
 				~GuiColumnSplitterComposition() = default;

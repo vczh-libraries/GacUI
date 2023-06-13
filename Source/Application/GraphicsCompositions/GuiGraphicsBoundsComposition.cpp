@@ -61,11 +61,12 @@ GuiBoundsComposition
 				return { cachedMinSize.x + offsetW,cachedMinSize.y + offsetH };
 			}
 
-			Rect GuiBoundsComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiBoundsComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				if (auto parent = GetParent())
 				{
 					Rect result;
+					Rect parentBounds({}, parentSize);
 					Margin parentInternalMargin = parent->GetInternalMargin();
 
 					if (alignmentToParent.left != -1 && alignmentToParent.right != -1)

@@ -642,7 +642,7 @@ GuiGraphicsHost
 							auto width = bounds.Width() > preferred.x ? bounds.Width() : preferred.x;
 							auto height = bounds.Height() > preferred.y ? bounds.Height() : preferred.y;
 							controlHost->UpdateClientSizeAfterRendering(preferred, Size(width, height));
-							windowComposition->Layout_UpdateBounds(Rect({ 0,0 }, { width,height }));
+							windowComposition->Layout_UpdateBounds({ width,height });
 							supressPaint = false;
 						}
 					}

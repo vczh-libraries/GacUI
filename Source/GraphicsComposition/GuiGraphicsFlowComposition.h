@@ -65,7 +65,7 @@ Flow Compositions
 				void								OnChildRemoved(GuiGraphicsComposition* child) override;
 				void								OnCompositionStateChanged() override;
 				Size								Layout_CalculateMinSize() override;
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiFlowComposition() = default;
 				~GuiFlowComposition() = default;

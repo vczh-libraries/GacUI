@@ -86,12 +86,12 @@ GuiGraphicsComposition
 				Layout_SetCachedMinSize(Layout_CalculateMinSize());
 			}
 
-			void GuiGraphicsComposition::Layout_UpdateBounds(Rect parentBounds)
+			void GuiGraphicsComposition::Layout_UpdateBounds(Size parentSize)
 			{
-				Layout_SetCachedBounds(Layout_CalculateBounds(parentBounds));
+				Layout_SetCachedBounds(Layout_CalculateBounds(parentSize));
 				for (auto child : children)
 				{
-					child->Layout_UpdateBounds(cachedBounds);
+					child->Layout_UpdateBounds(cachedBounds.GetSize());
 				}
 			}
 
@@ -143,14 +143,14 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::ForceCalculateSizeImmediately()
 			{
-				Rect parentBounds;
+				Size parentSize;
 				if (parent)
 				{
-					parentBounds = parent->cachedBounds;
+					parentSize = parent->cachedBounds.GetSize();
 				}
 
 				Layout_UpdateMinSize();
-				Layout_UpdateBounds(parentBounds);
+				Layout_UpdateBounds(parentSize);
 			}
 		}
 	}

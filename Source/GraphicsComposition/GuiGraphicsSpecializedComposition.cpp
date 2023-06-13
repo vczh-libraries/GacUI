@@ -11,12 +11,12 @@ namespace vl
 GuiSideAlignedComposition
 ***********************************************************************/
 
-			Rect GuiSideAlignedComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiSideAlignedComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				Rect result;
 				if (auto parent = GetParent())
 				{
-					Rect bounds = parentBounds;
+					Rect bounds({}, parentSize);
 					vint w = (vint)(bounds.Width() * maxRatio);
 					vint h = (vint)(bounds.Height() * maxRatio);
 					if (w > maxLength) w = maxLength;
@@ -97,12 +97,12 @@ GuiSideAlignedComposition
 GuiPartialViewComposition
 ***********************************************************************/
 
-			Rect GuiPartialViewComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiPartialViewComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				Rect result;
 				if (auto parent = GetParent())
 				{
-					Rect bounds = parentBounds;
+					Rect bounds({}, parentSize);
 					vint w = bounds.Width();
 					vint h = bounds.Height();
 					vint pw = (vint)(wPageSize * w);

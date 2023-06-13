@@ -163,9 +163,9 @@ GuiStackComposition
 				return minStackSize;
 			}
 
-			Rect GuiStackComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiStackComposition::Layout_CalculateBounds(Size parentSize)
 			{
-				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentBounds);
+				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
 				UpdateStackItemBounds();
 				return bounds;
 			}

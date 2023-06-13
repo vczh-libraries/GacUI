@@ -253,7 +253,7 @@ Basic Construction
 
 				virtual Size								Layout_CalculateMinSize() = 0;
 				virtual Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) = 0;
-				virtual Rect								Layout_CalculateBounds(Rect parentBounds) = 0;
+				virtual Rect								Layout_CalculateBounds(Size parentSize) = 0;
 
 				/// <summary>
 				/// Calculate a proper minimum size using all configurations in this class.
@@ -284,7 +284,7 @@ Basic Construction
 				/// Call <see cref="Layout_CalculateBounds"/> and <see cref="Layout_SetCachedBounds"/> and all children's <see cref="Layout_UpdateBounds"/>.
 				/// </summary>
 				/// <param name="parentBounds"></param>
-				void										Layout_UpdateBounds(Rect parentBounds);
+				void										Layout_UpdateBounds(Size parentSize);
 			public:
 
 				/// <summary>Event that will be raised when the minimum size is updated.</summary>
@@ -358,7 +358,7 @@ Categories
 					return { 0,0 };
 				}
 
-				Rect Layout_CalculateBounds(Rect parentBounds) override
+				Rect Layout_CalculateBounds(Size parentSize) override
 				{
 					// Making Layout_UpdateBounds does nothing
 					return cachedBounds;

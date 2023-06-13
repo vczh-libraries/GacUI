@@ -12,7 +12,7 @@ namespace vl
 GuiWindowComposition
 ***********************************************************************/
 
-			Rect GuiWindowComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiWindowComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				Rect bounds;
 				if (relatedHostRecord)

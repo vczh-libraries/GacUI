@@ -194,9 +194,9 @@ GuiFlowComposition
 				return minSize;
 			}
 
-			Rect GuiFlowComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiFlowComposition::Layout_CalculateBounds(Size parentSize)
 			{
-				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentBounds);
+				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
 				Size extraSize = Layout_UpdateFlowItemLayoutByConstraint(bounds.GetSize());
 				Size contentSize(
 					bounds.Width() - extraSize.x,

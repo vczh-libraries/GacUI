@@ -33,7 +33,7 @@ Basic Compositions
 
 				Size								Layout_CalculateMinSize() override;
 				Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override;
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiBoundsComposition() = default;
 				~GuiBoundsComposition() = default;

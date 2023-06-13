@@ -61,7 +61,7 @@ Stack Compositions
 				void								OnChildInserted(GuiGraphicsComposition* child) override;
 				void								OnChildRemoved(GuiGraphicsComposition* child) override;
 				Size								Layout_CalculateMinSize() override;
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiStackComposition() = default;
 				~GuiStackComposition() = default;

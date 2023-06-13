@@ -318,9 +318,9 @@ GuiTableComposition
 					);
 			}
 
-			Rect GuiTableComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiTableComposition::Layout_CalculateBounds(Size parentSize)
 			{
-				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentBounds);
+				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
 				Rect area = CalculateCellArea(bounds);
 				UpdateCellBoundsPercentages(rowSizes, rowTotal, area.Height(), rowOptions);
 				UpdateCellBoundsPercentages(columnSizes, columnTotal, area.Width(), columnOptions);
@@ -829,7 +829,7 @@ GuiRowSplitterComposition
 					);
 			}
 
-			Rect GuiRowSplitterComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiRowSplitterComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				return GetBoundsHelper(
 					rowsToTheTop,
@@ -879,7 +879,7 @@ GuiColumnSplitterComposition
 					);
 			}
 
-			Rect GuiColumnSplitterComposition::Layout_CalculateBounds(Rect parentBounds)
+			Rect GuiColumnSplitterComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				return GetBoundsHelper(
 					columnsToTheLeft,

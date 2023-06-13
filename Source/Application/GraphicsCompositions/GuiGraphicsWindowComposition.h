@@ -26,7 +26,7 @@ namespace vl
 			{
 				friend class GuiGraphicsHost;
 			protected:
-				Rect						Layout_CalculateBounds(Rect parentBounds) override;
+				Rect						Layout_CalculateBounds(Size parentSize) override;
 
 			public:
 				GuiWindowComposition() = default;

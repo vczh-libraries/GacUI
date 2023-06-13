@@ -45,7 +45,7 @@ Specialized Compositions
 				vint								maxLength = 10;
 				double								maxRatio = 1.0;
 
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 
 			public:
 				GuiSideAlignedComposition() = default;
@@ -82,7 +82,7 @@ Specialized Compositions
 				double								hRatio = 0.0;
 				double								hPageSize = 1.0;
 
-				Rect								Layout_CalculateBounds(Rect parentBounds) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 
 			public:
 				GuiPartialViewComposition() = default;
