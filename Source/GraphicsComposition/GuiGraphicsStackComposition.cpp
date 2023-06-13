@@ -80,14 +80,14 @@ GuiStackComposition
 					case ReversedHorizontal:
 						if (itemBounds.x1 <= 0)
 						{
-							adjustment -= itemBounds.x1;
+							adjustment = -itemBounds.x1;
 						}
 						else
 						{
 							vint overflow = itemBounds.x2 - contentBounds.x2;
 							if (overflow > 0)
 							{
-								adjustment -= overflow;
+								adjustment = -overflow;
 							}
 						}
 						break;
@@ -95,14 +95,14 @@ GuiStackComposition
 					case ReversedVertical:
 						if (itemBounds.y1 <= 0)
 						{
-							adjustment -= itemBounds.y1;
+							adjustment = -itemBounds.y1;
 						}
 						else
 						{
 							vint overflow = itemBounds.y2 - contentBounds.y2;
 							if (overflow > 0)
 							{
-								adjustment -= overflow;
+								adjustment = -overflow;
 							}
 						}
 						break;
@@ -302,9 +302,43 @@ GuiStackItemComposition
 			{
 				vint x = 0;
 				vint y = 0;
+				switch (layout_stackParent->direction)
+				{
+				case GuiStackComposition::Horizontal:
+					x = contentBounds.x1 + virtualOffset.x;
+					y = contentBounds.y1;
+					break;
+				case GuiStackComposition::ReversedHorizontal:
+					x = contentBounds.x2 - virtualOffset.x - cachedMinSize.x;
+					y = contentBounds.y1;
+					break;
+				case GuiStackComposition::Vertical:
+					x = contentBounds.x1;
+					y = contentBounds.y1 + virtualOffset.y;
+					break;
+				case GuiStackComposition::ReversedVertical:
+					x = contentBounds.x1;
+					y = contentBounds.y2 - virtualOffset.y - cachedMinSize.y;
+					break;
+				}
+				switch (layout_stackParent->direction)
+				{
+				case GuiStackComposition::Horizontal:
+					x += layout_stackParent->adjustment;
+					break;
+				case GuiStackComposition::ReversedHorizontal:
+					x -= layout_stackParent->adjustment;
+					break;
+				case GuiStackComposition::Vertical:
+					y += layout_stackParent->adjustment;
+					break;
+				case GuiStackComposition::ReversedVertical:
+					y -= layout_stackParent->adjustment;
+					break;
+				}
+
 				vint w = 0;
 				vint h = 0;
-
 				switch (layout_stackParent->direction)
 				{
 				case GuiStackComposition::Horizontal:
@@ -316,26 +350,6 @@ GuiStackItemComposition
 				case GuiStackComposition::ReversedVertical:
 					w = contentBounds.Width();
 					h = cachedMinSize.y;
-					break;
-				}
-
-				switch (layout_stackParent->direction)
-				{
-				case GuiStackComposition::Horizontal:
-					x = contentBounds.x1 + virtualOffset.x;
-					y = contentBounds.y1;
-					break;
-				case GuiStackComposition::ReversedHorizontal:
-					x = contentBounds.x2 - virtualOffset.x - w;
-					y = contentBounds.y1;
-					break;
-				case GuiStackComposition::Vertical:
-					x = contentBounds.x1;
-					y = contentBounds.y1 + virtualOffset.y;
-					break;
-				case GuiStackComposition::ReversedVertical:
-					x = contentBounds.x1;
-					y = contentBounds.y2 - virtualOffset.y - h;
 					break;
 				}
 
