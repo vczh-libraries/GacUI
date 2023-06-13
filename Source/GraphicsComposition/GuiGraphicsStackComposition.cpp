@@ -314,19 +314,19 @@ GuiStackItemComposition
 				switch (layout_stackParent->direction)
 				{
 				case GuiStackComposition::Horizontal:
-					x = virtualOffset.x;
-					y = 0;
+					x = contentBounds.x1 + virtualOffset.x;
+					y = contentBounds.y1;
 					break;
 				case GuiStackComposition::ReversedHorizontal:
 					x = contentBounds.x2 - virtualOffset.x - w;
-					y = 0;
+					y = contentBounds.y1;
 					break;
 				case GuiStackComposition::Vertical:
-					x = 0;
-					y = virtualOffset.y;
+					x = contentBounds.x1;
+					y = contentBounds.y1 + virtualOffset.y;
 					break;
 				case GuiStackComposition::ReversedVertical:
-					x = 0;
+					x = contentBounds.x1;
 					y = contentBounds.y2 - virtualOffset.y - h;
 					break;
 				}
