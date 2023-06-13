@@ -42,12 +42,13 @@ TEST_FILE
 			}
 		}
 
-		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		root->ForceCalculateSizeImmediately();
+		TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 0,0 }));
 		for (vint group = 0; group < 2; group++)
 		{
 			for (vint item = 0; item < 3; item++)
 			{
-				TEST_ASSERT(items[group][item]->GetBounds() == Rect({ 0,0 }, { (group + 1) * 30,(item + 1) * 10 }));
+				TEST_ASSERT(items[group][item]->GetCachedBounds() == Rect({ 0,0 }, { (group + 1) * 30,(item + 1) * 10 }));
 			}
 		}
 
@@ -79,12 +80,13 @@ TEST_FILE
 			}
 		}
 
-		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 0,0 }));
+		root->ForceCalculateSizeImmediately();
+		TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 0,0 }));
 		for (vint group = 0; group < 2; group++)
 		{
 			for (vint item = 0; item < 3; item++)
 			{
-				TEST_ASSERT(items[group][item]->GetBounds() == Rect({ 0,0 }, { (item + 1) * 10,(group + 1) * 30 }));
+				TEST_ASSERT(items[group][item]->GetCachedBounds() == Rect({ 0,0 }, { (item + 1) * 10,(group + 1) * 30 }));
 			}
 		}
 
@@ -129,10 +131,11 @@ TEST_FILE
 			itemWH->AddChild(bounds);
 		}
 
-		TEST_ASSERT(root->GetBounds() == Rect({ 0,0 }, { 0,0 }));
-		TEST_ASSERT(itemW->GetBounds() == Rect({ 0,0 }, { 30,10 }));
-		TEST_ASSERT(itemH->GetBounds() == Rect({ 0,0 }, { 20,30 }));
-		TEST_ASSERT(itemWH->GetBounds() == Rect({ 0,0 }, { 30,30 }));
+		root->ForceCalculateSizeImmediately();
+		TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 0,0 }));
+		TEST_ASSERT(itemW->GetCachedBounds() == Rect({ 0,0 }, { 30,10 }));
+		TEST_ASSERT(itemH->GetCachedBounds() == Rect({ 0,0 }, { 20,30 }));
+		TEST_ASSERT(itemWH->GetCachedBounds() == Rect({ 0,0 }, { 30,30 }));
 
 		SafeDeleteComposition(root);
 	});

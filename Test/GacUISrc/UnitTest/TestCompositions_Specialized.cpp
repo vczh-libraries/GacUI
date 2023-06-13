@@ -24,48 +24,64 @@ TEST_FILE
 		{
 			sideAligned->SetDirection(GuiSideAlignedComposition::Left);
 			TEST_ASSERT(sideAligned->GetDirection() == GuiSideAlignedComposition::Left);
+
 			sideAligned->SetMaxRatio(0.6);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.6);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 0,0 }, { 25,50 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 0,0 }, { 25,50 }));
+
 			sideAligned->SetMaxRatio(0.1);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.1);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 0,0 }, { 10,50 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 0,0 }, { 10,50 }));
 		});
 
 		TEST_CASE(L"Top")
 		{
 			sideAligned->SetDirection(GuiSideAlignedComposition::Top);
 			TEST_ASSERT(sideAligned->GetDirection() == GuiSideAlignedComposition::Top);
+
 			sideAligned->SetMaxRatio(0.6);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.6);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 0,0 }, { 100,25 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 0,0 }, { 100,25 }));
+
 			sideAligned->SetMaxRatio(0.1);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.1);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 0,0 }, { 100,5 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 0,0 }, { 100,5 }));
 		});
 
 		TEST_CASE(L"Right")
 		{
 			sideAligned->SetDirection(GuiSideAlignedComposition::Right);
 			TEST_ASSERT(sideAligned->GetDirection() == GuiSideAlignedComposition::Right);
+
 			sideAligned->SetMaxRatio(0.6);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.6);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 75,0 }, { 25,50 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 75,0 }, { 25,50 }));
+
 			sideAligned->SetMaxRatio(0.1);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.1);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 90,0 }, { 10,50 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 90,0 }, { 10,50 }));
 		});
 
 		TEST_CASE(L"Bottom")
 		{
 			sideAligned->SetDirection(GuiSideAlignedComposition::Bottom);
 			TEST_ASSERT(sideAligned->GetDirection() == GuiSideAlignedComposition::Bottom);
+
 			sideAligned->SetMaxRatio(0.6);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.6);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 0,25 }, { 100,25 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 0,25 }, { 100,25 }));
+
 			sideAligned->SetMaxRatio(0.1);
 			TEST_ASSERT(sideAligned->GetMaxRatio() == 0.1);
-			TEST_ASSERT(sideAligned->GetBounds() == Rect({ 0,45 }, { 100,5 }));
+			bounds->ForceCalculateSizeImmediately();
+			TEST_ASSERT(sideAligned->GetCachedBounds() == Rect({ 0,45 }, { 100,5 }));
 		});
 
 		SafeDeleteComposition(bounds);
@@ -93,7 +109,8 @@ TEST_FILE
 		TEST_ASSERT(partialView->GetHeightRatio() == 0.4);
 		TEST_ASSERT(partialView->GetHeightPageSize() == 0.5);
 
-		TEST_ASSERT(partialView->GetBounds() == Rect({ 20,20 }, { 30,25 }));
+		bounds->ForceCalculateSizeImmediately();
+		TEST_ASSERT(partialView->GetCachedBounds() == Rect({ 20,20 }, { 30,25 }));
 
 		SafeDeleteComposition(bounds);
 	});
