@@ -32,8 +32,6 @@
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
 - Refactor compositions (after unit test for `<Bounds>` are finished)
-  - TODO in `TestCompositions.h`.
-    - `AlignmentToParent` should not consider parent's `InternalMargin`.
   - Fix document
 - Refactor compositions
   - Fix document.

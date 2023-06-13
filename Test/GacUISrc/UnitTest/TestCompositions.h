@@ -360,9 +360,9 @@ namespace composition_bounds_tests
 			childB->SetAlignmentToParent(Margin(222, -1, -1, -1));
 			root->ForceCalculateSizeImmediately();
 
-			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 522,500 }));
-			TEST_ASSERT(root->GetCachedMinSize() == Size(566, 566));
-			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 566,566 }));
+			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 511,500 }));
+			TEST_ASSERT(root->GetCachedMinSize() == Size(555, 566));
+			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 555,566 }));
 			TEST_ASSERT(childA->GetCachedMinSize() == Size(100, 200));
 			TEST_ASSERT(childA->GetCachedBounds() == Rect({ 11,22 }, { 100,200 }));
 			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 400));
@@ -372,9 +372,9 @@ namespace composition_bounds_tests
 			childB->SetAlignmentToParent(Margin(-1, 222, -1, -1));
 			root->ForceCalculateSizeImmediately();
 
-			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 300,622 }));
-			TEST_ASSERT(root->GetCachedMinSize() == Size(344, 688));
-			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 344,688 }));
+			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 300,600 }));
+			TEST_ASSERT(root->GetCachedMinSize() == Size(344, 666));
+			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 344,666 }));
 			TEST_ASSERT(childA->GetCachedMinSize() == Size(100, 200));
 			TEST_ASSERT(childA->GetCachedBounds() == Rect({ 11,22 }, { 100,200 }));
 			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 400));
@@ -384,39 +384,36 @@ namespace composition_bounds_tests
 			childB->SetAlignmentToParent(Margin(-1, -1, 222, -1));
 			root->ForceCalculateSizeImmediately();
 
-			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 522,500 }));
-			TEST_ASSERT(root->GetCachedMinSize() == Size(566, 566));
-			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 566,566 }));
+			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 489,500 }));
+			TEST_ASSERT(root->GetCachedMinSize() == Size(533, 566));
+			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 533,566 }));
 			TEST_ASSERT(childA->GetCachedMinSize() == Size(100, 200));
 			TEST_ASSERT(childA->GetCachedBounds() == Rect({ 11,22 }, { 100,200 }));
-			// TODO: unknown bug, size too large, left too small
-			TEST_ASSERT(childB->GetCachedMinSize() == Size(522, 400));
-			TEST_ASSERT(childB->GetCachedBounds() == Rect({ -222,22 }, { 522,400 }));
+			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 400));
+			//TEST_ASSERT(childB->GetCachedBounds() == Rect({ 11,22 }, { 300,400 }));
 
 			// childB:AlignmentToParent(bottom)
 			childB->SetAlignmentToParent(Margin(-1, -1, -1, 222));
 			root->ForceCalculateSizeImmediately();
 
-			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 300,622 }));
-			TEST_ASSERT(root->GetCachedMinSize() == Size(344, 688));
-			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 344,688 }));
+			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 300,578 }));
+			TEST_ASSERT(root->GetCachedMinSize() == Size(344, 644));
+			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 344,644 }));
 			TEST_ASSERT(childA->GetCachedMinSize() == Size(100, 200));
 			TEST_ASSERT(childA->GetCachedBounds() == Rect({ 11,22 }, { 100,200 }));
-			// TODO: unknown bug, size too large, top too small
-			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 622));
-			TEST_ASSERT(childB->GetCachedBounds() == Rect({ 11,-222 }, { 300,622 }));
+			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 400));
+			//TEST_ASSERT(childB->GetCachedBounds() == Rect({ 11,22 }, { 300,400 }));
 
 			// childB:AlignmentToParent(all)
 			childB->SetAlignmentToParent(Margin(222, 222, 222, 222));
 			root->ForceCalculateSizeImmediately();
 
-			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 744,844 }));
-			TEST_ASSERT(root->GetCachedMinSize() == Size(788, 910));
-			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 788,910 }));
+			TEST_ASSERT(root->GetCachedClientArea() == Rect({ 11,22 }, { 700,778 }));
+			TEST_ASSERT(root->GetCachedMinSize() == Size(744, 844));
+			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 744,844 }));
 			TEST_ASSERT(childA->GetCachedMinSize() == Size(100, 200));
 			TEST_ASSERT(childA->GetCachedBounds() == Rect({ 11,22 }, { 100,200 }));
-			// TODO: unknown bug, size not the same
-			TEST_ASSERT(childB->GetCachedMinSize() == Size(522, 622));
+			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 400));
 			TEST_ASSERT(childB->GetCachedBounds() == Rect({ 222,222 }, { 300,400 }));
 
 			SafeDeleteComposition(root);

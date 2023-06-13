@@ -26,21 +26,36 @@ GuiBoundsComposition
 				vint offsetW = 0;
 				vint offsetH = 0;
 
-				if (alignmentToParent.left >= 0)
+				if (alignmentToParent.left == -1 && alignmentToParent.right == -1)
 				{
-					offsetW += alignmentToParent.left - parentInternalMargin.left;
+					offsetW = expectedBounds.x1;
 				}
-				if (alignmentToParent.right >= 0)
+				else
 				{
-					offsetW += alignmentToParent.right - parentInternalMargin.right;
+					if (alignmentToParent.left != -1)
+					{
+						offsetW += alignmentToParent.left - parentInternalMargin.left;
+					}
+					if (alignmentToParent.right != -1)
+					{
+						offsetW += alignmentToParent.right - parentInternalMargin.right;
+					}
 				}
-				if (alignmentToParent.top >= 0)
+
+				if (alignmentToParent.top == -1 && alignmentToParent.bottom == -1)
 				{
-					offsetH += alignmentToParent.top - parentInternalMargin.top;
+					offsetH = expectedBounds.y1;
 				}
-				if (alignmentToParent.bottom >= 0)
+				else
 				{
-					offsetH += alignmentToParent.bottom - parentInternalMargin.bottom;
+					if (alignmentToParent.top != -1)
+					{
+						offsetH += alignmentToParent.top - parentInternalMargin.top;
+					}
+					if (alignmentToParent.bottom != -1)
+					{
+						offsetH += alignmentToParent.bottom - parentInternalMargin.bottom;
+					}
 				}
 
 				return { cachedMinSize.x + offsetW,cachedMinSize.y + offsetH };
