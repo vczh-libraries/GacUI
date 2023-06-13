@@ -12,16 +12,21 @@ namespace vl
 GuiFlowComposition
 ***********************************************************************/
 
-			void GuiFlowComposition::UpdateFlowItemMinSizes()
+			void GuiFlowComposition::Layout_UpdateFlowItemLayout(vint width)
 			{
-				for (auto item : flowItems)
+				for (auto item : layout_flowItems)
 				{
 					item->Layout_SetCachedMinSize(item->Layout_CalculateMinSizeHelper());
 				}
-			}
 
-			void GuiFlowComposition::UpdateFlowItemBounds(Rect flowBounds)
-			{
+				if (layout_LastWidth != width)
+				{
+					layout_Invalid = true;
+					layout_LastWidth = width;
+				}
+
+				if (!layout_Invalid) return;
+
 				auto clientMargin = axis->RealMarginToVirtualMargin(extraMargin);
 				if (clientMargin.left < 0) clientMargin.left = 0;
 				if (clientMargin.top < 0) clientMargin.top = 0;
@@ -144,9 +149,10 @@ GuiFlowComposition
 			{
 				GuiBoundsComposition::OnChildInserted(child);
 				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
-				if (item && !flowItems.Contains(item))
+				if (item && !layout_flowItems.Contains(item))
 				{
-					flowItems.Add(item);
+					layout_flowItems.Add(item);
+					layout_Invalid = true;
 				}
 			}
 
@@ -156,7 +162,8 @@ GuiFlowComposition
 				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
 				if (item)
 				{
-					flowItems.Remove(item);
+					layout_flowItems.Remove(item);
+					layout_Invalid = true;
 				}
 			}
 
@@ -283,7 +290,13 @@ GuiFlowComposition
 GuiFlowItemComposition
 ***********************************************************************/
 
-			void GuiFlowItemComposition::Layout_SetFlowItemBounds(GuiFlowComposition* flowParent, Rect bounds)
+			void GuiFlowItemComposition::OnParentLineChanged()
+			{
+				flowParent = dynamic_cast<GuiFlowComposition*>(GetParent());
+				GuiGraphicsComposition::OnParentLineChanged();
+			}
+
+			void GuiFlowItemComposition::Layout_SetFlowItemBounds(Rect bounds)
 			{
 				Rect result = bounds;
 				result = Rect(
@@ -298,6 +311,10 @@ GuiFlowItemComposition
 			GuiFlowItemComposition::GuiFlowItemComposition()
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				CachedMinSizeChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				{
+					if (flowParent) flowParent->layout_Invalid = true;
+				});
 			}
 
 			Margin GuiFlowItemComposition::GetExtraMargin()

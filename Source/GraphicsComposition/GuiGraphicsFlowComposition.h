@@ -45,6 +45,14 @@ Flow Compositions
 				friend class GuiFlowItemComposition;
 
 				typedef collections::List<GuiFlowItemComposition*>				ItemCompositionList;
+			private:
+				bool								layout_Invalid = true;
+				vint								layout_LastWidth = 0;
+				ItemCompositionList					layout_flowItems;
+				vint								layout_minHeight = 0;
+
+				void								Layout_UpdateFlowItemLayout(vint width);
+
 			protected:
 				Margin								extraMargin;
 				vint								rowPadding = 0;
@@ -52,12 +60,6 @@ Flow Compositions
 				FlowAlignment						alignment = FlowAlignment::Left;
 				Ptr<IGuiAxis>						axis = Ptr(new GuiDefaultAxis);
 
-				ItemCompositionList					flowItems;
-				Rect								bounds;
-				vint								minHeight = 0;
-
-				void								UpdateFlowItemMinSizes();
-				void								UpdateFlowItemBounds(Rect flowBounds);
 				void								OnChildInserted(GuiGraphicsComposition* child)override;
 				void								OnChildRemoved(GuiGraphicsComposition* child)override;
 				Size								Layout_CalculateMinSize() override;
@@ -146,12 +148,17 @@ Flow Compositions
 			class GuiFlowItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiFlowItemComposition>
 			{
 				friend class GuiFlowComposition;
+			private:
+				GuiFlowComposition*					flowParent = nullptr;
+				Rect								flowItemBounds;
+
 			protected:
-				Rect								bounds;
 				Margin								extraMargin;
 				GuiFlowOption						option;
 
-				void								Layout_SetFlowItemBounds(GuiFlowComposition* flowParent, Rect bounds);
+				void								OnParentLineChanged() override;
+
+				void								Layout_SetFlowItemBounds(Rect bounds);
 			public:
 				GuiFlowItemComposition();
 				~GuiFlowItemComposition() = default;
