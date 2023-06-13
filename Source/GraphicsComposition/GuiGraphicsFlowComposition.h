@@ -61,8 +61,9 @@ Flow Compositions
 				FlowAlignment						alignment = FlowAlignment::Left;
 				Ptr<IGuiAxis>						axis = Ptr(new GuiDefaultAxis);
 
-				void								OnChildInserted(GuiGraphicsComposition* child)override;
-				void								OnChildRemoved(GuiGraphicsComposition* child)override;
+				void								OnChildInserted(GuiGraphicsComposition* child) override;
+				void								OnChildRemoved(GuiGraphicsComposition* child) override;
+				void								OnCompositionStateChanged() override;
 				Size								Layout_CalculateMinSize() override;
 				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:

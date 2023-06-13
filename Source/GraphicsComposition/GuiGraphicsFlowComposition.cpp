@@ -164,6 +164,12 @@ GuiFlowComposition
 				}
 			}
 
+			void GuiFlowComposition::OnCompositionStateChanged()
+			{
+				GuiBoundsComposition::OnCompositionStateChanged();
+				layout_invalid = true;
+			}
+
 			Size GuiFlowComposition::Layout_CalculateMinSize()
 			{
 				Size minSize = GuiBoundsComposition::Layout_CalculateMinSize();
@@ -351,6 +357,7 @@ GuiFlowItemComposition
 				if (option != value)
 				{
 					option = value;
+					if (layout_flowParent) layout_flowParent->layout_invalid = true;
 					InvokeOnCompositionStateChanged();
 				}
 			}

@@ -59,6 +59,10 @@ GuiGraphicsComposition
 				}
 			}
 
+			void GuiGraphicsComposition::OnCompositionStateChanged()
+			{
+			}
+
 			void GuiGraphicsComposition::OnRenderContextChanged()
 			{
 			}
@@ -114,6 +118,7 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::InvokeOnCompositionStateChanged()
 			{
+				OnCompositionStateChanged();
 				if (relatedHostRecord && GetEventuallyVisible())
 				{
 					relatedHostRecord->host->RequestRender();

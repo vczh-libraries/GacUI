@@ -115,6 +115,7 @@ Basic Construction
 				virtual void								OnChildRemoved(GuiGraphicsComposition* child);
 				virtual void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent);
 				virtual void								OnParentLineChanged();
+				virtual void								OnCompositionStateChanged();
 				virtual void								OnRenderContextChanged();
 				
 				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
