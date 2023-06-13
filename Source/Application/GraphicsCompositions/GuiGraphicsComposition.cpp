@@ -485,6 +485,11 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetInternalMargin(Margin value)
 			{
+				if (value.left < 0) value.left = 0;
+				if (value.top < 0) value.top = 0;
+				if (value.right < 0) value.right = 0;
+				if (value.bottom < 0) value.bottom = 0;
+
 				if (internalMargin != value)
 				{
 					internalMargin = value;
@@ -499,6 +504,9 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::SetPreferredMinSize(Size value)
 			{
+				if (value.x < 0) value.x = 0;
+				if (value.y < 0) value.y = 0;
+
 				if (preferredMinSize != value)
 				{
 					preferredMinSize = value;

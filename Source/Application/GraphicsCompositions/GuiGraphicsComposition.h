@@ -332,11 +332,6 @@ Categories
 			{
 			protected:
 				GuiGraphicsComposition_Trivial() = default;
-
-				Size Layout_CalculateMinSize() override
-				{
-					return Layout_CalculateMinSizeHelper();
-				}
 			};
 
 			/// <summary>

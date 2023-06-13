@@ -32,6 +32,11 @@ GuiGraphicsComposition
 					}
 				}
 
+				vint offsetW = internalMargin.left + internalMargin.right;
+				vint offsetH = internalMargin.top + internalMargin.bottom;
+				minSize.x += offsetW;
+				minSize.y += offsetH;
+
 				for (auto child : children)
 				{
 					child->Layout_UpdateMinSize();
@@ -39,8 +44,6 @@ GuiGraphicsComposition
 
 				if (minSizeLimitation == GuiGraphicsComposition::LimitToElementAndChildren)
 				{
-					vint offsetW = internalMargin.left + internalMargin.right;
-					vint offsetH = internalMargin.top + internalMargin.bottom;
 					for (auto child : children)
 					{
 						Size minClientSize = child->Layout_CalculateMinClientSizeForParent(internalMargin);
@@ -54,6 +57,9 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Layout_SetCachedMinSize(Size value)
 			{
+				if (value.x < 0) value.x = 0;
+				if (value.y < 0) value.y = 0;
+
 				if (cachedMinSize != value)
 				{
 					cachedMinSize = value;
@@ -64,6 +70,9 @@ GuiGraphicsComposition
 
 			void GuiGraphicsComposition::Layout_SetCachedBounds(Rect value)
 			{
+				if (value.x2 < value.x1) value.x2 = value.x1;
+				if (value.y2 < value.y1) value.y2 = value.y1;
+
 				if (cachedBounds != value)
 				{
 					cachedBounds = value;
@@ -94,8 +103,8 @@ GuiGraphicsComposition
 			Size GuiGraphicsComposition::GetCachedMinClientSize()
 			{
 				auto minSize = cachedMinSize;
-				minSize.x += internalMargin.left + internalMargin.right;
-				minSize.y += internalMargin.top + internalMargin.bottom;
+				minSize.x -= internalMargin.left + internalMargin.right;
+				minSize.y -= internalMargin.top + internalMargin.bottom;
 				return minSize;
 			}
 
@@ -111,6 +120,8 @@ GuiGraphicsComposition
 				bounds.y1 += internalMargin.top;
 				bounds.x2 -= internalMargin.right;
 				bounds.y2 -= internalMargin.bottom;
+				if (bounds.x2 < bounds.x1) bounds.x2 = bounds.x1;
+				if (bounds.y2 < bounds.y1) bounds.y2 = bounds.y1;
 				return bounds;
 			}
 

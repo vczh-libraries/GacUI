@@ -31,6 +31,7 @@ Basic Compositions
 				Rect								expectedBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
 
+				Size								Layout_CalculateMinSize() override;
 				Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override;
 				Rect								Layout_CalculateBounds(Rect parentBounds) override;
 			public:

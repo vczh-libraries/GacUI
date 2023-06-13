@@ -13,6 +13,14 @@ namespace vl
 GuiBoundsComposition
 ***********************************************************************/
 
+			Size GuiBoundsComposition::Layout_CalculateMinSize()
+			{
+				Size minSize = Layout_CalculateMinSizeHelper();
+				if (minSize.x < expectedBounds.Width()) minSize.x = expectedBounds.Width();
+				if (minSize.y < expectedBounds.Height()) minSize.y = expectedBounds.Height();
+				return minSize;
+			}
+
 			Size GuiBoundsComposition::Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin)
 			{
 				vint offsetW = 0;
@@ -100,6 +108,9 @@ GuiBoundsComposition
 
 			void GuiBoundsComposition::SetExpectedBounds(Rect value)
 			{
+				if (value.x2 < value.x1) value.x2 = value.x1;
+				if (value.y2 < value.y1) value.y2 = value.y1;
+
 				if (expectedBounds != value)
 				{
 					expectedBounds = value;
