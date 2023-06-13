@@ -113,6 +113,7 @@ Stack Compositions
 				friend class GuiStackComposition;
 			private:
 				GuiStackComposition*				layout_stackParent = nullptr;
+				Point								layout_virtualOffset;
 
 				void								Layout_SetStackItemBounds(Rect contentBounds, Point virtualOffset);
 

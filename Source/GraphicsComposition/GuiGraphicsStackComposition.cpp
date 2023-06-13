@@ -18,6 +18,10 @@ GuiStackComposition
 					item->Layout_SetCachedMinSize(item->Layout_CalculateMinSizeHelper());
 				}
 
+				if (!layout_invalid) return;
+				layout_invalid = false;
+
+				Point virtualOffset;
 				stackItemTotalSize = Size(0, 0);
 				for (vint i = 0; i < stackItems.Count(); i++)
 				{
@@ -54,23 +58,22 @@ GuiStackComposition
 						}
 						break;
 					}
+
+					stackItems[i]->layout_virtualOffset = virtualOffset;
+					virtualOffset.x += itemSize.x + padding;
+					virtualOffset.y += itemSize.y + padding;
 				}
 			}
 
 			void GuiStackComposition::Layout_UpdateStackItemBounds(Rect contentBounds)
 			{
-				Point virtualOffset;
-				for (vint i = 0; i < stackItems.Count(); i++)
-				{
-					Size itemSize = stackItems[i]->GetCachedMinSize();
-					stackItems[i]->Layout_SetStackItemBounds(contentBounds, virtualOffset);
-					virtualOffset.x += itemSize.x + padding;
-					virtualOffset.y += itemSize.y + padding;
-				}
-
 				if (ensuringVisibleStackItem)
 				{
-					Rect itemBounds = ensuringVisibleStackItem->GetCachedBounds();
+					Rect itemBounds(
+						ensuringVisibleStackItem->layout_virtualOffset,
+						ensuringVisibleStackItem->GetCachedMinSize()
+					);
+
 					switch (direction)
 					{
 					case Horizontal:
@@ -81,7 +84,7 @@ GuiStackComposition
 						}
 						else
 						{
-							vint overflow = itemBounds.x2 - cachedBounds.x2;
+							vint overflow = itemBounds.x2 - contentBounds.x2;
 							if (overflow > 0)
 							{
 								adjustment -= overflow;
@@ -96,7 +99,7 @@ GuiStackComposition
 						}
 						else
 						{
-							vint overflow = itemBounds.y2 - cachedBounds.y2;
+							vint overflow = itemBounds.y2 - contentBounds.y2;
 							if (overflow > 0)
 							{
 								adjustment -= overflow;
@@ -104,6 +107,11 @@ GuiStackComposition
 						}
 						break;
 					}
+				}
+
+				for (auto item : stackItems)
+				{
+					item->Layout_SetStackItemBounds(contentBounds, item->layout_virtualOffset);
 				}
 			}
 
