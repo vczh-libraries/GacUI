@@ -65,7 +65,14 @@ GuiSharedSizeItemComposition
 
 			Size GuiSharedSizeItemComposition::Layout_CalculateMinSize()
 			{
-				return cachedMinSize;
+				if (parentRoot)
+				{
+					return cachedMinSize;
+				}
+				else
+				{
+					return GuiBoundsComposition::Layout_CalculateMinSize();
+				}
 			}
 
 			Size GuiSharedSizeItemComposition::Layout_CalculateOriginalMinSize()
