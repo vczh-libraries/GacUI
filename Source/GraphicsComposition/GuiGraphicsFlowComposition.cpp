@@ -26,6 +26,7 @@ GuiFlowComposition
 				}
 
 				if (!layout_invalid) return;
+				layout_invalid = false;
 
 				vint currentIndex = 0;
 				vint rowTop = 0;
@@ -298,10 +299,10 @@ GuiFlowItemComposition
 			{
 				Rect result = layout_flowParent->axis->VirtualRectToRealRect(contentSize, virtualBounds);
 
-				result.x1 -= layout_flowParent->extraMargin.left;
-				result.x2 -= layout_flowParent->extraMargin.left;
-				result.y1 -= layout_flowParent->extraMargin.top;
-				result.y2 -= layout_flowParent->extraMargin.top;
+				result.x1 += layout_flowParent->extraMargin.left;
+				result.x2 += layout_flowParent->extraMargin.left;
+				result.y1 += layout_flowParent->extraMargin.top;
+				result.y2 += layout_flowParent->extraMargin.top;
 
 				result.x1 -= extraMargin.left;
 				result.y1 -= extraMargin.top;
