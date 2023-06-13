@@ -27,7 +27,7 @@ TEST_FILE
 					expected.x2 += 3 * i;
 					expected.y2 += 4 * i;
 				}
-				TEST_ASSERT(flowItems[i]->GetBounds() == expected);
+				TEST_ASSERT(flowItems[i]->GetCachedBounds() == expected);
 			}
 		};
 
@@ -35,10 +35,9 @@ TEST_FILE
 		{
 			auto testHorizontal = [&]
 			{
-				TEST_ASSERT(flow->GetClientArea() == Rect({ 0,0 }, { 200,386 }));
-				TEST_ASSERT(flow->GetMinPreferredClientSize() == flow->GetClientArea().GetSize());
-				TEST_ASSERT(flow->GetPreferredBounds() == flow->GetClientArea());
-				TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
+				TEST_ASSERT(flow->GetCachedClientArea() == Rect({ 0,0 }, { 200,386 }));
+				TEST_ASSERT(flow->GetCachedMinSize() == flow->GetCachedClientArea().GetSize());
+				TEST_ASSERT(flow->GetCachedBounds() == flow->GetCachedClientArea());
 			};
 
 			auto testRightDown = [&](bool expand)
@@ -105,22 +104,27 @@ TEST_FILE
 			{
 				flow->SetAxis(Ptr(new GuiDefaultAxis));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiDefaultAxis>());
+				flow->ForceCalculateSizeImmediately();
 				testRightDown(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::RightDown);
+				flow->ForceCalculateSizeImmediately();
 				testRightDown(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::LeftDown);
+				flow->ForceCalculateSizeImmediately();
 				testLeftDown(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::RightUp);
+				flow->ForceCalculateSizeImmediately();
 				testRightUp(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::LeftUp);
+				flow->ForceCalculateSizeImmediately();
 				testLeftUp(expand);
 			};
 
@@ -138,10 +142,9 @@ TEST_FILE
 		{
 			auto testVertical = [&]
 			{
-				TEST_ASSERT(flow->GetClientArea() == Rect({ 0,0 }, { 386,200 }));
-				TEST_ASSERT(flow->GetMinPreferredClientSize() == flow->GetClientArea().GetSize());
-				TEST_ASSERT(flow->GetPreferredBounds() == flow->GetClientArea());
-				TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
+				TEST_ASSERT(flow->GetCachedClientArea() == Rect({ 0,0 }, { 386,200 }));
+				TEST_ASSERT(flow->GetCachedMinSize() == flow->GetCachedClientArea().GetSize());
+				TEST_ASSERT(flow->GetCachedBounds() == flow->GetCachedClientArea());
 			};
 
 			auto testDownRight = [&](bool expand)
@@ -207,18 +210,22 @@ TEST_FILE
 			{
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::DownRight);
+				flow->ForceCalculateSizeImmediately();
 				testDownRight(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::UpRight);
+				flow->ForceCalculateSizeImmediately();
 				testUpRight(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::DownLeft);
+				flow->ForceCalculateSizeImmediately();
 				testDownLeft(expand);
 
 				flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
 				TEST_ASSERT(flow->GetAxis().Cast<GuiAxis>()->GetDirection() == AxisDirection::UpLeft);
+				flow->ForceCalculateSizeImmediately();
 				testUpLeft(expand);
 			};
 
@@ -238,7 +245,6 @@ TEST_FILE
 
 			flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 			flow->SetPreferredMinSize(Size(200, 200));
-			flow->ForceCalculateSizeImmediately();
 
 			TEST_ASSERT(flow->GetExtraMargin() == Margin(0, 0, 0, 0));
 			TEST_ASSERT(flow->GetRowPadding() == 0);
@@ -304,7 +310,6 @@ TEST_FILE
 
 		flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		flow->SetPreferredMinSize(Size(160, 160));
-		flow->ForceCalculateSizeImmediately();
 
 		const vint ITEM_ROWS = 3;
 		const vint ITEM_COLUMNS = 3;
@@ -322,81 +327,89 @@ TEST_FILE
 			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Left);
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ c * 50,r * 50}, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - c * 50,r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ c * 50,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - c * 50,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,110 - c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,110 - c * 50 }, { 50,50 }));
 				}
 			}
@@ -408,81 +421,89 @@ TEST_FILE
 			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Center);
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 5 + c * 50,r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 105 - c * 50,r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 5 + c * 50,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 105 - c * 50,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,5 + c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,5 + c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,105 - c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,105 - c * 50 }, { 50,50 }));
 				}
 			}
@@ -494,81 +515,89 @@ TEST_FILE
 			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Right);
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 10 + c * 50,r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 100 - c * 50,r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 10 + c * 50,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 100 - c * 50,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,10 + c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,10 + c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,100 - c * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,100 - c * 50 }, { 50,50 }));
 				}
 			}
@@ -580,81 +609,89 @@ TEST_FILE
 			TEST_ASSERT(flow->GetAlignment() == FlowAlignment::Extend);
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ c * 55,r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - c * 55,r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ c * 55,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - c * 55,110 - r * 50 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,c * 55 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,c * 55 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ r * 50,110 - c * 55 }, { 50,50 }));
 				}
 			}
 
 			flow->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			flow->ForceCalculateSizeImmediately();
 			for (vint r = 0; r < ITEM_ROWS; r++)
 			{
 				for (vint c = 0; c < ITEM_COLUMNS; c++)
 				{
-					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetBounds();
+					auto bounds = flowItems[r * ITEM_COLUMNS + c]->GetCachedBounds();
 					TEST_ASSERT(bounds == Rect({ 110 - r * 50,110 - c * 55 }, { 50,50 }));
 				}
 			}
@@ -706,24 +743,25 @@ TEST_FILE
 				for (auto direction : directions)
 				{
 					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					flow->ForceCalculateSizeImmediately();
 					for (vint i = 0; i < ITEM_ROWS; i++)
 					{
-						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetCachedBounds();
 						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetCachedBounds();
 							TEST_ASSERT(bounds.Width() == 40);
 							TEST_ASSERT(bounds.y1 == baseline.y1 + 15);
 							TEST_ASSERT(bounds.y2 == baseline.y2 - 5);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetCachedBounds();
 							TEST_ASSERT(bounds.Width() == 40);
 							TEST_ASSERT(bounds.y1 == baseline.y1 + 5);
 							TEST_ASSERT(bounds.y2 == baseline.y2 - 15);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetCachedBounds();
 							TEST_ASSERT(bounds.Width() == 40);
 							TEST_ASSERT(bounds.y1 == baseline.y1 + 8);
 							TEST_ASSERT(bounds.y2 == baseline.y2 - 12);
@@ -739,24 +777,25 @@ TEST_FILE
 				for (auto direction : directions)
 				{
 					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					flow->ForceCalculateSizeImmediately();
 					for (vint i = 0; i < ITEM_ROWS; i++)
 					{
-						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetCachedBounds();
 						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetCachedBounds();
 							TEST_ASSERT(bounds.Width() == 40);
 							TEST_ASSERT(bounds.y1 == baseline.y1 + 5);
 							TEST_ASSERT(bounds.y2 == baseline.y2 - 15);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetCachedBounds();
 							TEST_ASSERT(bounds.Width() == 40);
 							TEST_ASSERT(bounds.y1 == baseline.y1 + 15);
 							TEST_ASSERT(bounds.y2 == baseline.y2 - 5);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetCachedBounds();
 							TEST_ASSERT(bounds.Width() == 40);
 							TEST_ASSERT(bounds.y1 == baseline.y1 + 12);
 							TEST_ASSERT(bounds.y2 == baseline.y2 - 8);
@@ -809,24 +848,25 @@ TEST_FILE
 				for (auto direction : directions)
 				{
 					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					flow->ForceCalculateSizeImmediately();
 					for (vint i = 0; i < ITEM_ROWS; i++)
 					{
-						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetCachedBounds();
 						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetCachedBounds();
 							TEST_ASSERT(bounds.Height() == 40);
 							TEST_ASSERT(bounds.x1 == baseline.x1 + 15);
 							TEST_ASSERT(bounds.x2 == baseline.x2 - 5);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetCachedBounds();
 							TEST_ASSERT(bounds.Height() == 40);
 							TEST_ASSERT(bounds.x1 == baseline.x1 + 5);
 							TEST_ASSERT(bounds.x2 == baseline.x2 - 15);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetCachedBounds();
 							TEST_ASSERT(bounds.Height() == 40);
 							TEST_ASSERT(bounds.x1 == baseline.x1 + 8);
 							TEST_ASSERT(bounds.x2 == baseline.x2 - 12);
@@ -842,24 +882,25 @@ TEST_FILE
 				for (auto direction : directions)
 				{
 					flow->SetAxis(Ptr(new GuiAxis(direction)));
+					flow->ForceCalculateSizeImmediately();
 					for (vint i = 0; i < ITEM_ROWS; i++)
 					{
-						auto baseline = flowItems[i * ITEM_COLUMNS]->GetBounds();
+						auto baseline = flowItems[i * ITEM_COLUMNS]->GetCachedBounds();
 						TEST_ASSERT(baseline.GetSize() == Size(40, 40));
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 1]->GetCachedBounds();
 							TEST_ASSERT(bounds.Height() == 40);
 							TEST_ASSERT(bounds.x1 == baseline.x1 + 5);
 							TEST_ASSERT(bounds.x2 == baseline.x2 - 15);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 2]->GetCachedBounds();
 							TEST_ASSERT(bounds.Height() == 40);
 							TEST_ASSERT(bounds.x1 == baseline.x1 + 15);
 							TEST_ASSERT(bounds.x2 == baseline.x2 - 5);
 						}
 						{
-							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetBounds();
+							auto bounds = flowItems[i * ITEM_COLUMNS + 3]->GetCachedBounds();
 							TEST_ASSERT(bounds.Height() == 40);
 							TEST_ASSERT(bounds.x1 == baseline.x1 + 12);
 							TEST_ASSERT(bounds.x2 == baseline.x2 - 8);
@@ -894,14 +935,14 @@ TEST_FILE
 		vint contextValue = -1;
 		auto checkFlowItems = [&]()
 		{
+			flow->ForceCalculateSizeImmediately();
 			vint rows = (objects.Count() + 1) / 2;
-			TEST_ASSERT(flow->GetClientArea() == Rect({ 0,0 }, {
+			TEST_ASSERT(flow->GetCachedClientArea() == Rect({ 0,0 }, {
 				110,
 				(rows == 0 ? 0 : rows == 1 ? 50 : 70 * rows - 20)
 				}));
-			TEST_ASSERT(flow->GetMinPreferredClientSize() == flow->GetClientArea().GetSize());
-			TEST_ASSERT(flow->GetPreferredBounds() == flow->GetClientArea());
-			TEST_ASSERT(flow->GetBounds() == flow->GetClientArea());
+			TEST_ASSERT(flow->GetCachedMinSize() == flow->GetCachedClientArea().GetSize());
+			TEST_ASSERT(flow->GetCachedBounds() == flow->GetCachedClientArea());
 
 			TEST_ASSERT(flow->GetFlowItems().Count() == objects.Count());
 			for (auto [text, i] : indexed(objects))
@@ -910,11 +951,11 @@ TEST_FILE
 				vint column = i % 2;
 
 				auto flowItem = flow->GetFlowItems()[i];
-				TEST_ASSERT(flowItem->GetBounds() == Rect({ 60 * column,70 * row }, { 50,50 }));
+				TEST_ASSERT(flowItem->GetCachedBounds() == Rect({ 60 * column,70 * row }, { 50,50 }));
 				TEST_ASSERT(flowItem->Children().Count() == 1);
 				auto itemTemplate = dynamic_cast<GuiTemplate*>(flowItem->Children()[0]);
 				TEST_ASSERT(itemTemplate->GetText() == text);
-				TEST_ASSERT(itemTemplate->GetBounds() == Rect({ 0,0 }, { 50,50 }));
+				TEST_ASSERT(itemTemplate->GetCachedBounds() == Rect({ 0,0 }, { 50,50 }));
 
 				if (contextValue == -1)
 				{
