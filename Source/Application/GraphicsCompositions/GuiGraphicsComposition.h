@@ -62,6 +62,11 @@ Basic Construction
 				friend class GuiWindowComposition;
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
+
+				friend inline void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
+				{
+					composition->InvokeOnCompositionStateChanged();
+				}
 			public:
 				/// <summary>
 				/// Minimum size limitation.
