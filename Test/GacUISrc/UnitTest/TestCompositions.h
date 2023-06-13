@@ -390,7 +390,7 @@ namespace composition_bounds_tests
 			TEST_ASSERT(childA->GetCachedMinSize() == Size(100, 200));
 			TEST_ASSERT(childA->GetCachedBounds() == Rect({ 11,22 }, { 100,200 }));
 			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 400));
-			//TEST_ASSERT(childB->GetCachedBounds() == Rect({ 11,22 }, { 300,400 }));
+			TEST_ASSERT(childB->GetCachedBounds() == Rect({ 11,22 }, { 300,400 }));
 
 			// childB:AlignmentToParent(bottom)
 			childB->SetAlignmentToParent(Margin(-1, -1, -1, 222));
@@ -402,7 +402,7 @@ namespace composition_bounds_tests
 			TEST_ASSERT(childA->GetCachedMinSize() == Size(100, 200));
 			TEST_ASSERT(childA->GetCachedBounds() == Rect({ 11,22 }, { 100,200 }));
 			TEST_ASSERT(childB->GetCachedMinSize() == Size(300, 400));
-			//TEST_ASSERT(childB->GetCachedBounds() == Rect({ 11,22 }, { 300,400 }));
+			TEST_ASSERT(childB->GetCachedBounds() == Rect({ 11,22 }, { 300,400 }));
 
 			// childB:AlignmentToParent(all)
 			childB->SetAlignmentToParent(Margin(222, 222, 222, 222));
