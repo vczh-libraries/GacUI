@@ -43,23 +43,25 @@ Stack Compositions
 					/// <summary>Stack items is layouted from bottom to top.</summary>
 					ReversedVertical,
 				};
-			protected:
+
+			private:
+				bool								layout_invalid = true;
 				ItemCompositionList					stackItems;
 				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
 				vint								adjustment = 0;
+				Size								stackItemTotalSize;
+
+				void								UpdateStackItemMinSizes();
+				void								UpdateStackItemBounds();
+			protected:
 
 				Direction							direction = Horizontal;
 				vint								padding = 0;
 				Margin								extraMargin;
 
-				Size								stackItemTotalSize;
-				Rect								previousBounds;
-
-				void								UpdateStackItemMinSizes();
-				void								UpdateStackItemBounds();
-				void								EnsureStackItemVisible();
 				void								OnChildInserted(GuiGraphicsComposition* child) override;
 				void								OnChildRemoved(GuiGraphicsComposition* child) override;
+				void								OnCompositionStateChanged() override;
 				Size								Layout_CalculateMinSize() override;
 				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
@@ -109,11 +111,15 @@ Stack Compositions
 			class GuiStackItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiStackItemComposition>
 			{
 				friend class GuiStackComposition;
-			protected:
-				Rect								bounds;
-				Margin								extraMargin;
+			private:
+				GuiStackComposition*				layout_stackParent = nullptr;
 
 				void								Layout_SetStackItemBounds(GuiStackComposition* stackParent, Rect bounds);
+
+			protected:
+				Margin								extraMargin;
+
+				void								OnParentLineChanged() override;
 			public:
 				GuiStackItemComposition();
 				~GuiStackItemComposition() = default;

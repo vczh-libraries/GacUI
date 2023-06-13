@@ -67,27 +67,6 @@ GuiStackComposition
 					offset.y += itemSize.y + padding;
 				}
 
-				EnsureStackItemVisible();
-			}
-
-			void GuiStackComposition::EnsureStackItemVisible()
-			{
-#define ADJUSTMENT(U, V)															\
-				if (itemBounds.U() <= 0)											\
-				{																	\
-					adjustment -= itemBounds.U();									\
-					InvokeOnCompositionStateChanged();								\
-				}																	\
-				else																\
-				{																	\
-					vint overflow = itemBounds.V() - previousBounds.V();			\
-					if (overflow > 0)												\
-					{																\
-						adjustment -= overflow;										\
-						InvokeOnCompositionStateChanged();							\
-					}																\
-				}																	\
-
 				if (ensuringVisibleStackItem)
 				{
 					Rect itemBounds = ensuringVisibleStackItem->GetCachedBounds();
@@ -95,15 +74,36 @@ GuiStackComposition
 					{
 					case Horizontal:
 					case ReversedHorizontal:
-						ADJUSTMENT(Left, Right)
+						if (itemBounds.x1 <= 0)
+						{
+							adjustment -= itemBounds.x1;
+						}
+						else
+						{
+							vint overflow = itemBounds.x2 - cachedBounds.x2;
+							if (overflow > 0)
+							{
+								adjustment -= overflow;
+							}
+						}
 						break;
 					case Vertical:
 					case ReversedVertical:
-						ADJUSTMENT(Top, Bottom)
+						if (itemBounds.y1 <= 0)
+						{
+							adjustment -= itemBounds.y1;
+						}
+						else
+						{
+							vint overflow = itemBounds.y2 - cachedBounds.y2;
+							if (overflow > 0)
+							{
+								adjustment -= overflow;
+							}
+						}
 						break;
 					}
 				}
-#undef ADJUSTMENT
 			}
 
 			void GuiStackComposition::OnChildInserted(GuiGraphicsComposition* child)
@@ -115,6 +115,7 @@ GuiStackComposition
 					if (!stackItems.Contains(item))
 					{
 						stackItems.Add(item);
+						layout_invalid = true;
 					}
 				}
 			}
@@ -128,9 +129,16 @@ GuiStackComposition
 					stackItems.Remove(item);
 					if (item == ensuringVisibleStackItem)
 					{
-						ensuringVisibleStackItem = 0;
+						ensuringVisibleStackItem = nullptr;
 					}
+					layout_invalid = true;
 				}
+			}
+
+			void GuiStackComposition::OnCompositionStateChanged()
+			{
+				GuiBoundsComposition::OnCompositionStateChanged();
+				layout_invalid = true;
 			}
 
 			Size GuiStackComposition::Layout_CalculateMinSize()
@@ -178,15 +186,13 @@ GuiStackComposition
 			bool GuiStackComposition::InsertStackItem(vint index, GuiStackItemComposition* item)
 			{
 				index = stackItems.Insert(index, item);
-				if (!AddChild(item))
+				if (AddChild(item))
 				{
-					stackItems.RemoveAt(index);
-					return false;
-				}
-				else
-				{
+					layout_invalid = true;
 					return true;
 				}
+				stackItems.RemoveAt(index);
+				return false;
 			}
 
 			GuiStackComposition::Direction GuiStackComposition::GetDirection()
@@ -197,7 +203,7 @@ GuiStackComposition
 			void GuiStackComposition::SetDirection(Direction value)
 			{
 				direction = value;
-				EnsureStackItemVisible();
+				InvokeOnCompositionStateChanged();
 			}
 
 			vint GuiStackComposition::GetPadding()
@@ -208,7 +214,7 @@ GuiStackComposition
 			void GuiStackComposition::SetPadding(vint value)
 			{
 				padding = value;
-				EnsureStackItemVisible();
+				InvokeOnCompositionStateChanged();
 			}
 
 			Margin GuiStackComposition::GetExtraMargin()
@@ -219,7 +225,7 @@ GuiStackComposition
 			void GuiStackComposition::SetExtraMargin(Margin value)
 			{
 				extraMargin = value;
-				EnsureStackItemVisible();
+				InvokeOnCompositionStateChanged();
 			}
 
 			bool GuiStackComposition::IsStackItemClipped()
@@ -261,7 +267,7 @@ GuiStackComposition
 				{
 					ensuringVisibleStackItem = nullptr;
 				}
-				EnsureStackItemVisible();
+				InvokeOnCompositionStateChanged();
 				return ensuringVisibleStackItem != nullptr;
 			}
 
@@ -317,9 +323,19 @@ GuiStackItemComposition
 				Layout_SetCachedBounds(result);
 			}
 
+			void GuiStackItemComposition::OnParentLineChanged()
+			{
+				layout_stackParent = dynamic_cast<GuiStackComposition*>(GetParent());
+				GuiGraphicsComposition::OnParentLineChanged();
+			}
+
 			GuiStackItemComposition::GuiStackItemComposition()
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				CachedMinSizeChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				{
+					if (layout_stackParent) layout_stackParent->layout_invalid = true;
+				});
 			}
 
 			Margin GuiStackItemComposition::GetExtraMargin()
