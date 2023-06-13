@@ -63,57 +63,59 @@ GuiBoundsComposition
 
 			Rect GuiBoundsComposition::Layout_CalculateBounds(Rect parentBounds)
 			{
-				Rect result = expectedBounds;
-				if (result.Width() < cachedMinSize.x) result.x2 = result.x1 + cachedMinSize.x;
-				if (result.Height() < cachedMinSize.y) result.y2 = result.y1 + cachedMinSize.y;
-
 				if (auto parent = GetParent())
 				{
-					Margin clientMargin = GetParent()->GetInternalMargin();
-					result.x1 += clientMargin.left;
-					result.x2 += clientMargin.left;
-					result.y1 += clientMargin.top;
-					result.y2 += clientMargin.top;
+					Rect result;
+					Margin parentInternalMargin = parent->GetInternalMargin();
 
-					Size clientSize = GetParent()->GetCachedClientArea().GetSize();
-					if (alignmentToParent.left >= 0 && alignmentToParent.right >= 0)
+					if (alignmentToParent.left != -1 && alignmentToParent.right != -1)
 					{
-						result.x1 = alignmentToParent.left;
-						result.x2 = clientSize.x - alignmentToParent.right;
+						result.x1 = parentBounds.x1 + alignmentToParent.left;
+						result.x2 = parentBounds.x2 - alignmentToParent.right;
 					}
-					else if (alignmentToParent.left >= 0)
+					else if (alignmentToParent.left != -1)
 					{
-						vint width = result.Width();
-						result.x1 = alignmentToParent.left;
-						result.x2 = result.x1 + width;
+						result.x1 = parentBounds.x1 + alignmentToParent.left;
+						result.x2 = result.x1 + cachedMinSize.x;
 					}
-					else if (alignmentToParent.right >= 0)
+					else if (alignmentToParent.right != -1)
 					{
-						vint width = result.Width();
-						result.x2 = clientSize.x - alignmentToParent.right;
-						result.x1 = result.x2 - width;
+						result.x2 = parentBounds.x2 - alignmentToParent.right;
+						result.x1 = result.x2 - cachedMinSize.x;
+					}
+					else
+					{
+						result.x1 = expectedBounds.x1 + parentInternalMargin.left;
+						result.x2 = result.x1 + cachedMinSize.x;
 					}
 
-					if (alignmentToParent.top >= 0 && alignmentToParent.bottom >= 0)
+					if (alignmentToParent.top != -1 && alignmentToParent.bottom != -1)
 					{
-						result.y1 = alignmentToParent.top;
-						result.y2 = clientSize.y - alignmentToParent.bottom;
+						result.y1 = parentBounds.y1 + alignmentToParent.top;
+						result.y2 = parentBounds.y2 - alignmentToParent.bottom;
 					}
-					else if (alignmentToParent.top >= 0)
+					else if (alignmentToParent.top != -1)
 					{
-						vint height = result.Height();
-						result.y1 = alignmentToParent.top;
-						result.y2 = result.y1 + height;
+						result.y1 = parentBounds.y1 + alignmentToParent.top;
+						result.y2 = result.y1 + cachedMinSize.y;
 					}
-					else if (alignmentToParent.bottom >= 0)
+					else if (alignmentToParent.bottom != -1)
 					{
-						vint height = result.Height();
-						result.y2 = clientSize.y - alignmentToParent.bottom;
-						result.y1 = result.y2 - height;
+						result.y2 = parentBounds.y2 - alignmentToParent.bottom;
+						result.y1 = result.y2 - cachedMinSize.y;
 					}
+					else
+					{
+						result.y1 = expectedBounds.y1 + parentInternalMargin.top;
+						result.y2 = result.y1 + cachedMinSize.y;
+					}
+
+					return result;
 				}
-
-				return result;
+				else
+				{
+					return Rect(expectedBounds.LeftTop(), cachedMinSize);
+				}
 			}
 
 			Rect GuiBoundsComposition::GetExpectedBounds()
