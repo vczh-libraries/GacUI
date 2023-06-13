@@ -165,22 +165,26 @@ GuiFlowComposition
 
 			Size GuiFlowComposition::Layout_CalculateMinSize()
 			{
-				Size minClientSize = GuiBoundsComposition::Layout_CalculateMinSize();
-				Size cachedSize = cachedBounds.GetSize();
-				Size constraintSize(
-					minClientSize.x > cachedSize.x ? minClientSize.x : cachedSize.x,
-					minClientSize.y > cachedSize.y ? minClientSize.y : cachedSize.y
-				);
+				Size minSize = GuiBoundsComposition::Layout_CalculateMinSize();
 
-				Size extraSize = Layout_UpdateFlowItemLayoutByConstraint(constraintSize);
-				Size minFlowSize = axis->VirtualSizeToRealSize(Size(layout_lastVirtualWidth, layout_minVirtualHeight));
-				minFlowSize.x += extraSize.x;
-				minFlowSize.y += extraSize.y;
-
-				return Size(
-					minFlowSize.x > minClientSize.x ? minFlowSize.x : minClientSize.x,
-					minFlowSize.y > minClientSize.y ? minFlowSize.y : minClientSize.y
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren && layout_flowItems.Count() > 0)
+				{
+					Size cachedSize = cachedBounds.GetSize();
+					Size constraintSize(
+						minSize.x > cachedSize.x ? minSize.x : cachedSize.x,
+						minSize.y > cachedSize.y ? minSize.y : cachedSize.y
 					);
+
+					Size extraSize = Layout_UpdateFlowItemLayoutByConstraint(constraintSize);
+					Size minFlowSize = axis->VirtualSizeToRealSize(Size(layout_lastVirtualWidth, layout_minVirtualHeight));
+					minFlowSize.x += extraSize.x;
+					minFlowSize.y += extraSize.y;
+
+					if (minSize.x < minFlowSize.x) minSize.x = minFlowSize.x;
+					if (minSize.y < minFlowSize.y) minSize.y = minFlowSize.y;
+				}
+
+				return minSize;
 			}
 
 			Rect GuiFlowComposition::Layout_CalculateBounds(Rect parentBounds)
