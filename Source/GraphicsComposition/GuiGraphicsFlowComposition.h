@@ -46,12 +46,13 @@ Flow Compositions
 
 				typedef collections::List<GuiFlowItemComposition*>				ItemCompositionList;
 			private:
-				bool								layout_Invalid = true;
-				vint								layout_LastWidth = 0;
+				bool								layout_invalid = true;
+				vint								layout_lastVirtualWidth = 0;
 				ItemCompositionList					layout_flowItems;
-				vint								layout_minHeight = 0;
+				vint								layout_minVirtualHeight = 0;
 
-				void								Layout_UpdateFlowItemLayout(vint width);
+				void								Layout_UpdateFlowItemLayout(vint maxVirtualWidth);
+				Size								Layout_UpdateFlowItemLayoutByConstraint(Size constraintSize);
 
 			protected:
 				Margin								extraMargin;
@@ -149,16 +150,16 @@ Flow Compositions
 			{
 				friend class GuiFlowComposition;
 			private:
-				GuiFlowComposition*					flowParent = nullptr;
-				Rect								flowItemBounds;
+				GuiFlowComposition*					layout_flowParent = nullptr;
+				Rect								layout_virtualBounds;
 
+				void								Layout_SetFlowItemBounds(Size contentSize, Rect virtualBounds);
 			protected:
 				Margin								extraMargin;
 				GuiFlowOption						option;
 
 				void								OnParentLineChanged() override;
 
-				void								Layout_SetFlowItemBounds(Rect bounds);
 			public:
 				GuiFlowItemComposition();
 				~GuiFlowItemComposition() = default;
