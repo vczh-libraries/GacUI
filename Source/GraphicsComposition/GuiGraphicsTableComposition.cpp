@@ -259,11 +259,13 @@ GuiTableComposition
 			void GuiTableComposition::SetSitedCell(vint _row, vint _column, GuiCellComposition* cell)
 			{
 				cellCompositions[GetSiteIndex(rows, columns, _row, _column)] = cell;
+				layout_invalid = true;
 			}
 
 			void GuiTableComposition::OnCompositionStateChanged()
 			{
 				GuiBoundsComposition::OnCompositionStateChanged();
+				ConfigChanged.Execute(GuiEventArgs(this));
 				layout_invalid = true;
 			}
 
@@ -410,7 +412,6 @@ GuiTableComposition
 						cell->OnTableRowsAndColumnsChanged();
 					}
 				}
-				ConfigChanged.Execute(GuiEventArgs(this));
 				InvokeOnCompositionStateChanged();
 				return true;
 			}
@@ -436,7 +437,6 @@ GuiTableComposition
 				{
 					rowOptions[_row] = option;
 					InvokeOnCompositionStateChanged();
-					ConfigChanged.Execute(GuiEventArgs(this));
 				}
 			}
 
@@ -456,7 +456,6 @@ GuiTableComposition
 				{
 					columnOptions[_column] = option;
 					InvokeOnCompositionStateChanged();
-					ConfigChanged.Execute(GuiEventArgs(this));
 				}
 			}
 
@@ -468,8 +467,11 @@ GuiTableComposition
 			void GuiTableComposition::SetCellPadding(vint value)
 			{
 				if (value < 0) value = 0;
-				cellPadding = value;
-				InvokeOnCompositionStateChanged();
+				if (cellPadding != value)
+				{
+					cellPadding = value;
+					InvokeOnCompositionStateChanged();
+				}
 			}
 
 			bool GuiTableComposition::GetBorderVisible()
@@ -498,7 +500,7 @@ GuiCellComposition
 					{
 						for (vint c = 0; c < columnSpan; c++)
 						{
-							table->SetSitedCell(row + r, column + c, 0);
+							table->SetSitedCell(row + r, column + c, nullptr);
 						}
 					}
 				}
