@@ -72,16 +72,6 @@ GuiTableComposition
 				return bounds;
 			}
 
-			vint GuiTableComposition::GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column)
-			{
-				return _row*_columns + _column;
-			}
-
-			void GuiTableComposition::SetSitedCell(vint _row, vint _column, GuiCellComposition* cell)
-			{
-				cellCompositions[GetSiteIndex(rows, columns, _row, _column)] = cell;
-			}
-
 			void GuiTableComposition::UpdateCellBoundsInternal(
 				collections::Array<vint>& dimSizes,
 				vint& dimSize,
@@ -259,6 +249,22 @@ GuiTableComposition
 						}
 					}
 				}
+			}
+
+			vint GuiTableComposition::GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column)
+			{
+				return _row * _columns + _column;
+			}
+
+			void GuiTableComposition::SetSitedCell(vint _row, vint _column, GuiCellComposition* cell)
+			{
+				cellCompositions[GetSiteIndex(rows, columns, _row, _column)] = cell;
+			}
+
+			void GuiTableComposition::OnCompositionStateChanged()
+			{
+				GuiBoundsComposition::OnCompositionStateChanged();
+				layout_invalid = true;
 			}
 
 			Size GuiTableComposition::Layout_CalculateMinSize()
@@ -519,23 +525,23 @@ GuiCellComposition
 
 			bool GuiCellComposition::SetSiteInternal(vint _row, vint _column, vint _rowSpan, vint _columnSpan)
 			{
-				if (tableParent)
+				if (layout_tableParent)
 				{
-					if (_row < 0 || _row >= tableParent->rows || _column < 0 || _column >= tableParent->columns) return false;
-					if (_rowSpan<1 || _row + _rowSpan>tableParent->rows || _columnSpan<1 || _column + _columnSpan>tableParent->columns) return false;
+					if (_row < 0 || _row >= layout_tableParent->rows || _column < 0 || _column >= layout_tableParent->columns) return false;
+					if (_rowSpan<1 || _row + _rowSpan>layout_tableParent->rows || _columnSpan<1 || _column + _columnSpan>layout_tableParent->columns) return false;
 
 					for (vint r = 0; r < _rowSpan; r++)
 					{
 						for (vint c = 0; c < _columnSpan; c++)
 						{
-							GuiCellComposition* cell = tableParent->GetSitedCell(_row + r, _column + c);
+							GuiCellComposition* cell = layout_tableParent->GetSitedCell(_row + r, _column + c);
 							if (cell && cell != this)
 							{
 								return false;
 							}
 						}
 					}
-					ClearSitedCells(tableParent);
+					ClearSitedCells(layout_tableParent);
 				}
 
 				row = _row;
@@ -543,9 +549,9 @@ GuiCellComposition
 				rowSpan = _rowSpan;
 				columnSpan = _columnSpan;
 
-				if (tableParent)
+				if (layout_tableParent)
 				{
-					SetSitedCells(tableParent);
+					SetSitedCells(layout_tableParent);
 				}
 				return true;
 			}
@@ -553,16 +559,16 @@ GuiCellComposition
 			void GuiCellComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
 			{
 				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
-				if (tableParent)
+				if (layout_tableParent)
 				{
-					ClearSitedCells(tableParent);
+					ClearSitedCells(layout_tableParent);
 				}
-				tableParent = dynamic_cast<GuiTableComposition*>(newParent);
-				if (!tableParent || !SetSiteInternal(row, column, rowSpan, columnSpan))
+				layout_tableParent = dynamic_cast<GuiTableComposition*>(newParent);
+				if (!layout_tableParent || !SetSiteInternal(row, column, rowSpan, columnSpan))
 				{
 					ResetSiteInternal();
 				}
-				if (tableParent)
+				if (layout_tableParent)
 				{
 					if (row != -1 && column != -1)
 					{
@@ -582,29 +588,29 @@ GuiCellComposition
 			void GuiCellComposition::Layout_SetCellBounds()
 			{
 				Rect result;
-				if (tableParent && row != -1 && column != -1)
+				if (layout_tableParent && row != -1 && column != -1)
 				{
 					Rect bounds1, bounds2;
 					{
-						vint index = tableParent->GetSiteIndex(tableParent->rows, tableParent->columns, row, column);
-						bounds1 = tableParent->cellBounds[index];
+						vint index = layout_tableParent->GetSiteIndex(layout_tableParent->rows, layout_tableParent->columns, row, column);
+						bounds1 = layout_tableParent->cellBounds[index];
 					}
 					{
-						vint index = tableParent->GetSiteIndex(tableParent->rows, tableParent->columns, row + rowSpan - 1, column + columnSpan - 1);
-						bounds2 = tableParent->cellBounds[index];
-						if (tableParent->GetMinSizeLimitation() == GuiGraphicsComposition::NoLimit)
+						vint index = layout_tableParent->GetSiteIndex(layout_tableParent->rows, layout_tableParent->columns, row + rowSpan - 1, column + columnSpan - 1);
+						bounds2 = layout_tableParent->cellBounds[index];
+						if (layout_tableParent->GetMinSizeLimitation() == GuiGraphicsComposition::NoLimit)
 						{
-							if (row + rowSpan == tableParent->rows)
+							if (row + rowSpan == layout_tableParent->rows)
 							{
-								bounds2.y2 += tableParent->rowExtending;
+								bounds2.y2 += layout_tableParent->rowExtending;
 							}
-							if (column + columnSpan == tableParent->columns)
+							if (column + columnSpan == layout_tableParent->columns)
 							{
-								bounds2.x2 += tableParent->columnExtending;
+								bounds2.x2 += layout_tableParent->columnExtending;
 							}
 						}
 					}
-					vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
+					vint offset = layout_tableParent->borderVisible ? layout_tableParent->cellPadding : 0;
 					result = Rect(bounds1.x1 + offset, bounds1.y1 + offset, bounds2.x2 + offset, bounds2.y2 + offset);
 				}
 				else
@@ -617,11 +623,15 @@ GuiCellComposition
 			GuiCellComposition::GuiCellComposition()
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+				CachedMinSizeChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+				{
+					if (layout_tableParent) layout_tableParent->layout_invalid = true;
+				});
 			}
 
 			GuiTableComposition* GuiCellComposition::GetTableParent()
 			{
-				return tableParent;
+				return layout_tableParent;
 			}
 
 			vint GuiCellComposition::GetRow()

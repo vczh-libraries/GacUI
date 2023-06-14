@@ -103,6 +103,44 @@ Table Compositions
 				friend class GuiTableSplitterCompositionBase;
 				friend class GuiRowSplitterComposition;
 				friend class GuiColumnSplitterComposition;
+			private:
+				bool										layout_invalid = true;
+				collections::Array<Rect>					cellBounds;
+				collections::Array<vint>					rowOffsets;
+				collections::Array<vint>					columnOffsets;
+				collections::Array<vint>					rowSizes;
+				collections::Array<vint>					columnSizes;
+				vint										rowTotal = 0;
+				vint										columnTotal = 0;
+				vint										rowTotalWithPercentage = 0;
+				vint										columnTotalWithPercentage = 0;
+				
+
+				Rect										CalculateCellArea(Rect tableBounds);
+				void										UpdateCellBoundsInternal(
+																collections::Array<vint>& dimSizes,
+																vint& dimSize, 
+																vint& dimSizeWithPercentage,
+																collections::Array<GuiCellOption>& dimOptions,
+																vint GuiTableComposition::* dim1,
+																vint GuiTableComposition::* dim2,
+																vint (*getSize)(Size),
+																vint (*getLocation)(GuiCellComposition*),
+																vint (*getSpan)(GuiCellComposition*),
+																vint (*getRow)(vint, vint),
+																vint (*getCol)(vint, vint)
+																);
+				void										UpdateCellBoundsPercentages(
+																collections::Array<vint>& dimSizes,
+																vint dimSize,
+																vint maxDimSize,
+																collections::Array<GuiCellOption>& dimOptions
+																);
+				vint											UpdateCellBoundsOffsets(
+																collections::Array<vint>& offsets,
+																collections::Array<vint>& sizes,
+																vint max
+																);
 			protected:
 				vint										rows = 0;
 				vint										columns = 0;
@@ -113,49 +151,12 @@ Table Compositions
 				collections::Array<GuiCellOption>			rowOptions;
 				collections::Array<GuiCellOption>			columnOptions;
 				collections::Array<GuiCellComposition*>		cellCompositions;
-				
-				collections::Array<Rect>					cellBounds;
-				collections::Array<vint>					rowOffsets;
-				collections::Array<vint>					columnOffsets;
-				collections::Array<vint>					rowSizes;
-				collections::Array<vint>					columnSizes;
 
-				vint										rowTotal = 0;
-				vint										columnTotal = 0;
-				vint										rowTotalWithPercentage = 0;
-				vint										columnTotalWithPercentage = 0;
-
-				Rect								CalculateCellArea(Rect tableBounds);
-				vint								GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
-				void								SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
-
-				void								UpdateCellBoundsInternal(
-														collections::Array<vint>& dimSizes,
-														vint& dimSize, 
-														vint& dimSizeWithPercentage,
-														collections::Array<GuiCellOption>& dimOptions,
-														vint GuiTableComposition::* dim1,
-														vint GuiTableComposition::* dim2,
-														vint (*getSize)(Size),
-														vint (*getLocation)(GuiCellComposition*),
-														vint (*getSpan)(GuiCellComposition*),
-														vint (*getRow)(vint, vint),
-														vint (*getCol)(vint, vint)
-														);
-				void								UpdateCellBoundsPercentages(
-														collections::Array<vint>& dimSizes,
-														vint dimSize,
-														vint maxDimSize,
-														collections::Array<GuiCellOption>& dimOptions
-														);
-				vint									UpdateCellBoundsOffsets(
-														collections::Array<vint>& offsets,
-														collections::Array<vint>& sizes,
-														vint max
-														);
-
-				Size								Layout_CalculateMinSize() override;
-				Rect								Layout_CalculateBounds(Size parentSize) override;
+				vint										GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
+				void										SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
+				void										OnCompositionStateChanged() override;
+				Size										Layout_CalculateMinSize() override;
+				Rect										Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiTableComposition();
 				~GuiTableComposition() = default;
@@ -217,12 +218,13 @@ Table Compositions
 			class GuiCellComposition : public GuiGraphicsComposition_Controlled, public Description<GuiCellComposition>
 			{
 				friend class GuiTableComposition;
+			private:
+				GuiTableComposition*				layout_tableParent = nullptr;
 			protected:
 				vint								row = -1;
 				vint								rowSpan = 1;
 				vint								column = -1;
 				vint								columnSpan = 1;
-				GuiTableComposition*				tableParent = nullptr;
 				
 				void								ClearSitedCells(GuiTableComposition* table);
 				void								SetSitedCells(GuiTableComposition* table);
