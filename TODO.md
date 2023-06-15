@@ -36,35 +36,26 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
-- FullControlTest
-  - Crash: Layout -> Repeat -> SharedSize (TextList) -> Add 10 items
-    - Stack overflow, should be automatically fixed after refactoring
-  - LevelUp/LevelDown not working correctly: Layout -> Responsize -> first row
 
 ## Progressing
 
+- Fill empty test cases after composition refactoring.
+  - `TestCompositions_Bounds.cpp`.
+  - `TestCompositions_Table.cpp`.
+  - `TestCompositions_Responsive.cpp`.
+  - `TestCompositions_AllNested.cpp`.
+- Refactor compositions
+  - Skip layout when an element change doesn't affect the minimum size
+     - or the minimum size is still smaller than its size
+  - Fix `DarkSkin` and `FullControlTest`
+  - Examine all test projects carefully
+  - Fix document.
+- `FlowAlignment::Right` in demo.
 - UnitTest.vcxproj
   - Test controls with a unit test only platform provider running in hosted mode
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
-- Refactor compositions (after unit test for `<Bounds>` are finished)
-  - Fix document
-- Refactor compositions
-  - Fix document.
-  - When properties of a composition is changed, flagged(C), request refresh.
-  - When properties of an element is changed, flagged(E), request refresh.
-  - When global timer triggered.
-    - if flagged(E), render.
-      - If the min size of the element is changed, flagged(C).
-    - If flagged(C), `ForceCalculateSizeImmediately`.bounds related values.
-    - If any cached values are changed, flagged(C).
-  - Fix document.
-- Fill empty test cases after composition refactoring.
-  - `TestCompositions_Bounds.cpp`.
-  - `TestCompositions_Table.cpp`.
-  - `TestCompositions_Responsive.cpp`.
-- `FlowAlignment::Right` in demo.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
@@ -102,6 +93,31 @@
 - Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
 - Add `GuiRepeatCompositionBase::Context` property.
 - Review document for **compositions** and describe the new mechanism: all calculation result are cached, will update after refreshed.
+- Fix document for compositions
+  - `GuiGraphicsComposition`
+    - Remove
+      - `Margin` property
+      - `IsTrivialComposition`
+      - `ClientArea` property
+      - `MinPreferredClientSize` property
+      - `PreferredBounds` property
+      - `PreviousCalculatedBounds` property
+      - `Bounds` property
+    - Add
+      - `CachedMinSize` property
+      - `CachedMinClientSize` property
+      - `CachedBounds` property
+      - `CachedClientArea` property
+  - `GuiBoundsComposition`
+    - `Bounds` -> `ExpectedBounds`
+  - `GuiTableComposition`
+    - Remove
+      - `GetCellArea`
+      - `UpdateCellBounds`
+  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
+  - `FlowAlignment::Right`.
+  - `GuiRepeatCompositionBase`
+    - Add `Context` property.
 
 ## OS Provider Features
 

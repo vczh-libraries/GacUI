@@ -57,6 +57,9 @@
     <ClCompile Include="TestCompositions_Specialized.cpp">
       <Filter>Source Files\Compositions</Filter>
     </ClCompile>
+    <ClCompile Include="TestCompositions_AllNested.cpp">
+      <Filter>Source Files\Compositions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\Resources\Resource.FailedInstance.Ctor3.xml.txt">
