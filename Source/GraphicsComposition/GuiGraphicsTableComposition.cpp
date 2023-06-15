@@ -59,7 +59,7 @@ GuiTableComposition
 			}
 			using namespace update_cell_bounds_helpers;
 
-			Rect GuiTableComposition::CalculateCellArea(Rect tableBounds)
+			Rect GuiTableComposition::Layout_CalculateCellArea(Rect tableBounds)
 			{
 				Rect bounds(Point(0, 0), tableBounds.GetSize());
 				vint borderThickness = borderVisible ? cellPadding : 0;
@@ -72,7 +72,7 @@ GuiTableComposition
 				return bounds;
 			}
 
-			void GuiTableComposition::UpdateCellBoundsInternal(
+			void GuiTableComposition::Layout_UpdateCellBoundsInternal(
 				collections::Array<vint>& dimSizes,
 				vint& dimSize,
 				vint& dimSizeWithPercentage,
@@ -215,7 +215,7 @@ GuiTableComposition
 				}
 			}
 
-			void GuiTableComposition::UpdateCellBoundsPercentages(
+			void GuiTableComposition::Layout_UpdateCellBoundsPercentages(
 				collections::Array<vint>& dimSizes,
 				vint dimSize,
 				vint maxDimSize,
@@ -258,7 +258,7 @@ GuiTableComposition
 
 			void GuiTableComposition::SetSitedCell(vint _row, vint _column, GuiCellComposition* cell)
 			{
-				cellCompositions[GetSiteIndex(rows, columns, _row, _column)] = cell;
+				layout_cellCompositions[GetSiteIndex(rows, columns, _row, _column)] = cell;
 				layout_invalid = true;
 			}
 
@@ -279,19 +279,19 @@ GuiTableComposition
 					}
 				}
 
-				rowOffsets.Resize(rows);
-				rowSizes.Resize(rows);
-				columnOffsets.Resize(columns);
-				columnSizes.Resize(columns);
+				layout_rowOffsets.Resize(rows);
+				layout_rowSizes.Resize(rows);
+				layout_columnOffsets.Resize(columns);
+				layout_columnSizes.Resize(columns);
+				layout_rowTotal = (rows - 1) * cellPadding;
+				layout_columnTotal = (columns - 1) * cellPadding;
 
-				rowTotal = (rows - 1) * cellPadding;
-				columnTotal = (columns - 1) * cellPadding;
-				rowTotalWithPercentage = rowTotal;
-				columnTotalWithPercentage = columnTotal;
+				vint rowTotalWithPercentage = layout_rowTotal;
+				vint columnTotalWithPercentage = layout_columnTotal;
 
-				UpdateCellBoundsInternal(
-					rowSizes,
-					rowTotal,
+				Layout_UpdateCellBoundsInternal(
+					layout_rowSizes,
+					layout_rowTotal,
 					rowTotalWithPercentage,
 					rowOptions,
 					&GuiTableComposition::rows,
@@ -302,9 +302,9 @@ GuiTableComposition
 					&First,
 					&Second
 				);
-				UpdateCellBoundsInternal(
-					columnSizes,
-					columnTotal,
+				Layout_UpdateCellBoundsInternal(
+					layout_columnSizes,
+					layout_columnTotal,
 					columnTotalWithPercentage,
 					columnOptions,
 					&GuiTableComposition::columns,
@@ -329,29 +329,29 @@ GuiTableComposition
 			Rect GuiTableComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
-				Rect area = CalculateCellArea(bounds);
+				Rect area = Layout_CalculateCellArea(bounds);
 
-				UpdateCellBoundsPercentages(
-					rowSizes,
-					rowTotal,
+				Layout_UpdateCellBoundsPercentages(
+					layout_rowSizes,
+					layout_rowTotal,
 					area.Height(),
 					rowOptions
 					);
-				UpdateCellBoundsPercentages(
-					columnSizes,
-					columnTotal,
+				Layout_UpdateCellBoundsPercentages(
+					layout_columnSizes,
+					layout_columnTotal,
 					area.Width(),
 					columnOptions
 					);
-				rowExtending = UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
-				columnExtending = UpdateCellBoundsOffsets(columnOffsets, columnSizes, area.Width());
+				rowExtending = Layout_UpdateCellBoundsOffsets(layout_rowOffsets, layout_rowSizes, area.Height());
+				columnExtending = Layout_UpdateCellBoundsOffsets(layout_columnOffsets, layout_columnSizes, area.Width());
 
 				for (vint i = 0; i < rows; i++)
 				{
 					for (vint j = 0; j < columns; j++)
 					{
 						vint index = GetSiteIndex(rows, columns, i, j);
-						cellBounds[index] = Rect(Point(columnOffsets[j], rowOffsets[i]), Size(columnSizes[j], rowSizes[i]));
+						layout_cellBounds[index] = Rect(Point(layout_columnOffsets[j], layout_rowOffsets[i]), Size(layout_columnSizes[j], layout_rowSizes[i]));
 					}
 				}
 
@@ -366,7 +366,7 @@ GuiTableComposition
 				return bounds;
 			}
 
-			vint GuiTableComposition::UpdateCellBoundsOffsets(
+			vint GuiTableComposition::Layout_UpdateCellBoundsOffsets(
 				collections::Array<vint>& offsets,
 				collections::Array<vint>& sizes,
 				vint max
@@ -404,12 +404,12 @@ GuiTableComposition
 				if (_rows <= 0 || _columns <= 0) return false;
 				rowOptions.Resize(_rows);
 				columnOptions.Resize(_columns);
-				cellCompositions.Resize(_rows*_columns);
-				cellBounds.Resize(_rows*_columns);
+				layout_cellCompositions.Resize(_rows*_columns);
+				layout_cellBounds.Resize(_rows*_columns);
 				for (vint i = 0; i < _rows*_columns; i++)
 				{
-					cellCompositions[i] = 0;
-					cellBounds[i] = Rect();
+					layout_cellCompositions[i] = nullptr;
+					layout_cellBounds[i] = Rect();
 				}
 				rows = _rows;
 				columns = _columns;
@@ -429,7 +429,7 @@ GuiTableComposition
 
 			GuiCellComposition* GuiTableComposition::GetSitedCell(vint _row, vint _column)
 			{
-				return cellCompositions[GetSiteIndex(rows, columns, _row, _column)];
+				return layout_cellCompositions[GetSiteIndex(rows, columns, _row, _column)];
 			}
 
 			GuiCellOption GuiTableComposition::GetRowOption(vint _row)
@@ -606,11 +606,11 @@ GuiCellComposition
 					Rect bounds1, bounds2;
 					{
 						vint index = layout_tableParent->GetSiteIndex(layout_tableParent->rows, layout_tableParent->columns, row, column);
-						bounds1 = layout_tableParent->cellBounds[index];
+						bounds1 = layout_tableParent->layout_cellBounds[index];
 					}
 					{
 						vint index = layout_tableParent->GetSiteIndex(layout_tableParent->rows, layout_tableParent->columns, row + rowSpan - 1, column + columnSpan - 1);
-						bounds2 = layout_tableParent->cellBounds[index];
+						bounds2 = layout_tableParent->layout_cellBounds[index];
 						if (layout_tableParent->GetMinSizeLimitation() == GuiGraphicsComposition::NoLimit)
 						{
 							if (row + rowSpan == layout_tableParent->rows)
@@ -816,7 +816,7 @@ GuiTableSplitterCompositionBase
 					{
 						vint offset = tableParent->borderVisible ? tableParent->cellPadding : 0;
 						result.*dimU1 = offset;
-						result.*dimU2 = offset + (tableParent->CalculateCellArea(tableParent->GetCachedBounds()).*dimSize)();
+						result.*dimU2 = offset + (tableParent->Layout_CalculateCellArea(tableParent->GetCachedBounds()).*dimSize)();
 						result.*dimV1 = offset + cellOffsets[cellsBefore] - tableParent->cellPadding;
 						result.*dimV2 = (result.*dimV1) + tableParent->cellPadding;
 					}
@@ -845,7 +845,7 @@ GuiRowSplitterComposition
 				OnMouseMoveHelper(
 					rowsToTheTop,
 					&GuiTableComposition::rows,
-					tableParent->rowSizes,
+					tableParent->layout_rowSizes,
 					arguments.y - draggingPoint.y,
 					&GuiTableComposition::GetRowOption,
 					&GuiTableComposition::SetRowOption
@@ -858,7 +858,7 @@ GuiRowSplitterComposition
 					rowsToTheTop,
 					&GuiTableComposition::rows,
 					&Rect::Width,
-					tableParent->rowOffsets,
+					tableParent->layout_rowOffsets,
 					&Rect::x1,
 					&Rect::x2,
 					&Rect::y1,
@@ -895,7 +895,7 @@ GuiColumnSplitterComposition
 				OnMouseMoveHelper(
 					columnsToTheLeft,
 					&GuiTableComposition::columns,
-					tableParent->columnSizes,
+					tableParent->layout_columnSizes,
 					arguments.x - draggingPoint.x,
 					&GuiTableComposition::GetColumnOption,
 					&GuiTableComposition::SetColumnOption
@@ -908,7 +908,7 @@ GuiColumnSplitterComposition
 					columnsToTheLeft,
 					&GuiTableComposition::columns,
 					&Rect::Height,
-					tableParent->columnOffsets,
+					tableParent->layout_columnOffsets,
 					&Rect::y1,
 					&Rect::y2,
 					&Rect::x1,

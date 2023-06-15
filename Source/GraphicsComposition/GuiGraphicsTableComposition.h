@@ -105,19 +105,17 @@ Table Compositions
 				friend class GuiColumnSplitterComposition;
 			private:
 				bool										layout_invalid = true;
-				collections::Array<Rect>					cellBounds;
-				collections::Array<vint>					rowOffsets;
-				collections::Array<vint>					columnOffsets;
-				collections::Array<vint>					rowSizes;
-				collections::Array<vint>					columnSizes;
-				vint										rowTotal = 0;
-				vint										columnTotal = 0;
-				vint										rowTotalWithPercentage = 0;
-				vint										columnTotalWithPercentage = 0;
-				
+				collections::Array<GuiCellComposition*>		layout_cellCompositions;
+				collections::Array<Rect>					layout_cellBounds;
+				collections::Array<vint>					layout_rowOffsets;
+				collections::Array<vint>					layout_columnOffsets;
+				collections::Array<vint>					layout_rowSizes;
+				collections::Array<vint>					layout_columnSizes;
+				vint										layout_rowTotal = 0;
+				vint										layout_columnTotal = 0;
 
-				Rect										CalculateCellArea(Rect tableBounds);
-				void										UpdateCellBoundsInternal(
+				Rect										Layout_CalculateCellArea(Rect tableBounds);
+				void										Layout_UpdateCellBoundsInternal(
 																collections::Array<vint>& dimSizes,
 																vint& dimSize, 
 																vint& dimSizeWithPercentage,
@@ -130,13 +128,13 @@ Table Compositions
 																vint (*getRow)(vint, vint),
 																vint (*getCol)(vint, vint)
 																);
-				void										UpdateCellBoundsPercentages(
+				void										Layout_UpdateCellBoundsPercentages(
 																collections::Array<vint>& dimSizes,
 																vint dimSize,
 																vint maxDimSize,
 																collections::Array<GuiCellOption>& dimOptions
 																);
-				vint											UpdateCellBoundsOffsets(
+				vint										Layout_UpdateCellBoundsOffsets(
 																collections::Array<vint>& offsets,
 																collections::Array<vint>& sizes,
 																vint max
@@ -150,7 +148,6 @@ Table Compositions
 				vint										columnExtending = 0;
 				collections::Array<GuiCellOption>			rowOptions;
 				collections::Array<GuiCellOption>			columnOptions;
-				collections::Array<GuiCellComposition*>		cellCompositions;
 
 				vint										GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
 				void										SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
