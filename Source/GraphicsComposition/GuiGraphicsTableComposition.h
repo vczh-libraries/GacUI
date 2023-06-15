@@ -105,6 +105,8 @@ Table Compositions
 				friend class GuiColumnSplitterComposition;
 			private:
 				bool										layout_invalid = true;
+				bool										layout_invalidCellBounds = false;
+				Size										layout_lastTableSize;
 
 				collections::Array<GuiCellComposition*>		layout_cellCompositions;
 				collections::Array<Rect>					layout_cellBounds;
@@ -114,6 +116,8 @@ Table Compositions
 				collections::Array<vint>					layout_columnSizes;
 				vint										layout_rowTotal = 0;
 				vint										layout_columnTotal = 0;
+				vint										layout_rowTotalWithPercentage = 0;
+				vint										layout_columnTotalWithPercentage = 0;
 				vint										layout_rowExtending = 0;
 				vint										layout_columnExtending = 0;
 

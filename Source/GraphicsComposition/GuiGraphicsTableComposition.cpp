@@ -279,45 +279,50 @@ GuiTableComposition
 					}
 				}
 
-				layout_rowOffsets.Resize(rows);
-				layout_rowSizes.Resize(rows);
-				layout_columnOffsets.Resize(columns);
-				layout_columnSizes.Resize(columns);
-				layout_rowTotal = (rows - 1) * cellPadding;
-				layout_columnTotal = (columns - 1) * cellPadding;
+				if (layout_invalid)
+				{
+					layout_invalid = false;
+					layout_invalidCellBounds = true;
 
-				vint rowTotalWithPercentage = layout_rowTotal;
-				vint columnTotalWithPercentage = layout_columnTotal;
+					layout_rowOffsets.Resize(rows);
+					layout_rowSizes.Resize(rows);
+					layout_columnOffsets.Resize(columns);
+					layout_columnSizes.Resize(columns);
+					layout_rowTotal = (rows - 1) * cellPadding;
+					layout_columnTotal = (columns - 1) * cellPadding;
+					layout_rowTotalWithPercentage = layout_rowTotal;
+					layout_columnTotalWithPercentage = layout_columnTotal;
 
-				Layout_UpdateCellBoundsInternal(
-					layout_rowSizes,
-					layout_rowTotal,
-					rowTotalWithPercentage,
-					rowOptions,
-					&GuiTableComposition::rows,
-					&GuiTableComposition::columns,
-					&Y,
-					&RL,
-					&RS,
-					&First,
-					&Second
-				);
-				Layout_UpdateCellBoundsInternal(
-					layout_columnSizes,
-					layout_columnTotal,
-					columnTotalWithPercentage,
-					columnOptions,
-					&GuiTableComposition::columns,
-					&GuiTableComposition::rows,
-					&X,
-					&CL,
-					&CS,
-					&Second,
-					&First
-				);
+					Layout_UpdateCellBoundsInternal(
+						layout_rowSizes,
+						layout_rowTotal,
+						layout_rowTotalWithPercentage,
+						rowOptions,
+						&GuiTableComposition::rows,
+						&GuiTableComposition::columns,
+						&Y,
+						&RL,
+						&RS,
+						&First,
+						&Second
+					);
+					Layout_UpdateCellBoundsInternal(
+						layout_columnSizes,
+						layout_columnTotal,
+						layout_columnTotalWithPercentage,
+						columnOptions,
+						&GuiTableComposition::columns,
+						&GuiTableComposition::rows,
+						&X,
+						&CL,
+						&CS,
+						&Second,
+						&First
+					);
+				}
 
 				vint offset = (borderVisible ? 2 * cellPadding : 0);
-				Size minTableSize(columnTotalWithPercentage + offset, rowTotalWithPercentage + offset);
+				Size minTableSize(layout_columnTotalWithPercentage + offset, layout_rowTotalWithPercentage + offset);
 
 				Size minClientSize = GuiBoundsComposition::Layout_CalculateMinSize();
 				return Size(
@@ -329,37 +334,49 @@ GuiTableComposition
 			Rect GuiTableComposition::Layout_CalculateBounds(Size parentSize)
 			{
 				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
-				Rect area = Layout_CalculateCellArea(bounds);
 
-				Layout_UpdateCellBoundsPercentages(
-					layout_rowSizes,
-					layout_rowTotal,
-					area.Height(),
-					rowOptions
-					);
-				Layout_UpdateCellBoundsPercentages(
-					layout_columnSizes,
-					layout_columnTotal,
-					area.Width(),
-					columnOptions
-					);
-				layout_rowExtending = Layout_UpdateCellBoundsOffsets(layout_rowOffsets, layout_rowSizes, area.Height());
-				layout_columnExtending = Layout_UpdateCellBoundsOffsets(layout_columnOffsets, layout_columnSizes, area.Width());
-
-				for (vint i = 0; i < rows; i++)
+				if (layout_lastTableSize != bounds.GetSize())
 				{
-					for (vint j = 0; j < columns; j++)
-					{
-						vint index = GetSiteIndex(rows, columns, i, j);
-						layout_cellBounds[index] = Rect(Point(layout_columnOffsets[j], layout_rowOffsets[i]), Size(layout_columnSizes[j], layout_rowSizes[i]));
-					}
+					layout_invalidCellBounds = true;
+					layout_lastTableSize = bounds.GetSize();
 				}
 
-				for (auto child : Children())
+				if (layout_invalidCellBounds)
 				{
-					if (auto cell = dynamic_cast<GuiCellComposition*>(child))
+					layout_invalidCellBounds = false;
+
+					Size area = Layout_CalculateCellArea(bounds).GetSize();
+					Layout_UpdateCellBoundsPercentages(
+						layout_rowSizes,
+						layout_rowTotal,
+						area.y,
+						rowOptions
+						);
+					Layout_UpdateCellBoundsPercentages(
+						layout_columnSizes,
+						layout_columnTotal,
+						area.x,
+						columnOptions
+						);
+
+					layout_rowExtending = Layout_UpdateCellBoundsOffsets(layout_rowOffsets, layout_rowSizes, area.y);
+					layout_columnExtending = Layout_UpdateCellBoundsOffsets(layout_columnOffsets, layout_columnSizes, area.x);
+
+					for (vint i = 0; i < rows; i++)
 					{
-						cell->Layout_SetCellBounds();
+						for (vint j = 0; j < columns; j++)
+						{
+							vint index = GetSiteIndex(rows, columns, i, j);
+							layout_cellBounds[index] = Rect(Point(layout_columnOffsets[j], layout_rowOffsets[i]), Size(layout_columnSizes[j], layout_rowSizes[i]));
+						}
+					}
+
+					for (auto child : Children())
+					{
+						if (auto cell = dynamic_cast<GuiCellComposition*>(child))
+						{
+							cell->Layout_SetCellBounds();
+						}
 					}
 				}
 
