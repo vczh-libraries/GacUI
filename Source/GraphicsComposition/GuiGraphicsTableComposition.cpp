@@ -330,8 +330,19 @@ GuiTableComposition
 			{
 				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
 				Rect area = CalculateCellArea(bounds);
-				UpdateCellBoundsPercentages(rowSizes, rowTotal, area.Height(), rowOptions);
-				UpdateCellBoundsPercentages(columnSizes, columnTotal, area.Width(), columnOptions);
+
+				UpdateCellBoundsPercentages(
+					rowSizes,
+					rowTotal,
+					area.Height() - (rows - 1) * cellPadding,
+					rowOptions
+					);
+				UpdateCellBoundsPercentages(
+					columnSizes,
+					columnTotal,
+					area.Width() - (columns - 1) * cellPadding,
+					columnOptions
+					);
 				rowExtending = UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
 				columnExtending = UpdateCellBoundsOffsets(columnOffsets, columnSizes, area.Width());
 
