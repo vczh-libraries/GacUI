@@ -284,10 +284,10 @@ GuiTableComposition
 				columnOffsets.Resize(columns);
 				columnSizes.Resize(columns);
 
-				vint rowTotal = (rows - 1) * cellPadding;
-				vint columnTotal = (columns - 1) * cellPadding;
-				vint rowTotalWithPercentage = rowTotal;
-				vint columnTotalWithPercentage = columnTotal;
+				rowTotal = (rows - 1) * cellPadding;
+				columnTotal = (columns - 1) * cellPadding;
+				rowTotalWithPercentage = rowTotal;
+				columnTotalWithPercentage = columnTotal;
 
 				UpdateCellBoundsInternal(
 					rowSizes,
@@ -334,13 +334,13 @@ GuiTableComposition
 				UpdateCellBoundsPercentages(
 					rowSizes,
 					rowTotal,
-					area.Height() - (rows - 1) * cellPadding,
+					rowTotalWithPercentage,
 					rowOptions
 					);
 				UpdateCellBoundsPercentages(
 					columnSizes,
 					columnTotal,
-					area.Width() - (columns - 1) * cellPadding,
+					columnTotalWithPercentage,
 					columnOptions
 					);
 				rowExtending = UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
