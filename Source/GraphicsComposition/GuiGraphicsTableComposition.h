@@ -105,6 +105,7 @@ Table Compositions
 				friend class GuiColumnSplitterComposition;
 			private:
 				bool										layout_invalid = true;
+
 				collections::Array<GuiCellComposition*>		layout_cellCompositions;
 				collections::Array<Rect>					layout_cellBounds;
 				collections::Array<vint>					layout_rowOffsets;
@@ -113,6 +114,8 @@ Table Compositions
 				collections::Array<vint>					layout_columnSizes;
 				vint										layout_rowTotal = 0;
 				vint										layout_columnTotal = 0;
+				vint										layout_rowExtending = 0;
+				vint										layout_columnExtending = 0;
 
 				Rect										Layout_CalculateCellArea(Rect tableBounds);
 				void										Layout_UpdateCellBoundsInternal(
@@ -144,8 +147,6 @@ Table Compositions
 				vint										columns = 0;
 				vint										cellPadding = 0;
 				bool										borderVisible = true;
-				vint										rowExtending = 0;
-				vint										columnExtending = 0;
 				collections::Array<GuiCellOption>			rowOptions;
 				collections::Array<GuiCellOption>			columnOptions;
 

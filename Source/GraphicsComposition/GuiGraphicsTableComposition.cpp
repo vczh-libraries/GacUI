@@ -343,8 +343,8 @@ GuiTableComposition
 					area.Width(),
 					columnOptions
 					);
-				rowExtending = Layout_UpdateCellBoundsOffsets(layout_rowOffsets, layout_rowSizes, area.Height());
-				columnExtending = Layout_UpdateCellBoundsOffsets(layout_columnOffsets, layout_columnSizes, area.Width());
+				layout_rowExtending = Layout_UpdateCellBoundsOffsets(layout_rowOffsets, layout_rowSizes, area.Height());
+				layout_columnExtending = Layout_UpdateCellBoundsOffsets(layout_columnOffsets, layout_columnSizes, area.Width());
 
 				for (vint i = 0; i < rows; i++)
 				{
@@ -615,11 +615,11 @@ GuiCellComposition
 						{
 							if (row + rowSpan == layout_tableParent->rows)
 							{
-								bounds2.y2 += layout_tableParent->rowExtending;
+								bounds2.y2 += layout_tableParent->layout_rowExtending;
 							}
 							if (column + columnSpan == layout_tableParent->columns)
 							{
-								bounds2.x2 += layout_tableParent->columnExtending;
+								bounds2.x2 += layout_tableParent->layout_columnExtending;
 							}
 						}
 					}
