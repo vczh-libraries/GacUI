@@ -334,13 +334,13 @@ GuiTableComposition
 				UpdateCellBoundsPercentages(
 					rowSizes,
 					rowTotal,
-					rowTotalWithPercentage,
+					area.Height(),
 					rowOptions
 					);
 				UpdateCellBoundsPercentages(
 					columnSizes,
 					columnTotal,
-					columnTotalWithPercentage,
+					area.Width(),
 					columnOptions
 					);
 				rowExtending = UpdateCellBoundsOffsets(rowOffsets, rowSizes, area.Height());
