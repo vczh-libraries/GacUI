@@ -111,6 +111,12 @@ TEST_FILE
 
 		// <Bounds> =====================================================
 
+		auto bounds = new GuiBoundsComposition;
+		table->AddChild(bounds);
+		bounds->SetAlignmentToParent(Margin(30, 30, 30, 30));
+
+		// Assertions ===================================================
+
 		root->ForceCalculateSizeImmediately();
 
 		TEST_CASE(L"<Table>")
@@ -175,10 +181,29 @@ TEST_FILE
 
 		TEST_CASE(L"<Bounds>")
 		{
+			TEST_ASSERT(bounds->GetCachedMinSize() == Size(0, 0));
+			TEST_ASSERT(bounds->GetCachedBounds() == Rect({ 30,30 }, { 260,260 }));
 		});
+
+		root->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+		table->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+		stack->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+		flow->SetMinSizeLimitation(GuiGraphicsComposition::NoLimit);
+		root->ForceCalculateSizeImmediately();
 
 		TEST_CASE(L"MinSizeLimitation <- NoLimite")
 		{
+			TEST_ASSERT(root->GetCachedMinSize() == Size(340, 340));
+			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 340,340 }));
+
+			TEST_ASSERT(table->GetCachedMinSize() == Size(60, 60));
+			TEST_ASSERT(table->GetCachedBounds() == Rect({ 10,10 }, { 320,320 }));
+
+			TEST_ASSERT(stack->GetCachedMinSize() == Size(0, 0));
+			TEST_ASSERT(stack->GetCachedBounds() == Rect({ 10,10 }, { 0,0 }));
+
+			TEST_ASSERT(flow->GetCachedMinSize() == Size(0, 0));
+			TEST_ASSERT(flow->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
 		});
 
 		SafeDeleteComposition(root);
