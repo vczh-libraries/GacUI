@@ -125,7 +125,7 @@ TEST_FILE
 			TEST_ASSERT(table->GetCachedBounds() == Rect({ 10,10 }, { 320,320 }));
 			TEST_ASSERT(cellStack->GetCachedMinSize() == Size(100, 100));
 			TEST_ASSERT(cellStack->GetCachedBounds() == Rect({ 0,0 }, { 100,100 }));
-			TEST_ASSERT(cellFlow->GetCachedMinSize() == Size(70, 85));
+			TEST_ASSERT(cellFlow->GetCachedMinSize() == Size(20, 85));
 			TEST_ASSERT(cellFlow->GetCachedBounds() == Rect({ 110,110 }, { 100,100 }));
 			TEST_ASSERT(cellSpec->GetCachedMinSize() == Size(0, 0));
 			TEST_ASSERT(cellSpec->GetCachedBounds() == Rect({ 220,220 }, { 100,100 }));
@@ -144,12 +144,12 @@ TEST_FILE
 
 		TEST_CASE(L"<Flow>")
 		{
-			TEST_ASSERT(flow->GetCachedMinSize() == Size(50, 65));
+			TEST_ASSERT(flow->GetCachedMinSize() == Size(0, 65));
 			TEST_ASSERT(flow->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
 			for (auto [item, i] : indexed(From(flowItems)))
 			{
 				TEST_ASSERT(item->GetCachedMinSize() == Size(50, 15));
-				TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,i * 30 }, { 50,15 }));
+				TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,i * 25 }, { 50,15 }));
 			}
 		});
 

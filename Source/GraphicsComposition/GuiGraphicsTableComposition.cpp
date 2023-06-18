@@ -321,8 +321,13 @@ GuiTableComposition
 					);
 				}
 
-				vint offset = (borderVisible ? 2 * cellPadding : 0);
-				Size minTableSize(layout_columnTotalWithPercentage + offset, layout_rowTotalWithPercentage + offset);
+				Size minTableSize;
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				{
+					vint offset = (borderVisible ? 2 * cellPadding : 0);
+					minTableSize.x = layout_columnTotalWithPercentage + offset;
+					minTableSize.y = layout_rowTotalWithPercentage + offset;
+				}
 
 				Size minClientSize = GuiBoundsComposition::Layout_CalculateMinSize();
 				return Size(

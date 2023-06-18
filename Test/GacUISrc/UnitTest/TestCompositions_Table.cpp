@@ -17,6 +17,8 @@ TEST_FILE
 	TEST_CASE(L"Test <Table> default properties")
 	{
 		auto table = new GuiTableComposition;
+
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->ForceCalculateSizeImmediately();
 
 		TEST_ASSERT(table->GetRows() == 1);
@@ -37,6 +39,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetRowsAndColumns(3, 3);
 		table->SetRowOption(0, GuiCellOption::MinSizeOption());
 		table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -69,6 +72,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetRowsAndColumns(3, 3);
 		table->SetRowOption(0, GuiCellOption::AbsoluteOption(1));
 		table->SetRowOption(1, GuiCellOption::AbsoluteOption(2));
@@ -101,6 +105,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetRowsAndColumns(3, 3);
 		table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
 		table->SetRowOption(1, GuiCellOption::PercentageOption(1.0));
@@ -133,6 +138,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetRowsAndColumns(3, 3);
 		table->SetRowOption(0, GuiCellOption::MinSizeOption());
 		table->SetRowOption(1, GuiCellOption::AbsoluteOption(1));
@@ -179,7 +185,8 @@ TEST_FILE
 		{
 			for (vint c = 0; c < COLUMNS; c++)
 			{
-				TEST_ASSERT(table->GetSitedCell(r, c)->GetCachedBounds() == Rect({ xs[c],ys[r] }, { ws[c],hs[r] }));
+				auto cell = table->GetSitedCell(r, c);
+				TEST_ASSERT(cell->GetCachedBounds() == Rect({ xs[c],ys[r] }, { ws[c],hs[r] }));
 			}
 		}
 	};
@@ -188,6 +195,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(3, 3);
 		table->SetRowOption(0, GuiCellOption::MinSizeOption());
@@ -233,6 +241,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(3, 3);
 		table->SetRowOption(0, GuiCellOption::AbsoluteOption(20));
@@ -278,6 +287,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetPreferredMinSize(Size(100, 200));
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(3, 3);
@@ -322,6 +332,7 @@ TEST_FILE
 	{
 		auto table = new GuiTableComposition;
 
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetPreferredMinSize(Size(100, 200));
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(4, 4);
@@ -368,6 +379,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Test <Table> with merged cells and MinSize only")
 	{
 		auto table = new GuiTableComposition;
+
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(2, 2);
 		table->SetRowOption(0, GuiCellOption::MinSizeOption());
@@ -486,6 +499,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Test <Table> with merged cells and Absolute only")
 	{
 		auto table = new GuiTableComposition;
+
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(2, 2);
 		table->SetRowOption(0, GuiCellOption::AbsoluteOption(1));
@@ -547,6 +562,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Test <Table> with merged cells and Percentage only")
 	{
 		auto table = new GuiTableComposition;
+
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(2, 2);
 		table->SetRowOption(0, GuiCellOption::PercentageOption(1));
@@ -620,6 +637,8 @@ TEST_FILE
 	TEST_CATEGORY(L"Test <Table> with merged cells and mixed GuiCellOption")
 	{
 		auto table = new GuiTableComposition;
+
+		table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 		table->SetBorderVisible(false);
 		table->SetCellPadding(10);
 		table->SetRowsAndColumns(5, 5);

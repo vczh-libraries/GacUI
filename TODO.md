@@ -43,7 +43,6 @@
   - `TestCompositions_Bounds.cpp`.
   - `TestCompositions_Table.cpp`.
   - `TestCompositions_Responsive.cpp`.
-  - `TestCompositions_AllNested.cpp`.
 - Refactor compositions
   - Skip layout when an element change doesn't affect the minimum size
      - or the minimum size is still smaller than its size
