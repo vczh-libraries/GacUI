@@ -65,6 +65,29 @@ TEST_FILE
 
 		// <Flow> =======================================================
 
+		auto flow = new GuiFlowComposition;
+		cellFlow->AddChild(flow);
+		flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		flow->SetAlignmentToParent(Margin(10, 10, 10, 10));
+		flow->SetRowPadding(10);
+		flow->SetColumnPadding(10);
+
+		GuiFlowItemComposition* flowItems[3];
+		for (vint i = 0; i < sizeof(flowItems) / sizeof(*flowItems); i++)
+		{
+			auto& item = flowItems[i];
+			item = new GuiFlowItemComposition;
+			flow->AddChild(item);
+
+			auto shared = new GuiSharedSizeItemComposition;
+			item->AddChild(shared);
+			shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			shared->SetPreferredMinSize(Size(10 + i * 20, 15 - i * 10));
+			shared->SetSharedWidth(true);
+			shared->SetSharedHeight(true);
+			shared->SetGroup(L"flow");
+		}
+
 		// <Specialized> ================================================
 
 		// <SharedSize> =================================================
@@ -98,6 +121,13 @@ TEST_FILE
 
 		TEST_CASE(L"<Flow>")
 		{
+			TEST_ASSERT(flow->GetCachedMinSize() == Size(50, 65));
+			TEST_ASSERT(flow->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
+			for (auto [item, i] : indexed(From(flowItems)))
+			{
+				TEST_ASSERT(item->GetCachedMinSize() == Size(50, 15));
+				TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,i * 30 }, { 50,15 }));
+			}
 		});
 
 		TEST_CASE(L"<Specialized>")
@@ -113,6 +143,12 @@ TEST_FILE
 				auto shared = dynamic_cast<GuiSharedSizeItemComposition*>(item->Children()[0]);
 				TEST_ASSERT(shared->GetCachedMinSize() == Size(80, 20));
 				TEST_ASSERT(shared->GetCachedBounds() == Rect({ 0,0 }, { 80,20 }));
+			}
+			for (auto item : flowItems)
+			{
+				auto shared = dynamic_cast<GuiSharedSizeItemComposition*>(item->Children()[0]);
+				TEST_ASSERT(shared->GetCachedMinSize() == Size(50, 15));
+				TEST_ASSERT(shared->GetCachedBounds() == Rect({ 0,0 }, { 50,15 }));
 			}
 		});
 
