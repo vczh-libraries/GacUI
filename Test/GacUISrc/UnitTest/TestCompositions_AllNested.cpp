@@ -98,7 +98,7 @@ TEST_FILE
 			shared->SetGroup(L"stack");
 		}
 
-		for (auto [item, i] : indexed(From(stackItems)))
+		for (auto [item, i] : indexed(From(flowItems)))
 		{
 			auto shared = new GuiSharedSizeItemComposition;
 			item->AddChild(shared);
@@ -121,13 +121,13 @@ TEST_FILE
 
 		TEST_CASE(L"<Table>")
 		{
-			TEST_ASSERT(table->GetCachedMinSize() == Size(320, 320));
+			TEST_ASSERT(table->GetCachedMinSize() == Size(220, 220));
 			TEST_ASSERT(table->GetCachedBounds() == Rect({ 10,10 }, { 320,320 }));
 			TEST_ASSERT(cellStack->GetCachedMinSize() == Size(100, 100));
 			TEST_ASSERT(cellStack->GetCachedBounds() == Rect({ 0,0 }, { 100,100 }));
-			TEST_ASSERT(cellFlow->GetCachedMinSize() == Size(100, 100));
+			TEST_ASSERT(cellFlow->GetCachedMinSize() == Size(70, 85));
 			TEST_ASSERT(cellFlow->GetCachedBounds() == Rect({ 110,110 }, { 100,100 }));
-			TEST_ASSERT(cellSpec->GetCachedMinSize() == Size(100, 100));
+			TEST_ASSERT(cellSpec->GetCachedMinSize() == Size(0, 0));
 			TEST_ASSERT(cellSpec->GetCachedBounds() == Rect({ 220,220 }, { 100,100 }));
 		});
 
@@ -196,7 +196,7 @@ TEST_FILE
 			TEST_ASSERT(root->GetCachedMinSize() == Size(340, 340));
 			TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 340,340 }));
 
-			TEST_ASSERT(table->GetCachedMinSize() == Size(60, 60));
+			TEST_ASSERT(table->GetCachedMinSize() == Size(0, 0));
 			TEST_ASSERT(table->GetCachedBounds() == Rect({ 10,10 }, { 320,320 }));
 
 			TEST_ASSERT(stack->GetCachedMinSize() == Size(0, 0));
