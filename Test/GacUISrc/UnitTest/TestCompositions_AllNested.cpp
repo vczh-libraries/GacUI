@@ -48,19 +48,10 @@ TEST_FILE
 		stack->SetPadding(10);
 
 		GuiStackItemComposition* stackItems[3];
-		for (vint i = 0; i < sizeof(stackItems) / sizeof(*stackItems); i++)
+		for (auto& item : stackItems)
 		{
-			auto& item = stackItems[i];
 			item = new GuiStackItemComposition;
 			stack->AddChild(item);
-
-			auto shared = new GuiSharedSizeItemComposition;
-			item->AddChild(shared);
-			shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
-			shared->SetPreferredMinSize(Size(20 + i * 30, 20 - i * 5));
-			shared->SetSharedWidth(true);
-			shared->SetSharedHeight(true);
-			shared->SetGroup(L"stack");
 		}
 
 		// <Flow> =======================================================
@@ -73,12 +64,42 @@ TEST_FILE
 		flow->SetColumnPadding(10);
 
 		GuiFlowItemComposition* flowItems[3];
-		for (vint i = 0; i < sizeof(flowItems) / sizeof(*flowItems); i++)
+		for (auto& item : flowItems)
 		{
-			auto& item = flowItems[i];
 			item = new GuiFlowItemComposition;
 			flow->AddChild(item);
+		}
 
+		// <Specialized> ================================================
+
+		auto partial = new GuiPartialViewComposition;
+		cellSpec->AddChild(partial);
+		partial->SetWidthPageSize(0.5);
+		partial->SetWidthRatio(0.25);
+		partial->SetHeightPageSize(0.5);
+		partial->SetHeightRatio(0.25);
+
+		auto aligned = new GuiSideAlignedComposition;
+		cellSpec->AddChild(aligned);
+		aligned->SetDirection(GuiSideAlignedComposition::Right);
+		aligned->SetMaxLength(10);
+		aligned->SetMaxRatio(0.5);
+
+		// <SharedSize> =================================================
+
+		for (auto [item, i] : indexed(From(stackItems)))
+		{
+			auto shared = new GuiSharedSizeItemComposition;
+			item->AddChild(shared);
+			shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
+			shared->SetPreferredMinSize(Size(20 + i * 30, 20 - i * 5));
+			shared->SetSharedWidth(true);
+			shared->SetSharedHeight(true);
+			shared->SetGroup(L"stack");
+		}
+
+		for (auto [item, i] : indexed(From(stackItems)))
+		{
 			auto shared = new GuiSharedSizeItemComposition;
 			item->AddChild(shared);
 			shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
@@ -87,10 +108,6 @@ TEST_FILE
 			shared->SetSharedHeight(true);
 			shared->SetGroup(L"flow");
 		}
-
-		// <Specialized> ================================================
-
-		// <SharedSize> =================================================
 
 		// <Bounds> =====================================================
 
@@ -132,6 +149,10 @@ TEST_FILE
 
 		TEST_CASE(L"<Specialized>")
 		{
+			TEST_ASSERT(partial->GetCachedMinSize() == Size(0, 0));
+			TEST_ASSERT(partial->GetCachedBounds() == Rect({ 25,25 }, { 50,50 }));
+			TEST_ASSERT(aligned->GetCachedMinSize() == Size(0, 0));
+			TEST_ASSERT(aligned->GetCachedBounds() == Rect({ 90,0 }, { 10,100 }));
 		});
 
 		TEST_CASE(L"<SharedSize>")
