@@ -402,7 +402,7 @@ GuiTableComposition
 
 				vint last = offsets.Count() - 1;
 				vint right = offsets[last] + sizes[last];
-				return max - right;
+				return max > right ? max - right : 0;
 			}
 
 			GuiTableComposition::GuiTableComposition()
@@ -633,16 +633,14 @@ GuiCellComposition
 					{
 						vint index = layout_tableParent->GetSiteIndex(layout_tableParent->rows, layout_tableParent->columns, row + rowSpan - 1, column + columnSpan - 1);
 						bounds2 = layout_tableParent->layout_cellBounds[index];
-						if (layout_tableParent->GetMinSizeLimitation() == GuiGraphicsComposition::NoLimit)
+
+						if (row + rowSpan == layout_tableParent->rows)
 						{
-							if (row + rowSpan == layout_tableParent->rows)
-							{
-								bounds2.y2 += layout_tableParent->layout_rowExtending;
-							}
-							if (column + columnSpan == layout_tableParent->columns)
-							{
-								bounds2.x2 += layout_tableParent->layout_columnExtending;
-							}
+							bounds2.y2 += layout_tableParent->layout_rowExtending;
+						}
+						if (column + columnSpan == layout_tableParent->columns)
+						{
+							bounds2.x2 += layout_tableParent->layout_columnExtending;
 						}
 					}
 					vint offset = layout_tableParent->borderVisible ? layout_tableParent->cellPadding : 0;
