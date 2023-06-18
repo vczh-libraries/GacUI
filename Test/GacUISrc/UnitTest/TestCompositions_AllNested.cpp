@@ -1,4 +1,5 @@
 #include "TestCompositions.h"
+using namespace vl::collections;
 using namespace composition_bounds_tests;
 
 TEST_FILE
@@ -56,7 +57,7 @@ TEST_FILE
 			auto shared = new GuiSharedSizeItemComposition;
 			item->AddChild(shared);
 			shared->SetAlignmentToParent(Margin(0, 0, 0, 0));
-			shared->SetPreferredMinSize(Size(40 + i * 30, 20 - i * 5));
+			shared->SetPreferredMinSize(Size(20 + i * 30, 20 - i * 5));
 			shared->SetSharedWidth(true);
 			shared->SetSharedHeight(true);
 			shared->SetGroup(L"stack");
@@ -86,6 +87,13 @@ TEST_FILE
 
 		TEST_CASE(L"<Stack>")
 		{
+			TEST_ASSERT(stack->GetCachedMinSize() == Size(80, 80));
+			TEST_ASSERT(stack->GetCachedBounds() == Rect({ 10,10 }, { 80,80 }));
+			for (auto [item, i] : indexed(From(stackItems)))
+			{
+				TEST_ASSERT(item->GetCachedMinSize() == Size(80, 20));
+				TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,i * 30 }, { 80,20 }));
+			}
 		});
 
 		TEST_CASE(L"<Flow>")
@@ -103,8 +111,8 @@ TEST_FILE
 			for (auto item : stackItems)
 			{
 				auto shared = dynamic_cast<GuiSharedSizeItemComposition*>(item->Children()[0]);
-				TEST_ASSERT(shared->GetCachedMinSize() == Size(30, 30));
-				TEST_ASSERT(shared->GetCachedBounds() == Rect({ 0,0 }, { 100,30 }));
+				TEST_ASSERT(shared->GetCachedMinSize() == Size(80, 20));
+				TEST_ASSERT(shared->GetCachedBounds() == Rect({ 0,0 }, { 80,20 }));
 			}
 		});
 
