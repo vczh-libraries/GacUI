@@ -738,18 +738,26 @@ TEST_FILE
 
 			dragSplitter(splitter, { 0,-10 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(1).absolute == 10);
+			TEST_ASSERT(table->GetRowOption(2).absolute == 30);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,35 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,-10 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(1).absolute == 1);
+			TEST_ASSERT(table->GetRowOption(2).absolute == 39);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,26 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,20 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(1).absolute == 21);
+			TEST_ASSERT(table->GetRowOption(2).absolute == 19);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,46 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,20 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(1).absolute == 39);
+			TEST_ASSERT(table->GetRowOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,64 }, { 33,10 }));
 		});
 
@@ -803,18 +811,22 @@ TEST_FILE
 
 			dragSplitter(splitter, { 0,-50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(2).absolute == 70);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,20 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,-50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(2).absolute == 78);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,12 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(2).absolute == 28);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,62 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,88 }, { 33,10 }));
 		});
 
@@ -840,18 +852,22 @@ TEST_FILE
 
 			dragSplitter(splitter, { 0,50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(0).absolute == 70);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,70 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(0).absolute == 78);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,78 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,-50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(0).absolute == 28);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,28 }, { 33,10 }));
 
 			dragSplitter(splitter, { 0,-50 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetRowOption(0).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,1 }, { 33,10 }));
 		});
 	});
@@ -881,18 +897,26 @@ TEST_FILE
 
 			dragSplitter(splitter, { -10,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(1).absolute == 10);
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 30);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 35,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { -10,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(1).absolute == 1);
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 39);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 26,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { 20,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(1).absolute == 21);
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 19);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 46,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { 20,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(1).absolute == 39);
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 64,0 }, { 10,33 }));
 		});
 
@@ -946,18 +970,22 @@ TEST_FILE
 
 			dragSplitter(splitter, { -50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 70);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 20,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { -50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 78);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 12,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { 50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 28);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 62,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { 50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 88,0 }, { 10,33 }));
 		});
 
@@ -983,18 +1011,22 @@ TEST_FILE
 
 			dragSplitter(splitter, { 50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(0).absolute == 70);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 70,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { 50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(0).absolute == 78);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 78,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { -50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(0).absolute == 28);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 28,0 }, { 10,33 }));
 
 			dragSplitter(splitter, { -50,0 });
 			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(table->GetColumnOption(0).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 1,0 }, { 10,33 }));
 		});
 	});
