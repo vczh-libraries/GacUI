@@ -31,11 +31,16 @@
 ## Known Issues
 
 - Hosted Mode
-  - Main window dragging top/left border moves the whole window downwards/rightwards after reaching minimum size.
+  - Main window dragging to resize doesn't work
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
+- CppTest_Metaonly
+  - Resized main window can't shrink again (could caused by ribbon).
+  - `FontDialog` and `Open/Save FileDialog` missing content.
+- FullControlTest and DarkSkin
+  - Check everywhere that specified `InternalMargin`, ensure children do not cover the border.
 
 ## Progressing
 
