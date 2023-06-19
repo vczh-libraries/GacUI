@@ -846,7 +846,6 @@ GuiTableSplitterCompositionBase
 			
 			GuiTableSplitterCompositionBase::GuiTableSplitterCompositionBase()
 			{
-				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
 				GetEventReceiver()->leftButtonDown.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonDown);
 				GetEventReceiver()->leftButtonUp.AttachMethod(this, &GuiTableSplitterCompositionBase::OnLeftButtonUp);
 			}
@@ -888,7 +887,10 @@ GuiRowSplitterComposition
 			
 			GuiRowSplitterComposition::GuiRowSplitterComposition()
 			{
-				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
+				if (auto controller = GetCurrentController())
+				{
+					SetAssociatedCursor(controller->ResourceService()->GetSystemCursor(INativeCursor::SizeNS));
+				}
 				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiRowSplitterComposition::OnMouseMove);
 			}
 
@@ -938,7 +940,10 @@ GuiColumnSplitterComposition
 			
 			GuiColumnSplitterComposition::GuiColumnSplitterComposition()
 			{
-				SetAssociatedCursor(GetCurrentController()->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
+				if (auto controller = GetCurrentController())
+				{
+					SetAssociatedCursor(controller->ResourceService()->GetSystemCursor(INativeCursor::SizeWE));
+				}
 				GetEventReceiver()->mouseMove.AttachMethod(this, &GuiColumnSplitterComposition::OnMouseMove);
 			}
 

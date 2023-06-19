@@ -682,8 +682,29 @@ TEST_FILE
 		SafeDeleteComposition(table);
 	});
 
-	TEST_CASE(L"Test <RowSplitter>")
+	TEST_CATEGORY(L"Test <RowSplitter>")
 	{
+		TEST_CASE(L"P;A;A;P")
+		{
+			auto table = new GuiTableComposition;
+
+			table->SetPreferredMinSize(Size(33, 100));
+			table->SetBorderVisible(false);
+			table->SetCellPadding(10);
+			table->SetRowsAndColumns(4, 1);
+			table->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+			table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
+			table->SetRowOption(1, GuiCellOption::AbsoluteOption(20));
+			table->SetRowOption(2, GuiCellOption::AbsoluteOption(20));
+			table->SetRowOption(3, GuiCellOption::PercentageOption(0.5));
+
+			auto splitter = new GuiRowSplitterComposition;
+			splitter->SetRowsToTheTop(2);
+			table->AddChild(splitter);
+			table->ForceCalculateSizeImmediately();
+
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,45 }, { 33,10 }));
+		});
 	});
 
 	TEST_CASE(L"Test <ColumnSplitter>")
