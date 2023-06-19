@@ -45,27 +45,30 @@ Flow Compositions
 				friend class GuiFlowItemComposition;
 
 				typedef collections::List<GuiFlowItemComposition*>				ItemCompositionList;
+			private:
+				bool								layout_invalid = true;
+				vint								layout_lastVirtualWidth = 0;
+				ItemCompositionList					layout_flowItems;
+				vint								layout_minVirtualHeight = 0;
+
+				void								Layout_UpdateFlowItemLayout(vint maxVirtualWidth);
+				Size								Layout_UpdateFlowItemLayoutByConstraint(Size constraintSize);
+
 			protected:
 				Margin								extraMargin;
 				vint								rowPadding = 0;
 				vint								columnPadding = 0;
 				FlowAlignment						alignment = FlowAlignment::Left;
-				Ptr<IGuiAxis>						axis;
+				Ptr<IGuiAxis>						axis = Ptr(new GuiDefaultAxis);
 
-				ItemCompositionList					flowItems;
-				collections::Array<Rect>			flowItemBounds;
-				Rect								bounds;
-				vint								minHeight = 0;
-				bool								needUpdate = false;
-
-				void								UpdateFlowItemBounds(bool forceUpdate);
-				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
-				void								OnChildInserted(GuiGraphicsComposition* child)override;
-				void								OnChildRemoved(GuiGraphicsComposition* child)override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				void								OnChildInserted(GuiGraphicsComposition* child) override;
+				void								OnChildRemoved(GuiGraphicsComposition* child) override;
+				void								OnCompositionStateChanged() override;
+				Size								Layout_CalculateMinSize() override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
-				GuiFlowComposition();
-				~GuiFlowComposition();
+				GuiFlowComposition() = default;
+				~GuiFlowComposition() = default;
 				
 				/// <summary>Get all flow items inside the flow composition.</summary>
 				/// <returns>All flow items inside the flow composition.</returns>
@@ -110,9 +113,6 @@ Flow Compositions
 				/// <summary>Set the alignment for rows.</summary>
 				/// <param name="value">The alignment.</param>
 				void								SetAlignment(FlowAlignment value);
-				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
 			};
 			
 			/// <summary>
@@ -147,23 +147,23 @@ Flow Compositions
 			/// <summary>
 			/// Represents a flow item composition of a <see cref="GuiFlowComposition"/>.
 			/// </summary>
-			class GuiFlowItemComposition : public GuiGraphicsComposition, public Description<GuiFlowItemComposition>
+			class GuiFlowItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiFlowItemComposition>
 			{
 				friend class GuiFlowComposition;
+			private:
+				GuiFlowComposition*					layout_flowParent = nullptr;
+				Rect								layout_virtualBounds;
+
+				void								Layout_SetFlowItemBounds(Size contentSize, Rect virtualBounds);
 			protected:
-				GuiFlowComposition*					flowParent;
-				Rect								bounds;
 				Margin								extraMargin;
 				GuiFlowOption						option;
 
-				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				Size								GetMinSize();
+				void								OnParentLineChanged() override;
+
 			public:
 				GuiFlowItemComposition();
-				~GuiFlowItemComposition();
-				
-				Rect								GetBounds()override;
-				void								SetBounds(Rect value);
+				~GuiFlowItemComposition() = default;
 				
 				/// <summary>Get the extra margin for this flow item. An extra margin is used to enlarge the bounds of the flow item, but only the non-extra part will be used for deciding the flow item layout.</summary>
 				/// <returns>The extra margin for this flow item.</returns>

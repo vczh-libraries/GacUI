@@ -4,8 +4,25 @@
 
 - Composition refactoring
   - `GuiGraphicsComposition`
-    - Remove `Margin` property.
-    - `IsParentSizeAffected` -> `IsTrivialComposition`, returns false only for `Cell`, `StackItem`, `FlowItem` etc (not `Window` and not inherits from `Bounds`).
+    - Remove
+      - `Margin` property
+      - `IsTrivialComposition`
+      - `ClientArea` property
+      - `MinPreferredClientSize` property
+      - `PreferredBounds` property
+      - `PreviousCalculatedBounds` property
+      - `Bounds` property
+    - Add
+      - `CachedMinSize` property
+      - `CachedMinClientSize` property
+      - `CachedBounds` property
+      - `CachedClientArea` property
+  - `GuiBoundsComposition`
+    - `Bounds` -> `ExpectedBounds`
+  - `GuiTableComposition`
+    - Remove
+      - `GetCellArea`
+      - `UpdateCellBounds`
   - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
   - `FlowAlignment::Right`.
   - `GuiRepeatCompositionBase`
@@ -19,50 +36,24 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
-- FullControlTest
-  - Crash: Layout -> Repeat -> SharedSize (TextList) -> Add 10 items
-    - Stack overflow, should be automatically fixed after refactoring
-  - LevelUp/LevelDown not working correctly: Layout -> Responsize -> first row
 
 ## Progressing
 
+- Fill empty test cases after composition refactoring.
+  - `TestCompositions_Bounds.cpp`.
+  - `TestCompositions_Responsive.cpp`.
+- Refactor compositions
+  - Skip layout when an element change doesn't affect the minimum size
+     - or the minimum size is still smaller than its size
+  - Fix `DarkSkin` and `FullControlTest`
+  - Examine all test projects carefully
+  - Fix document.
+- `FlowAlignment::Right` in demo.
 - UnitTest.vcxproj
-  - Test compositions
   - Test controls with a unit test only platform provider running in hosted mode
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
-- Refactor compositions (after unit test for `<Bounds>` are finished)
-  - TODO in `TestCompositions_Bounds.cpp`.
-    - `AlignmentToParent` should not consider parent's `InternalMargin`.
-  - Fix document
-- Refactor compositions (after unit test for compositions are finished)
-  - Remove all friend and existing virtual functions.
-  - `CalculateMinimumParentClientSize`, returns the minimum size of its client area assuming `LimitToElementAndChildren`.
-  - `CalculateMinimumClientSize`, calls `CalculateMinimumParentClientSize` on each non-specialized child composition.
-  - `CalculateBounds(parentClientBounds, callUpdateBounds)`.
-  - `GetBounds` -> `GetUpdatedBounds`.
-  - `ForceCalculateSizeImmediately` calls all these functions.
-    - Call it in `GuiGraphicsHost::Render` before `auto bounds = windowComposition->GetBounds();`.
-  - `GuiTableComposition` remove `UpdateCellBounds`.
-  - Fix document.
-- Refactor compositions (after unit test for compositions are finished)
-  - When properties of a composition is changed, flagged(C), request refresh.
-  - When properties of an element is changed, flagged(E), request refresh.
-  - When global timer triggered.
-    - if flagged(E), render.
-      - If the min size of the element is changed, flagged(C).
-    - If flagged(C), `ForceCalculateSizeImmediately`.
-  - `GuiGraphicsComposition`
-    - Remove `GetBounds` and `GetGlobalBounds` and `GetPreviousCalculatedBounds`
-    - Add `GetCachedBounds`, `GetCachedGlobalBounds`, `GetCachedMinSize`, etc.
-  - `GuiGraphicsComposition` during `ForceCalculateSizeImmediately`, all cached values are updated.
-    - From root, passes its bounds and other informations to children recursively, update all cached min size related values.
-    - From root, extend bounds with min size related values, passes its bounds and other information to children recursively, update all cached bounds related values.
-    - If any cached values are changed, flagged(C).
-  - Fix document.
-- Fill empty test cases after composition refactoring.
-- `FlowAlignment::Right` in demo.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
@@ -99,6 +90,32 @@
 - Add `static{}` in workflow document.
 - Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
 - Add `GuiRepeatCompositionBase::Context` property.
+- Review document for **compositions** and describe the new mechanism: all calculation result are cached, will update after refreshed.
+- Fix document for compositions
+  - `GuiGraphicsComposition`
+    - Remove
+      - `Margin` property
+      - `IsTrivialComposition`
+      - `ClientArea` property
+      - `MinPreferredClientSize` property
+      - `PreferredBounds` property
+      - `PreviousCalculatedBounds` property
+      - `Bounds` property
+    - Add
+      - `CachedMinSize` property
+      - `CachedMinClientSize` property
+      - `CachedBounds` property
+      - `CachedClientArea` property
+  - `GuiBoundsComposition`
+    - `Bounds` -> `ExpectedBounds`
+  - `GuiTableComposition`
+    - Remove
+      - `GetCellArea`
+      - `UpdateCellBounds`
+  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
+  - `FlowAlignment::Right`.
+  - `GuiRepeatCompositionBase`
+    - Add `Context` property.
 
 ## OS Provider Features
 

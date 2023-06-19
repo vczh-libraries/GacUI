@@ -43,29 +43,30 @@ Stack Compositions
 					/// <summary>Stack items is layouted from bottom to top.</summary>
 					ReversedVertical,
 				};
+
+			private:
+				bool								layout_invalid = true;
+				ItemCompositionList					layout_stackItems;
+				GuiStackItemComposition*			layout_ensuringVisibleStackItem = nullptr;
+				vint								layout_adjustment = 0;
+				Size								layout_stackItemTotalSize;
+
+				void								Layout_UpdateStackItemMinSizes();
+				void								Layout_UpdateStackItemBounds(Rect contentBounds);
 			protected:
-				ItemCompositionList					stackItems;
-				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
-				vint								adjustment = 0;
-				bool								needUpdate = false;
 
 				Direction							direction = Horizontal;
 				vint								padding = 0;
 				Margin								extraMargin;
 
-				collections::Array<Rect>			stackItemBounds;
-				Size								stackItemTotalSize;
-				Rect								previousBounds;
-
-				void								UpdateStackItemBounds();
-				void								EnsureStackItemVisible();
-				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
-				void								OnChildInserted(GuiGraphicsComposition* child)override;
-				void								OnChildRemoved(GuiGraphicsComposition* child)override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				void								OnChildInserted(GuiGraphicsComposition* child) override;
+				void								OnChildRemoved(GuiGraphicsComposition* child) override;
+				void								OnCompositionStateChanged() override;
+				Size								Layout_CalculateMinSize() override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
-				GuiStackComposition();
-				~GuiStackComposition();
+				GuiStackComposition() = default;
+				~GuiStackComposition() = default;
 
 				/// <summary>Get all stack items inside the stack composition.</summary>
 				/// <returns>All stack items inside the stack composition.</returns>
@@ -89,9 +90,6 @@ Stack Compositions
 				/// <param name="value">The stack item padding.</param>
 				void								SetPadding(vint value);
 				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
-				
 				/// <summary>Get the extra margin inside the stack composition.</summary>
 				/// <returns>The extra margin inside the stack composition.</returns>
 				Margin								GetExtraMargin();
@@ -110,24 +108,22 @@ Stack Compositions
 			/// <summary>
 			/// Represents a stack item composition of a <see cref="GuiStackComposition"/>.
 			/// </summary>
-			class GuiStackItemComposition : public GuiGraphicsComposition, public Description<GuiStackItemComposition>
+			class GuiStackItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiStackItemComposition>
 			{
 				friend class GuiStackComposition;
+			private:
+				GuiStackComposition*				layout_stackParent = nullptr;
+				Point								layout_virtualOffset;
+
+				void								Layout_SetStackItemBounds(Rect contentBounds, Point virtualOffset);
+
 			protected:
-				GuiStackComposition*				stackParent = nullptr;
-				Rect								bounds;
 				Margin								extraMargin;
 
-				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				Size								GetMinSize();
+				void								OnParentLineChanged() override;
 			public:
 				GuiStackItemComposition();
-				~GuiStackItemComposition();
-				
-				Rect								GetBounds()override;
-				/// <summary>Set the expected bounds of a stack item. In most of the cases only the size of the bounds is used.</summary>
-				/// <param name="value">The expected bounds of a stack item.</param>
-				void								SetBounds(Rect value);
+				~GuiStackItemComposition() = default;
 				
 				/// <summary>Get the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for deciding the stack item layout.</summary>
 				/// <returns>The extra margin for this stack item.</returns>

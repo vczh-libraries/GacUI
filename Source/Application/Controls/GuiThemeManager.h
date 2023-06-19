@@ -10,7 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUITHEMEMANAGER
 
 #include "GuiInstanceRootObject.h"
-#include "../GraphicsCompositions/GuiGraphicsBasicComposition.h"
+#include "../GraphicsCompositions/GuiGraphicsBoundsComposition.h"
 
 namespace vl
 {

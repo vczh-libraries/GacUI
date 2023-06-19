@@ -254,13 +254,13 @@ GuiScrollView
 				}
 				ct->GetEventReceiver()->horizontalWheel.Detach(hWheelHandler);
 				ct->GetEventReceiver()->verticalWheel.Detach(vWheelHandler);
-				ct->BoundsChanged.Detach(containerBoundsChangedHandler);
+				ct->CachedBoundsChanged.Detach(containerCachedBoundsChangedHandler);
 
 				hScrollHandler = nullptr;
 				vScrollHandler = nullptr;
 				hWheelHandler = nullptr;
 				vWheelHandler = nullptr;
-				containerBoundsChangedHandler = nullptr;
+				containerCachedBoundsChangedHandler = nullptr;
 				supressScrolling = false;
 			}
 
@@ -277,7 +277,7 @@ GuiScrollView
 				}
 				hWheelHandler = ct->GetEventReceiver()->horizontalWheel.AttachMethod(this, &GuiScrollView::OnHorizontalWheel);
 				vWheelHandler = ct->GetEventReceiver()->verticalWheel.AttachMethod(this, &GuiScrollView::OnVerticalWheel);
-				containerBoundsChangedHandler = ct->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
+				containerCachedBoundsChangedHandler = ct->CachedBoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerCachedBoundsChanged);
 				CalculateView();
 			}
 
@@ -287,7 +287,7 @@ GuiScrollView
 				CalculateView();
 			}
 
-			void GuiScrollView::OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiScrollView::OnContainerCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				CalculateView();
 			}
@@ -353,7 +353,7 @@ GuiScrollView
 				auto ct = TypedControlTemplateObject(true);
 				auto hScroll = ct->GetHorizontalScroll();
 				auto vScroll = ct->GetVerticalScroll();
-				Size viewSize = ct->GetContainerComposition()->GetBounds().GetSize();
+				Size viewSize = ct->GetContainerComposition()->GetCachedBounds().GetSize();
 
 				auto hVisible = hScroll ? hScroll->GetVisible() : false;
 				auto vVisible = vScroll ? vScroll->GetVisible() : false;
@@ -400,7 +400,7 @@ GuiScrollView
 			GuiScrollView::GuiScrollView(theme::ThemeName themeName)
 				:GuiControl(themeName)
 			{
-				containerComposition->BoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerBoundsChanged);
+				containerComposition->CachedBoundsChanged.AttachMethod(this, &GuiScrollView::OnContainerCachedBoundsChanged);
 			}
 
 			vint GuiScrollView::GetSmallMove()
@@ -478,7 +478,7 @@ GuiScrollView
 
 			Size GuiScrollView::GetViewSize()
 			{
-				Size viewSize = TypedControlTemplateObject(true)->GetContainerComposition()->GetBounds().GetSize();
+				Size viewSize = TypedControlTemplateObject(true)->GetContainerComposition()->GetCachedBounds().GetSize();
 				return viewSize;
 			}
 
@@ -552,13 +552,13 @@ GuiScrollContainer
 
 			Size GuiScrollContainer::QueryFullSize()
 			{
-				return containerComposition->GetBounds().GetSize();
+				return containerComposition->GetCachedBounds().GetSize();
 			}
 
 			void GuiScrollContainer::UpdateView(Rect viewBounds)
 			{
 				auto leftTop = Point(-viewBounds.x1, -viewBounds.y1);
-				containerComposition->SetBounds(Rect(leftTop, Size(0, 0)));
+				containerComposition->SetExpectedBounds(Rect(leftTop, Size(0, 0)));
 			}
 
 			GuiScrollContainer::GuiScrollContainer(theme::ThemeName themeName)

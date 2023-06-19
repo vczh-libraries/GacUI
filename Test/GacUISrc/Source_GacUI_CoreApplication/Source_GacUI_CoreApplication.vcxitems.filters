@@ -36,7 +36,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.h">
       <Filter>Application\GraphicsHost</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition.h">
       <Filter>Application\GraphicsCompositions</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h">
@@ -48,11 +48,14 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.h">
       <Filter>Application\Controls</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBoundsComposition.h">
       <Filter>Application\GraphicsCompositions</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.h">
       <Filter>Application\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsWindowComposition.h">
+      <Filter>Application\GraphicsCompositions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -77,7 +80,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Tab.cpp">
       <Filter>Application\GraphicsHost</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition.cpp">
       <Filter>Application\GraphicsCompositions</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.cpp">
@@ -89,11 +92,20 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.cpp">
       <Filter>Application\Controls</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBoundsComposition.cpp">
       <Filter>Application\GraphicsCompositions</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiInstanceRootObject.cpp">
       <Filter>Application\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsWindowComposition.cpp">
+      <Filter>Application\GraphicsCompositions</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition_Helpers.cpp">
+      <Filter>Application\GraphicsCompositions</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition_Layout.cpp">
+      <Filter>Application\GraphicsCompositions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

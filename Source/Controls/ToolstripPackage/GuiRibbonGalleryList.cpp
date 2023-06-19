@@ -287,8 +287,8 @@ GuiBindableRibbonGalleryList
 
 			void GuiBindableRibbonGalleryList::UpdateLayoutSizeOffset()
 			{
-				auto cSize = itemList->GetContainerComposition()->GetBounds();
-				auto bSize = itemList->GetBoundsComposition()->GetBounds();
+				auto cSize = itemList->GetContainerComposition()->GetCachedBounds();
+				auto bSize = itemList->GetBoundsComposition()->GetCachedBounds();
 				layout->SetSizeOffset(Size(bSize.Width() - cSize.Width(), bSize.Height() - cSize.Height()));
 
 				if (layout->GetItemWidth() > 0)
@@ -296,7 +296,7 @@ GuiBindableRibbonGalleryList
 					vint columns = layout->GetVisibleItemCount();
 					if (columns == 0) columns = 1;
 					vint rows = (visibleItemCount + columns - 1) / columns;
-					vint height = (vint)(layout->GetBounds().Height()*(rows + 0.5));
+					vint height = (vint)(layout->GetCachedBounds().Height()*(rows + 0.5));
 					groupContainer->GetBoundsComposition()->SetPreferredMinSize(Size(0, height));
 				}
 				else
@@ -345,11 +345,11 @@ GuiBindableRibbonGalleryList
 				StopPreview(arguments.itemIndex);
 			}
 
-			void GuiBindableRibbonGalleryList::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiBindableRibbonGalleryList::OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				UpdateLayoutSizeOffset();
 
-				auto bounds = boundsComposition->GetBounds();
+				auto bounds = boundsComposition->GetCachedBounds();
 				subMenu->GetBoundsComposition()->SetPreferredMinSize(Size(bounds.Width() + 20, 1));
 
 				// TODO: (enumerable) foreach
@@ -577,7 +577,7 @@ GuiBindableRibbonGalleryList
 				RequestedScrollUp.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollUp);
 				RequestedScrollDown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedScrollDown);
 				RequestedDropdown.AttachMethod(this, &GuiBindableRibbonGalleryList::OnRequestedDropdown);
-				boundsComposition->BoundsChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnBoundsChanged);
+				boundsComposition->CachedBoundsChanged.AttachMethod(this, &GuiBindableRibbonGalleryList::OnCachedBoundsChanged);
 				itemListArranger->UnblockScrollUpdate();
 			}
 

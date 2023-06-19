@@ -12,155 +12,144 @@ namespace vl
 GuiFlowComposition
 ***********************************************************************/
 
-			void GuiFlowComposition::UpdateFlowItemBounds(bool forceUpdate)
+			void GuiFlowComposition::Layout_UpdateFlowItemLayout(vint maxVirtualWidth)
 			{
-				if (forceUpdate || needUpdate)
+				for (auto item : layout_flowItems)
 				{
-					needUpdate = false;
-					InvokeOnCompositionStateChanged();
-
-					auto clientMargin = axis->RealMarginToVirtualMargin(extraMargin);
-					if (clientMargin.left < 0) clientMargin.left = 0;
-					if (clientMargin.top < 0) clientMargin.top = 0;
-					if (clientMargin.right < 0) clientMargin.right = 0;
-					if (clientMargin.bottom < 0) clientMargin.bottom = 0;
-
-					auto preferredFullSize = GetPreferredBounds().GetSize();
-					auto realFullSize = previousBounds.GetSize();
-					if (realFullSize.x < preferredFullSize.x) realFullSize.x = preferredFullSize.x;
-					if (realFullSize.y < preferredFullSize.y) realFullSize.y = preferredFullSize.y;
-
-					auto clientSize = axis->RealSizeToVirtualSize(realFullSize);
-					clientSize.x -= (clientMargin.left + clientMargin.right);
-					clientSize.y -= (clientMargin.top + clientMargin.bottom);
-
-					flowItemBounds.Resize(flowItems.Count());
-					for (vint i = 0; i < flowItems.Count(); i++)
-					{
-						flowItemBounds[i] = Rect(Point(0, 0), flowItems[i]->GetMinSize());
-					}
-
-					vint currentIndex = 0;
-					vint rowTop = 0;
-
-					while (currentIndex < flowItems.Count())
-					{
-						auto itemSize = axis->RealSizeToVirtualSize(flowItemBounds[currentIndex].GetSize());
-						vint rowWidth = itemSize.x;
-						vint rowHeight = itemSize.y;
-						vint rowItemCount = 1;
-
-						for (vint i = currentIndex + 1; i < flowItems.Count(); i++)
-						{
-							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[i].GetSize());
-							vint itemWidth = itemSize.x + columnPadding;
-							if (rowWidth + itemWidth > clientSize.x)
-							{
-								break;
-							}
-							rowWidth += itemWidth;
-							if (rowHeight < itemSize.y)
-							{
-								rowHeight = itemSize.y;
-							}
-							rowItemCount++;
-						}
-
-						vint baseLine = 0;
-						Array<vint> itemBaseLines(rowItemCount);
-						for (vint i = 0; i < rowItemCount; i++)
-						{
-							vint index = currentIndex + i;
-							vint itemBaseLine = 0;
-							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
-
-							auto option = flowItems[index]->GetFlowOption();
-							switch (option.baseline)
-							{
-							case GuiFlowOption::FromTop:
-								itemBaseLine = option.distance;
-								break;
-							case GuiFlowOption::FromBottom:
-								itemBaseLine = itemSize.y - option.distance;
-								break;
-							case GuiFlowOption::Percentage:
-								itemBaseLine = (vint)(itemSize.y*option.percentage);
-								break;
-							}
-
-							itemBaseLines[i] = itemBaseLine;
-							if (baseLine < itemBaseLine)
-							{
-								baseLine = itemBaseLine;
-							}
-						}
-
-						vint rowUsedWidth = 0;
-						for (vint i = 0; i < rowItemCount; i++)
-						{
-							vint index = currentIndex + i;
-							itemSize = axis->RealSizeToVirtualSize(flowItemBounds[index].GetSize());
-
-							vint itemLeft = 0;
-							vint itemTop = rowTop + baseLine - itemBaseLines[i];
-
-							switch (alignment)
-							{
-							case FlowAlignment::Left:
-								itemLeft = rowUsedWidth + i * columnPadding;
-								break;
-							case FlowAlignment::Center:
-								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth) / 2;
-								break;
-							case FlowAlignment::Right:
-								itemLeft = rowUsedWidth + i * columnPadding + (clientSize.x - rowWidth);
-								break;
-							case FlowAlignment::Extend:
-								if (i == 0)
-								{
-									itemLeft = rowUsedWidth;
-								}
-								else
-								{
-									itemLeft = rowUsedWidth + (vint)((double)(clientSize.x - rowWidth) * i / (rowItemCount - 1)) + i * columnPadding;
-								}
-								break;
-							}
-
-							flowItemBounds[index] = axis->VirtualRectToRealRect(
-								realFullSize,
-								Rect(
-									Point(
-										itemLeft + clientMargin.left,
-										itemTop + clientMargin.top
-									),
-									itemSize
-								)
-							);
-							rowUsedWidth += itemSize.x;
-						}
-
-						rowTop += rowHeight + rowPadding;
-						currentIndex += rowItemCount;
-					}
-
-					minHeight = rowTop == 0 ? 0 : rowTop - rowPadding;
+					item->Layout_SetCachedMinSize(item->Layout_CalculateMinSizeHelper());
 				}
+
+				if (layout_lastVirtualWidth != maxVirtualWidth)
+				{
+					layout_invalid = true;
+					layout_lastVirtualWidth = maxVirtualWidth;
+				}
+
+				if (!layout_invalid) return;
+				layout_invalid = false;
+
+				vint currentIndex = 0;
+				vint rowTop = 0;
+
+				while (currentIndex < layout_flowItems.Count())
+				{
+					auto currentItemVirtualMinSize = axis->RealSizeToVirtualSize(layout_flowItems[currentIndex]->GetCachedMinSize());
+					vint rowWidth = currentItemVirtualMinSize.x;
+					vint rowHeight = currentItemVirtualMinSize.y;
+					vint rowItemCount = 1;
+
+					for (vint i = currentIndex + 1; i < layout_flowItems.Count(); i++)
+					{
+						auto itemSize = axis->RealSizeToVirtualSize(layout_flowItems[i]->GetCachedMinSize());
+						vint itemWidth = itemSize.x + columnPadding;
+						if (rowWidth + itemWidth > maxVirtualWidth)
+						{
+							break;
+						}
+						rowWidth += itemWidth;
+						if (rowHeight < itemSize.y)
+						{
+							rowHeight = itemSize.y;
+						}
+						rowItemCount++;
+					}
+
+					vint baseLine = 0;
+					Array<vint> itemBaseLines(rowItemCount);
+					for (vint i = 0; i < rowItemCount; i++)
+					{
+						vint index = currentIndex + i;
+						vint itemBaseLine = 0;
+						auto itemSize = axis->RealSizeToVirtualSize(layout_flowItems[index]->GetCachedMinSize());
+
+						auto option = layout_flowItems[index]->GetFlowOption();
+						switch (option.baseline)
+						{
+						case GuiFlowOption::FromTop:
+							itemBaseLine = option.distance;
+							break;
+						case GuiFlowOption::FromBottom:
+							itemBaseLine = itemSize.y - option.distance;
+							break;
+						case GuiFlowOption::Percentage:
+							itemBaseLine = (vint)(itemSize.y*option.percentage);
+							break;
+						}
+
+						itemBaseLines[i] = itemBaseLine;
+						if (baseLine < itemBaseLine)
+						{
+							baseLine = itemBaseLine;
+						}
+					}
+
+					vint rowUsedWidth = 0;
+					for (vint i = 0; i < rowItemCount; i++)
+					{
+						vint index = currentIndex + i;
+						auto itemSize = axis->RealSizeToVirtualSize(layout_flowItems[index]->GetCachedMinSize());
+
+						vint itemLeft = 0;
+						vint itemTop = rowTop + baseLine - itemBaseLines[i];
+
+						switch (alignment)
+						{
+						case FlowAlignment::Left:
+							itemLeft = rowUsedWidth + i * columnPadding;
+							break;
+						case FlowAlignment::Center:
+							itemLeft = rowUsedWidth + i * columnPadding + (maxVirtualWidth - rowWidth) / 2;
+							break;
+						case FlowAlignment::Right:
+							itemLeft = rowUsedWidth + i * columnPadding + (maxVirtualWidth - rowWidth);
+							break;
+						case FlowAlignment::Extend:
+							if (i == 0)
+							{
+								itemLeft = rowUsedWidth;
+							}
+							else
+							{
+								itemLeft = rowUsedWidth + (vint)((double)(maxVirtualWidth - rowWidth) * i / (rowItemCount - 1)) + i * columnPadding;
+							}
+							break;
+						}
+
+						layout_flowItems[index]->layout_virtualBounds = Rect({ itemLeft,itemTop }, itemSize);
+						rowUsedWidth += itemSize.x;
+					}
+
+					rowTop += rowHeight + rowPadding;
+					currentIndex += rowItemCount;
+				}
+
+				layout_minVirtualHeight = rowTop == 0 ? 0 : rowTop - rowPadding;
 			}
 
-			void GuiFlowComposition::OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+			Size GuiFlowComposition::Layout_UpdateFlowItemLayoutByConstraint(Size constraintSize)
 			{
-				UpdateFlowItemBounds(true);
+				Size extraSize(
+					extraMargin.left + extraMargin.right,
+					extraMargin.top + extraMargin.bottom
+				);
+				constraintSize.x -= extraSize.x;
+				constraintSize.y -= extraSize.y;
+				if (constraintSize.x < 0) constraintSize.x = 0;
+				if (constraintSize.y < 0) constraintSize.y = 0;
+
+				vint maxVirtualWidth = axis->RealSizeToVirtualSize(constraintSize).x;
+				Layout_UpdateFlowItemLayout(maxVirtualWidth);
+				return extraSize;
 			}
 
 			void GuiFlowComposition::OnChildInserted(GuiGraphicsComposition* child)
 			{
 				GuiBoundsComposition::OnChildInserted(child);
 				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
-				if (item && !flowItems.Contains(item))
+				if (item && !layout_flowItems.Contains(item))
 				{
-					flowItems.Add(item);
-					needUpdate = true;
+					layout_flowItems.Add(item);
+					layout_invalid = true;
 				}
 			}
 
@@ -170,65 +159,71 @@ GuiFlowComposition
 				auto item = dynamic_cast<GuiFlowItemComposition*>(child);
 				if (item)
 				{
-					flowItems.Remove(item);
-					needUpdate = true;
+					layout_flowItems.Remove(item);
+					layout_invalid = true;
 				}
 			}
-			
-			Size GuiFlowComposition::GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)
+
+			void GuiFlowComposition::OnCompositionStateChanged()
 			{
-				Size minFlowSize;
-				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren)
+				GuiBoundsComposition::OnCompositionStateChanged();
+				layout_invalid = true;
+			}
+
+			Size GuiFlowComposition::Layout_CalculateMinSize()
+			{
+				Size minSize = GuiBoundsComposition::Layout_CalculateMinSize();
+
+				if (GetMinSizeLimitation() == GuiGraphicsComposition::LimitToElementAndChildren && layout_flowItems.Count() > 0)
 				{
-					minFlowSize = axis->VirtualSizeToRealSize(Size(0, minHeight));
-					for (auto item : flowItems)
-					{
-						auto itemSize = InvokeGetPreferredBoundsInternal(item, considerPreferredMinSize).GetSize();
-						if (minFlowSize.x < itemSize.x) minFlowSize.x = itemSize.x;
-						if (minFlowSize.y < itemSize.y) minFlowSize.y = itemSize.y;
-					}
+					Size cachedSize = cachedBounds.GetSize();
+					Size constraintSize(
+						minSize.x > cachedSize.x ? minSize.x : cachedSize.x,
+						minSize.y > cachedSize.y ? minSize.y : cachedSize.y
+					);
+
+					Size extraSize = Layout_UpdateFlowItemLayoutByConstraint(constraintSize);
+					Size minFlowSize = axis->VirtualSizeToRealSize(Size(layout_lastVirtualWidth, layout_minVirtualHeight));
+					minFlowSize.x += extraSize.x;
+					minFlowSize.y += extraSize.y;
+
+					if (minSize.x < minFlowSize.x) minSize.x = minFlowSize.x;
+					if (minSize.y < minFlowSize.y) minSize.y = minFlowSize.y;
 				}
 
-				if (extraMargin.left > 0) minFlowSize.x += extraMargin.left;
-				if (extraMargin.right > 0) minFlowSize.x += extraMargin.right;
-				if (extraMargin.top > 0) minFlowSize.y += extraMargin.top;
-				if (extraMargin.bottom > 0) minFlowSize.y += extraMargin.bottom;
-
-				Size minClientSize = GuiBoundsComposition::GetMinPreferredClientSizeInternal(considerPreferredMinSize);
-				return Size(
-					minFlowSize.x > minClientSize.x ? minFlowSize.x : minClientSize.x,
-					minFlowSize.y > minClientSize.y ? minFlowSize.y : minClientSize.y
-					);
+				return minSize;
 			}
 
-			GuiFlowComposition::GuiFlowComposition()
-				:axis(new GuiDefaultAxis)
+			Rect GuiFlowComposition::Layout_CalculateBounds(Size parentSize)
 			{
-				BoundsChanged.AttachMethod(this, &GuiFlowComposition::OnBoundsChanged);
-			}
-
-			GuiFlowComposition::~GuiFlowComposition()
-			{
+				Rect bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
+				Size extraSize = Layout_UpdateFlowItemLayoutByConstraint(bounds.GetSize());
+				Size contentSize(
+					bounds.Width() - extraSize.x,
+					bounds.Height() - extraSize.y
+				);
+				for (auto item : layout_flowItems)
+				{
+					item->Layout_SetFlowItemBounds(contentSize, item->layout_virtualBounds);
+				}
+				return bounds;
 			}
 
 			const GuiFlowComposition::ItemCompositionList& GuiFlowComposition::GetFlowItems()
 			{
-				return flowItems;
+				return layout_flowItems;
 			}
 
 			bool GuiFlowComposition::InsertFlowItem(vint index, GuiFlowItemComposition* item)
 			{
-				index = flowItems.Insert(index, item);
-				if (!AddChild(item))
+				index = layout_flowItems.Insert(index, item);
+				if (AddChild(item))
 				{
-					flowItems.RemoveAt(index);
-					return false;
-				}
-				else
-				{
-					needUpdate = true;
+					layout_invalid = true;
 					return true;
 				}
+				layout_flowItems.RemoveAt(index);
+				return false;
 			}
 
 
@@ -242,7 +237,6 @@ GuiFlowComposition
 				if (extraMargin != value)
 				{
 					extraMargin = value;
-					needUpdate = true;
 					InvokeOnCompositionStateChanged();
 				}
 			}
@@ -257,7 +251,6 @@ GuiFlowComposition
 				if (rowPadding != value)
 				{
 					rowPadding = value;
-					needUpdate = true;
 					InvokeOnCompositionStateChanged();
 				}
 			}
@@ -272,7 +265,6 @@ GuiFlowComposition
 				if (columnPadding != value)
 				{
 					columnPadding = value;
-					needUpdate = true;
 					InvokeOnCompositionStateChanged();
 				}
 			}
@@ -287,7 +279,6 @@ GuiFlowComposition
 				if (value)
 				{
 					axis = value;
-					needUpdate = true;
 					InvokeOnCompositionStateChanged();
 				}
 			}
@@ -302,96 +293,44 @@ GuiFlowComposition
 				if (alignment != value)
 				{
 					alignment = value;
-					needUpdate = true;
 					InvokeOnCompositionStateChanged();
 				}
-			}
-
-			void GuiFlowComposition::ForceCalculateSizeImmediately()
-			{
-				GuiBoundsComposition::ForceCalculateSizeImmediately();
-				UpdateFlowItemBounds(true);
-			}
-
-			Rect GuiFlowComposition::GetBounds()
-			{
-				if (!needUpdate)
-				{
-					// TODO: (enumerable) foreach:indexed
-					for (vint i = 0; i < flowItems.Count(); i++)
-					{
-						if (flowItemBounds[i].GetSize() != flowItems[i]->GetMinSize())
-						{
-							needUpdate = true;
-							break;
-						}
-					}
-				}
-
-				if (needUpdate)
-				{
-					UpdateFlowItemBounds(true);
-				}
-
-				bounds = GuiBoundsComposition::GetBounds();
-				return bounds;
 			}
 
 /***********************************************************************
 GuiFlowItemComposition
 ***********************************************************************/
 
-			void GuiFlowItemComposition::OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)
+			void GuiFlowItemComposition::Layout_SetFlowItemBounds(Size contentSize, Rect virtualBounds)
 			{
-				GuiGraphicsComposition::OnParentChanged(oldParent, newParent);
-				flowParent = newParent == 0 ? 0 : dynamic_cast<GuiFlowComposition*>(newParent);
+				Rect result = layout_flowParent->axis->VirtualRectToRealRect(contentSize, virtualBounds);
+
+				result.x1 += layout_flowParent->extraMargin.left;
+				result.x2 += layout_flowParent->extraMargin.left;
+				result.y1 += layout_flowParent->extraMargin.top;
+				result.y2 += layout_flowParent->extraMargin.top;
+
+				result.x1 -= extraMargin.left;
+				result.y1 -= extraMargin.top;
+				result.x2 += extraMargin.right;
+				result.y2 += extraMargin.bottom;
+
+				Layout_SetCachedBounds(result);
 			}
 
-			Size GuiFlowItemComposition::GetMinSize()
+			void GuiFlowItemComposition::OnParentLineChanged()
 			{
-				return GetBoundsInternal(bounds, true).GetSize();
+				layout_flowParent = dynamic_cast<GuiFlowComposition*>(GetParent());
+				GuiGraphicsComposition::OnParentLineChanged();
 			}
 
 			GuiFlowItemComposition::GuiFlowItemComposition()
-				: GuiGraphicsComposition(false)
 			{
 				SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-			}
-
-			GuiFlowItemComposition::~GuiFlowItemComposition()
-			{
-			}
-
-			Rect GuiFlowItemComposition::GetBounds()
-			{
-				Rect result = bounds;
-				if(flowParent)
+				CachedMinSizeChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
 				{
-					flowParent->UpdateFlowItemBounds(false);
-					vint index = flowParent->flowItems.IndexOf(this);
-					if (index != -1)
-					{
-						result = flowParent->flowItemBounds[index];
-					}
-
-					result = Rect(
-						result.Left() - extraMargin.left,
-						result.Top() - extraMargin.top,
-						result.Right() + extraMargin.right,
-						result.Bottom() + extraMargin.bottom
-						);
-				}
-				UpdatePreviousBounds(result);
-				return result;
-			}
-
-			void GuiFlowItemComposition::SetBounds(Rect value)
-			{
-				if (bounds != value)
-				{
-					bounds = value;
-					InvokeOnCompositionStateChanged();
-				}
+					if (layout_flowParent) layout_flowParent->layout_invalid = true;
+				});
 			}
 
 			Margin GuiFlowItemComposition::GetExtraMargin()
@@ -418,11 +357,8 @@ GuiFlowItemComposition
 				if (option != value)
 				{
 					option = value;
-					if (flowParent)
-					{
-						flowParent->needUpdate = true;
-						InvokeOnCompositionStateChanged();
-					}
+					if (layout_flowParent) layout_flowParent->layout_invalid = true;
+					InvokeOnCompositionStateChanged();
 				}
 			}
 		}

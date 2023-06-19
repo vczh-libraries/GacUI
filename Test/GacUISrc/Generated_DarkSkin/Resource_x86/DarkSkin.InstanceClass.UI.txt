@@ -8709,7 +8709,7 @@ namespace darkskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {left : 1; top : (1 + (<bind-cache>0.Bounds.y2 / 2)); right : 1; bottom : 1;} of (::presentation::Margin);
+                        var <bind-activator-result> = {left : 1; top : (1 + (<bind-cache>0.CachedBounds.y2 / 2)); right : 1; bottom : 1;} of (::presentation::Margin);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -8724,7 +8724,7 @@ namespace darkskin
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (titleBounds ?? null of (::presentation::compositions::GuiBoundsComposition*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.BoundsChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.CachedBoundsChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -8747,7 +8747,7 @@ namespace darkskin
                             (<bind-closed> = true);
                             if (<bind-handler>0_0 is not null)
                             {
-                                detach(<bind-cache>0.BoundsChanged, <bind-handler>0_0);
+                                detach(<bind-cache>0.CachedBoundsChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
                             (<bind-cache>0 = null of (::presentation::compositions::GuiBoundsComposition*));
@@ -8782,7 +8782,7 @@ namespace darkskin
 
                     func <bind-activator>() : (::system::Void)
                     {
-                        var <bind-activator-result> = {left : 0; top : (<bind-cache>0.Bounds.y2 / 2); right : 0; bottom : 0;} of (::presentation::Margin);
+                        var <bind-activator-result> = {left : 0; top : (<bind-cache>0.CachedBounds.y2 / 2); right : 0; bottom : 0;} of (::presentation::Margin);
                         ValueChanged(<bind-activator-result>);
                     }
 
@@ -8797,7 +8797,7 @@ namespace darkskin
                         {
                             (<bind-opened> = true);
                             (<bind-cache>0 = (titleBounds ?? null of (::presentation::compositions::GuiBoundsComposition*)));
-                            (<bind-handler>0_0 = (attach(<bind-cache>0.BoundsChanged, <bind-callback>0_0) ?? null));
+                            (<bind-handler>0_0 = (attach(<bind-cache>0.CachedBoundsChanged, <bind-callback>0_0) ?? null));
                             return true;
                         }
                         return false;
@@ -8820,7 +8820,7 @@ namespace darkskin
                             (<bind-closed> = true);
                             if (<bind-handler>0_0 is not null)
                             {
-                                detach(<bind-cache>0.BoundsChanged, <bind-handler>0_0);
+                                detach(<bind-cache>0.CachedBoundsChanged, <bind-handler>0_0);
                                 (<bind-handler>0_0 = null);
                             }
                             (<bind-cache>0 = null of (::presentation::compositions::GuiBoundsComposition*));

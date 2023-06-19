@@ -20,17 +20,20 @@ namespace vl
 			/// <summary>A shared size composition that shares the same size with all other <see cref="GuiSharedSizeItemComposition"/> that has a same group name.</summary>
 			class GuiSharedSizeItemComposition : public GuiBoundsComposition, public Description<GuiSharedSizeItemComposition>
 			{
+				friend class GuiSharedSizeRootComposition;
 			protected:
 				GuiSharedSizeRootComposition*						parentRoot = nullptr;
 				WString												group;
 				bool												sharedWidth = false;
 				bool												sharedHeight = false;
+				Size												originalMinSize;
 
-				void												Update();
-				void												OnParentLineChanged()override;
+				void												OnParentLineChanged() override;
+				Size												Layout_CalculateMinSize() override;
+				Size												Layout_CalculateOriginalMinSize();
 			public:
 				GuiSharedSizeItemComposition();
-				~GuiSharedSizeItemComposition();
+				~GuiSharedSizeItemComposition() = default;
 				
 				/// <summary>Get the group name of this item.</summary>
 				/// <returns>The group name.</returns>
@@ -62,14 +65,14 @@ namespace vl
 				collections::List<GuiSharedSizeItemComposition*>	childItems;
 
 				void												AddSizeComponent(collections::Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent);
+				void												CalculateOriginalMinSizes();
 				void												CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
 				void												AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
-			public:
-				GuiSharedSizeRootComposition();
-				~GuiSharedSizeRootComposition();
 
-				void												ForceCalculateSizeImmediately()override;
-				Rect												GetBounds()override;
+				Size												Layout_CalculateMinSize() override;
+			public:
+				GuiSharedSizeRootComposition() = default;
+				~GuiSharedSizeRootComposition() = default;
 			};
 		}
 	}

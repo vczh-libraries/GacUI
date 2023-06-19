@@ -103,58 +103,65 @@ Table Compositions
 				friend class GuiTableSplitterCompositionBase;
 				friend class GuiRowSplitterComposition;
 				friend class GuiColumnSplitterComposition;
+			private:
+				bool										layout_invalid = true;
+				bool										layout_invalidCellBounds = false;
+				Size										layout_lastTableSize;
+
+				collections::Array<GuiCellComposition*>		layout_cellCompositions;
+				collections::Array<Rect>					layout_cellBounds;
+				collections::Array<vint>					layout_rowOffsets;
+				collections::Array<vint>					layout_columnOffsets;
+				collections::Array<vint>					layout_rowSizes;
+				collections::Array<vint>					layout_columnSizes;
+				vint										layout_rowTotal = 0;
+				vint										layout_columnTotal = 0;
+				vint										layout_rowTotalWithPercentage = 0;
+				vint										layout_columnTotalWithPercentage = 0;
+				vint										layout_rowExtending = 0;
+				vint										layout_columnExtending = 0;
+
+				Rect										Layout_CalculateCellArea(Rect tableBounds);
+				void										Layout_UpdateCellBoundsInternal(
+																collections::Array<vint>& dimSizes,
+																vint& dimSize, 
+																vint& dimSizeWithPercentage,
+																collections::Array<GuiCellOption>& dimOptions,
+																vint GuiTableComposition::* dim1,
+																vint GuiTableComposition::* dim2,
+																vint (*getSize)(Size),
+																vint (*getLocation)(GuiCellComposition*),
+																vint (*getSpan)(GuiCellComposition*),
+																vint (*getRow)(vint, vint),
+																vint (*getCol)(vint, vint)
+																);
+				void										Layout_UpdateCellBoundsPercentages(
+																collections::Array<vint>& dimSizes,
+																vint dimSize,
+																vint maxDimSize,
+																collections::Array<GuiCellOption>& dimOptions
+																);
+				vint										Layout_UpdateCellBoundsOffsets(
+																collections::Array<vint>& offsets,
+																collections::Array<vint>& sizes,
+																vint max
+																);
 			protected:
-				vint										rows;
-				vint										columns;
-				vint										cellPadding;
-				bool										borderVisible;
-				vint										rowExtending;
-				vint										columnExtending;
+				vint										rows = 0;
+				vint										columns = 0;
+				vint										cellPadding = 0;
+				bool										borderVisible = true;
 				collections::Array<GuiCellOption>			rowOptions;
 				collections::Array<GuiCellOption>			columnOptions;
-				collections::Array<GuiCellComposition*>		cellCompositions;
-				
-				collections::Array<Rect>					cellBounds;
-				collections::Array<vint>					rowOffsets;
-				collections::Array<vint>					columnOffsets;
-				collections::Array<vint>					rowSizes;
-				collections::Array<vint>					columnSizes;
 
-				Size										tableContentMinSize;
-
-				vint								GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
-				void								SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
-
-				void								UpdateCellBoundsInternal(
-														collections::Array<vint>& dimSizes,
-														vint& dimSize, 
-														vint& dimSizeWithPercentage,
-														collections::Array<GuiCellOption>& dimOptions,
-														vint GuiTableComposition::* dim1,
-														vint GuiTableComposition::* dim2,
-														vint (*getSize)(Size),
-														vint (*getLocation)(GuiCellComposition*),
-														vint (*getSpan)(GuiCellComposition*),
-														vint (*getRow)(vint, vint),
-														vint (*getCol)(vint, vint)
-														);
-				void								UpdateCellBoundsPercentages(
-														collections::Array<vint>& dimSizes,
-														vint dimSize,
-														vint maxDimSize,
-														collections::Array<GuiCellOption>& dimOptions
-														);
-				vint									UpdateCellBoundsOffsets(
-														collections::Array<vint>& offsets,
-														collections::Array<vint>& sizes,
-														vint max
-														);
-				
-				void								OnRenderContextChanged()override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				vint										GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
+				void										SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
+				void										OnCompositionStateChanged() override;
+				Size										Layout_CalculateMinSize() override;
+				Rect										Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiTableComposition();
-				~GuiTableComposition();
+				~GuiTableComposition() = default;
 
 				/// <summary>Event that will be raised with row numbers, column numbers or options are changed.</summary>
 				compositions::GuiNotifyEvent		ConfigChanged;
@@ -205,29 +212,21 @@ Table Compositions
 				/// <summary>Set the border visibility.</summary>
 				/// <param name="value">Set to true to let the border thickness equal to the cell padding, otherwise zero.</param>
 				void								SetBorderVisible(bool value);
-				/// <summary>Get the cell area in the space of the table's parent composition's client area.</summary>
-				/// <returns>The cell area.</returns>
-				Rect								GetCellArea();
-				/// <summary>Update the sizing of the table and cells after all rows' and columns' sizing options are prepared.</summary>
-				void								UpdateCellBounds();
-				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
 			};
 
 			/// <summary>
 			/// Represents a cell composition of a <see cref="GuiTableComposition"/>.
 			/// </summary>
-			class GuiCellComposition : public GuiGraphicsComposition, public Description<GuiCellComposition>
+			class GuiCellComposition : public GuiGraphicsComposition_Controlled, public Description<GuiCellComposition>
 			{
 				friend class GuiTableComposition;
+			private:
+				GuiTableComposition*				layout_tableParent = nullptr;
 			protected:
 				vint								row = -1;
 				vint								rowSpan = 1;
 				vint								column = -1;
 				vint								columnSpan = 1;
-				GuiTableComposition*				tableParent = nullptr;
-				Size								lastPreferredSize;
 				
 				void								ClearSitedCells(GuiTableComposition* table);
 				void								SetSitedCells(GuiTableComposition* table);
@@ -235,9 +234,10 @@ Table Compositions
 				bool								SetSiteInternal(vint _row, vint _column, vint _rowSpan, vint _columnSpan);
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
 				void								OnTableRowsAndColumnsChanged();
+				void								Layout_SetCellBounds();
 			public:
 				GuiCellComposition();
-				~GuiCellComposition();
+				~GuiCellComposition() = default;
 
 				/// <summary>Get the owner table composition.</summary>
 				/// <returns>The owner table composition.</returns>
@@ -262,16 +262,14 @@ Table Compositions
 				/// <param name="_rowSpan">The total numbers of acrossed rows for this cell composition.</param>
 				/// <param name="_columnSpan">The total numbers of acrossed columns for this cell composition.</param>
 				bool								SetSite(vint _row, vint _column, vint _rowSpan, vint _columnSpan);
-
-				Rect								GetBounds()override;
 			};
 
-			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition, public Description<GuiTableSplitterCompositionBase>
+			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition_Specialized, public Description<GuiTableSplitterCompositionBase>
 			{
 			protected:
 				GuiTableComposition*				tableParent = nullptr;
 
-				bool								dragging;
+				bool								dragging = false;
 				Point								draggingPoint;
 				
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
@@ -299,7 +297,7 @@ Table Compositions
 														);
 			public:
 				GuiTableSplitterCompositionBase();
-				~GuiTableSplitterCompositionBase();
+				~GuiTableSplitterCompositionBase() = default;
 
 				/// <summary>Get the owner table composition.</summary>
 				/// <returns>The owner table composition.</returns>
@@ -315,9 +313,10 @@ Table Compositions
 				vint								rowsToTheTop = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiRowSplitterComposition();
-				~GuiRowSplitterComposition();
+				~GuiRowSplitterComposition() = default;
 
 				/// <summary>Get the number of rows that above the splitter.</summary>
 				/// <returns>The number of rows that above the splitter.</returns>
@@ -325,8 +324,6 @@ Table Compositions
 				/// <summary>Set the number of rows that above the splitter.</summary>
 				/// <param name="value">The number of rows that above the splitter</param>
 				void								SetRowsToTheTop(vint value);
-
-				Rect								GetBounds()override;
 			};
 			
 			/// <summary>
@@ -338,9 +335,10 @@ Table Compositions
 				vint								columnsToTheLeft = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiColumnSplitterComposition();
-				~GuiColumnSplitterComposition();
+				~GuiColumnSplitterComposition() = default;
 
 				/// <summary>Get the number of columns that before the splitter.</summary>
 				/// <returns>The number of columns that before the splitter.</returns>
@@ -348,8 +346,6 @@ Table Compositions
 				/// <summary>Set the number of columns that before the splitter.</summary>
 				/// <param name="value">The number of columns that before the splitter</param>
 				void								SetColumnsToTheLeft(vint value);
-
-				Rect								GetBounds()override;
 			};
 		}
 	}

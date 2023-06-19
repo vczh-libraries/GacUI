@@ -295,9 +295,9 @@ GuiRibbonGroup
 				}
 			}
 
-			void GuiRibbonGroup::OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiRibbonGroup::OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
-				dropdownMenu->GetBoundsComposition()->SetPreferredMinSize(Size(0, containerComposition->GetBounds().Height()));
+				dropdownMenu->GetBoundsComposition()->SetPreferredMinSize(Size(0, containerComposition->GetCachedBounds().Height()));
 			}
 
 			void GuiRibbonGroup::OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -388,7 +388,7 @@ GuiRibbonGroup
 				LargeImageChanged.SetAssociatedComposition(boundsComposition);
 
 				TextChanged.AttachMethod(this, &GuiRibbonGroup::OnTextChanged);
-				boundsComposition->BoundsChanged.AttachMethod(this, &GuiRibbonGroup::OnBoundsChanged);
+				boundsComposition->CachedBoundsChanged.AttachMethod(this, &GuiRibbonGroup::OnCachedBoundsChanged);
 				responsiveView->BeforeSwitchingView.AttachMethod(this, &GuiRibbonGroup::OnBeforeSwitchingView);
 				dropdownButton->BeforeSubMenuOpening.AttachMethod(this, &GuiRibbonGroup::OnBeforeSubMenuOpening);
 			}

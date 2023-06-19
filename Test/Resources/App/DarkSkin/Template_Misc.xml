@@ -3,9 +3,9 @@
     <Instance ref.CodeBehind="false" ref.Class="darkskin::GroupBoxTemplate" ref.Styles="res://DarkSkin/Style">
       <ControlTemplate ref.Name="self" ContainerComposition-ref="container" MinSizeLimitation="LimitToElementAndChildren">
         <SolidBackground Color="#2D2D30"/>
-        <Bounds AlignmentToParent-bind="{left:0 top:(titleBounds.Bounds.y2/2) right:0 bottom:0}">
+        <Bounds AlignmentToParent-bind="{left:0 top:(titleBounds.CachedBounds.y2/2) right:0 bottom:0}">
           <SolidBorder Color="#3F3F46"/>
-          <Bounds ref.Name="container" AlignmentToParent-bind="{left:1 top:(1+titleBounds.Bounds.y2/2) right:1 bottom:1}"/>
+          <Bounds ref.Name="container" AlignmentToParent-bind="{left:1 top:(1+titleBounds.CachedBounds.y2/2) right:1 bottom:1}"/>
         </Bounds>
         <Bounds ref.Name="titleBounds" AlignmentToParent="left:5 top:0 right:-1 bottom:-1">
           <SolidBackground Color="#2D2D30"/>

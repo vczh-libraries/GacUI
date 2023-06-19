@@ -173,7 +173,7 @@ Ribbon Gallery List
 				void													OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnItemListItemMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													OnItemListItemMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
-				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

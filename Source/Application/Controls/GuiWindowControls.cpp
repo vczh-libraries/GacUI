@@ -1154,7 +1154,7 @@ GuiPopup
 
 			NativePoint GuiPopup::CalculatePopupPosition(NativeSize windowSize, GuiControl* control, INativeWindow* controlWindow, bool preferredTopBottomSide)
 			{
-				Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetBounds().GetSize());
+				Rect bounds(Point(0, 0), control->GetBoundsComposition()->GetCachedBounds().GetSize());
 				return CalculatePopupPosition(windowSize, control, controlWindow, bounds, preferredTopBottomSide);
 			}
 

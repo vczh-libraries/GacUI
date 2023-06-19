@@ -198,9 +198,9 @@ GuiGraphicsHost
 					GuiGraphicsComposition* parent=composition->GetParent();
 					if(parent)
 					{
-						Rect parentBounds=parent->GetBounds();
-						Rect clientArea=parent->GetClientArea();
-						Rect childBounds=composition->GetBounds();
+						Rect parentBounds=parent->GetCachedBounds();
+						Rect clientArea=parent->GetCachedClientArea();
+						Rect childBounds=composition->GetCachedBounds();
 
 						x+=childBounds.x1+(clientArea.x1-parentBounds.x1);
 						y+=childBounds.y1+(clientArea.y1-parentBounds.y1);
@@ -280,7 +280,7 @@ GuiGraphicsHost
 			void GuiGraphicsHost::Moving(NativeRect& bounds, bool fixSizeOnly, bool draggingBorder)
 			{
 				NativeRect oldBounds = hostRecord.nativeWindow->GetBounds();
-				minSize = windowComposition->GetPreferredBounds().GetSize();
+				minSize = windowComposition->GetCachedMinSize();
 				NativeSize minWindowSize = hostRecord.nativeWindow->Convert(minSize) + (oldBounds.GetSize() - hostRecord.nativeWindow->GetClientSize());
 				if (bounds.Width() < minWindowSize.x)
 				{
@@ -326,7 +326,7 @@ GuiGraphicsHost
 				if (previousClientSize != size)
 				{
 					previousClientSize = size;
-					minSize = windowComposition->GetPreferredBounds().GetSize();
+					minSize = windowComposition->GetCachedMinSize();
 					needRender = true;
 				}
 			}
@@ -636,11 +636,13 @@ GuiGraphicsHost
 					default:
 						{
 							supressPaint = true;
-							auto bounds = windowComposition->GetBounds();
-							auto preferred = windowComposition->GetPreferredBounds();
-							auto width = bounds.Width() > preferred.Width() ? bounds.Width() : preferred.Width();
-							auto height = bounds.Height() > preferred.Height() ? bounds.Height() : preferred.Height();
-							controlHost->UpdateClientSizeAfterRendering(preferred.GetSize(), Size(width, height));
+							auto bounds = windowComposition->GetCachedBounds();
+							windowComposition->Layout_UpdateMinSize();
+							auto preferred = windowComposition->GetCachedMinSize();
+							auto width = bounds.Width() > preferred.x ? bounds.Width() : preferred.x;
+							auto height = bounds.Height() > preferred.y ? bounds.Height() : preferred.y;
+							controlHost->UpdateClientSizeAfterRendering(preferred, Size(width, height));
+							windowComposition->Layout_UpdateBounds({ width,height });
 							supressPaint = false;
 						}
 					}
@@ -721,7 +723,7 @@ GuiGraphicsHost
 						_nativeWindow->InstallListener(this);
 						GetCurrentController()->CallbackService()->InstallListener(this);
 						previousClientSize = _nativeWindow->GetClientSize();
-						minSize = windowComposition->GetPreferredBounds().GetSize();
+						minSize = windowComposition->GetCachedMinSize();
 						_nativeWindow->SetCaretPoint(_nativeWindow->Convert(caretPoint));
 						needRender = true;
 					}

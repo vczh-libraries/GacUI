@@ -18,7 +18,7 @@ GuiListControl::ItemCallback
 
 			Ptr<GuiListControl::ItemCallback::BoundsChangedHandler> GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition)
 			{
-				auto handler = style->BoundsChanged.AttachMethod(this, &ItemCallback::OnStyleBoundsChanged);
+				auto handler = style->CachedBoundsChanged.AttachMethod(this, &ItemCallback::OnStyleCachedBoundsChanged);
 				listControl->GetContainerComposition()->AddChild(itemComposition ? itemComposition : style);
 				listControl->OnStyleInstalled(itemIndex, style);
 				return handler;
@@ -30,11 +30,11 @@ GuiListControl::ItemCallback
 				auto handler = installedStyles.Values()[index];
 				listControl->OnStyleUninstalled(style);
 				listControl->GetContainerComposition()->RemoveChild(style);
-				style->BoundsChanged.Detach(handler);
+				style->CachedBoundsChanged.Detach(handler);
 				return style;
 			}
 
-			void GuiListControl::ItemCallback::OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiListControl::ItemCallback::OnStyleCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				listControl->CalculateView();
 			}
@@ -101,7 +101,7 @@ GuiListControl::ItemCallback
 
 			Size GuiListControl::ItemCallback::GetStylePreferredSize(compositions::GuiBoundsComposition* style)
 			{
-				Size size = style->GetPreferredBounds().GetSize();
+				Size size = style->GetCachedMinSize();
 				return listControl->axis->RealSizeToVirtualSize(size);
 			}
 
@@ -113,14 +113,14 @@ GuiListControl::ItemCallback
 
 			Rect GuiListControl::ItemCallback::GetStyleBounds(compositions::GuiBoundsComposition* style)
 			{
-				Rect bounds = style->GetBounds();
+				Rect bounds = style->GetCachedBounds();
 				return listControl->axis->RealRectToVirtualRect(listControl->GetViewSize(), bounds);
 			}
 
 			void GuiListControl::ItemCallback::SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)
 			{
 				Rect newBounds = listControl->axis->VirtualRectToRealRect(listControl->GetViewSize(), bounds);
-				return style->SetBounds(newBounds);
+				return style->SetExpectedBounds(newBounds);
 			}
 
 			compositions::GuiGraphicsComposition* GuiListControl::ItemCallback::GetContainerComposition()
@@ -247,7 +247,7 @@ GuiListControl
 				}
 			}
 
-			void GuiListControl::OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+			void GuiListControl::OnClientCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 			{
 				auto args = GetNotifyEventArguments();
 				AdoptedSizeInvalidated.Execute(args);
@@ -378,7 +378,7 @@ GuiListControl
 			{
 				ContextChanged.AttachMethod(this, &GuiListControl::OnContextChanged);
 				VisuallyEnabledChanged.AttachMethod(this, &GuiListControl::OnVisuallyEnabledChanged);
-				containerComposition->BoundsChanged.AttachMethod(this, &GuiListControl::OnClientBoundsChanged);
+				containerComposition->CachedBoundsChanged.AttachMethod(this, &GuiListControl::OnClientCachedBoundsChanged);
 
 				ItemTemplateChanged.SetAssociatedComposition(boundsComposition);
 				ArrangerChanged.SetAssociatedComposition(boundsComposition);
@@ -492,8 +492,8 @@ GuiListControl
 			{
 				if (itemArranger)
 				{
-					Size controlSize = boundsComposition->GetPreviousCalculatedBounds().GetSize();
-					Size viewSize = containerComposition->GetPreviousCalculatedBounds().GetSize();
+					Size controlSize = boundsComposition->GetCachedBounds().GetSize();
+					Size viewSize = containerComposition->GetCachedBounds().GetSize();
 					vint x = controlSize.x - viewSize.x;
 					vint y = controlSize.y - viewSize.y;
 

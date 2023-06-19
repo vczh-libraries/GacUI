@@ -43,7 +43,7 @@ GuiResponsiveCompositionBase
 
 			public:
 				GuiResponsiveCompositionBase();
-				~GuiResponsiveCompositionBase();
+				~GuiResponsiveCompositionBase() = default;
 
 				/// <summary>LevelCount changed event.</summary>
 				GuiNotifyEvent						LevelCountChanged;
@@ -87,7 +87,7 @@ GuiResponsiveViewComposition
 
 			public:
 				GuiResponsiveSharedCollection(GuiResponsiveViewComposition* _view);
-				~GuiResponsiveSharedCollection();
+				~GuiResponsiveSharedCollection() = default;
 			};
 
 			class GuiResponsiveViewCollection : public collections::ObservableListBase<GuiResponsiveCompositionBase*>
@@ -102,7 +102,7 @@ GuiResponsiveViewComposition
 
 			public:
 				GuiResponsiveViewCollection(GuiResponsiveViewComposition* _view);
-				~GuiResponsiveViewCollection();
+				~GuiResponsiveViewCollection() = default;
 			};
 
 			/// <summary>Represents a composition, which will pick up a shared control and install inside it, when it is displayed by a [T:vl.presentation.compositions.GuiResponsiveViewComposition]</summary>
@@ -117,7 +117,7 @@ GuiResponsiveViewComposition
 
 			public:
 				GuiResponsiveSharedComposition();
-				~GuiResponsiveSharedComposition();
+				~GuiResponsiveSharedComposition() = default;
 
 				/// <summary>Get the selected shared control.</summary>
 				/// <returns>The selected shared control.</returns>
@@ -185,8 +185,8 @@ Others
 				void					OnResponsiveChildLevelUpdated()override;
 
 			public:
-				GuiResponsiveFixedComposition();
-				~GuiResponsiveFixedComposition();
+				GuiResponsiveFixedComposition() = default;
+				~GuiResponsiveFixedComposition() = default;
 
 				vint					GetLevelCount()override;
 				vint					GetCurrentLevel()override;
@@ -211,8 +211,8 @@ Others
 				bool					ChangeLevel(bool levelDown);
 
 			public:
-				GuiResponsiveStackComposition();
-				~GuiResponsiveStackComposition();
+				GuiResponsiveStackComposition() = default;
+				~GuiResponsiveStackComposition() = default;
 
 				vint					GetLevelCount()override;
 				vint					GetCurrentLevel()override;
@@ -236,8 +236,8 @@ Others
 				void					OnResponsiveChildLevelUpdated()override;
 
 			public:
-				GuiResponsiveGroupComposition();
-				~GuiResponsiveGroupComposition();
+				GuiResponsiveGroupComposition() = default;
+				~GuiResponsiveGroupComposition() = default;
 
 				vint					GetLevelCount()override;
 				vint					GetCurrentLevel()override;
@@ -257,11 +257,11 @@ GuiResponsiveContainerComposition
 				Size									upperLevelSize;
 
 				void									AdjustLevel();
-				void									OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
+				void									CallAdjustLevelPropertly();
 
 			public:
 				GuiResponsiveContainerComposition();
-				~GuiResponsiveContainerComposition();
+				~GuiResponsiveContainerComposition() = default;
 
 				/// <summary>Get the responsive composition to control.</summary>
 				/// <returns>The responsive composition to control.</returns>

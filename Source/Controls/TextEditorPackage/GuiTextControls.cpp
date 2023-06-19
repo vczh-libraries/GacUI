@@ -259,7 +259,7 @@ GuiSinglelineTextBox::DefaultTextElementOperatorCallback
 
 				newX+=marginX;
 				vint minX=-TextMargin;
-				vint maxX=textElement->GetLines().GetMaxWidth()+TextMargin-textComposition->GetBounds().Width();
+				vint maxX=textElement->GetLines().GetMaxWidth()+TextMargin-textComposition->GetCachedBounds().Width();
 				if(newX>=maxX)
 				{
 					newX=maxX-1;

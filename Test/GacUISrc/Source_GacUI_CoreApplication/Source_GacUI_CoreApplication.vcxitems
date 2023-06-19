@@ -20,9 +20,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiThemeManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBoundsComposition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsWindowComposition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.h" />
@@ -35,9 +36,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiLabelControls.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiThemeManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\Controls\GuiWindowControls.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBasicComposition.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsCompositionBase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsBoundsComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition_Helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsComposition_Layout.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsEventReceiver.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsCompositions\GuiGraphicsWindowComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_Alt.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\Application\GraphicsHost\GuiGraphicsHost_ShortcutKey.cpp" />

@@ -167,17 +167,17 @@ GuiRepeatStackComposition
 
 			vint GuiRepeatStackComposition::GetRepeatCompositionCount()
 			{
-				return stackItems.Count();
+				return GetStackItems().Count();
 			}
 
 			GuiGraphicsComposition* GuiRepeatStackComposition::GetRepeatComposition(vint index)
 			{
-				return stackItems[index];
+				return GetStackItems()[index];
 			}
 
 			GuiGraphicsComposition* GuiRepeatStackComposition::InsertRepeatComposition(vint index)
 			{
-				CHECK_ERROR(0 <= index && index <= stackItems.Count(), L"GuiRepeatStackComposition::InsertRepeatComposition(vint)#Index out of range.");
+				CHECK_ERROR(0 <= index && index <= GetStackItems().Count(), L"GuiRepeatStackComposition::InsertRepeatComposition(vint)#Index out of range.");
 				auto item = new GuiStackItemComposition;
 				InsertStackItem(index, item);
 				return item;
@@ -185,7 +185,7 @@ GuiRepeatStackComposition
 
 			GuiGraphicsComposition* GuiRepeatStackComposition::RemoveRepeatComposition(vint index)
 			{
-				auto item = stackItems[index];
+				auto item = GetStackItems()[index];
 				RemoveChild(item);
 				return item;
 			}
@@ -207,17 +207,17 @@ GuiRepeatFlowComposition
 
 			vint GuiRepeatFlowComposition::GetRepeatCompositionCount()
 			{
-				return flowItems.Count();
+				return GetFlowItems().Count();
 			}
 
 			GuiGraphicsComposition* GuiRepeatFlowComposition::GetRepeatComposition(vint index)
 			{
-				return flowItems[index];
+				return GetFlowItems()[index];
 			}
 
 			GuiGraphicsComposition* GuiRepeatFlowComposition::InsertRepeatComposition(vint index)
 			{
-				CHECK_ERROR(0 <= index && index <= flowItems.Count(), L"GuiRepeatStackComposition::InsertRepeatComposition(vint)#Index out of range.");
+				CHECK_ERROR(0 <= index && index <= GetFlowItems().Count(), L"GuiRepeatStackComposition::InsertRepeatComposition(vint)#Index out of range.");
 				auto item = new GuiFlowItemComposition;
 				InsertFlowItem(index, item);
 				return item;
@@ -225,7 +225,7 @@ GuiRepeatFlowComposition
 
 			GuiGraphicsComposition* GuiRepeatFlowComposition::RemoveRepeatComposition(vint index)
 			{
-				auto item = flowItems[index];
+				auto item = GetFlowItems()[index];
 				RemoveChild(item);
 				return item;
 			}
