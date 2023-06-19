@@ -682,6 +682,37 @@ TEST_FILE
 		SafeDeleteComposition(table);
 	});
 
+	auto dragSplitter = [](GuiTableSplitterCompositionBase* splitter, Size offset)
+	{
+		GuiMouseEventArgs prototype(splitter);
+		prototype.ctrl = false;
+		prototype.shift = false;
+		prototype.left = true;
+		prototype.middle = false;
+		prototype.right = true;
+		prototype.x = 2;
+		prototype.y = 2;
+		prototype.wheel = 0;
+		prototype.nonClient = false;
+
+		{
+			auto args = prototype;
+			splitter->GetEventReceiver()->leftButtonDown.Execute(args);
+		}
+		{
+			auto args = prototype;
+			args.x += offset.x;
+			args.y += offset.y;
+			splitter->GetEventReceiver()->mouseMove.Execute(args);
+		}
+		{
+			auto args = prototype;
+			args.x += offset.x;
+			args.y += offset.y;
+			splitter->GetEventReceiver()->leftButtonUp.Execute(args);
+		}
+	};
+
 	TEST_CATEGORY(L"Test <RowSplitter>")
 	{
 		TEST_CASE(L"P;A;A;P")
@@ -704,6 +735,22 @@ TEST_FILE
 			table->ForceCalculateSizeImmediately();
 
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,45 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,-10 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,35 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,-10 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,26 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,20 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,46 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,20 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,64 }, { 33,10 }));
 		});
 	});
 
