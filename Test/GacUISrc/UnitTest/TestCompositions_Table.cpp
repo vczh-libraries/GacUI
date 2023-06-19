@@ -817,6 +817,43 @@ TEST_FILE
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,88 }, { 33,10 }));
 		});
+
+		TEST_CASE(L"A|PP")
+		{
+			auto table = new GuiTableComposition;
+
+			table->SetPreferredMinSize(Size(33, 100));
+			table->SetBorderVisible(false);
+			table->SetCellPadding(10);
+			table->SetRowsAndColumns(3, 1);
+			table->SetColumnOption(0, GuiCellOption::PercentageOption(1.0));
+			table->SetRowOption(0, GuiCellOption::AbsoluteOption(20));
+			table->SetRowOption(1, GuiCellOption::PercentageOption(0.5));
+			table->SetRowOption(2, GuiCellOption::PercentageOption(0.5));
+
+			auto splitter = new GuiRowSplitterComposition;
+			splitter->SetRowsToTheTop(1);
+			table->AddChild(splitter);
+			table->ForceCalculateSizeImmediately();
+
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,20 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,50 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,70 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,50 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,78 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,-50 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,28 }, { 33,10 }));
+
+			dragSplitter(splitter, { 0,-50 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,1 }, { 33,10 }));
+		});
 	});
 
 	TEST_CATEGORY(L"Test <ColumnSplitter>")
@@ -922,6 +959,43 @@ TEST_FILE
 			dragSplitter(splitter, { 50,0 });
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 88,0 }, { 10,33 }));
+		});
+
+		TEST_CASE(L"A|PP")
+		{
+			auto table = new GuiTableComposition;
+
+			table->SetPreferredMinSize(Size(100, 33));
+			table->SetBorderVisible(false);
+			table->SetCellPadding(10);
+			table->SetRowsAndColumns(1, 3);
+			table->SetRowOption(0, GuiCellOption::PercentageOption(1.0));
+			table->SetColumnOption(0, GuiCellOption::AbsoluteOption(20));
+			table->SetColumnOption(1, GuiCellOption::PercentageOption(0.5));
+			table->SetColumnOption(2, GuiCellOption::PercentageOption(0.5));
+
+			auto splitter = new GuiColumnSplitterComposition;
+			splitter->SetColumnsToTheLeft(1);
+			table->AddChild(splitter);
+			table->ForceCalculateSizeImmediately();
+
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 20,0 }, { 10,33 }));
+
+			dragSplitter(splitter, { 50,0 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 70,0 }, { 10,33 }));
+
+			dragSplitter(splitter, { 50,0 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 78,0 }, { 10,33 }));
+
+			dragSplitter(splitter, { -50,0 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 28,0 }, { 10,33 }));
+
+			dragSplitter(splitter, { -50,0 });
+			table->ForceCalculateSizeImmediately();
+			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 1,0 }, { 10,33 }));
 		});
 	});
 }
