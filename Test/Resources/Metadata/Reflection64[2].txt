@@ -3205,8 +3205,9 @@ enum presentation::compositions::ControlSignal {
 @ValueType
 enum presentation::compositions::FlowAlignment {
     Center = 1,
-    Extend = 2,
+    Extend = 3,
     Left = 0,
+    Right = 2,
 }
 
 class presentation::compositions::GuiAxis : presentation::compositions::IGuiAxis {
@@ -3217,23 +3218,20 @@ class presentation::compositions::GuiAxis : presentation::compositions::IGuiAxis
     constructor (axisDirection : presentation::AxisDirection) : presentation::compositions::GuiAxis^;
 }
 
-class presentation::compositions::GuiBoundsComposition : presentation::compositions::GuiGraphicsSite {
+class presentation::compositions::GuiBoundsComposition : presentation::compositions::GuiGraphicsComposition {
     property AlignmentToParent : presentation::Margin { get:GetAlignmentToParent set:SetAlignmentToParent }
-    property Bounds : presentation::Rect { get:GetBounds set:SetBounds event:BoundsChanged }
-    property SizeAffectParent : system::Boolean { get:GetSizeAffectParent set:SetSizeAffectParent }
+    property ExpectedBounds : presentation::Rect { get:GetExpectedBounds set:SetExpectedBounds }
 
     function GetAlignmentToParent() : presentation::Margin;
-    function GetBounds() : presentation::Rect;
-    function GetSizeAffectParent() : system::Boolean;
+    function GetExpectedBounds() : presentation::Rect;
     function IsAlignedToParent() : system::Boolean;
     function SetAlignmentToParent(value : presentation::Margin) : system::Void;
-    function SetBounds(value : presentation::Rect) : system::Void;
-    function SetSizeAffectParent(value : system::Boolean) : system::Void;
+    function SetExpectedBounds(value : presentation::Rect) : system::Void;
 
     constructor () : presentation::compositions::GuiBoundsComposition*;
 }
 
-class presentation::compositions::GuiCellComposition : presentation::compositions::GuiGraphicsSite {
+class presentation::compositions::GuiCellComposition : presentation::compositions::GuiGraphicsComposition {
     property Column : system::Int64 { get:GetColumn }
     property ColumnSpan : system::Int64 { get:GetColumnSpan }
     property Row : system::Int64 { get:GetRow }
@@ -3326,15 +3324,12 @@ class presentation::compositions::GuiFlowComposition : presentation::composition
     constructor () : presentation::compositions::GuiFlowComposition*;
 }
 
-class presentation::compositions::GuiFlowItemComposition : presentation::compositions::GuiGraphicsSite {
-    property Bounds : presentation::Rect { get:GetBounds set:SetBounds event:BoundsChanged }
+class presentation::compositions::GuiFlowItemComposition : presentation::compositions::GuiGraphicsComposition {
     property ExtraMargin : presentation::Margin { get:GetExtraMargin set:SetExtraMargin }
     property FlowOption : presentation::compositions::GuiFlowOption { get:GetFlowOption set:SetFlowOption }
 
-    function GetBounds() : presentation::Rect;
     function GetExtraMargin() : presentation::Margin;
     function GetFlowOption() : presentation::compositions::GuiFlowOption;
-    function SetBounds(value : presentation::Rect) : system::Void;
     function SetExtraMargin(value : presentation::Margin) : system::Void;
     function SetFlowOption(value : presentation::compositions::GuiFlowOption) : system::Void;
 
@@ -3356,6 +3351,14 @@ enum presentation::compositions::GuiFlowOption::BaselineType {
 }
 
 class presentation::compositions::GuiGraphicsComposition : system::ReferenceType {
+    event CachedBoundsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CachedBounds,
+        CachedClientArea,
+    }
+    event CachedMinSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        CachedMinSize,
+        CachedMinClientSize,
+    }
     @AttachTemplate:::vl::__vwsn::EventAttach($This->GetEventReceiver()->$Name, $Handler)
     @DetachTemplate:::vl::__vwsn::EventDetach($This->GetEventReceiver()->$Name, $Handler)
     @InvokeTemplate:::vl::__vwsn::EventInvoke($This->GetEventReceiver()->$Name, $Handler)
@@ -3456,19 +3459,17 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     property AssociatedControl : presentation::controls::GuiControl* { get:GetAssociatedControl }
     property AssociatedCursor : presentation::INativeCursor* { get:GetAssociatedCursor set:SetAssociatedCursor }
     property AssociatedHitTestResult : presentation::INativeWindowListener::HitTestResult { get:GetAssociatedHitTestResult set:SetAssociatedHitTestResult }
-    property Bounds : presentation::Rect { get:GetBounds }
+    property CachedBounds : presentation::Rect { get:GetCachedBounds event:CachedBoundsChanged }
+    property CachedClientArea : presentation::Rect { get:GetCachedClientArea event:CachedBoundsChanged }
+    property CachedMinClientSize : presentation::Size { get:GetCachedMinClientSize event:CachedMinSizeChanged }
+    property CachedMinSize : presentation::Size { get:GetCachedMinSize event:CachedMinSizeChanged }
     property Children : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^ { get:GetChildren }
-    property ClientArea : presentation::Rect { get:GetClientArea }
-    property ClientAreaMargin : presentation::Margin { get:GetClientAreaMargin }
     property EventuallyVisible : system::Boolean { get:GetEventuallyVisible }
     property GlobalBounds : presentation::Rect { get:GetGlobalBounds }
     property InternalMargin : presentation::Margin { get:GetInternalMargin set:SetInternalMargin }
-    property Margin : presentation::Margin { get:GetMargin set:SetMargin }
-    property MinPreferredClientSize : presentation::Size { get:GetMinPreferredClientSize }
     property MinSizeLimitation : presentation::compositions::GuiGraphicsComposition::MinSizeLimitation { get:GetMinSizeLimitation set:SetMinSizeLimitation }
     property OwnedElement : presentation::elements::IGuiGraphicsElement^ { get:GetOwnedElement set:SetOwnedElement }
     property Parent : presentation::compositions::GuiGraphicsComposition* { get:GetParent }
-    property PreferredBounds : presentation::Rect { get:GetPreferredBounds }
     property PreferredMinSize : presentation::Size { get:GetPreferredMinSize set:SetPreferredMinSize }
     property RelatedControl : presentation::controls::GuiControl* { get:GetRelatedControl }
     property RelatedControlHost : presentation::controls::GuiControlHost* { get:GetRelatedControlHost }
@@ -3478,25 +3479,22 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
 
     function AddChild(child : presentation::compositions::GuiGraphicsComposition*) : system::Boolean;
     function FindComposition(location : presentation::Point, forMouseEvent : system::Boolean) : presentation::compositions::GuiGraphicsComposition*;
-    function ForceCalculateSizeImmediately() : system::Void;
     function GetAssociatedControl() : presentation::controls::GuiControl*;
     function GetAssociatedCursor() : presentation::INativeCursor*;
     function GetAssociatedHitTestResult() : presentation::INativeWindowListener::HitTestResult;
-    function GetBounds() : presentation::Rect;
+    function GetCachedBounds() : presentation::Rect;
+    function GetCachedClientArea() : presentation::Rect;
+    function GetCachedMinClientSize() : presentation::Size;
+    function GetCachedMinSize() : presentation::Size;
     @InvokeTemplate:$This->Children($Arguments)
     @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Children)
     function GetChildren() : system::ReadonlyList<presentation::compositions::GuiGraphicsComposition*>^;
-    function GetClientArea() : presentation::Rect;
-    function GetClientAreaMargin() : presentation::Margin;
     function GetEventuallyVisible() : system::Boolean;
     function GetGlobalBounds() : presentation::Rect;
     function GetInternalMargin() : presentation::Margin;
-    function GetMargin() : presentation::Margin;
-    function GetMinPreferredClientSize() : presentation::Size;
     function GetMinSizeLimitation() : presentation::compositions::GuiGraphicsComposition::MinSizeLimitation;
     function GetOwnedElement() : presentation::elements::IGuiGraphicsElement^;
     function GetParent() : presentation::compositions::GuiGraphicsComposition*;
-    function GetPreferredBounds() : presentation::Rect;
     function GetPreferredMinSize() : presentation::Size;
     function GetRelatedControl() : presentation::controls::GuiControl*;
     function GetRelatedControlHost() : presentation::controls::GuiControlHost*;
@@ -3504,7 +3502,6 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     function GetTransparentToMouse() : system::Boolean;
     function GetVisible() : system::Boolean;
     function InsertChild(index : system::Int64, child : presentation::compositions::GuiGraphicsComposition*) : system::Boolean;
-    function IsSizeAffectParent() : system::Boolean;
     function MoveChild(child : presentation::compositions::GuiGraphicsComposition*, newIndex : system::Int64) : system::Boolean;
     function RemoveChild(child : presentation::compositions::GuiGraphicsComposition*) : system::Boolean;
     function Render(size : presentation::Size) : system::Void;
@@ -3514,7 +3511,6 @@ class presentation::compositions::GuiGraphicsComposition : system::ReferenceType
     function SetAssociatedCursor(value : presentation::INativeCursor*) : system::Void;
     function SetAssociatedHitTestResult(value : presentation::INativeWindowListener::HitTestResult) : system::Void;
     function SetInternalMargin(value : presentation::Margin) : system::Void;
-    function SetMargin(value : presentation::Margin) : system::Void;
     function SetMinSizeLimitation(value : presentation::compositions::GuiGraphicsComposition::MinSizeLimitation) : system::Void;
     function SetOwnedElement(value : presentation::elements::IGuiGraphicsElement^) : system::Void;
     function SetPreferredMinSize(value : presentation::Size) : system::Void;
@@ -3528,22 +3524,6 @@ enum presentation::compositions::GuiGraphicsComposition::MinSizeLimitation {
     LimitToElement = 1,
     LimitToElementAndChildren = 2,
     NoLimit = 0,
-}
-
-class presentation::compositions::GuiGraphicsSite : presentation::compositions::GuiGraphicsComposition {
-    event BoundsChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
-        Bounds,
-        Bounds,
-        Bounds,
-        Bounds,
-    }
-
-    property Bounds : presentation::Rect { get:GetBounds event:BoundsChanged }
-    property PreviousCalculatedBounds : presentation::Rect { get:GetPreviousCalculatedBounds }
-
-    function GetBounds() : presentation::Rect;
-    function GetPreviousCalculatedBounds() : presentation::Rect;
-
 }
 
 class presentation::compositions::GuiItemEventArgs : presentation::compositions::GuiEventArgs {
@@ -3601,7 +3581,7 @@ class presentation::compositions::GuiNodeMouseEventArgs : presentation::composit
     constructor (composition : presentation::compositions::GuiGraphicsComposition*) : presentation::compositions::GuiNodeMouseEventArgs^;
 }
 
-class presentation::compositions::GuiPartialViewComposition : presentation::compositions::GuiGraphicsSite {
+class presentation::compositions::GuiPartialViewComposition : presentation::compositions::GuiGraphicsComposition {
     property HeightPageSize : system::Double { get:GetHeightPageSize set:SetHeightPageSize }
     property HeightRatio : system::Double { get:GetHeightRatio set:SetHeightRatio }
     property WidthPageSize : system::Double { get:GetWidthPageSize set:SetWidthPageSize }
@@ -3620,14 +3600,20 @@ class presentation::compositions::GuiPartialViewComposition : presentation::comp
 }
 
 class presentation::compositions::GuiRepeatCompositionBase : system::ReferenceType {
+    event ContextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Context,
+    }
     event ItemInserted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
     event ItemRemoved : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
 
+    property Context : system::Object { get:GetContext set:SetContext event:ContextChanged }
     property ItemSource : system::Enumerable^ { get:GetItemSource set:SetItemSource }
     property ItemTemplate : system::Function<presentation::templates::GuiTemplate*, system::Object>^ { get:GetItemTemplate set:SetItemTemplate }
 
+    function GetContext() : system::Object;
     function GetItemSource() : system::Enumerable^;
     function GetItemTemplate() : system::Function<presentation::templates::GuiTemplate*, system::Object>^;
+    function SetContext(value : system::Object) : system::Void;
     function SetItemSource(value : system::Enumerable^) : system::Void;
     function SetItemTemplate(value : system::Function<presentation::templates::GuiTemplate*, system::Object>^) : system::Void;
 
@@ -3745,7 +3731,7 @@ class presentation::compositions::GuiShortcutKeyManager : presentation::composit
     constructor () : presentation::compositions::GuiShortcutKeyManager*;
 }
 
-class presentation::compositions::GuiSideAlignedComposition : presentation::compositions::GuiGraphicsSite {
+class presentation::compositions::GuiSideAlignedComposition : presentation::compositions::GuiGraphicsComposition {
     property Direction : presentation::compositions::GuiSideAlignedComposition::Direction { get:GetDirection set:SetDirection }
     property MaxLength : system::Int64 { get:GetMaxLength set:SetMaxLength }
     property MaxRatio : system::Double { get:GetMaxRatio set:SetMaxRatio }
@@ -3796,13 +3782,10 @@ enum presentation::compositions::GuiStackComposition::Direction {
     Vertical = 1,
 }
 
-class presentation::compositions::GuiStackItemComposition : presentation::compositions::GuiGraphicsSite {
-    property Bounds : presentation::Rect { get:GetBounds set:SetBounds event:BoundsChanged }
+class presentation::compositions::GuiStackItemComposition : presentation::compositions::GuiGraphicsComposition {
     property ExtraMargin : presentation::Margin { get:GetExtraMargin set:SetExtraMargin }
 
-    function GetBounds() : presentation::Rect;
     function GetExtraMargin() : presentation::Margin;
-    function SetBounds(value : presentation::Rect) : system::Void;
     function SetExtraMargin(value : presentation::Margin) : system::Void;
 
     constructor () : presentation::compositions::GuiStackItemComposition*;
@@ -3817,7 +3800,6 @@ class presentation::compositions::GuiTableComposition : presentation::compositio
     property Rows : system::Int64 { get:GetRows set:SetRows }
 
     function GetBorderVisible() : system::Boolean;
-    function GetCellArea() : presentation::Rect;
     function GetCellPadding() : system::Int64;
     function GetColumnOption(column : system::Int64) : presentation::compositions::GuiCellOption;
     function GetColumns() : system::Int64;
@@ -3835,19 +3817,18 @@ class presentation::compositions::GuiTableComposition : presentation::compositio
     @ClosureTemplate:::vl::Func<$Func>($This, &::vl::reflection::description::GuiTableComposition_SetRows)
     function SetRows(value : system::Int64) : system::Void;
     function SetRowsAndColumns(rows : system::Int64, columns : system::Int64) : system::Boolean;
-    function UpdateCellBounds() : system::Void;
 
     constructor () : presentation::compositions::GuiTableComposition*;
 }
 
-class presentation::compositions::GuiTableSplitterCompositionBase : presentation::compositions::GuiGraphicsSite {
+class presentation::compositions::GuiTableSplitterCompositionBase : presentation::compositions::GuiGraphicsComposition {
     property TableParent : presentation::compositions::GuiTableComposition* { get:GetTableParent }
 
     function GetTableParent() : presentation::compositions::GuiTableComposition*;
 
 }
 
-class presentation::compositions::GuiWindowComposition : presentation::compositions::GuiGraphicsSite {
+class presentation::compositions::GuiWindowComposition : presentation::compositions::GuiGraphicsComposition {
     constructor () : presentation::compositions::GuiWindowComposition*;
 }
 
