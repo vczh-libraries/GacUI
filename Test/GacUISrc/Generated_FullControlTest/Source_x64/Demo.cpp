@@ -487,9 +487,9 @@ Closures
 		auto angle = (((circleRatio * ::vl::reflection::description::Math::Pi()) * static_cast<double>(static_cast<::vl::vint64_t>(2L))) + (::vl::reflection::description::Math::Pi() * static_cast<double>(1.5)));
 		auto sin = ::vl::reflection::description::Math::Sin(angle);
 		auto cos = ::vl::reflection::description::Math::Cos(angle);
-		auto cx = ((::vl::__vwsn::This(container)->GetBounds().x2 - ::vl::__vwsn::This(container)->GetBounds().x1) / static_cast<::vl::vint64_t>(2L));
-		auto cy = ((::vl::__vwsn::This(container)->GetBounds().y2 - ::vl::__vwsn::This(container)->GetBounds().y1) / static_cast<::vl::vint64_t>(2L));
-		auto radiusBall = ((::vl::__vwsn::This(ball)->GetBounds().x2 - ::vl::__vwsn::This(ball)->GetBounds().x1) / static_cast<::vl::vint64_t>(2L));
+		auto cx = ((::vl::__vwsn::This(container)->GetCachedBounds().x2 - ::vl::__vwsn::This(container)->GetCachedBounds().x1) / static_cast<::vl::vint64_t>(2L));
+		auto cy = ((::vl::__vwsn::This(container)->GetCachedBounds().y2 - ::vl::__vwsn::This(container)->GetCachedBounds().y1) / static_cast<::vl::vint64_t>(2L));
+		auto radiusBall = ((::vl::__vwsn::This(ball)->GetCachedBounds().x2 - ::vl::__vwsn::This(ball)->GetCachedBounds().x1) / static_cast<::vl::vint64_t>(2L));
 		auto radiusOrbit = (::vl::reflection::description::Math::Min(cx, cy) - radiusBall);
 		auto x = static_cast<::vl::vint64_t>(::vl::reflection::description::Math::Round(((cos * static_cast<double>(radiusOrbit)) + static_cast<double>(cx))));
 		auto y = static_cast<::vl::vint64_t>(::vl::reflection::description::Math::Round(((sin * static_cast<double>(radiusOrbit)) + static_cast<double>(cx))));
