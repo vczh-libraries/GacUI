@@ -149,7 +149,6 @@ GuiFlowComposition
 				if (item && !layout_flowItems.Contains(item))
 				{
 					layout_flowItems.Add(item);
-					layout_invalid = true;
 				}
 			}
 
@@ -160,7 +159,6 @@ GuiFlowComposition
 				if (item)
 				{
 					layout_flowItems.Remove(item);
-					layout_invalid = true;
 				}
 			}
 
@@ -219,7 +217,6 @@ GuiFlowComposition
 				index = layout_flowItems.Insert(index, item);
 				if (AddChild(item))
 				{
-					layout_invalid = true;
 					return true;
 				}
 				layout_flowItems.RemoveAt(index);
