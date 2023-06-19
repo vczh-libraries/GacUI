@@ -38,6 +38,14 @@ TEST_FILE
 		table->AddChild(cellSpec);
 		cellSpec->SetSite(2, 2, 1, 1);
 
+		auto rowSplitter = new GuiRowSplitterComposition;
+		table->AddChild(rowSplitter);
+		rowSplitter->SetRowsToTheTop(2);
+
+		auto columnSplitter = new GuiColumnSplitterComposition;
+		table->AddChild(columnSplitter);
+		columnSplitter->SetColumnsToTheLeft(2);
+
 		// <Stack> ======================================================
 
 		auto stack = new GuiStackComposition;
@@ -129,6 +137,8 @@ TEST_FILE
 			TEST_ASSERT(cellFlow->GetCachedBounds() == Rect({ 110,110 }, { 100,100 }));
 			TEST_ASSERT(cellSpec->GetCachedMinSize() == Size(0, 0));
 			TEST_ASSERT(cellSpec->GetCachedBounds() == Rect({ 220,220 }, { 100,100 }));
+			TEST_ASSERT(rowSplitter->GetCachedBounds() == Rect({ 0,210 }, { 320,10 }));
+			TEST_ASSERT(columnSplitter->GetCachedBounds() == Rect({ 210,0 }, { 10,320 }));
 		});
 
 		TEST_CASE(L"<Stack>")
