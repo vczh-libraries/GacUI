@@ -101,9 +101,9 @@
                   var sin = Math::Sin(angle);
                   var cos = Math::Cos(angle);
                 
-                  var cx = (container.Bounds.x2 - container.Bounds.x1) / 2;
-                  var cy = (container.Bounds.y2 - container.Bounds.y1) / 2;
-                  var radiusBall = (ball.Bounds.x2 - ball.Bounds.x1) / 2;
+                  var cx = (container.CachedBounds.x2 - container.CachedBounds.x1) / 2;
+                  var cy = (container.CachedBounds.y2 - container.CachedBounds.y1) / 2;
+                  var radiusBall = (ball.CachedBounds.x2 - ball.CachedBounds.x1) / 2;
                   var radiusOrbit = Math::Min(cx, cy) - radiusBall;
                 
                   var x = cast int Math::Round(cos * radiusOrbit + cx);
