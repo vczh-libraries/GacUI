@@ -41,7 +41,6 @@
 
 - Fill empty test cases after composition refactoring.
   - `TestCompositions_Bounds.cpp`.
-  - `TestCompositions_Table.cpp`.
   - `TestCompositions_Responsive.cpp`.
 - Refactor compositions
   - Skip layout when an element change doesn't affect the minimum size
