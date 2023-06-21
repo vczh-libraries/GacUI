@@ -34,12 +34,15 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
-- CppTest_Metaonly
+- FullControlTest
   - Resized main window can't shrink again (could caused by ribbon).
   - `FontDialog` and `Open/Save FileDialog` missing content.
     - probably a table bug, may also cause list view not showing items for some views.
-- FullControlTest and DarkSkin
+- MISC
   - Check everywhere that specified `InternalMargin`, ensure children do not cover the border.
+- Theme
+  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
+  - Add minimum size control to `<PartialView>`.
 
 ## Progressing
 
@@ -73,9 +76,6 @@
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - FakeDialogService
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
-- Theme
-  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-  - Add minimum size control to `<PartialView>`.
 - GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
@@ -85,7 +85,7 @@
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh
 - Rewrite GacBuild.ps1 in C++
-- Add `MoveToScreenCenterAfterLayouted` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
+- Add `MoveToScreenCenterAfterLayout` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
 
 ## Document
 
