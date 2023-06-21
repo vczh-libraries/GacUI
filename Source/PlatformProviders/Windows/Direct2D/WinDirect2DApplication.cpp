@@ -256,7 +256,7 @@ WindowListener 1.1
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
 
-					if(!d2dDeviceContext)
+					if (!d2dDeviceContext)
 					{
 						if (!dxgiDevice)
 						{
@@ -269,8 +269,6 @@ WindowListener 1.1
 						}
 
 						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
-						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
-						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
 						IWindowsForm* form = GetWindowsForm(window);
 						{
 							UINT dpiX = 0;
@@ -278,18 +276,26 @@ WindowListener 1.1
 							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
 							d2dDeviceContext->SetDpi((FLOAT)dpiX, (FLOAT)dpiY);
 						}
+						previousSize = { 0,0 };
 					}
-					else if(previousSize!=size)
+
+					if (previousSize != size)
 					{
+						previousSize = size;
 						d2dDeviceContext->SetTarget(nullptr);
-						HRESULT hr = dxgiSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+						HRESULT hr = dxgiSwapChain->ResizeBuffers(
+							0,
+							(UINT)size.x.value,
+							(UINT)size.y.value,
+							DXGI_FORMAT_UNKNOWN,
+							0
+						);
 						if (SUCCEEDED(hr))
 						{
 							auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
 							d2dDeviceContext->SetTarget(d2dBitmap.Obj());
 						}
 					}
-					previousSize=size;
 				}
 			public:
 				Direct2DWindowsNativeWindowListener_1_1(INativeWindow* _window, ComPtr<ID2D1Factory1> _d2dFactory1, ID3D11Device* _d3d11Device)
