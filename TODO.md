@@ -30,8 +30,6 @@
 
 ## Known Issues
 
-- Hosted Mode
-  - Main window dragging to resize doesn't work
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
@@ -39,6 +37,7 @@
 - CppTest_Metaonly
   - Resized main window can't shrink again (could caused by ribbon).
   - `FontDialog` and `Open/Save FileDialog` missing content.
+    - probably a table bug, may also cause list view not showing items for some views.
 - FullControlTest and DarkSkin
   - Check everywhere that specified `InternalMargin`, ensure children do not cover the border.
 

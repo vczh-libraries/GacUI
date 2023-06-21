@@ -178,6 +178,11 @@ GuiHostedController::INativeWindowListener
 				{
 					mainWindow->SetBounds({ {},clientSize });
 				}
+
+				for (auto listener : mainWindow->listeners)
+				{
+					listener->Moved();
+				}
 			}
 		}
 
