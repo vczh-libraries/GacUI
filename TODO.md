@@ -38,6 +38,7 @@
   - Resized main window can't shrink again (could caused by ribbon).
   - `FontDialog` and `Open/Save FileDialog` missing content.
     - probably a table bug, may also cause list view not showing items for some views.
+  - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC
   - Check everywhere that specified `InternalMargin`, ensure children do not cover the border.
 - Theme
