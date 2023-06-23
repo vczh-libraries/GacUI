@@ -1,6 +1,6 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::ElementTabPage">
   <TabPage ref.Name="self" Text="Elements">
-    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="10">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="10" MinSizeLimitation="LimitToElementAndChildren">
       <att.Rows>
         <_>composeType:Absolute absolute:45</_>
         <_>composeType:Absolute absolute:45</_>

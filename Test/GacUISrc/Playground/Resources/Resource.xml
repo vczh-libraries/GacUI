@@ -13,7 +13,7 @@
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
         <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
           <StackItem MinSizeLimitation="LimitToElementAndChildren">
-            <Table CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <Table MinSizeLimitation="LimitToElementAndChildren" CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0">
               <att.Rows>
                 <_>composeType:Absolute absolute:30</_>
               </att.Rows>
@@ -22,61 +22,6 @@
               </att.Columns>
 
               <Cell Site="row:0 column:0"><Label Text="Title:"/></Cell>
-              <Cell Site="row:1 column:0"><Label Text="Directory:"/></Cell>
-              <Cell Site="row:2 column:0"><Label Text="FileName:"/></Cell>
-              <Cell Site="row:3 column:0"><Label Text="Filter:"/></Cell>
-              <Cell Site="row:4 column:0"><Label Text="FilterIndex:"/></Cell>
-              <Cell Site="row:5 column:0"><Label Text="DefaultExtension:"/></Cell>
-
-              <Cell Site="row:0 column:1">
-                <SinglelineTextBox ref.Name="txtTitle" Text="The Title">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </SinglelineTextBox>
-              </Cell>
-
-              <Cell Site="row:1 column:1">
-                <SinglelineTextBox ref.Name="txtDirectory" Text="C:\">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </SinglelineTextBox>
-              </Cell>
-
-              <Cell Site="row:2 column:1">
-                <SinglelineTextBox ref.Name="txtFileName" Text="C:\File.txt">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </SinglelineTextBox>
-              </Cell>
-
-              <Cell Site="row:3 column:1">
-                <SinglelineTextBox ref.Name="txtFilter" Text="Text Files (*.txt)|*.txt|XML Files (*.xml)|*.xml|All Files (*.*)|*.*">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </SinglelineTextBox>
-              </Cell>
-
-              <Cell Site="row:4 column:1">
-                <SinglelineTextBox ref.Name="txtFilterIndex" Text="0">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </SinglelineTextBox>
-              </Cell>
-
-              <Cell Site="row:5 column:1">
-                <SinglelineTextBox ref.Name="txtDefaultExtension" Text="txt">
-                  <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-                </SinglelineTextBox>
-              </Cell>
-
-              <Cell Site="row:0 column:2 rowSpan:7">
-                <Stack Direction="Vertical" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                  <StackItem><CheckBox ref.Name="chkFileDialogAllowMultipleSelection" Text="FileDialogAllowMultipleSelection"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogFileMustExist" Text="FileDialogFileMustExist"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogShowReadOnlyCheckBox" Text="FileDialogShowReadOnlyCheckBox"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogDereferenceLinks" Text="FileDialogDereferenceLinks"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogShowNetworkButton" Text="FileDialogShowNetworkButton"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogPromptCreateFile" Text="FileDialogPromptCreateFile"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogPromptOverwriteFile" Text="FileDialogPromptOverwriteFile"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogDirectoryMustExist" Text="FileDialogDirectoryMustExist"/></StackItem>
-                  <StackItem><CheckBox ref.Name="chkFileDialogAddToRecent" Text="FileDialogAddToRecent"/></StackItem>
-                </Stack>
-              </Cell>
             </Table>
           </StackItem>
         </Stack>

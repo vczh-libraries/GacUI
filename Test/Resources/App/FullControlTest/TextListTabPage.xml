@@ -7,7 +7,7 @@
   </ref.Members>
   <TabPage ref.Name="self" Text="TextList">
     <x:MutexGroupController ref.Name="mutexGroupController"/>
-    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
       <att.Rows>
         <_>composeType:MinSize</_>
         <_>composeType:Percentage percentage:1.0</_>

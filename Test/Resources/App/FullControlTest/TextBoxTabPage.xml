@@ -83,7 +83,7 @@ So as I pray, unlimited blade works.]]>
         ]]>
       </ref.Members>
       <TabPage ref.Name="self">
-        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -116,7 +116,7 @@ So as I pray, unlimited blade works.]]>
         ]]>
       </ref.Members>
       <TabPage ref.Name="self">
-        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:MinSize</CellOption>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
@@ -179,7 +179,7 @@ So as I pray, unlimited blade works.]]>
           ]]>
         </ev.OnMakeFontSmaller-eval>
 
-        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <CellOption>composeType:Percentage percentage:1.0</CellOption>
             <CellOption>composeType:MinSize</CellOption>
