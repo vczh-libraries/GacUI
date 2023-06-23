@@ -153,6 +153,7 @@ DefaultDataGridItemTemplate
 					DefaultListViewItemTemplate::OnInitialize();
 					{
 						textTable = new GuiTableComposition;
+						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						textTable->SetRowsAndColumns(1, 1);
 						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
