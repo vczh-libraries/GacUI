@@ -802,9 +802,9 @@ GuiResponsiveContainerComposition
 				if (auto control = GetRelatedControl())
 				{
 					control->TryDelayExecuteIfNotDeleted([=]()
-						{
-							AdjustLevel();
-						});
+					{
+						AdjustLevel();
+					});
 				}
 				else
 				{

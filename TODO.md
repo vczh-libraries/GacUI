@@ -39,6 +39,8 @@
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC
   - Check everywhere that specified `InternalMargin`, ensure children do not cover the border.
+  - Check everywhere that uses `CachedBoundsChanged.Attach`.
+  - Fake file dialog crashes.
 - Theme
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
   - Add minimum size control to `<PartialView>`.
