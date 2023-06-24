@@ -40,7 +40,17 @@ namespace composition_bounds_tests
 	{
 	protected:
 		vint								level = 2;
+
+		void UpdateMinSize()
+		{
+			SetPreferredMinSize(Size(10 + level * 10, 10 + level * 10));
+		}
 	public:
+		FakeResponsiveComposition()
+		{
+			UpdateMinSize();
+		}
+
 		vint GetLevelCount() override		{ return 3; }
 		vint GetCurrentLevel() override		{ return level; }
 
@@ -48,15 +58,15 @@ namespace composition_bounds_tests
 		{
 			if (level == 0) return false;
 			level--;
-			SetPreferredMinSize(Size(10 + level * 10, 10 + level * 10));
+			UpdateMinSize();
 			return true;
 		}
 
 		bool LevelUp() override
 		{
 			if (level == 2) return false;
-			level--;
-			SetPreferredMinSize(Size(10 + level * 10, 10 + level * 10));
+			level++;
+			UpdateMinSize();
 			return true;
 		}
 	};

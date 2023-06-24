@@ -728,10 +728,9 @@ GuiResponsiveContainerComposition
 
 #define RESPONSIVE_INVALID_SIZE Size(-1, -1)
 
-			void GuiResponsiveContainerComposition::AdjustLevel()
+			void GuiResponsiveContainerComposition::AdjustLevel(Size containerSize)
 			{
 				if (!responsiveTarget) return;
-				const Size containerSize = cachedBounds.GetSize();
 				const Size responsiveOriginalSize = responsiveTarget->GetCachedBounds().GetSize();
 				const bool testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
 				const bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
@@ -753,12 +752,13 @@ GuiResponsiveContainerComposition
 						}
 						else if (responsiveTarget->LevelUp())
 						{
-							responsiveTarget->ForceCalculateSizeImmediately();
-							auto currentSize = responsiveTarget->GetCachedBounds().GetSize();
+							responsiveTarget->Layout_UpdateMinSize();
+							auto currentSize = responsiveTarget->GetCachedMinSize();
 							if (RESPONSIVE_IF_CONTAINER(<, currentSize))
 							{
 								upperLevelSize = currentSize;
 								responsiveTarget->LevelDown();
+								responsiveTarget->Layout_UpdateMinSize();
 								break;
 							}
 						}
@@ -772,8 +772,7 @@ GuiResponsiveContainerComposition
 				{
 					while (true)
 					{
-						responsiveTarget->ForceCalculateSizeImmediately();
-						auto currentSize = responsiveTarget->GetCachedBounds().GetSize();
+						auto currentSize = responsiveTarget->GetCachedMinSize();
 						if (RESPONSIVE_IF_CONTAINER(>=, currentSize))
 						{
 							break;
@@ -786,6 +785,7 @@ GuiResponsiveContainerComposition
 						else if(responsiveTarget->LevelDown())
 						{
 							upperLevelSize = currentSize;
+							responsiveTarget->Layout_UpdateMinSize();
 						}
 						else
 						{
@@ -797,28 +797,19 @@ GuiResponsiveContainerComposition
 #undef RESPONSIVE_IF_CONTAINER
 			}
 
-			void GuiResponsiveContainerComposition::CallAdjustLevelPropertly()
+			Rect GuiResponsiveContainerComposition::Layout_CalculateBounds(Size parentSize)
 			{
-				if (auto control = GetRelatedControl())
+				auto bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
+				if (bounds.GetSize() != cachedBounds.GetSize())
 				{
-					control->TryDelayExecuteIfNotDeleted([=]()
-					{
-						AdjustLevel();
-					});
+					AdjustLevel(bounds.GetSize());
 				}
-				else
-				{
-					AdjustLevel();
-				}
+				return bounds;
 			}
 
 			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
 				:upperLevelSize(RESPONSIVE_INVALID_SIZE)
 			{
-				CachedBoundsChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-				{
-					CallAdjustLevelPropertly();
-				});
 			}
 
 			GuiResponsiveCompositionBase* GuiResponsiveContainerComposition::GetResponsiveTarget()
@@ -843,7 +834,6 @@ GuiResponsiveContainerComposition
 						responsiveTarget->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						while (responsiveTarget->LevelUp());
 						AddChild(responsiveTarget);
-						CallAdjustLevelPropertly();
 					}
 				}
 			}

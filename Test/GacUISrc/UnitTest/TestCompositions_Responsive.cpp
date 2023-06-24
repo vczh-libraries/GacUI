@@ -334,14 +334,12 @@ TEST_FILE
 	{
 		auto responsive = new GuiResponsiveContainerComposition;
 		auto fake = new FakeResponsiveComposition;
+		responsive->SetResponsiveTarget(fake);
 
 #define RESPOND(W, H, L)\
 		responsive->SetExpectedBounds(Rect({ 0,0 }, { W,H }));\
 		responsive->ForceCalculateSizeImmediately();\
 		TEST_ASSERT(fake->GetCurrentLevel() == L)\
-
-		responsive->AddChild(fake);
-		responsive->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 		RESPOND(100, 100, 2);
 		RESPOND(30, 30, 2);

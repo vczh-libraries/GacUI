@@ -32,6 +32,7 @@ GuiResponsiveCompositionBase
 			/// <summary>Base class for responsive layout compositions.</summary>
 			class GuiResponsiveCompositionBase abstract : public GuiBoundsComposition, public Description<GuiResponsiveCompositionBase>
 			{
+				friend class GuiResponsiveContainerComposition;
 			protected:
 				GuiResponsiveCompositionBase*		responsiveParent = nullptr;
 				ResponsiveDirection					direction = ResponsiveDirection::Both;
@@ -256,8 +257,8 @@ GuiResponsiveContainerComposition
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
 				Size									upperLevelSize;
 
-				void									AdjustLevel();
-				void									CallAdjustLevelPropertly();
+				void									AdjustLevel(Size containerSize);
+				Rect									Layout_CalculateBounds(Size parentSize) override;
 
 			public:
 				GuiResponsiveContainerComposition();
