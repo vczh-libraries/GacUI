@@ -733,7 +733,7 @@ GuiResponsiveContainerComposition
 				const bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
 
 #define RESPONSIVE_LARGER_THAN(SIZE) ((!testX || (containerSize).x > SIZE.x) && (!testY || (containerSize).y > SIZE.y))
-#define RESPONSIVE_SMALLER_THAN(SIZE) ((!testX || (containerSize).x < SIZE.x) || (!testY || (containerSize).y < SIZE.y))
+#define RESPONSIVE_SMALLER_THAN(SIZE) ((testX && (containerSize).x < SIZE.x) || (testY && (containerSize).y < SIZE.y))
 
 				if (RESPONSIVE_LARGER_THAN(minSizeUpperBound) || (!RESPONSIVE_SMALLER_THAN(minSizeUpperBound) && minSizeLowerBound != minSizeUpperBound))
 				{
@@ -779,8 +779,9 @@ GuiResponsiveContainerComposition
 				if (responsiveTarget && responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
 				{
 					needAdjust = true;
-					minSizeUpperBound = responsiveTarget->GetCachedMinSize();
 					minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+					if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
+					if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
 				}
 
 				if (needAdjust)
