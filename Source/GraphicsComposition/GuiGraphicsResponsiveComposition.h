@@ -255,7 +255,8 @@ GuiResponsiveContainerComposition
 			{
 			protected:
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
-				Size									upperLevelSize;
+				Size									minSizeUpperBound;
+				Size									minSizeLowerBound;
 
 				void									AdjustLevel(Size containerSize);
 				Rect									Layout_CalculateBounds(Size parentSize) override;
