@@ -35,7 +35,9 @@
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
 - FullControlTest
-  - Resized main window can't shrink again (could caused by ribbon).
+  - Resized main window can't shrink again (caused by tab page).
+    - Repro in Playground
+  - `<ResponsiveContainer>` doesn't keep level stable (repro in ribbon).
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC
   - Check everywhere that specified `InternalMargin`, ensure children do not cover the border.
@@ -49,7 +51,6 @@
 
 - Fill empty test cases after composition refactoring.
   - `TestCompositions_Bounds.cpp`.
-  - `TestCompositions_Responsive.cpp`.
 - Refactor compositions
   - Skip layout when an element change doesn't affect the minimum size
      - or the minimum size is still smaller than its size
