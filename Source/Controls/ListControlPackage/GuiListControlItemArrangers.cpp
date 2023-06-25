@@ -1063,7 +1063,6 @@ FixedHeightMultiColumnItemArranger
 				}
 
 				FixedHeightMultiColumnItemArranger::FixedHeightMultiColumnItemArranger()
-					:itemHeight(1)
 				{
 				}
 

@@ -171,7 +171,7 @@ Predefined ItemArranger
 					vint										pim_itemHeight = 0;
 
 				protected:
-					vint										itemHeight;
+					vint										itemHeight = 1;
 
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
