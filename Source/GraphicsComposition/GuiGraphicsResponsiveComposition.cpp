@@ -726,68 +726,104 @@ GuiResponsiveGroupComposition
 GuiResponsiveContainerComposition
 ***********************************************************************/
 
-			void GuiResponsiveContainerComposition::AdjustLevel(Size containerSize)
+			std::strong_ordering GuiResponsiveContainerComposition::Layout_CompareSize(Size first, Size second)
 			{
-				if (!responsiveTarget) return;
-				const bool testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
-				const bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
+				auto ordX = testX ? first.x <=> second.y : std::strong_ordering::equivalent;
+				auto ordY = testY ? first.y <=> second.y : std::strong_ordering::equivalent;
 
-#define RESPONSIVE_LARGER_THAN(SIZE) ((!testX || (containerSize).x > SIZE.x) && (!testY || (containerSize).y > SIZE.y))
-#define RESPONSIVE_SMALLER_THAN(SIZE) ((testX && (containerSize).x < SIZE.x) || (testY && (containerSize).y < SIZE.y))
-
-				if (RESPONSIVE_LARGER_THAN(minSizeUpperBound) || (!RESPONSIVE_SMALLER_THAN(minSizeUpperBound) && minSizeLowerBound != minSizeUpperBound))
+				if (ordX == std::strong_ordering::less || ordY == std::strong_ordering::less)
 				{
-					while (responsiveTarget->GetCurrentLevel() < responsiveTarget->GetLevelCount() - 1)
-					{
-						if (!responsiveTarget->LevelUp()) break;
-						responsiveTarget->Layout_UpdateMinSize();
-						minSizeUpperBound = responsiveTarget->GetCachedMinSize();
-						if (RESPONSIVE_SMALLER_THAN(minSizeUpperBound))
-						{
-							responsiveTarget->LevelDown();
-							responsiveTarget->Layout_UpdateMinSize();
-							break;
-						}
-						minSizeLowerBound = minSizeUpperBound;
-					}
+					return std::strong_ordering::less;
 				}
-				else if (RESPONSIVE_SMALLER_THAN(minSizeLowerBound))
+				if (ordX == std::strong_ordering::greater || ordY == std::strong_ordering::greater)
 				{
-					while (responsiveTarget->GetCurrentLevel() > 0)
-					{
-						if (!responsiveTarget->LevelDown()) break;
-						responsiveTarget->Layout_UpdateMinSize();
-						minSizeUpperBound = minSizeLowerBound;
-						minSizeLowerBound = responsiveTarget->GetCachedMinSize();
-						if (!RESPONSIVE_SMALLER_THAN(minSizeLowerBound)) break;
-					}
+					return std::strong_ordering::greater;
 				}
+				return std::strong_ordering::equivalent;
+			}
 
-#undef RESPONSIVE_SMALLER_THAN
-#undef RESPONSIVE_LARGER_THAN
+			void GuiResponsiveContainerComposition::Layout_AdjustLevelUp(Size containerSize)
+			{
+				while (true)
+				{
+					if (responsiveTarget->GetCurrentLevel() == responsiveTarget->GetLevelCount() - 1) break;
+					if (Layout_CompareSize(minSizeLowerBound, minSizeUpperBound) == std::strong_ordering::less)
+					{
+						if (Layout_CompareSize(containerSize, minSizeUpperBound) == std::strong_ordering::less) break;
+					}
+					else
+					{
+						if (Layout_CompareSize(containerSize, minSizeUpperBound) != std::strong_ordering::greater) break;
+					}
+
+					if (!responsiveTarget->LevelUp()) break;
+					responsiveTarget->Layout_UpdateMinSize();
+					minSizeUpperBound = responsiveTarget->GetCachedMinSize();
+					if (Layout_CompareSize(containerSize, minSizeUpperBound) == std::strong_ordering::less)
+					{
+						responsiveTarget->LevelDown();
+						responsiveTarget->Layout_UpdateMinSize();
+						break;
+					}
+					minSizeLowerBound = minSizeUpperBound;
+				}
+			}
+
+			void GuiResponsiveContainerComposition::Layout_AdjustLevelDown(Size containerSize)
+			{
+				while (true)
+				{
+					if (responsiveTarget->GetCurrentLevel() == 0) break;
+					if (Layout_CompareSize(containerSize, minSizeLowerBound) != std::strong_ordering::less) break;
+
+					if (!responsiveTarget->LevelDown()) break;
+					responsiveTarget->Layout_UpdateMinSize();
+					minSizeUpperBound = minSizeLowerBound;
+					minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+				}
 			}
 
 			Rect GuiResponsiveContainerComposition::Layout_CalculateBounds(Size parentSize)
 			{
-				bool needAdjust = false;
 				auto bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
-				if (bounds.GetSize() != cachedBounds.GetSize())
+
+				if (responsiveTarget)
 				{
-					needAdjust = true;
+					bool needAdjust = false;
+					auto containerSize = bounds.GetSize();
+					auto ordering = std::strong_ordering::equivalent;
+
+					if (containerSize != cachedBounds.GetSize())
+					{
+						ordering = Layout_CompareSize(containerSize, cachedBounds.GetSize());
+						needAdjust = true;
+					}
+
+					if (responsiveTarget && responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
+					{
+						minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+						if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
+						if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
+						if (Layout_CompareSize(containerSize, minSizeLowerBound) == std::strong_ordering::less)
+						{
+							ordering = std::strong_ordering::less;
+							needAdjust = true;
+						}
+					}
+
+					if (needAdjust)
+					{
+						if (ordering == std::strong_ordering::less)
+						{
+							Layout_AdjustLevelDown(containerSize);
+						}
+						else if (ordering == std::strong_ordering::greater)
+						{
+							Layout_AdjustLevelUp(containerSize);
+						}
+					}
 				}
 
-				if (responsiveTarget && responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
-				{
-					needAdjust = true;
-					minSizeLowerBound = responsiveTarget->GetCachedMinSize();
-					if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
-					if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
-				}
-
-				if (needAdjust)
-				{
-					AdjustLevel(bounds.GetSize());
-				}
 				return bounds;
 			}
 
@@ -820,11 +856,16 @@ GuiResponsiveContainerComposition
 						responsiveTarget->Layout_UpdateMinSize();
 						minSizeUpperBound = responsiveTarget->GetCachedMinSize();
 						minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+						testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
+						testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
+						Layout_AdjustLevelDown(cachedBounds.GetSize());
 					}
 					else
 					{
 						minSizeUpperBound = {};
 						minSizeLowerBound = {};
+						testX = false;
+						testY = false;
 					}
 				}
 			}

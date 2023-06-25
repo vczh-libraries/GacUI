@@ -253,12 +253,17 @@ GuiResponsiveContainerComposition
 			/// <summary>A composition which will automatically tell its target responsive composition to switch between views according to its size.</summary>
 			class GuiResponsiveContainerComposition : public GuiBoundsComposition, public Description<GuiResponsiveContainerComposition>
 			{
-			protected:
+			private:
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
 				Size									minSizeUpperBound;
 				Size									minSizeLowerBound;
+				bool									testX = false;
+				bool									testY = false;
 
-				void									AdjustLevel(Size containerSize);
+				std::strong_ordering					Layout_CompareSize(Size first, Size second);
+				void									Layout_AdjustLevelUp(Size containerSize);
+				void									Layout_AdjustLevelDown(Size containerSize);
+			public:
 				Rect									Layout_CalculateBounds(Size parentSize) override;
 
 			public:
