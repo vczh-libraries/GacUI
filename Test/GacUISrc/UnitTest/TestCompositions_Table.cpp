@@ -759,6 +759,8 @@ TEST_FILE
 			TEST_ASSERT(table->GetRowOption(1).absolute == 39);
 			TEST_ASSERT(table->GetRowOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,64 }, { 33,10 }));
+
+			SafeDeleteComposition(table);
 		});
 
 		TEST_CASE(L"P|P")
@@ -787,6 +789,8 @@ TEST_FILE
 			dragSplitter(splitter, { 0,10 });
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,45 }, { 33,10 }));
+
+			SafeDeleteComposition(table);
 		});
 
 		TEST_CASE(L"PP|A")
@@ -828,6 +832,8 @@ TEST_FILE
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(table->GetRowOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,88 }, { 33,10 }));
+
+			SafeDeleteComposition(table);
 		});
 
 		TEST_CASE(L"A|PP")
@@ -869,6 +875,8 @@ TEST_FILE
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(table->GetRowOption(0).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 0,1 }, { 33,10 }));
+
+			SafeDeleteComposition(table);
 		});
 	});
 
@@ -918,6 +926,8 @@ TEST_FILE
 			TEST_ASSERT(table->GetColumnOption(1).absolute == 39);
 			TEST_ASSERT(table->GetColumnOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 64,0 }, { 10,33 }));
+
+			SafeDeleteComposition(table);
 		});
 
 		TEST_CASE(L"P|P")
@@ -946,6 +956,8 @@ TEST_FILE
 			dragSplitter(splitter, { 10,0 });
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 45,0 }, { 10,33 }));
+
+			SafeDeleteComposition(table);
 		});
 
 		TEST_CASE(L"PP|A")
@@ -987,6 +999,8 @@ TEST_FILE
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(table->GetColumnOption(2).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 88,0 }, { 10,33 }));
+
+			SafeDeleteComposition(table);
 		});
 
 		TEST_CASE(L"A|PP")
@@ -1028,6 +1042,8 @@ TEST_FILE
 			table->ForceCalculateSizeImmediately();
 			TEST_ASSERT(table->GetColumnOption(0).absolute == 1);
 			TEST_ASSERT(splitter->GetCachedBounds() == Rect({ 1,0 }, { 10,33 }));
+
+			SafeDeleteComposition(table);
 		});
 	});
 }
