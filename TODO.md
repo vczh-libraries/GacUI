@@ -35,8 +35,6 @@
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
 - FullControlTest
-  - Resized main window can't shrink again (caused by tab page).
-    - Repro in Playground
   - `<ResponsiveContainer>` doesn't keep level stable (repro in ribbon).
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC

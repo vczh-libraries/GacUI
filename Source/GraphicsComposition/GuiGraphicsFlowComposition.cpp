@@ -181,7 +181,7 @@ GuiFlowComposition
 					);
 
 					Size extraSize = Layout_UpdateFlowItemLayoutByConstraint(constraintSize);
-					Size minFlowSize = axis->VirtualSizeToRealSize(Size(layout_lastVirtualWidth, layout_minVirtualHeight));
+					Size minFlowSize = axis->VirtualSizeToRealSize(Size(0, layout_minVirtualHeight));
 					minFlowSize.x += extraSize.x;
 					minFlowSize.y += extraSize.y;
 

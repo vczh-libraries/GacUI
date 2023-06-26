@@ -17,6 +17,9 @@
             <TabPage Text="First"/>
             <TabPage Text="Second"/>
             <TabPage Text="Third"/>
+            <TabPage Text="Fourth"/>
+            <TabPage Text="Fifth"/>
+            <TabPage Text="Sixth"/>
           </att.Pages>
         </Tab>
       </Window>
