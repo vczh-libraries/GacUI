@@ -237,8 +237,8 @@
 
             <att.AfterHeaders-set>
               <Stack Direction="Horizontal" AlignmentToParent="left:0 top:-1 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
-                <StackItem InternalMargin="left:0 top:0 right:10 bottom:0">
-                  <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text="Search:" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <StackItem>
+                  <SolidLabel Font-bind="self.DisplayFont" Color="#FFFFFF" Text="Search: " HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </StackItem>
                 <StackItem>
                   <SinglelineTextBox Alt="S">

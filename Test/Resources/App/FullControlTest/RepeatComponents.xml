@@ -117,8 +117,7 @@
       <CustomControl ref.Name="self">
         <GroupBox Text-bind="self.Text">
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:-1"/>
-          <att.ContainerComposition-set InternalMargin="left:5 top:0 right:5 bottom:5"/>
-          <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
+          <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:0 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
             <StackItem>
               <Button Alt="A" Text="Add 10 items">
                 <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
