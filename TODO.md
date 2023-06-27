@@ -40,8 +40,6 @@
 - MISC
   - Check everywhere that specified `InternalMargin`, ensure children do not cover the border.
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
-  - Fake file dialog crashes.
-    - Ensure list item arrangers doesn't div by 0
 - Theme
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
   - Add minimum size control to `<PartialView>`.

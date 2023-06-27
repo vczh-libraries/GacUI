@@ -990,9 +990,13 @@ FixedHeightMultiColumnItemArranger
 
 				void FixedHeightMultiColumnItemArranger::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
 				{
-					rows = bounds.Height() / itemHeight;
+					vint w = bounds.Width();
+					vint h = bounds.Height();
+					if (w <= 0) w = 1;
+
+					rows = h / itemHeight;
 					if (rows < 1) rows = 1;
-					startColumn = bounds.Left() / bounds.Width();
+					startColumn = bounds.Left() / w;
 				}
 
 				void FixedHeightMultiColumnItemArranger::BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
@@ -1001,10 +1005,14 @@ FixedHeightMultiColumnItemArranger
 					pi_totalWidth = 0;
 					if (forMoving)
 					{
+						vint w = newBounds.Width();
+						vint h = newBounds.Height();
+						if (w <= 0) w = 1;
+
 						pim_itemHeight = itemHeight;
-						vint rows = newBounds.Height() / itemHeight;
+						vint rows = h / itemHeight;
 						if (rows < 1) rows = 1;
-						vint columns = newBounds.Left() / newBounds.Width();
+						vint columns = newBounds.Left() / w;
 						newStartIndex = rows * columns;
 					}
 				}
