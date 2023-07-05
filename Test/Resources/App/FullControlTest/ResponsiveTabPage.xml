@@ -17,9 +17,9 @@
             </att.Columns>
 
             <Cell Site="row:0 column:0 rowSpan:5">
-              <Bounds MinSizeLimitation="LimitToElementAndChildren" InternalMargin="left:1 top:1 right:1 bottom:1">
+              <Bounds MinSizeLimitation="LimitToElementAndChildren">
                 <SolidBorder Color="#00FF00"/>
-                <ResponsiveView ref.Name="responsive">
+                <ResponsiveView ref.Name="responsive" AlignmentToParent="left:1 top:1 right:1 bottom:1">
                   <att.SharedControls>
                     <DocumentTextBox ref.Name="documentBox" EditMode="Editable" Text="Edit me!"/>
                   </att.SharedControls>
@@ -106,9 +106,9 @@
             </att.Columns>
 
             <Cell Site="row:0 column:0 rowSpan:5">
-              <Bounds MinSizeLimitation="LimitToElementAndChildren" InternalMargin="left:1 top:1 right:1 bottom:1">
+              <Bounds MinSizeLimitation="LimitToElementAndChildren">
                 <SolidBorder Color="#00FF00"/>
-                <ResponsiveStack ref.Name="responsive">
+                <ResponsiveStack ref.Name="responsive" AlignmentToParent="left:1 top:1 right:1 bottom:1">
                   <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="10" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
                     <StackItem>
                       <ResponsiveView>
@@ -186,9 +186,9 @@
             </att.Columns>
 
             <Cell Site="row:0 column:0 rowSpan:5">
-              <Bounds MinSizeLimitation="LimitToElementAndChildren" InternalMargin="left:1 top:1 right:1 bottom:1">
+              <Bounds MinSizeLimitation="LimitToElementAndChildren">
                 <SolidBorder Color="#00FF00"/>
-                <ResponsiveGroup ref.Name="responsive">
+                <ResponsiveGroup ref.Name="responsive" AlignmentToParent="left:1 top:1 right:1 bottom:1">
                   <Stack AlignmentToParent="left:0 top:0 right:0 bottom:0" Padding="10" MinSizeLimitation="LimitToElementAndChildren" Direction="Vertical">
                     <StackItem>
                       <ResponsiveView>

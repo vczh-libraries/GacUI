@@ -30,30 +30,32 @@
 
 ## Known Issues
 
-- Hosted Mode
-  - Main window dragging top/left border moves the whole window downwards/rightwards after reaching minimum size.
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
 
+## Progressing (before release)
+
+- FullControlTest
+  - List control (or scroll view) should layout content during layouting composition, not driven by event.
+- MISC
+  - Check everywhere that uses `CachedBoundsChanged.Attach`.
+- Examine all demo projects.
+- `FlowAlignment::Right` in demo.
+- Make document v2 without auto generated content.
+
 ## Progressing
 
-- Fill empty test cases after composition refactoring.
-  - `TestCompositions_Bounds.cpp`.
-  - `TestCompositions_Responsive.cpp`.
-- Refactor compositions
-  - Skip layout when an element change doesn't affect the minimum size
-     - or the minimum size is still smaller than its size
-  - Fix `DarkSkin` and `FullControlTest`
-  - Examine all test projects carefully
-  - Fix document.
-- `FlowAlignment::Right` in demo.
 - UnitTest.vcxproj
+  - Complete `TestCompositions_Bounds.cpp`.
   - Test controls with a unit test only platform provider running in hosted mode
     - Each character takes exactly `FontSize x FontSize`
     - Deal with `\r` and `\n` when multiline is enabled
   - Test against more code as many as possible
+- DarkSkin
+  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
+  - Add minimum size control to `<PartialView>`.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
@@ -69,17 +71,16 @@
   - Delete `GuiControlHost` and `GuiWindow`'s `OnVisualStatusChanged`.
 - FakeDialogService
   - message box disable `X` button if `Cancel` is not in the button list or `OK` is the only button.
-- Theme
-  - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-  - Add minimum size control to `<PartialView>`.
 - GDI
   - Big cursor of document empty line (GDI)
   - In hosted mode, non-main window doesn't shrink when moving back to low DPI monitor.
+- Hosted
+  - When dragging left/top border if the main window, the window move if the size is smaller than the minimum size.
 - Rewrite calculator state machine demo, when "+" is pressed, jump into "WaitingAnotherOperandForPlus" state machine, instead of storing the operation in a loop. So there will be no loop except for waiting for numbers.
 - Check makefile for ParserGen/GlrParserGen/CodePack/CppMerge/GacGen
   - Write maketools.sh
 - Rewrite GacBuild.ps1 in C++
-- Add `MoveToScreenCenterAfterLayouted` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
+- Add `MoveToScreenCenterAfterLayout` as what is done in `FakeDialogServiceBase::ShowModalDialogAndDelete`.
 
 ## Document
 

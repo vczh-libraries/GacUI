@@ -124,7 +124,6 @@ GuiStackComposition
 					if (!layout_stackItems.Contains(item))
 					{
 						layout_stackItems.Add(item);
-						layout_invalid = true;
 					}
 				}
 			}
@@ -140,7 +139,6 @@ GuiStackComposition
 					{
 						layout_ensuringVisibleStackItem = nullptr;
 					}
-					layout_invalid = true;
 				}
 			}
 
@@ -203,7 +201,6 @@ GuiStackComposition
 				index = layout_stackItems.Insert(index, item);
 				if (AddChild(item))
 				{
-					layout_invalid = true;
 					return true;
 				}
 				layout_stackItems.RemoveAt(index);

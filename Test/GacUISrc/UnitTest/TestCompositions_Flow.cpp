@@ -917,11 +917,22 @@ TEST_FILE
 	{
 		ObservableList<WString> objects;
 
+		// root's preferred width set to 110
+		// flow expanded to fill root, so its width becomes 110
+		// flow's minimum width should always be 0
+		// flow's minimum height should be able to contain all flow items' current areas
+
+		auto root = new GuiBoundsComposition;
+		root->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		root->SetPreferredMinSize(Size(110, 0));
+
 		auto flow = new GuiRepeatFlowComposition;
+		root->AddChild(flow);
+
 		flow->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+		flow->SetAlignmentToParent(Margin(0, 0, 0, 0));
 		flow->SetRowPadding(20);
 		flow->SetColumnPadding(10);
-		flow->SetPreferredMinSize(Size(110, 0));
 		flow->SetItemTemplate([](const Value& obj)
 		{
 			auto itemTemplate = new GuiTemplate;
@@ -935,13 +946,13 @@ TEST_FILE
 		vint contextValue = -1;
 		auto checkFlowItems = [&]()
 		{
-			flow->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
 			vint rows = (objects.Count() + 1) / 2;
 			TEST_ASSERT(flow->GetCachedClientArea() == Rect({ 0,0 }, {
 				110,
 				(rows == 0 ? 0 : rows == 1 ? 50 : 70 * rows - 20)
 				}));
-			TEST_ASSERT(flow->GetCachedMinSize() == flow->GetCachedClientArea().GetSize());
+			TEST_ASSERT(flow->GetCachedMinSize() == Size(0, flow->GetCachedClientArea().Height()));
 			TEST_ASSERT(flow->GetCachedBounds() == flow->GetCachedClientArea());
 
 			TEST_ASSERT(flow->GetFlowItems().Count() == objects.Count());
@@ -1003,6 +1014,6 @@ TEST_FILE
 
 		TEST_ASSERT(flow->Children().Count() == 0);
 
-		SafeDeleteComposition(flow);
+		SafeDeleteComposition(root);
 	});
 }

@@ -1,6 +1,6 @@
 <Instance ref.CodeBehind="false" ref.Class="demo::RepeatTabPage" xmlns:demo="demo::*">
   <TabPage ref.Name="self" Text="Repeat">
-    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+    <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
       <att.Rows>
         <_>composeType:Percentage percentage:1.0</_>
         <_>composeType:Absolute absolute:20</_>

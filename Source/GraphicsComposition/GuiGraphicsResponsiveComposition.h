@@ -32,6 +32,7 @@ GuiResponsiveCompositionBase
 			/// <summary>Base class for responsive layout compositions.</summary>
 			class GuiResponsiveCompositionBase abstract : public GuiBoundsComposition, public Description<GuiResponsiveCompositionBase>
 			{
+				friend class GuiResponsiveContainerComposition;
 			protected:
 				GuiResponsiveCompositionBase*		responsiveParent = nullptr;
 				ResponsiveDirection					direction = ResponsiveDirection::Both;
@@ -252,12 +253,18 @@ GuiResponsiveContainerComposition
 			/// <summary>A composition which will automatically tell its target responsive composition to switch between views according to its size.</summary>
 			class GuiResponsiveContainerComposition : public GuiBoundsComposition, public Description<GuiResponsiveContainerComposition>
 			{
-			protected:
+			private:
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
-				Size									upperLevelSize;
+				Size									minSizeUpperBound;
+				Size									minSizeLowerBound;
+				bool									testX = false;
+				bool									testY = false;
 
-				void									AdjustLevel();
-				void									CallAdjustLevelPropertly();
+				std::strong_ordering					Layout_CompareSize(Size first, Size second);
+				void									Layout_AdjustLevelUp(Size containerSize);
+				void									Layout_AdjustLevelDown(Size containerSize);
+			public:
+				Rect									Layout_CalculateBounds(Size parentSize) override;
 
 			public:
 				GuiResponsiveContainerComposition();

@@ -1008,6 +1008,7 @@ DefaultTreeItemTemplate
 
 					table = new GuiTableComposition;
 					AddChild(table);
+					table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					table->SetRowsAndColumns(3, 4);
 					table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 					table->SetRowOption(1, GuiCellOption::MinSizeOption());

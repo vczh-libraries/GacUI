@@ -178,6 +178,11 @@ GuiHostedController::INativeWindowListener
 				{
 					mainWindow->SetBounds({ {},clientSize });
 				}
+
+				for (auto listener : mainWindow->listeners)
+				{
+					listener->Moved();
+				}
 			}
 		}
 
@@ -658,9 +663,9 @@ GuiHostedController::INativeControllerListener
 					return;
 				}
 
-				for (auto hostedWindow : createdWindows)
+				for (auto visibleWindow : From(wmManager->ordinaryWindowsInOrder).Concat(wmManager->topMostedWindowsInOrder))
 				{
-					for (auto listener : hostedWindow->listeners)
+					for (auto listener : visibleWindow->id->listeners)
 					{
 						if (listener->NeedRefresh())
 						{

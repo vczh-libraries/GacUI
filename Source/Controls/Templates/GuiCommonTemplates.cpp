@@ -484,6 +484,7 @@ GuiCommonScrollViewLook
 
 				tableComposition = new GuiTableComposition;
 				AddChild(tableComposition);
+				tableComposition->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 				tableComposition->SetAlignmentToParent(Margin(0, 0, 0, 0));
 				tableComposition->SetRowsAndColumns(2, 2);
 				tableComposition->SetRowOption(0, GuiCellOption::PercentageOption(1.0));

@@ -38,6 +38,7 @@ BigIconListViewItemTemplate
 					{
 						auto table = new GuiTableComposition;
 						AddChild(table);
+						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						table->SetRowsAndColumns(2, 3);
 						table->SetRowOption(0, GuiCellOption::MinSizeOption());
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -118,6 +119,7 @@ SmallIconListViewItemTemplate
 					{
 						auto table = new GuiTableComposition;
 						AddChild(table);
+						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						table->SetRowsAndColumns(3, 2);
 						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -196,6 +198,7 @@ ListListViewItemTemplate
 					{
 						auto table = new GuiTableComposition;
 						AddChild(table);
+						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						table->SetRowsAndColumns(3, 2);
 						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -411,6 +414,7 @@ InformationListViewItemTemplate
 
 						auto table = new GuiTableComposition;
 						AddChild(table);
+						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						table->SetRowsAndColumns(3, 3);
 						table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 						table->SetRowOption(1, GuiCellOption::MinSizeOption());
@@ -418,7 +422,6 @@ InformationListViewItemTemplate
 						table->SetColumnOption(0, GuiCellOption::MinSizeOption());
 						table->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
 						table->SetColumnOption(2, GuiCellOption::MinSizeOption());
-						table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						table->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						table->SetCellPadding(4);
 						{
@@ -492,11 +495,11 @@ InformationListViewItemTemplate
 								cell->SetSite(i + 1, 0, 1, 1);
 
 								auto dataTable = new GuiTableComposition;
+								dataTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 								dataTable->SetRowsAndColumns(1, 2);
 								dataTable->SetRowOption(0, GuiCellOption::MinSizeOption());
 								dataTable->SetColumnOption(0, GuiCellOption::MinSizeOption());
 								dataTable->SetColumnOption(1, GuiCellOption::PercentageOption(1.0));
-								dataTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 								dataTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 								cell->AddChild(dataTable);
 								{
@@ -566,6 +569,7 @@ DetailListViewItemTemplate
 
 					{
 						textTable = new GuiTableComposition;
+						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						textTable->SetRowsAndColumns(1, 1);
 						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
@@ -578,6 +582,7 @@ DetailListViewItemTemplate
 
 							auto table = new GuiTableComposition;
 							cell->AddChild(table);
+							table->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 							table->SetRowsAndColumns(3, 2);
 							table->SetRowOption(0, GuiCellOption::PercentageOption(0.5));
 							table->SetRowOption(1, GuiCellOption::MinSizeOption());

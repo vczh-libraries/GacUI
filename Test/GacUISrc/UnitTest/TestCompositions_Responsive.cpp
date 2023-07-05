@@ -332,5 +332,31 @@ TEST_FILE
 
 	TEST_CASE(L"Test <ResponsiveContainer>")
 	{
+		auto responsive = new GuiResponsiveContainerComposition;
+		auto fake = new FakeResponsiveComposition;
+		responsive->SetResponsiveTarget(fake);
+
+#define RESPOND(W, H, L)\
+		responsive->SetExpectedBounds(Rect({ 0,0 }, { W,H }));\
+		responsive->ForceCalculateSizeImmediately();\
+		TEST_ASSERT(fake->GetCurrentLevel() == L)\
+
+		RESPOND(100, 100, 2);
+		RESPOND(30, 30, 2);
+		RESPOND(25, 25, 1);
+		RESPOND(20, 20, 1);
+		RESPOND(15, 15, 0);
+		RESPOND(10, 10, 0);
+		RESPOND(5, 5, 0);
+		RESPOND(10, 10, 0);
+		RESPOND(15, 15, 0);
+		RESPOND(20, 20, 1);
+		RESPOND(25, 25, 1);
+		RESPOND(30, 30, 2);
+		RESPOND(100, 100, 2);
+
+#undef RESPOND
+
+		SafeDeleteComposition(responsive);
 	});
 }

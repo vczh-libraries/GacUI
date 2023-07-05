@@ -1729,7 +1729,6 @@ namespace demo
 		::vl::presentation::controls::GuiButton* __vwsn_precompile_15;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_16;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_17;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_18;
 		void __vwsn_demo_EnglishNumbersController_Initialize(::demo::EnglishNumbersController* __vwsn_this_);
 	public:
 		EnglishNumbersControllerConstructor();
@@ -3484,9 +3483,8 @@ namespace demo
 		::vl::presentation::controls::GuiComboBoxListControl* comboView;
 		::vl::presentation::controls::GuiBindableTextList* bindableTextList;
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_39;
-		::vl::presentation::compositions::GuiGraphicsComposition* __vwsn_precompile_40;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_41;
-		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_42;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_40;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_41;
 		void __vwsn_demo_TextListTabPage_Initialize(::demo::TextListTabPage* __vwsn_this_);
 	public:
 		TextListTabPageConstructor();

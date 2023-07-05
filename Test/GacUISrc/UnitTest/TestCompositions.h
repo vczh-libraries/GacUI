@@ -36,6 +36,41 @@ namespace composition_bounds_tests
 		Size GetMinSize() override												{ return size; }
 	};
 
+	class FakeResponsiveComposition : public GuiResponsiveCompositionBase
+	{
+	protected:
+		vint								level = 2;
+
+		void UpdateMinSize()
+		{
+			SetPreferredMinSize(Size(10 + level * 10, 10 + level * 10));
+		}
+	public:
+		FakeResponsiveComposition()
+		{
+			UpdateMinSize();
+		}
+
+		vint GetLevelCount() override		{ return 3; }
+		vint GetCurrentLevel() override		{ return level; }
+
+		bool LevelDown() override
+		{
+			if (level == 0) return false;
+			level--;
+			UpdateMinSize();
+			return true;
+		}
+
+		bool LevelUp() override
+		{
+			if (level == 2) return false;
+			level++;
+			UpdateMinSize();
+			return true;
+		}
+	};
+
 	template<typename T>
 	void TestBoundsWithTrivialChildren(void(*init)(T*) = nullptr)
 	{

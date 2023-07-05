@@ -318,25 +318,18 @@ GuiGraphicsComposition
 								renderer->Render(bounds);
 							}
 						}
+
 						if (children.Count() > 0)
 						{
-							bounds.x1 += internalMargin.left;
-							bounds.y1 += internalMargin.top;
-							bounds.x2 -= internalMargin.right;
-							bounds.y2 -= internalMargin.bottom;
-							if (bounds.x1 <= bounds.x2 && bounds.y1 <= bounds.y2)
+							renderTarget->PushClipper(bounds);
+							if (!renderTarget->IsClipperCoverWholeTarget())
 							{
-								offset = bounds.GetSize();
-								renderTarget->PushClipper(bounds);
-								if (!renderTarget->IsClipperCoverWholeTarget())
+								for (auto child : children)
 								{
-									for (auto child : children)
-									{
-										child->Render(Size(bounds.x1, bounds.y1));
-									}
+									child->Render(Size(bounds.x1, bounds.y1));
 								}
-								renderTarget->PopClipper();
 							}
+							renderTarget->PopClipper();
 						}
 						isRendering = false;
 					}
@@ -364,15 +357,12 @@ GuiGraphicsComposition
 				Rect relativeBounds = Rect(Point(0, 0), bounds.GetSize());
 				if (relativeBounds.Contains(location))
 				{
-					Rect clientArea = GetCachedClientArea();
 					// TODO: (enumerable) foreach:reversed
 					for (vint i = children.Count() - 1; i >= 0; i--)
 					{
 						GuiGraphicsComposition* child = children[i];
 						Rect childBounds = child->GetCachedBounds();
-						vint offsetX = childBounds.x1 + (clientArea.x1 - bounds.x1);
-						vint offsetY = childBounds.y1 + (clientArea.y1 - bounds.y1);
-						Point newLocation = location - Size(offsetX, offsetY);
+						Point newLocation = location - Size(childBounds.x1, childBounds.y1);
 						GuiGraphicsComposition* childResult = child->FindComposition(newLocation, forMouseEvent);
 						if (childResult)
 						{

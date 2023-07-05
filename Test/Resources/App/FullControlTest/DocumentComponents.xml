@@ -8,7 +8,7 @@
       </ref.Members>
       <Window ref.Name="self" Text="Hyperlink" ClientSize="x:320 y:80" SizeBox="false" MinimizedBox="false" MaximizedBox="false" ShowInTaskBar="false">
         <att.BoundsComposition-set PreferredMinSize="x:320 y:80"/>
-        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>

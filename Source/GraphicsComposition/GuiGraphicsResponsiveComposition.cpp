@@ -726,99 +726,113 @@ GuiResponsiveGroupComposition
 GuiResponsiveContainerComposition
 ***********************************************************************/
 
-#define RESPONSIVE_INVALID_SIZE Size(-1, -1)
-
-			void GuiResponsiveContainerComposition::AdjustLevel()
+			std::strong_ordering GuiResponsiveContainerComposition::Layout_CompareSize(Size first, Size second)
 			{
-				if (!responsiveTarget) return;
-				const Size containerSize = cachedBounds.GetSize();
-				const Size responsiveOriginalSize = responsiveTarget->GetCachedBounds().GetSize();
-				const bool testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
-				const bool testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
+				auto ordX = testX ? first.x <=> second.x : std::strong_ordering::equivalent;
+				auto ordY = testY ? first.y <=> second.y : std::strong_ordering::equivalent;
 
-#define RESPONSIVE_IF_CONTAINER(OP, SIZE) ((testX && (containerSize).x OP SIZE.x) || (testY && (containerSize).y OP SIZE.y))
-
-				if (upperLevelSize != RESPONSIVE_INVALID_SIZE && RESPONSIVE_IF_CONTAINER(>=, upperLevelSize))
+				if (ordX == std::strong_ordering::less || ordY == std::strong_ordering::less)
 				{
-					upperLevelSize = RESPONSIVE_INVALID_SIZE;
+					return std::strong_ordering::less;
 				}
-
-				if (upperLevelSize == RESPONSIVE_INVALID_SIZE && RESPONSIVE_IF_CONTAINER(>=, responsiveOriginalSize))
+				if (ordX == std::strong_ordering::greater || ordY == std::strong_ordering::greater)
 				{
-					while (true)
-					{
-						if (responsiveTarget->GetCurrentLevel() == responsiveTarget->GetLevelCount() - 1)
-						{
-							break;
-						}
-						else if (responsiveTarget->LevelUp())
-						{
-							responsiveTarget->ForceCalculateSizeImmediately();
-							auto currentSize = responsiveTarget->GetCachedBounds().GetSize();
-							if (RESPONSIVE_IF_CONTAINER(<, currentSize))
-							{
-								upperLevelSize = currentSize;
-								responsiveTarget->LevelDown();
-								break;
-							}
-						}
-						else
-						{
-							break;
-						}
-					}
+					return std::strong_ordering::greater;
 				}
-				else
-				{
-					while (true)
-					{
-						responsiveTarget->ForceCalculateSizeImmediately();
-						auto currentSize = responsiveTarget->GetCachedBounds().GetSize();
-						if (RESPONSIVE_IF_CONTAINER(>=, currentSize))
-						{
-							break;
-						}
-
-						if (responsiveTarget->GetCurrentLevel() == 0)
-						{
-							break;
-						}
-						else if(responsiveTarget->LevelDown())
-						{
-							upperLevelSize = currentSize;
-						}
-						else
-						{
-							break;
-						}
-					}
-				}
-
-#undef RESPONSIVE_IF_CONTAINER
+				return std::strong_ordering::equivalent;
 			}
 
-			void GuiResponsiveContainerComposition::CallAdjustLevelPropertly()
+			void GuiResponsiveContainerComposition::Layout_AdjustLevelUp(Size containerSize)
 			{
-				if (auto control = GetRelatedControl())
+				while (true)
 				{
-					control->TryDelayExecuteIfNotDeleted([=]()
+					if (responsiveTarget->GetCurrentLevel() == responsiveTarget->GetLevelCount() - 1) break;
+					if (Layout_CompareSize(minSizeLowerBound, minSizeUpperBound) == std::strong_ordering::less)
+					{
+						if (Layout_CompareSize(containerSize, minSizeUpperBound) == std::strong_ordering::less) break;
+					}
+					else
+					{
+						if (Layout_CompareSize(containerSize, minSizeUpperBound) != std::strong_ordering::greater) break;
+					}
+
+					if (!responsiveTarget->LevelUp()) break;
+					responsiveTarget->Layout_UpdateMinSize();
+					minSizeUpperBound = responsiveTarget->GetCachedMinSize();
+					if (Layout_CompareSize(containerSize, minSizeUpperBound) == std::strong_ordering::less)
+					{
+						responsiveTarget->LevelDown();
+						responsiveTarget->Layout_UpdateMinSize();
+						break;
+					}
+					minSizeLowerBound = minSizeUpperBound;
+				}
+			}
+
+			void GuiResponsiveContainerComposition::Layout_AdjustLevelDown(Size containerSize)
+			{
+				while (true)
+				{
+					if (responsiveTarget->GetCurrentLevel() == 0) break;
+					if (Layout_CompareSize(containerSize, minSizeLowerBound) != std::strong_ordering::less) break;
+
+					if (!responsiveTarget->LevelDown()) break;
+					responsiveTarget->Layout_UpdateMinSize();
+					minSizeUpperBound = minSizeLowerBound;
+					minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+				}
+			}
+
+			Rect GuiResponsiveContainerComposition::Layout_CalculateBounds(Size parentSize)
+			{
+				auto bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
+
+				if (responsiveTarget)
+				{
+					bool needAdjust = false;
+					auto containerSize = bounds.GetSize();
+					auto ordering = std::strong_ordering::equivalent;
+
+					if (containerSize != cachedBounds.GetSize())
+					{
+						ordering = Layout_CompareSize(containerSize, cachedBounds.GetSize());
+						needAdjust = true;
+					}
+
+					if (responsiveTarget)
+					{
+						if (responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
 						{
-							AdjustLevel();
-						});
+							minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+							if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
+							if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
+						}
+
+						if (Layout_CompareSize(containerSize, minSizeLowerBound) == std::strong_ordering::less)
+						{
+							ordering = std::strong_ordering::less;
+							needAdjust = true;
+						}
+					}
+
+					if (needAdjust)
+					{
+						if (ordering == std::strong_ordering::less)
+						{
+							Layout_AdjustLevelDown(containerSize);
+						}
+						else if (ordering == std::strong_ordering::greater)
+						{
+							Layout_AdjustLevelUp(containerSize);
+						}
+					}
 				}
-				else
-				{
-					AdjustLevel();
-				}
+
+				return bounds;
 			}
 
 			GuiResponsiveContainerComposition::GuiResponsiveContainerComposition()
-				:upperLevelSize(RESPONSIVE_INVALID_SIZE)
 			{
-				CachedBoundsChanged.AttachLambda([this](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-				{
-					CallAdjustLevelPropertly();
-				});
 			}
 
 			GuiResponsiveCompositionBase* GuiResponsiveContainerComposition::GetResponsiveTarget()
@@ -836,19 +850,29 @@ GuiResponsiveContainerComposition
 					}
 
 					responsiveTarget = value;
-					upperLevelSize = RESPONSIVE_INVALID_SIZE;
 
 					if (responsiveTarget)
 					{
 						responsiveTarget->SetAlignmentToParent(Margin(0, 0, 0, 0));
 						while (responsiveTarget->LevelUp());
 						AddChild(responsiveTarget);
-						CallAdjustLevelPropertly();
+
+						responsiveTarget->Layout_UpdateMinSize();
+						minSizeUpperBound = responsiveTarget->GetCachedMinSize();
+						minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+						testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
+						testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
+						Layout_AdjustLevelDown(cachedBounds.GetSize());
+					}
+					else
+					{
+						minSizeUpperBound = {};
+						minSizeLowerBound = {};
+						testX = false;
+						testY = false;
 					}
 				}
 			}
-
-#undef RESPONSIVE_INVALID_SIZE
 		}
 	}
 }

@@ -8,74 +8,20 @@
 
   <Folder name="Images" content="Link">../../../Resources/App/FullControlTest/ToolbarImages/Images.xml</Folder>
 
-  <Instance name="MenuToolBarControlTemplateResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::MenuToolBarControlTemplate">
-      <ControlTemplate MinSizeLimitation="LimitToElementAndChildren"/>
-    </Instance>
-  </Instance>
-
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
-        <MessageDialog ref.Name="dialog" Title="Global Shortcut Key" Text="Executed!"/>
-        
-        <ToolstripCommand ref.Name="commandCut" Text="Cut" Image-uri="res://Images/Cut" ShortcutBuilder="Ctrl+X"/>
-        <ToolstripCommand ref.Name="commandCopy" Text="Copy" Image-uri="res://Images/Copy" ShortcutBuilder="Ctrl+C"/>
-        <ToolstripCommand ref.Name="commandPaste" Text="Paste" Image-uri="res://Images/Paste" ShortcutBuilder="Ctrl+V"/>
-        <ToolstripCommand ref.Name="commandDelete" Text="Delete" Image-uri="res://Images/Delete"/>
-        <ToolstripCommand ref.Name="commandShowDialog" Text="Show Dialog" ShortcutBuilder="global:Ctrl+Shift+Alt+D">
-          <ev.Executed-eval><![CDATA[
-            {
-              GuiApplication::GetApplication().InvokeInMainThread(self, func():void
-              {
-                dialog.ShowDialog();
-              });
-            }
-          ]]></ev.Executed-eval>
-        </ToolstripCommand>
-        <ToolstripCommand ref.Name="commandUndo" Text="Undo" Image-uri="res://Images/Undo" ShortcutBuilder="Ctrl+Z"/>
-        <ToolstripCommand ref.Name="commandRedo" Text="Redo" Image-uri="res://Images/Redo" ShortcutBuilder="Ctrl+Y"/>
-        <ToolstripCommand ref.Name="commandExportPrivate" Text="Export as Private Format" Image-uri="res://Images/FormatPrivate"/>
-        <ToolstripCommand ref.Name="commandExportRtf" Text="Export as Rich Text Format" Image-uri="res://Images/FormatRtf"/>
-        <ToolstripCommand ref.Name="commandExportHtml" Text="Export as HTML" Image-uri="res://Images/FormatHtml"/>
-        
-        <ToolstripMenu ref.Name="menuEdit">
-          <ToolstripGroupContainer>
-            <ToolstripToolBar ControlTemplate="demo::MenuToolBarControlTemplate">
-              <ToolstripButton Command-ref="commandCut"/>
-              <ToolstripButton Command-ref="commandCopy"/>
-              <ToolstripButton Command-ref="commandPaste"/>
-              <ToolstripButton Command-ref="commandDelete"/>
-            </ToolstripToolBar>
-            <ToolstripGroup>
-              <MenuItemButton Command-ref="commandShowDialog"/>
-              <MenuItemButton Command-ref="commandUndo"/>
-              <MenuItemButton Command-ref="commandRedo"/>
-            </ToolstripGroup>
-            <ToolstripGroup>
-              <MenuItemButton Command-ref="commandExportPrivate"/>
-              <MenuItemButton Command-ref="commandExportRtf"/>
-              <MenuItemButton Command-ref="commandExportHtml"/>
-            </ToolstripGroup>
-          </ToolstripGroupContainer>
-        </ToolstripMenu>
-        
-        <att.BoundsComposition-set PreferredMinSize="x:320 y:240"/>
-        <Label Font="fontFamily:'Segoe UI' size:24" Text="Right click to show the menu">
+        <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-        </Label>
-        <att.ContainerComposition-set>
-          <ev.rightButtonDown-eval><![CDATA[
-            {
-              var b = self.ContainerComposition.GlobalBounds;
-              var p: Point = {
-                x:(arguments.x+b.x1)
-                y:(arguments.y+b.y1)
-                };
-              menuEdit.ShowPopup(self, p);
-            }
-          ]]></ev.rightButtonDown-eval>
-        </att.ContainerComposition-set>
+          <att.Pages>
+            <TabPage Text="First"/>
+            <TabPage Text="Second"/>
+            <TabPage Text="Third"/>
+            <TabPage Text="Fourth"/>
+            <TabPage Text="Fifth"/>
+            <TabPage Text="Sixth"/>
+          </att.Pages>
+        </Tab>
       </Window>
     </Instance>
   </Instance>

@@ -119,6 +119,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(3, 1);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
@@ -953,6 +956,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(7, 7);
                 <precompile>0.SetRowOption(0, {composeType : Absolute; absolute : 45;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 45;} of (::presentation::compositions::GuiCellOption));
@@ -1633,6 +1639,9 @@ namespace demo
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(3, 2);
@@ -3967,6 +3976,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(4, 3);
                 <precompile>0.SetRowOption(0, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Absolute; absolute : 20;} of (::presentation::compositions::GuiCellOption));
@@ -5915,13 +5927,10 @@ namespace demo
         var <precompile>39 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>40 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
+        var <precompile>40 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>41 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
-
-        @cpp:Protected
-        var <precompile>42 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+        var <precompile>41 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         func <demo-TextListTabPage>Initialize(<this> : ::demo::TextListTabPage*) : (::system::Void)
@@ -5940,6 +5949,9 @@ namespace demo
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(2, 3);
@@ -6038,10 +6050,6 @@ namespace demo
             {
                 (<precompile>10 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
             }
-            (<precompile>40 = <precompile>10.ContainerComposition);
-            {
-                (<precompile>40.InternalMargin = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
-            }
             (<precompile>39 = <precompile>10.BoundsComposition);
             {
                 (<precompile>39.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : (-1);} of (::presentation::Margin));
@@ -6057,7 +6065,7 @@ namespace demo
                 (<precompile>11.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>11.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>11.AlignmentToParent = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (<precompile>11.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -6239,9 +6247,9 @@ namespace demo
             {
                 <precompile>0.AddChild(<precompile>9);
             }
-            (<precompile>41 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>40 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                <precompile>41.SetSite(1, 2, 1, 1);
+                <precompile>40.SetSite(1, 2, 1, 1);
             }
             {
                 (bindableTextList = new (::presentation::controls::GuiBindableTextList*)(::presentation::theme::ThemeName::TextList));
@@ -6274,18 +6282,18 @@ namespace demo
                     return item.Name;
                 });
             }
-            (<precompile>42 = bindableTextList.BoundsComposition);
+            (<precompile>41 = bindableTextList.BoundsComposition);
             {
-                (<precompile>42.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>41.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
                 (bindableTextList.Alt = "B");
             }
             {
-                <precompile>41.AddChild(bindableTextList.BoundsComposition);
+                <precompile>40.AddChild(bindableTextList.BoundsComposition);
             }
             {
-                <precompile>0.AddChild(<precompile>41);
+                <precompile>0.AddChild(<precompile>40);
             }
             {
                 self.ContainerComposition.AddChild(<precompile>0);
@@ -6777,6 +6785,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(2, 2);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
@@ -7152,6 +7163,9 @@ namespace demo
             }
             {
                 (<precompile>3.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>3.SetRowsAndColumns(4, 3);
@@ -11309,6 +11323,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(3, 4);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
@@ -12212,6 +12229,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(3, 4);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
@@ -12654,6 +12674,9 @@ namespace demo
             (<precompile>0 = new (::presentation::compositions::GuiTableComposition*)());
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(3, 1);
@@ -16174,9 +16197,6 @@ namespace demo
                 (<precompile>90.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>91 = new (::presentation::compositions::GuiStackItemComposition*)());
-            {
-                (<precompile>91.InternalMargin = {left : 0; top : 0; right : 10; bottom : 0;} of (::presentation::Margin));
-            }
             (<precompile>92 = new (::presentation::elements::GuiSolidLabelElement^)());
             {
                 (<precompile>92.VerticalAlignment = Center of (::presentation::Alignment));
@@ -16188,7 +16208,7 @@ namespace demo
                 (<precompile>92.Color = (cast (::presentation::Color) "#FFFFFF"));
             }
             {
-                (<precompile>92.Text = "Search:");
+                (<precompile>92.Text = "Search: ");
             }
             {
                 (<precompile>91.OwnedElement = <precompile>92);
@@ -20066,6 +20086,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(2, 2);
                 <precompile>0.SetRowOption(0, {composeType : Absolute; absolute : 30;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
@@ -20246,6 +20269,9 @@ namespace demo
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(2, 3);
@@ -20729,6 +20755,9 @@ namespace demo
             }
             {
                 (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>2.SetRowsAndColumns(7, 4);
@@ -21388,6 +21417,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(3, 2);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
@@ -21673,6 +21705,9 @@ namespace demo
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(7, 3);
@@ -22139,6 +22174,9 @@ namespace demo
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(2, 3);
@@ -23594,18 +23632,11 @@ namespace demo
         var <precompile>17 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>18 : ::presentation::compositions::GuiGraphicsComposition* = null of (::presentation::compositions::GuiGraphicsComposition*);
-
-        @cpp:Protected
         func <demo-EnglishNumbersController>Initialize(<this> : ::demo::EnglishNumbersController*) : (::system::Void)
         {
             (self = <this>);
             {
                 (<precompile>0 = new (::presentation::controls::GuiControl*)(::presentation::theme::ThemeName::GroupBox));
-            }
-            (<precompile>18 = <precompile>0.ContainerComposition);
-            {
-                (<precompile>18.InternalMargin = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             (<precompile>17 = <precompile>0.BoundsComposition);
             {
@@ -23619,7 +23650,7 @@ namespace demo
                 (<precompile>1.Direction = Vertical of (::presentation::compositions::GuiStackComposition::Direction));
             }
             {
-                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 5; top : 0; right : 5; bottom : 5;} of (::presentation::Margin));
             }
             {
                 (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -25134,9 +25165,6 @@ namespace demo
             }
             (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>3 = new (::presentation::elements::GuiSolidBorderElement^)());
@@ -25147,6 +25175,9 @@ namespace demo
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (responsive = new (::presentation::compositions::GuiResponsiveGroupComposition*)());
+            {
+                (responsive.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
             (<precompile>4 = new (::presentation::compositions::GuiStackComposition*)());
             {
                 (<precompile>4.Padding = 10 of (::system::Int64));
@@ -25802,9 +25833,6 @@ namespace demo
             }
             (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>3 = new (::presentation::elements::GuiSolidBorderElement^)());
@@ -25815,6 +25843,9 @@ namespace demo
                 (<precompile>2.OwnedElement = <precompile>3);
             }
             (responsive = new (::presentation::compositions::GuiResponsiveStackComposition*)());
+            {
+                (responsive.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+            }
             (<precompile>4 = new (::presentation::compositions::GuiStackComposition*)());
             {
                 (<precompile>4.Padding = 10 of (::system::Int64));
@@ -26693,9 +26724,6 @@ namespace demo
             }
             (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             (<precompile>3 = new (::presentation::elements::GuiSolidBorderElement^)());
@@ -26886,6 +26914,9 @@ namespace demo
             {
                 var <collection> = responsive.SharedControls;
                 <collection>.Add(documentBox);
+            }
+            {
+                (responsive.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>2.AddChild(responsive);
@@ -27541,6 +27572,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(2, 2);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
@@ -27979,6 +28013,9 @@ namespace demo
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
                 <precompile>0.SetRowsAndColumns(2, 1);
                 <precompile>0.SetRowOption(0, {composeType : MinSize;} of (::presentation::compositions::GuiCellOption));
                 <precompile>0.SetRowOption(1, {composeType : Percentage; percentage : 1.0;} of (::presentation::compositions::GuiCellOption));
@@ -28333,6 +28370,9 @@ namespace demo
             }
             {
                 (<precompile>0.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+            }
+            {
+                (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
                 <precompile>0.SetRowsAndColumns(2, 4);

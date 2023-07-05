@@ -3186,7 +3186,10 @@ namespace darkskin
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -3208,22 +3211,29 @@ namespace darkskin
             {
                 (self.OwnedElement = <precompile>0);
             }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (container.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBorderElement^)());
             {
-                (container.OwnedElement = <precompile>1);
+                <precompile>1.AddChild(container);
             }
             {
-                self.AddChild(container);
+                self.AddChild(<precompile>1);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -3306,13 +3316,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>1.Color;
+                    var <old> = <precompile>2.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>1.Color = <new>);
+                    (<precompile>2.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -3430,9 +3440,6 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -3460,7 +3467,7 @@ namespace darkskin
                 });
             }
             {
-                (look.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (look.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>1.AddChild(look);
@@ -7061,9 +7068,6 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -7091,7 +7095,7 @@ namespace darkskin
                 });
             }
             {
-                (look.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (look.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>1.AddChild(look);
@@ -7331,9 +7335,6 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -7361,7 +7362,7 @@ namespace darkskin
                 });
             }
             {
-                (look.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (look.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>1.AddChild(look);
@@ -7593,9 +7594,6 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -7623,7 +7621,7 @@ namespace darkskin
                 });
             }
             {
-                (look.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (look.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>1.AddChild(look);
@@ -11945,7 +11943,10 @@ namespace darkskin
         var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -11964,25 +11965,32 @@ namespace darkskin
             {
                 (<precompile>0.OwnedElement = <precompile>1);
             }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (container.InternalMargin = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
+                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>3 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>3.Color = (cast (::presentation::Color) "#333337"));
+            }
+            {
+                (<precompile>2.OwnedElement = <precompile>3);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>2 = new (::presentation::elements::GuiSolidBorderElement^)());
             {
-                (<precompile>2.Color = (cast (::presentation::Color) "#333337"));
+                <precompile>2.AddChild(container);
             }
             {
-                (container.OwnedElement = <precompile>2);
-            }
-            {
-                <precompile>0.AddChild(container);
+                <precompile>0.AddChild(<precompile>2);
             }
             {
                 (<precompile>0.ContainerComposition = container);
@@ -12148,9 +12156,6 @@ namespace darkskin
             }
             (<precompile>2 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>2.InternalMargin = {left : 1; top : 0; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>2.PreferredMinSize = {x : 5; y : 5;} of (::presentation::Size));
             }
             {
@@ -12158,7 +12163,7 @@ namespace darkskin
             }
             (<precompile>3 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>3.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (<precompile>3.AlignmentToParent = {left : 2; top : 1; right : 2; bottom : 2;} of (::presentation::Margin));
             }
             {
                 (<precompile>3.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
@@ -12543,7 +12548,10 @@ namespace darkskin
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -12570,20 +12578,27 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 0; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
-            }
-            {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
-            (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
+            (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.AlignmentToParent = {left : 0; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
             {
-                (<precompile>2.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>3 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>3.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>1.OwnedElement = <precompile>2);
+                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>2.OwnedElement = <precompile>3);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
@@ -12661,13 +12676,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.Image;
+                    var <old> = <precompile>3.Image;
                     var <new> = (cast (::presentation::INativeImage^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.Image = <new>);
+                    (<precompile>3.Image = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -12734,13 +12749,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.Enabled;
+                    var <old> = <precompile>3.Enabled;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.Enabled = <new>);
+                    (<precompile>3.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -12807,13 +12822,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.FrameIndex;
+                    var <old> = <precompile>3.FrameIndex;
                     var <new> = (cast (::system::Int64) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.FrameIndex = <new>);
+                    (<precompile>3.FrameIndex = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -17891,16 +17906,19 @@ namespace darkskin
         var <precompile>1 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
-        var <precompile>3 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>3 : ::presentation::elements::GuiImageFrameElement^ = null of (::presentation::elements::GuiImageFrameElement^);
 
         @cpp:Protected
-        var <precompile>4 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
+        var <precompile>4 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>5 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
+        var <precompile>5 : ::presentation::compositions::GuiSharedSizeItemComposition* = null of (::presentation::compositions::GuiSharedSizeItemComposition*);
+
+        @cpp:Protected
+        var <precompile>6 : ::presentation::elements::GuiSolidLabelElement^ = null of (::presentation::elements::GuiSolidLabelElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -17928,53 +17946,57 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 0; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
-            }
-            {
                 <precompile>1.SetSite(0, 0, 1, 1);
             }
-            (<precompile>2 = new (::presentation::elements::GuiImageFrameElement^)());
+            (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>2.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.AlignmentToParent = {left : 0; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
             {
-                (<precompile>2.HorizontalAlignment = Center of (::presentation::Alignment));
+                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>3 = new (::presentation::elements::GuiImageFrameElement^)());
+            {
+                (<precompile>3.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>1.OwnedElement = <precompile>2);
+                (<precompile>3.HorizontalAlignment = Center of (::presentation::Alignment));
+            }
+            {
+                (<precompile>2.OwnedElement = <precompile>3);
+            }
+            {
+                <precompile>1.AddChild(<precompile>2);
             }
             {
                 <precompile>0.AddChild(<precompile>1);
             }
-            (<precompile>3 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>4 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>3.InternalMargin = {left : 0; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
+                <precompile>4.SetSite(0, 1, 1, 1);
+            }
+            (<precompile>5 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
+            {
+                (<precompile>5.SharedWidth = true);
             }
             {
-                <precompile>3.SetSite(0, 1, 1, 1);
-            }
-            (<precompile>4 = new (::presentation::compositions::GuiSharedSizeItemComposition*)());
-            {
-                (<precompile>4.SharedWidth = true);
+                (<precompile>5.Group = "MenuItem-Text");
             }
             {
-                (<precompile>4.Group = "MenuItem-Text");
+                (<precompile>5.AlignmentToParent = {left : 0; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
+            }
+            (<precompile>6 = new (::presentation::elements::GuiSolidLabelElement^)());
+            {
+                (<precompile>6.VerticalAlignment = Center of (::presentation::Alignment));
             }
             {
-                (<precompile>4.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
-            }
-            (<precompile>5 = new (::presentation::elements::GuiSolidLabelElement^)());
-            {
-                (<precompile>5.VerticalAlignment = Center of (::presentation::Alignment));
+                (<precompile>5.OwnedElement = <precompile>6);
             }
             {
-                (<precompile>4.OwnedElement = <precompile>5);
+                <precompile>4.AddChild(<precompile>5);
             }
             {
-                <precompile>3.AddChild(<precompile>4);
-            }
-            {
-                <precompile>0.AddChild(<precompile>3);
+                <precompile>0.AddChild(<precompile>4);
             }
             (container = new (::presentation::compositions::GuiCellComposition*)());
             {
@@ -18049,13 +18071,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.Image;
+                    var <old> = <precompile>3.Image;
                     var <new> = (cast (::presentation::INativeImage^) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.Image = <new>);
+                    (<precompile>3.Image = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -18122,13 +18144,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.Enabled;
+                    var <old> = <precompile>3.Enabled;
                     var <new> = (cast (::system::Boolean) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.Enabled = <new>);
+                    (<precompile>3.Enabled = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -18195,13 +18217,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>2.FrameIndex;
+                    var <old> = <precompile>3.FrameIndex;
                     var <new> = (cast (::system::Int64) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>2.FrameIndex = <new>);
+                    (<precompile>3.FrameIndex = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -18268,13 +18290,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.Text;
+                    var <old> = <precompile>6.Text;
                     var <new> = (cast (::system::String) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.Text = <new>);
+                    (<precompile>6.Text = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -18341,13 +18363,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.Color;
+                    var <old> = <precompile>6.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.Color = <new>);
+                    (<precompile>6.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -18414,13 +18436,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>5.Font;
+                    var <old> = <precompile>6.Font;
                     var <new> = (cast (::presentation::FontProperties) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>5.Font = <new>);
+                    (<precompile>6.Font = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -19868,16 +19890,19 @@ namespace darkskin
         var <precompile>8 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>9 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>9 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var <precompile>10 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>10 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>11 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+        var <precompile>11 : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
 
         @cpp:Protected
-        var container : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
+        var <precompile>12 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
+
+        @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
 
         @cpp:Protected
         var content : ::presentation::compositions::GuiCellComposition* = null of (::presentation::compositions::GuiCellComposition*);
@@ -19960,49 +19985,56 @@ namespace darkskin
             {
                 <precompile>4.AddChild(<precompile>5);
             }
-            (container = new (::presentation::compositions::GuiCellComposition*)());
-            {
-                (container.InternalMargin = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
-            }
-            {
-                container.SetSite(2, 0, 1, 2);
-            }
-            {
-                <precompile>4.AddChild(container);
-            }
             (<precompile>8 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>8.AssociatedHitTestResult = BorderBottom of (::presentation::INativeWindowListener::HitTestResult));
+                <precompile>8.SetSite(2, 0, 1, 2);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
             {
-                <precompile>8.SetSite(3, 0, 1, 1);
-            }
-            (<precompile>9 = new (::presentation::elements::GuiSolidBackgroundElement^)());
-            {
-                (<precompile>9.Color = (cast (::presentation::Color) "#007ACC"));
+                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
             {
-                (<precompile>8.OwnedElement = <precompile>9);
+                <precompile>8.AddChild(container);
             }
             {
                 <precompile>4.AddChild(<precompile>8);
             }
-            (<precompile>10 = new (::presentation::compositions::GuiCellComposition*)());
+            (<precompile>9 = new (::presentation::compositions::GuiCellComposition*)());
             {
-                (<precompile>10.AssociatedHitTestResult = BorderRightBottom of (::presentation::INativeWindowListener::HitTestResult));
+                (<precompile>9.AssociatedHitTestResult = BorderBottom of (::presentation::INativeWindowListener::HitTestResult));
             }
             {
-                <precompile>10.SetSite(3, 1, 1, 1);
+                <precompile>9.SetSite(3, 0, 1, 1);
             }
-            (<precompile>11 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            (<precompile>10 = new (::presentation::elements::GuiSolidBackgroundElement^)());
             {
-                (<precompile>11.Color = (cast (::presentation::Color) "#007ACC"));
-            }
-            {
-                (<precompile>10.OwnedElement = <precompile>11);
+                (<precompile>10.Color = (cast (::presentation::Color) "#007ACC"));
             }
             {
-                <precompile>4.AddChild(<precompile>10);
+                (<precompile>9.OwnedElement = <precompile>10);
+            }
+            {
+                <precompile>4.AddChild(<precompile>9);
+            }
+            (<precompile>11 = new (::presentation::compositions::GuiCellComposition*)());
+            {
+                (<precompile>11.AssociatedHitTestResult = BorderRightBottom of (::presentation::INativeWindowListener::HitTestResult));
+            }
+            {
+                <precompile>11.SetSite(3, 1, 1, 1);
+            }
+            (<precompile>12 = new (::presentation::elements::GuiSolidBackgroundElement^)());
+            {
+                (<precompile>12.Color = (cast (::presentation::Color) "#007ACC"));
+            }
+            {
+                (<precompile>11.OwnedElement = <precompile>12);
+            }
+            {
+                <precompile>4.AddChild(<precompile>11);
             }
             {
                 <precompile>2.AddChild(<precompile>4);
@@ -22521,9 +22553,6 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -22554,7 +22583,7 @@ namespace darkskin
                 });
             }
             {
-                (look.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (look.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>1.AddChild(look);
@@ -25874,9 +25903,6 @@ namespace darkskin
             }
             (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (<precompile>1.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
-            }
-            {
                 (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
@@ -25904,7 +25930,7 @@ namespace darkskin
                 });
             }
             {
-                (look.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (look.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 <precompile>1.AddChild(look);
@@ -26093,7 +26119,10 @@ namespace darkskin
         var <precompile>0 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>1 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+        var <precompile>1 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>2 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -26118,22 +26147,29 @@ namespace darkskin
             {
                 (self.OwnedElement = <precompile>0);
             }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>1 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (container.InternalMargin = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
+                (<precompile>1.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>1.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>2 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>1.OwnedElement = <precompile>2);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (container.AlignmentToParent = {left : 1; top : 1; right : 1; bottom : 1;} of (::presentation::Margin));
             }
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>1 = new (::presentation::elements::GuiSolidBorderElement^)());
             {
-                (container.OwnedElement = <precompile>1);
+                <precompile>1.AddChild(container);
             }
             {
-                self.AddChild(container);
+                self.AddChild(<precompile>1);
             }
             {
                 var <created-subscription> = new (::system::Subscription^)
@@ -26216,13 +26252,13 @@ namespace darkskin
                 };
                 attach(<created-subscription>.ValueChanged, func (<value> : ::system::Object) : (::system::Void)
                 {
-                    var <old> = <precompile>1.Color;
+                    var <old> = <precompile>2.Color;
                     var <new> = (cast (::presentation::Color) <value>);
                     if ((<old> == <new>))
                     {
                         return;
                     }
-                    (<precompile>1.Color = <new>);
+                    (<precompile>2.Color = <new>);
                 });
                 <this>.AddSubscription(<created-subscription>);
             }
@@ -30184,7 +30220,10 @@ namespace darkskin
         var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
-        var <precompile>2 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
+        var <precompile>2 : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
+        var <precompile>3 : ::presentation::elements::GuiSolidBorderElement^ = null of (::presentation::elements::GuiSolidBorderElement^);
 
         @cpp:Protected
         var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
@@ -30203,25 +30242,32 @@ namespace darkskin
             {
                 (<precompile>0.OwnedElement = <precompile>1);
             }
-            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            (<precompile>2 = new (::presentation::compositions::GuiBoundsComposition*)());
             {
-                (container.InternalMargin = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
+                (<precompile>2.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
             }
             {
-                (container.AlignmentToParent = {left : 0; top : 0; right : 0; bottom : 0;} of (::presentation::Margin));
+                (<precompile>2.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            (<precompile>3 = new (::presentation::elements::GuiSolidBorderElement^)());
+            {
+                (<precompile>3.Color = (cast (::presentation::Color) "#333337"));
+            }
+            {
+                (<precompile>2.OwnedElement = <precompile>3);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (container.AlignmentToParent = {left : 3; top : 3; right : 3; bottom : 3;} of (::presentation::Margin));
             }
             {
                 (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
-            (<precompile>2 = new (::presentation::elements::GuiSolidBorderElement^)());
             {
-                (<precompile>2.Color = (cast (::presentation::Color) "#333337"));
+                <precompile>2.AddChild(container);
             }
             {
-                (container.OwnedElement = <precompile>2);
-            }
-            {
-                <precompile>0.AddChild(container);
+                <precompile>0.AddChild(<precompile>2);
             }
             {
                 (<precompile>0.ContainerComposition = container);
@@ -31231,12 +31277,12 @@ namespace darkskin
         var <precompile>1 : ::presentation::elements::GuiSolidBackgroundElement^ = null of (::presentation::elements::GuiSolidBackgroundElement^);
 
         @cpp:Protected
+        var container : ::presentation::compositions::GuiBoundsComposition* = null of (::presentation::compositions::GuiBoundsComposition*);
+
+        @cpp:Protected
         func <darkskin-ToolstripTemplate>Initialize(<this> : ::darkskin::ToolstripTemplate*) : (::system::Void)
         {
             (<precompile>0 = <this>);
-            {
-                (<precompile>0.InternalMargin = {left : 2; top : 2; right : 2; bottom : 2;} of (::presentation::Margin));
-            }
             {
                 (<precompile>0.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
             }
@@ -31246,6 +31292,19 @@ namespace darkskin
             }
             {
                 (<precompile>0.OwnedElement = <precompile>1);
+            }
+            (container = new (::presentation::compositions::GuiBoundsComposition*)());
+            {
+                (container.AlignmentToParent = {left : 2; top : 2; right : 2; bottom : 2;} of (::presentation::Margin));
+            }
+            {
+                (container.MinSizeLimitation = LimitToElementAndChildren of (::presentation::compositions::GuiGraphicsComposition::MinSizeLimitation));
+            }
+            {
+                <precompile>0.AddChild(container);
+            }
+            {
+                (<precompile>0.ContainerComposition = container);
             }
         }
 

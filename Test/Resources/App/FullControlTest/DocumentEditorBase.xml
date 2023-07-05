@@ -168,7 +168,7 @@
                        Text="The document has been changed since the last time it was saved as a Private Format file. Do you want to save this file?"
               />
 
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>

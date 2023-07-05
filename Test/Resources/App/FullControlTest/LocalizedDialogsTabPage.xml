@@ -52,7 +52,7 @@
   <Instance name="LocalizedDialogsTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedDialogsTabPage" xmlns:demo="demo::*">
       <TabPage ref.Name="self" Text="Dialogs">
-        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5">
+        <Table AlignmentToParent="left:0 top:0 right:0 bottom:0" CellPadding="5" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
@@ -169,7 +169,7 @@
       ]]></ref.Ctor>
       <TabPage ref.Name="self" Text="MessageDialog">
         <MessageDialog ref.Name="dialog"/>
-        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
@@ -259,7 +259,7 @@
     <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedColorDialogTabPage">
       <TabPage ref.Name="self" Text="ColorDialog">
         <ColorDialog ref.Name="dialog" EnabledCustomColor="true"/>
-        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:Absolute absolute:30</_>
             <_>composeType:MinSize</_>
@@ -295,7 +295,7 @@
     <Instance ref.CodeBehind="false" ref.Class="demo::LocalizedFontDialogTabPage">
       <TabPage ref.Name="self" Text="FontDialog">
         <FontDialog ref.Name="dialog" ForceFontExist="true"/>
-        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+        <Table CellPadding="5" BorderVisible="true" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
@@ -365,7 +365,7 @@
         <SaveFileDialog ref.Name="dialogSave"/>
         <Stack Direction="Vertical" Padding="5" AlignmentToParent="left:5 top:5 right:5 bottom:5" MinSizeLimitation="LimitToElementAndChildren">
           <StackItem>
-            <Table CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+            <Table CellPadding="5" BorderVisible="false" AlignmentToParent="left:0 top:0 right:0 bottom:0" MinSizeLimitation="LimitToElementAndChildren">
               <att.Rows>
                 <_>composeType:MinSize</_>
                 <_>composeType:MinSize</_>

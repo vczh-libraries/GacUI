@@ -326,6 +326,8 @@ GuiGraphicsHost
 				if (previousClientSize != size)
 				{
 					previousClientSize = size;
+					windowComposition->Layout_UpdateMinSize();
+					windowComposition->Layout_UpdateBounds(hostRecord.nativeWindow->Convert(size));
 					minSize = windowComposition->GetCachedMinSize();
 					needRender = true;
 				}
