@@ -728,7 +728,7 @@ GuiResponsiveContainerComposition
 
 			std::strong_ordering GuiResponsiveContainerComposition::Layout_CompareSize(Size first, Size second)
 			{
-				auto ordX = testX ? first.x <=> second.y : std::strong_ordering::equivalent;
+				auto ordX = testX ? first.x <=> second.x : std::strong_ordering::equivalent;
 				auto ordY = testY ? first.y <=> second.y : std::strong_ordering::equivalent;
 
 				if (ordX == std::strong_ordering::less || ordY == std::strong_ordering::less)
@@ -799,11 +799,15 @@ GuiResponsiveContainerComposition
 						needAdjust = true;
 					}
 
-					if (responsiveTarget && responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
+					if (responsiveTarget)
 					{
-						minSizeLowerBound = responsiveTarget->GetCachedMinSize();
-						if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
-						if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
+						if (responsiveTarget->GetCachedMinSize() != minSizeLowerBound)
+						{
+							minSizeLowerBound = responsiveTarget->GetCachedMinSize();
+							if (minSizeUpperBound.x < minSizeLowerBound.x) minSizeUpperBound.x = minSizeLowerBound.x;
+							if (minSizeUpperBound.y < minSizeLowerBound.y) minSizeUpperBound.y = minSizeLowerBound.y;
+						}
+
 						if (Layout_CompareSize(containerSize, minSizeLowerBound) == std::strong_ordering::less)
 						{
 							ordering = std::strong_ordering::less;
