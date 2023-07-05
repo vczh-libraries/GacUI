@@ -38,7 +38,6 @@
 ## Progressing (before release)
 
 - FullControlTest
-  - `<ResponsiveContainer>` doesn't keep level stable (repro in ribbon).
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
