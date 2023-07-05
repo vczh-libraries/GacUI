@@ -18,8 +18,6 @@ namespace vl
 		namespace compositions
 		{
 			class GuiGraphicsComposition;
-
-			extern void											InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 		}
 
 		namespace elements

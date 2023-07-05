@@ -44,6 +44,8 @@ namespace vl
 			class GuiWindowComposition;
 			class GuiGraphicsHost;
 
+			extern void				InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
+
 /***********************************************************************
 Basic Construction
 ***********************************************************************/
@@ -63,10 +65,7 @@ Basic Construction
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
 
-				friend inline void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
-				{
-					composition->InvokeOnCompositionStateChanged();
-				}
+				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 			public:
 				/// <summary>
 				/// Minimum size limitation.

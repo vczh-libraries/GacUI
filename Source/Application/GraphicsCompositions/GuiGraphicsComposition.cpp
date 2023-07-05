@@ -10,6 +10,11 @@ namespace vl
 		{
 			using namespace elements;
 
+			void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition)
+			{
+				composition->InvokeOnCompositionStateChanged();
+			}
+
 /***********************************************************************
 GuiGraphicsComposition
 ***********************************************************************/

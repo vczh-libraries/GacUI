@@ -17,6 +17,11 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace compositions
+		{
+			extern void									InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
+		}
+
 		namespace elements
 		{
 
