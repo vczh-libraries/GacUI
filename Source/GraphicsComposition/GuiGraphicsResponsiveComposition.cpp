@@ -850,7 +850,7 @@ GuiResponsiveContainerComposition
 					if (responsiveTarget)
 					{
 						responsiveTarget->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						while (responsiveTarget->LevelDown());
+						while (responsiveTarget->LevelUp());
 						AddChild(responsiveTarget);
 
 						responsiveTarget->Layout_UpdateMinSize();
@@ -858,7 +858,7 @@ GuiResponsiveContainerComposition
 						minSizeLowerBound = responsiveTarget->GetCachedMinSize();
 						testX = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Horizontal;
 						testY = (vint)responsiveTarget->GetDirection() & (vint)ResponsiveDirection::Vertical;
-						Layout_AdjustLevelUp(cachedBounds.GetSize());
+						Layout_AdjustLevelDown(cachedBounds.GetSize());
 					}
 					else
 					{
