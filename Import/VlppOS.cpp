@@ -1082,6 +1082,7 @@ BroadcastStream
 
 		vint BroadcastStream::Write(void* _buffer, vint _size)
 		{
+			// TODO: (enumerable) foreach
 			for(vint i=0;i<streams.Count();i++)
 			{
 				vint written = streams[i]->Write(_buffer, _size);

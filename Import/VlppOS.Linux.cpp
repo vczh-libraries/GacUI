@@ -1298,6 +1298,7 @@ ThreadPoolLite
 			}
 
 			threadPoolData->taskFinishEvent.Wait();
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < threadPoolData->taskThreads.Count(); i++)
 			{
 				auto thread = threadPoolData->taskThreads[i];

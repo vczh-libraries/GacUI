@@ -137,6 +137,7 @@ description::TypeManager
 					{
 						loaded = true;
 						auto oldTypeVersion = typeVersion;
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < typeLoaders.Count(); i++)
 						{
 							typeLoaders[i]->Load(this);
@@ -157,6 +158,7 @@ description::TypeManager
 						loaded = false;
 						rootType = 0;
 						auto oldTypeVersion = typeVersion;
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < typeLoaders.Count(); i++)
 						{
 							typeLoaders[i]->Unload(this);
@@ -865,6 +867,7 @@ MetaonlyTypeInfo
 					default:;
 					}
 					WString result = elementType->GetTypeFriendlyName() + L"<";
+					// TODO: (enumerable) Linq:Aggregate
 					for (auto [type, i] : indexed(genericArguments))
 					{
 						if (i > 0) result += L", ";
@@ -1107,6 +1110,7 @@ IMethodInfo
 					: context(_context)
 					, metadata(_metadata)
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < metadata->parameters.Count(); i++)
 					{
 						parameters.Add(Ptr(new MetaonlyParameterInfo(context, metadata->parameters[i], metadata->ownerTypeDescriptor, this)));
@@ -1443,6 +1447,7 @@ ITypeDescriptor
 						serializableType = context->serializableTypes[metadata->typeName].Obj();
 					}
 
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < metadata->methodGroups.Count(); i++)
 					{
 						methodGroups.Add(Ptr(new MetaonlyMethodGroupInfo(context, metadata, metadata->methodGroups[i])));
@@ -1659,6 +1664,7 @@ ITypeDescriptor
 
 				IMethodGroupInfo* GetMethodGroupByName(const WString& name, bool inheritable) override
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < methodGroups.Count(); i++)
 					{
 						auto info = methodGroups[i].Obj();
@@ -1932,6 +1938,7 @@ LoadMetaonlyTypes
 
 				void Load(ITypeManager* manager) override
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < context->tds.Count(); i++)
 					{
 						auto td = context->tds[i];
@@ -2533,6 +2540,7 @@ description::Value
 				}
 				else
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<methods.Count();i++)
 					{
 						IMethodInfo* method=methods[i];
@@ -3375,6 +3383,7 @@ MethodInfoImpl
 				{
 					throw ArgumentCountMismtatchException(ownerMethodGroup);
 				}
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<parameters.Count();i++)
 				{
 					if(!arguments[i].CanConvertTo(parameters[i]->GetType()))
@@ -3430,6 +3439,7 @@ MethodInfoImpl
 
 			bool MethodInfoImpl::AddParameter(Ptr<IParameterInfo> parameter)
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<parameters.Count();i++)
 				{
 					if(parameters[i]->GetName()==parameter->GetName())
@@ -3969,6 +3979,7 @@ TypeDescriptorImpl
 			{
 				Load();
 				if (this == targetType) return true;
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < baseTypeDescriptors.Count(); i++)
 				{
 					if (baseTypeDescriptors[i]->CanConvertTo(targetType)) return true;
@@ -4004,6 +4015,7 @@ TypeDescriptorImpl
 				}
 				if(inheritable)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<baseTypeDescriptors.Count();i++)
 					{
 						if(baseTypeDescriptors[i]->IsPropertyExists(name, true))
@@ -4025,6 +4037,7 @@ TypeDescriptorImpl
 				}
 				if(inheritable)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<baseTypeDescriptors.Count();i++)
 					{
 						IPropertyInfo* result=baseTypeDescriptors[i]->GetPropertyByName(name, true);
@@ -4065,6 +4078,7 @@ TypeDescriptorImpl
 				}
 				if(inheritable)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<baseTypeDescriptors.Count();i++)
 					{
 						if(baseTypeDescriptors[i]->IsEventExists(name, true))
@@ -4086,6 +4100,7 @@ TypeDescriptorImpl
 				}
 				if(inheritable)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<baseTypeDescriptors.Count();i++)
 					{
 						IEventInfo* result=baseTypeDescriptors[i]->GetEventByName(name, true);
@@ -4126,6 +4141,7 @@ TypeDescriptorImpl
 				}
 				if(inheritable)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<baseTypeDescriptors.Count();i++)
 					{
 						if(baseTypeDescriptors[i]->IsMethodGroupExists(name, true))
@@ -4147,6 +4163,7 @@ TypeDescriptorImpl
 				}
 				if(inheritable)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<baseTypeDescriptors.Count();i++)
 					{
 						IMethodGroupInfo* result=baseTypeDescriptors[i]->GetMethodGroupByName(name, true);

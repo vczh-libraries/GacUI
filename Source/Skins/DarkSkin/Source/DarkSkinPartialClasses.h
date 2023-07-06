@@ -1356,7 +1356,8 @@ namespace darkskin
 		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::DocumentTextBoxTemplate* self;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_darkskin_DocumentTextBoxTemplate_Initialize(::darkskin::DocumentTextBoxTemplate* __vwsn_this_);
 	public:
 		DocumentTextBoxTemplateConstructor();
@@ -2367,7 +2368,8 @@ namespace darkskin
 		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::RibbonGroupMenuTemplate* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3;
 		void __vwsn_darkskin_RibbonGroupMenuTemplate_Initialize(::darkskin::RibbonGroupMenuTemplate* __vwsn_this_);
 	public:
 		RibbonGroupMenuTemplateConstructor();
@@ -2453,7 +2455,8 @@ namespace darkskin
 		::darkskin::RibbonIconLabelTemplate* self;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_3;
 		void __vwsn_darkskin_RibbonIconLabelTemplate_Initialize(::darkskin::RibbonIconLabelTemplate* __vwsn_this_);
 	public:
 		RibbonIconLabelTemplateConstructor();
@@ -2863,10 +2866,11 @@ namespace darkskin
 		::darkskin::RibbonSmallIconLabelTemplate* self;
 		::vl::presentation::compositions::GuiTableComposition* __vwsn_precompile_0;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_2;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_3;
-		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_4;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_5;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiImageFrameElement> __vwsn_precompile_3;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_4;
+		::vl::presentation::compositions::GuiSharedSizeItemComposition* __vwsn_precompile_5;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidLabelElement> __vwsn_precompile_6;
 		void __vwsn_darkskin_RibbonSmallIconLabelTemplate_Initialize(::darkskin::RibbonSmallIconLabelTemplate* __vwsn_this_);
 	public:
 		RibbonSmallIconLabelTemplateConstructor();
@@ -3069,7 +3073,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<RibbonToolstripMenuTemplateConstructor>;
 #endif
 	protected:
-		::vl::presentation::compositions::GuiCellComposition* container;
+		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::vl::presentation::compositions::GuiCellComposition* content;
 		::darkskin::RibbonToolstripMenuTemplate* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
@@ -3080,9 +3084,10 @@ namespace darkskin
 		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_6;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_7;
 		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_8;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_9;
-		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_10;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_11;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_9;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_10;
+		::vl::presentation::compositions::GuiCellComposition* __vwsn_precompile_11;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_12;
 		void __vwsn_darkskin_RibbonToolstripMenuTemplate_Initialize(::darkskin::RibbonToolstripMenuTemplate* __vwsn_this_);
 	public:
 		RibbonToolstripMenuTemplateConstructor();
@@ -3238,7 +3243,8 @@ namespace darkskin
 		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::SinglelineTextBoxTemplate* self;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_0;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_1;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_1;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
 		void __vwsn_darkskin_SinglelineTextBoxTemplate_Initialize(::darkskin::SinglelineTextBoxTemplate* __vwsn_this_);
 	public:
 		SinglelineTextBoxTemplateConstructor();
@@ -3756,7 +3762,8 @@ namespace darkskin
 		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::ToolstripMenuTemplate* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
-		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_2;
+		::vl::presentation::compositions::GuiBoundsComposition* __vwsn_precompile_2;
+		::vl::Ptr<::vl::presentation::elements::GuiSolidBorderElement> __vwsn_precompile_3;
 		void __vwsn_darkskin_ToolstripMenuTemplate_Initialize(::darkskin::ToolstripMenuTemplate* __vwsn_this_);
 	public:
 		ToolstripMenuTemplateConstructor();
@@ -3910,6 +3917,7 @@ namespace darkskin
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ToolstripTemplateConstructor>;
 #endif
 	protected:
+		::vl::presentation::compositions::GuiBoundsComposition* container;
 		::darkskin::ToolstripTemplate* __vwsn_precompile_0;
 		::vl::Ptr<::vl::presentation::elements::GuiSolidBackgroundElement> __vwsn_precompile_1;
 		void __vwsn_darkskin_ToolstripTemplate_Initialize(::darkskin::ToolstripTemplate* __vwsn_this_);

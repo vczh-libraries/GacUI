@@ -2644,6 +2644,7 @@ AstClassSymbol
 
 				List<AstClassSymbol*> visited;
 				visited.Add(newBaseClass);
+				// TODO: (enumerable) foreach:alterable
 				for (vint i = 0; i < visited.Count(); i++)
 				{
 					auto currentSymbol = visited[i];
@@ -2828,6 +2829,7 @@ AstDefFile
 
 				List<WString> visited;
 				visited.Add(dependency);
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < visited.Count(); i++)
 				{
 					auto currentName = visited[i];
@@ -2842,6 +2844,7 @@ AstDefFile
 						return false;
 					}
 					auto current = ownerManager->Files()[currentName];
+					// TODO: (enumerable) foreach
 					for (vint j = 0; j < current->dependencies.Count(); j++)
 					{
 						auto dep = current->dependencies[j];
@@ -4210,6 +4213,7 @@ CalculateFirstSet
 				while (true)
 				{
 					vint offset = 0;
+					// TODO: (enumerable) foreach:alterable
 					for (auto [rule, index] : indexed(indirect.Keys()))
 					{
 						auto&& startRules1 = indirect.GetByIndex(index);
@@ -5586,6 +5590,7 @@ FillMissingPrefixMergeClauses
 					if (index != -1)
 					{
 						auto&& values = const_cast<List<RuleClausePath>&>(references.GetByIndex(index));
+						// TODO: (enumerable) foreach:indexed(alterable(reversed))
 						for (vint i = values.Count() - 1; i >= 0; i--)
 						{
 							if (values[i].clause == clause)
@@ -5777,6 +5782,7 @@ CreateRewrittenRules
 						originRule->name.value += L"_LRI_Original";
 					}
 
+					// TODO: (enumerable) foreach
 					for (auto [ruleSymbol, index] : indexed(rContext.extractPrefixClauses.Keys()))
 					{
 						auto originRule = vContext.astRules[ruleSymbol];
@@ -6149,6 +6155,7 @@ RewriteRules (Unaffected)
 					SortedList<WString>& knownOptionalStartRules
 				)
 				{
+					// TODO: (enumerable) foreach on group
 					for (auto [pmName, pmIndex] : indexed(pmClauses.Keys()))
 					{
 						//   if originRule is not left recursive
@@ -6245,6 +6252,7 @@ RewriteRules (Affected)
 						}
 					}
 
+					// TODO: (enumerable) foreach on group
 					for (auto [pmName, pmIndex] : indexed(pmClauses.Keys()))
 					{
 						//   if originRule is not left recursive
@@ -6359,6 +6367,7 @@ RewriteRules (Affected)
 					SortedList<WString>& knownOptionalStartRules
 				)
 				{
+					// TODO: (enumerable) foreach on group
 					for (auto [conflictedClause, conflictedIndex] : indexed(conflict->conflictedClauses.Keys()))
 					{
 						auto conflictedRuleSymbol = vContext.simpleUseClauseToReferencedRules[conflictedClause];
@@ -6410,6 +6419,7 @@ RewriteRules
 					auto cont1 = c1->continuation;
 					auto cont2 = c2->continuation;
 					if (cont1->flags.Count() != cont2->flags.Count()) return false;
+					// TODO: (enumerable) foreach:indexed, flag not used, considering Linq:Zip, Any
 					for (auto [flag, i] : indexed(cont1->flags))
 					{
 						if (cont1->flags[i]->flag.value != cont2->flags[i]->flag.value) return false;
@@ -6438,6 +6448,7 @@ RewriteRules
 						{
 							auto candidate = candidates[candidates.Count() - 1];
 							candidates.RemoveAt(candidates.Count() - 1);
+							// TODO: (enumerable) foreach:indexed(alterable(reversed))
 							for (vint i = candidates.Count() - 1; i >= 0; i--)
 							{
 								auto compare = candidates[i];
@@ -7175,6 +7186,7 @@ ExpandClauseVisitor
 							auto alt = Ptr(new GlrAlternativeSyntax);
 							alt->first = items[0];
 							alt->second = items[1];
+							// TODO: (enumerable) Linq:Skip
 							for (vint i = 2; i < items.Count(); i++)
 							{
 								auto newAlt = Ptr(new GlrAlternativeSyntax);
@@ -7528,6 +7540,7 @@ RewriteSyntax
 
 				void CreateRuleSymbols(SyntaxSymbolManager& syntaxManager, Group<RuleSymbol*, Ptr<GlrRule>>& expandedRules)
 				{
+					// TODO: (enumerable) foreach on group, sort pairs instead of calling Get
 					for (auto ruleSymbol : From(expandedRules.Keys())
 						.OrderByKey([](auto&& a) { return a->Name(); })
 						)
@@ -8265,6 +8278,7 @@ ValidatePrefixMerge
 									SortedList<RuleSymbol*> visited;
 									CopyFrom(visiting, context.clauseToStartRules.GetByIndex(index));
 
+									// TODO: (enumerable) visiting/visited
 									for (vint i = 0; i < visiting.Count(); i++)
 									{
 										auto visitingRule = visiting[i];
@@ -9138,6 +9152,7 @@ CollectRuleAffectedSwitchesSecondPassVisitor
 						vint indexSwitch = sContext.ruleAffectedSwitches.Keys().IndexOf(refRuleSymbol);
 						if (indexSwitch != -1)
 						{
+							// TODO: (enumerable) operate on GetByIndex returned list object directly
 							for (auto&& name : sContext.ruleAffectedSwitches.GetByIndex(indexSwitch))
 							{
 								if (!pushedSwitches.Contains(name))
@@ -15242,6 +15257,7 @@ SyntaxSymbolManager
 							if (!visited.Contains(startState))
 							{
 								vint startIndex = visited.Add(startState);
+								// TODO: (enumerable) Linq:Skip
 								for (vint i = startIndex; i < visited.Count(); i++)
 								{
 									auto state = visited[i];
@@ -15503,6 +15519,7 @@ AutomatonBuilder (Syntax)
 				*/
 				CHECK_ERROR(elements.Count() > 0, L"vl::glr::parsergen::AutomatonBuilder::BuildSequenceSyntax(List<StateBuilder>&)#Elements must not be empty.");
 				auto pair = elements[0]();
+				// TODO: (enumerable) Linq:Skip
 				for (vint i = 1; i < elements.Count(); i++)
 				{
 					clauseDisplayText += L" ";
@@ -15528,6 +15545,7 @@ AutomatonBuilder (Syntax)
 				startPoses.Add(pair.begin, clauseDisplayText.Length());
 
 				clauseDisplayText += L"( ";
+				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < elements.Count(); i++)
 				{
 					if (i > 0) clauseDisplayText += L" | ";
@@ -15647,6 +15665,7 @@ AutomatonBuilder (Clause)
 				}
 
 				clauseDisplayText += L"lrp:(";
+				// TODO: (enumerable) Linq:Aggregate
 				for (vint i = 0; i < flags.Count(); i++)
 				{
 					if (i > 0) clauseDisplayText += L",";
@@ -15674,6 +15693,7 @@ AutomatonBuilder (Clause)
 				}
 
 				clauseDisplayText += L"lri:(";
+				// TODO: (enumerable) Linq:Aggregate
 				for (vint i = 0; i < flags.Count(); i++)
 				{
 					if (i > 0) clauseDisplayText += L",";
@@ -16550,6 +16570,7 @@ SyntaxSymbolManager::BuildLeftRecEdge
 				CopyFrom(newEdge->insBeforeInput, lrecPrefixEdge->insBeforeInput, true);
 				CopyFrom(newEdge->insAfterInput, lrecPrefixEdge->insAfterInput, true);
 
+				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for (vint i = newEdge->insBeforeInput.Count() - 1; i >= 0; i--)
 				{
 					if (newEdge->insBeforeInput[i].type == AstInsType::BeginObject)
@@ -16558,6 +16579,7 @@ SyntaxSymbolManager::BuildLeftRecEdge
 						newEdge->insBeforeInput.Insert(i + 2, { AstInsType::LriFetch });
 					}
 				}
+				// TODO: (enumerable) foreach:indexed(alterable(reversed))
 				for (vint i = newEdge->insAfterInput.Count() - 1; i >= 0; i--)
 				{
 					if (newEdge->insAfterInput[i].type == AstInsType::BeginObject)
@@ -16672,6 +16694,7 @@ SyntaxSymbolManager::EliminateSingleRulePrefix
 					}
 				}
 
+				// TODO: (enumerable) foreach on group
 				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
 				{
 					auto&& prefixEdgesOfRule = prefixEdges.GetByIndex(prefixIndex);
@@ -16693,6 +16716,7 @@ SyntaxSymbolManager::EliminateSingleRulePrefix
 				// if their insBeforeInput are different
 				// move prefixEdge's insBeforeInput to insAfterInput with help from LriStore and LriFetch
 				SortedList<RuleSymbol*> compatibleInsBeforeInputPrefixRules;
+				// TODO: (enumerable) foreach on group
 				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
 				{
 					// see if all prefixEdges are compatible
@@ -16725,6 +16749,7 @@ SyntaxSymbolManager::EliminateSingleRulePrefix
 				// for all prefixEdge that fails the above test
 				// combine insBeforeInput with insAfterInput with the help from LriStore and LriFetch
 				// properly move instructions from prefixEdge to endingEdge
+				// TODO: (enumerable) foreach on group
 				for (auto [ruleSymbol, prefixIndex] : indexed(prefixEdges.Keys()))
 				{
 					bool compatible = compatibleInsBeforeInputPrefixRules.Contains(ruleSymbol);
@@ -16849,6 +16874,7 @@ SyntaxSymbolManager::EliminateEpsilonEdges
 
 				// all epsilon-NFAs of its clauses become one connected epsilon-NFA of this rule
 				// we can build the compact-NFA out of this epsilon-NFA starting from the start state
+				// TODO: (enumerable) foreach:alterable
 				for (vint i = 0; i < visited.Count(); i++)
 				{
 					auto current = visited[i];
@@ -17080,6 +17106,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 					auto& endingStates = endingStatesArray[index];
 					auto& returnEdges = returnEdgesArray[index];
 
+					// TODO: (enumerable) foreach:indexed(reversed)
 					for (vint i = returnEdges.Count() - 1; i >= 0; i--)
 					{
 						auto endingState = endingStates[i];
@@ -17122,6 +17149,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 					}
 				}
 
+				// TODO: (enumerable) foreach on group
 				for (auto [input, inputIndex] : indexed(acceptableInputs.Keys()))
 				{
 					auto [inputToken, returnEdgeCount] = input;
@@ -17160,6 +17188,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 					Group<Entry, vint> simpleUseRecords;
 
 					// search for placeholder edges where their excluded return edges are all reuse edges
+					// TODO: (enumerable) foreach on group
 					for (vint recordIndex = 0; recordIndex < placeholderRecords.Count(); recordIndex++)
 					{
 						auto [placeholderIndex, lrEdge, tokenEdge] = placeholderRecords[recordIndex];
@@ -17176,6 +17205,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 					// for each group, if there are more than one placeholder edges
 					// mark them as deleted except the first one
 					SortedList<vint> recordsToRemove;
+					// TODO: (enumerable) foreach on group
 					for (vint recordGroup = 0; recordGroup < simpleUseRecords.Count(); recordGroup++)
 					{
 						auto&& records = simpleUseRecords.GetByIndex(recordGroup);
@@ -17187,6 +17217,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 
 					// delete them in Group
 					// this way is not recommended but the group is going to be discarded very soon
+					// TODO: (enumerable) foreach:reversed
 					for (vint i = recordsToRemove.Count() - 1; i >= 0; i--)
 					{
 						const_cast<List<InputValue>&>(placeholderRecords).RemoveAt(recordsToRemove[i]);
@@ -17222,7 +17253,8 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 						CopyFrom(instructionPrefix, placeholderEdge->insBeforeInput, true);
 						instructionPrefix.Add({ AstInsType::LriFetch });
 
-						for (vint i = returnEdges.Count() - 1; i >= returnEdgeCount;i --)
+						// TODO: (enumerable) foreach:reversed
+						for (vint i = returnEdges.Count() - 1; i >= returnEdgeCount; i--)
 						{
 							auto endingState = endingStates[i];
 							auto returnEdge = returnEdges[i];

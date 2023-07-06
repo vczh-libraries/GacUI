@@ -431,6 +431,7 @@ Utilities
 		if (!connectedInternet) goto CLEANUP;
 
 		// open request
+		// TODO: (enumerable) Linq:Select
 		for (vint i = 0; i < request.acceptTypes.Count(); i++)
 		{
 			acceptTypes.Add(request.acceptTypes.Get(i).Buffer());

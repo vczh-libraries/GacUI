@@ -4363,6 +4363,7 @@ MergeInsExecContext
 				{
 					// check if all stack objects are the same
 					bool sameStackObject = true;
+					// TODO: (enumerable) Linq:Skip
 					for (vint index = 1; index < stacks.Count(); index++)
 					{
 						if (stacks[0] != stacks[index])
@@ -4388,6 +4389,7 @@ MergeInsExecContext
 						// call this macro to create a one-time set for InsExec*
 						NEW_MERGE_STACK_MAGIC_COUNTER;
 						auto magicPush = MergeStack_MagicCounter;
+						// TODO: (enumerable) foreach
 						for (vint index = 0; index < stacks.Count(); index++)
 						{
 							// do not visit the same stack object repeatly

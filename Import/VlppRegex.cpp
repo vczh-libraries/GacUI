@@ -79,6 +79,7 @@ RegexMatch_<T>
 			: success(true)
 			, result(_string, _result->start, _result->length)
 		{
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < _result->captures.Count(); i++)
 			{
 				CaptureRecord& capture = _result->captures[i];
@@ -994,6 +995,7 @@ RegexLexer_<T>
 				expression->CollectCharSet(subsets);
 				expressions.Add(expression);
 			}
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < expressions.Count(); i++)
 			{
 				Dictionary<State*, State*> nfaStateMap;
@@ -1006,9 +1008,11 @@ RegexLexer_<T>
 			}
 
 			// Mark all states in DFAs
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < dfas.Count(); i++)
 			{
 				Ptr<Automaton> dfa = dfas[i];
+				// TODO: (enumerable) foreach
 				for (vint j = 0; j < dfa->states.Count(); j++)
 				{
 					if (dfa->states[j]->finalState)
@@ -1024,12 +1028,14 @@ RegexLexer_<T>
 
 			// Connect all DFAs to an e-NFA
 			auto bigEnfa = Ptr(new Automaton);
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < dfas.Count(); i++)
 			{
 				CopyFrom(bigEnfa->states, dfas[i]->states, true);
 				CopyFrom(bigEnfa->transitions, dfas[i]->transitions, true);
 			}
 			bigEnfa->startState = bigEnfa->NewState();
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < dfas.Count(); i++)
 			{
 				bigEnfa->NewEpsilon(bigEnfa->startState, dfas[i]->startState);
@@ -1039,12 +1045,14 @@ RegexLexer_<T>
 			Dictionary<State*, State*> nfaStateMap;
 			Group<State*, State*> dfaStateMap;
 			auto bigNfa = EpsilonNfaToNfa(bigEnfa, PureEpsilonChecker, nfaStateMap);
+			// TODO: (enumerable) foreach on dictionary
 			for (vint i = 0; i < nfaStateMap.Keys().Count(); i++)
 			{
 				void* userData = nfaStateMap.Values().Get(i)->userData;
 				nfaStateMap.Keys()[i]->userData = userData;
 			}
 			auto bigDfa = NfaToDfa(bigNfa, dfaStateMap);
+			// TODO: (enumerable) foreach on group
 			for (vint i = 0; i < dfaStateMap.Keys().Count(); i++)
 			{
 				void* userData = dfaStateMap.GetByIndex(i).Get(0)->userData;
@@ -1346,6 +1354,7 @@ PureInterpretor
 			{
 				charMap[i] = charSetCount - 1;
 			}
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < charRanges.Count(); i++)
 			{
 				CharRange range = charRanges[i];
@@ -1377,6 +1386,7 @@ PureInterpretor
 				}
 
 				State* state = dfa->states[i].Obj();
+				// TODO: (enumerable) foreach
 				for (vint j = 0; j < state->transitions.Count(); j++)
 				{
 					Transition* dfaTransition = state->transitions[j];
@@ -1717,12 +1727,14 @@ RichInterpretor
 		{
 			datas = new UserData[dfa->states.Count()];
 
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < dfa->states.Count(); i++)
 			{
 				State* state = dfa->states[i].Obj();
 				vint charEdges = 0;
 				vint nonCharEdges = 0;
 				bool mustSave = false;
+				// TODO: (enumerable) foreach
 				for (vint j = 0; j < state->transitions.Count(); j++)
 				{
 					if (state->transitions[j]->type == Transition::Chars)
@@ -1762,6 +1774,7 @@ RichInterpretor
 				bool found = false; // true means at least one transition matches the input
 				StateSaver<TChar> oldState = currentState;
 				// Iterate through all transitions from the current state
+				// TODO: (enumerable) foreach:reversed
 				for (vint i = currentState.minTransition; i < currentState.currentState->transitions.Count(); i++)
 				{
 					Transition* transition = currentState.currentState->transitions[i];
@@ -1972,6 +1985,7 @@ RichInterpretor
 							// Find the next NegativeFail transition
 							// Because when a negative lookahead regex failed to match, it is actually succeeded
 							// Since a negative lookahead means we don't want to match this regex
+							// TODO: (enumerable) foreach:reversed
 							for (vint i = 0; i < currentState.currentState->transitions.Count(); i++)
 							{
 								Transition* transition = currentState.currentState->transitions[i];
@@ -2185,6 +2199,7 @@ CharSetExpression
 				range.begin = range.end;
 				range.end = t;
 			}
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < ranges.Count(); i++)
 			{
 				if (!(range<ranges[i] || range>ranges[i]))
@@ -2389,6 +2404,7 @@ CharSetAlgorithm
 				if (expression->reverse)
 				{
 					char32_t begin = 1;
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < ranges.Count(); i++)
 					{
 						CharRange range = ranges[i];
@@ -2405,6 +2421,7 @@ CharSetAlgorithm
 				}
 				else
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < ranges.Count(); i++)
 					{
 						Process(expression, target, ranges[i]);
@@ -2535,6 +2552,7 @@ SetNormalizedCharSetAlgorithm
 		public:
 			void Process(CharSetExpression* expression, NormalizedCharSet* target, CharRange range)
 			{
+				// TODO: (enumerable) foreach
 				for (vint j = 0; j < target->ranges.Count(); j++)
 				{
 					CharRange targetRange = target->ranges[j];
@@ -2643,6 +2661,7 @@ EpsilonNfaAlgorithm
 				EpsilonNfa nfa;
 				nfa.start = target->NewState();
 				nfa.end = target->NewState();
+				// TODO: (enumerable) foreach
 				for (vint i = 0; i < expression->ranges.Count(); i++)
 				{
 					target->NewChars(nfa.start, nfa.end, expression->ranges[i]);
@@ -2949,6 +2968,7 @@ IsEqualAlgorithm
 				{
 					if (expression->reverse != expected->reverse)return false;
 					if (expression->ranges.Count() != expected->ranges.Count())return false;
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < expression->ranges.Count(); i++)
 					{
 						if (expression->ranges[i] != expected->ranges[i])return false;
@@ -3881,6 +3901,7 @@ RegexNode
 			auto target = Ptr(new CharSetExpression);
 			target->reverse = false;
 			CopyFrom(target->ranges, left->ranges);
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < right->ranges.Count(); i++)
 			{
 				if (!target->AddRangeWithConflict(right->ranges[i]))
@@ -4142,6 +4163,7 @@ Helpers
 			if (!epsilonStates.Contains(sourceState))
 			{
 				epsilonStates.Add(sourceState);
+				// TODO: (enumerable) foreach:alterable
 				for (vint i = 0; i < sourceState->transitions.Count(); i++)
 				{
 					Transition* transition = sourceState->transitions[i];
@@ -4176,6 +4198,7 @@ Helpers
 			target->startState = target->states[0].Obj();
 			CopyFrom(target->captureNames, source->captureNames);
 
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < target->states.Count(); i++)
 			{
 				// Clear cache
@@ -4192,6 +4215,7 @@ Helpers
 				CollectEpsilon(targetState, sourceState, epsilonChecker, epsilonStates, transitions);
 
 				// Iterate through all non-epsilon transitions
+				// TODO: (enumerable) foreach
 				for (vint j = 0; j < transitions.Count(); j++)
 				{
 					Transition* transition = transitions[j];
@@ -4244,6 +4268,7 @@ Helpers
 
 						if (transitionClass == nullptr)
 						{
+							// TODO: (enumerable) foreach
 							for (vint l = 0; l < orderedTransitionClasses.Count(); l++)
 							{
 								Transition* key = orderedTransitionClasses[l];
@@ -4283,6 +4308,7 @@ Helpers
 
 					// Check if these NFA states represent a created DFA state
 					State* dfaState = 0;
+					// TODO: (enumerable) foreach on dictionary
 					for (vint k = 0; k < dfaStateMap.Count(); k++)
 					{
 						// Compare two NFA states set
@@ -4295,6 +4321,7 @@ Helpers
 					if (!dfaState)
 					{
 						dfaState = target->NewState();
+						// TODO: (enumerable) foreach
 						for (vint k = 0; k < transitionTargets.Count(); k++)
 						{
 							dfaStateMap.Add(dfaState, transitionTargets[k]);

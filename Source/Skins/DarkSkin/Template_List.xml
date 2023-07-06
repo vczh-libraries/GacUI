@@ -21,9 +21,9 @@
         <att.TextColor>#F1F1F1</att.TextColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
-          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
             <att.DefaultScrollSize>20</att.DefaultScrollSize>
@@ -146,9 +146,9 @@
         <att.ItemSeparatorColor>#F1F1F1</att.ItemSeparatorColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
-          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
             <att.DefaultScrollSize>20</att.DefaultScrollSize>
@@ -210,9 +210,9 @@
         <att.TextColor>#F1F1F1</att.TextColor>
 
         <SolidBackground Color="#252526"/>
-        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0" InternalMargin="left:1 top:1 right:1 bottom:1">
+        <Bounds AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <SolidBorder ref.Style="listBorder"/>
-          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <CommonScrollViewLook ref.Name="look" AlignmentToParent="left:1 top:1 right:1 bottom:1">
             <att.HScrollTemplate>darkskin::HScrollTemplate</att.HScrollTemplate>
             <att.VScrollTemplate>darkskin::VScrollTemplate</att.VScrollTemplate>
             <att.DefaultScrollSize>20</att.DefaultScrollSize>
