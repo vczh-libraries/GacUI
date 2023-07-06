@@ -1072,8 +1072,6 @@ namespace vl
 		namespace compositions
 		{
 			class GuiGraphicsComposition;
-
-			extern void											InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 		}
 
 		namespace elements
@@ -3945,7 +3943,7 @@ Workflow to C++ Codegen Helpers
 #endif
 
 /***********************************************************************
-.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSCOMPOSITIONBASE.H
+.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSCOMPOSITION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -3955,8 +3953,8 @@ GacUI::Composition System
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
-#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
+#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITION
+#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITION
 
 
 namespace vl
@@ -3985,7 +3983,13 @@ namespace vl
 
 		namespace compositions
 		{
+			class GuiGraphicsComposition_Trivial;
+			class GuiGraphicsComposition_Controlled;
+			class GuiGraphicsComposition_Specialized;
+			class GuiWindowComposition;
 			class GuiGraphicsHost;
+
+			extern void				InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 
 /***********************************************************************
 Basic Construction
@@ -3999,11 +4003,14 @@ Basic Construction
 			{
 				typedef collections::List<GuiGraphicsComposition*> CompositionList;
 
+				friend class GuiGraphicsComposition_Trivial;
+				friend class GuiGraphicsComposition_Controlled;
+				friend class GuiGraphicsComposition_Specialized;
+				friend class GuiWindowComposition;
 				friend class controls::GuiControl;
 				friend class GuiGraphicsHost;
-				friend void InvokeOnCompositionStateChanged(GuiGraphicsComposition* composition);
-				friend Size InvokeGetMinPreferredClientSizeInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
-				friend Rect InvokeGetPreferredBoundsInternal(GuiGraphicsComposition* composition, bool considerPreferredMinSize);
+
+				friend void InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
 			public:
 				/// <summary>
 				/// Minimum size limitation.
@@ -4027,7 +4034,9 @@ Basic Construction
 					INativeWindow*							nativeWindow = nullptr;
 				};
 
-			protected:
+			private:
+				bool										isRendering = false;
+
 				CompositionList								children;
 				GuiGraphicsComposition*						parent = nullptr;
 				Ptr<elements::IGuiGraphicsElement>			ownedElement;
@@ -4041,29 +4050,27 @@ Basic Construction
 				INativeCursor*								associatedCursor = nullptr;
 				INativeWindowListener::HitTestResult		associatedHitTestResult = INativeWindowListener::NoDecision;
 
-				Margin										margin;
+			protected:
 				Margin										internalMargin;
 				Size										preferredMinSize;
-
-				bool										isRendering = false;
 
 				virtual void								OnControlParentChanged(controls::GuiControl* control);
 				virtual void								OnChildInserted(GuiGraphicsComposition* child);
 				virtual void								OnChildRemoved(GuiGraphicsComposition* child);
 				virtual void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent);
 				virtual void								OnParentLineChanged();
+				virtual void								OnCompositionStateChanged();
 				virtual void								OnRenderContextChanged();
 				
 				void										UpdateRelatedHostRecord(GraphicsHostRecord* record);
 				void										SetAssociatedControl(controls::GuiControl* control);
 				void										InvokeOnCompositionStateChanged();
 
-				virtual Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize) = 0;
-				virtual Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize) = 0;
-
+			private:
 				static bool									SharedPtrDestructorProc(DescriptableObject* obj, bool forceDisposing);
-			public:
+
 				GuiGraphicsComposition();
+			public:
 				~GuiGraphicsComposition();
 
 				bool										IsRendering();
@@ -4138,9 +4145,6 @@ Basic Construction
 				/// <summary>Set is the composition transparent to mouse events.</summary>
 				/// <param name="value">Set to true to make this composition transparent to mouse events.</param>
 				void										SetTransparentToMouse(bool value);
-				/// <summary>Get the bounds in the top composition space.</summary>
-				/// <returns>The bounds in the top composition space.</returns>
-				Rect										GetGlobalBounds();
 
 				/// <summary>Get the associated control. A control is associated to a composition only when the composition represents the bounds of this control. Such a composition usually comes from a control template.</summary>
 				/// <returns>The associated control.</returns>
@@ -4174,87 +4178,157 @@ Basic Construction
 				/// <returns>The related cursor.</returns>
 				INativeCursor*								GetRelatedCursor();
 				
-				/// <summary>Get the margin.</summary>
-				/// <returns>The margin.</returns>
-				virtual Margin								GetMargin();
-				/// <summary>Set the margin.</summary>
-				/// <param name="value">The margin.</param>
-				virtual void								SetMargin(Margin value);
 				/// <summary>Get the internal margin.</summary>
 				/// <returns>The internal margin.</returns>
-				virtual Margin								GetInternalMargin();
+				Margin										GetInternalMargin();
 				/// <summary>Set the internal margin.</summary>
 				/// <param name="value">The internal margin.</param>
-				virtual void								SetInternalMargin(Margin value);
+				void										SetInternalMargin(Margin value);
 				/// <summary>Get the preferred minimum size.</summary>
 				/// <returns>The preferred minimum size.</returns>
-				virtual Size								GetPreferredMinSize();
+				Size										GetPreferredMinSize();
 				/// <summary>Set the preferred minimum size.</summary>
 				/// <param name="value">The preferred minimum size.</param>
-				virtual void								SetPreferredMinSize(Size value);
-				/// <summary>Get the client area.</summary>
-				/// <returns>The client area.</returns>
-				virtual Rect								GetClientArea();
-				/// <summary>Force to calculate layout and size immediately</summary>
-				virtual void								ForceCalculateSizeImmediately();
+				void										SetPreferredMinSize(Size value);
 
-				/// <summary>Get the preferred minimum client size.</summary>
-				/// <returns>The preferred minimum client size.</returns>
-				Size										GetMinPreferredClientSize();
-				/// <summary>Get the preferred bounds.</summary>
-				/// <returns>The preferred bounds.</returns>
-				Rect										GetPreferredBounds();
-				
-				/// <summary>Test is the size calculation affected by the parent.</summary>
-				/// <returns>Returns true if the size calculation is affected by the parent.</returns>
-				virtual bool								IsSizeAffectParent()=0;
-				/// <summary>Get the bounds.</summary>
-				/// <returns>The bounds.</returns>
-				virtual Rect								GetBounds()=0;
-			};
-
-			/// <summary>
-			/// A general implementation for <see cref="GuiGraphicsComposition"/>.
-			/// </summary>
-			class GuiGraphicsSite : public GuiGraphicsComposition, public Description<GuiGraphicsSite>
-			{
-				friend Rect							InvokeGetBoundsInternal(GuiGraphicsSite* composition, Rect expectedBounds, bool considerPreferredMinSize);
 			protected:
-				Rect								previousBounds;
+				Size										cachedMinSize;
+				Rect										cachedBounds;
 
-				/// <summary>Calculate the final bounds from an expected bounds.</summary>
-				/// <returns>The final bounds according to some configuration like margin, minimum size, etc..</returns>
-				/// <param name="expectedBounds">The expected bounds.</param>
-				virtual Rect						GetBoundsInternal(Rect expectedBounds, bool considerPreferredMinSize);
+				virtual Size								Layout_CalculateMinSize() = 0;
+				virtual Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) = 0;
+				virtual Rect								Layout_CalculateBounds(Size parentSize) = 0;
 
-				void								UpdatePreviousBounds(Rect bounds);
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
-				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
+				/// <summary>
+				/// Calculate a proper minimum size using all configurations in this class.
+				/// All children's <see cref="Layout_UpdateMinSize"/> will be called.
+				/// All children's <see cref="Layout_CalculateMinClientSizeForParent"/> will be called.
+				/// </summary>
+				/// <returns></returns>
+				Size										Layout_CalculateMinSizeHelper();
+
+				/// <summary>
+				/// Update a size that affects <see cref="GetCachedMinSize"/> and <see cref="GetCachedMinClientSize"/>.
+				/// </summary>
+				/// <param name="value">The minimum size to update</param>
+				void										Layout_SetCachedMinSize(Size value);
+
+				/// <summary>
+				/// Update a bounds that affects <see cref="GetCachedBounds"/> and <see cref="GetCachedClientArea"/> and <see cref="GetGlobalBounds"/>.
+				/// </summary>
+				/// <param name="value">The minimum size to update</param>
+				void										Layout_SetCachedBounds(Rect value);
+
+				/// <summary>
+				/// Call <see cref="Layout_CalculateMinSize"/> and <see cref="Layout_SetCachedMinSize"/>.
+				/// </summary>
+				void										Layout_UpdateMinSize();
+
+				/// <summary>
+				/// Call <see cref="Layout_CalculateBounds"/> and <see cref="Layout_SetCachedBounds"/> and all children's <see cref="Layout_UpdateBounds"/>.
+				/// </summary>
+				/// <param name="parentBounds"></param>
+				void										Layout_UpdateBounds(Size parentSize);
 			public:
-				GuiGraphicsSite();
-				~GuiGraphicsSite();
 
-				/// <summary>Event that will be raised when the final bounds is changed.</summary>
-				compositions::GuiNotifyEvent		BoundsChanged;
-				
-				bool								IsSizeAffectParent()override;
+				/// <summary>Event that will be raised when the minimum size is updated.</summary>
+				compositions::GuiNotifyEvent				CachedMinSizeChanged;
 
-				/// <summary>Get the previous calculated bounds, ignoring any surrounding changes that could affect the bounds.</summary>
-				/// <returns>The previous calculated bounds.</returns>
-				Rect								GetPreviousCalculatedBounds();
+				/// <summary>Event that will be raised when the bounds is updated.</summary>
+				compositions::GuiNotifyEvent				CachedBoundsChanged;
+
+				/// <summary>Get the updated minimum size.</summary>
+				/// <returns>The updated minimum size.</returns>
+				Size										GetCachedMinSize();
+
+				/// <summary>Get the updated minimum client size. It is the minimum size removing the internal margin.</summary>
+				/// <returns>The updated minimum client size.</returns>
+				Size										GetCachedMinClientSize();
+
+				/// <summary>Get the updated bounds.</summary>
+				/// <returns>The updated bounds.</returns>
+				Rect										GetCachedBounds();
+
+				/// <summary>Get the updated client bounds. It is the bounds removing the internal margin.</summary>
+				/// <returns>The updated client bounds.</returns>
+				Rect										GetCachedClientArea();
+
+				/// <summary>Get the bounds in the top composition space.</summary>
+				/// <returns>The bounds in the top composition space.</returns>
+				Rect										GetGlobalBounds();
+
+				/// <summary>
+				/// Force this composition calculate its layout.
+				/// </summary>
+				void										ForceCalculateSizeImmediately();
 			};
-			
-			/// <summary>
-			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
-			/// </summary>
-			class GuiWindowComposition : public GuiGraphicsSite, public Description<GuiWindowComposition>
-			{
-			public:
-				GuiWindowComposition();
-				~GuiWindowComposition();
 
-				Rect								GetBounds()override;
-				void								SetMargin(Margin value)override;
+/***********************************************************************
+Categories
+***********************************************************************/
+
+			/// <summary>
+			/// A trivial composition is a composition that can be placed anywhere needed.
+			/// This class is not reflectable, it is for classification only.
+			/// All controlled children's minimum sizes are supposed to be done in <see cref="Layout_CalculateMinSize"/>.
+			/// All controlled children's bounds are supposed to be done in <see cref="Layout_CalculateBounds"/>.
+			/// </summary>
+			class GuiGraphicsComposition_Trivial : public GuiGraphicsComposition
+			{
+			protected:
+				GuiGraphicsComposition_Trivial() = default;
+			};
+
+			/// <summary>
+			/// A controlled composition is a composition that must be placed inside a certain type of parent composition.
+			/// Its layout calculation are taken over by its parent.
+			/// This class is not reflectable, it is for classification only.
+			/// </summary>
+			class GuiGraphicsComposition_Controlled : public GuiGraphicsComposition
+			{
+			protected:
+				GuiGraphicsComposition_Controlled() = default;
+
+				Size Layout_CalculateMinSize()override
+				{
+					// Making Layout_UpdateMinSize does nothing
+					return cachedMinSize;
+				}
+
+				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
+				{
+					// A controlled composition could affect its parent's layout
+					// but it is done inside the parent
+					return { 0,0 };
+				}
+
+				Rect Layout_CalculateBounds(Size parentSize) override
+				{
+					// Making Layout_UpdateBounds does nothing
+					return cachedBounds;
+				}
+			};
+
+			/// <summary>
+			/// A specialized composition is a composition that can be placed anywhere needed.
+			/// But its layout calculation are designed for special purposes.
+			/// This class is not reflectable, it is for classification only.
+			/// </summary>
+			class GuiGraphicsComposition_Specialized : public GuiGraphicsComposition
+			{
+			protected:
+				GuiGraphicsComposition_Specialized() = default;
+
+				Size Layout_CalculateMinSize()override
+				{
+					return Layout_CalculateMinSizeHelper();
+				}
+
+				Size Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override
+				{
+					// A controlled composition could not affect its parent's layout
+					return { 0,0 };
+				}
 			};
 
 /***********************************************************************
@@ -4283,7 +4357,7 @@ Helper Functions
 #endif
 
 /***********************************************************************
-.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSBASICCOMPOSITION.H
+.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSBOUNDSCOMPOSITION.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -4293,8 +4367,8 @@ GacUI::Composition System
 Interfaces:
 ***********************************************************************/
 
-#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBASICCOMPOSITION
-#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBASICCOMPOSITION
+#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBOUNDSCOMPOSITION
+#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSBOUNDSCOMPOSITION
 
 
 namespace vl
@@ -4311,30 +4385,25 @@ Basic Compositions
 			/// <summary>
 			/// Represents a composition that is free to change the expected bounds.
 			/// </summary>
-			class GuiBoundsComposition : public GuiGraphicsSite, public Description<GuiBoundsComposition>
+			class GuiBoundsComposition : public GuiGraphicsComposition_Trivial, public Description<GuiBoundsComposition>
 			{
 			protected:
-				bool								sizeAffectParent = true;
-				Rect								compositionBounds;
+				Rect								expectedBounds;
 				Margin								alignmentToParent{ -1,-1,-1,-1 };
 
-				Rect								GetPreferredBoundsInternal(bool considerPreferredMinSize)override;
+				Size								Layout_CalculateMinSize() override;
+				Size								Layout_CalculateMinClientSizeForParent(Margin parentInternalMargin) override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
-				GuiBoundsComposition();
-				~GuiBoundsComposition();
+				GuiBoundsComposition() = default;
+				~GuiBoundsComposition() = default;
 
-				/// <summary>Get if the parent composition's size calculation is aware of the configuration of this composition. If you want to bind Bounds, PreferredMinSize, AlignmentToParent or other similar properties to some properties of parent compositions, this property should be set to false to prevent from infinite size glowing.</summary>
-				/// <returns>Returns true if it is awared.</returns>
-				bool								GetSizeAffectParent();
-				/// <summary>Set if the parent composition's size calculation is aware of the configuration of this composition.</summary>
-				/// <param name="value">Set to true to be awared.</param>
-				void								SetSizeAffectParent(bool value);
-				
-				bool								IsSizeAffectParent()override;
-				Rect								GetBounds()override;
+				/// <summary>Get the expected bounds.</summary>
+				/// <returns>The expected bounds.</returns>
+				Rect								GetExpectedBounds();
 				/// <summary>Set the expected bounds.</summary>
 				/// <param name="value">The expected bounds.</param>
-				void								SetBounds(Rect value);
+				void								SetExpectedBounds(Rect value);
 
 				/// <summary>Get the alignment to its parent. -1 in each alignment component means that the corressponding side is not aligned to its parent.</summary>
 				/// <returns>The alignment to its parent.</returns>
@@ -4345,6 +4414,48 @@ Basic Compositions
 				/// <summary>Test is the composition aligned to its parent.</summary>
 				/// <returns>Returns true if the composition is aligned to its parent.</returns>
 				bool								IsAlignedToParent();
+			};
+		}
+	}
+}
+
+#endif
+
+/***********************************************************************
+.\APPLICATION\GRAPHICSCOMPOSITIONS\GUIGRAPHICSWINDOWCOMPOSITION.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+GacUI::Composition System
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
+#define VCZH_PRESENTATION_COMPOSITION_GUIGRAPHICSCOMPOSITIONBASE
+
+
+namespace vl
+{
+	namespace presentation
+	{
+		namespace compositions
+		{
+			class GuiGraphicsHost;
+
+			/// <summary>
+			/// Represents a composition for the client area in an <see cref="INativeWindow"/>.
+			/// </summary>
+			class GuiWindowComposition : public GuiGraphicsComposition_Specialized, public Description<GuiWindowComposition>
+			{
+				friend class GuiGraphicsHost;
+			protected:
+				Rect						Layout_CalculateBounds(Size parentSize) override;
+
+			public:
+				GuiWindowComposition() = default;
+				~GuiWindowComposition() = default;
 			};
 		}
 	}
@@ -4934,6 +5045,8 @@ namespace vl
 	{
 		namespace compositions
 		{
+			class GuiWindowComposition;
+
 			class GuiTableComposition;
 			class GuiCellComposition;
 			class GuiTableSplitterCompositionBase;
@@ -5002,6 +5115,8 @@ Flow Compositions
 				Left,
 				/// <summary>Align to the center.</summary>
 				Center,
+				/// <summary>Align to the Right.</summary>
+				Right,
 				/// <summary>Extend to the entire row.</summary>
 				Extend,
 			};
@@ -5014,27 +5129,30 @@ Flow Compositions
 				friend class GuiFlowItemComposition;
 
 				typedef collections::List<GuiFlowItemComposition*>				ItemCompositionList;
+			private:
+				bool								layout_invalid = true;
+				vint								layout_lastVirtualWidth = 0;
+				ItemCompositionList					layout_flowItems;
+				vint								layout_minVirtualHeight = 0;
+
+				void								Layout_UpdateFlowItemLayout(vint maxVirtualWidth);
+				Size								Layout_UpdateFlowItemLayoutByConstraint(Size constraintSize);
+
 			protected:
 				Margin								extraMargin;
 				vint								rowPadding = 0;
 				vint								columnPadding = 0;
 				FlowAlignment						alignment = FlowAlignment::Left;
-				Ptr<IGuiAxis>						axis;
+				Ptr<IGuiAxis>						axis = Ptr(new GuiDefaultAxis);
 
-				ItemCompositionList					flowItems;
-				collections::Array<Rect>			flowItemBounds;
-				Rect								bounds;
-				vint								minHeight = 0;
-				bool								needUpdate = false;
-
-				void								UpdateFlowItemBounds(bool forceUpdate);
-				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
-				void								OnChildInserted(GuiGraphicsComposition* child)override;
-				void								OnChildRemoved(GuiGraphicsComposition* child)override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				void								OnChildInserted(GuiGraphicsComposition* child) override;
+				void								OnChildRemoved(GuiGraphicsComposition* child) override;
+				void								OnCompositionStateChanged() override;
+				Size								Layout_CalculateMinSize() override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
-				GuiFlowComposition();
-				~GuiFlowComposition();
+				GuiFlowComposition() = default;
+				~GuiFlowComposition() = default;
 				
 				/// <summary>Get all flow items inside the flow composition.</summary>
 				/// <returns>All flow items inside the flow composition.</returns>
@@ -5079,9 +5197,6 @@ Flow Compositions
 				/// <summary>Set the alignment for rows.</summary>
 				/// <param name="value">The alignment.</param>
 				void								SetAlignment(FlowAlignment value);
-				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
 			};
 			
 			/// <summary>
@@ -5089,14 +5204,17 @@ Flow Compositions
 			/// </summary>
 			struct GuiFlowOption
 			{
-				/// <summary>Base line calculation algorithm</summary>
+				/// <summary>
+				/// Specify the the relationship between this item and the baseline of the row that this item currently belongs to.
+				/// The height of a row is the maximum value of minimum heights of all items in it.
+				/// </summary>
 				enum BaselineType
 				{
-					/// <summary>By percentage of the height from the top.</summary>
+					/// <summary>Top of this item is "percentage" times of the item height above the baseline.</summary>
 					Percentage,
-					/// <summary>By a distance from the top.</summary>
+					/// <summary>Top of this item is "distance" above the baseline.</summary>
 					FromTop,
-					/// <summary>By a distance from the bottom.</summary>
+					/// <summary>Bottom of this item is "distance" below the baseline.</summary>
 					FromBottom,
 				};
 				
@@ -5113,24 +5231,23 @@ Flow Compositions
 			/// <summary>
 			/// Represents a flow item composition of a <see cref="GuiFlowComposition"/>.
 			/// </summary>
-			class GuiFlowItemComposition : public GuiGraphicsSite, public Description<GuiFlowItemComposition>
+			class GuiFlowItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiFlowItemComposition>
 			{
 				friend class GuiFlowComposition;
+			private:
+				GuiFlowComposition*					layout_flowParent = nullptr;
+				Rect								layout_virtualBounds;
+
+				void								Layout_SetFlowItemBounds(Size contentSize, Rect virtualBounds);
 			protected:
-				GuiFlowComposition*					flowParent;
-				Rect								bounds;
 				Margin								extraMargin;
 				GuiFlowOption						option;
 
-				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				Size								GetMinSize();
+				void								OnParentLineChanged() override;
+
 			public:
 				GuiFlowItemComposition();
-				~GuiFlowItemComposition();
-				
-				bool								IsSizeAffectParent()override;
-				Rect								GetBounds()override;
-				void								SetBounds(Rect value);
+				~GuiFlowItemComposition() = default;
 				
 				/// <summary>Get the extra margin for this flow item. An extra margin is used to enlarge the bounds of the flow item, but only the non-extra part will be used for deciding the flow item layout.</summary>
 				/// <returns>The extra margin for this flow item.</returns>
@@ -5189,6 +5306,7 @@ GuiResponsiveCompositionBase
 			/// <summary>Base class for responsive layout compositions.</summary>
 			class GuiResponsiveCompositionBase abstract : public GuiBoundsComposition, public Description<GuiResponsiveCompositionBase>
 			{
+				friend class GuiResponsiveContainerComposition;
 			protected:
 				GuiResponsiveCompositionBase*		responsiveParent = nullptr;
 				ResponsiveDirection					direction = ResponsiveDirection::Both;
@@ -5200,7 +5318,7 @@ GuiResponsiveCompositionBase
 
 			public:
 				GuiResponsiveCompositionBase();
-				~GuiResponsiveCompositionBase();
+				~GuiResponsiveCompositionBase() = default;
 
 				/// <summary>LevelCount changed event.</summary>
 				GuiNotifyEvent						LevelCountChanged;
@@ -5244,7 +5362,7 @@ GuiResponsiveViewComposition
 
 			public:
 				GuiResponsiveSharedCollection(GuiResponsiveViewComposition* _view);
-				~GuiResponsiveSharedCollection();
+				~GuiResponsiveSharedCollection() = default;
 			};
 
 			class GuiResponsiveViewCollection : public collections::ObservableListBase<GuiResponsiveCompositionBase*>
@@ -5259,7 +5377,7 @@ GuiResponsiveViewComposition
 
 			public:
 				GuiResponsiveViewCollection(GuiResponsiveViewComposition* _view);
-				~GuiResponsiveViewCollection();
+				~GuiResponsiveViewCollection() = default;
 			};
 
 			/// <summary>Represents a composition, which will pick up a shared control and install inside it, when it is displayed by a [T:vl.presentation.compositions.GuiResponsiveViewComposition]</summary>
@@ -5274,7 +5392,7 @@ GuiResponsiveViewComposition
 
 			public:
 				GuiResponsiveSharedComposition();
-				~GuiResponsiveSharedComposition();
+				~GuiResponsiveSharedComposition() = default;
 
 				/// <summary>Get the selected shared control.</summary>
 				/// <returns>The selected shared control.</returns>
@@ -5342,8 +5460,8 @@ Others
 				void					OnResponsiveChildLevelUpdated()override;
 
 			public:
-				GuiResponsiveFixedComposition();
-				~GuiResponsiveFixedComposition();
+				GuiResponsiveFixedComposition() = default;
+				~GuiResponsiveFixedComposition() = default;
 
 				vint					GetLevelCount()override;
 				vint					GetCurrentLevel()override;
@@ -5368,8 +5486,8 @@ Others
 				bool					ChangeLevel(bool levelDown);
 
 			public:
-				GuiResponsiveStackComposition();
-				~GuiResponsiveStackComposition();
+				GuiResponsiveStackComposition() = default;
+				~GuiResponsiveStackComposition() = default;
 
 				vint					GetLevelCount()override;
 				vint					GetCurrentLevel()override;
@@ -5393,8 +5511,8 @@ Others
 				void					OnResponsiveChildLevelUpdated()override;
 
 			public:
-				GuiResponsiveGroupComposition();
-				~GuiResponsiveGroupComposition();
+				GuiResponsiveGroupComposition() = default;
+				~GuiResponsiveGroupComposition() = default;
 
 				vint					GetLevelCount()override;
 				vint					GetCurrentLevel()override;
@@ -5409,16 +5527,22 @@ GuiResponsiveContainerComposition
 			/// <summary>A composition which will automatically tell its target responsive composition to switch between views according to its size.</summary>
 			class GuiResponsiveContainerComposition : public GuiBoundsComposition, public Description<GuiResponsiveContainerComposition>
 			{
-			protected:
+			private:
 				GuiResponsiveCompositionBase*			responsiveTarget = nullptr;
-				Size									upperLevelSize;
+				Size									minSizeUpperBound;
+				Size									minSizeLowerBound;
+				bool									testX = false;
+				bool									testY = false;
 
-				void									AdjustLevel();
-				void									OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
+				std::strong_ordering					Layout_CompareSize(Size first, Size second);
+				void									Layout_AdjustLevelUp(Size containerSize);
+				void									Layout_AdjustLevelDown(Size containerSize);
+			public:
+				Rect									Layout_CalculateBounds(Size parentSize) override;
 
 			public:
 				GuiResponsiveContainerComposition();
-				~GuiResponsiveContainerComposition();
+				~GuiResponsiveContainerComposition() = default;
 
 				/// <summary>Get the responsive composition to control.</summary>
 				/// <returns>The responsive composition to control.</returns>
@@ -5458,17 +5582,20 @@ namespace vl
 			/// <summary>A shared size composition that shares the same size with all other <see cref="GuiSharedSizeItemComposition"/> that has a same group name.</summary>
 			class GuiSharedSizeItemComposition : public GuiBoundsComposition, public Description<GuiSharedSizeItemComposition>
 			{
+				friend class GuiSharedSizeRootComposition;
 			protected:
 				GuiSharedSizeRootComposition*						parentRoot = nullptr;
 				WString												group;
 				bool												sharedWidth = false;
 				bool												sharedHeight = false;
+				Size												originalMinSize;
 
-				void												Update();
-				void												OnParentLineChanged()override;
+				void												OnParentLineChanged() override;
+				Size												Layout_CalculateMinSize() override;
+				Size												Layout_CalculateOriginalMinSize();
 			public:
 				GuiSharedSizeItemComposition();
-				~GuiSharedSizeItemComposition();
+				~GuiSharedSizeItemComposition() = default;
 				
 				/// <summary>Get the group name of this item.</summary>
 				/// <returns>The group name.</returns>
@@ -5500,14 +5627,14 @@ namespace vl
 				collections::List<GuiSharedSizeItemComposition*>	childItems;
 
 				void												AddSizeComponent(collections::Dictionary<WString, vint>& sizes, const WString& group, vint sizeComponent);
+				void												CalculateOriginalMinSizes();
 				void												CollectSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
 				void												AlignSizes(collections::Dictionary<WString, vint>& widths, collections::Dictionary<WString, vint>& heights);
-			public:
-				GuiSharedSizeRootComposition();
-				~GuiSharedSizeRootComposition();
 
-				void												ForceCalculateSizeImmediately()override;
-				Rect												GetBounds()override;
+				Size												Layout_CalculateMinSize() override;
+			public:
+				GuiSharedSizeRootComposition() = default;
+				~GuiSharedSizeRootComposition() = default;
 			};
 		}
 	}
@@ -5544,7 +5671,7 @@ Specialized Compositions
 			/// <summary>
 			/// Represents a composition that is aligned to one border of the parent composition.
 			/// </summary>
-			class GuiSideAlignedComposition : public GuiGraphicsSite, public Description<GuiSideAlignedComposition>
+			class GuiSideAlignedComposition : public GuiGraphicsComposition_Specialized, public Description<GuiSideAlignedComposition>
 			{
 			public:
 				/// <summary>The border to align.</summary>
@@ -5560,12 +5687,15 @@ Specialized Compositions
 					Bottom,
 				};
 			protected:
-				Direction							direction;
-				vint								maxLength;
-				double								maxRatio;
+				Direction							direction = Top;
+				vint								maxLength = 10;
+				double								maxRatio = 1.0;
+
+				Rect								Layout_CalculateBounds(Size parentSize) override;
+
 			public:
-				GuiSideAlignedComposition();
-				~GuiSideAlignedComposition();
+				GuiSideAlignedComposition() = default;
+				~GuiSideAlignedComposition() = default;
 				
 				/// <summary>Get the border to align.</summary>
 				/// <returns>The border to align.</returns>
@@ -5585,25 +5715,24 @@ Specialized Compositions
 				/// <summary>Set the maximum ratio to limit the size according to the size of the parent.</summary>
 				/// <param name="value">The maximum ratio to limit the size according to the size of the parent.</param>
 				void								SetMaxRatio(double value);
-				
-				bool								IsSizeAffectParent()override;
-				Rect								GetBounds()override;
 			};
 
 			/// <summary>
 			/// Represents a composition that its location and size are decided by the client area of the parent composition by setting ratios.
 			/// </summary>
-			class GuiPartialViewComposition : public GuiGraphicsSite, public Description<GuiPartialViewComposition>
+			class GuiPartialViewComposition : public GuiGraphicsComposition_Specialized, public Description<GuiPartialViewComposition>
 			{
 			protected:
-				double								wRatio;
-				double								wPageSize;
-				double								hRatio;
-				double								hPageSize;
+				double								wRatio = 0.0;
+				double								wPageSize = 1.0;
+				double								hRatio = 0.0;
+				double								hPageSize = 1.0;
+
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 
 			public:
-				GuiPartialViewComposition();
-				~GuiPartialViewComposition();
+				GuiPartialViewComposition() = default;
+				~GuiPartialViewComposition() = default;
 				
 				/// <summary>Get the width ratio to decided the horizontal location. Value in [0, 1-pageSize].</summary>
 				/// <returns>The width ratio to decided the horizontal location.</returns>
@@ -5629,9 +5758,6 @@ Specialized Compositions
 				/// <summary>Set the page size to decide the vertical size. Value in [0, 1].</summary>
 				/// <param name="value">The page size to decide the vertical size.</param>
 				void								SetHeightPageSize(double value);
-				
-				bool								IsSizeAffectParent()override;
-				Rect								GetBounds()override;
 			};
 		}
 	}
@@ -5686,28 +5812,30 @@ Stack Compositions
 					/// <summary>Stack items is layouted from bottom to top.</summary>
 					ReversedVertical,
 				};
+
+			private:
+				bool								layout_invalid = true;
+				ItemCompositionList					layout_stackItems;
+				GuiStackItemComposition*			layout_ensuringVisibleStackItem = nullptr;
+				vint								layout_adjustment = 0;
+				Size								layout_stackItemTotalSize;
+
+				void								Layout_UpdateStackItemMinSizes();
+				void								Layout_UpdateStackItemBounds(Rect contentBounds);
 			protected:
+
 				Direction							direction = Horizontal;
-				ItemCompositionList					stackItems;
-				GuiStackItemComposition*			ensuringVisibleStackItem = nullptr;
-				
 				vint								padding = 0;
-				vint								adjustment = 0;
 				Margin								extraMargin;
 
-				collections::Array<Rect>			stackItemBounds;
-				Size								stackItemTotalSize;
-				Rect								previousBounds;
-
-				void								UpdateStackItemBounds();
-				void								EnsureStackItemVisible();
-				void								OnBoundsChanged(GuiGraphicsComposition* sender, GuiEventArgs& arguments);
-				void								OnChildInserted(GuiGraphicsComposition* child)override;
-				void								OnChildRemoved(GuiGraphicsComposition* child)override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				void								OnChildInserted(GuiGraphicsComposition* child) override;
+				void								OnChildRemoved(GuiGraphicsComposition* child) override;
+				void								OnCompositionStateChanged() override;
+				Size								Layout_CalculateMinSize() override;
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
-				GuiStackComposition();
-				~GuiStackComposition();
+				GuiStackComposition() = default;
+				~GuiStackComposition() = default;
 
 				/// <summary>Get all stack items inside the stack composition.</summary>
 				/// <returns>All stack items inside the stack composition.</returns>
@@ -5731,9 +5859,6 @@ Stack Compositions
 				/// <param name="value">The stack item padding.</param>
 				void								SetPadding(vint value);
 				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
-				
 				/// <summary>Get the extra margin inside the stack composition.</summary>
 				/// <returns>The extra margin inside the stack composition.</returns>
 				Margin								GetExtraMargin();
@@ -5752,25 +5877,22 @@ Stack Compositions
 			/// <summary>
 			/// Represents a stack item composition of a <see cref="GuiStackComposition"/>.
 			/// </summary>
-			class GuiStackItemComposition : public GuiGraphicsSite, public Description<GuiStackItemComposition>
+			class GuiStackItemComposition : public GuiGraphicsComposition_Controlled, public Description<GuiStackItemComposition>
 			{
 				friend class GuiStackComposition;
+			private:
+				GuiStackComposition*				layout_stackParent = nullptr;
+				Point								layout_virtualOffset;
+
+				void								Layout_SetStackItemBounds(Rect contentBounds, Point virtualOffset);
+
 			protected:
-				GuiStackComposition*				stackParent;
-				Rect								bounds;
 				Margin								extraMargin;
 
-				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
-				Size								GetMinSize();
+				void								OnParentLineChanged() override;
 			public:
 				GuiStackItemComposition();
-				~GuiStackItemComposition();
-				
-				bool								IsSizeAffectParent()override;
-				Rect								GetBounds()override;
-				/// <summary>Set the expected bounds of a stack item. In most of the cases only the size of the bounds is used.</summary>
-				/// <param name="value">The expected bounds of a stack item.</param>
-				void								SetBounds(Rect value);
+				~GuiStackItemComposition() = default;
 				
 				/// <summary>Get the extra margin for this stack item. An extra margin is used to enlarge the bounds of the stack item, but only the non-extra part will be used for deciding the stack item layout.</summary>
 				/// <returns>The extra margin for this stack item.</returns>
@@ -5815,6 +5937,7 @@ namespace vl
 			protected:
 				ItemStyleProperty									itemTemplate;
 				Ptr<IValueList>										itemSource;
+				description::Value									itemContext;
 				Ptr<EventHandler>									itemChangedHandler;
 
 				virtual vint										GetRepeatCompositionCount() = 0;
@@ -5835,6 +5958,8 @@ namespace vl
 				GuiItemNotifyEvent									ItemInserted;
 				/// <summary>An event called before a new item is removed.</summary>
 				GuiItemNotifyEvent									ItemRemoved;
+				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
+				GuiNotifyEvent										ContextChanged;
 
 				/// <summary>Get the item style provider.</summary>
 				/// <returns>The item style provider.</returns>
@@ -5849,6 +5974,13 @@ namespace vl
 				/// <summary>Set the item source.</summary>
 				/// <param name="value">The item source. Null is acceptable if you want to clear all data.</param>
 				void												SetItemSource(Ptr<IValueEnumerable> value);
+
+				/// <summary>Get the context of this composition. The all item templates (if it has) will see this context property.</summary>
+				/// <returns>The context of this composition.</returns>
+				description::Value									GetContext();
+				/// <summary>Set the context of this composition.</summary>
+				/// <param name="value">The context of this composition.</param>
+				void												SetContext(const description::Value& value);
 			};
 
 			/// <summary>Bindable stack composition.</summary>
@@ -5859,7 +5991,10 @@ namespace vl
 				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+
 			public:
+				GuiRepeatStackComposition();
+				~GuiRepeatStackComposition();
 			};
 
 			/// <summary>Bindable flow composition.</summary>
@@ -5870,7 +6005,10 @@ namespace vl
 				GuiGraphicsComposition*								GetRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								InsertRepeatComposition(vint index)override;
 				GuiGraphicsComposition*								RemoveRepeatComposition(vint index)override;
+
 			public:
+				GuiRepeatFlowComposition();
+				~GuiRepeatFlowComposition();
 			};
 		}
 	}
@@ -5909,14 +6047,22 @@ Table Compositions
 			/// </summary>
 			struct GuiCellOption
 			{
-				/// <summary>Sizing algorithm</summary>
+				/// <summary>Size configuration</summary>
 				enum ComposeType
 				{
-					/// <summary>Set the size to an absolute value.</summary>
+					/// <summary>
+					/// Set the size to an absolute value.
+					/// The size will not change even if affected cell's minimum size is bigger that this.
+					/// </summary>
 					Absolute,
-					/// <summary>Set the size to a percentage number of the whole table.</summary>
+					/// <summary>
+					/// Set the size to a percentage number of the whole table.
+					/// </summary>
 					Percentage,
-					/// <summary>Set the size to the minimum size of the cell element.</summary>
+					/// <summary>
+					/// Set the size to the minimum size of the cell element.
+					/// Only cells that take one row or column at this position are considered.
+					/// </summary>
 					MinSize,
 				};
 
@@ -5977,59 +6123,65 @@ Table Compositions
 				friend class GuiTableSplitterCompositionBase;
 				friend class GuiRowSplitterComposition;
 				friend class GuiColumnSplitterComposition;
+			private:
+				bool										layout_invalid = true;
+				bool										layout_invalidCellBounds = false;
+				Size										layout_lastTableSize;
+
+				collections::Array<GuiCellComposition*>		layout_cellCompositions;
+				collections::Array<Rect>					layout_cellBounds;
+				collections::Array<vint>					layout_rowOffsets;
+				collections::Array<vint>					layout_columnOffsets;
+				collections::Array<vint>					layout_rowSizes;
+				collections::Array<vint>					layout_columnSizes;
+				vint										layout_rowTotal = 0;
+				vint										layout_columnTotal = 0;
+				vint										layout_rowTotalWithPercentage = 0;
+				vint										layout_columnTotalWithPercentage = 0;
+				vint										layout_rowExtending = 0;
+				vint										layout_columnExtending = 0;
+
+				Rect										Layout_CalculateCellArea(Rect tableBounds);
+				void										Layout_UpdateCellBoundsInternal(
+																collections::Array<vint>& dimSizes,
+																vint& dimSize, 
+																vint& dimSizeWithPercentage,
+																collections::Array<GuiCellOption>& dimOptions,
+																vint GuiTableComposition::* dim1,
+																vint GuiTableComposition::* dim2,
+																vint (*getSize)(Size),
+																vint (*getLocation)(GuiCellComposition*),
+																vint (*getSpan)(GuiCellComposition*),
+																vint (*getRow)(vint, vint),
+																vint (*getCol)(vint, vint)
+																);
+				void										Layout_UpdateCellBoundsPercentages(
+																collections::Array<vint>& dimSizes,
+																vint dimSize,
+																vint maxDimSize,
+																collections::Array<GuiCellOption>& dimOptions
+																);
+				vint										Layout_UpdateCellBoundsOffsets(
+																collections::Array<vint>& offsets,
+																collections::Array<vint>& sizes,
+																vint max
+																);
 			protected:
-				vint										rows;
-				vint										columns;
-				vint										cellPadding;
-				bool										borderVisible;
-				vint										rowExtending;
-				vint										columnExtending;
+				vint										rows = 0;
+				vint										columns = 0;
+				vint										cellPadding = 0;
+				bool										borderVisible = true;
 				collections::Array<GuiCellOption>			rowOptions;
 				collections::Array<GuiCellOption>			columnOptions;
-				collections::Array<GuiCellComposition*>		cellCompositions;
-				
-				collections::Array<Rect>					cellBounds;
-				collections::Array<vint>					rowOffsets;
-				collections::Array<vint>					columnOffsets;
-				collections::Array<vint>					rowSizes;
-				collections::Array<vint>					columnSizes;
 
-				Size										tableContentMinSize;
-
-				vint								GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
-				void								SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
-
-				void								UpdateCellBoundsInternal(
-														collections::Array<vint>& dimSizes,
-														vint& dimSize, 
-														vint& dimSizeWithPercentage,
-														collections::Array<GuiCellOption>& dimOptions,
-														vint GuiTableComposition::* dim1,
-														vint GuiTableComposition::* dim2,
-														vint (*getSize)(Size),
-														vint (*getLocation)(GuiCellComposition*),
-														vint (*getSpan)(GuiCellComposition*),
-														vint (*getRow)(vint, vint),
-														vint (*getCol)(vint, vint),
-														vint maxPass
-														);
-				void								UpdateCellBoundsPercentages(
-														collections::Array<vint>& dimSizes,
-														vint dimSize,
-														vint maxDimSize,
-														collections::Array<GuiCellOption>& dimOptions
-														);
-				vint									UpdateCellBoundsOffsets(
-														collections::Array<vint>& offsets,
-														collections::Array<vint>& sizes,
-														vint max
-														);
-				
-				void								OnRenderContextChanged()override;
-				Size								GetMinPreferredClientSizeInternal(bool considerPreferredMinSize)override;
+				vint										GetSiteIndex(vint _rows, vint _columns, vint _row, vint _column);
+				void										SetSitedCell(vint _row, vint _column, GuiCellComposition* cell);
+				void										OnCompositionStateChanged() override;
+				Size										Layout_CalculateMinSize() override;
+				Rect										Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiTableComposition();
-				~GuiTableComposition();
+				~GuiTableComposition() = default;
 
 				/// <summary>Event that will be raised with row numbers, column numbers or options are changed.</summary>
 				compositions::GuiNotifyEvent		ConfigChanged;
@@ -6080,29 +6232,21 @@ Table Compositions
 				/// <summary>Set the border visibility.</summary>
 				/// <param name="value">Set to true to let the border thickness equal to the cell padding, otherwise zero.</param>
 				void								SetBorderVisible(bool value);
-				/// <summary>Get the cell area in the space of the table's parent composition's client area.</summary>
-				/// <returns>The cell area.</returns>
-				Rect								GetCellArea();
-				/// <summary>Update the sizing of the table and cells after all rows' and columns' sizing options are prepared.</summary>
-				void								UpdateCellBounds();
-				
-				void								ForceCalculateSizeImmediately()override;
-				Rect								GetBounds()override;
 			};
 
 			/// <summary>
 			/// Represents a cell composition of a <see cref="GuiTableComposition"/>.
 			/// </summary>
-			class GuiCellComposition : public GuiGraphicsSite, public Description<GuiCellComposition>
+			class GuiCellComposition : public GuiGraphicsComposition_Controlled, public Description<GuiCellComposition>
 			{
 				friend class GuiTableComposition;
+			private:
+				GuiTableComposition*				layout_tableParent = nullptr;
 			protected:
-				vint								row;
-				vint								rowSpan;
-				vint								column;
-				vint								columnSpan;
-				GuiTableComposition*				tableParent;
-				Size								lastPreferredSize;
+				vint								row = -1;
+				vint								rowSpan = 1;
+				vint								column = -1;
+				vint								columnSpan = 1;
 				
 				void								ClearSitedCells(GuiTableComposition* table);
 				void								SetSitedCells(GuiTableComposition* table);
@@ -6110,9 +6254,10 @@ Table Compositions
 				bool								SetSiteInternal(vint _row, vint _column, vint _rowSpan, vint _columnSpan);
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
 				void								OnTableRowsAndColumnsChanged();
+				void								Layout_SetCellBounds();
 			public:
 				GuiCellComposition();
-				~GuiCellComposition();
+				~GuiCellComposition() = default;
 
 				/// <summary>Get the owner table composition.</summary>
 				/// <returns>The owner table composition.</returns>
@@ -6137,16 +6282,14 @@ Table Compositions
 				/// <param name="_rowSpan">The total numbers of acrossed rows for this cell composition.</param>
 				/// <param name="_columnSpan">The total numbers of acrossed columns for this cell composition.</param>
 				bool								SetSite(vint _row, vint _column, vint _rowSpan, vint _columnSpan);
-
-				Rect								GetBounds()override;
 			};
 
-			class GuiTableSplitterCompositionBase : public GuiGraphicsSite, public Description<GuiTableSplitterCompositionBase>
+			class GuiTableSplitterCompositionBase : public GuiGraphicsComposition_Specialized, public Description<GuiTableSplitterCompositionBase>
 			{
 			protected:
-				GuiTableComposition*				tableParent;
+				GuiTableComposition*				tableParent = nullptr;
 
-				bool								dragging;
+				bool								dragging = false;
 				Point								draggingPoint;
 				
 				void								OnParentChanged(GuiGraphicsComposition* oldParent, GuiGraphicsComposition* newParent)override;
@@ -6174,7 +6317,7 @@ Table Compositions
 														);
 			public:
 				GuiTableSplitterCompositionBase();
-				~GuiTableSplitterCompositionBase();
+				~GuiTableSplitterCompositionBase() = default;
 
 				/// <summary>Get the owner table composition.</summary>
 				/// <returns>The owner table composition.</returns>
@@ -6187,12 +6330,13 @@ Table Compositions
 			class GuiRowSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiRowSplitterComposition>
 			{
 			protected:
-				vint								rowsToTheTop;
+				vint								rowsToTheTop = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiRowSplitterComposition();
-				~GuiRowSplitterComposition();
+				~GuiRowSplitterComposition() = default;
 
 				/// <summary>Get the number of rows that above the splitter.</summary>
 				/// <returns>The number of rows that above the splitter.</returns>
@@ -6200,8 +6344,6 @@ Table Compositions
 				/// <summary>Set the number of rows that above the splitter.</summary>
 				/// <param name="value">The number of rows that above the splitter</param>
 				void								SetRowsToTheTop(vint value);
-
-				Rect								GetBounds()override;
 			};
 			
 			/// <summary>
@@ -6210,12 +6352,13 @@ Table Compositions
 			class GuiColumnSplitterComposition : public GuiTableSplitterCompositionBase, public Description<GuiColumnSplitterComposition>
 			{
 			protected:
-				vint								columnsToTheLeft;
+				vint								columnsToTheLeft = 0;
 				
 				void								OnMouseMove(GuiGraphicsComposition* sender, GuiMouseEventArgs& arguments);
+				Rect								Layout_CalculateBounds(Size parentSize) override;
 			public:
 				GuiColumnSplitterComposition();
-				~GuiColumnSplitterComposition();
+				~GuiColumnSplitterComposition() = default;
 
 				/// <summary>Get the number of columns that before the splitter.</summary>
 				/// <returns>The number of columns that before the splitter.</returns>
@@ -6223,8 +6366,6 @@ Table Compositions
 				/// <summary>Set the number of columns that before the splitter.</summary>
 				/// <param name="value">The number of columns that before the splitter</param>
 				void								SetColumnsToTheLeft(vint value);
-
-				Rect								GetBounds()override;
 			};
 		}
 	}
@@ -6268,6 +6409,11 @@ namespace vl
 {
 	namespace presentation
 	{
+		namespace compositions
+		{
+			extern void									InvokeOnCompositionStateChanged(compositions::GuiGraphicsComposition* composition);
+		}
+
 		namespace elements
 		{
 
@@ -6986,6 +7132,7 @@ Window
 
 						CopyFrom(remainings, orderedWindows);
 						orderedWindows.Clear();
+						// TODO: (enumerable) foreach:reversed
 						for (vint i = windows.Count() - 1; i >= 0; i--)
 						{
 							orderedWindows.Add(windows[i]);
@@ -9096,7 +9243,7 @@ Basic Construction
 				/// <returns>The font to render the text.</returns>
 				virtual const FontProperties&			GetDisplayFont();
 				/// <summary>Get the context of this control. The control template and all item templates (if it has) will see this context property.</summary>
-				/// <returns>The context of this context.</returns>
+				/// <returns>The context of this control.</returns>
 				virtual description::Value				GetContext();
 				/// <summary>Set the context of this control.</summary>
 				/// <param name="value">The context of this control.</param>
@@ -13280,13 +13427,13 @@ Scroll View
 				Ptr<IEventHandler>						vScrollHandler;
 				Ptr<IEventHandler>						hWheelHandler;
 				Ptr<IEventHandler>						vWheelHandler;
-				Ptr<IEventHandler>						containerBoundsChangedHandler;
+				Ptr<IEventHandler>						containerCachedBoundsChangedHandler;
 				bool									horizontalAlwaysVisible = true;
 				bool									verticalAlwaysVisible = true;
 
 				void									UpdateDisplayFont()override;
 
-				void									OnContainerBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void									OnContainerCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnHorizontalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnVerticalScroll(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void									OnHorizontalWheel(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
@@ -13688,7 +13835,7 @@ List Control
 
 					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition);
 					ItemStyle*									UninstallStyle(vint index);
-					void										OnStyleBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void										OnStyleCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					ItemCallback(GuiListControl* _listControl);
 					~ItemCallback();
@@ -13757,7 +13904,7 @@ List Control
 				collections::Dictionary<ItemStyle*, Ptr<VisibleStyleHelper>>		visibleStyles;
 
 				void											UpdateDisplayFont()override;
-				void											OnClientBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void											OnClientCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void											OnItemMouseEvent(compositions::GuiItemMouseEvent& itemEvent, ItemStyle* style, compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
@@ -14146,7 +14293,7 @@ Predefined ItemArranger
 					vint										pim_itemHeight = 0;
 
 				protected:
-					vint										itemHeight;
+					vint										itemHeight = 1;
 
 					void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
@@ -17438,7 +17585,7 @@ ComboBox Base
 			protected:
 				
 				IGuiMenuService::Direction					GetSubMenuDirection()override;
-				void										OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a control with a specified default theme.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>
@@ -17498,7 +17645,7 @@ ComboBox with GuiListControl
 				void										OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnAfterSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-				void										OnListControlBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void										OnListControlCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void										OnListControlItemMouseDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);
 				void										OnKeyDown(compositions::GuiGraphicsComposition* sender, compositions::GuiKeyEventArgs& arguments);
 
@@ -17873,7 +18020,7 @@ ListViewColumnItemArranger
 					vint										splitterLatestX = 0;
 
 					void										ColumnClicked(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void										ColumnBoundsChanged(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void										ColumnCachedBoundsChanged(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void										ColumnHeaderSplitterLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
@@ -20243,7 +20390,7 @@ Ribbon Containers
 
 				bool												IsAltAvailable()override;
 				compositions::IGuiAltActionHost*					GetActivatingAltHost()override;
-				void												OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void												OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												OnTextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void												OnBeforeSwitchingView(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void												OnBeforeSubMenuOpening(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -20671,7 +20818,7 @@ Ribbon Gallery List
 				void													OnItemListSelectionChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnItemListItemMouseEnter(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
 				void													OnItemListItemMouseLeave(compositions::GuiGraphicsComposition* sender, compositions::GuiItemEventArgs& arguments);
-				void													OnBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+				void													OnCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedDropdown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollUp(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				void													OnRequestedScrollDown(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

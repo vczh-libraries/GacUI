@@ -96,6 +96,7 @@ namespace vl
 				return nullptr;
 			}
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [fileName, index] : indexed(output->cppFiles.Keys()))
 			{
 				WString code = output->cppFiles.Values()[index];
@@ -658,6 +659,7 @@ GuiInstanceGradientAnimation::InitStruct
 				tds.Add(td);
 				auto ref = Ptr(new WfConstructorExpression);
 
+				// TODO: (enumerable) foreach:alterable
 				for (vint i = 0; i < tds.Count(); i++)
 				{
 					auto currentTd = tds[i];
@@ -2167,6 +2169,7 @@ GuiDefaultInstanceLoader
 										block->statements.Add(stat);
 									}
 
+									// TODO: (enumerable) foreach
 									for (vint i = 0; i < values.Count(); i++)
 									{
 										auto refCollection = Ptr(new WfReferenceExpression);
@@ -2549,6 +2552,7 @@ GuiInstanceLoaderManager
 
 			void GetVirtualTypes(collections::List<GlobalStringKey>& typeNames)override
 			{
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < typeInfos.Count(); i++)
 				{
 					if (typeInfos.Values()[i]->parentTypeName != GlobalStringKey::Empty)
@@ -3973,6 +3977,7 @@ GuiDataProcessorDeserializer
 						inferExpr->type = funcType;
 
 						funcType->result = CopyType(decl->returnType);
+						// TODO: (enumerable) Linq:Select
 						for (vint i = 0; i < decl->arguments.Count(); i++)
 						{
 							funcType->arguments.Add(CopyType(itemType));
@@ -4180,6 +4185,7 @@ namespace vl
 					codes.Add(code);
 				};
 
+				// TODO: (enumerable) Linq:Select
 				for (vint i = 0; i < compiled->modules.Count(); i++)
 				{
 					manager->AddModule(compiled->modules[i].module);
@@ -4203,6 +4209,7 @@ namespace vl
 				}
 				else
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < compiled->modules.Count(); i++)
 					{
 						auto module = compiled->modules[i];
@@ -4212,6 +4219,7 @@ namespace vl
 					}
 
 					auto sp = Workflow_GetScriptPosition(context);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < manager->errors.Count(); i++)
 					{
 						auto error = manager->errors[i];
@@ -4312,6 +4320,7 @@ Shared Script Type Resolver (Script)
 					Workflow_GenerateAssembly(context, Path_Shared, errors, false, context.compilerCallback);
 					if (auto compiled = Workflow_GetModule(context, Path_Shared, {}))
 					{
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < compiled->modules.Count(); i++)
 						{
 							auto& module = compiled->modules[i];
@@ -4474,6 +4483,7 @@ Instance Type Resolver (Instance)
 									L"\" should have the class name specified in the ref.Class attribute."));
 							}
 
+							// TODO: (enumerable) Linq:Take
 							for (auto [localized, index] :
 								indexed(From(obj->localizeds).Where([](Ptr<GuiInstanceLocalized> ls) {return ls->defaultStrings; }))
 								)
@@ -5290,6 +5300,7 @@ GuiInstanceLocalizedStringsBase
 				}
 				else
 				{
+					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < textDesc->parameters.Count(); i++)
 					{
 						auto defaultParameter = defaultDesc->parameters[defaultDesc->positions[i]];
@@ -5369,6 +5380,7 @@ GuiInstanceLocalizedStringsBase
 			func->anonymity = WfFunctionAnonymity::Named;
 			func->name.value = functionName;
 			func->returnType = GetTypeFromTypeInfo(TypeInfoRetriver<WString>::CreateTypeInfo().Obj());
+			// TODO: (enumerable) foreach
 			for (vint i = 0; i < textDesc->positions.Count(); i++)
 			{
 				auto type = textDesc->parameters[textDesc->positions[i]];
@@ -5506,6 +5518,7 @@ GuiInstanceLocalizedStringsBase
 
 			auto block = Ptr(new WfBlockStatement);
 
+			// TODO: (enumerable) foreach:indexed
 			for (vint i = 0; i < textDesc->parameters.Count(); i++)
 			{
 				auto varDesc = Ptr(new WfVariableDeclaration);
@@ -5523,6 +5536,7 @@ GuiInstanceLocalizedStringsBase
 
 			{
 				Ptr<WfExpression> resultExpr;
+				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < textDesc->texts.Count(); i++)
 				{
 					if (textDesc->texts[i] != L"")
@@ -6342,6 +6356,7 @@ GuiAttSetterRepr
 		{
 			GuiValueRepr::CloneBody(repr);
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [name, index] : indexed(setters.Keys()))
 			{
 				auto src = setters.Values()[index];
@@ -6357,6 +6372,7 @@ GuiAttSetterRepr
 				repr->setters.Add(name, dst);
 			}
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [name, index] : indexed(eventHandlers.Keys()))
 			{
 				auto src = eventHandlers.Values()[index];
@@ -6371,6 +6387,7 @@ GuiAttSetterRepr
 				repr->eventHandlers.Add(name, dst);
 			}
 
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [name, index] : indexed(environmentVariables.Keys()))
 			{
 				auto src = environmentVariables.Values()[index];
@@ -6407,6 +6424,7 @@ GuiAttSetterRepr
 					xml->attributes.Add(attName);
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < setters.Count(); i++)
 				{
 					auto key = setters.Keys()[i];
@@ -6468,6 +6486,7 @@ GuiAttSetterRepr
 					}
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < eventHandlers.Count(); i++)
 				{
 					auto key = eventHandlers.Keys()[i];
@@ -6488,6 +6507,7 @@ GuiAttSetterRepr
 					}
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (vint i = 0; i < environmentVariables.Count(); i++)
 				{
 					auto key = environmentVariables.Keys()[i];
@@ -7047,6 +7067,7 @@ GuiInstanceContext
 			attClass->value.value = className;
 			xmlInstance->attributes.Add(attClass);
 
+			// TODO: (enumerable) foreach on dictionary
 			for (vint i = 0; i < namespaces.Count(); i++)
 			{
 				auto key = namespaces.Keys()[i];
@@ -7060,6 +7081,7 @@ GuiInstanceContext
 				}
 				xmlInstance->attributes.Add(xmlns);
 
+				// TODO: (enumerable) Linq:Aggregate
 				for (vint j = 0; j < value->namespaces.Count(); j++)
 				{
 					auto ns = value->namespaces[j];
@@ -7133,6 +7155,7 @@ GuiInstanceContext
 				attStyles->name.value = L"ref.Styles";
 				xmlInstance->attributes.Add(attStyles);
 
+				// TODO: (enumerable) Linq:Aggregate
 				for (vint j = 0; j < stylePaths.Count(); j++)
 				{
 					if (j != 0)
@@ -7511,6 +7534,7 @@ GuiCompositionInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
@@ -7669,6 +7693,7 @@ GuiTableCompositionInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Rows)
@@ -7703,6 +7728,7 @@ GuiTableCompositionInstanceLoader
 									block->statements.Add(stat);
 								}
 
+								// TODO: (enumerable) foreach:indexed
 								for (vint i = 0; i < rows.Count(); i++)
 								{
 									auto refComposition = Ptr(new WfReferenceExpression);
@@ -7725,6 +7751,7 @@ GuiTableCompositionInstanceLoader
 									block->statements.Add(stat);
 								}
 
+								// TODO: (enumerable) foreach:indexed
 								for (vint i = 0; i < columns.Count(); i++)
 								{
 									auto refComposition = Ptr(new WfReferenceExpression);
@@ -7798,6 +7825,7 @@ GuiCellCompositionInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Site)
@@ -8028,6 +8056,7 @@ GuiDocumentItemInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
@@ -8119,6 +8148,7 @@ GuiDocumentInstanceLoaderBase
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
@@ -8384,6 +8414,7 @@ GuiTreeViewInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == _Nodes)
@@ -8560,6 +8591,7 @@ GuiTreeNodeInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						if (prop == GlobalStringKey::Empty)
@@ -8793,6 +8825,7 @@ GuiControlInstanceLoader
 				{
 					auto block = Ptr(new WfBlockStatement);
 
+					// TODO: (enumerable) foreach on group
 					for (auto [prop, index] : indexed(arguments.Keys()))
 					{
 						const auto& values = arguments.GetByIndex(index);
@@ -9258,6 +9291,7 @@ namespace vl
 			{
 				auto block = Ptr(new WfBlockStatement);
 
+				// TODO: (enumerable) foreach on group
 				for (auto [prop, index] : indexed(arguments.Keys()))
 				{
 					const auto& values = arguments.GetByIndex(index);
@@ -9640,6 +9674,7 @@ ExecuteQueryVisitor
 			{
 				if (setter)
 				{
+					// TODO: (enumerable) foreach on group
 					for (auto [attribute, index] : indexed(setter->setters.Keys()))
 					{
 						auto setterValue = setter->setters.Values()[index];
@@ -9751,6 +9786,7 @@ ApplyStyle
 
 		void ApplyStyleInternal(Ptr<GuiAttSetterRepr> src, Ptr<GuiAttSetterRepr> dst)
 		{
+			// TODO: (enumerable) foreach on dictionary
 			for (auto [attribute, srcIndex] : indexed(src->setters.Keys()))
 			{
 				auto srcValue = src->setters.Values()[srcIndex];
@@ -9776,6 +9812,7 @@ ApplyStyle
 				}
 			}
 
+			// TODO: (enumerable) foreach
 			for (auto [eventName, srcIndex] : indexed(src->eventHandlers.Keys()))
 			{
 				if (!dst->eventHandlers.Keys().Contains(eventName))
@@ -9785,6 +9822,7 @@ ApplyStyle
 				}
 			}
 
+			// TODO: (enumerable) foreach
 			for (auto [varName, srcIndex] : indexed(src->environmentVariables.Keys()))
 			{
 				if (!dst->environmentVariables.Keys().Contains(varName))
@@ -10601,6 +10639,7 @@ WorkflowEventNamesVisitor
 
 			void Visit(GuiAttSetterRepr* repr)override
 			{
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
@@ -10639,6 +10678,7 @@ WorkflowEventNamesVisitor
 					}
 				}
 
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 				{
 					if (handler->binding == GlobalStringKey::Empty)
@@ -10994,6 +11034,7 @@ Workflow_GenerateInstanceClass
 					CopyFrom(unprocessed, memberDecls);
 
 					ReplaceDeclImplVisitor visitor(notImplemented, unprocessed);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < unprocessed.Count(); i++)
 					{
 						unprocessed[i]->Accept(&visitor);
@@ -11019,6 +11060,7 @@ Workflow_GenerateInstanceClass
 				call->type = CopyType(instanceClass->baseTypes[0]);
 				baseTypeContext = baseTypeResourceItem->GetContent().Cast<GuiInstanceContext>();
 
+				// TODO: (enumerable) foreach
 				for (auto parameter : baseTypeContext->parameters)
 				{
 					auto parameterTypeInfoTuple = getDefaultType(parameter->className.ToString());
@@ -11839,6 +11881,7 @@ WorkflowReferenceNamesVisitor
 			
 				auto loader = GetInstanceLoaderManager()->GetLoader(resolvedTypeInfo.typeName);
 
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [setter, index] : indexed(repr->setters.Values()))
 				{
 					List<types::PropertyResolving> possibleInfos;
@@ -12130,6 +12173,7 @@ WorkflowReferenceNamesVisitor
 					for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 					{
 						const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+						// TODO: (enumerable) foreach
 						for (vint j = 0; j < typeInfos.Count(); j++)
 						{
 							if (resolvedTypeInfo.typeInfo->GetTypeDescriptor()->CanConvertTo(typeInfos[j]->GetTypeDescriptor()))
@@ -12153,9 +12197,11 @@ WorkflowReferenceNamesVisitor
 							+ resolvedTypeInfo.typeName.ToString()
 							+ L"\" because it only accepts value of the following types: ";
 						
+						// TODO: (enumerable) foreach
 						for (vint i = 0; i < candidatePropertyTypeInfos.Count(); i++)
 						{
 							const auto& typeInfos = candidatePropertyTypeInfos[i].info->acceptableTypes;
+							// TODO: (enumerable) LinqLAggregate
 							for (vint j = 0; j < typeInfos.Count(); j++)
 							{
 								if (i != 0 || j != 0)
@@ -12218,6 +12264,7 @@ WorkflowReferenceNamesVisitor
 								{
 									List<GlobalStringKey> propertyNames;
 									loader->GetPropertyNames(precompileContext, resolvedTypeInfo, propertyNames);
+									// TODO: (enumerable) foreach:indexed(alterable(reversed))
 									for (vint i = propertyNames.Count() - 1; i >= 0; i--)
 									{
 										auto info = loader->GetPropertyType(precompileContext, { resolvedTypeInfo, propertyNames[i] });
@@ -12498,6 +12545,7 @@ WorkflowGenerateBindingVisitor
 				{
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
+					// TODO: (enumerable) foreach on dictionary
 					for (auto [setter, index] : indexed(repr->setters.Values()))
 					{
 						auto propertyName = repr->setters.Keys()[index];
@@ -12518,6 +12566,7 @@ WorkflowGenerateBindingVisitor
 						}
 					}
 
+					// TODO: (enumerable) foreach on dictionary
 					for (auto [handler, index] : indexed(repr->eventHandlers.Values()))
 					{
 						if (reprTypeInfo.typeInfo)
@@ -12789,6 +12838,7 @@ WorkflowGenerateCreatingVisitor
 				else if (errorCount == errors.Count())
 				{
 					WString propNames;
+					// TODO: (enumerable) Linq:Aggregate
 					for (auto [pairedProp, propIndex] : indexed(pairedProps))
 					{
 						if (propIndex > 0)propNames += L", ";
@@ -12819,6 +12869,7 @@ WorkflowGenerateCreatingVisitor
 					WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
 					Group<GlobalStringKey, IGuiInstanceLoader*> usedProps;
+					// TODO: (enumerable) foreach:reversed on dictionary
 					for (auto prop : From(repr->setters.Keys()).Reverse())
 					{
 						auto setter = repr->setters[prop];
@@ -12869,6 +12920,7 @@ WorkflowGenerateCreatingVisitor
 			{
 				WORKFLOW_ENVIRONMENT_VARIABLE_ADD
 
+				// TODO: (enumerable) foreach on dictionary
 				for (auto [prop, index] : indexed(repr->setters.Keys()))
 				{
 					auto setter = repr->setters.Values()[index];
@@ -13394,6 +13446,7 @@ Workflow_GenerateEventHandler
 					auto expectedType = GetTypeDescriptor<GuiEventArgs>();
 					List<ITypeDescriptor*> types;
 					types.Add(argumentType);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < types.Count(); i++)
 					{
 						auto type = types[i];
@@ -13708,6 +13761,7 @@ Variable
 		void Workflow_CreateVariablesForReferenceValues(Ptr<workflow::WfClassDeclaration> ctorClass, types::ResolvingResult& resolvingResult)
 		{
 			const auto& typeInfos = resolvingResult.typeInfos;
+			// TODO: (enumerable) foreach on dictionary
 			for (vint i = 0; i < typeInfos.Count(); i++)
 			{
 				auto key = typeInfos.Keys()[i];
@@ -13744,6 +13798,7 @@ Parser
 
 			if (availableAfter.row != 0 || availableAfter.column != 0)
 			{
+				// TODO: (enumerable) Linq:Skip
 				for (vint i = errorCount; i < errors.Count(); i++)
 				{
 					auto& error = errors[i];

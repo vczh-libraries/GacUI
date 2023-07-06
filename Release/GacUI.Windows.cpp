@@ -388,6 +388,7 @@ WindowsForm
 
 				static void ClosePopupsOf(WindowsForm* owner, SortedList<WindowsForm*>& exceptions)
 				{
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < owner->childWindows.Count(); i++)
 					{
 						auto popup = owner->childWindows[i];
@@ -456,6 +457,7 @@ WindowsForm
 							List<IWindowsForm*> allRootWindows;
 							GetAllCreatedWindows(allRootWindows, true);
 
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < allRootWindows.Count(); i++)
 							{
 								if (auto windowsForm = dynamic_cast<WindowsForm*>(allRootWindows[i]))
@@ -475,6 +477,7 @@ WindowsForm
 						{
 							LPRECT rawBounds=(LPRECT)lParam;
 							NativeRect bounds(rawBounds->left, rawBounds->top, rawBounds->right, rawBounds->bottom);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Moving(bounds, false, (uMsg == WM_SIZING));
@@ -494,6 +497,7 @@ WindowsForm
 						break;
 					case WM_MOVE:case WM_SIZE:
 						{
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Moved();
@@ -508,11 +512,13 @@ WindowsForm
 							auto newRect = (RECT*)lParam;
 							MoveWindow(handle, newRect->left, newRect->top, (newRect->right - newRect->left), (newRect->bottom - newRect->top), FALSE);
 
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								listeners[i]->DpiChanged(true);
 							}
 
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								listeners[i]->DpiChanged(false);
@@ -522,6 +528,7 @@ WindowsForm
 					// ************************************** state
 					case WM_ENABLE:
 						{
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								if(wParam==TRUE)
@@ -544,6 +551,7 @@ WindowsForm
 						break;
 					case WM_ACTIVATE:
 						{
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
@@ -564,6 +572,7 @@ WindowsForm
 						{
 							if (wParam == TRUE)
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Opened();
@@ -571,6 +580,7 @@ WindowsForm
 							}
 							else
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->Closed();
@@ -581,12 +591,14 @@ WindowsForm
 					case WM_CLOSE:
 						{
 							bool cancel = false;
+							// TODO: (enumerable) foreach
 							for (vint i = 0; i < listeners.Count(); i++)
 							{
 								listeners[i]->BeforeClosing(cancel);
 							}
 							if (!cancel)
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									listeners[i]->AfterClosing();
@@ -602,6 +614,7 @@ WindowsForm
 					case WM_LBUTTONDOWN:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->LeftButtonDown(info);
@@ -614,6 +627,7 @@ WindowsForm
 					case WM_LBUTTONUP:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->LeftButtonUp(info);
@@ -626,6 +640,7 @@ WindowsForm
 					case WM_LBUTTONDBLCLK:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->LeftButtonDoubleClick(info);
@@ -638,6 +653,7 @@ WindowsForm
 					case WM_RBUTTONDOWN:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->RightButtonDown(info);
@@ -650,6 +666,7 @@ WindowsForm
 					case WM_RBUTTONUP:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->RightButtonUp(info);
@@ -662,6 +679,7 @@ WindowsForm
 					case WM_RBUTTONDBLCLK:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->RightButtonDoubleClick(info);
@@ -674,6 +692,7 @@ WindowsForm
 					case WM_MBUTTONDOWN:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MiddleButtonDown(info);
@@ -686,6 +705,7 @@ WindowsForm
 					case WM_MBUTTONUP:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MiddleButtonUp(info);
@@ -698,6 +718,7 @@ WindowsForm
 					case WM_MBUTTONDBLCLK:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, false, nonClient);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MiddleButtonDoubleClick(info);
@@ -715,12 +736,14 @@ WindowsForm
 								if(!mouseHoving)
 								{
 									mouseHoving=true;
+									// TODO: (enumerable) foreach
 									for(vint i=0;i<listeners.Count();i++)
 									{
 										listeners[i]->MouseEntered();
 									}
 									TrackMouse(true);
 								}
+								// TODO: (enumerable) foreach
 								for(vint i=0;i<listeners.Count();i++)
 								{
 									listeners[i]->MouseMoving(info);
@@ -732,6 +755,7 @@ WindowsForm
 					case WM_MOUSEHWHEEL:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->HorizontalWheel(info);
@@ -741,6 +765,7 @@ WindowsForm
 					case WM_MOUSEWHEEL:
 						{
 							NativeWindowMouseInfo info=ConvertMouse(wParam, lParam, true, false);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->VerticalWheel(info);
@@ -756,6 +781,7 @@ WindowsForm
 							mouseLastX=-1;
 							mouseLastY=-1;
 							mouseHoving=false;
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->MouseLeaved();
@@ -773,6 +799,7 @@ WindowsForm
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
 							info.autoRepeatKeyDown = false;
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyUp(info);
@@ -782,6 +809,7 @@ WindowsForm
 					case WM_KEYDOWN:
 						{
 							NativeWindowKeyInfo info=ConvertKey(wParam, lParam);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyDown(info);
@@ -810,6 +838,7 @@ WindowsForm
 							{
 								break;
 							}
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->KeyDown(info);
@@ -819,6 +848,7 @@ WindowsForm
 					case WM_CHAR:
 						{
 							NativeWindowCharInfo info=ConvertChar(wParam);
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Char(info);
@@ -828,6 +858,7 @@ WindowsForm
 					// ************************************** painting
 					case WM_PAINT:
 						{
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<listeners.Count();i++)
 							{
 								listeners[i]->Paint();
@@ -971,6 +1002,7 @@ WindowsForm
 						case WM_LBUTTONUP:
 							{
 								POINTS location = MAKEPOINTS(lParam);
+								// TODO: (enumerable) this for-loop needs to be removed, because it is not looping, just leave the body
 								for (vint i = 0; i < listeners.Count(); i++)
 								{
 									switch (PerformHitTest(From(listeners), { location.x,location.y }))
@@ -1065,6 +1097,7 @@ WindowsForm
 					{
 						parentWindow->childWindows.Remove(this);
 					}
+					// TODO: (enumerable) foreach
 					for (vint i = childWindows.Count() - 1; i >= 0; i--)
 					{
 						childWindows[i]->SetParent(parentWindow);
@@ -1073,6 +1106,7 @@ WindowsForm
 					*flagDisposed.Obj() = true;
 					List<INativeWindowListener*> copiedListeners;
 					CopyFrom(copiedListeners, listeners);
+					// TODO: (enumerable) foreach
 					for (vint i = 0; i < copiedListeners.Count(); i++)
 					{
 						INativeWindowListener* listener = copiedListeners[i];
@@ -1091,6 +1125,7 @@ WindowsForm
 
 				void InvokeDestroying()
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<listeners.Count();i++)
 					{
 						listeners[i]->Destroying();
@@ -1220,6 +1255,7 @@ WindowsForm
 				void SetBounds(const NativeRect& bounds)override
 				{
 					NativeRect newBounds=bounds;
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<listeners.Count();i++)
 					{
 						listeners[i]->Moving(newBounds, true, false);
@@ -1926,6 +1962,7 @@ WindowsController
 							{
 								DestroyNativeWindow(window);
 							}
+							// TODO: (enumerable) foreach:reversed
 							for (vint i = windows.Count() - 1; i >= 0; i--)
 							{
 								auto window = windows.Values()[i];
@@ -2466,7 +2503,7 @@ WindowListener 1.1
 					if (size.x <= 1) size.x = 1;
 					if (size.y <= 1) size.y = 1;
 
-					if(!d2dDeviceContext)
+					if (!d2dDeviceContext)
 					{
 						if (!dxgiDevice)
 						{
@@ -2479,8 +2516,6 @@ WindowListener 1.1
 						}
 
 						d2dDeviceContext = CreateDeviceContext(dxgiDevice.Obj());
-						auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
-						d2dDeviceContext->SetTarget(d2dBitmap.Obj());
 						IWindowsForm* form = GetWindowsForm(window);
 						{
 							UINT dpiX = 0;
@@ -2488,18 +2523,26 @@ WindowListener 1.1
 							DpiAwared_GetDpiForWindow(form->GetWindowHandle(), &dpiX, &dpiY);
 							d2dDeviceContext->SetDpi((FLOAT)dpiX, (FLOAT)dpiY);
 						}
+						previousSize = { 0,0 };
 					}
-					else if(previousSize!=size)
+
+					if (previousSize != size)
 					{
+						previousSize = size;
 						d2dDeviceContext->SetTarget(nullptr);
-						HRESULT hr = dxgiSwapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+						HRESULT hr = dxgiSwapChain->ResizeBuffers(
+							0,
+							(UINT)size.x.value,
+							(UINT)size.y.value,
+							DXGI_FORMAT_UNKNOWN,
+							0
+						);
 						if (SUCCEEDED(hr))
 						{
 							auto d2dBitmap = CreateBitmap(dxgiSwapChain.Obj(), d2dDeviceContext.Obj());
 							d2dDeviceContext->SetTarget(d2dBitmap.Obj());
 						}
 					}
-					previousSize=size;
 				}
 			public:
 				Direct2DWindowsNativeWindowListener_1_1(INativeWindow* _window, ComPtr<ID2D1Factory1> _d2dFactory1, ID3D11Device* _d3d11Device)
@@ -2578,6 +2621,7 @@ ControllerListener
 
 				~Direct2DWindowsNativeControllerListener()
 				{
+					// TODO: (enumerable) foreach on dictionary
 					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
 					{
 						auto window = nativeWindowListeners.Keys()[i];
@@ -3133,6 +3177,7 @@ WindowsDirect2DParagraph (Ranges)
 				void CutMap(Dictionary<TextRange, T>& map, vint start, vint length)
 				{
 					vint end=start+length;
+					// TODO: (enumerable) foreach:alterable(reversed) on group
 					for(vint i=map.Count()-1;i>=0;i--)
 					{
 						TextRange key=map.Keys()[i];
@@ -3166,6 +3211,7 @@ WindowsDirect2DParagraph (Ranges)
 				void UpdateOverlappedMap(Dictionary<TextRange, T>& map, vint start, vint length, const T& value)
 				{
 					vint end=start+length;
+					// TODO: (enumerable) foreach:alterable(reversed)) on dictionary
 					for(vint i=map.Count()-1;i>=0;i--)
 					{
 						TextRange key=map.Keys()[i];
@@ -3181,6 +3227,7 @@ WindowsDirect2DParagraph (Ranges)
 				{
 					vint lastIndex=map.Count()-1;
 					T lastValue=map.Values()[lastIndex];
+					// TODO: (enumerable) foreach:indexed(alterable(reversed)) on dictionary
 					for(vint i=map.Count()-2;i>=-1;i--)
 					{
 						if(i==-1 || map.Values()[i]!=lastValue)
@@ -3262,6 +3309,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 							lineTops.Resize(lineCount);
 							vint start=0;
 							FLOAT top=0;
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<lineMetrics.Count();i++)
 							{
 								DWRITE_LINE_METRICS& metrics=lineMetrics[i];
@@ -3285,6 +3333,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 						{
 							vint textPos=0;
 							hitTestMetrics.Resize(clusterMetrics.Count());
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<hitTestMetrics.Count();i++)
 							{
 								FLOAT x=0;
@@ -3296,6 +3345,7 @@ WindowsDirect2DParagraph (Layout Retriving)
 						}
 						{
 							charHitTestMap.Resize(paragraphText.Length());
+							// TODO: (enumerable) foreach
 							for(vint i=0;i<hitTestMetrics.Count();i++)
 							{
 								DWRITE_HIT_TEST_METRICS& metrics=hitTestMetrics[i];
@@ -3520,6 +3570,7 @@ WindowsDirect2DParagraph (Formatting)
 					{
 						return false;
 					}
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<inlineElements.Count();i++)
 					{
 						ComPtr<WindowsDirect2DElementInlineObject> inlineObject=inlineElements.Values().Get(i);
@@ -3695,6 +3746,7 @@ WindowsDirect2DParagraph (Rendering)
 						BackgroundRenderer backgroundRenderer;
 						backgroundRenderer.renderTarget = renderTarget;
 
+						// TODO: (enumerable) foreach on dictionary
 						for (vint i = 0; i < backgroundColors.Count(); i++)
 						{
 							TextRange key = backgroundColors.Keys()[i];
@@ -5216,6 +5268,7 @@ GuiPolygonElementRenderer
 					p.x = (FLOAT)(oldPoints[0].x + offset.x) + 0.5f;
 					p.y = (FLOAT)(oldPoints[0].y + offset.y) + 0.5f;
 					pgs->BeginFigure(p, D2D1_FIGURE_BEGIN_FILLED);
+					// TODO: (enumerable) foreach
 					for (vint i = 1; i < oldPoints.Count(); i++)
 					{
 						p.x = (FLOAT)(oldPoints[i].x + offset.x) + 0.5f;
@@ -5319,6 +5372,7 @@ GuiPolygonElementRenderer
 				}
 				else
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<oldPoints.Count();i++)
 					{
 						if(oldPoints[i]!=element->GetPoint(i))
@@ -5344,6 +5398,7 @@ GuiColorizedTextElementRenderer
 				if(_renderTarget)
 				{
 					colors.Resize(element->GetColors().Count());
+					// TODO: (enumerable) foreach:indexed
 					for(vint i=0;i<colors.Count();i++)
 					{
 						text::ColorEntry entry=element->GetColors().Get(i);
@@ -5370,6 +5425,7 @@ GuiColorizedTextElementRenderer
 			{
 				if(_renderTarget)
 				{
+					// TODO: (enumerable) foreach
 					for(vint i=0;i<colors.Count();i++)
 					{
 						_renderTarget->DestroyDirect2DBrush(colors[i].normal.text);
@@ -8442,6 +8498,7 @@ namespace vl
 
 				~GdiWindowsNativeControllerListener()
 				{
+					// TODO: (enumerable) foreach on dictionary
 					for (vint i = 0; i < nativeWindowListeners.Count(); i++)
 					{
 						auto window = nativeWindowListeners.Keys()[i];
@@ -9774,6 +9831,7 @@ GuiColorizedTextElementRenderer
 			void GuiColorizedTextElementRenderer::DestroyColors()
 			{
 				auto resourceManager=GetWindowsGDIResourceManager();
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<colors.Count();i++)
 				{
 					resourceManager->DestroyGdiBrush(colors[i].normal.background);
@@ -9787,6 +9845,7 @@ GuiColorizedTextElementRenderer
 				auto resourceManager=GetWindowsGDIResourceManager();
 				ColorArray newColors;
 				newColors.Resize(element->GetColors().Count());
+				// TODO: (enumerable) foreach:indexed
 				for(vint i=0;i<newColors.Count();i++)
 				{
 					text::ColorEntry entry=element->GetColors().Get(i);
@@ -13481,6 +13540,7 @@ WindowsDialogService
 
 				Array<wchar_t> filterBuffer(filter.Length()+2);
 				vint index=0;
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<filterSeparators.Count();i++)
 				{
 					vint end=filterSeparators[i];
@@ -13619,6 +13679,7 @@ WindowsImageFrame
 
 			WindowsImageFrame::~WindowsImageFrame()
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<caches.Count();i++)
 				{
 					caches.Values().Get(i)->OnDetach(this);
@@ -13919,6 +13980,7 @@ WindowsImage
 						{
 							if ((vint)actualCount > colorContexts.Count())
 							{
+								// TODO: (enumerable) foreach
 								for (vint i = 0; i < colorContexts.Count(); i++) colorContexts[i]->Release();
 								colorContexts.Resize((vint)actualCount);
 								bitmapDecoder->GetColorContexts(actualCount, &colorContexts[0], &actualCount);
@@ -14639,6 +14701,7 @@ WindowsScreenService
 
 			void WindowsScreenService::RefreshScreenInformation()
 			{
+				// TODO: (enumerable) foreach
 				for(vint i=0;i<screens.Count();i++)
 				{
 					screens[i]->monitor=NULL;
@@ -14670,6 +14733,7 @@ WindowsScreenService
 					HMONITOR monitor=MonitorFromWindow(hwnd, MONITOR_DEFAULTTONULL);
 					if(monitor!=NULL)
 					{
+						// TODO: (enumerable) foreach
 						for(vint i=0;i<screens.Count();i++)
 						{
 							if(screens[i]->monitor==monitor)

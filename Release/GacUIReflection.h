@@ -260,10 +260,10 @@ Type List (Compositions)
 			F(presentation::compositions::IGuiAltActionContainer)\
 			F(presentation::compositions::IGuiAltActionHost)\
 			F(presentation::compositions::IGuiTabAction)\
+			F(presentation::compositions::GuiRepeatCompositionBase)\
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
 			F(presentation::compositions::GuiGraphicsComposition)\
-			F(presentation::compositions::GuiGraphicsSite)\
 			F(presentation::compositions::GuiWindowComposition)\
 			F(presentation::compositions::GuiBoundsComposition)\
 			F(presentation::compositions::GuiStackComposition)\
@@ -279,7 +279,6 @@ Type List (Compositions)
 			F(presentation::compositions::GuiPartialViewComposition)\
 			F(presentation::compositions::GuiSharedSizeItemComposition)\
 			F(presentation::compositions::GuiSharedSizeRootComposition)\
-			F(presentation::compositions::GuiRepeatCompositionBase)\
 			F(presentation::compositions::GuiRepeatStackComposition)\
 			F(presentation::compositions::GuiRepeatFlowComposition)\
 			F(presentation::compositions::GuiResponsiveCompositionBase)\
@@ -359,6 +358,7 @@ Type List (Controls)
 			F(presentation::theme::ThemeName)\
 			F(presentation::theme::ITheme)\
 			F(presentation::theme::ThemeTemplates)\
+			F(presentation::controls::GuiDisposedFlag)\
 			F(presentation::controls::GuiDialogBase)\
 			F(presentation::controls::GuiMessageDialog)\
 			F(presentation::controls::GuiColorDialog)\
@@ -439,7 +439,6 @@ Type List (Controls)
 			F(presentation::controls::list::DataProvider)\
 
 #define GUIREFLECTIONCONTROLS_CLASS_TYPELIST(F)\
-			F(presentation::controls::GuiDisposedFlag)\
 			F(presentation::controls::GuiControl)\
 			F(presentation::controls::GuiCustomControl)\
 			F(presentation::controls::GuiLabel)\
