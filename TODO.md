@@ -46,14 +46,9 @@
 - `FlowAlignment::Right` in demo.
 - Make document v2 without auto generated content.
 - Tutorials
-  - Check all `<Table/>` and make sure there is `MinSizeLimitation="LimitToElementAndChildren"`.
-  - `Xml/Binding_Uri` Cannot shrink smaller than the image (check if by design).
-  - `Layout/Alignment` Check button upper margin.
   - `Layout/Responsive2` Missing something.
   - `Layout/SharedSize(TextList)` Doesn't shrink after removing long items.
-  - `Controls/ContainerAndButtons(ScrollContainer)` Missing buttons.
   - `Controls/DataGrid` Birthday not correctly rendered.
-  - `Controls/Dialog` Some table content missing.
 
 ## Progressing
 
