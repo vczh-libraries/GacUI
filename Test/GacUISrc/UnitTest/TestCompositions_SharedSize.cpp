@@ -163,23 +163,19 @@ TEST_FILE
 
 		root->ForceCalculateSizeImmediately();
 		TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 0,0 }));
-		for (auto item : items)
-		{
-			TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,0 }, { 30,30 }));
-		}
 
-		SafeDeleteComposition(items[2]);
-		root->ForceCalculateSizeImmediately();
-		for (auto item : items)
+		for (vint j = ITEM_COUNT; j >= 1; j--)
 		{
-			TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,0 }, { 20,20 }));
-		}
+			if (j < ITEM_COUNT)
+			{
+				SafeDeleteComposition(items[j]);
+				root->ForceCalculateSizeImmediately();
+			}
 
-		SafeDeleteComposition(items[1]);
-		root->ForceCalculateSizeImmediately();
-		for (auto item : items)
-		{
-			TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,0 }, { 10,10 }));
+			for (vint i = 0; i < j; i++)
+			{
+				TEST_ASSERT(items[i]->GetCachedBounds() == Rect({0,0}, { j * 10,j * 10 }));
+			}
 		}
 
 		SafeDeleteComposition(root);
