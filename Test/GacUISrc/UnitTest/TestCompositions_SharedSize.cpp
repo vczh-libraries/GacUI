@@ -139,4 +139,49 @@ TEST_FILE
 
 		SafeDeleteComposition(root);
 	});
+
+	TEST_CASE(L"Test <SharedSizeRoot> auto shrink")
+	{
+		auto root = new GuiSharedSizeRootComposition;
+
+		constexpr vint ITEM_COUNT = 3;
+		GuiSharedSizeItemComposition* items[ITEM_COUNT];
+		for (vint i = 0; i < ITEM_COUNT; i++)
+		{
+			auto item = new GuiSharedSizeItemComposition;
+			items[i] = item;
+
+			item->SetGroup(L"group");
+			item->SetSharedWidth(true);
+			item->SetSharedHeight(true);
+			root->AddChild(item);
+
+			auto bounds = new GuiBoundsComposition;
+			bounds->SetPreferredMinSize(Size((i + 1) * 10, (i + 1) * 10));
+			item->AddChild(bounds);
+		}
+
+		root->ForceCalculateSizeImmediately();
+		TEST_ASSERT(root->GetCachedBounds() == Rect({ 0,0 }, { 0,0 }));
+		for (auto item : items)
+		{
+			TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,0 }, { 30,30 }));
+		}
+
+		SafeDeleteComposition(items[2]);
+		root->ForceCalculateSizeImmediately();
+		for (auto item : items)
+		{
+			TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,0 }, { 20,20 }));
+		}
+
+		SafeDeleteComposition(items[1]);
+		root->ForceCalculateSizeImmediately();
+		for (auto item : items)
+		{
+			TEST_ASSERT(item->GetCachedBounds() == Rect({ 0,0 }, { 10,10 }));
+		}
+
+		SafeDeleteComposition(root);
+	});
 }
