@@ -4505,6 +4505,14 @@ DateTime
 				return result;
 			}
 
+			vint ParseDigits(const WString& text)
+			{
+				const wchar_t* reading = text.Buffer();
+				while (*reading == '0') reading++;
+				if (!*reading) return 0;
+				return wtoi(WString::Unmanaged(reading));
+			}
+
 			bool TypedValueSerializerProvider<DateTime>::Serialize(const DateTime& input, WString& output)
 			{
 				output =
@@ -4523,13 +4531,13 @@ DateTime
 				if (match->Result().Start() != 0) return false;
 				if (match->Result().Length() != input.Length()) return false;
 
-				vint year = wtoi(match->Groups()[dts._Y].Get(0).Value());
-				vint month = wtoi(match->Groups()[dts._M].Get(0).Value());
-				vint day = wtoi(match->Groups()[dts._D].Get(0).Value());
-				vint hour = wtoi(match->Groups()[dts._h].Get(0).Value());
-				vint minute = wtoi(match->Groups()[dts._m].Get(0).Value());
-				vint second = wtoi(match->Groups()[dts._s].Get(0).Value());
-				vint milliseconds = wtoi(match->Groups()[dts._ms].Get(0).Value());
+				vint year = ParseDigits(match->Groups()[dts._Y].Get(0).Value());
+				vint month = ParseDigits(match->Groups()[dts._M].Get(0).Value());
+				vint day = ParseDigits(match->Groups()[dts._D].Get(0).Value());
+				vint hour = ParseDigits(match->Groups()[dts._h].Get(0).Value());
+				vint minute = ParseDigits(match->Groups()[dts._m].Get(0).Value());
+				vint second = ParseDigits(match->Groups()[dts._s].Get(0).Value());
+				vint milliseconds = ParseDigits(match->Groups()[dts._ms].Get(0).Value());
 
 				output = DateTime::FromDateTime(year, month, day, hour, minute, second, milliseconds);
 				return true;
