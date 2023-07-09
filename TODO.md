@@ -2,32 +2,6 @@
 
 ## Done but not Released
 
-- Composition refactoring
-  - `GuiGraphicsComposition`
-    - Remove
-      - `Margin` property
-      - `IsTrivialComposition`
-      - `ClientArea` property
-      - `MinPreferredClientSize` property
-      - `PreferredBounds` property
-      - `PreviousCalculatedBounds` property
-      - `Bounds` property
-    - Add
-      - `CachedMinSize` property
-      - `CachedMinClientSize` property
-      - `CachedBounds` property
-      - `CachedClientArea` property
-  - `GuiBoundsComposition`
-    - `Bounds` -> `ExpectedBounds`
-  - `GuiTableComposition`
-    - Remove
-      - `GetCellArea`
-      - `UpdateCellBounds`
-  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
-  - `FlowAlignment::Right`.
-  - `GuiRepeatCompositionBase`
-    - Add `Context` property.
-
 ## Known Issues
 
 - FakeDialogService
@@ -110,6 +84,7 @@
       - `CachedClientArea` property
   - `GuiBoundsComposition`
     - `Bounds` -> `ExpectedBounds`
+    - `AlignmentToParent` property will no longer consider parent's `InternalMargin` property in layout.
   - `GuiTableComposition`
     - Remove
       - `GetCellArea`
@@ -118,6 +93,8 @@
   - `FlowAlignment::Right`.
   - `GuiRepeatCompositionBase`
     - Add `Context` property.
+  - `GuiTableComposition`
+    - When `MinSizeLimitation` property is not `LimitToElementAndChildren`, sizes of cells will not be considered in its minimum size.
 
 ## OS Provider Features
 
