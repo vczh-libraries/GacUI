@@ -29148,24 +29148,6 @@ GuiSharedSizeItemComposition
 				if (parentRoot)
 				{
 					parentRoot->childItems.Add(this);
-					Size minSize;
-					if (sharedWidth)
-					{
-						vint index = parentRoot->itemWidths.Keys().IndexOf(group);
-						if (index != -1)
-						{
-							minSize.x = parentRoot->itemWidths.Values()[index];
-						}
-					}
-					if (sharedHeight)
-					{
-						vint index = parentRoot->itemHeights.Keys().IndexOf(group);
-						if (index != -1)
-						{
-							minSize.y = parentRoot->itemHeights.Values()[index];
-						}
-					}
-					SetPreferredMinSize(minSize);
 				}
 			}
 

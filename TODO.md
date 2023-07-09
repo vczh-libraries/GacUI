@@ -45,8 +45,6 @@
 - Examine all demo projects.
 - `FlowAlignment::Right` in demo.
 - Make document v2 without auto generated content.
-- Tutorials
-  - `Layout/SharedSize(TextList)` Doesn't shrink after removing long items.
 
 ## Progressing
 
