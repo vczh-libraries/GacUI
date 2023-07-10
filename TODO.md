@@ -62,8 +62,6 @@
 - Add document for `<ComboButton/>` and its `DropdownControl` property.
 - Add document for `<LocalizedStringsInjection/>` external injection.
 - Fix document for control signal event if already exists.
-- Add `static` keyword (method and init) in workflow document.
-- Add `static{}` in workflow document.
 - Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
 - Add `GuiRepeatCompositionBase::Context` property.
 - Review document for **compositions** and describe the new mechanism: all calculation result are cached, will update after refreshed.
