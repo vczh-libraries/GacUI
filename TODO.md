@@ -60,11 +60,8 @@
 ## Document
 
 - Add document for `<ComboButton/>` and its `DropdownControl` property.
-- Add document for `<LocalizedStringsInjection/>` external injection.
 - Fix document for control signal event if already exists.
 - Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
-- Add `GuiRepeatCompositionBase::Context` property.
-- Review document for **compositions** and describe the new mechanism: all calculation result are cached, will update after refreshed.
 - Fix document for compositions
   - `GuiGraphicsComposition`
     - Remove
@@ -80,19 +77,6 @@
       - `CachedMinClientSize` property
       - `CachedBounds` property
       - `CachedClientArea` property
-  - `GuiBoundsComposition`
-    - `Bounds` -> `ExpectedBounds`
-    - `AlignmentToParent` property will no longer consider parent's `InternalMargin` property in layout.
-  - `GuiTableComposition`
-    - Remove
-      - `GetCellArea`
-      - `UpdateCellBounds`
-  - Remove `GuiGraphicsSite`, merge into `GuiGraphicsComposition`.
-  - `FlowAlignment::Right`.
-  - `GuiRepeatCompositionBase`
-    - Add `Context` property.
-  - `GuiTableComposition`
-    - When `MinSizeLimitation` property is not `LimitToElementAndChildren`, sizes of cells will not be considered in its minimum size.
 
 ## OS Provider Features
 
