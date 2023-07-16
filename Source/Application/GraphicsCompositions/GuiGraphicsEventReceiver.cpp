@@ -36,6 +36,7 @@ Event Receiver
 				,lostFocus(_sender)
 				,caretNotify(_sender)
 				,clipboardNotify(_sender)
+				,renderTargetChanged(_sender)
 			{
 			}
 

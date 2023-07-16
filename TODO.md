@@ -59,25 +59,6 @@
 
 ## Document
 
-- Add document for `<ComboButton/>` and its `DropdownControl` property.
-- Fix document for control signal event if already exists.
-- Add document for `ThemeTemplates` updates, about `PreferCustomFrameWindow`, `SystemFrameWindow`, `CustopmFrameWindow` and `ThemeName::Window`.
-- Fix document for compositions
-  - `GuiGraphicsComposition`
-    - Remove
-      - `Margin` property
-      - `IsTrivialComposition`
-      - `ClientArea` property
-      - `MinPreferredClientSize` property
-      - `PreferredBounds` property
-      - `PreviousCalculatedBounds` property
-      - `Bounds` property
-    - Add
-      - `CachedMinSize` property
-      - `CachedMinClientSize` property
-      - `CachedBounds` property
-      - `CachedClientArea` property
-
 ## OS Provider Features
 
 - Drag and Drop framework.
