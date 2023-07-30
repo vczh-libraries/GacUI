@@ -215,7 +215,8 @@ class darkskin::DocumentTextBoxTemplate : presentation::templates::GuiDocumentLa
 @FullName:darkskin::DocumentTextBoxTemplateConstructor
 class darkskin::DocumentTextBoxTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
     property container : presentation::compositions::GuiBoundsComposition*;
     property self : darkskin::DocumentTextBoxTemplate*;
 
@@ -680,7 +681,8 @@ class darkskin::RibbonGroupMenuTemplate : presentation::templates::GuiMenuTempla
 class darkskin::RibbonGroupMenuTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : darkskin::RibbonGroupMenuTemplate*;
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
     property container : presentation::compositions::GuiBoundsComposition*;
 
     function __vwsn_darkskin_RibbonGroupMenuTemplate_Initialize(__vwsn_this_ : darkskin::RibbonGroupMenuTemplate*) : system::Void;
@@ -721,7 +723,8 @@ class darkskin::RibbonIconLabelTemplate : presentation::templates::GuiRibbonIcon
 class darkskin::RibbonIconLabelTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_2 : presentation::elements::GuiImageFrameElement^;
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::elements::GuiImageFrameElement^;
     property container : presentation::compositions::GuiCellComposition*;
     property self : darkskin::RibbonIconLabelTemplate*;
 
@@ -867,10 +870,11 @@ class darkskin::RibbonSmallIconLabelTemplate : presentation::templates::GuiRibbo
 class darkskin::RibbonSmallIconLabelTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : presentation::compositions::GuiTableComposition*;
     property __vwsn_precompile_1 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_2 : presentation::elements::GuiImageFrameElement^;
-    property __vwsn_precompile_3 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_4 : presentation::compositions::GuiSharedSizeItemComposition*;
-    property __vwsn_precompile_5 : presentation::elements::GuiSolidLabelElement^;
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::elements::GuiImageFrameElement^;
+    property __vwsn_precompile_4 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_5 : presentation::compositions::GuiSharedSizeItemComposition*;
+    property __vwsn_precompile_6 : presentation::elements::GuiSolidLabelElement^;
     property container : presentation::compositions::GuiCellComposition*;
     property self : darkskin::RibbonSmallIconLabelTemplate*;
 
@@ -953,8 +957,9 @@ class darkskin::RibbonToolstripMenuTemplate : presentation::templates::GuiRibbon
 class darkskin::RibbonToolstripMenuTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : darkskin::RibbonToolstripMenuTemplate*;
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_10 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_11 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_10 : presentation::elements::GuiSolidBackgroundElement^;
+    property __vwsn_precompile_11 : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_12 : presentation::elements::GuiSolidBackgroundElement^;
     property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
     property __vwsn_precompile_4 : presentation::compositions::GuiTableComposition*;
@@ -962,8 +967,8 @@ class darkskin::RibbonToolstripMenuTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_6 : presentation::compositions::GuiBoundsComposition*;
     property __vwsn_precompile_7 : presentation::elements::GuiSolidBackgroundElement^;
     property __vwsn_precompile_8 : presentation::compositions::GuiCellComposition*;
-    property __vwsn_precompile_9 : presentation::elements::GuiSolidBackgroundElement^;
-    property container : presentation::compositions::GuiCellComposition*;
+    property __vwsn_precompile_9 : presentation::compositions::GuiCellComposition*;
+    property container : presentation::compositions::GuiBoundsComposition*;
     property content : presentation::compositions::GuiCellComposition*;
 
     function __vwsn_darkskin_RibbonToolstripMenuTemplate_Initialize(__vwsn_this_ : darkskin::RibbonToolstripMenuTemplate*) : system::Void;
@@ -1047,7 +1052,8 @@ class darkskin::SinglelineTextBoxTemplate : presentation::templates::GuiSingleli
 @FullName:darkskin::SinglelineTextBoxTemplateConstructor
 class darkskin::SinglelineTextBoxTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_1 : presentation::elements::GuiSolidBorderElement^;
+    property __vwsn_precompile_1 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
     property container : presentation::compositions::GuiBoundsComposition*;
     property self : darkskin::SinglelineTextBoxTemplate*;
 
@@ -1259,7 +1265,8 @@ class darkskin::ToolstripMenuTemplate : presentation::templates::GuiMenuTemplate
 class darkskin::ToolstripMenuTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : darkskin::ToolstripMenuTemplate*;
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
-    property __vwsn_precompile_2 : presentation::elements::GuiSolidBorderElement^;
+    property __vwsn_precompile_2 : presentation::compositions::GuiBoundsComposition*;
+    property __vwsn_precompile_3 : presentation::elements::GuiSolidBorderElement^;
     property container : presentation::compositions::GuiBoundsComposition*;
 
     function __vwsn_darkskin_ToolstripMenuTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripMenuTemplate*) : system::Void;
@@ -1336,6 +1343,7 @@ class darkskin::ToolstripTemplate : presentation::templates::GuiControlTemplate,
 class darkskin::ToolstripTemplateConstructor : system::ReferenceType {
     property __vwsn_precompile_0 : darkskin::ToolstripTemplate*;
     property __vwsn_precompile_1 : presentation::elements::GuiSolidBackgroundElement^;
+    property container : presentation::compositions::GuiBoundsComposition*;
 
     function __vwsn_darkskin_ToolstripTemplate_Initialize(__vwsn_this_ : darkskin::ToolstripTemplate*) : system::Void;
 

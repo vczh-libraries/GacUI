@@ -9,7 +9,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppRegex.h"
 
 /***********************************************************************
-.\PARSERGEN\PARSERSYMBOL.H
+.\PARSERGEN_GLOBAL\PARSERSYMBOL.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -78,18 +78,21 @@ ParserSymbolManager
 
 #define GLR_PARSER_ERROR_LIST(ERROR_ITEM)\
 			/* AstSymbolManager */\
+			ERROR_ITEM(DuplicatedFileGroup,																			fileGroupName)\
 			ERROR_ITEM(DuplicatedFile,																				fileName)\
-			ERROR_ITEM(FileDependencyNotExists,																		fileName, dependency)\
-			ERROR_ITEM(FileCyclicDependency,																		fileName, dependency)\
-			ERROR_ITEM(DuplicatedSymbol,																			fileName, symbolName)\
-			ERROR_ITEM(DuplicatedSymbolGlobally,																	fileName, symbolName, anotherFileName)\
+			ERROR_ITEM(FileGroupDependencyNotExists,																fileGroupName, dependency)\
+			ERROR_ITEM(FileGroupCyclicDependency,																	fileGroupName, dependency)\
+			ERROR_ITEM(DuplicatedSymbolInFile,																		fileName, symbolName)\
+			ERROR_ITEM(DuplicatedSymbolInFileGroup,																	fileName, symbolName, anotherFileName)\
 			ERROR_ITEM(DuplicatedClassProp,																			fileName, className, propName)\
 			ERROR_ITEM(DuplicatedEnumItem,																			fileName, enumName, propName)\
 			ERROR_ITEM(BaseClassNotExists,																			fileName, className, typeName)\
 			ERROR_ITEM(BaseClassNotClass,																			fileName, className, typeName)\
+			ERROR_ITEM(BaseClassNotPublic,																			fileName, className, typeName)\
 			ERROR_ITEM(BaseClassCyclicDependency,																	fileName, className)\
 			ERROR_ITEM(FieldTypeNotExists,																			fileName, className, propName)\
 			ERROR_ITEM(FieldTypeNotClass,																			fileName, className, propName)\
+			ERROR_ITEM(FieldTypeNotPublic,																			fileName, className, propName)\
 			/* LexerSymbolManager */\
 			ERROR_ITEM(InvalidTokenDefinition,																		code)\
 			ERROR_ITEM(DuplicatedToken,																				tokenName)\
@@ -105,9 +108,11 @@ ParserSymbolManager
 			ERROR_ITEM(LeftRecursionInjectHasNoContinuation,														ruleName, placeholder, targetRuleName)\
 			/* SyntaxAst(ResolveName) */\
 			ERROR_ITEM(RuleNameConflictedWithToken,																	ruleName)\
+			ERROR_ITEM(TypeNotUniqueInRule,																			ruleName, name)\
 			ERROR_ITEM(TypeNotExistsInRule,																			ruleName, name)\
 			ERROR_ITEM(TypeNotClassInRule,																			ruleName, name)\
 			ERROR_ITEM(TokenOrRuleNotExistsInRule,																	ruleName, name)\
+			ERROR_ITEM(ReferencedRuleNotPublicInRuleOfDifferentFile,												ruleName, name)\
 			ERROR_ITEM(LiteralNotValidToken,																		ruleName, name)\
 			ERROR_ITEM(LiteralIsDiscardedToken,																		ruleName, name)\
 			ERROR_ITEM(ConditionalLiteralNotValidToken,																ruleName, name)\
@@ -171,7 +176,6 @@ ParserSymbolManager
 			ERROR_ITEM(PartialRuleIndirectlyBeginsWithPrefixMerge,													ruleName, prefixMergeRule)\
 			ERROR_ITEM(ClausePartiallyIndirectlyBeginsWithPrefixMergeAndLiteral,									ruleName, prefixMergeRule, literal)\
 			ERROR_ITEM(ClausePartiallyIndirectlyBeginsWithPrefixMergeAndRule,										ruleName, prefixMergeRule, literal)\
-			ERROR_ITEM(RuleDeductToPrefixMergeInNonSimpleUseClause,													ruleName, prefixMergeRule, byRule)\
 			/* SyntaxAst(RewriteSyntax_PrefixMerge, prefix_merge) */\
 			ERROR_ITEM(PrefixExtractionAffectedRuleReferencedAnother,												ruleName, conflictedRule, prefixRule)						/* During left_recursion_inject clause generation, if prefix extracted affected the process, all !prefixRule clauses where prefixRule is the prefix of conflictedRule in any !conflictedRule clauses, prefixRule should not be affected */\
 
@@ -184,6 +188,7 @@ ParserSymbolManager
 
 			enum class ParserDefFileType
 			{
+				AstGroup,
 				Ast,
 				Lexer,
 				Syntax,
@@ -275,6 +280,7 @@ namespace vl
 			class AstEnumSymbol;
 			class AstClassSymbol;
 			class AstDefFile;
+			class AstDefFileGroup;
 			class AstSymbolManager;
 
 /***********************************************************************
@@ -290,8 +296,8 @@ AstSymbol
 				AstSymbol(AstDefFile* _file, const WString& _name);
 			public:
 				bool								isPublic = false;
-				AstDefFile*							Owner() { return ownerFile; }
-				const WString&						Name() { return name; }
+				AstDefFile*							Owner() const { return ownerFile; }
+				const WString&						Name() const { return name; }
 			};
 
 /***********************************************************************
@@ -308,7 +314,7 @@ AstEnumSymbol
 			public:
 				vint								value = 0;
 
-				AstEnumSymbol*						Parent() { return parent; }
+				AstEnumSymbol*						Parent() const { return parent; }
 			};
 
 			class AstEnumSymbol : public AstSymbol
@@ -320,8 +326,9 @@ AstEnumSymbol
 				AstEnumSymbol(AstDefFile* _file, const WString& _name);
 			public:
 				AstEnumItemSymbol*					CreateItem(const WString& itemName, ParsingTextRange codeRange = {});
-				const auto&							Items() { return items.map; }
-				const auto&							ItemOrder() { return items.order; }
+
+				const auto&							Items() const { return items.map; }
+				const auto&							ItemOrder() const { return items.order; }
 			};
 
 /***********************************************************************
@@ -346,8 +353,15 @@ AstClassSymbol
 				AstPropType							propType = AstPropType::Token;
 				AstSymbol*							propSymbol = nullptr;
 
-				AstClassSymbol*						Parent() { return parent; }
+				AstClassSymbol*						Parent() const { return parent; }
 				bool								SetPropType(AstPropType _type, const WString& typeName = WString::Empty, ParsingTextRange codeRange = {});
+			};
+
+			enum class AstClassType
+			{
+				Defined,
+				Generated_ToResolve,
+				Generated_Common,
 			};
 
 			class AstClassSymbol : public AstSymbol
@@ -358,15 +372,20 @@ AstClassSymbol
 
 				AstClassSymbol(AstDefFile* _file, const WString& _name);
 			public:
+				AstClassType						classType = AstClassType::Defined;
 				AstClassSymbol*						baseClass = nullptr;
-				AstClassSymbol*						ambiguousDerivedClass = nullptr;
 				collections::List<AstClassSymbol*>	derivedClasses;
+				
+				AstClassSymbol*						derivedClass_ToResolve = nullptr;
+				AstClassSymbol*						derivedClass_Common = nullptr;
 
 				bool								SetBaseClass(const WString& typeName, ParsingTextRange codeRange = {});
-				AstClassSymbol*						CreateAmbiguousDerivedClass(ParsingTextRange codeRange);
+				AstClassSymbol*						CreateDerivedClass_ToResolve(ParsingTextRange codeRange);
+				AstClassSymbol*						CreateDerivedClass_Common(ParsingTextRange codeRange);
 				AstClassPropSymbol*					CreateProp(const WString& propName, ParsingTextRange codeRange = {});
-				const auto&							Props() { return props.map; }
-				const auto&							PropOrder() { return props.order; }
+
+				const auto&							Props() const { return props.map; }
+				const auto&							PropOrder() const { return props.order; }
 			};
 
 			extern AstClassSymbol*					FindCommonBaseClass(AstClassSymbol* c1, AstClassSymbol* c2);
@@ -378,39 +397,73 @@ AstDefFile
 
 			class AstDefFile : public Object
 			{
-				friend class AstSymbolManager;
-
+				friend class AstDefFileGroup;
 				using DependenciesList = collections::List<WString>;
 				using StringItems = collections::List<WString>;
 			protected:
-				ParserSymbolManager*		global = nullptr;
-				AstSymbolManager*			ownerManager = nullptr;
+				AstDefFileGroup*			ownerGroup = nullptr;
 				WString						name;
 				MappedOwning<AstSymbol>		symbols;
 
 				template<typename T>
 				T*							CreateSymbol(const WString& symbolName, ParsingTextRange codeRange);
 
-				AstDefFile(ParserSymbolManager* _global, AstSymbolManager* _ownerManager, const WString& _name);
+				AstDefFile(AstDefFileGroup* _ownerGroup, const WString& _name);
 			public:
-				DependenciesList			dependencies;
-				StringItems					cppNss;
-				StringItems					refNss;
-				WString						classPrefix;
+				AstDefFileGroup*			Owner() const { return ownerGroup; }
+				const WString&				Name() const { return name; }
+				AstEnumSymbol*				CreateEnum(const WString& symbolName, bool isPublic = false, ParsingTextRange codeRange = {});
+				AstClassSymbol*				CreateClass(const WString& symbolName, bool isPublic = false, ParsingTextRange codeRange = {});
 
-				AstSymbolManager*			Owner() { return ownerManager; }
-				const WString&				Name() { return name; }
-				bool						AddDependency(const WString& dependency, ParsingTextRange codeRange = {});
-				AstEnumSymbol*				CreateEnum(const WString& symbolName, ParsingTextRange codeRange = {});
-				AstClassSymbol*				CreateClass(const WString& symbolName, ParsingTextRange codeRange = {});
-				const auto&					Symbols() { return symbols.map; }
-				const auto&					SymbolOrder() { return symbols.order; }
+				const auto&					Symbols() const { return symbols.map; }
+				const auto&					SymbolOrder() const { return symbols.order; }
 
 				template<typename ...TArgs>
-				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args)
+				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args);
+			};
+
+/***********************************************************************
+AstDefFileGroup
+***********************************************************************/
+
+			class AstDefFileGroup : public Object
+			{
+				friend class AstDefFile;
+				friend class AstSymbolManager;
+				using DependenciesList = collections::List<WString>;
+				using StringItems = collections::List<WString>;
+				using SymbolMap = collections::Dictionary<WString, AstSymbol*>;
+			protected:
+				AstSymbolManager*				ownerManager = nullptr;
+				WString							name;
+				MappedOwning<AstDefFile>		files;
+				SymbolMap						symbolMap;
+
+				AstDefFileGroup(AstSymbolManager* _ownerManager, const WString& _name);
+			public:
+				DependenciesList				dependencies;
+				StringItems						cppNss;
+				StringItems						refNss;
+				WString							classPrefix;
+
+				AstSymbolManager*				Owner() const { return ownerManager; }
+				const WString&					Name() const { return name; }
+				bool							AddDependency(const WString& dependency, ParsingTextRange codeRange = {});
+				AstDefFile*						CreateFile(const WString& name);
+
+				const auto&						Files() const { return files.map; }
+				const auto&						FileOrder() const { return files.order; }
+				const auto&						Symbols() const { return symbolMap; }
+				collections::LazyList<WString>	SymbolOrder()
 				{
-					global->AddError(type, { ParserDefFileType::Ast,name,codeRange }, std::forward<TArgs&&>(args)...);
+					return From(files.order)
+						.Select([this](const WString& fileName) { return files.map[fileName]; })
+						.SelectMany([](AstDefFile* file) { return From(file->SymbolOrder()); })
+						;
 				}
+
+				template<typename ...TArgs>
+				void AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args);
 			};
 
 /***********************************************************************
@@ -419,27 +472,47 @@ AstSymbolManager
 
 			class AstSymbolManager : public Object
 			{
-				using SymbolMap = collections::Dictionary<WString, AstSymbol*>;
-
 				friend class AstDefFile;
+				using SymbolGroup = collections::Group<WString, AstSymbol*>;
+				using FileMap = collections::Dictionary<WString, AstDefFile*>;
 			protected:
-				MappedOwning<AstDefFile>	files;
-				SymbolMap					symbolMap;
-				ParserSymbolManager&		global;
+				ParserSymbolManager&			global;
+				MappedOwning<AstDefFileGroup>	fileGroups;
+				SymbolGroup						symbolGroup;
+				FileMap							fileMap;
 
 			public:
 				AstSymbolManager(ParserSymbolManager& _global);
 
-				AstDefFile*					CreateFile(const WString& name);
+				AstDefFileGroup*				CreateFileGroup(const WString& name);
 
-				const ParserSymbolManager&	Global() const { return global; }
-				const auto&					Files() const { return files.map; }
-				const auto&					FileOrder() const { return files.order; }
-				const auto&					Symbols() const { return symbolMap; }
+				const ParserSymbolManager&		Global() const { return global; }
+				const auto&						FileGroups() const { return fileGroups.map; }
+				const auto&						FileGroupOrder() const { return fileGroups.order; }
+				const auto&						Symbols() const { return symbolGroup; }
+				const auto&						Files() const { return fileMap; }
 			};
 
-			extern AstDefFile*				CreateParserGenTypeAst(AstSymbolManager& manager);
-			extern AstDefFile*				CreateParserGenRuleAst(AstSymbolManager& manager);
+			extern AstDefFile*					CreateParserGenTypeAst(AstSymbolManager& manager);
+			extern AstDefFile*					CreateParserGenRuleAst(AstSymbolManager& manager);
+
+/***********************************************************************
+AddError
+***********************************************************************/
+
+			template<typename ...TArgs>
+			void AstDefFile::AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args)
+			{
+				auto&& global = const_cast<ParserSymbolManager&>(ownerGroup->Owner()->Global());
+				global.AddError(type, { ParserDefFileType::Ast,name,codeRange }, std::forward<TArgs&&>(args)...);
+			}
+
+			template<typename ...TArgs>
+			void AstDefFileGroup::AddError(ParserErrorType type, ParsingTextRange codeRange, TArgs&&... args)
+			{
+				auto&& global = const_cast<ParserSymbolManager&>(ownerManager->Global());
+				global.AddError(type, { ParserDefFileType::AstGroup,name,codeRange }, std::forward<TArgs&&>(args)...);
+			}
 		}
 	}
 }
@@ -521,7 +594,7 @@ LexerSymbolManager
 #endif
 
 /***********************************************************************
-.\PARSERGEN\PARSERCPPGEN.H
+.\PARSERGEN_GLOBAL\PARSERCPPGEN.H
 ***********************************************************************/
 /***********************************************************************
 Author: Zihan Chen (vczh)
@@ -538,7 +611,7 @@ namespace vl
 	{
 		namespace parsergen
 		{
-			class AstDefFile;
+			class AstDefFileGroup;
 			class AstClassPropSymbol;
 			class AstClassSymbol;
 			class TokenSymbol;
@@ -576,7 +649,7 @@ Output
 				WString																	assemblyCpp;
 				WString																	lexerH;
 				WString																	lexerCpp;
-				collections::Dictionary<AstDefFile*, Ptr<CppAstGenOutput>>				astOutputs;
+				collections::Dictionary<AstDefFileGroup*, Ptr<CppAstGenOutput>>			astOutputs;
 				collections::Dictionary<SyntaxSymbolManager*, Ptr<CppSyntaxGenOutput>>	syntaxOutputs;
 
 				collections::Dictionary<AstClassSymbol*, vint32_t>						classIds;
@@ -623,29 +696,29 @@ namespace vl
 		{
 			extern void											GenerateAstFileNames(AstSymbolManager& manager, Ptr<CppParserGenOutput> parserOutput);
 
-			extern void			WriteAstHeaderFile				(AstDefFile* file, stream::StreamWriter& writer);
-			extern void			WriteAstCppFile					(AstDefFile* file, const WString& astHeaderName, stream::StreamWriter& writer);
+			extern void			WriteAstHeaderFile				(AstDefFileGroup* group, stream::StreamWriter& writer);
+			extern void			WriteAstCppFile					(AstDefFileGroup* group, const WString& astHeaderName, stream::StreamWriter& writer);
 
-			extern void			WriteAstUtilityHeaderFile		(AstDefFile* file, Ptr<CppAstGenOutput> output, const WString& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
-			extern void			WriteAstUtilityCppFile			(AstDefFile* file, const WString& utilityHeaderFile, const WString& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
+			extern void			WriteAstUtilityHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, const WString& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
+			extern void			WriteAstUtilityCppFile			(AstDefFileGroup* group, const WString& utilityHeaderFile, const WString& extraNss, stream::StreamWriter& writer, Func<void(const WString&)> callback);
 			extern void			WriteParserUtilityHeaderFile	(AstSymbolManager& manager, Ptr<CppParserGenOutput> output, const WString& guardPostfix, stream::StreamWriter& writer, Func<void(const WString&)> callback);
 			extern void			WriteParserUtilityCppFile		(AstSymbolManager& manager, const WString& utilityHeaderFile, stream::StreamWriter& writer, Func<void(const WString&)> callback);
 
-			extern void			WriteAstBuilderHeaderFile		(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteAstBuilderCppFile			(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteEmptyVisitorHeaderFile		(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteEmptyVisitorCppFile		(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteCopyVisitorHeaderFile		(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteCopyVisitorCppFile			(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteTraverseVisitorHeaderFile	(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteTraverseVisitorCppFile		(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteJsonVisitorHeaderFile		(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
-			extern void			WriteJsonVisitorCppFile			(AstDefFile* file, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteAstBuilderHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteAstBuilderCppFile			(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteEmptyVisitorHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteEmptyVisitorCppFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteCopyVisitorHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteCopyVisitorCppFile			(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteTraverseVisitorHeaderFile	(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteTraverseVisitorCppFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteJsonVisitorHeaderFile		(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
+			extern void			WriteJsonVisitorCppFile			(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, stream::StreamWriter& writer);
 
 			extern void			WriteAstAssemblerHeaderFile		(AstSymbolManager& manager, Ptr<CppParserGenOutput> output, stream::StreamWriter& writer);
 			extern void			WriteAstAssemblerCppFile		(AstSymbolManager& manager, Ptr<CppParserGenOutput> output, stream::StreamWriter& writer);
 
-			extern void			WriteAstFiles					(AstDefFile* file, Ptr<CppAstGenOutput> output, collections::Dictionary<WString, WString>& files);
+			extern void			WriteAstFiles					(AstDefFileGroup* group, Ptr<CppAstGenOutput> output, collections::Dictionary<WString, WString>& files);
 			extern void			WriteAstFiles					(AstSymbolManager& manager, Ptr<CppParserGenOutput> output, collections::Dictionary<WString, WString>& files);
 		}
 	}
@@ -2445,6 +2518,33 @@ namespace vl::glr::parsergen
 #endif
 
 /***********************************************************************
+.\PARSERGEN_PRINTER\ASTTOCODE.H
+***********************************************************************/
+#ifndef VCZH_PARSER2_PARSERGEN_ASTTOCODE
+#define VCZH_PARSER2_PARSERGEN_ASTTOCODE
+
+
+namespace vl::glr::parsergen
+{
+	extern Ptr<GlrAstFile> TypeSymbolToAst(
+		const AstSymbolManager& manager,
+		bool createGeneratedTypes
+	);
+
+	extern void TypeAstToCode(
+		Ptr<GlrAstFile> file,
+		stream::TextWriter& writer
+	);
+
+	extern void SyntaxAstToCode(
+		Ptr<GlrSyntaxFile> file,
+		stream::TextWriter& writer
+	);
+}
+
+#endif
+
+/***********************************************************************
 .\SYNTAX\SYNTAXSYMBOL.H
 ***********************************************************************/
 /***********************************************************************
@@ -2592,9 +2692,10 @@ RuleSymbol
 				WString						name;
 				vint32_t					currentClauseId = -1;
 
-				RuleSymbol(SyntaxSymbolManager* _ownerManager, const WString& _name);
+				RuleSymbol(SyntaxSymbolManager* _ownerManager, const WString& _name, vint _fileIndex);
 			public:
 				StateList					startStates;
+				vint						fileIndex = -1;
 				bool						isPublic = false;
 				bool						isParser = false;
 				bool						isPartial = false;
@@ -2656,7 +2757,7 @@ SyntaxSymbolManager
 				WString						name;
 				LrpFlagList					lrpFlags;
 
-				RuleSymbol*					CreateRule(const WString& name, ParsingTextRange codeRange = {});
+				RuleSymbol*					CreateRule(const WString& name, vint fileIndex, bool isPublic, bool isParser, ParsingTextRange codeRange = {});
 				void						RemoveRule(const WString& name);
 
 				StateSymbol*				CreateState(RuleSymbol* rule, vint32_t clauseId);
@@ -2830,9 +2931,11 @@ Compiler
 ***********************************************************************/
 
 			extern WString						UnescapeLiteral(const WString& literal, wchar_t quot);
+			extern void							CompileAst(AstSymbolManager& astManager, collections::List<collections::Pair<AstDefFile*, Ptr<GlrAstFile>>>& files);
 			extern void							CompileAst(AstSymbolManager& astManager, AstDefFile* astDefFile, Ptr<GlrAstFile> file);
 			extern void							CompileLexer(LexerSymbolManager& lexerManager, const WString& input);
 			extern Ptr<GlrSyntaxFile>			CompileSyntax(AstSymbolManager& astManager, LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, Ptr<CppParserGenOutput> output, collections::List<Ptr<GlrSyntaxFile>>& files);
+			extern Ptr<GlrSyntaxFile>			CompileSyntax(AstSymbolManager& astManager, LexerSymbolManager& lexerManager, SyntaxSymbolManager& syntaxManager, Ptr<CppParserGenOutput> output, Ptr<GlrSyntaxFile> file);
 		}
 	}
 }

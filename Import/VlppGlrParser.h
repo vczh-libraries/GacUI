@@ -567,6 +567,10 @@ IAstInsReceiver (Code Generation Templates)
 		Ptr<ParsingAstBase> AssemblerResolveAmbiguity(vint32_t type, collections::Array<Ptr<ParsingAstBase>>& candidates, const wchar_t* cppTypeName)
 		{
 			auto ast = Ptr(new TAmbiguity());
+			if (candidates.Count() > 0)
+			{
+				ast->codeRange = candidates[0]->codeRange;
+			}
 			for (auto candidate : candidates)
 			{
 				if (auto typedAst = candidate.Cast<TElement>())
@@ -2287,13 +2291,14 @@ TraceManager
 				// Ambiguity
 				Trace*										EnsureTraceWithValidStates(Trace* trace);
 				bool										AreTwoEndingInputTraceEqual(Trace* newTrace, Trace* candidate);
-				void										MergeTwoEndingInputTrace(Trace* newTrace, Trace* candidate);
+				Trace*										MergeTwoEndingInputTrace(Trace* newTrace, Trace* candidate);
+				void										TryMergeSurvivingTraces();
 
 				// Competition
 				void										AttendCompetition(Trace* trace, Ref<AttendingCompetitions>& newAttendingCompetitions, Ref<AttendingCompetitions>& newCarriedCompetitions, Ref<ReturnStack> returnStack, vint32_t ruleId, vint32_t clauseId, bool forHighPriority);
 				void										AttendCompetitionIfNecessary(Trace* trace, vint32_t currentTokenIndex, EdgeDesc& edgeDesc, Ref<AttendingCompetitions>& newAttendingCompetitions, Ref<AttendingCompetitions>& newCarriedCompetitions, Ref<ReturnStack>& newReturnStack);
 				void										CheckAttendingCompetitionsOnEndingEdge(Trace* trace, EdgeDesc& edgeDesc, Ref<AttendingCompetitions> acId, Ref<ReturnStack> returnStack);
-				void										CheckBackupTracesBeforeSwapping(vint32_t currentTokenIndex);
+				bool										CheckBackupTracesBeforeSwapping(vint32_t currentTokenIndex);
 
 				// ReturnStack
 				ReturnStackSuccessors*						GetCurrentSuccessorInReturnStack(Ref<ReturnStack> base, vint32_t currentTokenIndex);
