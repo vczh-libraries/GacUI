@@ -5,7 +5,7 @@
   <OutputDir>../Generated</OutputDir>
 
   <Asts>
-    <Ast name="Ast" file="Ast.txt">
+    <Ast name="Ast">
       <CppNamespace>vl::presentation::instancequery</CppNamespace>
       <ReflectionNamespace>presentation::instancequery</ReflectionNamespace>
       <ClassPrefix>GuiIq</ClassPrefix>
@@ -16,9 +16,12 @@
         <Builder/>
         <Json/>
       </BlockedUtilities>
+      <File file="Ast.txt"/>
     </Ast>
   </Asts>
 
   <Lexer file="Lexer.txt"/>
-  <Syntax name="Parser" file="Syntax.txt"/>
+  <Syntax name="Parser">
+    <File file="Syntax.txt"/>
+  </Syntax>
 </Parser>
