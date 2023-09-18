@@ -11,7 +11,11 @@
 
 ## Progressing (before release)
 
-- FullControlTest
+Turn `GuiListControl::IItemArranger` implementations into compositions.
+  - Turn `GuiListItemTemplate` into trivial a composition, containing no methods.
+    - Find a way to access `listControl` while constructing content.
+  - `GuiVirtualRepeatCompositionBase`.
+  - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
@@ -79,7 +83,6 @@
 - ListView.
   - `GroupedListView` and `BindableGroupedListView` from `GuiVirtualListView`: Group headers on all views.
   - `TreeListView` and `BindableTreeListView` from `GuiVirtualTreeView`.
-- New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
 - Chart control.
 - Code editor (need VlppParser2)
 - Dock container.

@@ -348,10 +348,6 @@ Control Template
 /***********************************************************************
 Item Template
 ***********************************************************************/
-				
-#define GuiListItemTemplate_PROPERTIES(F)\
-				F(GuiListItemTemplate, bool, Selected, false)\
-				F(GuiListItemTemplate, vint, Index, 0)\
 
 #define GuiTextListItemTemplate_PROPERTIES(F)\
 				F(GuiTextListItemTemplate, Color, TextColor, {})\
