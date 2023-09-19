@@ -126,6 +126,17 @@ GuiNonVirtialRepeatCompositionBase
 GuiVirtualRepeatCompositionBase
 ***********************************************************************/
 
+			/// <summary>EnsureItemVisible result for item arranger.</summary>
+			enum class VirtualRepeatEnsureItemVisibleResult
+			{
+				/// <summary>The requested item does not exist.</summary>
+				ItemNotExists,
+				/// <summary>The view location is moved.</summary>
+				Moved,
+				/// <summary>The view location is not moved.</summary>
+				NotMoved,
+			};
+
 			/// <summary>This composition implements most of the common functionality that display a continuing subset of items at a time.</summary>
 			class GuiVirtualRepeatCompositionBase : public GuiBoundsComposition, public GuiRepeatCompositionBase, public Description<GuiVirtualRepeatCompositionBase>
 			{
@@ -148,7 +159,13 @@ GuiVirtualRepeatCompositionBase
 
 				virtual void										Layout_UpdateIndex(ItemStyleRecord style, vint index);
 				void												Layout_UpdateViewBounds(Rect value);
+				void												Layout_UpdateViewLocation(Point value);
 				Rect												Layout_CalculateBounds(Size parentSize) override;
+
+				void												Layout_SetStyleAlignmentToParent(ItemStyleRecord style, Margin value);
+				Size												Layout_GetStylePreferredSize(ItemStyleRecord style);
+				Rect												Layout_GetStyleBounds(ItemStyleRecord style);
+				void												Layout_SetStyleBounds(ItemStyleRecord style, Rect value);
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
 				void												ClearItems() override;
@@ -182,12 +199,48 @@ GuiVirtualRepeatCompositionBase
 				void												SetAxis(Ptr<IGuiAxis> value);
 
 				Size												GetTotalSize();
+				Size												GetAdoptedSize();
 				Point												GetViewLocation();
 				void												SetViewLocation(Point value);
 
 				ItemStyleRecord										GetVisibleStyle(vint itemIndex);
 				vint												GetVisibleIndex(ItemStyleRecord style);
 				void												ReloadVisibleStyles();
+
+				virtual vint										FindItem(vint itemIndex, compositions::KeyDirection key) = 0;
+				virtual VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex) = 0;
+				virtual Size										GetAdoptedSize(Size expectedSize) = 0;
+			};
+
+			/// <summary>Free height repeat composition. This arranger will cache heights of all items.</summary>
+			class GuiRepeatFreeHeightItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFreeHeightItemComposition>
+			{
+			private:
+				bool												pim_heightUpdated = false;
+
+			protected:
+				collections::Array<vint>							heights;
+				collections::Array<vint>							offsets;
+				vint												availableOffsetCount = 0;
+
+				void												EnsureOffsetForItem(vint itemIndex);
+
+				void												Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) override;
+				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) override;
+				bool												Layout_IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) override;
+				bool												Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) override;
+				void												Layout_InvalidateItemSizeCache() override;
+				Size												Layout_CalculateTotalSize() override;
+
+				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
+			public:
+				/// <summary>Create the arranger.</summary>
+				GuiRepeatFreeHeightItemComposition() = default;
+				~GuiRepeatFreeHeightItemComposition() = default;
+
+				vint												FindItem(vint itemIndex, compositions::KeyDirection key) override;
+				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex) override;
+				Size												GetAdoptedSize(Size expectedSize) override;
 			};
 		}
 	}
