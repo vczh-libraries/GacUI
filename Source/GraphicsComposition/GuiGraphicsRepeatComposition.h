@@ -123,8 +123,62 @@ GuiNonVirtialRepeatCompositionBase
 			};
 
 /***********************************************************************
-GuiRepeatCompositionBase
+GuiVirtualRepeatCompositionBase
 ***********************************************************************/
+
+			/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
+			class GuiVirtualRepeatCompositionBase : public GuiBoundsComposition, public GuiRepeatCompositionBase, public Description<GuiVirtualRepeatCompositionBase>
+			{
+			protected:
+				using ItemStyleRecord = templates::GuiTemplate*;
+				using StyleList = collections::List<ItemStyleRecord>;
+
+			private:
+				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
+				bool												suppressOnViewChanged = false;
+				Size												realFullSize;
+				Rect												viewBounds;
+				vint												startIndex = 0;
+				StyleList											visibleStyles;
+
+				virtual void										Callback_InvalidateAdoptedSize() = 0;
+				virtual void										Callback_UpdateTotalSize(Size totalSize) = 0;
+				virtual void										Callback_UpdateViewLocation(Point location) = 0;
+				virtual void										Callback_UpdateIndex(ItemStyleRecord style, vint index) = 0;
+
+				virtual void										Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
+				virtual void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
+				virtual bool										Layout_IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
+				virtual bool										Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
+				virtual void										Layout_InvalidateItemSizeCache() = 0;
+				virtual Size										Layout_CalculateTotalSize() = 0;
+
+			protected:
+
+				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
+				void												ClearItems() override;
+				void												InstallItems() override;
+				void												UpdateContext() override;
+
+				vint												CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
+				ItemStyleRecord										CreateStyle(vint index);
+				void												DeleteStyle(ItemStyleRecord style);
+				void												OnViewChangedInternal(Rect oldBounds, Rect newBounds);
+				virtual void										RearrangeItemBounds();
+
+			public:
+				/// <summary>Create the arranger.</summary>
+				GuiVirtualRepeatCompositionBase();
+				~GuiVirtualRepeatCompositionBase();
+
+				Size												GetTotalSize();
+				ItemStyleRecord										GetVisibleStyle(vint itemIndex);
+				vint												GetVisibleIndex(ItemStyleRecord style);
+				void												ReloadVisibleStyles();
+
+				Rect												GetViewBounds();
+				void												SetViewBounds(Rect bounds);
+			};
 		}
 	}
 }

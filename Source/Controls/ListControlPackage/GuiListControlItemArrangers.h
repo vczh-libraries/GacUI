@@ -24,7 +24,6 @@ Predefined ItemArranger
 
 			namespace list
 			{
-
 				/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
 				class RangedItemArrangerBase : public Object, virtual public GuiListControl::IItemArranger, public Description<RangedItemArrangerBase>
 				{
@@ -75,6 +74,7 @@ Predefined ItemArranger
 					void										ReloadVisibleStyles()override;
 					void										OnViewChanged(Rect bounds)override;
 				};
+
 				/// <summary>Free height item arranger. This arranger will cache heights of all items.</summary>
 				class FreeHeightItemArranger : public RangedItemArrangerBase, public Description<FreeHeightItemArranger>
 				{
