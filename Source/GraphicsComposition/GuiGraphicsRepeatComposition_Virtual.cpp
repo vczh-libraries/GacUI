@@ -7,10 +7,6 @@ namespace vl
 	{
 		namespace compositions
 		{
-			using namespace reflection::description;
-			using namespace collections;
-			using namespace controls;
-			using namespace elements;
 
 /***********************************************************************
 GuiVirtualRepeatCompositionBase
