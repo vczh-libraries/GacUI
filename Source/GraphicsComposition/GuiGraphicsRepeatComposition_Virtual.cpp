@@ -13,6 +13,10 @@ namespace vl
 GuiVirtualRepeatCompositionBase
 ***********************************************************************/
 
+			void GuiVirtualRepeatCompositionBase::Layout_UpdateIndex(ItemStyleRecord style, vint index)
+			{
+			}
+
 			void GuiVirtualRepeatCompositionBase::Layout_UpdateViewBounds(Rect value)
 			{
 				auto old = GetViewLocation();
@@ -89,10 +93,9 @@ GuiVirtualRepeatCompositionBase
 				}
 
 				visibleStyles.RemoveRange(0, visibleCount);
-				// TODO: (enumerable) foreach:indexed
-				for (vint i = 0; i < visibleStyles.Count(); i++)
+				for (auto [style, i] : indexed(visibleStyles))
 				{
-					Callback_UpdateIndex(visibleStyles[i], startIndex + 1);
+					Layout_UpdateIndex(style, startIndex + 1);
 				}
 
 				realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
@@ -103,10 +106,9 @@ GuiVirtualRepeatCompositionBase
 			void GuiVirtualRepeatCompositionBase::ClearItems()
 			{
 				startIndex = 0;
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < visibleStyles.Count(); i++)
+				for (auto style : visibleStyles)
 				{
-					DeleteStyle(visibleStyles[i]);
+					DeleteStyle(style);
 				}
 				visibleStyles.Clear();
 				viewBounds = Rect(0, 0, 0, 0);
@@ -116,10 +118,16 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::InstallItems()
 			{
+				OnViewChangedInternal(viewBounds, viewBounds);
+				RearrangeItemBounds();
 			}
 
 			void GuiVirtualRepeatCompositionBase::UpdateContext()
 			{
+				for (auto style : visibleStyles)
+				{
+					style->SetContext(itemContext);
+				}
 			}
 
 			vint GuiVirtualRepeatCompositionBase::CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize)
@@ -186,8 +194,7 @@ GuiVirtualRepeatCompositionBase
 					}
 
 					vint newEndIndex = newStartIndex + newVisibleStyles.Count() - 1;
-					// TODO: (enumerable) foreach:indexed
-					for (vint i = 0; i < visibleStyles.Count(); i++)
+					for (auto [style, i] : indexed(visibleStyles))
 					{
 						vint index = startIndex + i;
 						if (index < newStartIndex || index > newEndIndex)
@@ -211,10 +218,8 @@ GuiVirtualRepeatCompositionBase
 			{
 				vint newStartIndex = startIndex;
 				Layout_BeginPlaceItem(false, viewBounds, newStartIndex);
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < visibleStyles.Count(); i++)
+				for (auto [style, i] : indexed(visibleStyles))
 				{
-					auto style = visibleStyles[i];
 					Rect bounds;
 					Margin alignmentToParent(-1, -1, -1, -1);
 					Layout_PlaceItem(false, false, startIndex + i, style, viewBounds, bounds, alignmentToParent);
@@ -232,6 +237,7 @@ GuiVirtualRepeatCompositionBase
 
 			GuiVirtualRepeatCompositionBase::GuiVirtualRepeatCompositionBase()
 			{
+				AxisChanged.SetAssociatedComposition(this);
 				TotalSizeChanged.SetAssociatedComposition(this);
 				ViewLocationChanged.SetAssociatedComposition(this);
 				AdoptedSizeInvalidated.SetAssociatedComposition(this);
@@ -239,6 +245,25 @@ GuiVirtualRepeatCompositionBase
 
 			GuiVirtualRepeatCompositionBase::~GuiVirtualRepeatCompositionBase()
 			{
+			}
+
+			Ptr<IGuiAxis> GuiVirtualRepeatCompositionBase::GetAxis()
+			{
+				return axis;
+			}
+
+			void GuiVirtualRepeatCompositionBase::SetAxis(Ptr<IGuiAxis> value)
+			{
+				if (axis != value)
+				{
+					ClearItems();
+					axis = value;
+					if (itemTemplate && itemSource)
+					{
+						InstallItems();
+					}
+					AxisChanged.Execute(GuiEventArgs(this));
+				}
 			}
 
 			Size GuiVirtualRepeatCompositionBase::GetTotalSize()
@@ -270,10 +295,9 @@ GuiVirtualRepeatCompositionBase
 
 			vint GuiVirtualRepeatCompositionBase::GetVisibleIndex(ItemStyleRecord style)
 			{
-				// TODO: (enumerable) foreach:indexed
-				for (vint i = 0; i < visibleStyles.Count(); i++)
+				for (auto [s, i] : indexed(visibleStyles))
 				{
-					if (visibleStyles[i] == style)
+					if (s == style)
 					{
 						return i + startIndex;
 					}

@@ -133,15 +133,11 @@ GuiVirtualRepeatCompositionBase
 				using ItemStyleRecord = templates::GuiTemplate*;
 				using StyleList = collections::List<ItemStyleRecord>;
 
-			private:
 				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
 				Size												realFullSize;
 				Rect												viewBounds;
 				vint												startIndex = 0;
 				StyleList											visibleStyles;
-
-				virtual void										Callback_UpdateViewLocation(Point location) = 0;
-				virtual void										Callback_UpdateIndex(ItemStyleRecord style, vint index) = 0;
 
 				virtual void										Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
 				virtual void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
@@ -150,8 +146,7 @@ GuiVirtualRepeatCompositionBase
 				virtual void										Layout_InvalidateItemSizeCache() = 0;
 				virtual Size										Layout_CalculateTotalSize() = 0;
 
-			protected:
-
+				virtual void										Layout_UpdateIndex(ItemStyleRecord style, vint index);
 				void												Layout_UpdateViewBounds(Rect value);
 				Rect												Layout_CalculateBounds(Size parentSize) override;
 
@@ -171,6 +166,9 @@ GuiVirtualRepeatCompositionBase
 				GuiVirtualRepeatCompositionBase();
 				~GuiVirtualRepeatCompositionBase();
 
+				/// <summary>Axis changed event.</summary>
+				GuiNotifyEvent										AxisChanged;
+
 				/// <summary>Total size changed event. This event raises when the total size of the content is changed.</summary>
 				GuiNotifyEvent										TotalSizeChanged;
 
@@ -179,6 +177,9 @@ GuiVirtualRepeatCompositionBase
 
 				/// <summary>This event raises when the adopted size of the content is potentially changed.</summary>
 				GuiNotifyEvent										AdoptedSizeInvalidated;
+
+				Ptr<IGuiAxis>										GetAxis();
+				void												SetAxis(Ptr<IGuiAxis> value);
 
 				Size												GetTotalSize();
 				Point												GetViewLocation();
