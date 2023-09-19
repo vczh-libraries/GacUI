@@ -13,72 +13,91 @@ namespace vl
 GuiVirtualRepeatCompositionBase
 ***********************************************************************/
 
+			void GuiVirtualRepeatCompositionBase::Layout_UpdateViewBounds(Rect value)
+			{
+				auto old = GetViewLocation();
+				Rect oldBounds = viewBounds;
+				viewBounds = value;
+				OnViewChangedInternal(oldBounds, value);
+				RearrangeItemBounds();
+				if (old != GetViewLocation())
+				{
+					ViewLocationChanged.Execute(GuiEventArgs(this));
+				}
+			}
+
+			Rect GuiVirtualRepeatCompositionBase::Layout_CalculateBounds(Size parentSize)
+			{
+				auto bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
+				auto size = axis->RealSizeToVirtualSize(bounds.GetSize());
+				if (size != viewBounds.GetSize())
+				{
+					Layout_UpdateViewBounds(Rect(viewBounds.LeftTop(), size));
+				}
+				return bounds;
+			}
+
 			void GuiVirtualRepeatCompositionBase::OnItemChanged(vint start, vint oldCount, vint newCount)
 			{
-				suppressOnViewChanged = true;
+				vint visibleCount = visibleStyles.Count();
+				vint itemCount = itemSource->GetCount();
+				SortedList<ItemStyleRecord> reusedStyles;
+				for (vint i = 0; i < visibleCount; i++)
 				{
-					vint visibleCount = visibleStyles.Count();
-					vint itemCount = itemSource->GetCount();
-					SortedList<ItemStyleRecord> reusedStyles;
-					for (vint i = 0; i < visibleCount; i++)
+					vint index = startIndex + i;
+					if (index >= itemCount)
 					{
-						vint index = startIndex + i;
-						if (index >= itemCount)
-						{
-							break;
-						}
-
-						vint oldIndex = -1;
-						if (index < start)
-						{
-							oldIndex = index;
-						}
-						else if (index >= start + newCount)
-						{
-							oldIndex = index - newCount + oldCount;
-						}
-
-						if (oldIndex != -1)
-						{
-							if (oldIndex >= startIndex && oldIndex < startIndex + visibleCount)
-							{
-								auto style = visibleStyles[oldIndex - startIndex];
-								reusedStyles.Add(style);
-								visibleStyles.Add(style);
-							}
-							else
-							{
-								oldIndex = -1;
-							}
-						}
-						if (oldIndex == -1)
-						{
-							visibleStyles.Add(CreateStyle(index));
-						}
+						break;
 					}
 
-					for (vint i = 0; i < visibleCount; i++)
+					vint oldIndex = -1;
+					if (index < start)
 					{
-						auto style = visibleStyles[i];
-						if (!reusedStyles.Contains(style))
-						{
-							DeleteStyle(style);
-						}
+						oldIndex = index;
+					}
+					else if (index >= start + newCount)
+					{
+						oldIndex = index - newCount + oldCount;
 					}
 
-					visibleStyles.RemoveRange(0, visibleCount);
-					// TODO: (enumerable) foreach:indexed
-					for (vint i = 0; i < visibleStyles.Count(); i++)
+					if (oldIndex != -1)
 					{
-						Callback_UpdateIndex(visibleStyles[i], startIndex + 1);
+						if (oldIndex >= startIndex && oldIndex < startIndex + visibleCount)
+						{
+							auto style = visibleStyles[oldIndex - startIndex];
+							reusedStyles.Add(style);
+							visibleStyles.Add(style);
+						}
+						else
+						{
+							oldIndex = -1;
+						}
+					}
+					if (oldIndex == -1)
+					{
+						visibleStyles.Add(CreateStyle(index));
 					}
 				}
-				suppressOnViewChanged = false;
+
+				for (vint i = 0; i < visibleCount; i++)
+				{
+					auto style = visibleStyles[i];
+					if (!reusedStyles.Contains(style))
+					{
+						DeleteStyle(style);
+					}
+				}
+
+				visibleStyles.RemoveRange(0, visibleCount);
+				// TODO: (enumerable) foreach:indexed
+				for (vint i = 0; i < visibleStyles.Count(); i++)
+				{
+					Callback_UpdateIndex(visibleStyles[i], startIndex + 1);
+				}
 
 				realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
-				Callback_UpdateTotalSize(realFullSize);
-				Callback_UpdateViewLocation(axis->VirtualRectToRealRect(realFullSize, viewBounds).LeftTop());
-				Callback_InvalidateAdoptedSize();
+				TotalSizeChanged.Execute(GuiEventArgs(this));
+				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 			}
 
 			void GuiVirtualRepeatCompositionBase::ClearItems()
@@ -91,8 +110,8 @@ GuiVirtualRepeatCompositionBase
 				}
 				visibleStyles.Clear();
 				viewBounds = Rect(0, 0, 0, 0);
-				Callback_InvalidateAdoptedSize();
-				Callback_InvalidateAdoptedSize();
+				Layout_InvalidateItemSizeCache();
+				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 			}
 
 			void GuiVirtualRepeatCompositionBase::InstallItems()
@@ -181,8 +200,8 @@ GuiVirtualRepeatCompositionBase
 					if (Layout_EndPlaceItem(true, newBounds, newStartIndex))
 					{
 						realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
-						Callback_UpdateTotalSize(realFullSize);
-						Callback_InvalidateAdoptedSize();
+						TotalSizeChanged.Execute(GuiEventArgs(this));
+						AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 					}
 					startIndex = newStartIndex;
 				}
@@ -213,6 +232,9 @@ GuiVirtualRepeatCompositionBase
 
 			GuiVirtualRepeatCompositionBase::GuiVirtualRepeatCompositionBase()
 			{
+				TotalSizeChanged.SetAssociatedComposition(this);
+				ViewLocationChanged.SetAssociatedComposition(this);
+				AdoptedSizeInvalidated.SetAssociatedComposition(this);
 			}
 
 			GuiVirtualRepeatCompositionBase::~GuiVirtualRepeatCompositionBase()
@@ -222,6 +244,16 @@ GuiVirtualRepeatCompositionBase
 			Size GuiVirtualRepeatCompositionBase::GetTotalSize()
 			{
 				return realFullSize;
+			}
+
+			Point GuiVirtualRepeatCompositionBase::GetViewLocation()
+			{
+				return axis->VirtualRectToRealRect(realFullSize, viewBounds).LeftTop();
+			}
+
+			void GuiVirtualRepeatCompositionBase::SetViewLocation(Point value)
+			{
+				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, Rect(value, viewBounds.GetSize())));
 			}
 
 			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::GetVisibleStyle(vint itemIndex)
@@ -252,24 +284,6 @@ GuiVirtualRepeatCompositionBase
 			void GuiVirtualRepeatCompositionBase::ReloadVisibleStyles()
 			{
 				ClearItems();
-			}
-
-			Rect GuiVirtualRepeatCompositionBase::GetViewBounds()
-			{
-				return axis->VirtualRectToRealRect(realFullSize, viewBounds);
-			}
-
-			void GuiVirtualRepeatCompositionBase::SetViewBounds(Rect bounds)
-			{
-				if (!suppressOnViewChanged)
-				{
-					suppressOnViewChanged = true;
-					Rect oldBounds = viewBounds;
-					viewBounds = axis->RealRectToVirtualRect(realFullSize, bounds);
-					OnViewChangedInternal(oldBounds, viewBounds);
-					RearrangeItemBounds();
-					suppressOnViewChanged = false;
-				}
 			}
 		}
 	}

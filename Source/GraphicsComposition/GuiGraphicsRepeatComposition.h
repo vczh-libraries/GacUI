@@ -38,7 +38,7 @@ namespace vl
 				GuiRepeatCompositionBase();
 				~GuiRepeatCompositionBase();
 
-				/// <summary>Context changed event. This event raises when the context of the control is changed.</summary>
+				/// <summary>Context changed event. This event raises when the context of the composition is changed.</summary>
 				GuiNotifyEvent										ContextChanged;
 
 				/// <summary>Get the item style provider.</summary>
@@ -126,7 +126,7 @@ GuiNonVirtialRepeatCompositionBase
 GuiVirtualRepeatCompositionBase
 ***********************************************************************/
 
-			/// <summary>Ranged item arranger. This arranger implements most of the common functionality for those arrangers that display a continuing subset of item at a time.</summary>
+			/// <summary>This composition implements most of the common functionality that display a continuing subset of items at a time.</summary>
 			class GuiVirtualRepeatCompositionBase : public GuiBoundsComposition, public GuiRepeatCompositionBase, public Description<GuiVirtualRepeatCompositionBase>
 			{
 			protected:
@@ -135,14 +135,11 @@ GuiVirtualRepeatCompositionBase
 
 			private:
 				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
-				bool												suppressOnViewChanged = false;
 				Size												realFullSize;
 				Rect												viewBounds;
 				vint												startIndex = 0;
 				StyleList											visibleStyles;
 
-				virtual void										Callback_InvalidateAdoptedSize() = 0;
-				virtual void										Callback_UpdateTotalSize(Size totalSize) = 0;
 				virtual void										Callback_UpdateViewLocation(Point location) = 0;
 				virtual void										Callback_UpdateIndex(ItemStyleRecord style, vint index) = 0;
 
@@ -154,6 +151,9 @@ GuiVirtualRepeatCompositionBase
 				virtual Size										Layout_CalculateTotalSize() = 0;
 
 			protected:
+
+				void												Layout_UpdateViewBounds(Rect value);
+				Rect												Layout_CalculateBounds(Size parentSize) override;
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
 				void												ClearItems() override;
@@ -171,13 +171,22 @@ GuiVirtualRepeatCompositionBase
 				GuiVirtualRepeatCompositionBase();
 				~GuiVirtualRepeatCompositionBase();
 
+				/// <summary>Total size changed event. This event raises when the total size of the content is changed.</summary>
+				GuiNotifyEvent										TotalSizeChanged;
+
+				/// <summary>View location changed event. This event raises when the view location of the content is changed.</summary>
+				GuiNotifyEvent										ViewLocationChanged;
+
+				/// <summary>This event raises when the adopted size of the content is potentially changed.</summary>
+				GuiNotifyEvent										AdoptedSizeInvalidated;
+
 				Size												GetTotalSize();
+				Point												GetViewLocation();
+				void												SetViewLocation(Point value);
+
 				ItemStyleRecord										GetVisibleStyle(vint itemIndex);
 				vint												GetVisibleIndex(ItemStyleRecord style);
 				void												ReloadVisibleStyles();
-
-				Rect												GetViewBounds();
-				void												SetViewBounds(Rect bounds);
 			};
 		}
 	}
