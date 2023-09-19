@@ -157,6 +157,12 @@
       <Filter>GraphicsComposition</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GacUIReflectionHelper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_NonVirtial.cpp">
+      <Filter>GraphicsComposition</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_Virtual.cpp">
+      <Filter>GraphicsComposition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\Source\Controls\GuiButtonControls.h">

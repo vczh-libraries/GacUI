@@ -30,25 +30,15 @@ namespace vl
 				description::Value									itemContext;
 				Ptr<EventHandler>									itemChangedHandler;
 
-				virtual vint										GetRepeatCompositionCount() = 0;
-				virtual GuiGraphicsComposition*						GetRepeatComposition(vint index) = 0;
-				virtual GuiGraphicsComposition*						InsertRepeatComposition(vint index) = 0;
-				virtual GuiGraphicsComposition*						RemoveRepeatComposition(vint index) = 0;
-
-				void												OnItemChanged(vint index, vint oldCount, vint newCount);
-				void												RemoveItem(vint index);
-				void												InstallItem(vint index);
-				void												ClearItems();
-				void												InstallItems();
+				virtual void										OnItemChanged(vint index, vint oldCount, vint newCount) = 0;
+				virtual void										ClearItems() = 0;
+				virtual void										InstallItems() = 0;
+				virtual void										UpdateContext() = 0;
 			public:
 				GuiRepeatCompositionBase();
 				~GuiRepeatCompositionBase();
 
-				/// <summary>An event called after a new item is inserted.</summary>
-				GuiItemNotifyEvent									ItemInserted;
-				/// <summary>An event called before a new item is removed.</summary>
-				GuiItemNotifyEvent									ItemRemoved;
-				/// <summary>Context changed event. This event raises when the font of the control is changed.</summary>
+				/// <summary>Context changed event. This event raises when the context of the control is changed.</summary>
 				GuiNotifyEvent										ContextChanged;
 
 				/// <summary>Get the item style provider.</summary>
@@ -73,8 +63,39 @@ namespace vl
 				void												SetContext(const description::Value& value);
 			};
 
+/***********************************************************************
+GuiNonVirtialRepeatCompositionBase
+***********************************************************************/
+
+			/// <summary>A base class for all bindable repeat compositions.</summary>
+			class GuiNonVirtialRepeatCompositionBase : public GuiRepeatCompositionBase, public Description<GuiNonVirtialRepeatCompositionBase>
+			{
+			protected:
+
+				virtual vint										GetRepeatCompositionCount() = 0;
+				virtual GuiGraphicsComposition*						GetRepeatComposition(vint index) = 0;
+				virtual GuiGraphicsComposition*						InsertRepeatComposition(vint index) = 0;
+				virtual GuiGraphicsComposition*						RemoveRepeatComposition(vint index) = 0;
+
+				void												OnItemChanged(vint index, vint oldCount, vint newCount) override;
+				void												ClearItems() override;
+				void												InstallItems() override;
+				void												UpdateContext() override;
+
+				void												RemoveItem(vint index);
+				void												InstallItem(vint index);
+			public:
+				GuiNonVirtialRepeatCompositionBase();
+				~GuiNonVirtialRepeatCompositionBase();
+
+				/// <summary>An event called after a new item is inserted.</summary>
+				GuiItemNotifyEvent									ItemInserted;
+				/// <summary>An event called before a new item is removed.</summary>
+				GuiItemNotifyEvent									ItemRemoved;
+			};
+
 			/// <summary>Bindable stack composition.</summary>
-			class GuiRepeatStackComposition : public GuiStackComposition, public GuiRepeatCompositionBase, public Description<GuiRepeatStackComposition>
+			class GuiRepeatStackComposition : public GuiStackComposition, public GuiNonVirtialRepeatCompositionBase, public Description<GuiRepeatStackComposition>
 			{
 			protected:
 				vint												GetRepeatCompositionCount()override;
@@ -88,7 +109,7 @@ namespace vl
 			};
 
 			/// <summary>Bindable flow composition.</summary>
-			class GuiRepeatFlowComposition : public GuiFlowComposition, public GuiRepeatCompositionBase, public Description<GuiRepeatFlowComposition>
+			class GuiRepeatFlowComposition : public GuiFlowComposition, public GuiNonVirtialRepeatCompositionBase, public Description<GuiRepeatFlowComposition>
 			{
 			protected:
 				vint												GetRepeatCompositionCount()override;
@@ -100,6 +121,10 @@ namespace vl
 				GuiRepeatFlowComposition();
 				~GuiRepeatFlowComposition();
 			};
+
+/***********************************************************************
+GuiRepeatCompositionBase
+***********************************************************************/
 		}
 	}
 }

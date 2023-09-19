@@ -183,6 +183,7 @@ Type List (Compositions)
 			F(presentation::compositions::IGuiAltActionHost)\
 			F(presentation::compositions::IGuiTabAction)\
 			F(presentation::compositions::GuiRepeatCompositionBase)\
+			F(presentation::compositions::GuiNonVirtialRepeatCompositionBase)\
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
 			F(presentation::compositions::GuiGraphicsComposition)\

@@ -53,6 +53,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_NonVirtial.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_Virtual.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsSharedSizeComposition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.cpp" />
