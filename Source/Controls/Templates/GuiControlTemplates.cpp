@@ -32,16 +32,6 @@ Item GuiListItemTemplate
 				FinalizeAggregation();
 			}
 
-			void GuiListItemTemplate::BeginEditListItem()
-			{
-				listControl->GetItemProvider()->PushEditing();
-			}
-
-			void GuiListItemTemplate::EndEditListItem()
-			{
-				CHECK_ERROR(listControl->GetItemProvider()->PopEditing(), L"GuiListItemTemplate::EndEditListItem()#BeginEditListItem and EndEditListItem calls are not paired.");
-			}
-
 			void GuiListItemTemplate::Initialize(controls::GuiListControl* _listControl)
 			{
 				CHECK_ERROR(listControl == nullptr, L"GuiListItemTemplate::Initialize(GuiListControl*)#This function can only be called once.");

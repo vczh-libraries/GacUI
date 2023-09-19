@@ -209,8 +209,6 @@ GuiListItemTemplate
 
 				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
 
-				void						BeginEditListItem();
-				void						EndEditListItem();
 				void						Initialize(controls::GuiListControl* _listControl);
 			};
 

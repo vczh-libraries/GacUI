@@ -113,15 +113,17 @@ DefaultTextListItemTemplate
 
 				void DefaultTextListItemTemplate::OnBulletSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::DefaultTextListItemTemplate::OnBulletSelectedChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
 					if (!supressEdit)
 					{
 						if (auto textItemView = dynamic_cast<ITextItemView*>(listControl->GetItemProvider()->RequestView(ITextItemView::Identifier)))
 						{
-							BeginEditListItem();
+							listControl->GetItemProvider()->PushEditing();
 							textItemView->SetChecked(GetIndex(), bulletButton->GetSelected());
-							EndEditListItem();
+							CHECK_ERROR(listControl->GetItemProvider()->PopEditing(), ERROR_MESSAGE_PREFIX L"BeginEditListItem and EndEditListItem calls are not paired.");
 						}
 					}
+#undef ERROR_MESSAGE_PREFIX
 				}
 
 				DefaultTextListItemTemplate::DefaultTextListItemTemplate()
