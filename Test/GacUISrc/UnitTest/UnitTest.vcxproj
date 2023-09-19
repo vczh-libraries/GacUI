@@ -188,6 +188,7 @@
     <ClCompile Include="TestCompositions_Specialized.cpp" />
     <ClCompile Include="TestCompositions_Stack.cpp" />
     <ClCompile Include="TestCompositions_Table.cpp" />
+    <ClCompile Include="TestCompositions_VirtualRepeat.cpp" />
     <ClCompile Include="TestHostedWindowManager.cpp" />
     <ClCompile Include="TestPtrDescriptableObject.cpp" />
     <ClCompile Include="TestQueryParser.cpp" />
