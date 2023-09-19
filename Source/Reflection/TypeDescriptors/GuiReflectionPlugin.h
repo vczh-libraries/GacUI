@@ -255,7 +255,6 @@ Type List (Templates)
 
 #define GUIREFLECTIONTEMPLATES_CLASS_TYPELIST(F)\
 			F(presentation::templates::GuiTemplate)\
-			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiCommonDatePickerLook)\
 			F(presentation::templates::GuiCommonScrollViewLook)\
 			GUI_CORE_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\

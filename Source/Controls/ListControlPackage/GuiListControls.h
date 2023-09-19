@@ -491,6 +491,32 @@ Predefined ItemProvider
 						return this->items.Count();
 					}
 				};
+
+				template<typename TBase>
+				class PredefinedListItemTemplate : public TBase
+				{
+				protected:
+					GuiListControl*							listControl = nullptr;
+					virtual void							OnInitialize() = 0;
+
+					void OnAssociatedListControlChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
+					{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::PredefinedListItemTemplate<TBase>::OnAssociatedListControlChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
+						auto value = this->GetAssociatedListControl();
+						CHECK_ERROR(value && (!listControl || listControl == value), ERROR_MESSAGE_PREFIX L"GuiListItemTemplate::SetAssociatedListControl cannot be invoked using a different list control instance.");
+						if (!listControl)
+						{
+							listControl = value;
+							OnInitialize();
+						}
+#undef ERROR_MESSAGE_PREFIX
+					}
+				public:
+					PredefinedListItemTemplate()
+					{
+						this->AssociatedListControlChanged.AttachMethod(this, &PredefinedListItemTemplate<TBase>::OnAssociatedListControlChanged);
+					}
+				};
 			}
 		}
 	}

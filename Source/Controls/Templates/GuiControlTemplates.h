@@ -183,34 +183,12 @@ Templates
 			F(GuiRibbonGalleryListTemplate,		GuiRibbonGalleryTemplate)	\
 
 #define GUI_ITEM_TEMPLATE_DECL(F)\
+			F(GuiListItemTemplate,				GuiTemplate)				\
 			F(GuiTextListItemTemplate,			GuiListItemTemplate)		\
 			F(GuiTreeItemTemplate,				GuiTextListItemTemplate)	\
 			F(GuiGridCellTemplate,				GuiControlTemplate)			\
 			F(GuiGridVisualizerTemplate,		GuiGridCellTemplate)		\
 			F(GuiGridEditorTemplate,			GuiGridCellTemplate)		\
-
-/***********************************************************************
-GuiListItemTemplate
-***********************************************************************/
-
-			class GuiListItemTemplate : public GuiTemplate, public AggregatableDescription<GuiListItemTemplate>
-			{
-			protected:
-				controls::GuiListControl*	listControl = nullptr;
-
-				virtual void				OnInitialize();
-			public:
-				GuiListItemTemplate();
-				~GuiListItemTemplate();
-
-#define GuiListItemTemplate_PROPERTIES(F)\
-				F(GuiListItemTemplate, bool, Selected, false)\
-				F(GuiListItemTemplate, vint, Index, 0)\
-
-				GuiListItemTemplate_PROPERTIES(GUI_TEMPLATE_PROPERTY_DECL)
-
-				void						Initialize(controls::GuiListControl* _listControl);
-			};
 
 /***********************************************************************
 Control Template
@@ -346,6 +324,11 @@ Control Template
 /***********************************************************************
 Item Template
 ***********************************************************************/
+
+#define GuiListItemTemplate_PROPERTIES(F)\
+				F(GuiListItemTemplate, bool, Selected, false)\
+				F(GuiListItemTemplate, vint, Index, 0)\
+				F(GuiListItemTemplate, controls::GuiListControl*, AssociatedListControl, nullptr)\
 
 #define GuiTextListItemTemplate_PROPERTIES(F)\
 				F(GuiTextListItemTemplate, Color, TextColor, {})\

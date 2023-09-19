@@ -19,7 +19,7 @@ namespace vl
 		{
 			namespace list
 			{
-				class DefaultListViewItemTemplate : public templates::GuiListItemTemplate
+				class DefaultListViewItemTemplate : public PredefinedListItemTemplate<templates::GuiListItemTemplate>
 				{
 				public:
 					DefaultListViewItemTemplate();

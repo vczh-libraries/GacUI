@@ -150,7 +150,6 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					{
 						textTable = new GuiTableComposition;
 						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);

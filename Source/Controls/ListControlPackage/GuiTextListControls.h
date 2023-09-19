@@ -44,7 +44,7 @@ DefaultTextListItemTemplate
 					virtual void							SetChecked(vint itemIndex, bool value) = 0;
 				};
 
-				class DefaultTextListItemTemplate : public templates::GuiTextListItemTemplate
+				class DefaultTextListItemTemplate : public PredefinedListItemTemplate<templates::GuiTextListItemTemplate>
 				{
 				protected:
 					using BulletStyle = templates::GuiControlTemplate;

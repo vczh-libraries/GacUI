@@ -495,7 +495,7 @@ DefaultTreeItemTemplate
 
 			namespace tree
 			{
-				class DefaultTreeItemTemplate : public templates::GuiTreeItemTemplate
+				class DefaultTreeItemTemplate : public list::PredefinedListItemTemplate<templates::GuiTreeItemTemplate>
 				{
 				protected:
 					GuiSelectableButton*					expandingButton = nullptr;
