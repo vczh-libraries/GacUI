@@ -11,7 +11,11 @@ TEST_FILE
 		TestBoundsWithTrivialChildren<GuiRepeatFreeHeightItemComposition>();
 	});
 
-	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding and trivial layout")
+	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding without item template")
+	{
+	});
+
+	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding in default direction")
 	{
 	});
 
