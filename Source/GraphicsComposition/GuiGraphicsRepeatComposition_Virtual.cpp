@@ -211,11 +211,6 @@ GuiVirtualRepeatCompositionBase
 						{
 							break;
 						}
-
-						bounds.x1 -= newBounds.x1;
-						bounds.x2 -= newBounds.x1;
-						bounds.y1 -= newBounds.y1;
-						bounds.y2 -= newBounds.y1;
 					}
 
 					vint newEndIndex = newStartIndex + newVisibleStyles.Count() - 1;
