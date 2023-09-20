@@ -178,6 +178,7 @@ GuiVirtualRepeatCompositionBase
 				auto source = itemSource->Get(index);
 				auto itemStyle = itemTemplate(source);
 				AddChild(itemStyle);
+				itemStyle->ForceCalculateSizeImmediately();
 				return itemStyle;
 			}
 

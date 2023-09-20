@@ -47,7 +47,7 @@ TEST_FILE
 
 	TEST_CASE(L"Test <RepeatFreeHeightItem> binding with all items visible")
 	{
-		// TODO: change item template in the middle
+		// TODO: change item template in the middle (text)
 		// TODO: assign item template in the middle
 		ObservableList<vint> xs;
 		auto root = new GuiRepeatFreeHeightItemComposition;
