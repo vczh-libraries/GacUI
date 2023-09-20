@@ -63,6 +63,11 @@ TEST_FILE
 
 		auto checkItems = [&]()
 		{
+			// TODO:
+			// the first call update ExpectedBounds of item styles
+			// but since the CachedMinSize has already been calculated
+			// the size of ExpectedBounds doesn't take effect in time
+			// the next call fix the issue
 			root->ForceCalculateSizeImmediately();
 			root->ForceCalculateSizeImmediately();
 			TEST_ASSERT(root->Children().Count() == xs.Count());
