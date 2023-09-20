@@ -142,8 +142,8 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::InstallItems()
 			{
-				OnViewChangedInternal(viewBounds, viewBounds);
-				RearrangeItemBounds();
+				// nothing needs to be done here
+				// visibleStyles will be recreated in the next round of layout
 			}
 
 			void GuiVirtualRepeatCompositionBase::UpdateContext()

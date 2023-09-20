@@ -47,21 +47,12 @@ TEST_FILE
 
 	TEST_CASE(L"Test <RepeatFreeHeightItem> binding with all items visible")
 	{
-		// TODO: change item template in the middle (text)
-		// TODO: assign item template in the middle
 		ObservableList<vint> xs;
 		auto root = new GuiRepeatFreeHeightItemComposition;
 		root->SetPreferredMinSize({ 100,100 });
 		root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
-		root->SetItemTemplate([](const Value& value)
-		{
-			auto style = new GuiTemplate;
-			style->SetText(itow(UnboxValue<vint>(value)));
-			style->SetPreferredMinSize({ 10,20 });
-			return style;
-		});
 
-		auto checkItems = [&]()
+		auto checkItems = [&](vint phase)
 		{
 			// TODO:
 			// the first call update ExpectedBounds of item styles
@@ -70,53 +61,83 @@ TEST_FILE
 			// the next call fix the issue
 			root->ForceCalculateSizeImmediately();
 			root->ForceCalculateSizeImmediately();
-			TEST_ASSERT(root->Children().Count() == xs.Count());
-			for (vint i = 0; i < xs.Count(); i++)
+			if (phase == 0)
 			{
-				auto style = root->GetVisibleStyle(i);
-				TEST_ASSERT(root->GetVisibleIndex(style) == i);
-				TEST_ASSERT(style->GetCachedBounds() == Rect({ 0,i * 20 }, { 100,20 }));
-				TEST_ASSERT(style->GetText() == itow(xs[i]));
-				TEST_ASSERT(style->GetContext() == root->GetContext());
+				TEST_ASSERT(root->Children().Count() == 0);
+			}
+			else
+			{
+				TEST_ASSERT(root->Children().Count() == xs.Count());
+				for (vint i = 0; i < xs.Count(); i++)
+				{
+					auto style = root->GetVisibleStyle(i);
+					TEST_ASSERT(root->GetVisibleIndex(style) == i);
+					TEST_ASSERT(style->GetCachedBounds() == Rect({ 0,i * 20 }, { 100,20 }));
+					if (phase == 1)
+					{
+						TEST_ASSERT(style->GetText() == itow(xs[i]));
+					}
+					else
+					{
+						TEST_ASSERT(style->GetText() == L"[" + itow(xs[i]) + L"]");
+					}
+					TEST_ASSERT(style->GetContext() == root->GetContext());
+				}
 			}
 		};
 
-		checkItems();
+		checkItems(0);
 
 		xs.Add(0);
-		checkItems();
+		checkItems(0);
+
+		root->SetItemTemplate([](const Value& value)
+		{
+			auto style = new GuiTemplate;
+			style->SetText(itow(UnboxValue<vint>(value)));
+			style->SetPreferredMinSize({ 10,20 });
+			return style;
+		});
 
 		xs.Add(1);
-		checkItems();
+		checkItems(1);
 
 		root->SetContext(BoxValue<vint>(100));
-		checkItems();
+		checkItems(1);
 
 		xs.Insert(1, 2);
-		checkItems();
+		checkItems(1);
 
 		xs.Insert(0, 3);
-		checkItems();
+		checkItems(1);
 
 		xs.Add(4);
-		checkItems();
+		checkItems(1);
+
+		root->SetItemTemplate([](const Value& value)
+		{
+			auto style = new GuiTemplate;
+			style->SetText(L"[" + itow(UnboxValue<vint>(value)) + L"]");
+			style->SetPreferredMinSize({ 10,20 });
+			return style;
+		});
 
 		xs.Remove(2);
-		checkItems();
+		checkItems(2);
 
 		root->SetContext({});
-		checkItems();
+		checkItems(2);
 
 		xs.RemoveRange(1, 2);
-		checkItems();
+		checkItems(2);
 
 		xs.Clear();
-		checkItems();
+		checkItems(2);
 
 		SafeDeleteComposition(root);
 	});
 
-	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding with partial items visible")
+	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding with scrolling")
 	{
 	});
 
