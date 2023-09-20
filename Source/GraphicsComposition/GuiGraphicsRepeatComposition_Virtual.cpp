@@ -177,6 +177,7 @@ GuiVirtualRepeatCompositionBase
 			{
 				auto source = itemSource->Get(index);
 				auto itemStyle = itemTemplate(source);
+				itemStyle->SetContext(itemContext);
 				AddChild(itemStyle);
 				itemStyle->ForceCalculateSizeImmediately();
 				return itemStyle;

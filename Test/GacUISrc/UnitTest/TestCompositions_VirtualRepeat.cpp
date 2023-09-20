@@ -64,12 +64,13 @@ TEST_FILE
 		auto checkItems = [&]()
 		{
 			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
 			TEST_ASSERT(root->Children().Count() == xs.Count());
 			for (vint i = 0; i < xs.Count(); i++)
 			{
 				auto style = root->GetVisibleStyle(i);
 				TEST_ASSERT(root->GetVisibleIndex(style) == i);
-				TEST_ASSERT(style->GetCachedBounds() == Rect({ 0,i * 10 }, { 100,20 }));
+				TEST_ASSERT(style->GetCachedBounds() == Rect({ 0,i * 20 }, { 100,20 }));
 				TEST_ASSERT(style->GetText() == itow(xs[i]));
 				TEST_ASSERT(style->GetContext() == root->GetContext());
 			}
