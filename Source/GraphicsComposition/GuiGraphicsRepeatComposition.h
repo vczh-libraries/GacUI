@@ -145,6 +145,7 @@ GuiVirtualRepeatCompositionBase
 				using StyleList = collections::List<ItemStyleRecord>;
 
 				Ptr<IGuiAxis>										axis = Ptr(new GuiDefaultAxis);
+				bool												itemSourceUpdated = false;
 				Size												realFullSize;
 				Rect												viewBounds;
 				vint												startIndex = 0;

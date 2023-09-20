@@ -45,8 +45,10 @@ TEST_FILE
 		SafeDeleteComposition(root);
 	});
 
-	TEST_CASE(L"Test <RepeatFreeHeightItem> simple use case")
+	TEST_CASE(L"Test <RepeatFreeHeightItem> binding with all items visible")
 	{
+		// TODO: change item template in the middle
+		// TODO: assign item template in the middle
 		ObservableList<vint> xs;
 		auto root = new GuiRepeatFreeHeightItemComposition;
 		root->SetPreferredMinSize({ 100,100 });
@@ -63,7 +65,7 @@ TEST_FILE
 		{
 			root->ForceCalculateSizeImmediately();
 			TEST_ASSERT(root->Children().Count() == xs.Count());
-			for (vint i = 0; i > xs.Count(); i++)
+			for (vint i = 0; i < xs.Count(); i++)
 			{
 				auto style = root->GetVisibleStyle(i);
 				TEST_ASSERT(root->GetVisibleIndex(style) == i);
@@ -106,10 +108,6 @@ TEST_FILE
 		checkItems();
 
 		SafeDeleteComposition(root);
-	});
-
-	TEST_CASE(L"Test <RepeatFreeHeightItem> binding with all items visible")
-	{
 	});
 
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding with partial items visible")

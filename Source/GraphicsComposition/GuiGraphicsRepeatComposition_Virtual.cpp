@@ -39,8 +39,9 @@ GuiVirtualRepeatCompositionBase
 			{
 				auto bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
 				auto size = axis->RealSizeToVirtualSize(bounds.GetSize());
-				if (size != viewBounds.GetSize())
+				if (size != viewBounds.GetSize() || itemSourceUpdated)
 				{
+					itemSourceUpdated = false;
 					Layout_UpdateViewBounds(Rect(viewBounds.LeftTop(), size));
 				}
 				return bounds;
@@ -68,6 +69,8 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::OnItemChanged(vint start, vint oldCount, vint newCount)
 			{
+				itemSourceUpdated = true;
+
 				vint visibleCount = visibleStyles.Count();
 				vint itemCount = itemSource->GetCount();
 				SortedList<ItemStyleRecord> reusedStyles;
@@ -122,10 +125,6 @@ GuiVirtualRepeatCompositionBase
 				{
 					Layout_UpdateIndex(style, startIndex + 1);
 				}
-
-				realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
-				TotalSizeChanged.Execute(GuiEventArgs(this));
-				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 			}
 
 			void GuiVirtualRepeatCompositionBase::ClearItems()
