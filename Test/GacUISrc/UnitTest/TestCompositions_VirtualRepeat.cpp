@@ -139,9 +139,17 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding with scrolling")
 	{
+		// setup and add items until overflow and then scroll
+		// add items until overslow and setup and then scroll
+		// add/remove/update during scrolling
+		//   viewport is free to set to any coordination
+		//   viewport is not fixed when content strinks (GuiScrollView fix it)
+		// change template during scrolling
+		// change axis during scrolling
 	});
 
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> layout in different direction")
 	{
+		// setup and add items with different size until overflow and thens scroll in all directions
 	});
 }
