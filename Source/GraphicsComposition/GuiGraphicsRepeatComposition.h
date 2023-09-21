@@ -200,7 +200,6 @@ GuiVirtualRepeatCompositionBase
 				void												SetAxis(Ptr<IGuiAxis> value);
 
 				Size												GetTotalSize();
-				Size												GetAdoptedSize();
 				Point												GetViewLocation();
 				void												SetViewLocation(Point value);
 
