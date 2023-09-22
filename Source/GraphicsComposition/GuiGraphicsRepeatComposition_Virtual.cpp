@@ -208,7 +208,7 @@ GuiVirtualRepeatCompositionBase
 						Rect bounds;
 						Margin alignmentToParent;
 						Layout_PlaceItem(true, !reuseOldStyle, i, style, newBounds, bounds, alignmentToParent);
-						if (Layout_IsItemOutOfViewBounds(i, style, bounds, newBounds))
+						if (Layout_IsItemCouldBeTheLastVisibleInBounds(i, style, bounds, newBounds))
 						{
 							break;
 						}
@@ -400,9 +400,9 @@ GuiRepeatFreeHeightItemComposition
 				bounds = Rect(Point(0, offsets[index]), Size(viewBounds.Width(), heights[index]));
 			}
 
-			bool GuiRepeatFreeHeightItemComposition::Layout_IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+			bool GuiRepeatFreeHeightItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 			{
-				return bounds.Top() >= viewBounds.Bottom();
+				return bounds.Bottom() >= viewBounds.Bottom();
 			}
 
 			bool GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)

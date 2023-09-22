@@ -153,7 +153,7 @@ GuiVirtualRepeatCompositionBase
 
 				virtual void										Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
 				virtual void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
-				virtual bool										Layout_IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
+				virtual bool										Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
 				virtual bool										Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
 				virtual void										Layout_InvalidateItemSizeCache() = 0;
 				virtual Size										Layout_CalculateTotalSize() = 0;
@@ -227,7 +227,7 @@ GuiVirtualRepeatCompositionBase
 
 				void												Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) override;
 				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) override;
-				bool												Layout_IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) override;
+				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) override;
 				bool												Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) override;
 				void												Layout_InvalidateItemSizeCache() override;
 				Size												Layout_CalculateTotalSize() override;

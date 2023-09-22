@@ -174,6 +174,9 @@ TEST_FILE
 			root->SetItemTemplate(itemTemplate);
 
 			checkItems(0, 9, 0);
+
+			for (vint i = 9; i < 20; i++) xs.Insert(i - 4, i);
+			checkItems(0, 10, 0);
 		});
 		// add items until overslow and setup and then scroll
 		// add/remove/update during scrolling
