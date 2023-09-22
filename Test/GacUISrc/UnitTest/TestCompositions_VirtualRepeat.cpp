@@ -150,7 +150,7 @@ TEST_FILE
 			return style;
 		};
 
-		auto checkItems = [&](vint first, vint count, vint offset)
+		auto checkItems = [&](vint first, vint count, vint x, vint y)
 		{
 			root->ForceCalculateSizeImmediately();
 			root->ForceCalculateSizeImmediately();
@@ -159,7 +159,7 @@ TEST_FILE
 			{
 				auto style = root->GetVisibleStyle(first + i);
 				TEST_ASSERT(root->GetVisibleIndex(style) == first + i);
-				TEST_ASSERT(style->GetCachedBounds() == Rect({ 0,i * 10 + offset }, { 95,10 }));
+				TEST_ASSERT(style->GetCachedBounds() == Rect({ x,i * 10 + y }, { 95,10 }));
 				TEST_ASSERT(style->GetText() == itow(xs[first + i]));
 				TEST_ASSERT(style->GetContext() == root->GetContext());
 			}
@@ -173,38 +173,59 @@ TEST_FILE
 			for (vint i = 0; i < 9; i++) xs.Add(i);
 			root->SetItemTemplate(itemTemplate);
 
-			checkItems(0, 9, 0);
+			checkItems(0, 9, 0, 0);
 
 			for (vint i = 9; i < 20; i++) xs.Insert(i - 4, i);
-			checkItems(0, 10, 0);
+			checkItems(0, 10, 0, 0);
 
-			root->SetViewLocation({ 0,52 });
-			checkItems(5, 10, -2);
+			auto messingAround = [&]()
+			{
+				root->SetViewLocation({ 0,52 });
+				checkItems(5, 10, 0, -2);
 
-			root->SetViewLocation({ 0,105 });
-			checkItems(10, 10, -5);
+				root->SetViewLocation({ 0,105 });
+				checkItems(10, 10, 0, -5);
 
-			xs.RemoveRange(15, 5);
-			checkItems(10, 5, -5);
+				xs.RemoveRange(15, 5);
+				checkItems(10, 5, 0, -5);
 
-			root->SetViewLocation({ 0,-42 });
-			checkItems(0, 6, 42);
+				root->SetViewLocation({ 0,-42 });
+				checkItems(0, 6, 0, 42);
 
-			for (vint i = 0; i < 5; i++) xs.Add(i + 20);
-			checkItems(0, 6, 42);
+				for (vint i = 0; i < 5; i++) xs.Add(i + 20);
+				checkItems(0, 6, 0, 42);
+			};
+			messingAround();
 
 			xs.Clear();
-			checkItems(0, 0, 0);
+			checkItems(0, 0, 0, 0);
+
+			root->SetItemTemplate({});
+			for (vint i = 0; i < 20; i++) xs.Add(i + 20);
+			checkItems(0, 0, 0, 0);
+
+			root->SetItemTemplate(itemTemplate);
+			checkItems(0, 10, 0, 0);
+
+			messingAround();
+
+			root->SetItemTemplate({});
+			checkItems(0, 0, 0, 0);
+
+			xs.Clear();
+			checkItems(0, 0, 0, 0);
 
 			SafeDeleteComposition(root);
 			root = nullptr;
 		});
-		// add items until overslow and setup and then scroll
-		// add/remove/update during scrolling
-		//   viewport is free to set to any coordination
-		//   viewport is not fixed when content strinks (GuiScrollView fix it)
-		// change template during scrolling
-		// change axis during scrolling
+
+		TEST_CASE(L"Setting ViewBounds with X Offset")
+		{
+		});
+
+		TEST_CASE(L"Changing Axis")
+		{
+		});
 	});
 
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> layout in different direction")
