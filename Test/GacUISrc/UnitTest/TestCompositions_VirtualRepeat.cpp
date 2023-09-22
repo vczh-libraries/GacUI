@@ -221,6 +221,25 @@ TEST_FILE
 
 		TEST_CASE(L"Setting ViewBounds with X Offset")
 		{
+			root = new GuiRepeatFreeHeightItemComposition;
+			root->SetPreferredMinSize({ 95,95 });
+			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+			root->SetItemTemplate(itemTemplate);
+
+			for (vint i = 0; i < 20; i++) xs.Add(i + 20);
+			checkItems(0, 10, 0, 0);
+
+			root->SetViewLocation({ 52,52 });
+			checkItems(5, 10, -52, -2);
+
+			xs.RemoveRange(5, 10);
+			checkItems(5, 5, -52, -2);
+
+			xs.Clear();
+			checkItems(0, 0, 0, 0);
+
+			SafeDeleteComposition(root);
+			root = nullptr;
 		});
 
 		TEST_CASE(L"Changing Axis")
