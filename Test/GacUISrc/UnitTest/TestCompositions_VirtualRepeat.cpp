@@ -177,6 +177,27 @@ TEST_FILE
 
 			for (vint i = 9; i < 20; i++) xs.Insert(i - 4, i);
 			checkItems(0, 10, 0);
+
+			root->SetViewLocation({ 0,52 });
+			checkItems(5, 10, -2);
+
+			root->SetViewLocation({ 0,105 });
+			checkItems(10, 10, -5);
+
+			xs.RemoveRange(15, 5);
+			checkItems(10, 5, -5);
+
+			root->SetViewLocation({ 0,-42 });
+			checkItems(0, 6, 42);
+
+			for (vint i = 0; i < 5; i++) xs.Add(i + 20);
+			checkItems(0, 6, 42);
+
+			xs.Clear();
+			checkItems(0, 0, 0);
+
+			SafeDeleteComposition(root);
+			root = nullptr;
 		});
 		// add items until overslow and setup and then scroll
 		// add/remove/update during scrolling
