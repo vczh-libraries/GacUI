@@ -139,7 +139,42 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> binding with scrolling")
 	{
-		// setup and add items until overflow and then scroll
+		ObservableList<vint> xs;
+		GuiRepeatFreeHeightItemComposition* root = nullptr;
+
+		auto itemTemplate = [](const Value& value)
+		{
+			auto style = new GuiTemplate;
+			style->SetText(itow(UnboxValue<vint>(value)));
+			style->SetPreferredMinSize({ 20,10 });
+			return style;
+		};
+
+		auto checkItems = [&](vint first, vint count, vint offset)
+		{
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == count);
+			for (vint i = 0; i < count; i++)
+			{
+				auto style = root->GetVisibleStyle(first + i);
+				TEST_ASSERT(root->GetVisibleIndex(style) == first + i);
+				TEST_ASSERT(style->GetCachedBounds() == Rect({ 0,i * 10 + offset }, { 95,10 }));
+				TEST_ASSERT(style->GetText() == itow(xs[first + i]));
+				TEST_ASSERT(style->GetContext() == root->GetContext());
+			}
+		};
+
+		TEST_CASE(L"Simple Scrolling")
+		{
+			root = new GuiRepeatFreeHeightItemComposition;
+			root->SetPreferredMinSize({ 95,95 });
+			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+			for (vint i = 0; i < 9; i++) xs.Add(i);
+			root->SetItemTemplate(itemTemplate);
+
+			checkItems(0, 9, 0);
+		});
 		// add items until overslow and setup and then scroll
 		// add/remove/update during scrolling
 		//   viewport is free to set to any coordination
