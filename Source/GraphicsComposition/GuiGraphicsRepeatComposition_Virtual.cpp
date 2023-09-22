@@ -361,6 +361,14 @@ GuiRepeatFreeHeightItemComposition
 					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < heights.Count(); i++)
 					{
+						if (heights[i] == 1 && startIndex <= i && i < startIndex + visibleStyles.Count() && visibleStyles[i - startIndex])
+						{
+							vint h = visibleStyles[i - startIndex]->GetCachedMinSize().y;
+							if (h > 1)
+							{
+								heights[i] = h;
+							}
+						}
 						if (offsets[i] + heights[i] >= newBounds.Top())
 						{
 							newStartIndex = i;

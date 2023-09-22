@@ -226,7 +226,7 @@ TEST_FILE
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 			root->SetItemTemplate(itemTemplate);
 
-			for (vint i = 0; i < 20; i++) xs.Add(i + 20);
+			for (vint i = 0; i < 20; i++) xs.Add(i);
 			checkItems(0, 10, 0, 0);
 
 			root->SetViewLocation({ 52,52 });
