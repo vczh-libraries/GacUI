@@ -300,7 +300,12 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::SetViewLocation(Point value)
 			{
-				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, Rect(value, axis->VirtualSizeToRealSize(viewBounds.GetSize()))));
+				Rect reference = axis->VirtualRectToRealRect(realFullSize, Rect({ 0,0 }, viewBounds.GetSize()));
+				reference.x1 += value.x;
+				reference.x2 += value.x;
+				reference.y1 += value.y;
+				reference.y2 += value.y;
+				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, reference));
 			}
 
 			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::GetVisibleStyle(vint itemIndex)
