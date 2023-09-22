@@ -150,7 +150,7 @@ TEST_FILE
 			return style;
 		};
 
-		auto checkItems = [&](vint first, vint count, vint x, vint y)
+		auto checkItemsCommon = [&]<typename TGetBounds>(vint first, vint count, TGetBounds&& getBounds)
 		{
 			root->ForceCalculateSizeImmediately();
 			root->ForceCalculateSizeImmediately();
@@ -159,16 +159,35 @@ TEST_FILE
 			{
 				auto style = root->GetVisibleStyle(first + i);
 				TEST_ASSERT(root->GetVisibleIndex(style) == first + i);
-				TEST_ASSERT(style->GetCachedBounds() == Rect({ x,i * 10 + y }, { 95,10 }));
 				TEST_ASSERT(style->GetText() == itow(xs[first + i]));
 				TEST_ASSERT(style->GetContext() == root->GetContext());
+
+				auto actualBounds = style->GetCachedBounds();
+				auto expectedBounds = getBounds(i);
+				TEST_ASSERT(actualBounds == expectedBounds);
 			}
+		};
+
+		auto checkItems = [&](vint first, vint count, vint x, vint y)
+		{
+			checkItemsCommon(first, count, [=](vint i)
+			{
+				return Rect({ x,i * 10 + y }, { 85,10 });
+			});
+		};
+
+		auto checkItemsR2L = [&](vint first, vint count, vint x, vint y)
+		{
+			checkItemsCommon(first, count, [=](vint i)
+			{
+				return Rect({ x - i*20,y }, { 20,95 });
+			});
 		};
 
 		TEST_CASE(L"Simple Scrolling")
 		{
 			root = new GuiRepeatFreeHeightItemComposition;
-			root->SetPreferredMinSize({ 95,95 });
+			root->SetPreferredMinSize({ 85,95 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 			for (vint i = 0; i < 9; i++) xs.Add(i);
 			root->SetItemTemplate(itemTemplate);
@@ -222,7 +241,7 @@ TEST_FILE
 		TEST_CASE(L"Setting ViewBounds with X Offset")
 		{
 			root = new GuiRepeatFreeHeightItemComposition;
-			root->SetPreferredMinSize({ 95,95 });
+			root->SetPreferredMinSize({ 85,95 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 			root->SetItemTemplate(itemTemplate);
 
