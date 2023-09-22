@@ -278,6 +278,7 @@ GuiVirtualRepeatCompositionBase
 				if (axis != value)
 				{
 					ClearItems();
+					if (!value) value = Ptr(new GuiDefaultAxis);
 					axis = value;
 					if (itemTemplate && itemSource)
 					{
