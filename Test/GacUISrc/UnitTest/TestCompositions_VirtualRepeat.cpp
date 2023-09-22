@@ -267,7 +267,7 @@ TEST_FILE
 			root->SetPreferredMinSize({ 85,95 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 			root->SetItemTemplate(itemTemplate);
-			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
 
 			for (vint i = 0; i < 3; i++) xs.Add(i);
 			checkItems(0, 3, 0, 0);
@@ -275,7 +275,7 @@ TEST_FILE
 			root->SetViewLocation({ -30,-20 });
 			checkItems(0, 3, 30, 20);
 
-			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
 			checkItemsR2L(0, 3, 65, 0);
 
 			root->SetViewLocation({ 30,20 });

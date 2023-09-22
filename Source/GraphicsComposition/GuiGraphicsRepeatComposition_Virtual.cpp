@@ -382,11 +382,7 @@ GuiRepeatFreeHeightItemComposition
 			{
 				vint styleHeight = heights[index];
 				{
-					auto currentBounds = Layout_GetStyleBounds(style);
-					Layout_SetStyleBounds(style, Rect(bounds.LeftTop(), Size(viewBounds.Width(), bounds.Height())));
 					vint newStyleHeight = Layout_GetStylePreferredSize(style).y;
-					Layout_SetStyleBounds(style, currentBounds);
-
 					if (!newCreatedStyle || styleHeight < newStyleHeight)
 					{
 						styleHeight = newStyleHeight;
