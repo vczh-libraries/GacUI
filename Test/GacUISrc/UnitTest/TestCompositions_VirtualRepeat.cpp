@@ -180,7 +180,7 @@ TEST_FILE
 		{
 			checkItemsCommon(first, count, [=](vint i)
 			{
-				return Rect({ x - i*20,y }, { 20,95 });
+				return Rect({ x - i * 20,y }, { 20,95 });
 			});
 		};
 
@@ -263,6 +263,29 @@ TEST_FILE
 
 		TEST_CASE(L"Changing Axis")
 		{
+			root = new GuiRepeatFreeHeightItemComposition;
+			root->SetPreferredMinSize({ 85,95 });
+			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+			root->SetItemTemplate(itemTemplate);
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+
+			for (vint i = 0; i < 3; i++) xs.Add(i);
+			checkItems(0, 3, 0, 0);
+
+			root->SetViewLocation({ -30,-20 });
+			checkItems(0, 3, 30, 20);
+
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			checkItemsR2L(0, 3, 65, 0);
+
+			root->SetViewLocation({ 30,20 });
+			checkItemsR2L(0, 3, 35, -20);
+
+			xs.Clear();
+			checkItems(0, 0, 0, 0);
+
+			SafeDeleteComposition(root);
+			root = nullptr;
 		});
 	});
 
