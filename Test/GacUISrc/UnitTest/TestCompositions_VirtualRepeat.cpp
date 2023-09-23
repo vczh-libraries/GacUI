@@ -292,5 +292,7 @@ TEST_FILE
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> layout in different direction")
 	{
 		// setup and add items with different size until overflow and thens scroll in all directions
+		// test GetTotalSize()
+		// test EnsureItemVisible()
 	});
 }

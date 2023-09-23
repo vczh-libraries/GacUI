@@ -23,7 +23,6 @@ GuiVirtualRepeatCompositionBase
 				Rect oldBounds = viewBounds;
 				viewBounds = value;
 				OnViewChangedInternal(oldBounds, value);
-				RearrangeItemBounds();
 				if (old != GetViewLocation())
 				{
 					ViewLocationChanged.Execute(GuiEventArgs(this));
@@ -192,68 +191,70 @@ GuiVirtualRepeatCompositionBase
 			{
 				if (itemTemplate && itemSource)
 				{
-					vint endIndex = startIndex + visibleStyles.Count() - 1;
-					vint newStartIndex = 0;
-					vint itemCount = itemSource->GetCount();
-					Layout_BeginPlaceItem(true, newBounds, newStartIndex);
-					if (newStartIndex < 0) newStartIndex = 0;
-
-					StyleList newVisibleStyles;
-					for (vint i = newStartIndex; i < itemCount; i++)
 					{
-						bool reuseOldStyle = startIndex <= i && i <= endIndex;
-						auto style = reuseOldStyle ? visibleStyles[i - startIndex] : CreateStyle(i);
-						newVisibleStyles.Add(style);
+						vint endIndex = startIndex + visibleStyles.Count() - 1;
+						vint newStartIndex = 0;
+						vint itemCount = itemSource->GetCount();
+						Layout_BeginPlaceItem(true, newBounds, newStartIndex);
+						if (newStartIndex < 0) newStartIndex = 0;
 
-						Rect bounds;
-						Margin alignmentToParent;
-						Layout_PlaceItem(true, !reuseOldStyle, i, style, newBounds, bounds, alignmentToParent);
-						if (Layout_IsItemCouldBeTheLastVisibleInBounds(i, style, bounds, newBounds))
+						StyleList newVisibleStyles;
+						for (vint i = newStartIndex; i < itemCount; i++)
 						{
-							break;
+							bool reuseOldStyle = startIndex <= i && i <= endIndex;
+							auto style = reuseOldStyle ? visibleStyles[i - startIndex] : CreateStyle(i);
+							newVisibleStyles.Add(style);
+
+							Rect bounds;
+							Margin alignmentToParent;
+							Layout_PlaceItem(true, !reuseOldStyle, i, style, newBounds, bounds, alignmentToParent);
+							if (Layout_IsItemCouldBeTheLastVisibleInBounds(i, style, bounds, newBounds))
+							{
+								break;
+							}
+						}
+
+						vint newEndIndex = newStartIndex + newVisibleStyles.Count() - 1;
+						for (auto [style, i] : indexed(visibleStyles))
+						{
+							vint index = startIndex + i;
+							if (index < newStartIndex || index > newEndIndex)
+							{
+								DeleteStyle(visibleStyles[i]);
+							}
+						}
+						CopyFrom(visibleStyles, newVisibleStyles);
+
+						Layout_EndPlaceItem(true, newBounds, newStartIndex);
+						startIndex = newStartIndex;
+					}
+					{
+						vint newStartIndex = startIndex;
+						Layout_BeginPlaceItem(false, viewBounds, newStartIndex);
+
+						for (auto [style, i] : indexed(visibleStyles))
+						{
+							Rect bounds;
+							Margin alignmentToParent(-1, -1, -1, -1);
+							Layout_PlaceItem(false, false, startIndex + i, style, viewBounds, bounds, alignmentToParent);
+
+							bounds.x1 -= viewBounds.x1;
+							bounds.x2 -= viewBounds.x1;
+							bounds.y1 -= viewBounds.y1;
+							bounds.y2 -= viewBounds.y1;
+
+							Layout_SetStyleAlignmentToParent(style, alignmentToParent);
+							Layout_SetStyleBounds(style, bounds);
+						}
+
+						if (Layout_EndPlaceItem(false, viewBounds, startIndex))
+						{
+							realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
+							TotalSizeChanged.Execute(GuiEventArgs(this));
+							AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 						}
 					}
-
-					vint newEndIndex = newStartIndex + newVisibleStyles.Count() - 1;
-					for (auto [style, i] : indexed(visibleStyles))
-					{
-						vint index = startIndex + i;
-						if (index < newStartIndex || index > newEndIndex)
-						{
-							DeleteStyle(visibleStyles[i]);
-						}
-					}
-					CopyFrom(visibleStyles, newVisibleStyles);
-
-					if (Layout_EndPlaceItem(true, newBounds, newStartIndex))
-					{
-						realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
-						TotalSizeChanged.Execute(GuiEventArgs(this));
-						AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
-					}
-					startIndex = newStartIndex;
 				}
-			}
-
-			void GuiVirtualRepeatCompositionBase::RearrangeItemBounds()
-			{
-				vint newStartIndex = startIndex;
-				Layout_BeginPlaceItem(false, viewBounds, newStartIndex);
-				for (auto [style, i] : indexed(visibleStyles))
-				{
-					Rect bounds;
-					Margin alignmentToParent(-1, -1, -1, -1);
-					Layout_PlaceItem(false, false, startIndex + i, style, viewBounds, bounds, alignmentToParent);
-
-					bounds.x1 -= viewBounds.x1;
-					bounds.x2 -= viewBounds.x1;
-					bounds.y1 -= viewBounds.y1;
-					bounds.y2 -= viewBounds.y1;
-
-					Layout_SetStyleAlignmentToParent(style, alignmentToParent);
-					Layout_SetStyleBounds(style, bounds);
-				}
-				Layout_EndPlaceItem(false, viewBounds, startIndex);
 			}
 
 			GuiVirtualRepeatCompositionBase::GuiVirtualRepeatCompositionBase()

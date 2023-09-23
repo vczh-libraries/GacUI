@@ -177,7 +177,6 @@ GuiVirtualRepeatCompositionBase
 				ItemStyleRecord										CreateStyle(vint index);
 				void												DeleteStyle(ItemStyleRecord style);
 				void												OnViewChangedInternal(Rect oldBounds, Rect newBounds);
-				virtual void										RearrangeItemBounds();
 
 			public:
 				/// <summary>Create the arranger.</summary>
