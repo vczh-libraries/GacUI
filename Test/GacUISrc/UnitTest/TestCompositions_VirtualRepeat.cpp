@@ -406,36 +406,67 @@ TEST_FILE
 		TEST_CASE(L"LeftDown")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			checkItemsDown(0, 12, 0, 0);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
+
+			root->SetViewLocation({ 10,100 });
+			checkItemsDown(11, 6, -10, -100);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 204 + 3));
+
+			root->SetViewLocation({ 20,200 });
+			checkItemsDown(16, 4, -20, -200);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+
+			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+			TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
+			checkItemsDown(0, 12, -20, 0);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, 170));
+			checkItemsDown(15, 5, -20, -170);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 		});
 
 		TEST_CASE(L"RightUp")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			TEST_ASSERT(false);
 		});
 
 		TEST_CASE(L"LeftUp")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			TEST_ASSERT(false);
 		});
 
 		TEST_CASE(L"DownLeft")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			TEST_ASSERT(false);
 		});
 
 		TEST_CASE(L"UpLeft")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			TEST_ASSERT(false);
 		});
 
 		TEST_CASE(L"DownRight")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			TEST_ASSERT(false);
 		});
 
 		TEST_CASE(L"UpRight")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			TEST_ASSERT(false);
 		});
 
 		SafeDeleteComposition(root);
