@@ -320,7 +320,7 @@ TEST_FILE
 				TEST_ASSERT(style->GetContext() == root->GetContext());
 
 				auto actualBounds = style->GetCachedBounds();
-				auto expectedBounds = getBounds(i);
+				auto expectedBounds = getBounds(first + i);
 				TEST_ASSERT(actualBounds == expectedBounds);
 			}
 		};
@@ -359,8 +359,8 @@ TEST_FILE
 		{
 			checkItemsCommon(first, count, [=](vint i)
 			{
-				vint offset = i * (i + 1) / 2 + i * 3;
-				vint thickness = (i + 1) + 3;
+				vint offset = i * (i + 1) / 2 + i * 2;
+				vint thickness = (i + 1) + 2;
 				return Rect({ x0 - offset - thickness,offset }, { thickness,100 });
 			});
 		};
@@ -380,11 +380,11 @@ TEST_FILE
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
 
 			root->SetViewLocation({ 10,100 });
-			checkItemsDown(10, 6, -10, -100);
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 184 + 4));
+			checkItemsDown(11, 6, -10, -100);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 204 + 3));
 
 			root->SetViewLocation({ 20,200 });
-			checkItemsDown(15, 5, -20, -200);
+			checkItemsDown(16, 4, -20, -200);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 
 			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -392,14 +392,14 @@ TEST_FILE
 
 			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
 			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
-			checkItemsDown(0, 12, 0, 0);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
+			checkItemsDown(0, 12, -20, 0);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 
 			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
 			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-			TEST_ASSERT(root->GetViewLocation() == Point(0, 170));
-			checkItemsDown(14, 6, 0, 0);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, 170));
+			checkItemsDown(15, 5, -20, -170);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 		});
 
