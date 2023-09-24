@@ -134,7 +134,8 @@ GuiVirtualRepeatCompositionBase
 					DeleteStyle(style);
 				}
 				visibleStyles.Clear();
-				viewBounds = Rect(0, 0, 0, 0);
+				viewBounds = Rect({ 0,0 },{ 0,0 });
+				itemSourceUpdated = true;
 				Layout_InvalidateItemSizeCache();
 				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 			}
@@ -304,12 +305,9 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::SetViewLocation(Point value)
 			{
-				Rect reference = axis->VirtualRectToRealRect(realFullSize, Rect({ 0,0 }, viewBounds.GetSize()));
-				reference.x1 += value.x;
-				reference.x2 += value.x;
-				reference.y1 += value.y;
-				reference.y2 += value.y;
-				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, reference));
+				Size realSize = axis->VirtualSizeToRealSize(viewBounds.GetSize());
+				Rect realBounds = Rect(value, realSize);
+				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, realBounds));
 			}
 
 			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::GetVisibleStyle(vint itemIndex)
@@ -478,8 +476,10 @@ GuiRepeatFreeHeightItemComposition
 			void GuiRepeatFreeHeightItemComposition::InstallItems()
 			{
 				heights.Resize(itemSource->GetCount());
-				offsets.Resize(itemSource->GetCount());
 				Layout_InvalidateItemSizeCache();
+
+				offsets.Resize(itemSource->GetCount());
+				EnsureOffsetForItem(heights.Count() - 1);
 
 				GuiVirtualRepeatCompositionBase::InstallItems();
 			}

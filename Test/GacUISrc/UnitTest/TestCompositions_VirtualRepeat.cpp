@@ -278,7 +278,7 @@ TEST_FILE
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
 			checkItemsR2L(0, 3, 65, 0);
 
-			root->SetViewLocation({ 30,20 });
+			root->SetViewLocation({ 5,20 });
 			checkItemsR2L(0, 3, 35, -20);
 
 			xs.Clear();
@@ -361,7 +361,7 @@ TEST_FILE
 			{
 				vint offset = i * (i + 1) / 2 + i * 2;
 				vint thickness = (i + 1) + 2;
-				return Rect({ x0 - offset - thickness,offset }, { thickness,100 });
+				return Rect({ x0 - offset - thickness,y0 }, { thickness,100 });
 			});
 		};
 
@@ -436,7 +436,31 @@ TEST_FILE
 		TEST_CASE(L"RightUp")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
-			TEST_ASSERT(false);
+			checkItemsUp(0, 12, 0, 100);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
+
+			root->SetViewLocation({ 10,-78 });
+			checkItemsUp(11, 6, -10, 170);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 204 + 3));
+
+			root->SetViewLocation({ 20,-170 });
+			checkItemsUp(16, 4, -20, 270);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+
+			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+			TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, 170));
+			checkItemsUp(0, 12, -20, 100);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
+			checkItemsUp(15, 5, -20, 270);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 		});
 
 		TEST_CASE(L"LeftUp")
