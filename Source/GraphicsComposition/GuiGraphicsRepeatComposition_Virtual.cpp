@@ -376,7 +376,7 @@ GuiRepeatFreeHeightItemComposition
 								heights[i] = h;
 							}
 						}
-						if (offsets[i] + heights[i] >= newBounds.Top())
+						if (offsets[i] + heights[i] > newBounds.Top())
 						{
 							newStartIndex = i;
 							break;

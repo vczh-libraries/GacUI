@@ -345,7 +345,7 @@ TEST_FILE
 			});
 		};
 
-		auto checkItemsLeft = [&](vint first, vint count, vint x0, vint y0)
+		auto checkItemsRight = [&](vint first, vint count, vint x0, vint y0)
 		{
 			checkItemsCommon(first, count, [=](vint i)
 			{
@@ -355,7 +355,7 @@ TEST_FILE
 			});
 		};
 
-		auto checkItemsRight = [&](vint first, vint count, vint x0, vint y0)
+		auto checkItemsLeft = [&](vint first, vint count, vint x0, vint y0)
 		{
 			checkItemsCommon(first, count, [=](vint i)
 			{
@@ -457,7 +457,31 @@ TEST_FILE
 
 		auto testRight = [&]()
 		{
-			TEST_ASSERT(false);
+			checkItemsRight(0, 12, 0, 0);
+			TEST_ASSERT(root->GetTotalSize() == Size(102 + 8, 100));
+
+			root->SetViewLocation({ 100,10 });
+			checkItemsRight(11, 7, -100, -10);
+			TEST_ASSERT(root->GetTotalSize() == Size(207 + 2, 100));
+
+			root->SetViewLocation({ 200,20 });
+			checkItemsRight(17, 3, -200, -20);
+			TEST_ASSERT(root->GetTotalSize() == Size(250, 100));
+
+			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+			TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 20));
+			checkItemsRight(0, 12, 0, -20);
+			TEST_ASSERT(root->GetTotalSize() == Size(250, 100));
+
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(150, 20));
+			checkItemsRight(15, 5, -150, -20);
+			TEST_ASSERT(root->GetTotalSize() == Size(250, 100));
 		};
 
 		TEST_CASE(L"DownRight")
