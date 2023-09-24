@@ -373,9 +373,8 @@ TEST_FILE
 		//   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23
 		//   4,   9,  15,  22,  30,  39,  49,  60,  72,  85,  99, 114, 130, 147, 165, 184, 204, 225, 247, 270
 
-		TEST_CASE(L"RightDown")
+		auto testDown = [&]()
 		{
-			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
 			checkItemsDown(0, 12, 0, 0);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
 
@@ -401,50 +400,31 @@ TEST_FILE
 			TEST_ASSERT(root->GetViewLocation() == Point(20, 170));
 			checkItemsDown(15, 5, -20, -170);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+		};
+
+		TEST_CASE(L"RightDown")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			testDown();
 		});
 
 		TEST_CASE(L"LeftDown")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
-			checkItemsDown(0, 12, 0, 0);
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
-
-			root->SetViewLocation({ 10,100 });
-			checkItemsDown(11, 6, -10, -100);
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 204 + 3));
-
-			root->SetViewLocation({ 20,200 });
-			checkItemsDown(16, 4, -20, -200);
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
-
-			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
-			TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
-
-			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
-			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-			TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
-			checkItemsDown(0, 12, -20, 0);
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
-
-			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
-			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-			TEST_ASSERT(root->GetViewLocation() == Point(20, 170));
-			checkItemsDown(15, 5, -20, -170);
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+			testDown();
 		});
 
-		TEST_CASE(L"RightUp")
+		auto testUp = [&]()
 		{
-			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
 			checkItemsUp(0, 12, 0, 100);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
 
 			root->SetViewLocation({ 10,-78 });
-			checkItemsUp(11, 6, -10, 170);
+			checkItemsUp(11, 6, -10, 200);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 204 + 3));
 
-			root->SetViewLocation({ 20,-170 });
-			checkItemsUp(16, 4, -20, 270);
+			root->SetViewLocation({ 20,-93 });
+			checkItemsUp(16, 4, -20, 300);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 
 			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -461,12 +441,18 @@ TEST_FILE
 			TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
 			checkItemsUp(15, 5, -20, 270);
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+		};
+
+		TEST_CASE(L"RightUp")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			testUp();
 		});
 
 		TEST_CASE(L"LeftUp")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
-			TEST_ASSERT(false);
+			testUp();
 		});
 
 		TEST_CASE(L"DownLeft")
