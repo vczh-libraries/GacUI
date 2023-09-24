@@ -455,28 +455,38 @@ TEST_FILE
 			testUp();
 		});
 
-		TEST_CASE(L"DownLeft")
+		auto testRight = [&]()
 		{
-			root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
 			TEST_ASSERT(false);
-		});
-
-		TEST_CASE(L"UpLeft")
-		{
-			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
-			TEST_ASSERT(false);
-		});
+		};
 
 		TEST_CASE(L"DownRight")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
-			TEST_ASSERT(false);
+			testRight();
 		});
 
 		TEST_CASE(L"UpRight")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			testRight();
+		});
+
+		auto testLeft = [&]()
+		{
 			TEST_ASSERT(false);
+		};
+
+		TEST_CASE(L"DownLeft")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			testLeft();
+		});
+
+		TEST_CASE(L"UpLeft")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			testLeft();
 		});
 
 		SafeDeleteComposition(root);
