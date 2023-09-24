@@ -191,6 +191,7 @@ GuiVirtualRepeatCompositionBase
 			{
 				if (itemTemplate && itemSource)
 				{
+					bool needToUpdateTotalSize = false;
 					{
 						vint endIndex = startIndex + visibleStyles.Count() - 1;
 						vint newStartIndex = 0;
@@ -225,7 +226,7 @@ GuiVirtualRepeatCompositionBase
 						}
 						CopyFrom(visibleStyles, newVisibleStyles);
 
-						Layout_EndPlaceItem(true, newBounds, newStartIndex);
+						needToUpdateTotalSize = Layout_EndPlaceItem(true, newBounds, newStartIndex) || needToUpdateTotalSize;
 						startIndex = newStartIndex;
 					}
 					{
@@ -247,12 +248,14 @@ GuiVirtualRepeatCompositionBase
 							Layout_SetStyleBounds(style, bounds);
 						}
 
-						if (Layout_EndPlaceItem(false, viewBounds, startIndex))
-						{
-							realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
-							TotalSizeChanged.Execute(GuiEventArgs(this));
-							AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
-						}
+						needToUpdateTotalSize = Layout_EndPlaceItem(false, viewBounds, startIndex) || needToUpdateTotalSize;
+					}
+
+					if (needToUpdateTotalSize)
+					{
+						realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
+						TotalSizeChanged.Execute(GuiEventArgs(this));
+						AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 					}
 				}
 			}
@@ -470,6 +473,15 @@ GuiRepeatFreeHeightItemComposition
 				offsets.Resize(itemCount);
 
 				GuiVirtualRepeatCompositionBase::OnItemChanged(start, oldCount, newCount);
+			}
+
+			void GuiRepeatFreeHeightItemComposition::InstallItems()
+			{
+				heights.Resize(itemSource->GetCount());
+				offsets.Resize(itemSource->GetCount());
+				Layout_InvalidateItemSizeCache();
+
+				GuiVirtualRepeatCompositionBase::InstallItems();
 			}
 
 			vint GuiRepeatFreeHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)

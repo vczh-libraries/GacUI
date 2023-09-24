@@ -232,6 +232,7 @@ GuiVirtualRepeatCompositionBase
 				Size												Layout_CalculateTotalSize() override;
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
+				void												InstallItems() override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFreeHeightItemComposition() = default;
