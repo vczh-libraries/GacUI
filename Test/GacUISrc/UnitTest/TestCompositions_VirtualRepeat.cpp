@@ -291,6 +291,121 @@ TEST_FILE
 
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> layout in different direction")
 	{
+		ObservableList<vint> xs;
+		for (vint i = 0; i < 20; i++) xs.Add(i);
+
+		auto root = new GuiRepeatFreeHeightItemComposition;
+		root->SetPreferredMinSize({ 100,100 });
+		root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+
+		root->SetItemTemplate([](const Value& value)
+		{
+			vint x = UnboxValue<vint>(value);
+			auto style = new GuiTemplate;
+			style->SetText(itow(UnboxValue<vint>(value)));
+			style->SetPreferredMinSize({ (x + 1) + 2,(x + 1) + 3});
+			return style;
+		});
+
+		auto checkItemsCommon = [&]<typename TGetBounds>(vint first, vint count, TGetBounds&& getBounds)
+		{
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == count);
+			for (vint i = 0; i < count; i++)
+			{
+				auto style = root->GetVisibleStyle(first + i);
+				TEST_ASSERT(root->GetVisibleIndex(style) == first + i);
+				TEST_ASSERT(style->GetText() == itow(xs[first + i]));
+				TEST_ASSERT(style->GetContext() == root->GetContext());
+
+				auto actualBounds = style->GetCachedBounds();
+				auto expectedBounds = getBounds(i);
+				TEST_ASSERT(actualBounds == expectedBounds);
+			}
+		};
+
+		auto checkItemsDown = [&](vint first, vint count, vint x0, vint y0)
+		{
+			checkItemsCommon(first, count, [=](vint i)
+			{
+				vint offset = i * (i + 1) / 2 + i * 3;
+				vint thickness = (i + 1) + 3;
+				return Rect({ x0,y0 + offset }, { 100,thickness });
+			});
+		};
+
+		auto checkItemsUp = [&](vint first, vint count, vint x0, vint y0)
+		{
+			checkItemsCommon(first, count, [=](vint i)
+			{
+				vint offset = i * (i + 1) / 2 + i * 3;
+				vint thickness = (i + 1) + 3;
+				return Rect({ x0,y0 - offset - thickness }, { 100,thickness });
+			});
+		};
+
+		auto checkItemsLeft = [&](vint first, vint count, vint x0, vint y0)
+		{
+			checkItemsCommon(first, count, [=](vint i)
+			{
+				vint offset = i * (i + 1) / 2 + i * 2;
+				vint thickness = (i + 1) + 2;
+				return Rect({ x0 + offset,y0 }, { thickness,100 });
+			});
+		};
+
+		auto checkItemsRight = [&](vint first, vint count, vint x0, vint y0)
+		{
+			checkItemsCommon(first, count, [=](vint i)
+			{
+				vint offset = i * (i + 1) / 2 + i * 3;
+				vint thickness = (i + 1) + 3;
+				return Rect({ x0 - offset - thickness,offset }, { thickness,100 });
+			});
+		};
+
+		TEST_CASE(L"RightDown")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+		});
+
+		TEST_CASE(L"LeftDown")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+		});
+
+		TEST_CASE(L"RightUp")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+		});
+
+		TEST_CASE(L"LeftUp")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+		});
+
+		TEST_CASE(L"DownLeft")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+		});
+
+		TEST_CASE(L"UpLeft")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+		});
+
+		TEST_CASE(L"DownRight")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+		});
+
+		TEST_CASE(L"UpRight")
+		{
+			root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+		});
+
+		SafeDeleteComposition(root);
 		// setup and add items with different size until overflow and thens scroll in all directions
 		// test GetTotalSize()
 		// test EnsureItemVisible()
