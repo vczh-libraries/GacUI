@@ -376,14 +376,17 @@ TEST_FILE
 		auto testDown = [&]()
 		{
 			checkItemsDown(0, 12, 0, 0);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
 
 			root->SetViewLocation({ 10,100 });
 			checkItemsDown(11, 6, -10, -100);
+			TEST_ASSERT(root->GetViewLocation() == Point(10, 100));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 204 + 3));
 
 			root->SetViewLocation({ 20,200 });
 			checkItemsDown(16, 4, -20, -200);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 
 			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -417,14 +420,17 @@ TEST_FILE
 		auto testUp = [&]()
 		{
 			checkItemsUp(0, 12, 0, 100);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 22));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 114 + 8));
 
 			root->SetViewLocation({ 10,-78 });
 			checkItemsUp(11, 6, -10, 200);
+			TEST_ASSERT(root->GetViewLocation() == Point(10, 7));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 204 + 3));
 
 			root->SetViewLocation({ 20,-93 });
 			checkItemsUp(16, 4, -20, 300);
+			TEST_ASSERT(root->GetViewLocation() == Point(20, -30));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 
 			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -458,14 +464,17 @@ TEST_FILE
 		auto testRight = [&]()
 		{
 			checkItemsRight(0, 12, 0, 0);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(102 + 8, 100));
 
 			root->SetViewLocation({ 100,10 });
 			checkItemsRight(11, 7, -100, -10);
+			TEST_ASSERT(root->GetViewLocation() == Point(100, 10));
 			TEST_ASSERT(root->GetTotalSize() == Size(207 + 2, 100));
 
 			root->SetViewLocation({ 200,20 });
 			checkItemsRight(17, 3, -200, -20);
+			TEST_ASSERT(root->GetViewLocation() == Point(200, 20));
 			TEST_ASSERT(root->GetTotalSize() == Size(250, 100));
 
 			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
