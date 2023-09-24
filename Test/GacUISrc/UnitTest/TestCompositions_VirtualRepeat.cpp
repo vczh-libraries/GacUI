@@ -507,7 +507,34 @@ TEST_FILE
 
 		auto testLeft = [&]()
 		{
-			TEST_ASSERT(false);
+			checkItemsLeft(0, 12, 100, 0);
+			TEST_ASSERT(root->GetViewLocation() == Point(10, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(102 + 8, 100));
+
+			root->SetViewLocation({ -90,10 });
+			checkItemsLeft(11, 7, 200, -10);
+			TEST_ASSERT(root->GetViewLocation() == Point(9, 10));
+			TEST_ASSERT(root->GetTotalSize() == Size(207 + 2, 100));
+
+			root->SetViewLocation({ -91,20 });
+			checkItemsLeft(17, 3, 300, -20);
+			TEST_ASSERT(root->GetViewLocation() == Point(-50, 20));
+			TEST_ASSERT(root->GetTotalSize() == Size(250, 100));
+
+			TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+			TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(150, 20));
+			checkItemsLeft(0, 12, 100, -20);
+			TEST_ASSERT(root->GetTotalSize() == Size(250, 100));
+
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
+			TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 20));
+			checkItemsLeft(15, 5, 250, -20);
+			TEST_ASSERT(root->GetTotalSize() == Size(250, 100));
 		};
 
 		TEST_CASE(L"DownLeft")
@@ -523,8 +550,17 @@ TEST_FILE
 		});
 
 		SafeDeleteComposition(root);
-		// setup and add items with different size until overflow and thens scroll in all directions
-		// test GetTotalSize()
-		// test EnsureItemVisible()
+	});
+
+	TEST_CATEGORY(L"Test <RepeatFixedHeightItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
+	{
+	});
+
+	TEST_CATEGORY(L"Test <RepeatFixedSizeMultiColumnItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
+	{
+	});
+
+	TEST_CATEGORY(L"Test <RepeatFixedHeightMultiColumnItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
+	{
 	});
 }
