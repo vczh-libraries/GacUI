@@ -271,6 +271,62 @@ GuiVirtualRepeatCompositionBase
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 				Size												GetAdoptedSize(Size expectedSize)override;
 			};
+
+			/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple lines with the same size. The width is the maximum width of all minimum widths of displayed items. The same to height.</summary>
+			class GuiRepeatFixedSizeMultiColumnItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedSizeMultiColumnItemComposition>
+			{
+			private:
+				Size										pim_itemSize;
+
+			protected:
+				Size										itemSize{ 1,1 };
+
+				void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
+
+				void										Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+				void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+				bool										Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				bool										Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+				void										Layout_InvalidateItemSizeCache()override;
+				Size										Layout_CalculateTotalSize()override;
+			public:
+				/// <summary>Create the arranger.</summary>
+				GuiRepeatFixedSizeMultiColumnItemComposition();
+				~GuiRepeatFixedSizeMultiColumnItemComposition();
+
+				vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
+				Size										GetAdoptedSize(Size expectedSize)override;
+			};
+			
+			/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
+			class GuiRepeatFixedHeightMultiColumnItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedHeightMultiColumnItemComposition>
+			{
+			private:
+				vint										pi_currentWidth = 0;
+				vint										pi_totalWidth = 0;
+				vint										pim_itemHeight = 0;
+
+			protected:
+				vint										itemHeight = 1;
+
+				void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
+
+				void										Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+				void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+				bool										Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				bool										Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+				void										Layout_InvalidateItemSizeCache()override;
+				Size										Layout_CalculateTotalSize()override;
+			public:
+				/// <summary>Create the arranger.</summary>
+				GuiRepeatFixedHeightMultiColumnItemComposition();
+				~GuiRepeatFixedHeightMultiColumnItemComposition();
+
+				vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
+				Size										GetAdoptedSize(Size expectedSize)override;
+			};
 		}
 	}
 }
