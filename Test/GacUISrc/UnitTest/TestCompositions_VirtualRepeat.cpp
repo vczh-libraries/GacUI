@@ -620,13 +620,127 @@ TEST_FILE
 	{
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
+			ObservableList<vint> xs;
+
+			auto root = new GuiRepeatFixedSizeMultiColumnItemComposition;
+			root->SetPreferredMinSize({ 100,100 });
+			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+
+			SafeDeleteComposition(root);
 		});
+
+		{
+			ObservableList<vint> xs;
+
+			auto root = new GuiRepeatFixedSizeMultiColumnItemComposition;
+			root->SetPreferredMinSize({ 100,100 });
+			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+
+			TEST_CASE(L"RightDown")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			});
+
+			TEST_CASE(L"LeftDown")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			});
+
+			TEST_CASE(L"RightUp")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			});
+
+			TEST_CASE(L"LeftUp")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			});
+
+			TEST_CASE(L"DownRight")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			});
+
+			TEST_CASE(L"UpRight")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			});
+
+			TEST_CASE(L"DownLeft")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			});
+
+			TEST_CASE(L"UpLeft")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			});
+
+			SafeDeleteComposition(root);
+		}
 	});
 
 	TEST_CATEGORY(L"Test <RepeatFixedHeightMultiColumnItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
+			ObservableList<vint> xs;
+
+			auto root = new GuiRepeatFixedHeightMultiColumnItemComposition;
+			root->SetPreferredMinSize({ 100,100 });
+			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+
+			SafeDeleteComposition(root);
 		});
+
+		{
+			ObservableList<vint> xs;
+
+			auto root = new GuiRepeatFixedHeightMultiColumnItemComposition;
+			root->SetPreferredMinSize({ 100,100 });
+			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+
+			TEST_CASE(L"RightDown")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+			});
+
+			TEST_CASE(L"LeftDown")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+			});
+
+			TEST_CASE(L"RightUp")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+			});
+
+			TEST_CASE(L"LeftUp")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+			});
+
+			TEST_CASE(L"DownRight")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+			});
+
+			TEST_CASE(L"UpRight")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+			});
+
+			TEST_CASE(L"DownLeft")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+			});
+
+			TEST_CASE(L"UpLeft")
+			{
+				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+			});
+
+			SafeDeleteComposition(root);
+		}
 	});
 }
