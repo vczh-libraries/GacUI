@@ -780,7 +780,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				bounds = Rect(Point(col * itemSize.x, row * itemSize.y), itemSize);
 				if (forMoving)
 				{
-					Size styleSize = callback->GetStylePreferredSize(GetStyleBounds(style));
+					Size styleSize = Layout_GetStylePreferredSize(style);
 					if (pim_itemSize.x < styleSize.x) pim_itemSize.x = styleSize.x;
 					if (pim_itemSize.y < styleSize.y) pim_itemSize.y = styleSize.y;
 				}
@@ -813,15 +813,15 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 			{
 				vint rowItems = viewBounds.Width() / itemSize.x;
 				if (rowItems < 1) rowItems = 1;
-				vint rows = itemProvider->Count() / rowItems;
-				if (itemProvider->Count() % rowItems) rows++;
+				vint rows = itemSource->GetCount() / rowItems;
+				if (itemSource->GetCount() % rowItems) rows++;
 
 				return Size(itemSize.x * rowItems, itemSize.y*rows);
 			}
 
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
 			{
-				vint count = itemProvider->Count();
+				vint count = itemSource->GetCount();
 				vint columnCount = viewBounds.Width() / itemSize.x;
 				if (columnCount == 0) columnCount = 1;
 				vint rowCount = viewBounds.Height() / itemSize.y;
@@ -870,68 +870,62 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 
 			VirtualRepeatEnsureItemVisibleResult GuiRepeatFixedSizeMultiColumnItemComposition::EnsureItemVisible(vint itemIndex)
 			{
-				if (callback)
+				if (!itemSource) return VirtualRepeatEnsureItemVisibleResult::NotMoved;
+				if (itemIndex < 0 || itemIndex >= itemSource->GetCount())
 				{
-					if (itemIndex < 0 || itemIndex >= itemProvider->Count())
+					return VirtualRepeatEnsureItemVisibleResult::ItemNotExists;
+				}
+				bool moved = false;
+				while (true)
+				{
+					vint rowHeight = itemSize.y;
+					vint columnCount = viewBounds.Width() / itemSize.x;
+					if (columnCount == 0) columnCount = 1;
+					vint rowIndex = itemIndex / columnCount;
+
+					vint top = rowIndex*rowHeight;
+					vint bottom = top + rowHeight;
+
+					if (viewBounds.Height() < rowHeight)
 					{
-						return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
-					}
-					bool moved = false;
-					while (true)
-					{
-						vint rowHeight = itemSize.y;
-						vint columnCount = viewBounds.Width() / itemSize.x;
-						if (columnCount == 0) columnCount = 1;
-						vint rowIndex = itemIndex / columnCount;
-
-						vint top = rowIndex*rowHeight;
-						vint bottom = top + rowHeight;
-
-						if (viewBounds.Height() < rowHeight)
-						{
-							if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
-							{
-								break;
-							}
-						}
-
-						Point location = viewBounds.LeftTop();
-						if (top < viewBounds.Top())
-						{
-							location.y = top;
-						}
-						else if (viewBounds.Bottom() < bottom)
-						{
-							location.y = bottom - viewBounds.Height();
-						}
-						else
+						if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
 						{
 							break;
 						}
-
-						auto oldLeftTop = viewBounds.LeftTop();
-						callback->SetViewLocation(location);
-						moved |= viewBounds.LeftTop() != oldLeftTop;
-						if (viewBounds.LeftTop() != location) break;
 					}
-					return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
+
+					Point location = viewBounds.LeftTop();
+					if (top < viewBounds.Top())
+					{
+						location.y = top;
+					}
+					else if (viewBounds.Bottom() < bottom)
+					{
+						location.y = bottom - viewBounds.Height();
+					}
+					else
+					{
+						break;
+					}
+
+					auto oldLeftTop = viewBounds.LeftTop();
+					Layout_UpdateViewLocation(location);
+					moved |= viewBounds.LeftTop() != oldLeftTop;
+					if (viewBounds.LeftTop() != location) break;
 				}
-				return GuiListControl::EnsureItemVisibleResult::NotMoved;
+				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
 			}
 
 			Size GuiRepeatFixedSizeMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
 			{
-				if (itemProvider)
-				{
-					vint count = itemProvider->Count();
-					vint columnCount = viewBounds.Width() / itemSize.x;
-					vint rowCount = viewBounds.Height() / itemSize.y;
-					return Size(
-						CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
-						CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
-					);
-				}
-				return expectedSize;
+				if (!itemSource) return expectedSize;
+				vint count = itemSource->GetCount();
+				vint columnCount = viewBounds.Width() / itemSize.x;
+				vint rowCount = viewBounds.Height() / itemSize.y;
+				return Size(
+					CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
+					CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
+				);
 			}
 
 /***********************************************************************
@@ -979,7 +973,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					pi_currentWidth = 0;
 				}
 
-				Size styleSize = callback->GetStylePreferredSize(GetStyleBounds(style));
+				Size styleSize = Layout_GetStylePreferredSize(style);
 				if (pi_currentWidth < styleSize.x) pi_currentWidth = styleSize.x;
 				bounds = Rect(Point(pi_totalWidth + viewBounds.Left(), itemHeight * row), Size(0, 0));
 				if (forMoving)
@@ -1011,18 +1005,18 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				itemHeight = 1;
 			}
 
-			Size GuiRepeatFixedHeightMultiColumnItemComposition::Layout_OnCalculateTotalSize()
+			Size GuiRepeatFixedHeightMultiColumnItemComposition::Layout_CalculateTotalSize()
 			{
 				vint rows = viewBounds.Height() / itemHeight;
 				if (rows < 1) rows = 1;
-				vint columns = itemProvider->Count() / rows;
-				if (itemProvider->Count() % rows) columns += 1;
+				vint columns = itemSource->GetCount() / rows;
+				if (itemSource->GetCount() % rows) columns += 1;
 				return Size(viewBounds.Width() * columns, 0);
 			}
 
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
 			{
-				vint count = itemProvider->Count();
+				vint count = itemSource->GetCount();
 				vint groupCount = viewBounds.Height() / itemHeight;
 				if (groupCount == 0) groupCount = 1;
 				switch (key)
@@ -1062,47 +1056,33 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 
 			VirtualRepeatEnsureItemVisibleResult GuiRepeatFixedHeightMultiColumnItemComposition::EnsureItemVisible(vint itemIndex)
 			{
-				if (callback)
+				if (!itemSource) return VirtualRepeatEnsureItemVisibleResult::NotMoved;
+				if (itemIndex < 0 || itemIndex >= itemSource->GetCount())
 				{
-					if (itemIndex < 0 || itemIndex >= itemProvider->Count())
-					{
-						return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
-					}
-					bool moved = false;
-					while (true)
-					{
-						vint rowCount = viewBounds.Height() / itemHeight;
-						if (rowCount == 0) rowCount = 1;
-						vint columnIndex = itemIndex / rowCount;
-						vint minIndex = startIndex;
-						vint maxIndex = startIndex + visibleStyles.Count() - 1;
+					return VirtualRepeatEnsureItemVisibleResult::ItemNotExists;
+				}
+				bool moved = false;
+				while (true)
+				{
+					vint rowCount = viewBounds.Height() / itemHeight;
+					if (rowCount == 0) rowCount = 1;
+					vint columnIndex = itemIndex / rowCount;
+					vint minIndex = startIndex;
+					vint maxIndex = startIndex + visibleStyles.Count() - 1;
 
-						Point location = viewBounds.LeftTop();
-						if (minIndex <= itemIndex && itemIndex <= maxIndex)
+					Point location = viewBounds.LeftTop();
+					if (minIndex <= itemIndex && itemIndex <= maxIndex)
+					{
+						Rect bounds = Layout_GetStyleBounds(visibleStyles[itemIndex - startIndex]);
+						if (0 < bounds.Bottom() && bounds.Top() < viewBounds.Width() && bounds.Width() > viewBounds.Width())
 						{
-							Rect bounds = callback->GetStyleBounds(GetStyleBounds(visibleStyles[itemIndex - startIndex]));
-							if (0 < bounds.Bottom() && bounds.Top() < viewBounds.Width() && bounds.Width() > viewBounds.Width())
-							{
-								break;
-							}
-							else if (bounds.Left() < 0)
-							{
-								location.x -= viewBounds.Width();
-							}
-							else if (bounds.Right() > viewBounds.Width())
-							{
-								location.x += viewBounds.Width();
-							}
-							else
-							{
-								break;
-							}
+							break;
 						}
-						else if (columnIndex < minIndex / rowCount)
+						else if (bounds.Left() < 0)
 						{
 							location.x -= viewBounds.Width();
 						}
-						else if (columnIndex >= maxIndex / rowCount)
+						else if (bounds.Right() > viewBounds.Width())
 						{
 							location.x += viewBounds.Width();
 						}
@@ -1110,25 +1090,33 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 						{
 							break;
 						}
-
-						auto oldLeftTop = viewBounds.LeftTop();
-						callback->SetViewLocation(location);
-						moved |= viewBounds.LeftTop() != oldLeftTop;
-						if (viewBounds.LeftTop() != location) break;
 					}
-					return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
+					else if (columnIndex < minIndex / rowCount)
+					{
+						location.x -= viewBounds.Width();
+					}
+					else if (columnIndex >= maxIndex / rowCount)
+					{
+						location.x += viewBounds.Width();
+					}
+					else
+					{
+						break;
+					}
+
+					auto oldLeftTop = viewBounds.LeftTop();
+					Layout_UpdateViewLocation(location);
+					moved |= viewBounds.LeftTop() != oldLeftTop;
+					if (viewBounds.LeftTop() != location) break;
 				}
-				return GuiListControl::EnsureItemVisibleResult::NotMoved;
+				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
 			}
 
 			Size GuiRepeatFixedHeightMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
 			{
-				if (itemProvider)
-				{
-					vint count = itemProvider->Count();
-					return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, count, itemHeight));
-				}
-				return expectedSize;
+				if (!itemSource) return expectedSize;
+				vint count = itemSource->GetCount();
+				return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, count, itemHeight));
 			}
 		}
 	}
