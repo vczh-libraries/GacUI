@@ -568,6 +568,191 @@ GuiRepeatFreeHeightItemComposition
 				if (expectedSize.y < h) expectedSize.y = h;
 				return expectedSize;
 			}
+
+/***********************************************************************
+GuiRepeatFixedHeightItemComposition
+***********************************************************************/
+
+			vint GuiRepeatFixedHeightItemComposition::GetWidth()
+			{
+				return -1;
+			}
+
+			vint GuiRepeatFixedHeightItemComposition::GetYOffset()
+			{
+				return 0;
+			}
+
+			void GuiRepeatFixedHeightItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+			{
+				pi_width = GetWidth();
+				if (forMoving)
+				{
+					pim_rowHeight = rowHeight;
+					newStartIndex = (newBounds.Top() - GetYOffset()) / rowHeight;
+				}
+			}
+
+			void GuiRepeatFixedHeightItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			{
+				vint top = GetYOffset() + index * rowHeight;
+				if (pi_width == -1)
+				{
+					alignmentToParent = Margin(0, -1, 0, -1);
+					bounds = Rect(Point(0, top), Size(0, rowHeight));
+				}
+				else
+				{
+					alignmentToParent = Margin(-1, -1, -1, -1);
+					bounds = Rect(Point(0, top), Size(pi_width, rowHeight));
+				}
+				if (forMoving)
+				{
+					vint styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+					if (pim_rowHeight < styleHeight)
+					{
+						pim_rowHeight = styleHeight;
+					}
+				}
+			}
+
+			bool GuiRepeatFixedHeightItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+			{
+				return bounds.Bottom() >= viewBounds.Bottom();
+			}
+
+			bool GuiRepeatFixedHeightItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+			{
+				if (forMoving)
+				{
+					if (pim_rowHeight != rowHeight)
+					{
+						vint offset = (pim_rowHeight - rowHeight) * newStartIndex;
+						rowHeight = pim_rowHeight;
+						callback->SetViewLocation(Point(0, newBounds.Top() + offset));
+						return true;
+					}
+				}
+				return false;
+			}
+
+			void GuiRepeatFixedHeightItemComposition::Layout_InvalidateItemSizeCache()
+			{
+				rowHeight = 1;
+			}
+
+			Size GuiRepeatFixedHeightItemComposition::Layout_CalculateTotalSize()
+			{
+				vint width = GetWidth();
+				if (width < 0) width = 0;
+				return Size(width, rowHeight * itemProvider->Count() + GetYOffset());
+			}
+
+			GuiRepeatFixedHeightItemComposition::GuiRepeatFixedHeightItemComposition()
+			{
+			}
+
+			GuiRepeatFixedHeightItemComposition::~GuiRepeatFixedHeightItemComposition()
+			{
+			}
+
+			vint GuiRepeatFixedHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
+			{
+				vint count = itemProvider->Count();
+				if (count == 0) return -1;
+				vint groupCount = viewBounds.Height() / rowHeight;
+				if (groupCount == 0) groupCount = 1;
+				switch (key)
+				{
+				case KeyDirection::Up:
+					itemIndex--;
+					break;
+				case KeyDirection::Down:
+					itemIndex++;
+					break;
+				case KeyDirection::Home:
+					itemIndex = 0;
+					break;
+				case KeyDirection::End:
+					itemIndex = count;
+					break;
+				case KeyDirection::PageUp:
+					itemIndex -= groupCount;
+					break;
+				case KeyDirection::PageDown:
+					itemIndex += groupCount;
+					break;
+				default:
+					return -1;
+				}
+
+				if (itemIndex < 0) return 0;
+				else if (itemIndex >= count) return count - 1;
+				else return itemIndex;
+			}
+
+			VirtualRepeatEnsureItemVisibleResult GuiRepeatFixedHeightItemComposition::EnsureItemVisible(vint itemIndex)
+			{
+				if (callback)
+				{
+					if (itemIndex < 0 || itemIndex >= itemProvider->Count())
+					{
+						return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
+					}
+					bool moved = false;
+					while (true)
+					{
+						vint yOffset = GetYOffset();
+						vint top = itemIndex*rowHeight;
+						vint bottom = top + rowHeight + yOffset;
+
+						if (viewBounds.Height() < rowHeight)
+						{
+							if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
+							{
+								break;
+							}
+						}
+
+						Point location = viewBounds.LeftTop();
+						if (viewBounds.y1 >= top && viewBounds.y2 <= bottom)
+						{
+							break;
+						}
+						else if (top < viewBounds.Top())
+						{
+							location.y = top;
+						}
+						else if (viewBounds.Bottom() < bottom)
+						{
+							location.y = bottom - viewBounds.Height();
+						}
+						else
+						{
+							break;
+						}
+
+						auto oldLeftTop = viewBounds.LeftTop();
+						callback->SetViewLocation(location);
+						moved |= viewBounds.LeftTop() != oldLeftTop;
+						if (viewBounds.LeftTop() != location) break;
+					}
+					return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
+				}
+				return GuiListControl::EnsureItemVisibleResult::NotMoved;
+			}
+
+			Size GuiRepeatFixedHeightItemComposition::GetAdoptedSize(Size expectedSize)
+			{
+				if (itemProvider)
+				{
+					vint yOffset = GetYOffset();
+					vint y = expectedSize.y - yOffset;
+					vint itemCount = itemProvider->Count();
+					return Size(expectedSize.x, yOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
+				}
+				return expectedSize;
+			}
 		}
 	}
 }

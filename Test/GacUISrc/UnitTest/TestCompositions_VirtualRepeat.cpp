@@ -552,6 +552,10 @@ TEST_FILE
 		SafeDeleteComposition(root);
 	});
 
+	TEST_CASE(L"Test <RepeatFixedHeightItem> layout with item of different PreferredMinSize")
+	{
+	});
+
 	TEST_CATEGORY(L"Test <RepeatFixedHeightItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
 	});

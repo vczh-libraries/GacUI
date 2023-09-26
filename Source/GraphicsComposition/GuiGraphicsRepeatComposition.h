@@ -242,6 +242,35 @@ GuiVirtualRepeatCompositionBase
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex) override;
 				Size												GetAdoptedSize(Size expectedSize) override;
 			};
+				
+			/// <summary>Fixed height item arranger. This arranger lists all item with the same height value. This value is the maximum height of all minimum heights of displayed items.</summary>
+			class GuiRepeatFixedHeightItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedHeightItemComposition>
+			{
+			private:
+				vint												pi_width = 0;
+				vint												pim_rowHeight = 0;
+
+			protected:
+				vint												rowHeight = 1;
+
+				virtual vint										GetWidth();
+				virtual vint										GetYOffset();
+
+				void												Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				bool												Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+				void												Layout_InvalidateItemSizeCache()override;
+				Size												Layout_CalculateTotalSize()override;
+			public:
+				/// <summary>Create the arranger.</summary>
+				GuiRepeatFixedHeightItemComposition();
+				~GuiRepeatFixedHeightItemComposition();
+
+				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
+				Size												GetAdoptedSize(Size expectedSize)override;
+			};
 		}
 	}
 }
