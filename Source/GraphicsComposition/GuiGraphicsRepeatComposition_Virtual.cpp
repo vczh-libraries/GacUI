@@ -608,7 +608,7 @@ GuiRepeatFixedHeightItemComposition
 				}
 				if (forMoving)
 				{
-					vint styleHeight = callback->GetStylePreferredSize(GetStyleBounds(style)).y;
+					vint styleHeight = Layout_GetStylePreferredSize(style).y;
 					if (pim_rowHeight < styleHeight)
 					{
 						pim_rowHeight = styleHeight;
@@ -629,7 +629,7 @@ GuiRepeatFixedHeightItemComposition
 					{
 						vint offset = (pim_rowHeight - rowHeight) * newStartIndex;
 						rowHeight = pim_rowHeight;
-						callback->SetViewLocation(Point(0, newBounds.Top() + offset));
+						Layout_UpdateViewLocation({ viewBounds.x1,newBounds.Top() + offset });
 						return true;
 					}
 				}
@@ -645,7 +645,7 @@ GuiRepeatFixedHeightItemComposition
 			{
 				vint width = GetWidth();
 				if (width < 0) width = 0;
-				return Size(width, rowHeight * itemProvider->Count() + GetYOffset());
+				return Size(width, rowHeight * itemSource->GetCount() + GetYOffset());
 			}
 
 			GuiRepeatFixedHeightItemComposition::GuiRepeatFixedHeightItemComposition()
@@ -658,7 +658,7 @@ GuiRepeatFixedHeightItemComposition
 
 			vint GuiRepeatFixedHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
 			{
-				vint count = itemProvider->Count();
+				vint count = itemSource->GetCount();
 				if (count == 0) return -1;
 				vint groupCount = viewBounds.Height() / rowHeight;
 				if (groupCount == 0) groupCount = 1;
@@ -693,65 +693,59 @@ GuiRepeatFixedHeightItemComposition
 
 			VirtualRepeatEnsureItemVisibleResult GuiRepeatFixedHeightItemComposition::EnsureItemVisible(vint itemIndex)
 			{
-				if (callback)
+				if (!itemSource) return VirtualRepeatEnsureItemVisibleResult::NotMoved;
+				if (itemIndex < 0 || itemIndex >= itemSource->GetCount())
 				{
-					if (itemIndex < 0 || itemIndex >= itemProvider->Count())
-					{
-						return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
-					}
-					bool moved = false;
-					while (true)
-					{
-						vint yOffset = GetYOffset();
-						vint top = itemIndex*rowHeight;
-						vint bottom = top + rowHeight + yOffset;
-
-						if (viewBounds.Height() < rowHeight)
-						{
-							if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
-							{
-								break;
-							}
-						}
-
-						Point location = viewBounds.LeftTop();
-						if (viewBounds.y1 >= top && viewBounds.y2 <= bottom)
-						{
-							break;
-						}
-						else if (top < viewBounds.Top())
-						{
-							location.y = top;
-						}
-						else if (viewBounds.Bottom() < bottom)
-						{
-							location.y = bottom - viewBounds.Height();
-						}
-						else
-						{
-							break;
-						}
-
-						auto oldLeftTop = viewBounds.LeftTop();
-						callback->SetViewLocation(location);
-						moved |= viewBounds.LeftTop() != oldLeftTop;
-						if (viewBounds.LeftTop() != location) break;
-					}
-					return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
+					return VirtualRepeatEnsureItemVisibleResult::ItemNotExists;
 				}
-				return GuiListControl::EnsureItemVisibleResult::NotMoved;
+				bool moved = false;
+				while (true)
+				{
+					vint yOffset = GetYOffset();
+					vint top = itemIndex*rowHeight;
+					vint bottom = top + rowHeight + yOffset;
+
+					if (viewBounds.Height() < rowHeight)
+					{
+						if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
+						{
+							break;
+						}
+					}
+
+					Point location = viewBounds.LeftTop();
+					if (viewBounds.y1 >= top && viewBounds.y2 <= bottom)
+					{
+						break;
+					}
+					else if (top < viewBounds.Top())
+					{
+						location.y = top;
+					}
+					else if (viewBounds.Bottom() < bottom)
+					{
+						location.y = bottom - viewBounds.Height();
+					}
+					else
+					{
+						break;
+					}
+
+					auto oldLeftTop = viewBounds.LeftTop();
+					Layout_UpdateViewLocation(location);
+					moved |= viewBounds.LeftTop() != oldLeftTop;
+					if (viewBounds.LeftTop() != location) break;
+				}
+				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
 			}
 
 			Size GuiRepeatFixedHeightItemComposition::GetAdoptedSize(Size expectedSize)
 			{
-				if (itemProvider)
-				{
-					vint yOffset = GetYOffset();
-					vint y = expectedSize.y - yOffset;
-					vint itemCount = itemProvider->Count();
-					return Size(expectedSize.x, yOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
-				}
-				return expectedSize;
+				if (!itemSource) return expectedSize;
+				vint yOffset = GetYOffset();
+				vint y = expectedSize.y - yOffset;
+				vint itemCount = itemSource->GetCount();
+				return Size(expectedSize.x, yOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
 			}
 		}
 	}
