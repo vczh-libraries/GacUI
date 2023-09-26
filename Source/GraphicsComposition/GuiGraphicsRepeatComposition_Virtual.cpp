@@ -648,14 +648,6 @@ GuiRepeatFixedHeightItemComposition
 				return Size(width, rowHeight * itemSource->GetCount() + GetYOffset());
 			}
 
-			GuiRepeatFixedHeightItemComposition::GuiRepeatFixedHeightItemComposition()
-			{
-			}
-
-			GuiRepeatFixedHeightItemComposition::~GuiRepeatFixedHeightItemComposition()
-			{
-			}
-
 			vint GuiRepeatFixedHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
@@ -746,6 +738,397 @@ GuiRepeatFixedHeightItemComposition
 				vint y = expectedSize.y - yOffset;
 				vint itemCount = itemSource->GetCount();
 				return Size(expectedSize.x, yOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
+			}
+
+/***********************************************************************
+GuiRepeatFixedSizeMultiColumnItemComposition
+***********************************************************************/
+
+			void GuiRepeatFixedSizeMultiColumnItemComposition::CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end)
+			{
+				vint startRow = bounds.Top() / itemSize.y;
+				if (startRow < 0) startRow = 0;
+				vint endRow = (bounds.Bottom() - 1) / itemSize.y;
+				vint cols = bounds.Width() / itemSize.x;
+				if (cols < 1) cols = 1;
+
+				start = startRow*cols;
+				end = (endRow + 1)*cols - 1;
+				if (end >= count) end = count - 1;
+			}
+
+			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+			{
+				if (forMoving)
+				{
+					pim_itemSize = itemSize;
+					vint rows = newBounds.Top() / itemSize.y;
+					if (rows < 0) rows = 0;
+					vint cols = newBounds.Width() / itemSize.x;
+					if (cols < 1) cols = 1;
+					newStartIndex = rows * cols;
+				}
+			}
+
+			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			{
+				vint rowItems = viewBounds.Width() / itemSize.x;
+				if (rowItems < 1) rowItems = 1;
+
+				vint row = index / rowItems;
+				vint col = index % rowItems;
+				bounds = Rect(Point(col * itemSize.x, row * itemSize.y), itemSize);
+				if (forMoving)
+				{
+					Size styleSize = callback->GetStylePreferredSize(GetStyleBounds(style));
+					if (pim_itemSize.x < styleSize.x) pim_itemSize.x = styleSize.x;
+					if (pim_itemSize.y < styleSize.y) pim_itemSize.y = styleSize.y;
+				}
+			}
+
+			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+			{
+				return bounds.Top() >= viewBounds.Bottom();
+			}
+
+			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+			{
+				if (forMoving)
+				{
+					if (pim_itemSize != itemSize)
+					{
+						itemSize = pim_itemSize;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_InvalidateItemSizeCache()
+			{
+				itemSize = Size(1, 1);
+			}
+
+			Size GuiRepeatFixedSizeMultiColumnItemComposition::Layout_CalculateTotalSize()
+			{
+				vint rowItems = viewBounds.Width() / itemSize.x;
+				if (rowItems < 1) rowItems = 1;
+				vint rows = itemProvider->Count() / rowItems;
+				if (itemProvider->Count() % rowItems) rows++;
+
+				return Size(itemSize.x * rowItems, itemSize.y*rows);
+			}
+
+			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
+			{
+				vint count = itemProvider->Count();
+				vint columnCount = viewBounds.Width() / itemSize.x;
+				if (columnCount == 0) columnCount = 1;
+				vint rowCount = viewBounds.Height() / itemSize.y;
+				if (rowCount == 0) rowCount = 1;
+
+				switch (key)
+				{
+				case KeyDirection::Up:
+					itemIndex -= columnCount;
+					break;
+				case KeyDirection::Down:
+					itemIndex += columnCount;
+					break;
+				case KeyDirection::Left:
+					itemIndex--;
+					break;
+				case KeyDirection::Right:
+					itemIndex++;
+					break;
+				case KeyDirection::Home:
+					itemIndex = 0;
+					break;
+				case KeyDirection::End:
+					itemIndex = count;
+					break;
+				case KeyDirection::PageUp:
+					itemIndex -= columnCount*rowCount;
+					break;
+				case KeyDirection::PageDown:
+					itemIndex += columnCount*rowCount;
+					break;
+				case KeyDirection::PageLeft:
+					itemIndex -= itemIndex%columnCount;
+					break;
+				case KeyDirection::PageRight:
+					itemIndex += columnCount - itemIndex%columnCount - 1;
+					break;
+				default:
+					return -1;
+				}
+
+				if (itemIndex < 0) return 0;
+				else if (itemIndex >= count) return count - 1;
+				else return itemIndex;
+			}
+
+			VirtualRepeatEnsureItemVisibleResult GuiRepeatFixedSizeMultiColumnItemComposition::EnsureItemVisible(vint itemIndex)
+			{
+				if (callback)
+				{
+					if (itemIndex < 0 || itemIndex >= itemProvider->Count())
+					{
+						return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
+					}
+					bool moved = false;
+					while (true)
+					{
+						vint rowHeight = itemSize.y;
+						vint columnCount = viewBounds.Width() / itemSize.x;
+						if (columnCount == 0) columnCount = 1;
+						vint rowIndex = itemIndex / columnCount;
+
+						vint top = rowIndex*rowHeight;
+						vint bottom = top + rowHeight;
+
+						if (viewBounds.Height() < rowHeight)
+						{
+							if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
+							{
+								break;
+							}
+						}
+
+						Point location = viewBounds.LeftTop();
+						if (top < viewBounds.Top())
+						{
+							location.y = top;
+						}
+						else if (viewBounds.Bottom() < bottom)
+						{
+							location.y = bottom - viewBounds.Height();
+						}
+						else
+						{
+							break;
+						}
+
+						auto oldLeftTop = viewBounds.LeftTop();
+						callback->SetViewLocation(location);
+						moved |= viewBounds.LeftTop() != oldLeftTop;
+						if (viewBounds.LeftTop() != location) break;
+					}
+					return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
+				}
+				return GuiListControl::EnsureItemVisibleResult::NotMoved;
+			}
+
+			Size GuiRepeatFixedSizeMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
+			{
+				if (itemProvider)
+				{
+					vint count = itemProvider->Count();
+					vint columnCount = viewBounds.Width() / itemSize.x;
+					vint rowCount = viewBounds.Height() / itemSize.y;
+					return Size(
+						CalculateAdoptedSize(expectedSize.x, columnCount, itemSize.x),
+						CalculateAdoptedSize(expectedSize.y, rowCount, itemSize.y)
+					);
+				}
+				return expectedSize;
+			}
+
+/***********************************************************************
+GuiRepeatFixedHeightMultiColumnItemComposition
+***********************************************************************/
+
+			void GuiRepeatFixedHeightMultiColumnItemComposition::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
+			{
+				vint w = bounds.Width();
+				vint h = bounds.Height();
+				if (w <= 0) w = 1;
+
+				rows = h / itemHeight;
+				if (rows < 1) rows = 1;
+				startColumn = bounds.Left() / w;
+			}
+
+			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+			{
+				pi_currentWidth = 0;
+				pi_totalWidth = 0;
+				if (forMoving)
+				{
+					vint w = newBounds.Width();
+					vint h = newBounds.Height();
+					if (w <= 0) w = 1;
+
+					pim_itemHeight = itemHeight;
+					vint rows = h / itemHeight;
+					if (rows < 1) rows = 1;
+					vint columns = newBounds.Left() / w;
+					newStartIndex = rows * columns;
+				}
+			}
+
+			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			{
+				vint rows = viewBounds.Height() / itemHeight;
+				if (rows < 1) rows = 1;
+
+				vint row = index % rows;
+				if (row == 0)
+				{
+					pi_totalWidth += pi_currentWidth;
+					pi_currentWidth = 0;
+				}
+
+				Size styleSize = callback->GetStylePreferredSize(GetStyleBounds(style));
+				if (pi_currentWidth < styleSize.x) pi_currentWidth = styleSize.x;
+				bounds = Rect(Point(pi_totalWidth + viewBounds.Left(), itemHeight * row), Size(0, 0));
+				if (forMoving)
+				{
+					if (pim_itemHeight < styleSize.y) pim_itemHeight = styleSize.y;
+				}
+			}
+
+			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
+			{
+				return bounds.Left() >= viewBounds.Right();
+			}
+
+			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+			{
+				if (forMoving)
+				{
+					if (pim_itemHeight != itemHeight)
+					{
+						itemHeight = pim_itemHeight;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_InvalidateItemSizeCache()
+			{
+				itemHeight = 1;
+			}
+
+			Size GuiRepeatFixedHeightMultiColumnItemComposition::Layout_OnCalculateTotalSize()
+			{
+				vint rows = viewBounds.Height() / itemHeight;
+				if (rows < 1) rows = 1;
+				vint columns = itemProvider->Count() / rows;
+				if (itemProvider->Count() % rows) columns += 1;
+				return Size(viewBounds.Width() * columns, 0);
+			}
+
+			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
+			{
+				vint count = itemProvider->Count();
+				vint groupCount = viewBounds.Height() / itemHeight;
+				if (groupCount == 0) groupCount = 1;
+				switch (key)
+				{
+				case KeyDirection::Up:
+					itemIndex--;
+					break;
+				case KeyDirection::Down:
+					itemIndex++;
+					break;
+				case KeyDirection::Left:
+					itemIndex -= groupCount;
+					break;
+				case KeyDirection::Right:
+					itemIndex += groupCount;
+					break;
+				case KeyDirection::Home:
+					itemIndex = 0;
+					break;
+				case KeyDirection::End:
+					itemIndex = count;
+					break;
+				case KeyDirection::PageUp:
+					itemIndex -= itemIndex%groupCount;
+					break;
+				case KeyDirection::PageDown:
+					itemIndex += groupCount - itemIndex%groupCount - 1;
+					break;
+				default:
+					return -1;
+				}
+
+				if (itemIndex < 0) return 0;
+				else if (itemIndex >= count) return count - 1;
+				else return itemIndex;
+			}
+
+			VirtualRepeatEnsureItemVisibleResult GuiRepeatFixedHeightMultiColumnItemComposition::EnsureItemVisible(vint itemIndex)
+			{
+				if (callback)
+				{
+					if (itemIndex < 0 || itemIndex >= itemProvider->Count())
+					{
+						return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
+					}
+					bool moved = false;
+					while (true)
+					{
+						vint rowCount = viewBounds.Height() / itemHeight;
+						if (rowCount == 0) rowCount = 1;
+						vint columnIndex = itemIndex / rowCount;
+						vint minIndex = startIndex;
+						vint maxIndex = startIndex + visibleStyles.Count() - 1;
+
+						Point location = viewBounds.LeftTop();
+						if (minIndex <= itemIndex && itemIndex <= maxIndex)
+						{
+							Rect bounds = callback->GetStyleBounds(GetStyleBounds(visibleStyles[itemIndex - startIndex]));
+							if (0 < bounds.Bottom() && bounds.Top() < viewBounds.Width() && bounds.Width() > viewBounds.Width())
+							{
+								break;
+							}
+							else if (bounds.Left() < 0)
+							{
+								location.x -= viewBounds.Width();
+							}
+							else if (bounds.Right() > viewBounds.Width())
+							{
+								location.x += viewBounds.Width();
+							}
+							else
+							{
+								break;
+							}
+						}
+						else if (columnIndex < minIndex / rowCount)
+						{
+							location.x -= viewBounds.Width();
+						}
+						else if (columnIndex >= maxIndex / rowCount)
+						{
+							location.x += viewBounds.Width();
+						}
+						else
+						{
+							break;
+						}
+
+						auto oldLeftTop = viewBounds.LeftTop();
+						callback->SetViewLocation(location);
+						moved |= viewBounds.LeftTop() != oldLeftTop;
+						if (viewBounds.LeftTop() != location) break;
+					}
+					return moved ? GuiListControl::EnsureItemVisibleResult::Moved : GuiListControl::EnsureItemVisibleResult::NotMoved;
+				}
+				return GuiListControl::EnsureItemVisibleResult::NotMoved;
+			}
+
+			Size GuiRepeatFixedHeightMultiColumnItemComposition::GetAdoptedSize(Size expectedSize)
+			{
+				if (itemProvider)
+				{
+					vint count = itemProvider->Count();
+					return Size(expectedSize.x, CalculateAdoptedSize(expectedSize.y, count, itemHeight));
+				}
+				return expectedSize;
 			}
 		}
 	}

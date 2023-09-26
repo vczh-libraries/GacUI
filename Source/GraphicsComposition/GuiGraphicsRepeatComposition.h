@@ -264,8 +264,8 @@ GuiVirtualRepeatCompositionBase
 				Size												Layout_CalculateTotalSize()override;
 			public:
 				/// <summary>Create the arranger.</summary>
-				GuiRepeatFixedHeightItemComposition();
-				~GuiRepeatFixedHeightItemComposition();
+				GuiRepeatFixedHeightItemComposition() = default;
+				~GuiRepeatFixedHeightItemComposition() = default;
 
 				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
@@ -291,8 +291,8 @@ GuiVirtualRepeatCompositionBase
 				Size										Layout_CalculateTotalSize()override;
 			public:
 				/// <summary>Create the arranger.</summary>
-				GuiRepeatFixedSizeMultiColumnItemComposition();
-				~GuiRepeatFixedSizeMultiColumnItemComposition();
+				GuiRepeatFixedSizeMultiColumnItemComposition() = default;
+				~GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 
 				vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
@@ -320,8 +320,8 @@ GuiVirtualRepeatCompositionBase
 				Size										Layout_CalculateTotalSize()override;
 			public:
 				/// <summary>Create the arranger.</summary>
-				GuiRepeatFixedHeightMultiColumnItemComposition();
-				~GuiRepeatFixedHeightMultiColumnItemComposition();
+				GuiRepeatFixedHeightMultiColumnItemComposition() = default;
+				~GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 
 				vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
