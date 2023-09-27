@@ -567,21 +567,63 @@ Common
 
 	TEST_CATEGORY(L"Test <RepeatFixedHeightItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
+		ObservableList<vint> xs;
+		GuiRepeatFixedHeightItemComposition* root = nullptr;
+
+		auto checkItems = [&](vint first, vint count, vint x0, vint y0, vint w, vint h)
+		{
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == count);
+			for (vint i = 0; i < count; i++)
+			{
+				auto style = root->GetVisibleStyle(first + i);
+				TEST_ASSERT(root->GetVisibleIndex(style) == first + i);
+				TEST_ASSERT(style->GetText() == itow(xs[first + i]));
+				TEST_ASSERT(style->GetContext() == root->GetContext());
+
+				if (w < 0) x0 += w;
+				if (h < 0) y0 += h;
+
+				auto actualBounds = style->GetCachedBounds();
+				auto expectedBounds = Rect({
+					x0 + i * w,
+					y0 + i * h
+				}, {
+					w == 0 ? root->GetCachedBounds().Width() : w,
+					h == 0 ? root->GetCachedBounds().Height() : h
+				});
+				TEST_ASSERT(actualBounds == expectedBounds);
+			}
+		};
+
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
-			ObservableList<vint> xs;
-
-			auto root = new GuiRepeatFixedHeightItemComposition;
+			root = new GuiRepeatFixedHeightItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
+			root->SetItemTemplate([](const Value& value)
+			{
+				vint x = UnboxValue<vint>(value);
+				auto style = new GuiTemplate;
+				style->SetText(itow(UnboxValue<vint>(value)));
+				style->SetPreferredMinSize({ 10 + x,10 + x});
+				return style;
+			});
+
+			for (vint i = 1; i <= 20; i++) xs.Add(i);
+			checkItems(0, 6, 0, 0, 0, 17);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
+
+			xs.Clear();
 			SafeDeleteComposition(root);
+			root = nullptr;
 		});
 
 		{
-			ObservableList<vint> xs;
-
-			auto root = new GuiRepeatFixedHeightItemComposition;
+			root = new GuiRepeatFixedHeightItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
@@ -626,6 +668,7 @@ Common
 			});
 
 			SafeDeleteComposition(root);
+			root = nullptr;
 		}
 	});
 
@@ -635,21 +678,21 @@ Common
 
 	TEST_CATEGORY(L"Test <RepeatFixedSizeMultiColumnItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
+		ObservableList<vint> xs;
+		GuiRepeatFixedSizeMultiColumnItemComposition* root = nullptr;
+
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
-			ObservableList<vint> xs;
-
-			auto root = new GuiRepeatFixedSizeMultiColumnItemComposition;
+			root = new GuiRepeatFixedSizeMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
 			SafeDeleteComposition(root);
+			root = nullptr;
 		});
 
 		{
-			ObservableList<vint> xs;
-
-			auto root = new GuiRepeatFixedSizeMultiColumnItemComposition;
+			root = new GuiRepeatFixedSizeMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
@@ -694,6 +737,7 @@ Common
 			});
 
 			SafeDeleteComposition(root);
+			root = nullptr;
 		}
 	});
 
@@ -703,21 +747,21 @@ Common
 
 	TEST_CATEGORY(L"Test <RepeatFixedHeightMultiColumnItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
+		ObservableList<vint> xs;
+		GuiRepeatFixedHeightMultiColumnItemComposition* root = nullptr;
+
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
-			ObservableList<vint> xs;
-
-			auto root = new GuiRepeatFixedHeightMultiColumnItemComposition;
+			root = new GuiRepeatFixedHeightMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
 			SafeDeleteComposition(root);
+			root = nullptr;
 		});
 
 		{
-			ObservableList<vint> xs;
-
-			auto root = new GuiRepeatFixedHeightMultiColumnItemComposition;
+			root = new GuiRepeatFixedHeightMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
@@ -762,6 +806,7 @@ Common
 			});
 
 			SafeDeleteComposition(root);
+			root = nullptr;
 		}
 	});
 }
