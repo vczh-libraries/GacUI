@@ -6,6 +6,11 @@ using namespace composition_bounds_tests;
 
 TEST_FILE
 {
+
+/***********************************************************************
+Common
+***********************************************************************/
+
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> with common <Bounds> operations")
 	{
 		TestBoundsWithTrivialChildren<GuiRepeatFreeHeightItemComposition>();
@@ -289,6 +294,10 @@ TEST_FILE
 		});
 	});
 
+/***********************************************************************
+<RepeatFreeHeightItem>
+***********************************************************************/
+
 	TEST_CATEGORY(L"Test <RepeatFreeHeightItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
 		ObservableList<vint> xs;
@@ -552,6 +561,10 @@ TEST_FILE
 		SafeDeleteComposition(root);
 	});
 
+/***********************************************************************
+<RepeatFixedHeightItem>
+***********************************************************************/
+
 	TEST_CATEGORY(L"Test <RepeatFixedHeightItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
 		TEST_CASE(L"Item of different PreferredMinSize")
@@ -616,6 +629,10 @@ TEST_FILE
 		}
 	});
 
+/***********************************************************************
+<RepeatFixedSizeMultiColumnItem>
+***********************************************************************/
+
 	TEST_CATEGORY(L"Test <RepeatFixedSizeMultiColumnItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
 		TEST_CASE(L"Item of different PreferredMinSize")
@@ -679,6 +696,10 @@ TEST_FILE
 			SafeDeleteComposition(root);
 		}
 	});
+
+/***********************************************************************
+<RepeatFixedHeightMultiColumnItem>
+***********************************************************************/
 
 	TEST_CATEGORY(L"Test <RepeatFixedHeightMultiColumnItem> layout in different direction, with GetTotalSize and EnsureItemVisible")
 	{
