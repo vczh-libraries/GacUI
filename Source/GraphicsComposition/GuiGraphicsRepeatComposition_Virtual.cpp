@@ -368,7 +368,7 @@ GuiRepeatFreeHeightItemComposition
 
 			void GuiRepeatFreeHeightItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 			{
-				pim_heightUpdated = false;
+				pi_heightUpdated = false;
 				EnsureOffsetForItem(heights.Count() - 1);
 				if (forMoving)
 				{
@@ -406,7 +406,7 @@ GuiRepeatFreeHeightItemComposition
 				if (heights[index] != styleHeight)
 				{
 					heights[index] = styleHeight;
-					pim_heightUpdated = true;
+					pi_heightUpdated = true;
 				}
 
 				vint styleOffset = index == 0 ? 0 : offsets[index - 1] + heights[index - 1];
@@ -426,7 +426,7 @@ GuiRepeatFreeHeightItemComposition
 
 			bool GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
 			{
-				return pim_heightUpdated;
+				return pi_heightUpdated;
 			}
 
 			void GuiRepeatFreeHeightItemComposition::Layout_EndLayout(bool totalSizeUpdated)
@@ -595,8 +595,8 @@ GuiRepeatFixedHeightItemComposition
 				pi_width = GetWidth();
 				if (forMoving)
 				{
-					pim_rowHeight = rowHeight;
-					newStartIndex = (newBounds.Top() - GetYOffset()) / pim_rowHeight;
+					pi_rowHeight = rowHeight;
+					newStartIndex = (newBounds.Top() - GetYOffset()) / pi_rowHeight;
 				}
 			}
 
@@ -605,22 +605,22 @@ GuiRepeatFixedHeightItemComposition
 				if (forMoving)
 				{
 					vint styleHeight = Layout_GetStylePreferredSize(style).y;
-					if (pim_rowHeight < styleHeight)
+					if (pi_rowHeight < styleHeight)
 					{
-						pim_rowHeight = styleHeight;
+						pi_rowHeight = styleHeight;
 					}
 				}
 
-				vint top = GetYOffset() + index * pim_rowHeight;
+				vint top = GetYOffset() + index * pi_rowHeight;
 				if (pi_width == -1)
 				{
 					alignmentToParent = Margin(0, -1, 0, -1);
-					bounds = Rect(Point(0, top), Size(0, pim_rowHeight));
+					bounds = Rect(Point(0, top), Size(0, pi_rowHeight));
 				}
 				else
 				{
 					alignmentToParent = Margin(-1, -1, -1, -1);
-					bounds = Rect(Point(0, top), Size(pi_width, pim_rowHeight));
+					bounds = Rect(Point(0, top), Size(pi_width, pi_rowHeight));
 				}
 			}
 
@@ -633,10 +633,10 @@ GuiRepeatFixedHeightItemComposition
 			{
 				if (forMoving)
 				{
-					if (pim_rowHeight != rowHeight)
+					if (pi_rowHeight != rowHeight)
 					{
-						vint offset = (pim_rowHeight - rowHeight) * newStartIndex;
-						rowHeight = pim_rowHeight;
+						vint offset = (pi_rowHeight - rowHeight) * newStartIndex;
+						rowHeight = pi_rowHeight;
 						Layout_UpdateViewLocation({ viewBounds.x1,newBounds.Top() + offset });
 						return true;
 					}
@@ -658,6 +658,20 @@ GuiRepeatFixedHeightItemComposition
 				vint width = GetWidth();
 				if (width == -1) width = viewBounds.Width();
 				return Size(width, rowHeight * itemSource->GetCount() + GetYOffset());
+			}
+
+			void GuiRepeatFixedHeightItemComposition::OnItemChanged(vint start, vint oldCount, vint newCount)
+			{
+				pi_adjustReason = None;
+				pi_adjustItem = -1;
+				GuiVirtualRepeatCompositionBase::OnItemChanged(start, oldCount, newCount);
+			}
+
+			void GuiRepeatFixedHeightItemComposition::OnResetViewLocation()
+			{
+				pi_adjustReason = None;
+				pi_adjustItem = -1;
+				GuiVirtualRepeatCompositionBase::OnResetViewLocation();
 			}
 
 			vint GuiRepeatFixedHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
@@ -773,7 +787,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 			{
 				if (forMoving)
 				{
-					pim_itemSize = itemSize;
+					pi_itemSize = itemSize;
 					vint rows = newBounds.Top() / itemSize.y;
 					if (rows < 0) rows = 0;
 					vint cols = newBounds.Width() / itemSize.x;
@@ -793,8 +807,8 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				if (forMoving)
 				{
 					Size styleSize = Layout_GetStylePreferredSize(style);
-					if (pim_itemSize.x < styleSize.x) pim_itemSize.x = styleSize.x;
-					if (pim_itemSize.y < styleSize.y) pim_itemSize.y = styleSize.y;
+					if (pi_itemSize.x < styleSize.x) pi_itemSize.x = styleSize.x;
+					if (pi_itemSize.y < styleSize.y) pi_itemSize.y = styleSize.y;
 				}
 			}
 
@@ -807,9 +821,9 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 			{
 				if (forMoving)
 				{
-					if (pim_itemSize != itemSize)
+					if (pi_itemSize != itemSize)
 					{
-						itemSize = pim_itemSize;
+						itemSize = pi_itemSize;
 						return true;
 					}
 				}
@@ -969,7 +983,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					vint h = newBounds.Height();
 					if (w <= 0) w = 1;
 
-					pim_itemHeight = itemHeight;
+					pi_itemHeight = itemHeight;
 					vint rows = h / itemHeight;
 					if (rows < 1) rows = 1;
 					vint columns = newBounds.Left() / w;
@@ -994,7 +1008,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				bounds = Rect(Point(pi_totalWidth + viewBounds.Left(), itemHeight * row), Size(0, 0));
 				if (forMoving)
 				{
-					if (pim_itemHeight < styleSize.y) pim_itemHeight = styleSize.y;
+					if (pi_itemHeight < styleSize.y) pi_itemHeight = styleSize.y;
 				}
 			}
 
@@ -1007,9 +1021,9 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			{
 				if (forMoving)
 				{
-					if (pim_itemHeight != itemHeight)
+					if (pi_itemHeight != itemHeight)
 					{
-						itemHeight = pim_itemHeight;
+						itemHeight = pi_itemHeight;
 						return true;
 					}
 				}

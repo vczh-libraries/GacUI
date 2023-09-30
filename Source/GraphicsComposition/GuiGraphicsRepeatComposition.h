@@ -217,7 +217,7 @@ GuiVirtualRepeatCompositionBase
 			class GuiRepeatFreeHeightItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFreeHeightItemComposition>
 			{
 			private:
-				bool												pim_heightUpdated = false;
+				bool												pi_heightUpdated = false;
 
 			protected:
 				collections::Array<vint>							heights;
@@ -250,8 +250,17 @@ GuiVirtualRepeatCompositionBase
 			class GuiRepeatFixedHeightItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedHeightItemComposition>
 			{
 			private:
+				enum AdjustViewLocationReason
+				{
+					None,
+					AlignTop,
+					AlignBottom,
+				};
+
+				AdjustViewLocationReason							pi_adjustReason = None;
+				vint												pi_adjustItem = -1;
 				vint												pi_width = 0;
-				vint												pim_rowHeight = 0;
+				vint												pi_rowHeight = 0;
 
 			protected:
 				vint												rowHeight = 1;
@@ -266,6 +275,9 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
 				Size												Layout_CalculateTotalSize()override;
+
+				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
+				void												OnResetViewLocation() override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightItemComposition() = default;
@@ -280,7 +292,7 @@ GuiVirtualRepeatCompositionBase
 			class GuiRepeatFixedSizeMultiColumnItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedSizeMultiColumnItemComposition>
 			{
 			private:
-				Size												pim_itemSize;
+				Size												pi_itemSize;
 
 			protected:
 				Size												itemSize{ 1,1 };
@@ -310,7 +322,7 @@ GuiVirtualRepeatCompositionBase
 			private:
 				vint												pi_currentWidth = 0;
 				vint												pi_totalWidth = 0;
-				vint												pim_itemHeight = 0;
+				vint												pi_itemHeight = 0;
 
 			protected:
 				vint												itemHeight = 1;
