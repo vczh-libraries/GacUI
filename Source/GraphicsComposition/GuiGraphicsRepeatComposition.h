@@ -31,9 +31,9 @@ namespace vl
 				Ptr<EventHandler>									itemChangedHandler;
 
 				virtual void										OnItemChanged(vint index, vint oldCount, vint newCount) = 0;
-				virtual void										ClearItems() = 0;
-				virtual void										InstallItems() = 0;
-				virtual void										UpdateContext() = 0;
+				virtual void										OnClearItems() = 0;
+				virtual void										OnInstallItems() = 0;
+				virtual void										OnUpdateContext() = 0;
 			public:
 				GuiRepeatCompositionBase();
 				~GuiRepeatCompositionBase();
@@ -78,9 +78,9 @@ GuiNonVirtialRepeatCompositionBase
 				virtual GuiGraphicsComposition*						RemoveRepeatComposition(vint index) = 0;
 
 				void												OnItemChanged(vint index, vint oldCount, vint newCount) override;
-				void												ClearItems() override;
-				void												InstallItems() override;
-				void												UpdateContext() override;
+				void												OnClearItems() override;
+				void												OnInstallItems() override;
+				void												OnUpdateContext() override;
 
 				void												RemoveItem(vint index);
 				void												InstallItem(vint index);
@@ -155,6 +155,7 @@ GuiVirtualRepeatCompositionBase
 				virtual void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
 				virtual bool										Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
 				virtual bool										Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
+				virtual void										Layout_EndLayout(bool totalSizeUpdated) = 0;
 				virtual void										Layout_InvalidateItemSizeCache() = 0;
 				virtual Size										Layout_CalculateTotalSize() = 0;
 
@@ -169,9 +170,10 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_SetStyleBounds(ItemStyleRecord style, Rect value);
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
-				void												ClearItems() override;
-				void												InstallItems() override;
-				void												UpdateContext() override;
+				void												OnClearItems() override;
+				void												OnInstallItems() override;
+				void												OnUpdateContext() override;
+				virtual void										OnResetViewLocation();
 
 				vint												CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
 				ItemStyleRecord										CreateStyle(vint index);
@@ -228,11 +230,12 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) override;
 				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) override;
 				bool												Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) override;
+				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache() override;
 				Size												Layout_CalculateTotalSize() override;
 
 				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
-				void												InstallItems() override;
+				void												OnInstallItems() override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFreeHeightItemComposition() = default;
@@ -260,6 +263,7 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
 				bool												Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
 				Size												Layout_CalculateTotalSize()override;
 			public:
@@ -276,56 +280,58 @@ GuiVirtualRepeatCompositionBase
 			class GuiRepeatFixedSizeMultiColumnItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedSizeMultiColumnItemComposition>
 			{
 			private:
-				Size										pim_itemSize;
+				Size												pim_itemSize;
 
 			protected:
-				Size										itemSize{ 1,1 };
+				Size												itemSize{ 1,1 };
 
-				void										CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
+				void												CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
 
-				void										Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-				void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-				bool										Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
-				bool										Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
-				void										Layout_InvalidateItemSizeCache()override;
-				Size										Layout_CalculateTotalSize()override;
+				void												Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				bool												Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+				void												Layout_EndLayout(bool totalSizeUpdated) override;
+				void												Layout_InvalidateItemSizeCache()override;
+				Size												Layout_CalculateTotalSize()override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 				~GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 
-				vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-				VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
-				Size										GetAdoptedSize(Size expectedSize)override;
+				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
+				Size												GetAdoptedSize(Size expectedSize)override;
 			};
 			
 			/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple columns with the same height. The height is the maximum width of all minimum height of displayed items. Each item will displayed using its minimum width.</summary>
 			class GuiRepeatFixedHeightMultiColumnItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedHeightMultiColumnItemComposition>
 			{
 			private:
-				vint										pi_currentWidth = 0;
-				vint										pi_totalWidth = 0;
-				vint										pim_itemHeight = 0;
+				vint												pi_currentWidth = 0;
+				vint												pi_totalWidth = 0;
+				vint												pim_itemHeight = 0;
 
 			protected:
-				vint										itemHeight = 1;
+				vint												itemHeight = 1;
 
-				void										CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
+				void												CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
-				void										Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-				void										Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-				bool										Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
-				bool										Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
-				void										Layout_InvalidateItemSizeCache()override;
-				Size										Layout_CalculateTotalSize()override;
+				void												Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
+				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				bool												Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
+				void												Layout_EndLayout(bool totalSizeUpdated) override;
+				void												Layout_InvalidateItemSizeCache()override;
+				Size												Layout_CalculateTotalSize()override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 				~GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 
-				vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-				VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
-				Size										GetAdoptedSize(Size expectedSize)override;
+				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
+				Size												GetAdoptedSize(Size expectedSize)override;
 			};
 		}
 	}

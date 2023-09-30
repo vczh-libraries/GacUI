@@ -28,7 +28,7 @@ GuiNonVirtialRepeatCompositionBase
 				}
 			}
 
-			void GuiNonVirtialRepeatCompositionBase::ClearItems()
+			void GuiNonVirtialRepeatCompositionBase::OnClearItems()
 			{
 				vint count = GetRepeatCompositionCount();
 				for (vint i = count - 1; i >= 0; i--)
@@ -37,7 +37,7 @@ GuiNonVirtialRepeatCompositionBase
 				}
 			}
 
-			void GuiNonVirtialRepeatCompositionBase::InstallItems()
+			void GuiNonVirtialRepeatCompositionBase::OnInstallItems()
 			{
 				if (itemTemplate && itemSource)
 				{
@@ -49,7 +49,7 @@ GuiNonVirtialRepeatCompositionBase
 				}
 			}
 
-			void GuiNonVirtialRepeatCompositionBase::UpdateContext()
+			void GuiNonVirtialRepeatCompositionBase::OnUpdateContext()
 			{
 				vint count = GetRepeatCompositionCount();
 				for (vint i = 0; i < count; i++)

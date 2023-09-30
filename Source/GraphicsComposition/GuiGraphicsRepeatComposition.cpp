@@ -32,11 +32,11 @@ GuiRepeatCompositionBase
 
 			void GuiRepeatCompositionBase::SetItemTemplate(ItemStyleProperty value)
 			{
-				ClearItems();
+				OnClearItems();
 				itemTemplate = value;
 				if (itemTemplate && itemSource)
 				{
-					InstallItems();
+					OnInstallItems();
 				}
 			}
 
@@ -54,7 +54,7 @@ GuiRepeatCompositionBase
 						itemSource.Cast<IValueObservableList>()->ItemChanged.Remove(itemChangedHandler);
 					}
 
-					ClearItems();
+					OnClearItems();
 					itemSource = value.Cast<IValueList>();
 					if (!itemSource && value)
 					{
@@ -63,7 +63,7 @@ GuiRepeatCompositionBase
 
 					if (itemTemplate && itemSource)
 					{
-						InstallItems();
+						OnInstallItems();
 					}
 					if (auto observable = itemSource.Cast<IValueObservableList>())
 					{
@@ -82,7 +82,7 @@ GuiRepeatCompositionBase
 				if (itemContext != value)
 				{
 					itemContext = value;
-					UpdateContext();
+					OnUpdateContext();
 
 					GuiEventArgs arguments(dynamic_cast<GuiGraphicsComposition*>(this));
 					ContextChanged.Execute(arguments);

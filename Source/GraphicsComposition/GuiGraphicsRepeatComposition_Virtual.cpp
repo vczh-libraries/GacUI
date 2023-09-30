@@ -126,7 +126,7 @@ GuiVirtualRepeatCompositionBase
 				}
 			}
 
-			void GuiVirtualRepeatCompositionBase::ClearItems()
+			void GuiVirtualRepeatCompositionBase::OnClearItems()
 			{
 				startIndex = 0;
 				for (auto style : visibleStyles)
@@ -135,23 +135,28 @@ GuiVirtualRepeatCompositionBase
 				}
 				visibleStyles.Clear();
 				viewBounds = Rect({ 0,0 },{ 0,0 });
+				OnResetViewLocation();
 				itemSourceUpdated = true;
 				Layout_InvalidateItemSizeCache();
 				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 			}
 
-			void GuiVirtualRepeatCompositionBase::InstallItems()
+			void GuiVirtualRepeatCompositionBase::OnInstallItems()
 			{
 				// nothing needs to be done here
 				// visibleStyles will be recreated in the next round of layout
 			}
 
-			void GuiVirtualRepeatCompositionBase::UpdateContext()
+			void GuiVirtualRepeatCompositionBase::OnUpdateContext()
 			{
 				for (auto style : visibleStyles)
 				{
 					style->SetContext(itemContext);
 				}
+			}
+
+			void GuiVirtualRepeatCompositionBase::OnResetViewLocation()
+			{
 			}
 
 			vint GuiVirtualRepeatCompositionBase::CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize)
@@ -258,6 +263,7 @@ GuiVirtualRepeatCompositionBase
 						TotalSizeChanged.Execute(GuiEventArgs(this));
 						AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
 					}
+					Layout_EndLayout(needToUpdateTotalSize);
 				}
 			}
 
@@ -282,12 +288,12 @@ GuiVirtualRepeatCompositionBase
 			{
 				if (axis != value)
 				{
-					ClearItems();
+					OnClearItems();
 					if (!value) value = Ptr(new GuiDefaultAxis);
 					axis = value;
 					if (itemTemplate && itemSource)
 					{
-						InstallItems();
+						OnInstallItems();
 					}
 					AxisChanged.Execute(GuiEventArgs(this));
 				}
@@ -308,6 +314,7 @@ GuiVirtualRepeatCompositionBase
 				Size realSize = axis->VirtualSizeToRealSize(viewBounds.GetSize());
 				Rect realBounds = Rect(value, realSize);
 				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, realBounds));
+				OnResetViewLocation();
 			}
 
 			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::GetVisibleStyle(vint itemIndex)
@@ -336,7 +343,7 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::ReloadVisibleStyles()
 			{
-				ClearItems();
+				OnClearItems();
 			}
 
 /***********************************************************************
@@ -426,6 +433,10 @@ GuiRepeatFreeHeightItemComposition
 				return false;
 			}
 
+			void GuiRepeatFreeHeightItemComposition::Layout_EndLayout(bool totalSizeUpdated)
+			{
+			}
+
 			void GuiRepeatFreeHeightItemComposition::Layout_InvalidateItemSizeCache()
 			{
 				availableOffsetCount = 0;
@@ -473,7 +484,7 @@ GuiRepeatFreeHeightItemComposition
 				GuiVirtualRepeatCompositionBase::OnItemChanged(start, oldCount, newCount);
 			}
 
-			void GuiRepeatFreeHeightItemComposition::InstallItems()
+			void GuiRepeatFreeHeightItemComposition::OnInstallItems()
 			{
 				heights.Resize(itemSource->GetCount());
 				Layout_InvalidateItemSizeCache();
@@ -481,7 +492,7 @@ GuiRepeatFreeHeightItemComposition
 				offsets.Resize(itemSource->GetCount());
 				EnsureOffsetForItem(heights.Count() - 1);
 
-				GuiVirtualRepeatCompositionBase::InstallItems();
+				GuiVirtualRepeatCompositionBase::OnInstallItems();
 			}
 
 			vint GuiRepeatFreeHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
@@ -634,6 +645,10 @@ GuiRepeatFixedHeightItemComposition
 					}
 				}
 				return false;
+			}
+
+			void GuiRepeatFixedHeightItemComposition::Layout_EndLayout(bool totalSizeUpdated)
+			{
 			}
 
 			void GuiRepeatFixedHeightItemComposition::Layout_InvalidateItemSizeCache()
@@ -802,6 +817,10 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 					}
 				}
 				return false;
+			}
+
+			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndLayout(bool totalSizeUpdated)
+			{
 			}
 
 			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_InvalidateItemSizeCache()
@@ -998,6 +1017,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					}
 				}
 				return false;
+			}
+
+			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndLayout(bool totalSizeUpdated)
+			{
 			}
 
 			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_InvalidateItemSizeCache()
