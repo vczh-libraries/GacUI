@@ -613,32 +613,32 @@ Common
 			});
 
 			for (vint i = 1; i <= 20; i++) xs.Add(i);
-			checkItems(0, 7, 0, 0, 0, 17);
+			checkItems(0, 6, 0, 0, 0, 17);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
+
+			root->EnsureItemVisible(4);
+			checkItems(0, 6, 0, 0, 0, 17);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
 
 			root->EnsureItemVisible(5);
-			checkItems(0, 7, 0, 0, 0, 17);
-			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
-
-			root->EnsureItemVisible(6);
-			checkItems(0, 7, -19, 0, 0, 17);
+			checkItems(0, 6, 0, -19, 0, 17);
 			TEST_ASSERT(root->GetViewLocation() == Point(19, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
 
 			root->EnsureItemVisible(9);
-			checkItems(5, 5, -100, 0, 0, 20);
+			checkItems(5, 5, 0, -100, 0, 20);
 			TEST_ASSERT(root->GetViewLocation() == Point(100, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 400));
 
 			root->EnsureItemVisible(19);
-			checkItems(16, 4, -800, 0, 0, 30);
+			checkItems(16, 4, 0, -800, 0, 30);
 			TEST_ASSERT(root->GetViewLocation() == Point(800, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 900));
 
 			root->EnsureItemVisible(18);
-			checkItems(16, 4, -800, 0, 0, 30);
+			checkItems(16, 4, 0, -800, 0, 30);
 			TEST_ASSERT(root->GetViewLocation() == Point(800, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 900));
 

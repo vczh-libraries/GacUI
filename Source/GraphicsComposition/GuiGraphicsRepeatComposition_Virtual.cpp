@@ -426,11 +426,7 @@ GuiRepeatFreeHeightItemComposition
 
 			bool GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
 			{
-				if (forMoving)
-				{
-					return pim_heightUpdated;
-				}
-				return false;
+				return pim_heightUpdated;
 			}
 
 			void GuiRepeatFreeHeightItemComposition::Layout_EndLayout(bool totalSizeUpdated)
@@ -600,23 +596,12 @@ GuiRepeatFixedHeightItemComposition
 				if (forMoving)
 				{
 					pim_rowHeight = rowHeight;
-					newStartIndex = (newBounds.Top() - GetYOffset()) / rowHeight;
+					newStartIndex = (newBounds.Top() - GetYOffset()) / pim_rowHeight;
 				}
 			}
 
 			void GuiRepeatFixedHeightItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
-				vint top = GetYOffset() + index * rowHeight;
-				if (pi_width == -1)
-				{
-					alignmentToParent = Margin(0, -1, 0, -1);
-					bounds = Rect(Point(0, top), Size(0, rowHeight));
-				}
-				else
-				{
-					alignmentToParent = Margin(-1, -1, -1, -1);
-					bounds = Rect(Point(0, top), Size(pi_width, rowHeight));
-				}
 				if (forMoving)
 				{
 					vint styleHeight = Layout_GetStylePreferredSize(style).y;
@@ -624,6 +609,18 @@ GuiRepeatFixedHeightItemComposition
 					{
 						pim_rowHeight = styleHeight;
 					}
+				}
+
+				vint top = GetYOffset() + index * pim_rowHeight;
+				if (pi_width == -1)
+				{
+					alignmentToParent = Margin(0, -1, 0, -1);
+					bounds = Rect(Point(0, top), Size(0, pim_rowHeight));
+				}
+				else
+				{
+					alignmentToParent = Margin(-1, -1, -1, -1);
+					bounds = Rect(Point(0, top), Size(pi_width, pim_rowHeight));
 				}
 			}
 
@@ -659,7 +656,7 @@ GuiRepeatFixedHeightItemComposition
 			Size GuiRepeatFixedHeightItemComposition::Layout_CalculateTotalSize()
 			{
 				vint width = GetWidth();
-				if (width < 0) width = 0;
+				if (width == -1) width = viewBounds.Width();
 				return Size(width, rowHeight * itemSource->GetCount() + GetYOffset());
 			}
 
