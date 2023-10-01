@@ -749,45 +749,28 @@ GuiRepeatFixedHeightItemComposition
 						return VirtualRepeatEnsureItemVisibleResult::Moved;
 					}
 				}
-				bool moved = false;
+
+				bool up = itemY1 < viewY1;
 				while (true)
 				{
-					vint yOffset = GetYOffset();
-					vint top = itemIndex * rowHeight;
-					vint bottom = top + rowHeight + yOffset;
-
-					if (viewBounds.Height() < rowHeight)
+					if (up)
 					{
-						if (viewBounds.Top() < bottom && top < viewBounds.Bottom())
-						{
-							break;
-						}
-					}
-
-					Point location = viewBounds.LeftTop();
-					if (viewBounds.y1 >= top && viewBounds.y2 <= bottom)
-					{
-						break;
-					}
-					else if (top < viewBounds.Top())
-					{
-						location.y = top;
-					}
-					else if (viewBounds.Bottom() < bottom)
-					{
-						location.y = bottom - viewBounds.Height();
+						if (itemY1 >= viewY1) break;
+						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + viewY1 - itemY1 });
 					}
 					else
 					{
-						break;
+						if (itemY2 <= viewY2) break;
+						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + itemY2 - viewY2 });
 					}
 
-					auto oldLeftTop = viewBounds.LeftTop();
-					Layout_UpdateViewLocation(location);
-					moved |= viewBounds.LeftTop() != oldLeftTop;
-					if (viewBounds.LeftTop() != location) break;
+					viewY1 = viewBounds.y1 + yOffset;
+					viewY2 = viewBounds.y2;
+					itemY1 = itemIndex * rowHeight + yOffset;
+					itemY2 = itemY1 + rowHeight;
 				}
-				return moved ? VirtualRepeatEnsureItemVisibleResult::Moved : VirtualRepeatEnsureItemVisibleResult::NotMoved;
+
+				return VirtualRepeatEnsureItemVisibleResult::Moved;
 			}
 
 			Size GuiRepeatFixedHeightItemComposition::GetAdoptedSize(Size expectedSize)
