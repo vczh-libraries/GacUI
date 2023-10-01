@@ -716,6 +716,39 @@ GuiRepeatFixedHeightItemComposition
 				{
 					return VirtualRepeatEnsureItemVisibleResult::ItemNotExists;
 				}
+
+				vint yOffset = GetYOffset();
+				vint viewY1 = viewBounds.y1 + yOffset;
+				vint viewY2 = viewBounds.y2;
+				vint itemY1 = itemIndex * rowHeight + yOffset;
+				vint itemY2 = itemY1 + rowHeight;
+
+				if (viewY2 - viewY1 < rowHeight)
+				{
+					if (itemY1 < viewY2 && itemY2 > viewY1)
+					{
+						return VirtualRepeatEnsureItemVisibleResult::NotMoved;
+					}
+				}
+				else
+				{
+					if (itemY1 >= viewY1 && itemY2 <= viewY2)
+					{
+						return VirtualRepeatEnsureItemVisibleResult::NotMoved;
+					}
+
+					if (itemY1 < viewY1 && itemY2 > viewY1)
+					{
+						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + viewY1 - itemY1 });
+						return VirtualRepeatEnsureItemVisibleResult::Moved;
+					}
+
+					if (itemY1 < viewY2 && itemY2 > viewY2)
+					{
+						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + itemY2 - viewY2 });
+						return VirtualRepeatEnsureItemVisibleResult::Moved;
+					}
+				}
 				bool moved = false;
 				while (true)
 				{

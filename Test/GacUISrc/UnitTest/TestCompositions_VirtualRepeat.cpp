@@ -627,6 +627,11 @@ Common
 			TEST_ASSERT(root->GetViewLocation() == Point(19, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
 
+			root->EnsureItemVisible(0);
+			checkItems(0, 6, 0, 0, 0, 17);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
+
 			root->EnsureItemVisible(9);
 			checkItems(5, 5, 0, -100, 0, 20);
 			TEST_ASSERT(root->GetViewLocation() == Point(100, 0));
