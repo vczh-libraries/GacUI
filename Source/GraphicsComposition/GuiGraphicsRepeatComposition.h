@@ -250,15 +250,6 @@ GuiVirtualRepeatCompositionBase
 			class GuiRepeatFixedHeightItemComposition : public GuiVirtualRepeatCompositionBase, public Description<GuiRepeatFixedHeightItemComposition>
 			{
 			private:
-				enum AdjustViewLocationReason
-				{
-					None,
-					AlignTop,
-					AlignBottom,
-				};
-
-				AdjustViewLocationReason							pi_adjustReason = None;
-				vint												pi_adjustItem = -1;
 				vint												pi_width = 0;
 				vint												pi_rowHeight = 0;
 
@@ -275,9 +266,6 @@ GuiVirtualRepeatCompositionBase
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
 				Size												Layout_CalculateTotalSize()override;
-
-				void												OnItemChanged(vint start, vint oldCount, vint newCount) override;
-				void												OnResetViewLocation() override;
 			public:
 				/// <summary>Create the arranger.</summary>
 				GuiRepeatFixedHeightItemComposition() = default;

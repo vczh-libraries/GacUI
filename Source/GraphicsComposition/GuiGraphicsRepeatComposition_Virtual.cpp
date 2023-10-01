@@ -660,20 +660,6 @@ GuiRepeatFixedHeightItemComposition
 				return Size(width, rowHeight * itemSource->GetCount() + GetYOffset());
 			}
 
-			void GuiRepeatFixedHeightItemComposition::OnItemChanged(vint start, vint oldCount, vint newCount)
-			{
-				pi_adjustReason = None;
-				pi_adjustItem = -1;
-				GuiVirtualRepeatCompositionBase::OnItemChanged(start, oldCount, newCount);
-			}
-
-			void GuiRepeatFixedHeightItemComposition::OnResetViewLocation()
-			{
-				pi_adjustReason = None;
-				pi_adjustItem = -1;
-				GuiVirtualRepeatCompositionBase::OnResetViewLocation();
-			}
-
 			vint GuiRepeatFixedHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
