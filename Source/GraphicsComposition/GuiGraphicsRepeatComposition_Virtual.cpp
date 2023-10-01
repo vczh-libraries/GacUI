@@ -635,9 +635,7 @@ GuiRepeatFixedHeightItemComposition
 				{
 					if (pi_rowHeight != rowHeight)
 					{
-						vint offset = (pi_rowHeight - rowHeight) * newStartIndex;
 						rowHeight = pi_rowHeight;
-						Layout_UpdateViewLocation({ viewBounds.x1,newBounds.Top() + offset });
 						return true;
 					}
 				}

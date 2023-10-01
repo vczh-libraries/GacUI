@@ -587,8 +587,8 @@ Common
 
 				auto actualBounds = style->GetCachedBounds();
 				auto expectedBounds = Rect({
-					x0 + i * w,
-					y0 + i * h
+					x0 + (i + first) * w,
+					y0 + (i + first) * h
 				}, {
 					w == 0 ? root->GetCachedBounds().Width() : w,
 					h == 0 ? root->GetCachedBounds().Height() : h
@@ -613,12 +613,12 @@ Common
 			});
 
 			for (vint i = 1; i <= 20; i++) xs.Add(i);
-			checkItems(0, 6, 0, 0, 0, 17);
+			checkItems(0, 7, 0, 0, 0, 17);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
 
 			root->EnsureItemVisible(4);
-			checkItems(0, 6, 0, 0, 0, 17);
+			checkItems(0, 7, 0, 0, 0, 17);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 340));
 
@@ -638,19 +638,19 @@ Common
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 400));
 
 			root->EnsureItemVisible(19);
-			checkItems(16, 4, 0, -800, 0, 30);
-			TEST_ASSERT(root->GetViewLocation() == Point(0, 800));
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 900));
+			checkItems(16, 4, 0, -500, 0, 30);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 500));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 600));
 
 			root->EnsureItemVisible(18);
-			checkItems(16, 4, 0, -800, 0, 30);
-			TEST_ASSERT(root->GetViewLocation() == Point(0, 800));
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 900));
+			checkItems(16, 4, 0, -500, 0, 30);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 500));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 600));
 
 			root->EnsureItemVisible(0);
 			checkItems(0, 4, 0, 0, 0, 30);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 900));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 600));
 
 			xs.Clear();
 			SafeDeleteComposition(root);
