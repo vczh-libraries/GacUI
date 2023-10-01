@@ -720,7 +720,7 @@ GuiRepeatFixedHeightItemComposition
 				while (true)
 				{
 					vint yOffset = GetYOffset();
-					vint top = itemIndex*rowHeight;
+					vint top = itemIndex * rowHeight;
 					vint bottom = top + rowHeight + yOffset;
 
 					if (viewBounds.Height() < rowHeight)
@@ -878,16 +878,16 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 					itemIndex = count;
 					break;
 				case KeyDirection::PageUp:
-					itemIndex -= columnCount*rowCount;
+					itemIndex -= columnCount * rowCount;
 					break;
 				case KeyDirection::PageDown:
-					itemIndex += columnCount*rowCount;
+					itemIndex += columnCount * rowCount;
 					break;
 				case KeyDirection::PageLeft:
-					itemIndex -= itemIndex%columnCount;
+					itemIndex -= itemIndex % columnCount;
 					break;
 				case KeyDirection::PageRight:
-					itemIndex += columnCount - itemIndex%columnCount - 1;
+					itemIndex += columnCount - itemIndex % columnCount - 1;
 					break;
 				default:
 					return -1;
@@ -913,7 +913,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 					if (columnCount == 0) columnCount = 1;
 					vint rowIndex = itemIndex / columnCount;
 
-					vint top = rowIndex*rowHeight;
+					vint top = rowIndex * rowHeight;
 					vint bottom = top + rowHeight;
 
 					if (viewBounds.Height() < rowHeight)
@@ -1074,10 +1074,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					itemIndex = count;
 					break;
 				case KeyDirection::PageUp:
-					itemIndex -= itemIndex%groupCount;
+					itemIndex -= itemIndex % groupCount;
 					break;
 				case KeyDirection::PageDown:
-					itemIndex += groupCount - itemIndex%groupCount - 1;
+					itemIndex += groupCount - itemIndex % groupCount - 1;
 					break;
 				default:
 					return -1;
