@@ -740,7 +740,7 @@ GuiRepeatFixedHeightItemComposition
 					if (up)
 					{
 						if (itemY1 >= viewY1) break;
-						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + viewY1 - itemY1 });
+						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + itemY1 - viewY1 });
 					}
 					else
 					{
