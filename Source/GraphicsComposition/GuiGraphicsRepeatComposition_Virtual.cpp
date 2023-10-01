@@ -739,7 +739,7 @@ GuiRepeatFixedHeightItemComposition
 
 					if (itemY1 < viewY1 && itemY2 > viewY1)
 					{
-						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + viewY1 - itemY1 });
+						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + itemY1 - viewY1 });
 						return VirtualRepeatEnsureItemVisibleResult::Moved;
 					}
 
