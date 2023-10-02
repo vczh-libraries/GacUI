@@ -782,19 +782,19 @@ Common
 			TEST_ASSERT(root->GetTotalSize() == Size(96, 320));
 
 			root->EnsureItemVisible(29);
-			checkItems(26, 4, 0, -1400, 50, 50);
-			TEST_ASSERT(root->GetViewLocation() == Point(0, 1400));
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 1500));
+			checkItems(26, 4, 0, -650, 50, 50);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 650));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 750));
 
 			root->EnsureItemVisible(26);
-			checkItems(26, 4, 0, -1400, 50, 50);
-			TEST_ASSERT(root->GetViewLocation() == Point(0, 1400));
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 1500));
+			checkItems(26, 4, 0, -650, 50, 50);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 650));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 750));
 
 			root->EnsureItemVisible(0);
 			checkItems(0, 4, 0, 0, 50, 50);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
-			TEST_ASSERT(root->GetTotalSize() == Size(100, 1500));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 750));
 
 			SafeDeleteComposition(root);
 			root = nullptr;

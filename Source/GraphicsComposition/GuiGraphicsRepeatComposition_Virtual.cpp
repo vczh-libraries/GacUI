@@ -804,7 +804,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 			{
 				vint rowItems = viewBounds.Width() / pi_itemSize.x;
 				vint col = index % rowItems;
-				return col == rowItems - 1 && bounds.Top() >= viewBounds.Bottom();
+				return col == rowItems - 1 && bounds.Bottom() >= viewBounds.Bottom();
 			}
 
 			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
