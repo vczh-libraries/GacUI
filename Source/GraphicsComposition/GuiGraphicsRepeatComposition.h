@@ -285,8 +285,6 @@ GuiVirtualRepeatCompositionBase
 			protected:
 				Size												itemSize{ 1,1 };
 
-				void												CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end);
-
 				void												Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
 				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
@@ -314,8 +312,6 @@ GuiVirtualRepeatCompositionBase
 
 			protected:
 				vint												itemHeight = 1;
-
-				void												CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn);
 
 				void												Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
 				void												Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;

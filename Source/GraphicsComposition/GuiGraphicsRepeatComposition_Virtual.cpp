@@ -770,27 +770,14 @@ GuiRepeatFixedHeightItemComposition
 GuiRepeatFixedSizeMultiColumnItemComposition
 ***********************************************************************/
 
-			void GuiRepeatFixedSizeMultiColumnItemComposition::CalculateRange(Size itemSize, Rect bounds, vint count, vint& start, vint& end)
-			{
-				vint startRow = bounds.Top() / itemSize.y;
-				if (startRow < 0) startRow = 0;
-				vint endRow = (bounds.Bottom() - 1) / itemSize.y;
-				vint cols = bounds.Width() / itemSize.x;
-				if (cols < 1) cols = 1;
-
-				start = startRow*cols;
-				end = (endRow + 1)*cols - 1;
-				if (end >= count) end = count - 1;
-			}
-
 			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 			{
 				if (forMoving)
 				{
 					pi_itemSize = itemSize;
-					vint rows = newBounds.Top() / itemSize.y;
+					vint rows = newBounds.Top() / pi_itemSize.y;
 					if (rows < 0) rows = 0;
-					vint cols = newBounds.Width() / itemSize.x;
+					vint cols = newBounds.Width() / pi_itemSize.x;
 					if (cols < 1) cols = 1;
 					newStartIndex = rows * cols;
 				}
@@ -798,23 +785,26 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 
 			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
-				vint rowItems = viewBounds.Width() / itemSize.x;
-				if (rowItems < 1) rowItems = 1;
-
-				vint row = index / rowItems;
-				vint col = index % rowItems;
-				bounds = Rect(Point(col * itemSize.x, row * itemSize.y), itemSize);
 				if (forMoving)
 				{
 					Size styleSize = Layout_GetStylePreferredSize(style);
 					if (pi_itemSize.x < styleSize.x) pi_itemSize.x = styleSize.x;
 					if (pi_itemSize.y < styleSize.y) pi_itemSize.y = styleSize.y;
 				}
+
+				vint rowItems = viewBounds.Width() / pi_itemSize.x;
+				if (rowItems < 1) rowItems = 1;
+
+				vint row = index / rowItems;
+				vint col = index % rowItems;
+				bounds = Rect(Point(col * pi_itemSize.x, row * pi_itemSize.y), pi_itemSize);
 			}
 
 			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 			{
-				return bounds.Top() >= viewBounds.Bottom();
+				vint rowItems = viewBounds.Width() / pi_itemSize.x;
+				vint col = index % rowItems;
+				return col == rowItems - 1 && bounds.Top() >= viewBounds.Bottom();
 			}
 
 			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
@@ -961,17 +951,6 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 /***********************************************************************
 GuiRepeatFixedHeightMultiColumnItemComposition
 ***********************************************************************/
-
-			void GuiRepeatFixedHeightMultiColumnItemComposition::CalculateRange(vint itemHeight, Rect bounds, vint& rows, vint& startColumn)
-			{
-				vint w = bounds.Width();
-				vint h = bounds.Height();
-				if (w <= 0) w = 1;
-
-				rows = h / itemHeight;
-				if (rows < 1) rows = 1;
-				startColumn = bounds.Left() / w;
-			}
 
 			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
 			{
