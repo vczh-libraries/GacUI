@@ -590,8 +590,8 @@ Common
 					x0 + (i + first) * w,
 					y0 + (i + first) * h
 				}, {
-					w == 0 ? root->GetCachedBounds().Width() : w,
-					h == 0 ? root->GetCachedBounds().Height() : h
+					w == 0 ? root->GetCachedBounds().Width() : (w > 0 ? w : -w),
+					h == 0 ? root->GetCachedBounds().Height() : (h > 0 ? h : -h)
 				});
 				TEST_ASSERT(actualBounds == expectedBounds);
 			}
@@ -716,11 +716,85 @@ Common
 		ObservableList<vint> xs;
 		GuiRepeatFixedSizeMultiColumnItemComposition* root = nullptr;
 
+		auto checkItems = [&](vint first, vint count, vint x0, vint y0, vint w, vint h)
+		{
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == count);
+			for (vint i = 0; i < count; i++)
+			{
+				auto style = root->GetVisibleStyle(first + i);
+				TEST_ASSERT(root->GetVisibleIndex(style) == first + i);
+				TEST_ASSERT(style->GetText() == itow(xs[first + i]));
+				TEST_ASSERT(style->GetContext() == root->GetContext());
+
+				if (w < 0) x0 += w;
+				if (h < 0) y0 += h;
+				vint s = root->GetCachedBounds().Width() / (w > 0 ? w : -w);
+				vint r = (first + i) / s;
+				vint c = (first + i) % s;
+
+				auto actualBounds = style->GetCachedBounds();
+				auto expectedBounds = Rect({
+					x0 + c * w,
+					y0 + r * h
+				}, {
+					(w > 0 ? w : -w),
+					(h > 0 ? h : -h)
+				});
+				TEST_ASSERT(actualBounds == expectedBounds);
+			}
+		};
+
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
 			root = new GuiRepeatFixedSizeMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+
+			root->SetItemTemplate([](const Value& value)
+			{
+				vint x = UnboxValue<vint>(value);
+				auto style = new GuiTemplate;
+				style->SetText(itow(UnboxValue<vint>(value)));
+				style->SetPreferredMinSize({ 20 + x,20 + x});
+				return style;
+			});
+
+			for (vint i = 1; i <= 30; i++) xs.Add(i);
+			checkItems(0, 12, 0, 0, 32, 32);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(96, 320));
+
+			root->EnsureItemVisible(8);
+			checkItems(0, 12, 0, 0, 32, 32);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(96, 320));
+
+			root->EnsureItemVisible(9);
+			checkItems(0, 12, 0, -28, 32, 32);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 28));
+			TEST_ASSERT(root->GetTotalSize() == Size(96, 320));
+
+			root->EnsureItemVisible(11);
+			checkItems(0, 12, 0, -28, 32, 32);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 28));
+			TEST_ASSERT(root->GetTotalSize() == Size(96, 320));
+
+			root->EnsureItemVisible(29);
+			checkItems(26, 4, 0, -1400, 50, 50);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 1400));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 1500));
+
+			root->EnsureItemVisible(26);
+			checkItems(26, 4, 0, -1400, 50, 50);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 1400));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 1500));
+
+			root->EnsureItemVisible(0);
+			checkItems(0, 4, 0, 0, 50, 50);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 1500));
 
 			SafeDeleteComposition(root);
 			root = nullptr;
