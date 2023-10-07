@@ -658,6 +658,8 @@ Common
 		});
 
 		{
+			for (vint i = 0; i < 20; i++) xs.Add(i + 1);
+
 			root = new GuiRepeatFixedHeightItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
@@ -673,6 +675,34 @@ Common
 
 			auto testDown = [&]()
 			{
+				checkItems(0, 7, 0, 0, 0, 15);
+				TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				root->SetViewLocation({ 10,100 });
+				checkItems(7, 8, 0, -100, 0, 15);
+				TEST_ASSERT(root->GetViewLocation() == Point(10, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				root->SetViewLocation({ 20,200 });
+				checkItems(13, 7, 0, -200, 0, 15);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+				TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
+				checkItems(0, 7, 0, 0, 0, 15);
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
+
+				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
+				checkItems(13, 7, 0, -200, 0, 15);
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 			};
 
 			TEST_CASE(L"RightDown")
