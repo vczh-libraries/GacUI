@@ -575,15 +575,16 @@ Common
 			root->ForceCalculateSizeImmediately();
 			root->ForceCalculateSizeImmediately();
 			TEST_ASSERT(root->Children().Count() == count);
+
+			if (w < 0) x0 += w;
+			if (h < 0) y0 += h;
+
 			for (vint i = 0; i < count; i++)
 			{
 				auto style = root->GetVisibleStyle(first + i);
 				TEST_ASSERT(root->GetVisibleIndex(style) == first + i);
 				TEST_ASSERT(style->GetText() == itow(xs[first + i]));
 				TEST_ASSERT(style->GetContext() == root->GetContext());
-
-				if (w < 0) x0 += w;
-				if (h < 0) y0 += h;
 
 				auto actualBounds = style->GetCachedBounds();
 				auto expectedBounds = Rect({
@@ -719,6 +720,34 @@ Common
 
 			auto testUp = [&]()
 			{
+				checkItems(0, 7, 0, 100, 0, -15);
+				TEST_ASSERT(root->GetViewLocation() == Point(0, 200));
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				root->SetViewLocation({ 10,100 });
+				checkItems(6, 8, 0, 200, 0, -15);
+				TEST_ASSERT(root->GetViewLocation() == Point(10, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				root->SetViewLocation({ 20,0 });
+				checkItems(13, 7, 0, 300, 0, -15);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+				TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
+				checkItems(0, 7, 0, 100, 0, -15);
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
+				checkItems(13, 7, 0, 300, 0, -15);
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
 			};
 
 			TEST_CASE(L"RightUp")
