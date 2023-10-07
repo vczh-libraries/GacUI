@@ -662,44 +662,77 @@ Common
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
+			root->SetItemTemplate([](const Value& value)
+			{
+				vint x = UnboxValue<vint>(value);
+				auto style = new GuiTemplate;
+				style->SetText(itow(UnboxValue<vint>(value)));
+				style->SetPreferredMinSize({ 15,15 });
+				return style;
+			});
+
+			auto testDown = [&]()
+			{
+			};
+
 			TEST_CASE(L"RightDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+				testDown();
 			});
 
 			TEST_CASE(L"LeftDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+				testDown();
 			});
+
+			auto testUp = [&]()
+			{
+			};
 
 			TEST_CASE(L"RightUp")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+				testUp();
 			});
 
 			TEST_CASE(L"LeftUp")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+				testUp();
 			});
+
+			auto testRight = [&]()
+			{
+			};
 
 			TEST_CASE(L"DownRight")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+				testRight();
 			});
 
 			TEST_CASE(L"UpRight")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+				testRight();
 			});
+
+			auto testLeft = [&]()
+			{
+			};
 
 			TEST_CASE(L"DownLeft")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+				testLeft();
 			});
 
 			TEST_CASE(L"UpLeft")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+				testLeft();
 			});
 
 			SafeDeleteComposition(root);
