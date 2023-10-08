@@ -976,12 +976,12 @@ Common
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0, vy0));
 				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
 
-				root->SetViewLocation({ vx0 + 10,100 });
+				root->SetViewLocation({ vx0 + 10,vy1 });
 				checkItems(9, 12, x0 - 10, y1, w, h, true);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0 + 10, vy1));
 				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
 
-				root->SetViewLocation({ vx0 + 20,200 });
+				root->SetViewLocation({ vx0 + 20,vy2 });
 				checkItems(18, 12, x0 - 20, y2, w, h, true);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0 + 20, vy2));
 				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
@@ -1038,6 +1038,12 @@ Common
 			TEST_CASE(L"LeftUp")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+				testHorizontal(
+					100,
+					100, 200, 300,
+					-10,
+					200, 100, 0,
+					-30, -30);
 			});
 
 			TEST_CASE(L"DownRight")
