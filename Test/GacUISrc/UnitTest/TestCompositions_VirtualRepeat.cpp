@@ -1002,6 +1002,38 @@ Common
 				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
 			};
 
+			auto testVertical = [&](vint y0, vint x0, vint x1, vint x2, vint vy0, vint vx0, vint vx1, vint vx2, vint w, vint h)
+			{
+				checkItems(0, 12, x0, y0, w, h, false);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0, vy0));
+				TEST_ASSERT(root->GetTotalSize() == Size(300, 90));
+
+				root->SetViewLocation({ vx1,vy0 + 10 });
+				checkItems(9, 12, x1, y0 - 10, w, h, false);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx1, vy0 + 10));
+				TEST_ASSERT(root->GetTotalSize() == Size(300, 90));
+
+				root->SetViewLocation({ vx2,vy0 + 20 });
+				checkItems(18, 12, x2, y0 - 20, w, h, false);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx2, vy0 + 20));
+				TEST_ASSERT(root->GetTotalSize() == Size(300, 90));
+
+				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+				TEST_ASSERT(root->EnsureItemVisible(30) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0, vy0 + 20));
+				checkItems(0, 12, x0, y0 - 20, w, h, false);
+				TEST_ASSERT(root->GetTotalSize() == Size(300, 90));
+
+				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx2, vy0 + 20));
+				checkItems(18, 12, x2, y0 - 20, w, h, false);
+				TEST_ASSERT(root->GetTotalSize() == Size(300, 90));
+			};
+
 			TEST_CASE(L"RightDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
@@ -1049,6 +1081,12 @@ Common
 			TEST_CASE(L"DownRight")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+				testVertical(
+					0,
+					0, -100, -200,
+					0,
+					0, 100, 200,
+					30, 30);
 			});
 
 			TEST_CASE(L"UpRight")
