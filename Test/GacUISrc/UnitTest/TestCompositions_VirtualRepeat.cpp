@@ -949,18 +949,58 @@ Common
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 750));
 
+			xs.Clear();
 			SafeDeleteComposition(root);
 			root = nullptr;
 		});
 
 		{
+			for (vint i = 1; i <= 30; i++) xs.Add(i);
+
 			root = new GuiRepeatFixedSizeMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
+			root->SetItemTemplate([](const Value& value)
+			{
+				vint x = UnboxValue<vint>(value);
+				auto style = new GuiTemplate;
+				style->SetText(itow(UnboxValue<vint>(value)));
+				style->SetPreferredMinSize({ 30,30 });
+				return style;
+			});
+
 			TEST_CASE(L"RightDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+				checkItems(0, 12, 0, 0, 30, 30, true);
+				TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
+
+				root->SetViewLocation({ 10,100 });
+				checkItems(9, 12, -10, -100, 30, 30, true);
+				TEST_ASSERT(root->GetViewLocation() == Point(10, 100));
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
+
+				root->SetViewLocation({ 20,200 });
+				checkItems(18, 12, -20, -200, 30, 30, true);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
+
+				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+				TEST_ASSERT(root->EnsureItemVisible(30) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
+				checkItems(0, 12, -20, 0, 30, 30, true);
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
+
+				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
+				checkItems(18, 12, -20, -200, 30, 30, true);
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
 			});
 
 			TEST_CASE(L"LeftDown")
