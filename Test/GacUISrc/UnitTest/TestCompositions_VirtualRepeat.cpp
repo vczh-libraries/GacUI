@@ -1092,16 +1092,34 @@ Common
 			TEST_CASE(L"UpRight")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+				testVertical(
+					100,
+					0, -100, -200,
+					-10,
+					0, 100, 200,
+					30, -30);
 			});
 
 			TEST_CASE(L"DownLeft")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+				testVertical(
+					0,
+					100, 200, 300,
+					0,
+					200, 100, 0,
+					-30, 30);
 			});
 
 			TEST_CASE(L"UpLeft")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+				testVertical(
+					100,
+					100, 200, 300,
+					-10,
+					200, 100, 0,
+					-30, -30);
 			});
 
 			SafeDeleteComposition(root);
