@@ -674,20 +674,20 @@ Common
 				return style;
 			});
 
-			auto testDown = [&]()
+			auto testHorizontal = [&](vint y0, vint y1, vint y2, vint vy0, vint vy1, vint vy2, vint h)
 			{
-				checkItems(0, 7, 0, 0, 0, 15);
-				TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+				checkItems(0, 7, 0, y0, 0, h);
+				TEST_ASSERT(root->GetViewLocation() == Point(0, vy0));
 				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
 
-				root->SetViewLocation({ 10,100 });
-				checkItems(6, 8, 0, -100, 0, 15);
-				TEST_ASSERT(root->GetViewLocation() == Point(10, 100));
+				root->SetViewLocation({ 10,vy1 });
+				checkItems(6, 8, 0, y1, 0, h);
+				TEST_ASSERT(root->GetViewLocation() == Point(10, vy1));
 				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
 
-				root->SetViewLocation({ 20,200 });
-				checkItems(13, 7, 0, -200, 0, 15);
-				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
+				root->SetViewLocation({ 20,vy2 });
+				checkItems(13, 7, 0, y2, 0, h);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, vy2));
 				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
 
 				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -695,15 +695,23 @@ Common
 
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-				TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
-				checkItems(0, 7, 0, 0, 0, 15);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0));
+				checkItems(0, 7, 0, y0, 0, h);
 				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
 
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
-				checkItems(13, 7, 0, -200, 0, 15);
+				TEST_ASSERT(root->GetViewLocation() == Point(20, vy2));
+				checkItems(13, 7, 0, y2, 0, h);
 				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+			};
+
+			auto testDown = [&]()
+			{
+				testHorizontal(
+					0, -100, -200,
+					0, 100, 200,
+					15);
 			};
 
 			TEST_CASE(L"RightDown")
@@ -720,34 +728,10 @@ Common
 
 			auto testUp = [&]()
 			{
-				checkItems(0, 7, 0, 100, 0, -15);
-				TEST_ASSERT(root->GetViewLocation() == Point(0, 200));
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
-
-				root->SetViewLocation({ 10,100 });
-				checkItems(6, 8, 0, 200, 0, -15);
-				TEST_ASSERT(root->GetViewLocation() == Point(10, 100));
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
-
-				root->SetViewLocation({ 20,0 });
-				checkItems(13, 7, 0, 300, 0, -15);
-				TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
-
-				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
-				TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
-
-				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
-				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-				TEST_ASSERT(root->GetViewLocation() == Point(20, 200));
-				checkItems(0, 7, 0, 100, 0, -15);
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
-
-				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
-				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
-				TEST_ASSERT(root->GetViewLocation() == Point(20, 0));
-				checkItems(13, 7, 0, 300, 0, -15);
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+				testHorizontal(
+					100, 200, 300,
+					200, 100, 0,
+					-15);
 			};
 
 			TEST_CASE(L"RightUp")
