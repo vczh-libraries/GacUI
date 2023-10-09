@@ -17,12 +17,12 @@ GuiVirtualRepeatCompositionBase
 			{
 			}
 
-			void GuiVirtualRepeatCompositionBase::Layout_UpdateViewBounds(Rect value)
+			void GuiVirtualRepeatCompositionBase::Layout_UpdateViewBounds(Rect value, bool forceUpdateTotalSize)
 			{
 				auto old = GetViewLocation();
 				Rect oldBounds = viewBounds;
 				viewBounds = value;
-				OnViewChangedInternal(oldBounds, value);
+				OnViewChangedInternal(oldBounds, value, forceUpdateTotalSize);
 				if (old != GetViewLocation())
 				{
 					ViewLocationChanged.Execute(GuiEventArgs(this));
@@ -31,17 +31,18 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::Layout_UpdateViewLocation(Point value)
 			{
-				Layout_UpdateViewBounds(Rect(value, viewBounds.GetSize()));
+				Layout_UpdateViewBounds(Rect(value, viewBounds.GetSize()), false);
 			}
 
 			Rect GuiVirtualRepeatCompositionBase::Layout_CalculateBounds(Size parentSize)
 			{
 				auto bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
 				auto size = axis->RealSizeToVirtualSize(bounds.GetSize());
-				if (size != viewBounds.GetSize() || itemSourceUpdated)
+				bool viewBoundsSizeChanged = size != viewBounds.GetSize();
+				if (viewBoundsSizeChanged || itemSourceUpdated)
 				{
 					itemSourceUpdated = false;
-					Layout_UpdateViewBounds(Rect(viewBounds.LeftTop(), size));
+					Layout_UpdateViewBounds(Rect(viewBounds.LeftTop(), size), viewBoundsSizeChanged);
 				}
 				return bounds;
 			}
@@ -193,11 +194,12 @@ GuiVirtualRepeatCompositionBase
 				SafeDeleteComposition(style);
 			}
 
-			void GuiVirtualRepeatCompositionBase::OnViewChangedInternal(Rect oldBounds, Rect newBounds)
+			void GuiVirtualRepeatCompositionBase::OnViewChangedInternal(Rect oldBounds, Rect newBounds, bool forceUpdateTotalSize)
 			{
+				bool needToUpdateTotalSize = forceUpdateTotalSize;
+
 				if (itemTemplate && itemSource)
 				{
-					bool needToUpdateTotalSize = false;
 					{
 						vint endIndex = startIndex + visibleStyles.Count() - 1;
 						vint newStartIndex = 0;
@@ -256,15 +258,15 @@ GuiVirtualRepeatCompositionBase
 
 						needToUpdateTotalSize = Layout_EndPlaceItem(false, viewBounds, startIndex) || needToUpdateTotalSize;
 					}
-
-					if (needToUpdateTotalSize)
-					{
-						realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
-						TotalSizeChanged.Execute(GuiEventArgs(this));
-						AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
-					}
-					Layout_EndLayout(needToUpdateTotalSize);
 				}
+
+				if (needToUpdateTotalSize)
+				{
+					realFullSize = axis->VirtualSizeToRealSize(Layout_CalculateTotalSize());
+					TotalSizeChanged.Execute(GuiEventArgs(this));
+					AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
+				}
+				Layout_EndLayout(needToUpdateTotalSize);
 			}
 
 			GuiVirtualRepeatCompositionBase::GuiVirtualRepeatCompositionBase()
@@ -313,7 +315,7 @@ GuiVirtualRepeatCompositionBase
 			{
 				Size realSize = axis->VirtualSizeToRealSize(viewBounds.GetSize());
 				Rect realBounds = Rect(value, realSize);
-				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, realBounds));
+				Layout_UpdateViewBounds(axis->RealRectToVirtualRect(realFullSize, realBounds), false);
 				OnResetViewLocation();
 			}
 
@@ -653,6 +655,8 @@ GuiRepeatFixedHeightItemComposition
 
 			Size GuiRepeatFixedHeightItemComposition::Layout_CalculateTotalSize()
 			{
+				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
+
 				vint width = GetWidth();
 				if (width == -1) width = viewBounds.Width();
 				return Size(width, rowHeight * itemSource->GetCount() + GetYOffset());
@@ -831,6 +835,8 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 
 			Size GuiRepeatFixedSizeMultiColumnItemComposition::Layout_CalculateTotalSize()
 			{
+				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
+
 				vint rowItems = viewBounds.Width() / itemSize.x;
 				if (rowItems < 1) rowItems = 1;
 				vint rows = itemSource->GetCount() / rowItems;
@@ -1020,11 +1026,13 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 
 			Size GuiRepeatFixedHeightMultiColumnItemComposition::Layout_CalculateTotalSize()
 			{
+				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
+
 				vint rows = viewBounds.Height() / itemHeight;
 				if (rows < 1) rows = 1;
-				vint columns = itemSource->GetCount() / rows;
-				if (itemSource->GetCount() % rows) columns += 1;
-				return Size(viewBounds.Width() * columns, 0);
+				vint columns = (itemSource->GetCount() + rows - 1) / rows;
+
+				return Size(viewBounds.Width() * (columns + 1), 0);
 			}
 
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)

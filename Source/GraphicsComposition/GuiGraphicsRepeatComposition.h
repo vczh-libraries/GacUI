@@ -160,7 +160,7 @@ GuiVirtualRepeatCompositionBase
 				virtual Size										Layout_CalculateTotalSize() = 0;
 
 				virtual void										Layout_UpdateIndex(ItemStyleRecord style, vint index);
-				void												Layout_UpdateViewBounds(Rect value);
+				void												Layout_UpdateViewBounds(Rect value, bool forceUpdateTotalSize);
 				void												Layout_UpdateViewLocation(Point value);
 				Rect												Layout_CalculateBounds(Size parentSize) override;
 
@@ -178,7 +178,7 @@ GuiVirtualRepeatCompositionBase
 				vint												CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
 				ItemStyleRecord										CreateStyle(vint index);
 				void												DeleteStyle(ItemStyleRecord style);
-				void												OnViewChangedInternal(Rect oldBounds, Rect newBounds);
+				void												OnViewChangedInternal(Rect oldBounds, Rect newBounds, bool forceUpdateTotalSize);
 
 			public:
 				/// <summary>Create the arranger.</summary>
