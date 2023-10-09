@@ -194,6 +194,12 @@ Common
 			root = new GuiRepeatFreeHeightItemComposition;
 			root->SetPreferredMinSize({ 85,95 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == 0);
+			TEST_ASSERT(root->GetTotalSize() == Size(0, 0));
+
 			for (vint i = 0; i < 9; i++) xs.Add(i);
 			root->SetItemTemplate(itemTemplate);
 
@@ -604,6 +610,11 @@ Common
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == 0);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 0));
+
 			root->SetItemTemplate([](const Value& value)
 			{
 				vint x = UnboxValue<vint>(value);
@@ -873,6 +884,11 @@ Common
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == 0);
+			TEST_ASSERT(root->GetTotalSize() == Size(0, 0));
+
 			root->SetItemTemplate([](const Value& value)
 			{
 				vint x = UnboxValue<vint>(value);
@@ -1104,12 +1120,62 @@ Common
 		ObservableList<vint> xs;
 		GuiRepeatFixedHeightMultiColumnItemComposition* root = nullptr;
 
+		auto checkItemsCommon = [&]<typename TGetWidth>(vint first, vint count, vint h, TGetWidth&& getWidth)
+		{
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			vint itemsInColumn = root->GetCachedBounds().Height() / h;
+			TEST_ASSERT(first % itemsInColumn == 0);
+			TEST_ASSERT(root->Children().Count() == count);
+
+			vint cx = 0;
+			vint cf = first;
+			while (true)
+			{
+				vint cw = 0;
+				vint stepCount = itemsInColumn;
+				if (cf + stepCount > first + count) stepCount = first + count - cf;
+
+				for (vint i = 0; i < stepCount; i++)
+				{
+					auto style = root->GetVisibleStyle(cf + i);
+					TEST_ASSERT(root->GetVisibleIndex(style) == cf + i);
+					TEST_ASSERT(style->GetText() == itow(xs[cf + i]));
+					TEST_ASSERT(style->GetContext() == root->GetContext());
+
+					vint w = getWidth(cf + i);
+					if (cw < w) cw = w;
+					auto actualBounds = style->GetCachedBounds();
+					auto expectedBounds = Rect({ cx,i * h }, { w,h });
+					TEST_ASSERT(actualBounds == expectedBounds);
+				}
+
+				cx += cw;
+				cf += stepCount;
+			}
+		};
+
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
 			root = new GuiRepeatFixedHeightMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+			TEST_ASSERT(root->Children().Count() == 0);
+			TEST_ASSERT(root->GetTotalSize() == Size(100, 0));
+
+			root->SetItemTemplate([](const Value& value)
+			{
+				vint x = UnboxValue<vint>(value);
+				auto style = new GuiTemplate;
+				style->SetText(itow(UnboxValue<vint>(value)));
+				style->SetPreferredMinSize({ 10 + x,30 + x});
+				return style;
+			});
+
+			xs.Clear();
 			SafeDeleteComposition(root);
 			root = nullptr;
 		});

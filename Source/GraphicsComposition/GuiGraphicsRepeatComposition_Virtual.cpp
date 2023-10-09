@@ -836,7 +836,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				vint rows = itemSource->GetCount() / rowItems;
 				if (itemSource->GetCount() % rowItems) rows++;
 
-				return Size(itemSize.x * rowItems, itemSize.y*rows);
+				return Size(itemSize.x * rowItems, itemSize.y * rows);
 			}
 
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
