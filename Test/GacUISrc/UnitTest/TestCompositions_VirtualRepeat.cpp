@@ -1159,7 +1159,7 @@ Common
 				vint x = UnboxValue<vint>(value);
 				auto style = new GuiTemplate;
 				style->SetText(itow(UnboxValue<vint>(value)));
-				style->SetPreferredMinSize({ 10 + x,30 + x});
+				style->SetPreferredMinSize({ 30 + x,10 + x});
 				return style;
 			});
 
@@ -1180,6 +1180,31 @@ Common
 			checkItems(0, 12, 22);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(1100, 100));
+
+			root->EnsureItemVisible(7);
+			checkItems(0, 12, 22);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(1100, 100));
+
+			root->EnsureItemVisible(8);
+			checkItems(3, 9, 26);
+			TEST_ASSERT(root->GetViewLocation() == Point(100, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+			root->EnsureItemVisible(9);
+			checkItems(6, 9, 26);
+			TEST_ASSERT(root->GetViewLocation() == Point(200, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+			root->EnsureItemVisible(39);
+			checkItems(38, 2, 50);
+			TEST_ASSERT(root->GetViewLocation() == Point(1900, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(2100, 100));
+
+			root->EnsureItemVisible(0);
+			checkItems(0, 6, 50);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(2100, 100));
 
 			// TODO: more
 
