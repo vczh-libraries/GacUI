@@ -1168,6 +1168,21 @@ Common
 			TEST_ASSERT(root->Children().Count() == 0);
 			TEST_ASSERT(root->GetTotalSize() == Size(0, 0));
 
+			auto checkItems = [&](vint first, vint count, vint h)
+			{
+				checkItemsCommon(first, count, h, [](vint i)
+				{
+					return 10 + i;
+				});
+			};
+
+			for (vint i = 1; i <= 40; i++) xs.Add(i);
+			checkItems(0, 12, 22);
+			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
+			TEST_ASSERT(root->GetTotalSize() == Size(1100, 100));
+
+			// TODO: more
+
 			xs.Clear();
 			SafeDeleteComposition(root);
 			root = nullptr;
