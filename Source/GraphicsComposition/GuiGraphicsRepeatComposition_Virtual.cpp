@@ -368,11 +368,11 @@ GuiRepeatFreeHeightItemComposition
 				}
 			}
 
-			void GuiRepeatFreeHeightItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+			void GuiRepeatFreeHeightItemComposition::Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)
 			{
 				pi_heightUpdated = false;
 				EnsureOffsetForItem(heights.Count() - 1);
-				if (forMoving)
+				if (firstPhase)
 				{
 					// TODO: (enumerable) foreach:indexed
 					for (vint i = 0; i < heights.Count(); i++)
@@ -394,7 +394,7 @@ GuiRepeatFreeHeightItemComposition
 				}
 			}
 
-			void GuiRepeatFreeHeightItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			void GuiRepeatFreeHeightItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
 				vint styleHeight = heights[index];
 				{
@@ -426,7 +426,7 @@ GuiRepeatFreeHeightItemComposition
 				return bounds.Bottom() >= viewBounds.Bottom();
 			}
 
-			bool GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+			bool GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
 				return pi_heightUpdated;
 			}
@@ -592,19 +592,19 @@ GuiRepeatFixedHeightItemComposition
 				return 0;
 			}
 
-			void GuiRepeatFixedHeightItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+			void GuiRepeatFixedHeightItemComposition::Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)
 			{
 				pi_width = GetWidth();
-				if (forMoving)
+				if (firstPhase)
 				{
 					pi_rowHeight = rowHeight;
 					newStartIndex = (newBounds.Top() - GetYOffset()) / pi_rowHeight;
 				}
 			}
 
-			void GuiRepeatFixedHeightItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			void GuiRepeatFixedHeightItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
-				if (forMoving)
+				if (firstPhase)
 				{
 					vint styleHeight = Layout_GetStylePreferredSize(style).y;
 					if (pi_rowHeight < styleHeight)
@@ -631,9 +631,9 @@ GuiRepeatFixedHeightItemComposition
 				return bounds.Bottom() >= viewBounds.Bottom();
 			}
 
-			bool GuiRepeatFixedHeightItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+			bool GuiRepeatFixedHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
-				if (forMoving)
+				if (firstPhase)
 				{
 					if (pi_rowHeight != rowHeight)
 					{
@@ -774,9 +774,9 @@ GuiRepeatFixedHeightItemComposition
 GuiRepeatFixedSizeMultiColumnItemComposition
 ***********************************************************************/
 
-			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)
 			{
-				if (forMoving)
+				if (firstPhase)
 				{
 					pi_itemSize = itemSize;
 					vint rows = newBounds.Top() / pi_itemSize.y;
@@ -787,9 +787,9 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				}
 			}
 
-			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
-				if (forMoving)
+				if (firstPhase)
 				{
 					Size styleSize = Layout_GetStylePreferredSize(style);
 					if (pi_itemSize.x < styleSize.x) pi_itemSize.x = styleSize.x;
@@ -811,9 +811,9 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				return col == rowItems - 1 && bounds.Bottom() >= viewBounds.Bottom();
 			}
 
-			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
-				if (forMoving)
+				if (firstPhase)
 				{
 					if (pi_itemSize != itemSize)
 					{
@@ -958,56 +958,76 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 GuiRepeatFixedHeightMultiColumnItemComposition
 ***********************************************************************/
 
-			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)
+			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)
 			{
-				pi_currentWidth = 0;
-				pi_totalWidth = 0;
-				if (forMoving)
+				if (firstPhase)
 				{
-					vint w = newBounds.Width();
-					vint h = newBounds.Height();
-					if (w <= 0) w = 1;
-
+					pi_firstColumn = firstColumn;
 					pi_itemHeight = itemHeight;
-					vint rows = h / itemHeight;
-					if (rows < 1) rows = 1;
-					vint columns = newBounds.Left() / w;
-					newStartIndex = rows * columns;
+
+					pi_visibleItemWidths.Clear();
+					pi_visibleColumnWidths.Clear();
+					pi_visibleColumnOffsets.Clear();
+					pi_rows = newBounds.Height() / itemHeight;
+					if (pi_rows < 1) pi_rows = 1;
+
+					newStartIndex = pi_firstColumn * pi_rows;
 				}
 			}
 
-			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
-				vint rows = viewBounds.Height() / itemHeight;
-				if (rows < 1) rows = 1;
+				vint visibleColumn = index / pi_rows - pi_firstColumn;
+				vint visibleRow = index % pi_rows;
 
-				vint row = index % rows;
-				if (row == 0)
+				if (firstPhase)
 				{
-					pi_totalWidth += pi_currentWidth;
-					pi_currentWidth = 0;
+					Size styleSize = Layout_GetStylePreferredSize(style);
+					if (pi_itemHeight < styleSize.y)
+					{
+						pi_itemHeight = styleSize.y;
+						vint newRows = viewBounds.Height() / pi_itemHeight;
+						if (newRows < pi_rows)
+						{
+							pi_rows = newRows;
+							CHECK_FAIL(L"Not Implemented!");
+						}
+					}
+
+					pi_visibleItemWidths.Add(styleSize.x);
+					if (index % pi_rows == 0)
+					{
+						pi_visibleColumnWidths.Add(styleSize.x);
+						if (index == pi_firstColumn * pi_rows)
+						{
+							pi_visibleColumnOffsets.Add(0);
+						}
+						else
+						{
+							pi_visibleColumnOffsets.Add(pi_visibleColumnOffsets[visibleColumn - 1] + pi_visibleColumnWidths[visibleColumn - 1]);
+						}
+					}
 				}
 
-				Size styleSize = Layout_GetStylePreferredSize(style);
-				if (pi_currentWidth < styleSize.x) pi_currentWidth = styleSize.x;
-				bounds = Rect(Point(pi_totalWidth + viewBounds.Left(), itemHeight * row), Size(0, 0));
-				if (forMoving)
-				{
-					if (pi_itemHeight < styleSize.y) pi_itemHeight = styleSize.y;
-				}
+				vint x = viewBounds.x1 + pi_visibleColumnOffsets[visibleColumn];
+				vint y = pi_itemHeight * visibleRow;
+				vint w = pi_visibleItemWidths[index - pi_firstColumn * pi_rows];
+				bounds = Rect({ x,y }, { w,pi_itemHeight });
 			}
 
 			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 			{
-				return bounds.Left() >= viewBounds.Right();
+				vint visibleColumn = index / pi_rows - pi_firstColumn;
+				return pi_visibleColumnOffsets[visibleColumn] + pi_visibleColumnWidths[visibleColumn] >= viewBounds.Width();
 			}
 
-			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)
+			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
-				if (forMoving)
+				if (firstPhase)
 				{
 					if (pi_itemHeight != itemHeight)
 					{
+						firstColumn = pi_firstColumn;
 						itemHeight = pi_itemHeight;
 						return true;
 					}
