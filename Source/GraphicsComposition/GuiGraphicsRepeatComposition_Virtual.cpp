@@ -962,21 +962,21 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			{
 				vint c = index / pi_rows - pi_firstColumn;
 				vint r = index % pi_rows;
-				vint w = pi_visibleColumnWidths[index - pi_firstColumn * pi_rows];
+				vint w = pi_visibleItemWidths[index - pi_firstColumn * pi_rows];
 
 				if (r == 0)
 				{
-					while (pi_visibleColumnWidths.Count() < c) pi_visibleColumnWidths.Add(0);
-					while (pi_visibleColumnOffsets.Count() < c) pi_visibleColumnOffsets.Add(0);
+					while (pi_visibleColumnWidths.Count() <= c) pi_visibleColumnWidths.Add(0);
+					while (pi_visibleColumnOffsets.Count() <= c) pi_visibleColumnOffsets.Add(0);
 
 					pi_visibleColumnWidths[c] = w;
 					if (c == 0)
 					{
-						pi_visibleColumnOffsets.Add(0);
+						pi_visibleColumnOffsets[c] = 0;
 					}
 					else
 					{
-						pi_visibleColumnOffsets.Add(pi_visibleColumnOffsets[c - 1] + pi_visibleColumnWidths[c - 1]);
+						pi_visibleColumnOffsets[c] = pi_visibleColumnOffsets[c - 1] + pi_visibleColumnWidths[c - 1];
 					}
 				}
 				else
@@ -1058,7 +1058,8 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
 			{
 				vint visibleColumn = index / pi_rows - pi_firstColumn;
-				return pi_visibleColumnOffsets[visibleColumn] + pi_visibleColumnWidths[visibleColumn] >= viewBounds.Width();
+				vint visibleRow = index % pi_rows;
+				return visibleRow == pi_rows - 1 && pi_visibleColumnOffsets[visibleColumn] + pi_visibleColumnWidths[visibleColumn] >= viewBounds.Width();
 			}
 
 			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)

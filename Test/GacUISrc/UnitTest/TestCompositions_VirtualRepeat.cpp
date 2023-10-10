@@ -1124,7 +1124,7 @@ Common
 
 			vint cx = 0;
 			vint cf = first;
-			while (true)
+			while (cf - first < count)
 			{
 				vint cw = 0;
 				vint stepCount = itemsInColumn;
@@ -1172,7 +1172,7 @@ Common
 			{
 				checkItemsCommon(first, count, h, [](vint i)
 				{
-					return 10 + i;
+					return 30 + (i + 1);
 				});
 			};
 
