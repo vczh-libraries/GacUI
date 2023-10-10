@@ -139,6 +139,9 @@ GuiVirtualRepeatCompositionBase
 
 			enum class VirtualRepeatPlaceItemResult
 			{
+				None,
+				HitLastItem,
+				Restart,
 			};
 
 			enum class VirtualRepeatEndPlaceItemResult
@@ -162,8 +165,7 @@ GuiVirtualRepeatCompositionBase
 				StyleList											visibleStyles;
 
 				virtual void										Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex) = 0;
-				virtual void										Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
-				virtual bool										Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
+				virtual VirtualRepeatPlaceItemResult				Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
 				virtual VirtualRepeatEndPlaceItemResult				Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex) = 0;
 				virtual void										Layout_EndLayout(bool totalSizeUpdated) = 0;
 				virtual void										Layout_InvalidateItemSizeCache() = 0;
@@ -237,8 +239,7 @@ GuiVirtualRepeatCompositionBase
 				void												EnsureOffsetForItem(vint itemIndex);
 
 				void												Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex) override;
-				void												Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) override;
-				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) override;
+				VirtualRepeatPlaceItemResult						Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) override;
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex) override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache() override;
@@ -270,8 +271,7 @@ GuiVirtualRepeatCompositionBase
 				virtual vint										GetYOffset();
 
 				void												Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)override;
-				void												Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				VirtualRepeatPlaceItemResult						Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
@@ -296,8 +296,7 @@ GuiVirtualRepeatCompositionBase
 				Size												itemSize{ 1,1 };
 
 				void												Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)override;
-				void												Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				VirtualRepeatPlaceItemResult						Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;
@@ -331,8 +330,7 @@ GuiVirtualRepeatCompositionBase
 				void												FixColumnWidth(vint index);
 
 				void												Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)override;
-				void												Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
+				VirtualRepeatPlaceItemResult						Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 				VirtualRepeatEndPlaceItemResult						Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
 				void												Layout_EndLayout(bool totalSizeUpdated) override;
 				void												Layout_InvalidateItemSizeCache()override;

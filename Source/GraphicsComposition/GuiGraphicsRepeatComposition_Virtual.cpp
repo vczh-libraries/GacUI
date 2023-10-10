@@ -200,7 +200,10 @@ GuiVirtualRepeatCompositionBase
 
 				if (itemTemplate && itemSource)
 				{
+					while (true)
 					{
+						bool needRestart = false;
+
 						vint endIndex = startIndex + visibleStyles.Count() - 1;
 						vint newStartIndex = 0;
 						vint itemCount = itemSource->GetCount();
@@ -216,9 +219,11 @@ GuiVirtualRepeatCompositionBase
 
 							Rect bounds;
 							Margin alignmentToParent;
-							Layout_PlaceItem(true, !reuseOldStyle, i, style, newBounds, bounds, alignmentToParent);
-							if (Layout_IsItemCouldBeTheLastVisibleInBounds(i, style, bounds, newBounds))
+							auto placeItemResult = Layout_PlaceItem(true, !reuseOldStyle, i, style, newBounds, bounds, alignmentToParent);
+
+							if (placeItemResult != VirtualRepeatPlaceItemResult::None)
 							{
+								needRestart = placeItemResult == VirtualRepeatPlaceItemResult::Restart;
 								break;
 							}
 						}
@@ -236,7 +241,10 @@ GuiVirtualRepeatCompositionBase
 
 						needToUpdateTotalSize = (Layout_EndPlaceItem(true, newBounds, newStartIndex) == VirtualRepeatEndPlaceItemResult::TotalSizeUpdated) || needToUpdateTotalSize;
 						startIndex = newStartIndex;
+
+						if (!needRestart) break;
 					}
+
 					{
 						vint newStartIndex = startIndex;
 						Layout_BeginPlaceItem(false, viewBounds, newStartIndex);
@@ -394,7 +402,7 @@ GuiRepeatFreeHeightItemComposition
 				}
 			}
 
-			void GuiRepeatFreeHeightItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			VirtualRepeatPlaceItemResult GuiRepeatFreeHeightItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
 				vint styleHeight = heights[index];
 				{
@@ -419,11 +427,15 @@ GuiRepeatFreeHeightItemComposition
 				}
 
 				bounds = Rect(Point(0, offsets[index]), Size(viewBounds.Width(), heights[index]));
-			}
 
-			bool GuiRepeatFreeHeightItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
-			{
-				return bounds.Bottom() >= viewBounds.Bottom();
+				if (bounds.Bottom() >= viewBounds.Bottom())
+				{
+					return VirtualRepeatPlaceItemResult::HitLastItem;
+				}
+				else
+				{
+					return VirtualRepeatPlaceItemResult::None;
+				}
 			}
 
 			VirtualRepeatEndPlaceItemResult GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
@@ -602,7 +614,7 @@ GuiRepeatFixedHeightItemComposition
 				}
 			}
 
-			void GuiRepeatFixedHeightItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			VirtualRepeatPlaceItemResult GuiRepeatFixedHeightItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
 				if (firstPhase)
 				{
@@ -624,11 +636,15 @@ GuiRepeatFixedHeightItemComposition
 					alignmentToParent = Margin(-1, -1, -1, -1);
 					bounds = Rect(Point(0, top), Size(pi_width, pi_rowHeight));
 				}
-			}
 
-			bool GuiRepeatFixedHeightItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
-			{
-				return bounds.Bottom() >= viewBounds.Bottom();
+				if (bounds.Bottom() >= viewBounds.Bottom())
+				{
+					return VirtualRepeatPlaceItemResult::HitLastItem;
+				}
+				else
+				{
+					return VirtualRepeatPlaceItemResult::None;
+				}
 			}
 
 			VirtualRepeatEndPlaceItemResult GuiRepeatFixedHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
@@ -787,7 +803,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				}
 			}
 
-			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			VirtualRepeatPlaceItemResult GuiRepeatFixedSizeMultiColumnItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
 				if (firstPhase)
 				{
@@ -802,13 +818,15 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				vint row = index / rowItems;
 				vint col = index % rowItems;
 				bounds = Rect(Point(col * pi_itemSize.x, row * pi_itemSize.y), pi_itemSize);
-			}
 
-			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
-			{
-				vint rowItems = viewBounds.Width() / pi_itemSize.x;
-				vint col = index % rowItems;
-				return col == rowItems - 1 && bounds.Bottom() >= viewBounds.Bottom();
+				if (col == rowItems - 1 && bounds.Bottom() >= viewBounds.Bottom())
+				{
+					return VirtualRepeatPlaceItemResult::HitLastItem;
+				}
+				else
+				{
+					return VirtualRepeatPlaceItemResult::None;
+				}
 			}
 
 			VirtualRepeatEndPlaceItemResult GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
@@ -1010,7 +1028,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				}
 			}
 
-			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
+			VirtualRepeatPlaceItemResult GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
 #define ERROR_MESSAGE_INTERNAL_ERROR L"vl::presentation::compositions::GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(...)#Internal error."
 
@@ -1041,7 +1059,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 							else
 							{
 								CHECK_ERROR(oldFirstIndex > newFirstIndex, ERROR_MESSAGE_INTERNAL_ERROR);
-								CHECK_FAIL(L"Not Implemented!");
+								return VirtualRepeatPlaceItemResult::Restart;
 							}
 
 							visibleColumn = index / pi_rows - pi_firstColumn;
@@ -1057,14 +1075,16 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				vint y = pi_itemHeight * visibleRow;
 				vint w = pi_visibleItemWidths[index - pi_firstColumn * pi_rows];
 				bounds = Rect({ x,y }, { w,pi_itemHeight });
-#undef ERROR_MESSAGE_INTERNAL_ERROR
-			}
 
-			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)
-			{
-				vint visibleColumn = index / pi_rows - pi_firstColumn;
-				vint visibleRow = index % pi_rows;
-				return visibleRow == pi_rows - 1 && pi_visibleColumnOffsets[visibleColumn] + pi_visibleColumnWidths[visibleColumn] >= viewBounds.Width();
+				if (visibleRow == pi_rows - 1 && pi_visibleColumnOffsets[visibleColumn] + pi_visibleColumnWidths[visibleColumn] >= viewBounds.Width())
+				{
+					return VirtualRepeatPlaceItemResult::HitLastItem;
+				}
+				else
+				{
+					return VirtualRepeatPlaceItemResult::None;
+				}
+#undef ERROR_MESSAGE_INTERNAL_ERROR
 			}
 
 			VirtualRepeatEndPlaceItemResult GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
