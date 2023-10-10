@@ -38,11 +38,10 @@ GuiVirtualRepeatCompositionBase
 			{
 				auto bounds = GuiBoundsComposition::Layout_CalculateBounds(parentSize);
 				auto size = axis->RealSizeToVirtualSize(bounds.GetSize());
-				bool viewBoundsSizeChanged = size != viewBounds.GetSize();
-				if (viewBoundsSizeChanged || itemSourceUpdated)
+				if (size != viewBounds.GetSize() || itemSourceUpdated)
 				{
 					itemSourceUpdated = false;
-					Layout_UpdateViewBounds(Rect(viewBounds.LeftTop(), size), viewBoundsSizeChanged);
+					Layout_UpdateViewBounds(Rect(viewBounds.LeftTop(), size), true);
 				}
 				return bounds;
 			}
@@ -1091,27 +1090,30 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			{
 				if (firstPhase)
 				{
-					if (pi_itemHeight != itemHeight)
+					bool itemHeightUpdated = pi_itemHeight != itemHeight;
+
+					firstColumn = pi_firstColumn;
+					itemHeight = pi_itemHeight;
+					if (pi_visibleColumnOffsets.Count() <= 1)
 					{
-						firstColumn = pi_firstColumn;
-						itemHeight = pi_itemHeight;
-						if (pi_visibleColumnOffsets.Count() <= 1)
+						fullVisibleColumns = pi_visibleColumnOffsets.Count();
+					}
+					else
+					{
+						vint c = pi_visibleColumnOffsets.Count() - 1;
+						vint x = pi_visibleColumnOffsets[c] + pi_visibleColumnWidths[c];
+						if (c > viewBounds.Width())
 						{
-							fullVisibleColumns = pi_visibleColumnOffsets.Count();
+							fullVisibleColumns = c + 1;
 						}
 						else
 						{
-							vint c = pi_visibleColumnOffsets.Count() - 1;
-							vint x = pi_visibleColumnOffsets[c] + pi_visibleColumnWidths[c];
-							if (c > viewBounds.Width())
-							{
-								fullVisibleColumns = c + 1;
-							}
-							else
-							{
-								fullVisibleColumns = c;
-							}
+							fullVisibleColumns = c;
 						}
+					}
+
+					if (itemHeightUpdated)
+					{
 						return VirtualRepeatEndPlaceItemResult::TotalSizeUpdated;
 					}
 				}

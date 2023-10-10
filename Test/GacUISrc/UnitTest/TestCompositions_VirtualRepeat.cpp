@@ -1206,8 +1206,6 @@ Common
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
 			TEST_ASSERT(root->GetTotalSize() == Size(2100, 100));
 
-			// TODO: more
-
 			xs.Clear();
 			SafeDeleteComposition(root);
 			root = nullptr;
