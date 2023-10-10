@@ -234,7 +234,7 @@ GuiVirtualRepeatCompositionBase
 						}
 						CopyFrom(visibleStyles, newVisibleStyles);
 
-						needToUpdateTotalSize = Layout_EndPlaceItem(true, newBounds, newStartIndex) || needToUpdateTotalSize;
+						needToUpdateTotalSize = (Layout_EndPlaceItem(true, newBounds, newStartIndex) == VirtualRepeatEndPlaceItemResult::TotalSizeUpdated) || needToUpdateTotalSize;
 						startIndex = newStartIndex;
 					}
 					{
@@ -256,7 +256,7 @@ GuiVirtualRepeatCompositionBase
 							Layout_SetStyleBounds(style, bounds);
 						}
 
-						needToUpdateTotalSize = Layout_EndPlaceItem(false, viewBounds, startIndex) || needToUpdateTotalSize;
+						needToUpdateTotalSize = (Layout_EndPlaceItem(false, viewBounds, startIndex) == VirtualRepeatEndPlaceItemResult::TotalSizeUpdated) || needToUpdateTotalSize;
 					}
 				}
 
@@ -426,9 +426,9 @@ GuiRepeatFreeHeightItemComposition
 				return bounds.Bottom() >= viewBounds.Bottom();
 			}
 
-			bool GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
+			VirtualRepeatEndPlaceItemResult GuiRepeatFreeHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
-				return pi_heightUpdated;
+				return pi_heightUpdated ? VirtualRepeatEndPlaceItemResult::TotalSizeUpdated : VirtualRepeatEndPlaceItemResult::None;
 			}
 
 			void GuiRepeatFreeHeightItemComposition::Layout_EndLayout(bool totalSizeUpdated)
@@ -631,17 +631,17 @@ GuiRepeatFixedHeightItemComposition
 				return bounds.Bottom() >= viewBounds.Bottom();
 			}
 
-			bool GuiRepeatFixedHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
+			VirtualRepeatEndPlaceItemResult GuiRepeatFixedHeightItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
 				if (firstPhase)
 				{
 					if (pi_rowHeight != rowHeight)
 					{
 						rowHeight = pi_rowHeight;
-						return true;
+						return VirtualRepeatEndPlaceItemResult::TotalSizeUpdated;
 					}
 				}
-				return false;
+				return VirtualRepeatEndPlaceItemResult::None;
 			}
 
 			void GuiRepeatFixedHeightItemComposition::Layout_EndLayout(bool totalSizeUpdated)
@@ -811,17 +811,17 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				return col == rowItems - 1 && bounds.Bottom() >= viewBounds.Bottom();
 			}
 
-			bool GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
+			VirtualRepeatEndPlaceItemResult GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
 				if (firstPhase)
 				{
 					if (pi_itemSize != itemSize)
 					{
 						itemSize = pi_itemSize;
-						return true;
+						return VirtualRepeatEndPlaceItemResult::TotalSizeUpdated;
 					}
 				}
-				return false;
+				return VirtualRepeatEndPlaceItemResult::None;
 			}
 
 			void GuiRepeatFixedSizeMultiColumnItemComposition::Layout_EndLayout(bool totalSizeUpdated)
@@ -1067,7 +1067,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				return visibleRow == pi_rows - 1 && pi_visibleColumnOffsets[visibleColumn] + pi_visibleColumnWidths[visibleColumn] >= viewBounds.Width();
 			}
 
-			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
+			VirtualRepeatEndPlaceItemResult GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)
 			{
 				if (firstPhase)
 				{
@@ -1092,10 +1092,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 								fullVisibleColumns = c;
 							}
 						}
-						return true;
+						return VirtualRepeatEndPlaceItemResult::TotalSizeUpdated;
 					}
 				}
-				return false;
+				return VirtualRepeatEndPlaceItemResult::None;
 			}
 
 			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_EndLayout(bool totalSizeUpdated)
