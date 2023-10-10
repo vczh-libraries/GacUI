@@ -1075,6 +1075,23 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					{
 						firstColumn = pi_firstColumn;
 						itemHeight = pi_itemHeight;
+						if (pi_visibleColumnOffsets.Count() <= 1)
+						{
+							fullVisibleColumns = pi_visibleColumnOffsets.Count();
+						}
+						else
+						{
+							vint c = pi_visibleColumnOffsets.Count() - 1;
+							vint x = pi_visibleColumnOffsets[c] + pi_visibleColumnWidths[c];
+							if (c > viewBounds.Width())
+							{
+								fullVisibleColumns = c + 1;
+							}
+							else
+							{
+								fullVisibleColumns = c;
+							}
+						}
 						return true;
 					}
 				}
@@ -1153,38 +1170,16 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				{
 					vint rowCount = viewBounds.Height() / itemHeight;
 					if (rowCount == 0) rowCount = 1;
-					vint columnIndex = itemIndex / rowCount;
-					vint minIndex = startIndex;
-					vint maxIndex = startIndex + visibleStyles.Count() - 1;
-
+					vint column = itemIndex / rowCount;
 					Point location = viewBounds.LeftTop();
-					if (minIndex <= itemIndex && itemIndex <= maxIndex)
+
+					if (column < firstColumn)
 					{
-						Rect bounds = Layout_GetStyleBounds(visibleStyles[itemIndex - startIndex]);
-						if (0 < bounds.Bottom() && bounds.Top() < viewBounds.Width() && bounds.Width() > viewBounds.Width())
-						{
-							break;
-						}
-						else if (bounds.Left() < 0)
-						{
-							location.x -= viewBounds.Width();
-						}
-						else if (bounds.Right() > viewBounds.Width())
-						{
-							location.x += viewBounds.Width();
-						}
-						else
-						{
-							break;
-						}
+						location.x = viewBounds.Width() * column;
 					}
-					else if (columnIndex < minIndex / rowCount)
+					else if (column >= firstColumn + fullVisibleColumns)
 					{
-						location.x -= viewBounds.Width();
-					}
-					else if (columnIndex >= maxIndex / rowCount)
-					{
-						location.x += viewBounds.Width();
+						location.x = viewBounds.Width() * (column - fullVisibleColumns + 1);
 					}
 					else
 					{

@@ -315,6 +315,7 @@ GuiVirtualRepeatCompositionBase
 
 			protected:
 				vint												firstColumn = 0;
+				vint												fullVisibleColumns = 0;
 				vint												itemHeight = 1;
 
 				void												FixColumnWidth(vint index);
