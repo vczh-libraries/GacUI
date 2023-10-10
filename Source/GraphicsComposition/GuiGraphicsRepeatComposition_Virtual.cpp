@@ -992,7 +992,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			{
 				if (firstPhase)
 				{
-					pi_firstColumn = firstColumn;
+					pi_firstColumn = newBounds.Width() == 0 ? 0 : newBounds.x1 / newBounds.Width();
 					pi_itemHeight = itemHeight;
 
 					pi_visibleItemWidths.Clear();
@@ -1000,6 +1000,11 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					pi_visibleColumnOffsets.Clear();
 					pi_rows = newBounds.Height() / itemHeight;
 					if (pi_rows < 1) pi_rows = 1;
+
+					if (pi_firstColumn * pi_rows >= itemSource->GetCount())
+					{
+						pi_firstColumn = (itemSource->GetCount() + pi_rows - 1) / pi_rows - 1;
+					}
 
 					newStartIndex = pi_firstColumn * pi_rows;
 				}
@@ -1022,15 +1027,15 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 						if (newRows != pi_rows)
 						{
 							CHECK_ERROR(newRows < pi_rows, ERROR_MESSAGE_INTERNAL_ERROR);
-							vint oldFirstIndex = firstColumn * pi_rows;
+							vint oldFirstIndex = pi_firstColumn * pi_rows;
 							pi_rows = newRows;
-							vint newFirstIndex = firstColumn * pi_rows;
+							vint newFirstIndex = pi_firstColumn * pi_rows;
 
 							if (oldFirstIndex == newFirstIndex)
 							{
 								for (vint i = newFirstIndex; i < index; i++)
 								{
-									FixColumnWidth(i);
+									FixColumnWidth(i + newFirstIndex);
 								}
 							}
 							else
@@ -1099,8 +1104,8 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
-				vint groupCount = viewBounds.Height() / itemHeight;
-				if (groupCount == 0) groupCount = 1;
+				vint rowCount = viewBounds.Height() / itemHeight;
+				if (rowCount == 0) rowCount = 1;
 				switch (key)
 				{
 				case KeyDirection::Up:
@@ -1110,10 +1115,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					itemIndex++;
 					break;
 				case KeyDirection::Left:
-					itemIndex -= groupCount;
+					itemIndex -= rowCount;
 					break;
 				case KeyDirection::Right:
-					itemIndex += groupCount;
+					itemIndex += rowCount;
 					break;
 				case KeyDirection::Home:
 					itemIndex = 0;
@@ -1122,10 +1127,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					itemIndex = count;
 					break;
 				case KeyDirection::PageUp:
-					itemIndex -= itemIndex % groupCount;
+					itemIndex -= itemIndex % rowCount;
 					break;
 				case KeyDirection::PageDown:
-					itemIndex += groupCount - itemIndex % groupCount - 1;
+					itemIndex += rowCount - itemIndex % rowCount - 1;
 					break;
 				default:
 					return -1;
