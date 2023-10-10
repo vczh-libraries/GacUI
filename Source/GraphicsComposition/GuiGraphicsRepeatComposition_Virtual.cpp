@@ -958,6 +958,36 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 GuiRepeatFixedHeightMultiColumnItemComposition
 ***********************************************************************/
 
+			void GuiRepeatFixedHeightMultiColumnItemComposition::FixColumnWidth(vint index)
+			{
+				vint c = index / pi_rows - pi_firstColumn;
+				vint r = index % pi_rows;
+				vint w = pi_visibleColumnWidths[index - pi_firstColumn * pi_rows];
+
+				if (r == 0)
+				{
+					while (pi_visibleColumnWidths.Count() < c) pi_visibleColumnWidths.Add(0);
+					while (pi_visibleColumnOffsets.Count() < c) pi_visibleColumnOffsets.Add(0);
+
+					pi_visibleColumnWidths[c] = w;
+					if (c == 0)
+					{
+						pi_visibleColumnOffsets.Add(0);
+					}
+					else
+					{
+						pi_visibleColumnOffsets.Add(pi_visibleColumnOffsets[c - 1] + pi_visibleColumnWidths[c - 1]);
+					}
+				}
+				else
+				{
+					if (pi_visibleColumnWidths[c] < w)
+					{
+						pi_visibleColumnWidths[c] = w;
+					}
+				}
+			}
+
 			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)
 			{
 				if (firstPhase)
@@ -977,6 +1007,8 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 
 			void GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)
 			{
+#define ERROR_MESSAGE_INTERNAL_ERROR L"vl::presentation::compositions::GuiRepeatFixedHeightMultiColumnItemComposition::Layout_PlaceItem(...)#Internal error."
+
 				vint visibleColumn = index / pi_rows - pi_firstColumn;
 				vint visibleRow = index % pi_rows;
 
@@ -987,32 +1019,40 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					{
 						pi_itemHeight = styleSize.y;
 						vint newRows = viewBounds.Height() / pi_itemHeight;
-						if (newRows < pi_rows)
+						if (newRows != pi_rows)
 						{
+							CHECK_ERROR(newRows < pi_rows, ERROR_MESSAGE_INTERNAL_ERROR);
+							vint oldFirstIndex = firstColumn * pi_rows;
 							pi_rows = newRows;
-							CHECK_FAIL(L"Not Implemented!");
+							vint newFirstIndex = firstColumn * pi_rows;
+
+							if (oldFirstIndex == newFirstIndex)
+							{
+								for (vint i = newFirstIndex; i < index; i++)
+								{
+									FixColumnWidth(i);
+								}
+							}
+							else
+							{
+								CHECK_ERROR(oldFirstIndex > newFirstIndex, ERROR_MESSAGE_INTERNAL_ERROR);
+								CHECK_FAIL(L"Not Implemented!");
+							}
+
+							visibleColumn = index / pi_rows - pi_firstColumn;
+							visibleRow = index % pi_rows;
 						}
 					}
 
 					pi_visibleItemWidths.Add(styleSize.x);
-					if (index % pi_rows == 0)
-					{
-						pi_visibleColumnWidths.Add(styleSize.x);
-						if (index == pi_firstColumn * pi_rows)
-						{
-							pi_visibleColumnOffsets.Add(0);
-						}
-						else
-						{
-							pi_visibleColumnOffsets.Add(pi_visibleColumnOffsets[visibleColumn - 1] + pi_visibleColumnWidths[visibleColumn - 1]);
-						}
-					}
+					FixColumnWidth(index);
 				}
 
 				vint x = viewBounds.x1 + pi_visibleColumnOffsets[visibleColumn];
 				vint y = pi_itemHeight * visibleRow;
 				vint w = pi_visibleItemWidths[index - pi_firstColumn * pi_rows];
 				bounds = Rect({ x,y }, { w,pi_itemHeight });
+#undef ERROR_MESSAGE_INTERNAL_ERROR
 			}
 
 			bool GuiRepeatFixedHeightMultiColumnItemComposition::Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)

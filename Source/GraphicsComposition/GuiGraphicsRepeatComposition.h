@@ -317,6 +317,8 @@ GuiVirtualRepeatCompositionBase
 				vint												firstColumn = 0;
 				vint												itemHeight = 1;
 
+				void												FixColumnWidth(vint index);
+
 				void												Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)override;
 				void												Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
 				bool												Layout_IsItemCouldBeTheLastVisibleInBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
