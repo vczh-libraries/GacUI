@@ -1419,21 +1419,25 @@ Common
 			TEST_CASE(L"DownRight")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownRight)));
+				testVertical(0, 100, 300, 10, 40);
 			});
 
 			TEST_CASE(L"UpRight")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpRight)));
+				testVertical(500, 400, 200, 10, -40);
 			});
 
 			TEST_CASE(L"DownLeft")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::DownLeft)));
+				testVertical(0, 100, 300, -10, 40);
 			});
 
 			TEST_CASE(L"UpLeft")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::UpLeft)));
+				testVertical(500, 400, 200, -10, -40);
 			});
 
 			SafeDeleteComposition(root);
