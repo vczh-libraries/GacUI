@@ -1018,7 +1018,11 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					pi_rows = newBounds.Height() / itemHeight;
 					if (pi_rows < 1) pi_rows = 1;
 
-					if (pi_firstColumn * pi_rows >= itemSource->GetCount())
+					if (pi_firstColumn < 0)
+					{
+						pi_firstColumn = 0;
+					}
+					else if (pi_firstColumn * pi_rows >= itemSource->GetCount())
 					{
 						pi_firstColumn = (itemSource->GetCount() + pi_rows - 1) / pi_rows - 1;
 					}
@@ -1102,7 +1106,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 					{
 						vint c = pi_visibleColumnOffsets.Count() - 1;
 						vint x = pi_visibleColumnOffsets[c] + pi_visibleColumnWidths[c];
-						if (c > viewBounds.Width())
+						if (x <= viewBounds.Width())
 						{
 							fullVisibleColumns = c + 1;
 						}
