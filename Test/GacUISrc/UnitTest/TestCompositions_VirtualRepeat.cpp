@@ -1114,41 +1114,6 @@ Common
 		ObservableList<vint> xs;
 		GuiRepeatFixedHeightMultiColumnItemComposition* root = nullptr;
 
-		auto checkItemsCommon = [&]<typename TGetWidth>(vint first, vint count, vint h, TGetWidth&& getWidth)
-		{
-			root->ForceCalculateSizeImmediately();
-			root->ForceCalculateSizeImmediately();
-			vint itemsInColumn = root->GetCachedBounds().Height() / h;
-			TEST_ASSERT(first % itemsInColumn == 0);
-			TEST_ASSERT(root->Children().Count() == count);
-
-			vint cx = 0;
-			vint cf = first;
-			while (cf - first < count)
-			{
-				vint cw = 0;
-				vint stepCount = itemsInColumn;
-				if (cf + stepCount > first + count) stepCount = first + count - cf;
-
-				for (vint i = 0; i < stepCount; i++)
-				{
-					auto style = root->GetVisibleStyle(cf + i);
-					TEST_ASSERT(root->GetVisibleIndex(style) == cf + i);
-					TEST_ASSERT(style->GetText() == itow(xs[cf + i]));
-					TEST_ASSERT(style->GetContext() == root->GetContext());
-
-					vint w = getWidth(cf + i);
-					if (cw < w) cw = w;
-					auto actualBounds = style->GetCachedBounds();
-					auto expectedBounds = Rect({ cx,i * h }, { w,h });
-					TEST_ASSERT(actualBounds == expectedBounds);
-				}
-
-				cx += cw;
-				cf += stepCount;
-			}
-		};
-
 		TEST_CASE(L"Item of different PreferredMinSize")
 		{
 			root = new GuiRepeatFixedHeightMultiColumnItemComposition;
@@ -1159,7 +1124,7 @@ Common
 				vint x = UnboxValue<vint>(value);
 				auto style = new GuiTemplate;
 				style->SetText(itow(UnboxValue<vint>(value)));
-				style->SetPreferredMinSize({ 30 + x,10 + x});
+				style->SetPreferredMinSize({ 30 + x,10 + x });
 				return style;
 			});
 
@@ -1170,10 +1135,37 @@ Common
 
 			auto checkItems = [&](vint first, vint count, vint h)
 			{
-				checkItemsCommon(first, count, h, [](vint i)
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				vint itemsInColumn = root->GetCachedBounds().Height() / h;
+				TEST_ASSERT(first % itemsInColumn == 0);
+				TEST_ASSERT(root->Children().Count() == count);
+
+				vint cx = 0;
+				vint cf = first;
+				while (cf - first < count)
 				{
-					return 30 + (i + 1);
-				});
+					vint cw = 0;
+					vint stepCount = itemsInColumn;
+					if (cf + stepCount > first + count) stepCount = first + count - cf;
+
+					for (vint i = 0; i < stepCount; i++)
+					{
+						auto style = root->GetVisibleStyle(cf + i);
+						TEST_ASSERT(root->GetVisibleIndex(style) == cf + i);
+						TEST_ASSERT(style->GetText() == itow(xs[cf + i]));
+						TEST_ASSERT(style->GetContext() == root->GetContext());
+
+						vint w = 30 + cf + i + 1;
+						if (cw < w) cw = w;
+						auto actualBounds = style->GetCachedBounds();
+						auto expectedBounds = Rect({ cx,i * h }, { w,h });
+						TEST_ASSERT(actualBounds == expectedBounds);
+					}
+
+					cx += cw;
+					cf += stepCount;
+				}
 			};
 
 			for (vint i = 1; i <= 40; i++) xs.Add(i);
@@ -1212,13 +1204,104 @@ Common
 		});
 
 		{
+			for (vint i = 1; i <= 50; i++) xs.Add(i);
+
 			root = new GuiRepeatFixedHeightMultiColumnItemComposition;
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
+			root->SetItemTemplate([](const Value& value)
+			{
+				vint x = UnboxValue<vint>(value);
+				auto style = new GuiTemplate;
+				style->SetText(itow(UnboxValue<vint>(value)));
+				style->SetPreferredMinSize({ 40,10 });
+				return style;
+			});
+
+			auto checkItemsHorizontal = [&](vint firstColumn, vint visibleColumns, vint x0, vint y0, vint w, vint h)
+			{
+				vint cw = w > 0 ? w : -w;
+				vint ch = h > 0 ? h : -h;
+				if (w < 0) x0 += w;
+				if (h < 0) y0 += h;
+
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+
+				for (vint c = 0; c < visibleColumns; c++)
+				{
+					for (vint r = 0; r < 10; r++)
+					{
+						vint i = (firstColumn + c) * 10 + r;
+						auto style = root->GetVisibleStyle(i);
+						TEST_ASSERT(root->GetVisibleIndex(style) == i);
+						TEST_ASSERT(style->GetText() == itow(xs[i]));
+						TEST_ASSERT(style->GetContext() == root->GetContext());
+
+						auto actualBounds = style->GetCachedBounds();
+						auto expectedBounds = Rect({ x0 + c * w,y0 + r * h }, { cw,ch });
+						TEST_ASSERT(actualBounds == expectedBounds);
+					}
+				}
+			};
+
+			auto testHorizontal = [&](vint vx0, vint vx1, vint vx2, vint w, vint h)
+			{
+				vint x0 = w > 0 ? 100 : -100;
+				vint y0 = h > 0 ? 100 : -100;
+
+				checkItemsHorizontal(0, 3, x0, y0, w, h);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 0));
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+				root->SetViewLocation({ vx0 + x0 / 2,10 });
+				checkItemsHorizontal(0, 3, x0, y0 - 10, w, h);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0 + x0 / 2, 10));
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+				root->SetViewLocation({ vx0 + x0,20 });
+				checkItemsHorizontal(1, 3, x0, y0 - 20, w, h);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0 + 20, 20));
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+				TEST_ASSERT(root->EnsureItemVisible(50) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
+
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 20));
+				checkItemsHorizontal(0, 3, x0, y0 - 20, w, h);
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+				TEST_ASSERT(root->EnsureItemVisible(15) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(15) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 20));
+				checkItemsHorizontal(0, 3, x0, y0 - 20, w, h);
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx1, 20));
+				checkItemsHorizontal(1, 3, x0, y0 - 20, w, h);
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+				TEST_ASSERT(root->EnsureItemVisible(49) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(49) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx2, 20));
+				checkItemsHorizontal(3, 3, x0, y0 - 20, w, h);
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
+				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
+				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 20));
+				checkItemsHorizontal(0, 3, x0, y0 - 20, w, h);
+				TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+			};
 
 			TEST_CASE(L"RightDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
+				testHorizontal(0, 100, 300, 30, 10);
 			});
 
 			TEST_CASE(L"LeftDown")
