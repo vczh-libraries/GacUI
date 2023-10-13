@@ -1210,7 +1210,7 @@ Common
 			root->SetPreferredMinSize({ 100,100 });
 			root->SetItemSource(UnboxValue<Ptr<IValueObservableList>>(BoxParameter(xs)));
 
-			auto checkItemsHorizontal = [&](vint firstColumn, vint visibleColumns, vint x0, vint y0, vint w, vint h)
+			auto checkItems = [&](vint firstColumn, vint visibleColumns, vint x0, vint y0, vint w, vint h, bool horizontal)
 			{
 				vint cw = w > 0 ? w : -w;
 				vint ch = h > 0 ? h : -h;
@@ -1220,7 +1220,7 @@ Common
 				root->ForceCalculateSizeImmediately();
 				root->ForceCalculateSizeImmediately();
 				TEST_ASSERT(root->Children().Count() == visibleColumns * 10);
-				TEST_ASSERT(root->GetTotalSize() == Size(600, 100));
+				TEST_ASSERT(root->GetTotalSize() == (horizontal ? Size(600, 100) : Size(100, 600)));
 
 				for (vint c = 0; c < visibleColumns; c++)
 				{
@@ -1233,7 +1233,9 @@ Common
 						TEST_ASSERT(style->GetContext() == root->GetContext());
 
 						auto actualBounds = style->GetCachedBounds();
-						auto expectedBounds = Rect({ x0 + c * w,y0 + r * h }, { cw,ch });
+						auto expectedBounds = horizontal
+							? Rect({ x0 + c * w,y0 + r * h }, { cw,ch })
+							: Rect({ x0 + r * w,y0 + c * h }, { cw,ch });
 						TEST_ASSERT(actualBounds == expectedBounds);
 					}
 				}
@@ -1245,23 +1247,23 @@ Common
 				vint y0 = h > 0 ? 0 : 100;
 				vint tw = w > 0 ? 500 : -500;
 
-				checkItemsHorizontal(0, 3, x0, y0, w, h);
+				checkItems(0, 3, x0, y0, w, h, true);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 0));
 
 				root->SetViewLocation({ (vx0 + vx1) / 2,10 });
-				checkItemsHorizontal(0, 3, x0, y0 - 10, w, h);
+				checkItems(0, 3, x0, y0 - 10, w, h, true);
 				TEST_ASSERT(root->GetViewLocation() == Point((vx0 + vx1) / 2, 10));
 
 				root->SetViewLocation({ vx1,20 });
-				checkItemsHorizontal(1, 3, x0, y0 - 20, w, h);
+				checkItems(1, 3, x0, y0 - 20, w, h, true);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx1, 20));
 
 				root->SetViewLocation({ vx0 - tw,20 });
-				checkItemsHorizontal(0, 3, x0, y0 - 20, w, h);
+				checkItems(0, 3, x0, y0 - 20, w, h, true);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0 - tw, 20));
 
 				root->SetViewLocation({ vx0 + tw,20 });
-				checkItemsHorizontal(4, 1, x0, y0 - 20, w, h);
+				checkItems(4, 1, x0, y0 - 20, w, h, true);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0 + tw, 20));
 
 				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -1270,55 +1272,26 @@ Common
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 20));
-				checkItemsHorizontal(0, 3, x0, y0 - 20, w, h);
+				checkItems(0, 3, x0, y0 - 20, w, h, true);
 
 				TEST_ASSERT(root->EnsureItemVisible(15) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 20));
-				checkItemsHorizontal(0, 3, x0, y0 - 20, w, h);
+				checkItems(0, 3, x0, y0 - 20, w, h, true);
 
 				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx1, 20));
-				checkItemsHorizontal(1, 3, x0, y0 - 20, w, h);
+				checkItems(1, 3, x0, y0 - 20, w, h, true);
 
 				TEST_ASSERT(root->EnsureItemVisible(49) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(49) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx2, 20));
-				checkItemsHorizontal(3, 2, x0, y0 - 20, w, h);
+				checkItems(3, 2, x0, y0 - 20, w, h, true);
 
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(vx0, 20));
-				checkItemsHorizontal(0, 3, x0, y0 - 20, w, h);
-			};
-
-			auto checkItemsVertical = [&](vint firstColumn, vint visibleColumns, vint x0, vint y0, vint w, vint h)
-			{
-				vint cw = w > 0 ? w : -w;
-				vint ch = h > 0 ? h : -h;
-				if (w < 0) x0 += w;
-				if (h < 0) y0 += h;
-
-				root->ForceCalculateSizeImmediately();
-				root->ForceCalculateSizeImmediately();
-				TEST_ASSERT(root->Children().Count() == visibleColumns * 10);
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 600));
-
-				for (vint c = 0; c < visibleColumns; c++)
-				{
-					for (vint r = 0; r < 10; r++)
-					{
-						vint i = (firstColumn + c) * 10 + r;
-						auto style = root->GetVisibleStyle(i);
-						TEST_ASSERT(root->GetVisibleIndex(style) == i);
-						TEST_ASSERT(style->GetText() == itow(xs[i]));
-						TEST_ASSERT(style->GetContext() == root->GetContext());
-
-						auto actualBounds = style->GetCachedBounds();
-						auto expectedBounds = Rect({ x0 + r * w,y0 + c * h }, { cw,ch });
-						TEST_ASSERT(actualBounds == expectedBounds);
-					}
-				}
+				checkItems(0, 3, x0, y0 - 20, w, h, true);
 			};
 
 			auto testVertical = [&](vint vy0, vint vy1, vint vy2, vint w, vint h)
@@ -1327,23 +1300,23 @@ Common
 				vint y0 = h > 0 ? 0 : 100;
 				vint th = h > 0 ? 500 : -500;
 
-				checkItemsVertical(0, 3, x0, y0, w, h);
+				checkItems(0, 3, x0, y0, w, h, false);
 				TEST_ASSERT(root->GetViewLocation() == Point(0, vy0));
 
 				root->SetViewLocation({ 10,(vy0 + vy1) / 2 });
-				checkItemsVertical(0, 3, x0 - 10, y0, w, h);
+				checkItems(0, 3, x0 - 10, y0, w, h, false);
 				TEST_ASSERT(root->GetViewLocation() == Point(10, (vy0 + vy1) / 2));
 
 				root->SetViewLocation({ 20,vy1 });
-				checkItemsVertical(1, 3, x0 - 20, y0, w, h);
+				checkItems(1, 3, x0 - 20, y0, w, h, false);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy1));
 
 				root->SetViewLocation({ 20,vy0 - th });
-				checkItemsVertical(0, 3, x0 - 20, y0, w, h);
+				checkItems(0, 3, x0 - 20, y0, w, h, false);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0 - th));
 
 				root->SetViewLocation({ 20,vy0 + th });
-				checkItemsVertical(4, 1, x0 - 20, y0, w, h);
+				checkItems(4, 1, x0 - 20, y0, w, h, false);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0 + th));
 
 				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -1352,26 +1325,26 @@ Common
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0));
-				checkItemsVertical(0, 3, x0 - 20, y0, w, h);
+				checkItems(0, 3, x0 - 20, y0, w, h, false);
 
 				TEST_ASSERT(root->EnsureItemVisible(15) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0));
-				checkItemsVertical(0, 3, x0 - 20, y0, w, h);
+				checkItems(0, 3, x0 - 20, y0, w, h, false);
 
 				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(29) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy1));
-				checkItemsVertical(1, 3, x0 - 20, y0, w, h);
+				checkItems(1, 3, x0 - 20, y0, w, h, false);
 
 				TEST_ASSERT(root->EnsureItemVisible(49) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(49) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy2));
-				checkItemsVertical(3, 2, x0 - 20, y0, w, h);
+				checkItems(3, 2, x0 - 20, y0, w, h, false);
 
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0));
-				checkItemsVertical(0, 3, x0 - 20, y0, w, h);
+				checkItems(0, 3, x0 - 20, y0, w, h, false);
 			};
 
 			root->SetItemTemplate([](const Value& value)
