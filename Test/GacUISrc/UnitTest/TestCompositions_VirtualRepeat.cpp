@@ -1309,16 +1309,19 @@ Common
 			TEST_CASE(L"LeftDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftDown)));
+				testHorizontal(500, 400, 200, -40, 10);
 			});
 
 			TEST_CASE(L"RightUp")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightUp)));
+				testHorizontal(0, 100, 300, 40, -10);
 			});
 
 			TEST_CASE(L"LeftUp")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::LeftUp)));
+				testHorizontal(500, 400, 200, -40, -10);
 			});
 
 			TEST_CASE(L"DownRight")
