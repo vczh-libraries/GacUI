@@ -600,7 +600,7 @@ GuiRepeatFixedHeightItemComposition
 				if (firstPhase)
 				{
 					pi_rowHeight = rowHeight;
-					newStartIndex = (newBounds.Top() - pi_yoffset) / pi_rowHeight;
+					newStartIndex = newBounds.Top() / pi_rowHeight;
 				}
 			}
 
