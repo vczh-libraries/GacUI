@@ -262,13 +262,13 @@ GuiVirtualRepeatCompositionBase
 			{
 			private:
 				vint												pi_width = 0;
+				vint												pi_yoffset = 0;
 				vint												pi_rowHeight = 0;
 
 			protected:
 				vint												rowHeight = 1;
-
-				virtual vint										GetWidth();
-				virtual vint										GetYOffset();
+				vint												itemWidth = -1;
+				vint												itemYOffset = 0;
 
 				void												Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)override;
 				VirtualRepeatPlaceItemResult						Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
@@ -284,6 +284,11 @@ GuiVirtualRepeatCompositionBase
 				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 				Size												GetAdoptedSize(Size expectedSize)override;
+
+				vint												GetItemWidth();
+				void												SetItemWidth(vint value);
+				vint												GetItemYOffset();
+				void												SetItemYOffset(vint value);
 			};
 
 			/// <summary>Fixed size multiple columns item arranger. This arranger adjust all items in multiple lines with the same size. The width is the maximum width of all minimum widths of displayed items. The same to height.</summary>

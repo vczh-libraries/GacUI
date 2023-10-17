@@ -593,23 +593,14 @@ GuiRepeatFreeHeightItemComposition
 GuiRepeatFixedHeightItemComposition
 ***********************************************************************/
 
-			vint GuiRepeatFixedHeightItemComposition::GetWidth()
-			{
-				return -1;
-			}
-
-			vint GuiRepeatFixedHeightItemComposition::GetYOffset()
-			{
-				return 0;
-			}
-
 			void GuiRepeatFixedHeightItemComposition::Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)
 			{
-				pi_width = GetWidth();
+				pi_width = itemWidth;
+				pi_yoffset = itemYOffset;
 				if (firstPhase)
 				{
 					pi_rowHeight = rowHeight;
-					newStartIndex = (newBounds.Top() - GetYOffset()) / pi_rowHeight;
+					newStartIndex = (newBounds.Top() - pi_yoffset) / pi_rowHeight;
 				}
 			}
 
@@ -624,7 +615,7 @@ GuiRepeatFixedHeightItemComposition
 					}
 				}
 
-				vint top = GetYOffset() + index * pi_rowHeight;
+				vint top = pi_yoffset + index * pi_rowHeight;
 				if (pi_width == -1)
 				{
 					alignmentToParent = Margin(0, -1, 0, -1);
@@ -672,9 +663,9 @@ GuiRepeatFixedHeightItemComposition
 			{
 				if (!itemSource || itemSource->GetCount() == 0) return Size(0, 0);
 
-				vint width = GetWidth();
+				vint width = itemWidth;
 				if (width == -1) width = viewBounds.Width();
-				return Size(width, rowHeight * itemSource->GetCount() + GetYOffset());
+				return Size(width, rowHeight * itemSource->GetCount() + itemYOffset);
 			}
 
 			vint GuiRepeatFixedHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
@@ -720,10 +711,9 @@ GuiRepeatFixedHeightItemComposition
 					return VirtualRepeatEnsureItemVisibleResult::ItemNotExists;
 				}
 
-				vint yOffset = GetYOffset();
-				vint viewY1 = viewBounds.y1 + yOffset;
+				vint viewY1 = viewBounds.y1 + itemYOffset;
 				vint viewY2 = viewBounds.y2;
-				vint itemY1 = itemIndex * rowHeight + yOffset;
+				vint itemY1 = itemIndex * rowHeight + itemYOffset;
 				vint itemY2 = itemY1 + rowHeight;
 
 				if (viewY2 - viewY1 < rowHeight)
@@ -767,9 +757,9 @@ GuiRepeatFixedHeightItemComposition
 						Layout_UpdateViewLocation({ viewBounds.x1,viewBounds.y1 + itemY2 - viewY2 });
 					}
 
-					viewY1 = viewBounds.y1 + yOffset;
+					viewY1 = viewBounds.y1 + itemYOffset;
 					viewY2 = viewBounds.y2;
-					itemY1 = itemIndex * rowHeight + yOffset;
+					itemY1 = itemIndex * rowHeight + itemYOffset;
 					itemY2 = itemY1 + rowHeight;
 				}
 
@@ -779,10 +769,39 @@ GuiRepeatFixedHeightItemComposition
 			Size GuiRepeatFixedHeightItemComposition::GetAdoptedSize(Size expectedSize)
 			{
 				if (!itemSource) return expectedSize;
-				vint yOffset = GetYOffset();
-				vint y = expectedSize.y - yOffset;
+				vint y = expectedSize.y - itemYOffset;
 				vint itemCount = itemSource->GetCount();
-				return Size(expectedSize.x, yOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
+				return Size(expectedSize.x, itemYOffset + CalculateAdoptedSize(y, itemCount, rowHeight));
+			}
+
+			vint GuiRepeatFixedHeightItemComposition::GetItemWidth()
+			{
+				return itemWidth;
+			}
+
+			void GuiRepeatFixedHeightItemComposition::SetItemWidth(vint value)
+			{
+				if (value < -1) value = -1;
+				if (itemWidth != value)
+				{
+					itemWidth = value;
+					itemSourceUpdated = true;
+				}
+			}
+
+			vint GuiRepeatFixedHeightItemComposition::GetItemYOffset()
+			{
+				return itemYOffset;
+			}
+
+			void GuiRepeatFixedHeightItemComposition::SetItemYOffset(vint value)
+			{
+				if (value < 0) value = 0;
+				if (itemYOffset != value)
+				{
+					itemYOffset = value;
+					itemSourceUpdated = true;
+				}
 			}
 
 /***********************************************************************
