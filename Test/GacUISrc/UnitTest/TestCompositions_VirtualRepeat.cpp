@@ -769,6 +769,20 @@ Common
 				testDown();
 			});
 
+			TEST_CASE(L"ItemYOffset")
+			{
+				root->SetItemYOffset(30);
+				root->SetPreferredMinSize({ 100,130 });
+				testHorizontal(
+					0, -100, -200,
+					0, 100, 200,
+					15);
+
+				root->SetItemYOffset(0);
+				root->SetPreferredMinSize({ 100,100 });
+				testDown();
+			});
+
 			TEST_CASE(L"RightDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
