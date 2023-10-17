@@ -682,24 +682,25 @@ Common
 				return style;
 			});
 
-			auto testHorizontal = [&](vint y0, vint y1, vint y2, vint vy0, vint vy1, vint vy2, vint h, vint cw = 0)
+			auto testHorizontal = [&](vint y0, vint y1, vint y2, vint vy0, vint vy1, vint vy2, vint h, vint cw = 0, vint ch = 0)
 			{
 				vint tw = cw == 0 ? 100 : cw;
+				vint th = ch == 0 ? 300 : ch;
 				vint fxo = cw == 0 ? 0 : 1;
 
 				checkItems(0, 7, 0, y0, 0, h, cw, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(0, vy0));
-				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				root->SetViewLocation({ 10,vy1 });
 				checkItems(6, 8, (fxo * -10), y1, 0, h, cw, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(10, vy1));
-				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				root->SetViewLocation({ 20,vy2 });
 				checkItems(13, 7, (fxo * -20), y2, 0, h, cw, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy2));
-				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
 				TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -708,13 +709,13 @@ Common
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0));
 				checkItems(0, 7, (fxo * -20), y0, 0, h, cw, 0);
-				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy2));
 				checkItems(13, 7, (fxo * -20), y2, 0, h, cw, 0);
-				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, th));
 			};
 
 			auto testVertical = [&](vint x0, vint x1, vint x2, vint vx0, vint vx1, vint vx2, vint w)
@@ -763,7 +764,7 @@ Common
 				testHorizontal(
 					0, -100, -200,
 					0, 100, 200,
-					15, 80);
+					15, 80, 0);
 			
 				root->SetItemWidth(-1);
 				testDown();
@@ -774,9 +775,9 @@ Common
 				root->SetItemYOffset(30);
 				root->SetPreferredMinSize({ 100,130 });
 				testHorizontal(
-					0, -100, -200,
+					30, -70, -170,
 					0, 100, 200,
-					15);
+					15, 0, 330);
 
 				root->SetItemYOffset(0);
 				root->SetPreferredMinSize({ 100,100 });
