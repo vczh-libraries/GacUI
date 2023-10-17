@@ -18,7 +18,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Reflection.
     - Test `FindItem`.
     - Test `GetTotalSize` immediately after resizing / changing items.
-    - Test `<RepeatFixedHeightItem>` with `GetWidth` and `GetYOffset`.
   - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC
