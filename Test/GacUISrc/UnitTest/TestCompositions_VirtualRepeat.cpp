@@ -572,14 +572,16 @@ Common
 		ObservableList<vint> xs;
 		GuiRepeatFixedHeightItemComposition* root = nullptr;
 
-		auto checkItems = [&](vint first, vint count, vint x0, vint y0, vint w, vint h)
+		auto checkItems = [&](vint first, vint count, vint x0, vint y0, vint ow, vint oh, vint iw = 0, vint ih = 0)
 		{
 			root->ForceCalculateSizeImmediately();
 			root->ForceCalculateSizeImmediately();
 			TEST_ASSERT(root->Children().Count() == count);
 
-			if (w < 0) x0 += w;
-			if (h < 0) y0 += h;
+			if (iw == 0) iw = (ow == 0 ? root->GetCachedBounds().Width() : (ow > 0 ? ow : -ow));
+			if (ih == 0) ih = (oh == 0 ? root->GetCachedBounds().Height() : (oh > 0 ? oh : -oh));
+			if (ow < 0) x0 += ow;
+			if (oh < 0) y0 += oh;
 
 			for (vint i = 0; i < count; i++)
 			{
@@ -590,11 +592,11 @@ Common
 
 				auto actualBounds = style->GetCachedBounds();
 				auto expectedBounds = Rect({
-					x0 + (i + first) * w,
-					y0 + (i + first) * h
+					x0 + (i + first) * ow,
+					y0 + (i + first) * oh
 				}, {
-					w == 0 ? root->GetCachedBounds().Width() : (w > 0 ? w : -w),
-					h == 0 ? root->GetCachedBounds().Height() : (h > 0 ? h : -h)
+					iw,
+					ih
 				});
 				TEST_ASSERT(actualBounds == expectedBounds);
 			}
@@ -680,21 +682,24 @@ Common
 				return style;
 			});
 
-			auto testHorizontal = [&](vint y0, vint y1, vint y2, vint vy0, vint vy1, vint vy2, vint h)
+			auto testHorizontal = [&](vint y0, vint y1, vint y2, vint vy0, vint vy1, vint vy2, vint h, vint cw = 0)
 			{
-				checkItems(0, 7, 0, y0, 0, h);
+				vint tw = cw == 0 ? 100 : cw;
+				vint fxo = cw == 0 ? 0 : 1;
+
+				checkItems(0, 7, 0, y0, 0, h, cw, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(0, vy0));
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
 
 				root->SetViewLocation({ 10,vy1 });
-				checkItems(6, 8, 0, y1, 0, h);
+				checkItems(6, 8, (fxo * -10), y1, 0, h, cw, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(10, vy1));
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
 
 				root->SetViewLocation({ 20,vy2 });
-				checkItems(13, 7, 0, y2, 0, h);
+				checkItems(13, 7, (fxo * -20), y2, 0, h, cw, 0);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy2));
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
 
 				TEST_ASSERT(root->EnsureItemVisible(-1) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
 				TEST_ASSERT(root->EnsureItemVisible(20) == VirtualRepeatEnsureItemVisibleResult::ItemNotExists);
@@ -702,14 +707,14 @@ Common
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(0) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy0));
-				checkItems(0, 7, 0, y0, 0, h);
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+				checkItems(0, 7, (fxo * -20), y0, 0, h, cw, 0);
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
 
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::Moved);
 				TEST_ASSERT(root->EnsureItemVisible(19) == VirtualRepeatEnsureItemVisibleResult::NotMoved);
 				TEST_ASSERT(root->GetViewLocation() == Point(20, vy2));
-				checkItems(13, 7, 0, y2, 0, h);
-				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+				checkItems(13, 7, (fxo * -20), y2, 0, h, cw, 0);
+				TEST_ASSERT(root->GetTotalSize() == Size(tw, 300));
 			};
 
 			auto testVertical = [&](vint x0, vint x1, vint x2, vint vx0, vint vx1, vint vx2, vint w)
@@ -751,6 +756,18 @@ Common
 					0, 100, 200,
 					15);
 			};
+
+			TEST_CASE(L"ItemWidth")
+			{
+				root->SetItemWidth(80);
+				testHorizontal(
+					0, -100, -200,
+					0, 100, 200,
+					15, 80);
+			
+				root->SetItemWidth(-1);
+				testDown();
+			});
 
 			TEST_CASE(L"RightDown")
 			{
