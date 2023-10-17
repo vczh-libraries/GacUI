@@ -786,6 +786,7 @@ GuiRepeatFixedHeightItemComposition
 				{
 					itemWidth = value;
 					itemSourceUpdated = true;
+					ReloadVisibleStyles();
 				}
 			}
 
@@ -801,6 +802,7 @@ GuiRepeatFixedHeightItemComposition
 				{
 					itemYOffset = value;
 					itemSourceUpdated = true;
+					ReloadVisibleStyles();
 				}
 			}
 
