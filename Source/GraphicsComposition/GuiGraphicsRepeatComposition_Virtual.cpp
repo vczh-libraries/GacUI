@@ -513,7 +513,8 @@ GuiRepeatFreeHeightItemComposition
 			{
 				if (!itemSource) return -1;
 				vint count = itemSource->GetCount();
-				if (count == 0) return -1;
+				if (itemIndex < 0 || itemIndex >= count) return -1;
+
 				switch (key)
 				{
 				case KeyDirection::Up:
@@ -526,7 +527,7 @@ GuiRepeatFreeHeightItemComposition
 					itemIndex = 0;
 					break;
 				case KeyDirection::End:
-					itemIndex = count;
+					itemIndex = count - 1;
 					break;
 				case KeyDirection::PageUp:
 					itemIndex -= visibleStyles.Count();
@@ -676,9 +677,10 @@ GuiRepeatFixedHeightItemComposition
 			vint GuiRepeatFixedHeightItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
-				if (count == 0) return -1;
+				if (itemIndex < 0 || itemIndex >= count) return -1;
 				vint groupCount = viewBounds.Height() / rowHeight;
 				if (groupCount == 0) groupCount = 1;
+
 				switch (key)
 				{
 				case KeyDirection::Up:
@@ -891,6 +893,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
+				if (itemIndex < 0 || itemIndex >= count) return -1;
 				vint columnCount = viewBounds.Width() / itemSize.x;
 				if (columnCount == 0) columnCount = 1;
 				vint rowCount = viewBounds.Height() / itemSize.y;
@@ -1173,8 +1176,10 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
+				if (itemIndex < 0 || itemIndex >= count) return -1;
 				vint rowCount = viewBounds.Height() / itemHeight;
 				if (rowCount == 0) rowCount = 1;
+
 				switch (key)
 				{
 				case KeyDirection::Up:

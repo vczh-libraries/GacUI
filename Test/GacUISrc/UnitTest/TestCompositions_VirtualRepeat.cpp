@@ -4,6 +4,8 @@ using namespace vl::collections;
 using namespace vl::presentation::templates;
 using namespace composition_bounds_tests;
 
+#define FIND_ITEM(KEY, INPUT, OUTPUT) TEST_ASSERT(root->FindItemByRealKeyDirection(INPUT, KeyDirection::KEY) == OUTPUT)
+
 TEST_FILE
 {
 
@@ -416,6 +418,58 @@ Common
 			TEST_ASSERT(root->GetTotalSize() == Size(100, 270));
 		};
 
+		TEST_CASE(L"FindItemByVirtualKeyDirection")
+		{
+			// move to the top so its page size becomes 12
+			root->SetViewLocation({ 0,0 });
+			root->ForceCalculateSizeImmediately();
+			root->ForceCalculateSizeImmediately();
+
+			FIND_ITEM(Up		,	0	,	0	);
+			FIND_ITEM(Down		,	0	,	1	);
+			FIND_ITEM(Left		,	0	,	-1	);
+			FIND_ITEM(Right		,	0	,	-1	);
+			FIND_ITEM(Home		,	0	,	0	);
+			FIND_ITEM(End		,	0	,	19	);
+			FIND_ITEM(PageUp	,	0	,	0	);
+			FIND_ITEM(PageDown	,	0	,	12	);
+			FIND_ITEM(PageLeft	,	0	,	-1	);
+			FIND_ITEM(PageRight	,	0	,	-1	);
+
+			FIND_ITEM(Up		,	1	,	0	);
+			FIND_ITEM(Down		,	1	,	2	);
+			FIND_ITEM(Left		,	1	,	-1	);
+			FIND_ITEM(Right		,	1	,	-1	);
+			FIND_ITEM(Home		,	1	,	0	);
+			FIND_ITEM(End		,	1	,	19	);
+			FIND_ITEM(PageUp	,	1	,	0	);
+			FIND_ITEM(PageDown	,	1	,	13	);
+			FIND_ITEM(PageLeft	,	1	,	-1	);
+			FIND_ITEM(PageRight	,	1	,	-1	);
+
+			FIND_ITEM(Up		,	18	,	17	);
+			FIND_ITEM(Down		,	18	,	19	);
+			FIND_ITEM(Left		,	18	,	-1	);
+			FIND_ITEM(Right		,	18	,	-1	);
+			FIND_ITEM(Home		,	18	,	0	);
+			FIND_ITEM(End		,	18	,	19	);
+			FIND_ITEM(PageUp	,	18	,	6	);
+			FIND_ITEM(PageDown	,	18	,	19	);
+			FIND_ITEM(PageLeft	,	18	,	-1	);
+			FIND_ITEM(PageRight	,	18	,	-1	);
+
+			FIND_ITEM(Up		,	19	,	18	);
+			FIND_ITEM(Down		,	19	,	19	);
+			FIND_ITEM(Left		,	19	,	-1	);
+			FIND_ITEM(Right		,	19	,	-1	);
+			FIND_ITEM(Home		,	19	,	0	);
+			FIND_ITEM(End		,	19	,	19	);
+			FIND_ITEM(PageUp	,	19	,	7	);
+			FIND_ITEM(PageDown	,	19	,	19	);
+			FIND_ITEM(PageLeft	,	19	,	-1	);
+			FIND_ITEM(PageRight	,	19	,	-1	);
+		});
+
 		TEST_CASE(L"RightDown")
 		{
 			root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
@@ -758,6 +812,11 @@ Common
 					15);
 			};
 
+			TEST_CASE(L"FindItemByVirtualKeyDirection")
+			{
+				TEST_ASSERT(false);
+			});
+
 			TEST_CASE(L"ItemWidth")
 			{
 				root->SetItemWidth(80);
@@ -1043,6 +1102,11 @@ Common
 				checkItems(18, 12, x2, y0 - 20, w, h, false);
 				TEST_ASSERT(root->GetTotalSize() == Size(300, 90));
 			};
+
+			TEST_CASE(L"FindItemByVirtualKeyDirection")
+			{
+				TEST_ASSERT(false);
+			});
 
 			TEST_CASE(L"RightDown")
 			{
@@ -1386,6 +1450,11 @@ Common
 				style->SetText(itow(UnboxValue<vint>(value)));
 				style->SetPreferredMinSize({ 40,10 });
 				return style;
+			});
+
+			TEST_CASE(L"FindItemByVirtualKeyDirection")
+			{
+				TEST_ASSERT(false);
 			});
 
 			TEST_CASE(L"RightDown")
