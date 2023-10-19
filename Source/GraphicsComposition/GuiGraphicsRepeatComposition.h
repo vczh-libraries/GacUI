@@ -220,7 +220,8 @@ GuiVirtualRepeatCompositionBase
 				vint												GetVisibleIndex(ItemStyleRecord style);
 				void												ReloadVisibleStyles();
 
-				virtual vint										FindItem(vint itemIndex, compositions::KeyDirection key) = 0;
+				vint												FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key);
+				virtual vint										FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) = 0;
 				virtual VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex) = 0;
 				virtual Size										GetAdoptedSize(Size expectedSize) = 0;
 			};
@@ -252,7 +253,7 @@ GuiVirtualRepeatCompositionBase
 				GuiRepeatFreeHeightItemComposition() = default;
 				~GuiRepeatFreeHeightItemComposition() = default;
 
-				vint												FindItem(vint itemIndex, compositions::KeyDirection key) override;
+				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex) override;
 				Size												GetAdoptedSize(Size expectedSize) override;
 			};
@@ -281,7 +282,7 @@ GuiVirtualRepeatCompositionBase
 				GuiRepeatFixedHeightItemComposition() = default;
 				~GuiRepeatFixedHeightItemComposition() = default;
 
-				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 				Size												GetAdoptedSize(Size expectedSize)override;
 
@@ -311,7 +312,7 @@ GuiVirtualRepeatCompositionBase
 				GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 				~GuiRepeatFixedSizeMultiColumnItemComposition() = default;
 
-				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 				Size												GetAdoptedSize(Size expectedSize)override;
 			};
@@ -345,7 +346,7 @@ GuiVirtualRepeatCompositionBase
 				GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 				~GuiRepeatFixedHeightMultiColumnItemComposition() = default;
 
-				vint												FindItem(vint itemIndex, compositions::KeyDirection key)override;
+				vint												FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
 				VirtualRepeatEnsureItemVisibleResult				EnsureItemVisible(vint itemIndex)override;
 				Size												GetAdoptedSize(Size expectedSize)override;
 			};

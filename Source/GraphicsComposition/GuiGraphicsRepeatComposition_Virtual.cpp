@@ -355,6 +355,11 @@ GuiVirtualRepeatCompositionBase
 				OnClearItems();
 			}
 
+			vint GuiVirtualRepeatCompositionBase::FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key)
+			{
+				return FindItemByVirtualKeyDirection(itemIndex, axis->RealKeyDirectionToVirtualKeyDirection(key));
+			}
+
 /***********************************************************************
 GuiRepeatFreeHeightItemComposition
 ***********************************************************************/
@@ -504,7 +509,7 @@ GuiRepeatFreeHeightItemComposition
 				GuiVirtualRepeatCompositionBase::OnInstallItems();
 			}
 
-			vint GuiRepeatFreeHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
+			vint GuiRepeatFreeHeightItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				if (!itemSource) return -1;
 				vint count = itemSource->GetCount();
@@ -668,7 +673,7 @@ GuiRepeatFixedHeightItemComposition
 				return Size(width, rowHeight * itemSource->GetCount() + itemYOffset);
 			}
 
-			vint GuiRepeatFixedHeightItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
+			vint GuiRepeatFixedHeightItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
 				if (count == 0) return -1;
@@ -883,7 +888,7 @@ GuiRepeatFixedSizeMultiColumnItemComposition
 				return Size(itemSize.x * rowItems, itemSize.y * rows);
 			}
 
-			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
+			vint GuiRepeatFixedSizeMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
 				vint columnCount = viewBounds.Width() / itemSize.x;
@@ -1165,7 +1170,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				return Size(viewBounds.Width() * (columns + 1), viewBounds.Height());
 			}
 
-			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItem(vint itemIndex, compositions::KeyDirection key)
+			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 			{
 				vint count = itemSource->GetCount();
 				vint rowCount = viewBounds.Height() / itemHeight;
