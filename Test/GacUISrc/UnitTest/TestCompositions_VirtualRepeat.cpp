@@ -1615,6 +1615,28 @@ Common
 				FIND_ITEM(PageDown	,	0	,	9	);
 				FIND_ITEM(PageLeft	,	0	,	-1	);
 				FIND_ITEM(PageRight	,	0	,	-1	);
+
+				FIND_ITEM(Up		,	1	,	0	);
+				FIND_ITEM(Down		,	1	,	2	);
+				FIND_ITEM(Left		,	1	,	0	);
+				FIND_ITEM(Right		,	1	,	11	);
+				FIND_ITEM(Home		,	1	,	0	);
+				FIND_ITEM(End		,	1	,	49	);
+				FIND_ITEM(PageUp	,	1	,	0	);
+				FIND_ITEM(PageDown	,	1	,	9	);
+				FIND_ITEM(PageLeft	,	1	,	-1	);
+				FIND_ITEM(PageRight	,	1	,	-1	);
+
+				FIND_ITEM(Up		,	9	,	8	);
+				FIND_ITEM(Down		,	9	,	10	);
+				FIND_ITEM(Left		,	9	,	0	);
+				FIND_ITEM(Right		,	9	,	19	);
+				FIND_ITEM(Home		,	9	,	0	);
+				FIND_ITEM(End		,	9	,	49	);
+				FIND_ITEM(PageUp	,	9	,	0	);
+				FIND_ITEM(PageDown	,	9	,	9	);
+				FIND_ITEM(PageLeft	,	9	,	-1	);
+				FIND_ITEM(PageRight	,	9	,	-1	);
 			});
 
 			TEST_CASE(L"RightDown")
