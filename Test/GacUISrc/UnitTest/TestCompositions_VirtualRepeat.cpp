@@ -1601,7 +1601,20 @@ Common
 
 			TEST_CASE(L"FindItemByVirtualKeyDirection")
 			{
-				TEST_ASSERT(false);
+				// trigger layout so its page size becomes 2x10
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+
+				FIND_ITEM(Up		,	0	,	0	);
+				FIND_ITEM(Down		,	0	,	1	);
+				FIND_ITEM(Left		,	0	,	0	);
+				FIND_ITEM(Right		,	0	,	10	);
+				FIND_ITEM(Home		,	0	,	0	);
+				FIND_ITEM(End		,	0	,	49	);
+				FIND_ITEM(PageUp	,	0	,	0	);
+				FIND_ITEM(PageDown	,	0	,	9	);
+				FIND_ITEM(PageLeft	,	0	,	-1	);
+				FIND_ITEM(PageRight	,	0	,	-1	);
 			});
 
 			TEST_CASE(L"RightDown")
