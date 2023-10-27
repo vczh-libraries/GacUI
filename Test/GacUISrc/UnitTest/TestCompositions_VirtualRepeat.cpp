@@ -1151,7 +1151,42 @@ Common
 
 			TEST_CASE(L"FindItemByVirtualKeyDirection")
 			{
-				TEST_ASSERT(false);
+				// trigger layout so its page size becomes 3x3
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+
+				FIND_ITEM(Up		,	0	,	0	);
+				FIND_ITEM(Down		,	0	,	3	);
+				FIND_ITEM(Left		,	0	,	0	);
+				FIND_ITEM(Right		,	0	,	1	);
+				FIND_ITEM(Home		,	0	,	0	);
+				FIND_ITEM(End		,	0	,	29	);
+				FIND_ITEM(PageUp	,	0	,	0	);
+				FIND_ITEM(PageDown	,	0	,	9	);
+				FIND_ITEM(PageLeft	,	0	,	0	);
+				FIND_ITEM(PageRight	,	0	,	2	);
+
+				FIND_ITEM(Up		,	1	,	0	);
+				FIND_ITEM(Down		,	1	,	4	);
+				FIND_ITEM(Left		,	1	,	0	);
+				FIND_ITEM(Right		,	1	,	2	);
+				FIND_ITEM(Home		,	1	,	0	);
+				FIND_ITEM(End		,	1	,	29	);
+				FIND_ITEM(PageUp	,	1	,	0	);
+				FIND_ITEM(PageDown	,	1	,	10	);
+				FIND_ITEM(PageLeft	,	1	,	0	);
+				FIND_ITEM(PageRight	,	1	,	2	);
+
+				FIND_ITEM(Up		,	2	,	0	);
+				FIND_ITEM(Down		,	2	,	5	);
+				FIND_ITEM(Left		,	2	,	1	);
+				FIND_ITEM(Right		,	2	,	3	);
+				FIND_ITEM(Home		,	2	,	0	);
+				FIND_ITEM(End		,	2	,	29	);
+				FIND_ITEM(PageUp	,	2	,	0	);
+				FIND_ITEM(PageDown	,	2	,	11	);
+				FIND_ITEM(PageLeft	,	2	,	0	);
+				FIND_ITEM(PageRight	,	2	,	2	);
 			});
 
 			TEST_CASE(L"RightDown")
