@@ -1187,6 +1187,39 @@ Common
 				FIND_ITEM(PageDown	,	2	,	11	);
 				FIND_ITEM(PageLeft	,	2	,	0	);
 				FIND_ITEM(PageRight	,	2	,	2	);
+
+				FIND_ITEM(Up		,	27	,	24	);
+				FIND_ITEM(Down		,	27	,	29	);
+				FIND_ITEM(Left		,	27	,	26	);
+				FIND_ITEM(Right		,	27	,	28	);
+				FIND_ITEM(Home		,	27	,	0	);
+				FIND_ITEM(End		,	27	,	29	);
+				FIND_ITEM(PageUp	,	27	,	18	);
+				FIND_ITEM(PageDown	,	27	,	29	);
+				FIND_ITEM(PageLeft	,	27	,	27	);
+				FIND_ITEM(PageRight	,	27	,	29	);
+
+				FIND_ITEM(Up		,	28	,	25	);
+				FIND_ITEM(Down		,	28	,	29	);
+				FIND_ITEM(Left		,	28	,	27	);
+				FIND_ITEM(Right		,	28	,	29	);
+				FIND_ITEM(Home		,	28	,	0	);
+				FIND_ITEM(End		,	28	,	29	);
+				FIND_ITEM(PageUp	,	28	,	19	);
+				FIND_ITEM(PageDown	,	28	,	29	);
+				FIND_ITEM(PageLeft	,	28	,	27	);
+				FIND_ITEM(PageRight	,	28	,	29	);
+
+				FIND_ITEM(Up		,	29	,	26	);
+				FIND_ITEM(Down		,	29	,	29	);
+				FIND_ITEM(Left		,	29	,	28	);
+				FIND_ITEM(Right		,	29	,	29	);
+				FIND_ITEM(Home		,	29	,	0	);
+				FIND_ITEM(End		,	29	,	29	);
+				FIND_ITEM(PageUp	,	29	,	20	);
+				FIND_ITEM(PageDown	,	29	,	29	);
+				FIND_ITEM(PageLeft	,	29	,	27	);
+				FIND_ITEM(PageRight	,	29	,	29	);
 			});
 
 			TEST_CASE(L"RightDown")
