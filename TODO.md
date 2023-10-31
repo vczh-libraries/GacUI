@@ -36,7 +36,8 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Test against more code as many as possible
 - DarkSkin
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-  - Add minimum size control to `<PartialView>`.
+  - Add minimum size control to `<PartialView>` (should have been done).
+  - Use it in `<PartialView ref.Name="handle">`.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
