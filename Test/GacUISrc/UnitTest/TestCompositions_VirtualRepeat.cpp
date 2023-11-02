@@ -1255,6 +1255,36 @@ Common
 				FIND_ITEM(PageRight	,	29	,	29	);
 			});
 
+			TEST_CASE(L"GetTotalSize")
+			{
+				// 3x10
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
+
+				// 5x6
+				root->SetPreferredMinSize({ 150,200 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(150, 180));
+
+				// 5x9
+				for (vint i = 1; i <= 15; i++) xs.Add(i);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(150, 270));
+
+				// 3x15
+				root->SetPreferredMinSize({ 100,100 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 450));
+
+				// 3x10
+				xs.RemoveRange(30, 15);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(90, 300));
+			});
+
 			TEST_CASE(L"RightDown")
 			{
 				root->SetAxis(Ptr(new GuiAxis(AxisDirection::RightDown)));
