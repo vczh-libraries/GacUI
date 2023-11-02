@@ -62,6 +62,8 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\GraphicsComposition\GuiGraphicsAxis.cpp"
 #include "..\..\Source\GraphicsComposition\GuiGraphicsFlowComposition.cpp"
 #include "..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition.cpp"
+#include "..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_NonVirtial.cpp"
+#include "..\..\Source\GraphicsComposition\GuiGraphicsRepeatComposition_Virtual.cpp"
 #include "..\..\Source\GraphicsComposition\GuiGraphicsResponsiveComposition.cpp"
 #include "..\..\Source\GraphicsComposition\GuiGraphicsSharedSizeComposition.cpp"
 #include "..\..\Source\GraphicsComposition\GuiGraphicsSpecializedComposition.cpp"

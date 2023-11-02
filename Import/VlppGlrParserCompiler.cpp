@@ -5714,6 +5714,7 @@ namespace vl
 				{
 					List<RuleSymbol*>										pmRules;				// all rules that need to be rewritten
 					Dictionary<RuleSymbol*, GlrRule*>						skippedRules;			// skipped RuleSymbol -> GlrRule
+					SortedList<GlrClause*>									protectedSkippedClause;	// a simple use clause that belongs to one of the skipped rules
 					Dictionary<RuleSymbol*, GlrRule*>						originRules;			// rewritten RuleSymbol -> GlrRule ends with _LRI_Original, which is the same GlrRule object before rewritten
 					Dictionary<RuleSymbol*, GlrRule*>						lriRules;				// rewritten RuleSymbol -> GlrRule containing left_recursion_inject clauses
 					Dictionary<RuleSymbol*, GlrRule*>						fixedAstRules;			// RuleSymbol -> GlrRule relationship after rewritten
@@ -5814,7 +5815,7 @@ FillMissingPrefixMergeClauses
 							true,
 							ruleSymbol->isParser,
 							ruleRaw->name.codeRange
-							);
+						);
 						newRuleSymbol->isPartial = ruleSymbol->isPartial;
 						newRuleSymbol->ruleType = vContext.clauseTypes[clause.Obj()];
 						vContext.astRules.Add(newRuleSymbol, newRule.Obj());
@@ -5851,24 +5852,30 @@ FillMissingPrefixMergeClauses
 				}
 
 /***********************************************************************
-CollectRewritingTargets
+CollectSkippedTargets
 ***********************************************************************/
 
-				void CollectRewritingTargets(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
+				void CollectSkippedTargets(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
 				{
+					// when a rule
+					//   is not a prefix of a rewritten rule
+					//   has no direct prefix_merge clause
+					//   has only one clause which starts with prefix_merge clause
+					// skip rewriting it
+					// if the only clause of a skipped rule is a simple use clause referencing a rule to be rewritten
+					// the name it referenced should not be changed in RenamePrefix
+
+					List<RuleSymbol*> lastRemovedCandidates;
+					Dictionary<RuleSymbol*, GlrClause*> candidateProtectedClauses;
+
 					for (auto rule : rewritten->rules)
 					{
 						auto ruleSymbol = vContext.syntaxManager.Rules()[rule->name.value];
 						if (vContext.indirectPmClauses.Keys().Contains(ruleSymbol))
 						{
-							// when a rule has
-							//   no direct prefix_merge clause
-							//   only one clause which starts with prefix_merge clause
-							//   such clause is not a simple use clause
-							// skip rewriting it
 							if (!vContext.directPmClauses.Keys().Contains(ruleSymbol))
 							{
-								bool found = false;
+								GlrClause* uniqueQualifiedClause = nullptr;
 								for (auto clause : rule->clauses)
 								{
 									vint index = vContext.clauseToStartRules.Keys().IndexOf(clause.Obj());
@@ -5879,14 +5886,9 @@ CollectRewritingTargets
 									{
 										if (vContext.indirectPmClauses.Keys().Contains(startRule))
 										{
-											if (vContext.simpleUseClauseToReferencedRules.Keys().Contains(clause.Obj()))
+											if (!uniqueQualifiedClause)
 											{
-												goto DO_NOT_SKIP;
-											}
-
-											if (!found)
-											{
-												found = true;
+												uniqueQualifiedClause = clause.Obj();
 												break;
 											}
 											else
@@ -5898,11 +5900,67 @@ CollectRewritingTargets
 									}
 								}
 
-								rContext.skippedRules.Add(ruleSymbol, rule.Obj());
+								if (uniqueQualifiedClause)
+								{
+									rContext.skippedRules.Add(ruleSymbol, rule.Obj());
+									if (vContext.simpleUseClauseToReferencedRules.Keys().Contains(uniqueQualifiedClause))
+									{
+										candidateProtectedClauses.Add(ruleSymbol, uniqueQualifiedClause);
+									}
+								}
 								continue;
-							DO_NOT_SKIP:;
+							DO_NOT_SKIP:
+								lastRemovedCandidates.Add(ruleSymbol);
 							}
+						}
+					}
 
+					while (lastRemovedCandidates.Count() > 0)
+					{
+						List<RuleSymbol*> newRemovedCandidates;
+						for (auto ruleSymbol : lastRemovedCandidates)
+						{
+							vint indexStart = vContext.directStartRules.Keys().IndexOf(ruleSymbol);
+							if (indexStart != -1)
+							{
+								for (auto startRuleSymbol : vContext.directStartRules.GetByIndex(indexStart))
+								{
+									if (rContext.skippedRules.Keys().Contains(startRuleSymbol.ruleSymbol))
+									{
+										rContext.skippedRules.Remove(startRuleSymbol.ruleSymbol);
+										newRemovedCandidates.Add(startRuleSymbol.ruleSymbol);
+									}
+								}
+							}
+						}
+						CopyFrom(lastRemovedCandidates, newRemovedCandidates);
+					}
+
+					for (auto [ruleSymbol, rule] : rContext.skippedRules)
+					{
+						vint index = candidateProtectedClauses.Keys().IndexOf(ruleSymbol);
+						if (index != -1)
+						{
+							rContext.protectedSkippedClause.Add(candidateProtectedClauses.Values()[index]);
+						}
+					}
+				}
+
+/***********************************************************************
+CollectRewritingTargets
+***********************************************************************/
+
+				void CollectRewritingTargets(const VisitorContext& vContext, RewritingContext& rContext, Ptr<GlrSyntaxFile> rewritten)
+				{
+					for (auto rule : rewritten->rules)
+					{
+						auto ruleSymbol = vContext.syntaxManager.Rules()[rule->name.value];
+						if (vContext.indirectPmClauses.Keys().Contains(ruleSymbol))
+						{
+							if (rContext.skippedRules.Keys().Contains(ruleSymbol))
+							{
+								continue;
+							}
 							rContext.pmRules.Add(ruleSymbol);
 
 							vint indexStart = vContext.directStartRules.Keys().IndexOf(ruleSymbol);
@@ -6982,6 +7040,11 @@ RenamePrefix
 						RenamePrefixVisitor visitor(rContext, ruleSymbol, syntaxManager);
 						for (auto clause : originRule->clauses)
 						{
+							if (rContext.protectedSkippedClause.Contains(clause.Obj()))
+							{
+								continue;
+							}
+
 							// !(a; b) should be moved from rule X_LRI_Original to left_recursion_inject clauses in rule X
 							if (auto reuseClause = clause.Cast<GlrReuseClause>())
 							{
@@ -7013,6 +7076,7 @@ RewriteSyntax
 
 				// find rules that need to be rewritten using left_recursion_inject
 				RewritingContext rewritingContext;
+				CollectSkippedTargets(context, rewritingContext, rewritten);
 				CollectRewritingTargets(context, rewritingContext, rewritten);
 
 				// create rewritten rules, rename origin rules
@@ -7374,7 +7438,8 @@ ExpandClauseVisitor
 						name.value += L"_SWITCH";
 						for (auto&& switchName : switchNames)
 						{
-							auto value = workingSwitchValues->Get(switchName);
+							vint index = workingSwitchValues->Keys().IndexOf(switchName);
+							auto value = index == -1 ? sContext.switches[switchName].key : workingSwitchValues->Values()[index];
 							name.value += (value ? L"_1" : L"_0") + switchName;
 						}
 					}
@@ -7435,6 +7500,7 @@ ExpandClauseVisitor
 						{
 							// make it optional if necessary
 							auto opt = Ptr(new GlrOptionalSyntax);
+							opt->priority = GlrOptionalPriority::Equal;
 							opt->syntax = result.Cast<GlrSyntax>();
 							result = opt;
 						}
@@ -7457,6 +7523,66 @@ ExpandClauseVisitor
 						// only need to fix rule name for GlrUseSyntax
 						copy_visitor::RuleAstVisitor::Visit(node);
 						FixRuleName(result.Cast<GlrUseSyntax>()->name);
+					}
+
+					void Visit(GlrLoopSyntax* node) override
+					{
+						Ptr<GlrSyntax> syntax, delimiter;
+
+						try
+						{
+							syntax = CopyNode(node->syntax.Obj());
+						}
+						catch (CancelBranch)
+						{
+						}
+
+						try
+						{
+							delimiter = CopyNode(node->delimiter.Obj());
+						}
+						catch (CancelBranch)
+						{
+						}
+
+						if (syntax && delimiter)
+						{
+							auto loop = Ptr(new GlrLoopSyntax);
+							loop->codeRange = node->codeRange;
+							loop->syntax = syntax;
+							loop->delimiter = delimiter;
+							result = loop;
+						}
+						else if (syntax)
+						{
+							auto loop = Ptr(new GlrLoopSyntax);
+							loop->codeRange = syntax->codeRange;
+							loop->syntax = syntax;
+							result = loop;
+						}
+						else if (delimiter)
+						{
+							auto loop = Ptr(new GlrLoopSyntax);
+							loop->codeRange = delimiter->codeRange;
+							loop->syntax = delimiter;
+							result = loop;
+						}
+						else
+						{
+							result = Ptr(new EmptySyntax);
+						}
+					}
+
+					void Visit(GlrOptionalSyntax* node) override
+					{
+						try
+						{
+							copy_visitor::RuleAstVisitor::Visit(node);
+						}
+						catch (CancelBranch)
+						{
+							result = Ptr(new EmptySyntax);
+						}
 					}
 
 					void Visit(GlrAlternativeSyntax* node) override
@@ -7566,14 +7692,27 @@ DeductEmptySyntaxVisitor
 						node->delimiter = CopyNodeSafe(node->delimiter);
 						result = Ptr(node);
 
-						if (node->syntax.Cast<EmptySyntax>())
+						bool syntax = !node->syntax.Cast<EmptySyntax>();
+						bool delimiter = !node->delimiter.Cast<EmptySyntax>();
+						if (syntax && delimiter)
 						{
-							// if the loop body is empty, it is empty
-							result = node->syntax;
+							// if both are not empty, nothing need to worry
 						}
-						else if (node->delimiter.Cast<EmptySyntax>())
+						else if (syntax)
 						{
+							// if only syntax is not empty, it is {syntax}
 							node->delimiter = nullptr;
+						}
+						else if (delimiter)
+						{
+							// if only delimiter is empty, it is {delimiter}
+							node->syntax = node->delimiter;
+							node->delimiter = nullptr;
+						}
+						else
+						{
+							// if both are empty, it is empty
+							result = node->syntax;
 						}
 					}
 
@@ -7634,6 +7773,7 @@ DeductEmptySyntaxVisitor
 						{
 							// if only first is not empty, it is [first]
 							auto opt = Ptr(new GlrOptionalSyntax);
+							opt->priority = GlrOptionalPriority::Equal;
 							opt->syntax = node->first;
 							result = opt;
 						}
@@ -7641,6 +7781,7 @@ DeductEmptySyntaxVisitor
 						{
 							// if only second is not empty, it is [second]
 							auto opt = Ptr(new GlrOptionalSyntax);
+							opt->priority = GlrOptionalPriority::Equal;
 							opt->syntax = node->second;
 							result = opt;
 						}
@@ -7742,12 +7883,15 @@ RewriteSyntax
 					return ruleName;
 				}
 
-				Ptr<GlrRule> CreateRule(RuleSymbol* ruleSymbol, Ptr<GlrRule> rule, const WString& name)
+				Ptr<GlrRule> CreateRule(RuleSymbol* ruleSymbol, Ptr<GlrRule> rule, const WString& name, bool applyAttributes)
 				{
 					auto newRule = Ptr(new GlrRule);
 					newRule->codeRange = rule->codeRange;
-					newRule->attPublic = rule->attPublic;
-					newRule->attParser = rule->attParser;
+					if (applyAttributes)
+					{
+						newRule->attPublic = rule->attPublic;
+						newRule->attParser = rule->attParser;
+					}
 					newRule->name = rule->name;
 					newRule->name.value = name;
 					newRule->type = rule->type;
@@ -7757,7 +7901,7 @@ RewriteSyntax
 
 				Ptr<GlrRule> CreateRule(RuleSymbol* ruleSymbol, Ptr<GlrRule> rule, const wchar_t* tag, Dictionary<WString, bool>& switchValues)
 				{
-					return CreateRule(ruleSymbol, rule, CreateRuleName(rule, tag, switchValues));
+					return CreateRule(ruleSymbol, rule, CreateRuleName(rule, tag, switchValues), true);
 				}
 
 				void AddRules(RuleSymbol* ruleSymbol, Ptr<GlrSyntaxFile> rewritten, Group<RuleSymbol*, Ptr<GlrRule>>& expandedRules)
@@ -7787,7 +7931,7 @@ RewriteSyntax
 								rule->name.value,
 								ruleSymbol->fileIndex,
 								ruleSymbol->isPublic,
-								false,
+								ruleSymbol->isParser,
 								rule->name.codeRange
 							);
 						}
@@ -7801,11 +7945,7 @@ RewriteSyntax
 
 				if (sContext.ruleAffectedSwitches.Count() == syntaxManager.Rules().Count())
 				{
-					syntaxManager.AddError(
-						ParserErrorType::NoSwitchUnaffectedRule,
-						{}
-						);
-					return nullptr;
+					CHECK_FAIL(L"vl::glr::parsergen::RewriteSyntax_Switch(...)#Internal error: This function should not be called when there is no switch used in any rule.");
 				}
 
 				RewritingContext rewritingContext;
@@ -7935,7 +8075,7 @@ RewriteSyntax
 												vint ruleIndex = rewritingContext.combinedRulesByName.Keys().IndexOf(combinedRuleName);
 												if (ruleIndex == -1)
 												{
-													combinedRule = CreateRule(ruleSymbol, rule, combinedRuleName);
+													combinedRule = CreateRule(ruleSymbol, rule, combinedRuleName, false);
 													rewritingContext.expandedCombinedRules.Add(ruleSymbol, combinedRule);
 													rewritingContext.combinedRulesByName.Add(combinedRuleName, combinedRule);
 												}
@@ -8343,15 +8483,13 @@ ValidateDeducingPrefixMergeRuleVisitor
 					auto secondResult = result;
 					auto secondEmpty = couldBeEmpty;
 
-					if (firstEmpty || secondEmpty)
+					couldBeEmpty = firstEmpty || secondEmpty;
+					if (couldBeEmpty)
 					{
 						VisitPotentialEmptySyntax();
 					}
 					else
 					{
-						result = nullptr;
-						couldBeEmpty = true;
-
 						if (firstResult && secondResult)
 						{
 							CopyFrom(*firstResult.Obj(), *secondResult.Obj(), true);
@@ -8364,6 +8502,10 @@ ValidateDeducingPrefixMergeRuleVisitor
 						else if (secondResult)
 						{
 							result = secondResult;
+						}
+						else
+						{
+							result = nullptr;
 						}
 					}
 				}
@@ -8930,107 +9072,12 @@ ValidateStructureRelationshipVisitor
 				, protected virtual GlrSyntax::IVisitor
 				, protected virtual GlrClause::IVisitor
 			{
-				struct Link
-				{
-					GlrRefSyntax*			ref = nullptr;
-					Link*					prev = nullptr;
-					Link*					next = nullptr;
-
-					Link(GlrRefSyntax* _ref) : ref(_ref) {}
-				};
-
-				struct LinkPair
-				{
-					Link*					first = nullptr;
-					Link*					last = nullptr;
-
-					void EnsureComplete()
-					{
-						CHECK_ERROR(!first || !first->prev, L"Illegal Operation!");
-						CHECK_ERROR(!last || !last->next, L"Illegal Operation!");
-					}
-
-					LinkPair Append(Link* link)
-					{
-						EnsureComplete();
-						if (first)
-						{
-							link->prev = last;
-							last->next = link;
-							return { first,link };
-						}
-						else
-						{
-							return { link,link };
-						}
-					}
-
-					LinkPair Connect(LinkPair pair)
-					{
-						EnsureComplete();
-						pair.EnsureComplete();
-						if (!first && !pair.first)
-						{
-							return {};
-						}
-						else if (!first)
-						{
-							return pair;
-						}
-						else if (!pair.first)
-						{
-							return *this;
-						}
-						else
-						{
-							last->next = pair.first;
-							pair.first->prev = last;
-							return { first,pair.last };
-						}
-					}
-
-					void CutAfter(Link* link, LinkPair& l1, LinkPair& l2)
-					{
-						EnsureComplete();
-						if (!first)
-						{
-							CHECK_ERROR(!link, L"Illegal Operation!");
-							l1 = {};
-							l2 = {};
-						}
-						else if (!link)
-						{
-							l2 = *this;
-							l1 = {};
-						}
-						else if (link == last)
-						{
-							l1 = *this;
-							l2 = {};
-						}
-						else
-						{
-							auto a = first;
-							auto b = last;
-							l1 = { a,link };
-							l2 = { link->next,b };
-							l1.last->next = nullptr;
-							l2.first->prev = nullptr;
-						}
-					}
-
-					operator bool() const
-					{
-						return last;
-					}
-				};
 			protected:
 				VisitorContext&				context;
 				RuleSymbol*					ruleSymbol;
 				GlrClause*					clause = nullptr;
+				Dictionary<WString, vint>	fieldCounters;
 
-				LinkPair					existingFields;
-				LinkPair					existingPartials;
 			public:
 				ValidateStructureRelationshipVisitor(
 					VisitorContext& _context,
@@ -9041,34 +9088,25 @@ ValidateStructureRelationshipVisitor
 				{
 				}
 
-				~ValidateStructureRelationshipVisitor()
-				{
-					{
-						auto c = existingFields.first;
-						while (c)
-						{
-							auto n = c->next;
-							delete c;
-							c = n;
-						}
-					}
-					{
-						auto c = existingPartials.first;
-						while (c)
-						{
-							auto n = c->next;
-							delete c;
-							c = n;
-						}
-					}
-				}
-
 				void ValidateClause(Ptr<GlrClause> clause)
 				{
 					clause->Accept(this);
 				}
 
 			protected:
+
+				void AddFieldCounter(const WString& name, vint counter)
+				{
+					vint index = fieldCounters.Keys().IndexOf(name);
+					if (index == -1)
+					{
+						fieldCounters.Add(name, counter);
+					}
+					else
+					{
+						const_cast<List<vint>&>(fieldCounters.Values())[index] += counter;
+					}
+				}
 
 				////////////////////////////////////////////////////////////////////////
 				// GlrSyntax::IVisitor
@@ -9078,20 +9116,7 @@ ValidateStructureRelationshipVisitor
 				{
 					if (node->field)
 					{
-						existingFields = existingFields.Append(new Link(node));
-					}
-
-					if (node->refType == GlrRefType::Id)
-					{
-						vint ruleIndex = context.syntaxManager.Rules().Keys().IndexOf(node->literal.value);
-						if (ruleIndex != -1)
-						{
-							auto fieldRule = context.syntaxManager.Rules().Values()[ruleIndex];
-							if (fieldRule->isPartial)
-							{
-								existingPartials = existingPartials.Append(new Link(node));
-							}
-						}
+						AddFieldCounter(node->field.value, 1);
 					}
 				}
 
@@ -9121,19 +9146,61 @@ ValidateStructureRelationshipVisitor
 
 				void Visit(GlrAlternativeSyntax* node) override
 				{
-					auto currentFields = existingFields;
-					auto currentPartials = existingPartials;
+					Dictionary<WString, vint> currentCounters(std::move(fieldCounters));
 
 					node->first->Accept(this);
-
-					LinkPair firstFields, firstPartials;
-					existingFields.CutAfter(currentFields.last, existingFields, firstFields);
-					existingPartials.CutAfter(currentPartials.last, existingPartials, firstPartials);
+					Dictionary<WString, vint> firstCounters(std::move(fieldCounters));
 
 					node->second->Accept(this);
+					Dictionary<WString, vint> secondCounters(std::move(fieldCounters));
 
-					existingFields = existingFields.Connect(firstFields);
-					existingPartials = existingPartials.Connect(firstPartials);
+					vint firstIndex = 0;
+					vint secondIndex = 0;
+					fieldCounters = std::move(currentCounters);
+					while (true)
+					{
+						bool firstAvailable = firstIndex < firstCounters.Count();
+						bool secondAvailable = secondIndex < secondCounters.Count();
+
+						if (firstAvailable && secondAvailable)
+						{
+							auto firstKey = firstCounters.Keys()[firstIndex];
+							auto secondKey = secondCounters.Keys()[secondIndex];
+							auto compare = firstKey <=> secondKey;
+
+							if (compare == std::strong_ordering::less)
+							{
+								secondAvailable = false;
+							}
+							else if (compare == std::strong_ordering::greater)
+							{
+								firstAvailable = false;
+							}
+						}
+
+						if (firstAvailable && secondAvailable)
+						{
+							vint firstValue = firstCounters.Values()[firstIndex];
+							vint secondValue = secondCounters.Values()[secondIndex];
+							AddFieldCounter(firstCounters.Keys()[firstIndex], (firstValue > secondValue ? firstValue : secondValue));
+							firstIndex++;
+							secondIndex++;
+						}
+						else if (firstAvailable)
+						{
+							AddFieldCounter(firstCounters.Keys()[firstIndex], firstCounters.Values()[firstIndex]);
+							firstIndex++;
+						}
+						else if (secondAvailable)
+						{
+							AddFieldCounter(secondCounters.Keys()[secondIndex], secondCounters.Values()[secondIndex]);
+							secondIndex++;
+						}
+						else
+						{
+							break;
+						}
+					}
 				}
 
 				void Visit(GlrPushConditionSyntax* node) override
@@ -9152,25 +9219,8 @@ ValidateStructureRelationshipVisitor
 
 				void CheckAfterClause(GlrClause* node)
 				{
-					Dictionary<WString, vint> counters;
-					auto c = existingFields.first;
-					while (c)
-					{
-						auto fieldName = c->ref->field.value;
-						vint index = counters.Keys().IndexOf(fieldName);
-						if (index == -1)
-						{
-							counters.Add(fieldName, 1);
-						}
-						else
-						{
-							counters.Set(fieldName, counters.Values()[index] + 1);
-						}
-						c = c->next;
-					}
-
 					auto clauseType = context.clauseTypes[clause];
-					for (auto [key, value] : counters)
+					for (auto [key, value] : fieldCounters)
 					{
 						auto prop = FindPropSymbol(clauseType, key);
 						if (prop->propType != AstPropType::Array && value > 1)
@@ -9583,6 +9633,14 @@ ValidateSwitchesAndConditions
 				{
 					VerifySwitchesAndConditionsVisitor visitor(context, sContext);
 					visitor.ValidateRule(rule);
+				}
+
+				if (sContext.ruleAffectedSwitches.Count() == context.syntaxManager.Rules().Count())
+				{
+					context.syntaxManager.AddError(
+						ParserErrorType::SwitchUnaffectedRuleNotExist,
+						syntaxFile->codeRange
+						);
 				}
 			}
 		}
@@ -15541,6 +15599,7 @@ namespace vl::glr::parsergen
 						writer.WriteString(prop->propTypeName.value);
 						writer.WriteString(L"[]");
 						break;
+					default:;
 					}
 					writer.WriteLine(L";");
 				}
@@ -17868,6 +17927,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 
 			void SyntaxSymbolManager::FixLeftRecursionInjectEdge(StateSymbol* startState, EdgeSymbol* injectEdge)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::glr::parsergen::SyntaxSymbolManager::FixLeftRecursionInjectEdge(StateSymbol*, EdgeSymbol*)#"
 				// search for all qualified placeholder edge starts from inject targets
 				List<EdgeSymbol*> placeholderEdges;
 				for (auto outEdge : startState->OutEdges())
@@ -17902,7 +17962,9 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 					// check if placeholderEdge does nothing more than using rules
 					if (placeholderEdge->insAfterInput.Count() > 0)
 					{
-						goto FAILED_INSTRUCTION_CHECKING;
+						// EdgeInputType::LrPlaceholder is created from a left_recursion_placeholder clause
+						// This is ensured by the semantic
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Internal error: EdgeInputType::LrPlaceholder edge should have empty insAfterInput.");
 					}
 
 					for (vint i = 0; i <= placeholderEdge->returnEdges.Count(); i++)
@@ -17922,23 +17984,15 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 						{
 							if (outEdge->input.type == EdgeInputType::Ending && outEdge->insAfterInput.Count() > 0)
 							{
-								goto FAILED_INSTRUCTION_CHECKING;
+								// EdgeInputType::Ending is created from accumulating multiple EdgeInputType::Epsilon edges leading to an ending state
+								// EdgeInputType::Epsilon always have empty insAfterInput
+								CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Internal error: EdgeInputType::Ending edge should have empty insAfterInput.");
 							}
 						}
 
 						returnEdges.Add(returnEdge);
 						endingStates.Add(endingState);
 					}
-					continue;
-				FAILED_INSTRUCTION_CHECKING:
-					AddError(
-						ParserErrorType::LeftRecursionPlaceholderMixedWithSwitches,
-						{},
-						injectEdge->fromState->Rule()->Name(),
-						lrpFlags[injectEdge->input.flags[0]],
-						startState->Rule()->Name()
-						);
-					return;
 				}
 
 				// calculate all acceptable Token input from inject edge
@@ -18258,6 +18312,7 @@ SyntaxSymbolManager::FixLeftRecursionInjectEdge
 						startState->Rule()->Name()
 						);
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************

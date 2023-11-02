@@ -1950,7 +1950,7 @@ namespace vl
 			/// <summary>Calculate the relative path based on a specified referencing folder.</summary>
 			/// <returns>The relative path.</returns>
 			/// <param name="_filePath">The referencing folder.</param>
-			WString						GetRelativePathFor(const FilePath& _filePath);
+			WString						GetRelativePathFor(const FilePath& _filePath)const;
 
 		};
 

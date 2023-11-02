@@ -105,7 +105,7 @@ FilePath
 			return fullPath == L"";
 		}
 
-		WString FilePath::GetRelativePathFor(const FilePath& _filePath)
+		WString FilePath::GetRelativePathFor(const FilePath& _filePath) const
 		{
 			if (fullPath.Length() == 0 || _filePath.fullPath.Length() == 0 || fullPath[0] != _filePath.fullPath[0])
 			{
