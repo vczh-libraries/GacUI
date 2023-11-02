@@ -863,6 +863,36 @@ Common
 				FIND_ITEM(PageRight	,	19	,	-1	);
 			});
 
+			TEST_CASE(L"GetTotalSize")
+			{
+				// 15*20
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+
+				// 15*20
+				root->SetPreferredMinSize({ 150,200 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(150, 300));
+
+				// 15*35
+				for (vint i = 1; i <= 15; i++) xs.Add(i);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(150, 525));
+
+				// 15*35
+				root->SetPreferredMinSize({ 100,100 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 525));
+
+				// 15*20
+				xs.RemoveRange(20, 15);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(100, 300));
+			});
+
 			TEST_CASE(L"ItemWidth")
 			{
 				root->SetItemWidth(80);
