@@ -1170,7 +1170,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 				if (rows < 1) rows = 1;
 				vint columns = (itemSource->GetCount() + rows - 1) / rows;
 
-				return Size(viewBounds.Width() * (columns + 1), viewBounds.Height());
+				return Size(viewBounds.Width() * (columns + 1), (rows * itemHeight));
 			}
 
 			vint GuiRepeatFixedHeightMultiColumnItemComposition::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)

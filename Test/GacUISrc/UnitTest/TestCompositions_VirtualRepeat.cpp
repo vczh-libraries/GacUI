@@ -1414,22 +1414,22 @@ Common
 			for (vint i = 1; i <= 40; i++) xs.Add(i);
 			checkItems(0, 12, 22);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
-			TEST_ASSERT(root->GetTotalSize() == Size(1100, 100));
+			TEST_ASSERT(root->GetTotalSize() == Size(1100, 88));
 
 			root->EnsureItemVisible(7);
 			checkItems(0, 12, 22);
 			TEST_ASSERT(root->GetViewLocation() == Point(0, 0));
-			TEST_ASSERT(root->GetTotalSize() == Size(1100, 100));
+			TEST_ASSERT(root->GetTotalSize() == Size(1100, 88));
 
 			root->EnsureItemVisible(8);
 			checkItems(3, 9, 26);
 			TEST_ASSERT(root->GetViewLocation() == Point(100, 0));
-			TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+			TEST_ASSERT(root->GetTotalSize() == Size(1500, 78));
 
 			root->EnsureItemVisible(9);
 			checkItems(6, 9, 26);
 			TEST_ASSERT(root->GetViewLocation() == Point(200, 0));
-			TEST_ASSERT(root->GetTotalSize() == Size(1500, 100));
+			TEST_ASSERT(root->GetTotalSize() == Size(1500, 78));
 
 			root->EnsureItemVisible(39);
 			checkItems(38, 2, 50);
@@ -1703,6 +1703,36 @@ Common
 				FIND_ITEM(PageDown	,	49	,	49	);
 				FIND_ITEM(PageLeft	,	49	,	-1	);
 				FIND_ITEM(PageRight	,	49	,	-1	);
+			});
+
+			TEST_CASE(L"GetTotalSize")
+			{
+				// 5x10
+				TEST_ASSERT(root->GetTotalSize() == Size(600, 100));
+
+				// 3x20
+				root->SetPreferredMinSize({ 150,200 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(600, 200));
+
+				// 4x20
+				for (vint i = 1; i <= 15; i++) xs.Add(i);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(750, 200));
+
+				// 7x10
+				root->SetPreferredMinSize({ 100,100 });
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(800, 100));
+
+				// 5x10
+				xs.RemoveRange(50, 15);
+				root->ForceCalculateSizeImmediately();
+				root->ForceCalculateSizeImmediately();
+				TEST_ASSERT(root->GetTotalSize() == Size(600, 100));
 			});
 
 			TEST_CASE(L"RightDown")
