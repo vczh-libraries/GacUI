@@ -150,7 +150,6 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					{
 						textTable = new GuiTableComposition;
 						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -505,6 +504,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 			void GuiVirtualDataGrid::RequestSaveData()
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::presentation::controls::list::DefaultTextListItemTemplate::OnBulletSelectedChanged(GuiGraphicsComposition*, GuiEventArgs&)#"
 				if (currentEditor && !currentEditorOpeningEditor)
 				{
 					GuiControl* focusedControl = nullptr;
@@ -521,7 +521,7 @@ GuiVirtualDataGrid (IDataGridContext)
 
 					GetItemProvider()->PushEditing();
 					dataGridView->SetBindingCellValue(currentEditorPos.row, currentEditorPos.column, currentEditor->GetTemplate()->GetCellValue());
-					GetItemProvider()->PopEditing();
+					CHECK_ERROR(GetItemProvider()->PopEditing(), ERROR_MESSAGE_PREFIX L"BeginEditListItem and EndEditListItem calls are not paired.");
 
 					auto style = GetArranger()->GetVisibleStyle(currentEditorPos.row);
 					if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
@@ -534,6 +534,7 @@ GuiVirtualDataGrid (IDataGridContext)
 						focusedControl->SetFocused();
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************

@@ -162,7 +162,7 @@ GuiListControl
 				style->SetVisuallyEnabled(GetVisuallyEnabled());
 				style->SetSelected(false);
 				style->SetIndex(itemIndex);
-				style->Initialize(this);
+				style->SetAssociatedListControl(this);
 				AttachItemEvents(style);
 			}
 

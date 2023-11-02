@@ -34,7 +34,6 @@ BigIconListViewItemTemplate
 
 				void BigIconListViewItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
 						AddChild(table);
@@ -115,7 +114,6 @@ SmallIconListViewItemTemplate
 
 				void SmallIconListViewItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
 						AddChild(table);
@@ -194,7 +192,6 @@ ListListViewItemTemplate
 
 				void ListListViewItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
 						AddChild(table);
@@ -301,7 +298,6 @@ TileListViewItemTemplate
 
 				void TileListViewItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					{
 						auto table = new GuiTableComposition;
 						AddChild(table);
@@ -403,7 +399,6 @@ InformationListViewItemTemplate
 
 				void InformationListViewItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					{
 						bottomLine = GuiSolidBackgroundElement::Create();
 						bottomLineComposition = new GuiBoundsComposition;
@@ -564,7 +559,6 @@ DetailListViewItemTemplate
 
 				void DetailListViewItemTemplate::OnInitialize()
 				{
-					DefaultListViewItemTemplate::OnInitialize();
 					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
 
 					{

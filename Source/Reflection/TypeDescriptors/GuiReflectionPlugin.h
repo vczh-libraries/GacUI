@@ -183,6 +183,7 @@ Type List (Compositions)
 			F(presentation::compositions::IGuiAltActionHost)\
 			F(presentation::compositions::IGuiTabAction)\
 			F(presentation::compositions::GuiRepeatCompositionBase)\
+			F(presentation::compositions::VirtualRepeatEnsureItemVisibleResult)\
 
 #define GUIREFLECTIONCOMPOSITION_CLASS_TYPELIST(F)\
 			F(presentation::compositions::GuiGraphicsComposition)\
@@ -201,8 +202,14 @@ Type List (Compositions)
 			F(presentation::compositions::GuiPartialViewComposition)\
 			F(presentation::compositions::GuiSharedSizeItemComposition)\
 			F(presentation::compositions::GuiSharedSizeRootComposition)\
+			F(presentation::compositions::GuiNonVirtialRepeatCompositionBase)\
 			F(presentation::compositions::GuiRepeatStackComposition)\
 			F(presentation::compositions::GuiRepeatFlowComposition)\
+			F(presentation::compositions::GuiVirtualRepeatCompositionBase)\
+			F(presentation::compositions::GuiRepeatFreeHeightItemComposition)\
+			F(presentation::compositions::GuiRepeatFixedHeightItemComposition)\
+			F(presentation::compositions::GuiRepeatFixedSizeMultiColumnItemComposition)\
+			F(presentation::compositions::GuiRepeatFixedHeightMultiColumnItemComposition)\
 			F(presentation::compositions::GuiResponsiveCompositionBase)\
 			F(presentation::compositions::GuiResponsiveSharedComposition)\
 			F(presentation::compositions::GuiResponsiveViewComposition)\
@@ -255,7 +262,6 @@ Type List (Templates)
 
 #define GUIREFLECTIONTEMPLATES_CLASS_TYPELIST(F)\
 			F(presentation::templates::GuiTemplate)\
-			F(presentation::templates::GuiListItemTemplate)\
 			F(presentation::templates::GuiCommonDatePickerLook)\
 			F(presentation::templates::GuiCommonScrollViewLook)\
 			GUI_CORE_CONTROL_TEMPLATE_DECL(GUIREFLECTIONTEMPLATES_##F)\

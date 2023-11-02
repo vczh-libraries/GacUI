@@ -1003,7 +1003,6 @@ DefaultTreeItemTemplate
 
 				void DefaultTreeItemTemplate::OnInitialize()
 				{
-					templates::GuiTreeItemTemplate::OnInitialize();
 					SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 
 					table = new GuiTableComposition;

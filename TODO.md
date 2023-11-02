@@ -4,6 +4,8 @@
 
 ## Known Issues
 
+- `GuiVirtualRepeatCompositionBase`.
+  - Eliminate double `ForceCalculateSizeImmediately()` calls in `TestCompositions_VirtualRepeat.cpp` (TODO) and related files.
 - FakeDialogService
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
@@ -11,7 +13,8 @@
 
 ## Progressing (before release)
 
-- FullControlTest
+Turn `GuiListControl::IItemArranger` implementations into compositions.
+  - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
@@ -30,7 +33,8 @@
   - Test against more code as many as possible
 - DarkSkin
   - Need to hardcode a minimum size for scroll bar handler. When list has too many items, the handler will disappear.
-  - Add minimum size control to `<PartialView>`.
+  - Add minimum size control to `<PartialView>` (should have been done).
+  - Use it in `<PartialView ref.Name="handle">`.
 - DarkSkin Color Theme.
   - Move all hardcoded colors to Style.xml or a general place.
   - Move all colors from Style.xml to a general place.
@@ -79,7 +83,6 @@
 - ListView.
   - `GroupedListView` and `BindableGroupedListView` from `GuiVirtualListView`: Group headers on all views.
   - `TreeListView` and `BindableTreeListView` from `GuiVirtualTreeView`.
-- New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
 - Chart control.
 - Code editor (need VlppParser2)
 - Dock container.
