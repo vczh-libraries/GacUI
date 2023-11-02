@@ -1508,6 +1508,12 @@ class presentation::compositions::GuiNodeMouseEventArgs : presentation::composit
     constructor (composition : presentation::compositions::GuiGraphicsComposition*) : presentation::compositions::GuiNodeMouseEventArgs^;
 }
 
+class presentation::compositions::GuiNonVirtialRepeatCompositionBase : presentation::compositions::GuiBoundsComposition, presentation::compositions::GuiRepeatCompositionBase {
+    event ItemInserted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
+    event ItemRemoved : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
+
+}
+
 class presentation::compositions::GuiPartialViewComposition : presentation::compositions::GuiGraphicsComposition {
     property HeightPageSize : system::Double { get:GetHeightPageSize set:SetHeightPageSize }
     property HeightRatio : system::Double { get:GetHeightRatio set:SetHeightRatio }
@@ -1530,8 +1536,6 @@ class presentation::compositions::GuiRepeatCompositionBase : system::ReferenceTy
     event ContextChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         Context,
     }
-    event ItemInserted : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
-    event ItemRemoved : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiItemEventArgs*>^;
 
     property Context : system::Object { get:GetContext set:SetContext event:ContextChanged }
     property ItemSource : system::Enumerable^ { get:GetItemSource set:SetItemSource }
@@ -1546,11 +1550,27 @@ class presentation::compositions::GuiRepeatCompositionBase : system::ReferenceTy
 
 }
 
-class presentation::compositions::GuiRepeatFlowComposition : presentation::compositions::GuiFlowComposition, presentation::compositions::GuiRepeatCompositionBase {
+class presentation::compositions::GuiRepeatFixedHeightItemComposition : presentation::compositions::GuiVirtualRepeatCompositionBase {
+    constructor () : presentation::compositions::GuiRepeatFixedHeightItemComposition*;
+}
+
+class presentation::compositions::GuiRepeatFixedHeightMultiColumnItemComposition : presentation::compositions::GuiVirtualRepeatCompositionBase {
+    constructor () : presentation::compositions::GuiRepeatFixedHeightMultiColumnItemComposition*;
+}
+
+class presentation::compositions::GuiRepeatFixedSizeMultiColumnItemComposition : presentation::compositions::GuiVirtualRepeatCompositionBase {
+    constructor () : presentation::compositions::GuiRepeatFixedSizeMultiColumnItemComposition*;
+}
+
+class presentation::compositions::GuiRepeatFlowComposition : presentation::compositions::GuiFlowComposition, presentation::compositions::GuiNonVirtialRepeatCompositionBase {
     constructor () : presentation::compositions::GuiRepeatFlowComposition*;
 }
 
-class presentation::compositions::GuiRepeatStackComposition : presentation::compositions::GuiStackComposition, presentation::compositions::GuiRepeatCompositionBase {
+class presentation::compositions::GuiRepeatFreeHeightItemComposition : presentation::compositions::GuiVirtualRepeatCompositionBase {
+    constructor () : presentation::compositions::GuiRepeatFreeHeightItemComposition*;
+}
+
+class presentation::compositions::GuiRepeatStackComposition : presentation::compositions::GuiStackComposition, presentation::compositions::GuiNonVirtialRepeatCompositionBase {
     constructor () : presentation::compositions::GuiRepeatStackComposition*;
 }
 
@@ -1755,6 +1775,41 @@ class presentation::compositions::GuiTableSplitterCompositionBase : presentation
 
 }
 
+class presentation::compositions::GuiVirtualRepeatCompositionBase : presentation::compositions::GuiBoundsComposition, presentation::compositions::GuiRepeatCompositionBase {
+    event AdoptedSizeInvalidated : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        AdoptedSize,
+    }
+    event AxisChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        Axis,
+    }
+    event TotalSizeChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        TotalSize,
+    }
+    event ViewLocationChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        ViewLocation,
+    }
+
+    property AdoptedSize : presentation::Size { get:GetAdoptedSize event:AdoptedSizeInvalidated }
+    property Axis : presentation::compositions::IGuiAxis^ { get:GetAxis set:SetAxis event:AxisChanged }
+    property TotalSize : presentation::Size { get:GetTotalSize event:TotalSizeChanged }
+    property ViewLocation : presentation::Point { get:GetViewLocation set:SetViewLocation event:ViewLocationChanged }
+
+    function EnsureItemVisible(itemIndex : system::Int64) : presentation::compositions::VirtualRepeatEnsureItemVisibleResult;
+    function FindItemByRealKeyDirection(itemIndex : system::Int64, key : presentation::compositions::KeyDirection) : system::Int64;
+    function FindItemByVirtualKeyDirection(itemIndex : system::Int64, key : presentation::compositions::KeyDirection) : system::Int64;
+    function GetAdoptedSize( : presentation::Size) : presentation::Size;
+    function GetAdoptedSize(expectedSize : presentation::Size) : presentation::Size;
+    function GetAxis() : presentation::compositions::IGuiAxis^;
+    function GetTotalSize() : presentation::Size;
+    function GetViewLocation() : presentation::Point;
+    function GetVisibleIndex(style : presentation::templates::GuiTemplate*) : system::Int64;
+    function GetVisibleStyle(itemIndex : system::Int64) : presentation::templates::GuiTemplate*;
+    function ReloadVisibleStyles() : system::Void;
+    function SetAxis(value : presentation::compositions::IGuiAxis^) : system::Void;
+    function SetViewLocation(value : presentation::Point) : system::Void;
+
+}
+
 class presentation::compositions::GuiWindowComposition : presentation::compositions::GuiGraphicsComposition {
     constructor () : presentation::compositions::GuiWindowComposition*;
 }
@@ -1872,6 +1927,13 @@ enum presentation::compositions::ResponsiveDirection {
     Both = 3,
     Horizontal = 1,
     Vertical = 2,
+}
+
+@ValueType
+enum presentation::compositions::VirtualRepeatEnsureItemVisibleResult {
+    ItemNotExists = 0,
+    Moved = 1,
+    NotMoved = 2,
 }
 
 @ValueType
@@ -4788,6 +4850,9 @@ class presentation::templates::GuiListControlTemplate : presentation::templates:
 }
 
 class presentation::templates::GuiListItemTemplate : presentation::templates::GuiTemplate {
+    event AssociatedListControlChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
+        AssociatedListControl,
+    }
     event IndexChanged : system::Function<system::Void, presentation::compositions::GuiGraphicsComposition*, presentation::compositions::GuiEventArgs*>^ observing {
         Index,
     }
@@ -4795,11 +4860,14 @@ class presentation::templates::GuiListItemTemplate : presentation::templates::Gu
         Selected,
     }
 
+    property AssociatedListControl : presentation::controls::GuiListControl* { get:GetAssociatedListControl set:SetAssociatedListControl event:AssociatedListControlChanged }
     property Index : system::Int64 { get:GetIndex set:SetIndex event:IndexChanged }
     property Selected : system::Boolean { get:GetSelected set:SetSelected event:SelectedChanged }
 
+    function GetAssociatedListControl() : presentation::controls::GuiListControl*;
     function GetIndex() : system::Int64;
     function GetSelected() : system::Boolean;
+    function SetAssociatedListControl(value : presentation::controls::GuiListControl*) : system::Void;
     function SetIndex(value : system::Int64) : system::Void;
     function SetSelected(value : system::Boolean) : system::Void;
 
