@@ -52,6 +52,7 @@ GuiRepeatCompositionBase
 					if (itemChangedHandler)
 					{
 						itemSource.Cast<IValueObservableList>()->ItemChanged.Remove(itemChangedHandler);
+						itemChangedHandler = {};
 					}
 
 					OnClearItems();
