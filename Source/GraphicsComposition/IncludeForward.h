@@ -46,8 +46,14 @@ namespace vl
 			class GuiSharedSizeRootComposition;
 
 			class GuiRepeatCompositionBase;
+			class GuiNonVirtialRepeatCompositionBase;
 			class GuiRepeatStackComposition;
 			class GuiRepeatFlowComposition;
+			class GuiVirtualRepeatCompositionBase;
+			class GuiRepeatFreeHeightItemComposition;
+			class GuiRepeatFixedHeightItemComposition;
+			class GuiRepeatFixedSizeMultiColumnItemComposition;
+			class GuiRepeatFixedHeightMultiColumnItemComposition;
 		}
 	}
 }
