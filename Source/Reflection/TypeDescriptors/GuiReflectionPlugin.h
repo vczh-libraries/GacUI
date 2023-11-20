@@ -816,9 +816,9 @@ Interface Proxy (Controls)
 					INVOKE_INTERFACE_PROXY(OnViewChanged, bounds);
 				}
 
-				vint FindItem(vint itemIndex, presentation::compositions::KeyDirection key)override
+				vint FindItemByVirtualKeyDirection(vint itemIndex, presentation::compositions::KeyDirection key)override
 				{
-					INVOKEGET_INTERFACE_PROXY(FindItem, itemIndex, key);
+					INVOKEGET_INTERFACE_PROXY(FindItemByVirtualKeyDirection, itemIndex, key);
 				}
 
 				presentation::controls::GuiListControl::EnsureItemVisibleResult EnsureItemVisible(vint itemIndex)override

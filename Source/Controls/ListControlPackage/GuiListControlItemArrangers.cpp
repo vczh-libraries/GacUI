@@ -21,6 +21,35 @@ namespace vl
 RangedItemArrangerBase
 ***********************************************************************/
 
+				templates::GuiTemplate* RangedItemArrangerBase::CreateItemTemplate(vint index)
+				{
+					GuiSelectableButton* backgroundButton = nullptr;
+					if (listControl->GetDisplayItemBackground())
+					{
+						backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
+						if (auto style = listControl->TypedControlTemplateObject(true)->GetBackgroundTemplate())
+						{
+							backgroundButton->SetControlTemplate(style);
+						}
+						backgroundButton->SetAutoFocus(false);
+						backgroundButton->SetAutoSelection(false);
+					}
+
+					auto itemStyle = callback->RequestItem(index, (backgroundButton ? backgroundButton->GetBoundsComposition() : nullptr));
+					if (backgroundButton)
+					{
+						itemStyle->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						itemStyle->SelectedChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+						{
+							backgroundButton->SetSelected(itemStyle->GetSelected());
+						});
+						backgroundButton->SetSelected(itemStyle->GetSelected());
+						backgroundButton->GetContainerComposition()->AddChild(itemStyle);
+					}
+
+					return itemStyle;
+				}
+
 				RangedItemArrangerBase::RangedItemArrangerBase(compositions::GuiVirtualRepeatCompositionBase* _repeat)
 					: repeat(_repeat)
 				{
@@ -28,6 +57,7 @@ RangedItemArrangerBase
 
 				RangedItemArrangerBase::~RangedItemArrangerBase()
 				{
+					SafeDeleteComposition(repeat);
 				}
 
 				void RangedItemArrangerBase::OnAttached(GuiListControl::IItemProvider* provider)
@@ -47,12 +77,15 @@ RangedItemArrangerBase
 				void RangedItemArrangerBase::AttachListControl(GuiListControl* value)
 				{
 					listControl = value;
-					CHECK_FAIL(L"Observe and set repeat properties!");
+					repeat->SetAxis(Ptr(listControl->GetAxis()));
+					CHECK_FAIL(L"Set ItemTemplate");
 				}
 
 				void RangedItemArrangerBase::DetachListControl()
 				{
-					CHECK_FAIL(L"Unobserve!");
+					repeat->SetAxis(nullptr);
+					repeat->SetItemSource(nullptr);
+					repeat->SetItemTemplate({});
 					listControl = nullptr;
 				}
 
@@ -65,79 +98,70 @@ RangedItemArrangerBase
 				{
 					if (callback != value)
 					{
-						ClearStyles();
+						if (callback)
+						{
+							repeat->GetParent()->RemoveChild(repeat);
+						}
+						repeat->ReloadVisibleStyles();
 						callback = value;
+						if (callback)
+						{
+							callback->GetContainerComposition()->AddChild(repeat);
+						}
 					}
 				}
 
 				Size RangedItemArrangerBase::GetTotalSize()
 				{
-					if (callback)
+					if (callback && repeat)
 					{
-						return OnCalculateTotalSize();
+						return repeat->GetTotalSize();
 					}
-					else
-					{
-						return Size(0, 0);
-					}
+					return Size(0, 0);
 				}
 
 				GuiListControl::ItemStyle* RangedItemArrangerBase::GetVisibleStyle(vint itemIndex)
 				{
-					if (startIndex <= itemIndex && itemIndex < startIndex + visibleStyles.Count())
-					{
-						return visibleStyles[itemIndex - startIndex].key;
-					}
-					else
-					{
-						return nullptr;
-					}
+					return dynamic_cast<GuiListControl::ItemStyle*>(repeat->GetVisibleStyle(itemIndex));
 				}
 
 				vint RangedItemArrangerBase::GetVisibleIndex(GuiListControl::ItemStyle* style)
 				{
-					// TODO: (enumerable) foreach:indexed
-					for (vint i = 0; i < visibleStyles.Count(); i++)
-					{
-						if (visibleStyles[i].key == style)
-						{
-							return i + startIndex;
-						}
-					}
-					return -1;
+					return repeat->GetVisibleIndex(style);
 				}
 
 				void RangedItemArrangerBase::ReloadVisibleStyles()
 				{
-					ClearStyles();
+					if (repeat) repeat->ReloadVisibleStyles();
 				}
 
 				void RangedItemArrangerBase::OnViewChanged(Rect bounds)
 				{
-					if (!suppressOnViewChanged)
-					{
-						suppressOnViewChanged = true;
-						Rect oldBounds = viewBounds;
-						viewBounds = bounds;
-						if (callback)
-						{
-							OnViewChangedInternal(oldBounds, viewBounds);
-							RearrangeItemBounds();
-						}
-						suppressOnViewChanged = false;
-					}
+					repeat->SetViewLocation(bounds.LeftTop());
+					repeat->SetExpectedBounds(Rect({ 0,0 }, bounds.GetSize()));
 				}
 
-				vint RangedItemArrangerBase::FindItem(vint itemIndex, compositions::KeyDirection key)
+				vint RangedItemArrangerBase::FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)
 				{
+					return repeat->FindItemByVirtualKeyDirection(itemIndex, key);
 				}
 
 				GuiListControl::EnsureItemVisibleResult RangedItemArrangerBase::EnsureItemVisible(vint itemIndex)
 				{
+					switch (repeat->EnsureItemVisible(itemIndex))
+					{
+					case VirtualRepeatEnsureItemVisibleResult::Moved:
+						return GuiListControl::EnsureItemVisibleResult::Moved;
+					case VirtualRepeatEnsureItemVisibleResult::NotMoved:
+						return GuiListControl::EnsureItemVisibleResult::NotMoved;
+					default:
+						return GuiListControl::EnsureItemVisibleResult::ItemNotExists;
+					}
 				}
 
 				Size RangedItemArrangerBase::GetAdoptedSize(Size expectedSize)
 				{
+					return repeat->GetAdoptedSize(expectedSize);
 				}
 
 /***********************************************************************

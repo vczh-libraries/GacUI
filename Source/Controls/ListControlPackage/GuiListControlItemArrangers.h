@@ -36,6 +36,7 @@ Predefined ItemArranger
 					GuiListControl::IItemProvider*					itemProvider = nullptr;
 					compositions::GuiVirtualRepeatCompositionBase*	repeat = nullptr;
 
+					templates::GuiTemplate*						CreateItemTemplate(vint index);
 				public:
 					/// <summary>Create the arranger.</summary>
 					/// <param name="_repeat">A repeat composition to implement the item layout. It will be deleted when the item arranger is deleted.</param>
@@ -53,7 +54,7 @@ Predefined ItemArranger
 					vint										GetVisibleIndex(GuiListControl::ItemStyle* style)override;
 					void										ReloadVisibleStyles()override;
 					void										OnViewChanged(Rect bounds)override;
-					vint										FindItem(vint itemIndex, compositions::KeyDirection key) override;
+					vint										FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) override;
 					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex) override;
 					Size										GetAdoptedSize(Size expectedSize) override;
 				};

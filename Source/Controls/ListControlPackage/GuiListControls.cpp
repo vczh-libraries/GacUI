@@ -99,30 +99,6 @@ GuiListControl::ItemCallback
 				listControl->SetViewPosition(realRect.LeftTop());
 			}
 
-			Size GuiListControl::ItemCallback::GetStylePreferredSize(compositions::GuiBoundsComposition* style)
-			{
-				Size size = style->GetCachedMinSize();
-				return listControl->axis->RealSizeToVirtualSize(size);
-			}
-
-			void GuiListControl::ItemCallback::SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)
-			{
-				Margin newMargin = listControl->axis->VirtualMarginToRealMargin(margin);
-				style->SetAlignmentToParent(newMargin);
-			}
-
-			Rect GuiListControl::ItemCallback::GetStyleBounds(compositions::GuiBoundsComposition* style)
-			{
-				Rect bounds = style->GetCachedBounds();
-				return listControl->axis->RealRectToVirtualRect(listControl->GetViewSize(), bounds);
-			}
-
-			void GuiListControl::ItemCallback::SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)
-			{
-				Rect newBounds = listControl->axis->VirtualRectToRealRect(listControl->GetViewSize(), bounds);
-				return style->SetExpectedBounds(newBounds);
-			}
-
 			compositions::GuiGraphicsComposition* GuiListControl::ItemCallback::GetContainerComposition()
 			{
 				return listControl->GetContainerComposition();
@@ -635,7 +611,7 @@ GuiSelectableListControl
 
 			vint GuiSelectableListControl::FindItemByVirtualKeyDirection(vint index, compositions::KeyDirection keyDirection)
 			{
-				return GetArranger()->FindItem(selectedItemIndexEnd, keyDirection);
+				return GetArranger()->FindItemByVirtualKeyDirection(selectedItemIndexEnd, keyDirection);
 			}
 
 			GuiSelectableListControl::GuiSelectableListControl(theme::ThemeName themeName, IItemProvider* _itemProvider)

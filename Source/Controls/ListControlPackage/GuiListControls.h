@@ -171,7 +171,7 @@ List Control
 					/// <returns>The item index that is found. Returns -1 if this operation failed.</returns>
 					/// <param name="itemIndex">The base item index.</param>
 					/// <param name="key">The key direction.</param>
-					virtual vint								FindItem(vint itemIndex, compositions::KeyDirection key) = 0;
+					virtual vint								FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) = 0;
 					/// <summary>Adjust the view location to make an item visible.</summary>
 					/// <returns>Returns the result of this operation.</returns>
 					/// <param name="itemIndex">The item index of the item to be made visible.</param>
@@ -212,10 +212,6 @@ List Control
 					ItemStyle*									RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)override;
 					void										ReleaseItem(ItemStyle* style)override;
 					void										SetViewLocation(Point value)override;
-					Size										GetStylePreferredSize(compositions::GuiBoundsComposition* style)override;
-					void										SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)override;
-					Rect										GetStyleBounds(compositions::GuiBoundsComposition* style)override;
-					void										SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)override;
 					compositions::GuiGraphicsComposition*		GetContainerComposition()override;
 					void										OnTotalSizeChanged()override;
 				};
