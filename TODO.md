@@ -17,7 +17,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - New `GuiListControl::IItemArranger` that can accept a `GuiRepeatCompositionBase`.
     - Test `GetAdoptedSize`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
-    - Remove axis related callbacks in `IItemArrangerCallback`.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
   - Enlarging window slower than shrinking.
