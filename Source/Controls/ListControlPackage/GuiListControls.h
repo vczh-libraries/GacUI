@@ -71,22 +71,6 @@ List Control
 					/// <summary>Update the view location. The view location is the left-top position in the logic space of the list control.</summary>
 					/// <param name="value">The new view location.</param>
 					virtual void									SetViewLocation(Point value)=0;
-					/// <summary>Get the preferred size of an item control.</summary>
-					/// <returns>The preferred size of an item control.</returns>
-					/// <param name="style">The item control.</param>
-					virtual Size									GetStylePreferredSize(compositions::GuiBoundsComposition* style)=0;
-					/// <summary>Set the alignment of an item control.</summary>
-					/// <param name="style">The item control.</param>
-					/// <param name="margin">The new alignment.</param>
-					virtual void									SetStyleAlignmentToParent(compositions::GuiBoundsComposition* style, Margin margin)=0;
-					/// <summary>Get the bounds of an item control.</summary>
-					/// <returns>The bounds of an item control.</returns>
-					/// <param name="style">The item control.</param>
-					virtual Rect									GetStyleBounds(compositions::GuiBoundsComposition* style)=0;
-					/// <summary>Set the bounds of an item control.</summary>
-					/// <param name="style">The item control.</param>
-					/// <param name="bounds">The new bounds.</param>
-					virtual void									SetStyleBounds(compositions::GuiBoundsComposition* style, Rect bounds)=0;
 					/// <summary>Get the <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</summary>
 					/// <returns>The <see cref="compositions::GuiGraphicsComposition"/> that directly contains item controls.</returns>
 					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;

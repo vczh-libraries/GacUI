@@ -31,35 +31,15 @@ Predefined ItemArranger
 					using ItemStyleRecord = collections::Pair<GuiListControl::ItemStyle*, GuiSelectableButton*>;
 					typedef collections::List<ItemStyleRecord>	StyleList;
 
-					GuiListControl*								listControl = nullptr;
-					GuiListControl::IItemArrangerCallback*		callback = nullptr;
-					GuiListControl::IItemProvider*				itemProvider = nullptr;
+					GuiListControl*									listControl = nullptr;
+					GuiListControl::IItemArrangerCallback*			callback = nullptr;
+					GuiListControl::IItemProvider*					itemProvider = nullptr;
+					compositions::GuiVirtualRepeatCompositionBase*	repeat = nullptr;
 
-					bool										suppressOnViewChanged = false;
-					Rect										viewBounds;
-					vint										startIndex = 0;
-					StyleList									visibleStyles;
-
-				protected:
-
-					void										InvalidateAdoptedSize();
-					vint										CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
-					ItemStyleRecord								CreateStyle(vint index);
-					void										DeleteStyle(ItemStyleRecord style);
-					compositions::GuiBoundsComposition*			GetStyleBounds(ItemStyleRecord style);
-					void										ClearStyles();
-					void										OnViewChangedInternal(Rect oldBounds, Rect newBounds);
-					virtual void								RearrangeItemBounds();
-
-					virtual void								BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex) = 0;
-					virtual void								PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent) = 0;
-					virtual bool								IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds) = 0;
-					virtual bool								EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex) = 0;
-					virtual void								InvalidateItemSizeCache() = 0;
-					virtual Size								OnCalculateTotalSize() = 0;
 				public:
 					/// <summary>Create the arranger.</summary>
-					RangedItemArrangerBase();
+					/// <param name="_repeat">A repeat composition to implement the item layout. It will be deleted when the item arranger is deleted.</param>
+					RangedItemArrangerBase(compositions::GuiVirtualRepeatCompositionBase* _repeat);
 					~RangedItemArrangerBase();
 
 					void										OnAttached(GuiListControl::IItemProvider* provider)override;
@@ -73,25 +53,18 @@ Predefined ItemArranger
 					vint										GetVisibleIndex(GuiListControl::ItemStyle* style)override;
 					void										ReloadVisibleStyles()override;
 					void										OnViewChanged(Rect bounds)override;
+					vint										FindItem(vint itemIndex, compositions::KeyDirection key) override;
+					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex) override;
+					Size										GetAdoptedSize(Size expectedSize) override;
 				};
 
 				template<typename TVirtualRepeatComposition>
 				class VirtualRepeatRangedItemArrangerBase : public RangedItemArrangerBase
 				{
 				public:
-					vint FindItem(vint itemIndex, compositions::KeyDirection key) override
+					VirtualRepeatRangedItemArrangerBase()
+						: RangedItemArrangerBase(new TVirtualRepeatComposition)
 					{
-						CHECK_FAIL(L"Not Implemented!");
-					}
-
-					GuiListControl::EnsureItemVisibleResult EnsureItemVisible(vint itemIndex) override
-					{
-						CHECK_FAIL(L"Not Implemented!");
-					}
-
-					Size GetAdoptedSize(Size expectedSize) override
-					{
-						CHECK_FAIL(L"Not Implemented!");
 					}
 				};
 
