@@ -109,12 +109,13 @@ ListViewColumnItemArranger
 ***********************************************************************/
 
 				/// <summary>List view column item arranger. This arranger contains column headers. When an column header is resized, all items will be notified via the [T:vl.presentation.controls.list.ListViewColumnItemArranger.IColumnItemView] for <see cref="GuiListControl::IItemProvider"/>.</summary>
-				class ListViewColumnItemArranger : public FixedHeightItemArranger, public Description<ListViewColumnItemArranger>
+				class ListViewColumnItemArranger : public VirtualRepeatRangedItemArrangerBase<compositions::GuiRepeatFixedHeightItemComposition>, public Description<ListViewColumnItemArranger>
 				{
+					using TBase = VirtualRepeatRangedItemArrangerBase<compositions::GuiRepeatFixedHeightItemComposition>;
 					typedef collections::List<GuiListViewColumnHeader*>					ColumnHeaderButtonList;
 					typedef collections::List<compositions::GuiBoundsComposition*>		ColumnHeaderSplitterList;
 				public:
-					static const vint							SplitterWidth=8;
+					static const vint							SplitterWidth = 8;
 					
 					/// <summary>Callback for [T:vl.presentation.controls.list.ListViewColumnItemArranger.IColumnItemView]. Column item view use this interface to notify column related modification.</summary>
 					class IColumnItemViewCallback : public virtual IDescriptable, public Description<IColumnItemViewCallback>
@@ -162,12 +163,24 @@ ListViewColumnItemArranger
 					class ColumnItemViewCallback : public Object, public virtual IColumnItemViewCallback
 					{
 					protected:
-						ListViewColumnItemArranger*				arranger;
+						ListViewColumnItemArranger*				arranger = nullptr;
+
 					public:
 						ColumnItemViewCallback(ListViewColumnItemArranger* _arranger);
 						~ColumnItemViewCallback();
 
 						void									OnColumnChanged();
+					};
+
+					class ColumnItemArrangerRepeatComposition : public TBase::ArrangerRepeatComposition
+					{
+					protected:
+						ListViewColumnItemArranger*				arranger = nullptr;
+
+						void									Layout_EndLayout(bool totalSizeUpdated) override;
+						Size									Layout_CalculateTotalSize() override;
+					public:
+						ColumnItemArrangerRepeatComposition(ListViewColumnItemArranger* _arranger);
 					};
 
 					GuiListViewBase*							listView = nullptr;
@@ -186,10 +199,9 @@ ListViewColumnItemArranger
 					void										ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 
-					void										RearrangeItemBounds()override;
-					vint										GetWidth()override;
-					vint										GetYOffset()override;
-					Size										OnCalculateTotalSize()override;
+					void										FixColumnsAfterLayout();
+					vint										GetColumnsWidth();
+					vint										GetColumnsYOffset();
 					void										DeleteColumnButtons();
 					void										RebuildColumns();
 				public:

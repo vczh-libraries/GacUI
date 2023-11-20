@@ -10,6 +10,7 @@ Interfaces:
 #define VCZH_PRESENTATION_CONTROLS_GUILISTCONTROLITEMARRANGERS
 
 #include "GuiListControls.h"
+#include "../../GraphicsComposition/GuiGraphicsRepeatComposition.h"
 
 namespace vl
 {
@@ -95,9 +96,14 @@ Predefined ItemArranger
 						return dynamic_cast<TVirtualRepeatComposition*>(repeat);
 					}
 
-				public:
+				protected:
 					VirtualRepeatRangedItemArrangerBase()
 						: RangedItemArrangerBase(new ArrangerRepeatComposition(this))
+					{
+					}
+
+					VirtualRepeatRangedItemArrangerBase(ArrangerRepeatComposition* _repeat)
+						: RangedItemArrangerBase(_repeat)
 					{
 					}
 				};

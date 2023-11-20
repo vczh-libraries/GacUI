@@ -1,7 +1,6 @@
 #include "GuiListViewControls.h"
 #include "GuiListViewItemTemplates.h"
 #include "../Templates/GuiThemeStyleFactory.h"
-#include "../../GraphicsComposition/GuiGraphicsStackComposition.h"
 
 namespace vl
 {
@@ -98,13 +97,38 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged()
 				{
 					arranger->RebuildColumns();
-					for (auto style : arranger->visibleStyles)
+					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
+					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
+					for (auto style : arranger->GetRepeatComposition()->Children())
 					{
-						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style.key))
+						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style))
 						{
 							callback->OnColumnChanged();
 						}
 					}
+				}
+				
+/***********************************************************************
+ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition
+***********************************************************************/
+
+				void ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::Layout_EndLayout(bool totalSizeUpdated)
+				{
+					TBase::ArrangerRepeatComposition::Layout_EndLayout(totalSizeUpdated);
+					arranger->FixColumnsAfterLayout();
+				}
+
+				Size ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::Layout_CalculateTotalSize()
+				{
+					auto size = TBase::ArrangerRepeatComposition::Layout_CalculateTotalSize();
+					size.x += arranger->SplitterWidth;
+					return size;
+				}
+
+				ListViewColumnItemArranger::ColumnItemArrangerRepeatComposition::ColumnItemArrangerRepeatComposition(ListViewColumnItemArranger* _arranger)
+					: TBase::ArrangerRepeatComposition(_arranger)
+					, arranger(_arranger)
+				{
 				}
 				
 /***********************************************************************
@@ -169,15 +193,15 @@ ListViewColumnItemArranger
 					}
 				}
 
-				void ListViewColumnItemArranger::RearrangeItemBounds()
+				void ListViewColumnItemArranger::FixColumnsAfterLayout()
 				{
-					FixedHeightItemArranger::RearrangeItemBounds();
+					vint x = GetRepeatComposition()->GetViewLocation().x;
 					vint count = columnHeaders->GetParent()->Children().Count();
 					columnHeaders->GetParent()->MoveChild(columnHeaders, count - 1);
-					columnHeaders->SetExpectedBounds(Rect(Point(-viewBounds.Left(), 0), Size(0, 0)));
+					columnHeaders->SetExpectedBounds(Rect(Point(-x, 0), Size(0, 0)));
 				}
 
-				vint ListViewColumnItemArranger::GetWidth()
+				vint ListViewColumnItemArranger::GetColumnsWidth()
 				{
 					vint width=columnHeaders->GetCachedBounds().Width()-SplitterWidth;
 					if(width<SplitterWidth)
@@ -187,16 +211,9 @@ ListViewColumnItemArranger
 					return width;
 				}
 
-				vint ListViewColumnItemArranger::GetYOffset()
+				vint ListViewColumnItemArranger::GetColumnsYOffset()
 				{
 					return columnHeaders->GetCachedBounds().Height();
-				}
-
-				Size ListViewColumnItemArranger::OnCalculateTotalSize()
-				{
-					Size size=FixedHeightItemArranger::OnCalculateTotalSize();
-					size.x+=SplitterWidth;
-					return size;
 				}
 
 				void ListViewColumnItemArranger::DeleteColumnButtons()
@@ -287,6 +304,7 @@ ListViewColumnItemArranger
 				}
 
 				ListViewColumnItemArranger::ListViewColumnItemArranger()
+					: TBase(new ColumnItemArrangerRepeatComposition(this))
 				{
 					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
@@ -304,7 +322,7 @@ ListViewColumnItemArranger
 
 				void ListViewColumnItemArranger::AttachListControl(GuiListControl* value)
 				{
-					FixedHeightItemArranger::AttachListControl(value);
+					TBase::AttachListControl(value);
 					listView = dynamic_cast<GuiListViewBase*>(value);
 					if (listView)
 					{
@@ -332,7 +350,7 @@ ListViewColumnItemArranger
 						listView->GetContainerComposition()->RemoveChild(columnHeaders);
 						listView = nullptr;
 					}
-					FixedHeightItemArranger::DetachListControl();
+					TBase::DetachListControl();
 				}
 
 /***********************************************************************

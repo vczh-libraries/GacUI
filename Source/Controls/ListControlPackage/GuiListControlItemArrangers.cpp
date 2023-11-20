@@ -1,5 +1,4 @@
 #include "GuiListControlItemArrangers.h"
-#include "../../GraphicsComposition/GuiGraphicsRepeatComposition.h"
 #include "../Templates/GuiControlTemplates.h"
 #include "../Templates/GuiThemeStyleFactory.h"
 #include "../GuiButtonControls.h"
