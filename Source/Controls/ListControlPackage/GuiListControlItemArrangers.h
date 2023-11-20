@@ -34,29 +34,33 @@ Predefined ItemArranger
 					GuiListControl*									listControl = nullptr;
 					GuiListControl::IItemArrangerCallback*			callback = nullptr;
 					GuiListControl::IItemProvider*					itemProvider = nullptr;
+					Ptr<description::IValueObservableList>			itemSource;
 					compositions::GuiVirtualRepeatCompositionBase*	repeat = nullptr;
 
 					GuiListControl::ItemStyle*						CreateItemTemplate(vint index);
+					void											OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
+					void											OnTotalSizeChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
+					void											OnAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 				public:
 					/// <summary>Create the arranger.</summary>
 					/// <param name="_repeat">A repeat composition to implement the item layout. It will be deleted when the item arranger is deleted.</param>
 					RangedItemArrangerBase(compositions::GuiVirtualRepeatCompositionBase* _repeat);
 					~RangedItemArrangerBase();
 
-					void										OnAttached(GuiListControl::IItemProvider* provider)override;
-					void										OnItemModified(vint start, vint count, vint newCount)override;
-					void										AttachListControl(GuiListControl* value)override;
-					void										DetachListControl()override;
-					GuiListControl::IItemArrangerCallback*		GetCallback()override;
-					void										SetCallback(GuiListControl::IItemArrangerCallback* value)override;
-					Size										GetTotalSize()override;
-					GuiListControl::ItemStyle*					GetVisibleStyle(vint itemIndex)override;
-					vint										GetVisibleIndex(GuiListControl::ItemStyle* style)override;
-					void										ReloadVisibleStyles()override;
-					void										OnViewChanged(Rect bounds)override;
-					vint										FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) override;
-					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex) override;
-					Size										GetAdoptedSize(Size expectedSize) override;
+					void											OnAttached(GuiListControl::IItemProvider* provider)override;
+					void											OnItemModified(vint start, vint count, vint newCount)override;
+					void											AttachListControl(GuiListControl* value)override;
+					void											DetachListControl()override;
+					GuiListControl::IItemArrangerCallback*			GetCallback()override;
+					void											SetCallback(GuiListControl::IItemArrangerCallback* value)override;
+					Size											GetTotalSize()override;
+					GuiListControl::ItemStyle*						GetVisibleStyle(vint itemIndex)override;
+					vint											GetVisibleIndex(GuiListControl::ItemStyle* style)override;
+					void											ReloadVisibleStyles()override;
+					void											OnViewChanged(Rect bounds)override;
+					vint											FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key) override;
+					GuiListControl::EnsureItemVisibleResult			EnsureItemVisible(vint itemIndex) override;
+					Size											GetAdoptedSize(Size expectedSize) override;
 				};
 
 				template<typename TVirtualRepeatComposition>
@@ -85,6 +89,11 @@ Predefined ItemArranger
 							arranger->callback->ReleaseItem(dynamic_cast<GuiListControl::ItemStyle*>(style));
 						}
 					};
+
+					TVirtualRepeatComposition* GetRepeatComposition()
+					{
+						return dynamic_cast<TVirtualRepeatComposition*>(repeat);
+					}
 
 				public:
 					VirtualRepeatRangedItemArrangerBase()

@@ -198,6 +198,7 @@ Type Declaration (Extra)
 				CLASS_MEMBER_METHOD(SetViewLocation, {L"value"})
 				CLASS_MEMBER_METHOD(GetContainerComposition, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(OnTotalSizeChanged, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(OnAdoptedSizeChanged, NO_PARAMETER)
 			END_INTERFACE_MEMBER(GuiListControl::IItemArrangerCallback)
 
 			BEGIN_ENUM_ITEM(GuiListControl::EnsureItemVisibleResult)

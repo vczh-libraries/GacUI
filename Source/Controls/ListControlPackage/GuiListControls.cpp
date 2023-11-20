@@ -109,6 +109,11 @@ GuiListControl::ItemCallback
 				listControl->CalculateView();
 			}
 
+			void GuiListControl::ItemCallback::OnAdoptedSizeChanged()
+			{
+				listControl->AdoptedSizeInvalidated.Execute(listControl->GetNotifyEventArguments());
+			}
+
 /***********************************************************************
 GuiListControl
 ***********************************************************************/

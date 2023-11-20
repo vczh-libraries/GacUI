@@ -76,6 +76,8 @@ List Control
 					virtual compositions::GuiGraphicsComposition*	GetContainerComposition()=0;
 					/// <summary>Notify the list control that the total size of all item controls are changed.</summary>
 					virtual void									OnTotalSizeChanged()=0;
+					/// <summary>Notify the list control that the adopted size of the list control is changed.</summary>
+					virtual void									OnAdoptedSizeChanged()=0;
 				};
 
 				//-----------------------------------------------------------
@@ -214,6 +216,7 @@ List Control
 					void										SetViewLocation(Point value)override;
 					compositions::GuiGraphicsComposition*		GetContainerComposition()override;
 					void										OnTotalSizeChanged()override;
+					void										OnAdoptedSizeChanged()override;
 				};
 
 				//-----------------------------------------------------------

@@ -18,6 +18,43 @@ namespace vl
 			{
 
 /***********************************************************************
+RangedItemArrangerBase (ItemSource)
+***********************************************************************/
+
+				class ArrangerItemSource : public Object, public virtual description::IValueObservableList
+				{
+				protected:
+					GuiListControl::IItemProvider*			itemProvider = nullptr;
+
+				public:
+					ArrangerItemSource(GuiListControl::IItemProvider* _itemProvider)
+						: itemProvider(_itemProvider)
+					{
+					}
+
+					vint GetCount() override
+					{
+						return itemProvider->Count();
+					}
+
+					description::Value Get(vint index) override
+					{
+						return itemProvider->GetBindingValue(index);
+					}
+
+					Ptr<description::IValueEnumerator>	CreateEnumerator()										override { CHECK_FAIL(L"ArrangerItemSource::CreateEnumerator should not be called."); }
+					bool								Contains(const description::Value& value)				override { CHECK_FAIL(L"ArrangerItemSource::Contains should not be called."); }
+					vint								IndexOf(const description::Value& value)				override { CHECK_FAIL(L"ArrangerItemSource::IndexOf should not be called."); }
+
+					void								Set(vint index, const description::Value& value)		override { CHECK_FAIL(L"ArrangerItemSource::Set should not be called."); }
+					vint								Add(const description::Value& value)					override { CHECK_FAIL(L"ArrangerItemSource::Add should not be called."); }
+					vint								Insert(vint index, const description::Value& value)		override { CHECK_FAIL(L"ArrangerItemSource::Insert should not be called."); }
+					bool								Remove(const description::Value& value)					override { CHECK_FAIL(L"ArrangerItemSource::Remove should not be called."); }
+					bool								RemoveAt(vint index)									override { CHECK_FAIL(L"ArrangerItemSource::RemoveAt should not be called."); }
+					void								Clear()													override { CHECK_FAIL(L"ArrangerItemSource::Clear should not be called."); }
+				};
+
+/***********************************************************************
 RangedItemArrangerBase
 ***********************************************************************/
 
@@ -50,9 +87,36 @@ RangedItemArrangerBase
 					return itemStyle;
 				}
 
+				void RangedItemArrangerBase::OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
+				{
+					if (callback)
+					{
+						callback->SetViewLocation(repeat->GetViewLocation());
+					}
+				}
+
+				void RangedItemArrangerBase::OnTotalSizeChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
+				{
+					if (callback)
+					{
+						callback->OnTotalSizeChanged();
+					}
+				}
+
+				void RangedItemArrangerBase::OnAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
+				{
+					if (callback)
+					{
+						callback->OnAdoptedSizeChanged();
+					}
+				}
+
 				RangedItemArrangerBase::RangedItemArrangerBase(compositions::GuiVirtualRepeatCompositionBase* _repeat)
 					: repeat(_repeat)
 				{
+					repeat->ViewLocationChanged.AttachMethod(this, &RangedItemArrangerBase::OnViewLocationChanged);
+					repeat->TotalSizeChanged.AttachMethod(this, &RangedItemArrangerBase::OnTotalSizeChanged);
+					repeat->AdoptedSizeInvalidated.AttachMethod(this, &RangedItemArrangerBase::OnAdoptedSizeInvalidated);
 				}
 
 				RangedItemArrangerBase::~RangedItemArrangerBase()
@@ -65,17 +129,22 @@ RangedItemArrangerBase
 					itemProvider = provider;
 					if (provider)
 					{
-						CHECK_FAIL(L"Not Implemented: Need to build a Ptr<IValueObservableList> from IItemProvider.");
+						itemSource = Ptr(new ArrangerItemSource(provider));
+						repeat->SetItemSource(itemSource);
 					}
 					else
 					{
 						repeat->SetItemSource(nullptr);
+						itemSource = nullptr;
 					}
 				}
 
 				void RangedItemArrangerBase::OnItemModified(vint start, vint count, vint newCount)
 				{
-					CHECK_FAIL(L"Not Implemented!");
+					if (itemSource)
+					{
+						itemSource->ItemChanged(start, count, newCount);
+					}
 				}
 
 				void RangedItemArrangerBase::AttachListControl(GuiListControl* value)
