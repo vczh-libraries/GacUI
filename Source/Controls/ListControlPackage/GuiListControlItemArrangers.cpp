@@ -21,7 +21,7 @@ namespace vl
 RangedItemArrangerBase
 ***********************************************************************/
 
-				templates::GuiTemplate* RangedItemArrangerBase::CreateItemTemplate(vint index)
+				GuiListControl::ItemStyle* RangedItemArrangerBase::CreateItemTemplate(vint index)
 				{
 					GuiSelectableButton* backgroundButton = nullptr;
 					if (listControl->GetDisplayItemBackground())
@@ -67,6 +67,10 @@ RangedItemArrangerBase
 					{
 						CHECK_FAIL(L"Not Implemented: Need to build a Ptr<IValueObservableList> from IItemProvider.");
 					}
+					else
+					{
+						repeat->SetItemSource(nullptr);
+					}
 				}
 
 				void RangedItemArrangerBase::OnItemModified(vint start, vint count, vint newCount)
@@ -78,14 +82,11 @@ RangedItemArrangerBase
 				{
 					listControl = value;
 					repeat->SetAxis(Ptr(listControl->GetAxis()));
-					CHECK_FAIL(L"Set ItemTemplate");
 				}
 
 				void RangedItemArrangerBase::DetachListControl()
 				{
 					repeat->SetAxis(nullptr);
-					repeat->SetItemSource(nullptr);
-					repeat->SetItemTemplate({});
 					listControl = nullptr;
 				}
 
@@ -101,12 +102,16 @@ RangedItemArrangerBase
 						if (callback)
 						{
 							repeat->GetParent()->RemoveChild(repeat);
+							repeat->SetItemTemplate({});
 						}
-						repeat->ReloadVisibleStyles();
 						callback = value;
 						if (callback)
 						{
 							callback->GetContainerComposition()->AddChild(repeat);
+							repeat->SetItemTemplate([](const description::Value&)->templates::GuiTemplate*
+							{
+								CHECK_FAIL(L"This function should not be called, it is used to enable the virtual repeat composition.");
+							});
 						}
 					}
 				}

@@ -36,7 +36,7 @@ Predefined ItemArranger
 					GuiListControl::IItemProvider*					itemProvider = nullptr;
 					compositions::GuiVirtualRepeatCompositionBase*	repeat = nullptr;
 
-					templates::GuiTemplate*						CreateItemTemplate(vint index);
+					GuiListControl::ItemStyle*						CreateItemTemplate(vint index);
 				public:
 					/// <summary>Create the arranger.</summary>
 					/// <param name="_repeat">A repeat composition to implement the item layout. It will be deleted when the item arranger is deleted.</param>
@@ -62,9 +62,33 @@ Predefined ItemArranger
 				template<typename TVirtualRepeatComposition>
 				class VirtualRepeatRangedItemArrangerBase : public RangedItemArrangerBase
 				{
+					using TArranger = VirtualRepeatRangedItemArrangerBase<TVirtualRepeatComposition>;
+				protected:
+					class ArrangerRepeatComposition : public TVirtualRepeatComposition
+					{
+					protected:
+						TArranger*								arranger = nullptr;
+
+					public:
+						ArrangerRepeatComposition(TArranger* _arranger)
+							: arranger(_arranger)
+						{
+						}
+
+						templates::GuiTemplate* CreateStyleInternal(vint index) override
+						{
+							return arranger->CreateItemTemplate(index);
+						}
+
+						void DeleteStyleInternal(templates::GuiTemplate* style) override
+						{
+							arranger->callback->ReleaseItem(dynamic_cast<GuiListControl::ItemStyle*>(style));
+						}
+					};
+
 				public:
 					VirtualRepeatRangedItemArrangerBase()
-						: RangedItemArrangerBase(new TVirtualRepeatComposition)
+						: RangedItemArrangerBase(new ArrangerRepeatComposition(this))
 					{
 					}
 				};

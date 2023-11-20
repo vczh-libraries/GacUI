@@ -159,6 +159,19 @@ GuiVirtualRepeatCompositionBase
 			{
 			}
 
+			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::CreateStyleInternal(vint index)
+			{
+				auto source = itemSource->Get(index);
+				auto itemStyle = itemTemplate(source);
+				itemStyle->SetContext(itemContext);
+				return itemStyle;
+			}
+
+			void GuiVirtualRepeatCompositionBase::DeleteStyleInternal(ItemStyleRecord style)
+			{
+				SafeDeleteComposition(style);
+			}
+
 			vint GuiVirtualRepeatCompositionBase::CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize)
 			{
 				vint visibleCount = expectedSize / itemSize;
@@ -180,9 +193,7 @@ GuiVirtualRepeatCompositionBase
 
 			GuiVirtualRepeatCompositionBase::ItemStyleRecord GuiVirtualRepeatCompositionBase::CreateStyle(vint index)
 			{
-				auto source = itemSource->Get(index);
-				auto itemStyle = itemTemplate(source);
-				itemStyle->SetContext(itemContext);
+				auto itemStyle = CreateStyleInternal(index);
 				AddChild(itemStyle);
 				itemStyle->ForceCalculateSizeImmediately();
 				return itemStyle;
@@ -190,7 +201,7 @@ GuiVirtualRepeatCompositionBase
 
 			void GuiVirtualRepeatCompositionBase::DeleteStyle(ItemStyleRecord style)
 			{
-				SafeDeleteComposition(style);
+				DeleteStyleInternal(style);
 			}
 
 			void GuiVirtualRepeatCompositionBase::OnViewChangedInternal(Rect oldBounds, Rect newBounds, bool forceUpdateTotalSize)

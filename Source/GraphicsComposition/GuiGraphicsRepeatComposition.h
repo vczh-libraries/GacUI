@@ -186,6 +186,8 @@ GuiVirtualRepeatCompositionBase
 				void												OnInstallItems() override;
 				void												OnUpdateContext() override;
 				virtual void										OnResetViewLocation();
+				virtual ItemStyleRecord								CreateStyleInternal(vint index);
+				virtual void										DeleteStyleInternal(ItemStyleRecord style);
 
 				vint												CalculateAdoptedSize(vint expectedSize, vint count, vint itemSize);
 				ItemStyleRecord										CreateStyle(vint index);
