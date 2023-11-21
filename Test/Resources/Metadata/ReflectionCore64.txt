@@ -2703,7 +2703,7 @@ interface presentation::controls::GuiListControl::IItemArranger : presentation::
     function AttachListControl(value : presentation::controls::GuiListControl*) : system::Void;
     function DetachListControl() : system::Void;
     function EnsureItemVisible(itemIndex : system::Int64) : presentation::controls::GuiListControl::EnsureItemVisibleResult;
-    function FindItem(itemIndex : system::Int64, key : presentation::compositions::KeyDirection) : system::Int64;
+    function FindItemByVirtualKeyDirection(itemIndex : system::Int64, key : presentation::compositions::KeyDirection) : system::Int64;
     function GetAdoptedSize(expectedSize : presentation::Size) : presentation::Size;
     function GetCallback() : presentation::controls::GuiListControl::IItemArrangerCallback*;
     function GetTotalSize() : presentation::Size;
@@ -2720,13 +2720,10 @@ interface presentation::controls::GuiListControl::IItemArranger : presentation::
 
 interface presentation::controls::GuiListControl::IItemArrangerCallback : system::Interface {
     function GetContainerComposition() : presentation::compositions::GuiGraphicsComposition*;
-    function GetStyleBounds(style : presentation::compositions::GuiBoundsComposition*) : presentation::Rect;
-    function GetStylePreferredSize(style : presentation::compositions::GuiBoundsComposition*) : presentation::Size;
+    function OnAdoptedSizeChanged() : system::Void;
     function OnTotalSizeChanged() : system::Void;
     function ReleaseItem(style : presentation::templates::GuiListItemTemplate*) : system::Void;
     function RequestItem(itemIndex : system::Int64, itemComposition : presentation::compositions::GuiBoundsComposition*) : presentation::templates::GuiListItemTemplate*;
-    function SetStyleAlignmentToParent(style : presentation::compositions::GuiBoundsComposition*, margin : presentation::Margin) : system::Void;
-    function SetStyleBounds(style : presentation::compositions::GuiBoundsComposition*, bounds : presentation::Rect) : system::Void;
     function SetViewLocation(value : presentation::Point) : system::Void;
 
 }
