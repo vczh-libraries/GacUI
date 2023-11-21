@@ -26,30 +26,42 @@ GalleryItemArranger
 
 			namespace ribbon_impl
 			{
-				class GalleryItemArranger : public list::RangedItemArrangerBase, public Description<GalleryItemArranger>
+				class GalleryItemArrangerRepeatComposition : public compositions::GuiVirtualRepeatCompositionBase, public Description<GalleryItemArrangerRepeatComposition>
 				{
 				private:
-					vint										pim_itemWidth = 0;
-					bool										blockScrollUpdate = true;
+					vint													pim_itemWidth = 0;
+					bool													blockScrollUpdate = true;
 
 				protected:
-					GuiBindableRibbonGalleryList*				owner;
-					vint										itemWidth = 1;
-					vint										firstIndex = 0;
+					GuiBindableRibbonGalleryList*							owner;
+					vint													itemWidth = 1;
+					vint													firstIndex = 0;
 
-					void										BeginPlaceItem(bool forMoving, Rect newBounds, vint& newStartIndex)override;
-					void										PlaceItem(bool forMoving, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
-					bool										IsItemOutOfViewBounds(vint index, ItemStyleRecord style, Rect bounds, Rect viewBounds)override;
-					bool										EndPlaceItem(bool forMoving, Rect newBounds, vint newStartIndex)override;
-					void										InvalidateItemSizeCache()override;
-					Size										OnCalculateTotalSize()override;
+					void													Layout_BeginPlaceItem(bool firstPhase, Rect newBounds, vint& newStartIndex)override;
+					compositions::VirtualRepeatPlaceItemResult				Layout_PlaceItem(bool firstPhase, bool newCreatedStyle, vint index, ItemStyleRecord style, Rect viewBounds, Rect& bounds, Margin& alignmentToParent)override;
+					compositions::VirtualRepeatEndPlaceItemResult			Layout_EndPlaceItem(bool firstPhase, Rect newBounds, vint newStartIndex)override;
+					void													Layout_EndLayout(bool totalSizeUpdated) override;
+					void													Layout_InvalidateItemSizeCache()override;
+					Size													Layout_CalculateTotalSize()override;
+				public:
+					GalleryItemArrangerRepeatComposition(GuiBindableRibbonGalleryList* _owner);
+					~GalleryItemArrangerRepeatComposition();
+
+					vint													FindItemByVirtualKeyDirection(vint itemIndex, compositions::KeyDirection key)override;
+					compositions::VirtualRepeatEnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
+					Size													GetAdoptedSize(Size expectedSize)override;
+
+					void													ScrollUp();
+					void													ScrollDown();
+					void													UnblockScrollUpdate();
+				};
+
+				class GalleryItemArranger : public list::VirtualRepeatRangedItemArrangerBase<GalleryItemArrangerRepeatComposition>, public Description<GalleryItemArranger>
+				{
+					using TBase = list::VirtualRepeatRangedItemArrangerBase<GalleryItemArrangerRepeatComposition>;
 				public:
 					GalleryItemArranger(GuiBindableRibbonGalleryList* _owner);
 					~GalleryItemArranger();
-
-					vint										FindItem(vint itemIndex, compositions::KeyDirection key)override;
-					GuiListControl::EnsureItemVisibleResult		EnsureItemVisible(vint itemIndex)override;
-					Size										GetAdoptedSize(Size expectedSize)override;
 
 					void										ScrollUp();
 					void										ScrollDown();

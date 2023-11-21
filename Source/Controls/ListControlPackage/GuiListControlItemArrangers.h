@@ -75,8 +75,10 @@ Predefined ItemArranger
 						TArranger*								arranger = nullptr;
 
 					public:
-						ArrangerRepeatComposition(TArranger* _arranger)
-							: arranger(_arranger)
+						template<typename ...TArgs>
+						ArrangerRepeatComposition(TArranger* _arranger, TArgs&& ...args)
+							: TVirtualRepeatComposition(std::forward<TArgs&&>(args)...)
+							, arranger(_arranger)
 						{
 						}
 

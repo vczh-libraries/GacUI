@@ -304,7 +304,7 @@ ListViewColumnItemArranger
 				}
 
 				ListViewColumnItemArranger::ListViewColumnItemArranger()
-					: TBase(new ColumnItemArrangerRepeatComposition(this))
+					: TBase(new TBase::ArrangerRepeatComposition(this))
 				{
 					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
