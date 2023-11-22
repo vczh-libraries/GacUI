@@ -11,17 +11,17 @@
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
-        <Tab>
+        <TextList>
           <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-          <att.Pages>
-            <TabPage Text="First"/>
-            <TabPage Text="Second"/>
-            <TabPage Text="Third"/>
-            <TabPage Text="Fourth"/>
-            <TabPage Text="Fifth"/>
-            <TabPage Text="Sixth"/>
-          </att.Pages>
-        </Tab>
+          <att.Items>
+            <_ Text="First"/>
+            <_ Text="Second"/>
+            <_ Text="Third"/>
+            <_ Text="Fourth"/>
+            <_ Text="Fifth"/>
+            <_ Text="Sixth"/>
+          </att.Items>
+        </TextList>
       </Window>
     </Instance>
   </Instance>
