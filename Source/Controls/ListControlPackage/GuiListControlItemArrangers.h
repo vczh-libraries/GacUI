@@ -38,7 +38,6 @@ Predefined ItemArranger
 					Ptr<description::IValueObservableList>			itemSource;
 					compositions::GuiVirtualRepeatCompositionBase*	repeat = nullptr;
 
-					GuiListControl::ItemStyle*						CreateItemTemplate(vint index);
 					void											OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 					void											OnTotalSizeChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 					void											OnAdoptedSizeInvalidated(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
@@ -84,12 +83,14 @@ Predefined ItemArranger
 
 						templates::GuiTemplate* CreateStyleInternal(vint index) override
 						{
-							return arranger->CreateItemTemplate(index);
+							auto itemStyle = arranger->callback->CreateItem(index);
+							return arranger->callback->GetItemBounds(itemStyle);
 						}
 
 						void DeleteStyleInternal(templates::GuiTemplate* style) override
 						{
-							arranger->callback->ReleaseItem(dynamic_cast<GuiListControl::ItemStyle*>(style));
+							auto itemStyle = arranger->callback->GetItem(style);
+							arranger->callback->ReleaseItem(itemStyle);
 						}
 					};
 

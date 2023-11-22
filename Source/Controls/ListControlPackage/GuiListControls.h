@@ -36,6 +36,8 @@ List Control
 				class IItemProvider;
 
 				using ItemStyle = templates::GuiListItemTemplate;
+				using ItemStyleBounds = templates::GuiTemplate;
+				using ItemStyleRecord = collections::Pair<ItemStyle*, ItemStyleBounds*>;
 				using ItemStyleProperty = TemplateProperty<templates::GuiListItemTemplate>;
 
 				//-----------------------------------------------------------
@@ -60,11 +62,18 @@ List Control
 				class IItemArrangerCallback : public virtual IDescriptable, public Description<IItemArrangerCallback>
 				{
 				public:
-					/// <summary>Request an item control representing an item in the item provider. This function is suggested to call when an item control gets into the visible area.</summary>
+					/// <summary>Create an item control representing an item in the item provider. This function is suggested to call when an item control gets into the visible area.</summary>
 					/// <returns>The item control.</returns>
 					/// <param name="itemIndex">The index of the item in the item provider.</param>
-					/// <param name="itemComposition">The composition that represents the item. Set to null if the item style is expected to be put directly into the list control.</param>
-					virtual ItemStyle*								RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)=0;
+					virtual ItemStyle*								CreateItem(vint itemIndex)=0;
+					/// <summary>Get the most outer bounds from an item control.</summary>
+					/// <returns>The most outer bounds. When <see cref="GuiListControl::GetDisplayItemBackground/> returns true, the item is wrapped in other compositions.</returns>
+					/// <param name="style">The item control.</param>
+					virtual ItemStyleBounds*						GetItemBounds(ItemStyle* style)=0;
+					/// <summary>Get the item control from its most outer bounds.</summary>
+					/// <returns>The item control.</returns>
+					/// <param name="style">The most outer bounds.</param>
+					virtual ItemStyle*								GetItem(ItemStyleBounds* bounds)=0;
 					/// <summary>Release an item control. This function is suggested to call when an item control gets out of the visible area.</summary>
 					/// <param name="style">The item control.</param>
 					virtual void									ReleaseItem(ItemStyle* style)=0;
@@ -192,17 +201,14 @@ List Control
 
 				class ItemCallback : public IItemProviderCallback, public IItemArrangerCallback
 				{
-					typedef compositions::IGuiGraphicsEventHandler							BoundsChangedHandler;
-					typedef collections::List<ItemStyle*>									StyleList;
-					typedef collections::Dictionary<ItemStyle*, Ptr<BoundsChangedHandler>>	InstalledStyleMap;
+					typedef collections::Dictionary<ItemStyle*, templates::GuiTemplate*>	InstalledStyleMap;
 				protected:
 					GuiListControl*								listControl = nullptr;
 					IItemProvider*								itemProvider = nullptr;
 					InstalledStyleMap							installedStyles;
 
-					Ptr<BoundsChangedHandler>					InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition);
-					ItemStyle*									UninstallStyle(vint index);
-					void										OnStyleCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					ItemStyleRecord								InstallStyle(ItemStyle* style, vint itemIndex);
+					ItemStyleRecord								UninstallStyle(vint index);
 				public:
 					ItemCallback(GuiListControl* _listControl);
 					~ItemCallback();
@@ -211,7 +217,9 @@ List Control
 
 					void										OnAttached(IItemProvider* provider)override;
 					void										OnItemModified(vint start, vint count, vint newCount)override;
-					ItemStyle*									RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)override;
+					ItemStyle*									CreateItem(vint itemIndex)override;
+					ItemStyleBounds*							GetItemBounds(ItemStyle* style)override;
+					ItemStyle*									GetItem(ItemStyleBounds* bounds)override;
 					void										ReleaseItem(ItemStyle* style)override;
 					void										SetViewLocation(Point value)override;
 					compositions::GuiGraphicsComposition*		GetContainerComposition()override;

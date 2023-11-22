@@ -1,7 +1,6 @@
 #include "GuiListControlItemArrangers.h"
 #include "../Templates/GuiControlTemplates.h"
 #include "../Templates/GuiThemeStyleFactory.h"
-#include "../GuiButtonControls.h"
 
 namespace vl
 {
@@ -56,35 +55,6 @@ RangedItemArrangerBase (ItemSource)
 /***********************************************************************
 RangedItemArrangerBase
 ***********************************************************************/
-
-				GuiListControl::ItemStyle* RangedItemArrangerBase::CreateItemTemplate(vint index)
-				{
-					GuiSelectableButton* backgroundButton = nullptr;
-					if (listControl->GetDisplayItemBackground())
-					{
-						backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
-						if (auto style = listControl->TypedControlTemplateObject(true)->GetBackgroundTemplate())
-						{
-							backgroundButton->SetControlTemplate(style);
-						}
-						backgroundButton->SetAutoFocus(false);
-						backgroundButton->SetAutoSelection(false);
-					}
-
-					auto itemStyle = callback->RequestItem(index, (backgroundButton ? backgroundButton->GetBoundsComposition() : nullptr));
-					if (backgroundButton)
-					{
-						itemStyle->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						itemStyle->SelectedChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
-						{
-							backgroundButton->SetSelected(itemStyle->GetSelected());
-						});
-						backgroundButton->SetSelected(itemStyle->GetSelected());
-						backgroundButton->GetContainerComposition()->AddChild(itemStyle);
-					}
-
-					return itemStyle;
-				}
 
 				void RangedItemArrangerBase::OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
 				{

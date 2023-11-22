@@ -1,6 +1,7 @@
 #include "GuiListControls.h"
 #include "../Templates/GuiControlTemplates.h"
 #include "../../Application/GraphicsHost/GuiGraphicsHost.h"
+#include "../GuiButtonControls.h"
 
 namespace vl
 {
@@ -16,27 +17,44 @@ namespace vl
 GuiListControl::ItemCallback
 ***********************************************************************/
 
-			Ptr<GuiListControl::ItemCallback::BoundsChangedHandler> GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex, compositions::GuiBoundsComposition* itemComposition)
+			GuiListControl::ItemStyleRecord GuiListControl::ItemCallback::InstallStyle(ItemStyle* style, vint itemIndex)
 			{
-				auto handler = style->CachedBoundsChanged.AttachMethod(this, &ItemCallback::OnStyleCachedBoundsChanged);
-				listControl->GetContainerComposition()->AddChild(itemComposition ? itemComposition : style);
+				templates::GuiTemplate* bounds = style;
+				if (listControl->GetDisplayItemBackground())
+				{
+					style->SetAlignmentToParent(Margin(0, 0, 0, 0));
+
+					auto backgroundButton = new GuiSelectableButton(theme::ThemeName::ListItemBackground);
+					if (auto backgroundStyle = listControl->TypedControlTemplateObject(true)->GetBackgroundTemplate())
+					{
+						backgroundButton->SetControlTemplate(backgroundStyle);
+					}
+					backgroundButton->GetBoundsComposition()->SetAlignmentToParent(Margin(0, 0, 0, 0));
+					backgroundButton->SetAutoFocus(false);
+					backgroundButton->SetAutoSelection(false);
+					backgroundButton->SetSelected(style->GetSelected());
+					backgroundButton->GetContainerComposition()->AddChild(style);
+
+					bounds = new templates::GuiTemplate;
+					bounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+					bounds->AddChild(backgroundButton->GetBoundsComposition());
+					
+					style->SelectedChanged.AttachLambda([=](GuiGraphicsComposition* sender, GuiEventArgs& arguments)
+					{
+						backgroundButton->SetSelected(style->GetSelected());
+					});
+				}
+
 				listControl->OnStyleInstalled(itemIndex, style);
-				return handler;
+				return { style,bounds };
 			}
 
-			GuiListControl::ItemStyle* GuiListControl::ItemCallback::UninstallStyle(vint index)
+			GuiListControl::ItemStyleRecord GuiListControl::ItemCallback::UninstallStyle(vint index)
 			{
 				auto style = installedStyles.Keys()[index];
-				auto handler = installedStyles.Values()[index];
+				auto bounds = installedStyles.Values()[index];
 				listControl->OnStyleUninstalled(style);
-				listControl->GetContainerComposition()->RemoveChild(style);
-				style->CachedBoundsChanged.Detach(handler);
-				return style;
-			}
-
-			void GuiListControl::ItemCallback::OnStyleCachedBoundsChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
-			{
-				listControl->CalculateView();
+				return { style,bounds };
 			}
 
 			GuiListControl::ItemCallback::ItemCallback(GuiListControl* _listControl)
@@ -54,8 +72,8 @@ GuiListControl::ItemCallback
 				// TODO: (enumerable) foreach:indexed
 				for (vint i = 0; i < installedStyles.Count(); i++)
 				{
-					auto style = UninstallStyle(i);
-					SafeDeleteComposition(style);
+					auto [style, bounds] = UninstallStyle(i);
+					SafeDeleteComposition(bounds);
 				}
 				installedStyles.Clear();
 			}
@@ -70,26 +88,59 @@ GuiListControl::ItemCallback
 				listControl->OnItemModified(start, count, newCount);
 			}
 
-			GuiListControl::ItemStyle* GuiListControl::ItemCallback::RequestItem(vint itemIndex, compositions::GuiBoundsComposition* itemComposition)
+			GuiListControl::ItemStyle* GuiListControl::ItemCallback::CreateItem(vint itemIndex)
 			{
-				CHECK_ERROR(0 <= itemIndex && itemIndex < itemProvider->Count(), L"GuiListControl::ItemCallback::RequestItem(vint)#Index out of range.");
-				CHECK_ERROR(listControl->itemStyleProperty, L"GuiListControl::ItemCallback::RequestItem(vint)#SetItemTemplate function should be called before adding items to the list control.");
+#define ERROR_MESSAGE_PREFIX L"GuiListControl::ItemCallback::RequestItem(vint)#"
+				CHECK_ERROR(0 <= itemIndex && itemIndex < itemProvider->Count(), ERROR_MESSAGE_PREFIX L"Index out of range.");
+				CHECK_ERROR(listControl->itemStyleProperty, ERROR_MESSAGE_PREFIX L"SetItemTemplate function should be called before adding items to the list control.");
 
 				auto style = listControl->itemStyleProperty(itemProvider->GetBindingValue(itemIndex));
-				auto handler = InstallStyle(style, itemIndex, itemComposition);
-				installedStyles.Add(style, handler);
+				auto record = InstallStyle(style, itemIndex);
+				installedStyles.Add(record);
 				return style;
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			GuiListControl::ItemStyleBounds* GuiListControl::ItemCallback::GetItemBounds(ItemStyle * style)
+			{
+#define ERROR_MESSAGE_PREFIX L"GuiListControl::ItemCallback::GetItemBounds(GuiListItemTemplate*)#The style is not created from CreateItem."
+				vint index = installedStyles.Keys().IndexOf(style);
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX);
+
+				return installedStyles.Values()[index];
+#undef ERROR_MESSAGE_PREFIX
+			}
+
+			GuiListControl::ItemStyle* GuiListControl::ItemCallback::GetItem(ItemStyleBounds* bounds)
+			{
+#define ERROR_MESSAGE_PREFIX L"GuiListControl::ItemCallback::GetItem(GuiTemplate*)#The bounds is not created from CreateItem."
+				auto style = dynamic_cast<ItemStyle*>(bounds);
+				if (style) return style;
+
+				CHECK_ERROR(bounds->Children().Count() == 1, ERROR_MESSAGE_PREFIX);
+				auto backgroundButton = dynamic_cast<GuiSelectableButton*>(bounds->Children()[0]->GetAssociatedControl());
+				CHECK_ERROR(backgroundButton != nullptr, ERROR_MESSAGE_PREFIX);
+				CHECK_ERROR(backgroundButton->GetContainerComposition()->Children().Count() == 1, ERROR_MESSAGE_PREFIX);
+				style = dynamic_cast<ItemStyle*>(backgroundButton->GetContainerComposition()->Children()[0]);
+				CHECK_ERROR(style != nullptr, ERROR_MESSAGE_PREFIX);
+
+				vint index = installedStyles.Keys().IndexOf(style);
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX);
+				CHECK_ERROR(installedStyles.Values()[index] == bounds, ERROR_MESSAGE_PREFIX);
+				return style;
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiListControl::ItemCallback::ReleaseItem(ItemStyle* style)
 			{
+#define ERROR_MESSAGE_PREFIX L"GuiListControl::ItemCallback::GetItemBounds(GuiListItemTemplate*)#The style is not created from CreateItem."
 				vint index = installedStyles.Keys().IndexOf(style);
-				if (index != -1)
-				{
-					auto style = UninstallStyle(index);
-					installedStyles.Remove(style);
-					SafeDeleteComposition(style);
-				}
+				CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX);
+
+				auto bounds = UninstallStyle(index).value;
+				installedStyles.Remove(style);
+				SafeDeleteComposition(bounds);
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 			void GuiListControl::ItemCallback::SetViewLocation(Point value)
