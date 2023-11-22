@@ -171,7 +171,8 @@ RangedItemArrangerBase
 
 				vint RangedItemArrangerBase::GetVisibleIndex(GuiListControl::ItemStyle* style)
 				{
-					return repeat->GetVisibleIndex(style);
+					auto bounds = callback->GetItemBounds(style);
+					return repeat->GetVisibleIndex(bounds);
 				}
 
 				void RangedItemArrangerBase::ReloadVisibleStyles()
