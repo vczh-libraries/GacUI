@@ -165,7 +165,8 @@ RangedItemArrangerBase
 
 				GuiListControl::ItemStyle* RangedItemArrangerBase::GetVisibleStyle(vint itemIndex)
 				{
-					return dynamic_cast<GuiListControl::ItemStyle*>(repeat->GetVisibleStyle(itemIndex));
+					auto bounds = repeat->GetVisibleStyle(itemIndex);
+					return bounds ? callback->GetItem(bounds) : nullptr;
 				}
 
 				vint RangedItemArrangerBase::GetVisibleIndex(GuiListControl::ItemStyle* style)
