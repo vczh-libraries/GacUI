@@ -2719,11 +2719,13 @@ interface presentation::controls::GuiListControl::IItemArranger : presentation::
 }
 
 interface presentation::controls::GuiListControl::IItemArrangerCallback : system::Interface {
+    function CreateItem(itemIndex : system::Int64) : presentation::templates::GuiListItemTemplate*;
     function GetContainerComposition() : presentation::compositions::GuiGraphicsComposition*;
+    function GetItem(bounds : presentation::templates::GuiTemplate*) : presentation::templates::GuiListItemTemplate*;
+    function GetItemBounds(style : presentation::templates::GuiListItemTemplate*) : presentation::templates::GuiTemplate*;
     function OnAdoptedSizeChanged() : system::Void;
     function OnTotalSizeChanged() : system::Void;
     function ReleaseItem(style : presentation::templates::GuiListItemTemplate*) : system::Void;
-    function RequestItem(itemIndex : system::Int64, itemComposition : presentation::compositions::GuiBoundsComposition*) : presentation::templates::GuiListItemTemplate*;
     function SetViewLocation(value : presentation::Point) : system::Void;
 
 }
