@@ -8,8 +8,35 @@
 
   <Folder name="Images" content="Link">../../../Resources/App/FullControlTest/ToolbarImages/Images.xml</Folder>
 
+  <Script name="ViewModelResource">
+    <Workflow><![CDATA[
+      module viewmodel;
+      using system::*;
+
+      class Item
+      {
+        prop Name : string = "" {}
+        prop Title : string = "" {}
+        prop Selected : bool = false {}
+
+        new (name:string, title:string)
+        {
+          Name = name;
+          Title = title;
+        }
+      }
+    ]]></Workflow>
+  </Script>
+
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+      <ref.Members><![CDATA[
+        var items : observe Item^[] = {
+          new Item^("First", "1st")
+          new Item^("Second", "2nd")
+          new Item^("Third", "3rd")
+        };
+      ]]></ref.Members>
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
         <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
           <att.Rows>
@@ -24,9 +51,10 @@
           </att.Columns>
           <Cell Site="row:0 column:0">
             <Button Text="Check First">
-              <ev.Clicked-eval><![CDATA[
+              <ev.Clicked-eval>
+                  <![CDATA[
                 {
-                  textList.Items[0].Checked = true;
+                  self.items[0].Selected = true;
                 }
               ]]></ev.Clicked-eval>
             </Button>
@@ -36,7 +64,7 @@
               <ev.Clicked-eval>
                 <![CDATA[
                 {
-                  textList.Items[0].Checked = false;
+                  self.items[0].Selected = false;
                 }
               ]]></ev.Clicked-eval>
             </Button>
@@ -46,7 +74,7 @@
               <ev.Clicked-eval>
                 <![CDATA[
                 {
-                  if (textList.Items[0].Checked)
+                  if (self.items[0].Selected)
                   {
                     buttonRead.Text = "Read (true)";
                   }
@@ -59,17 +87,12 @@
             </Button>
           </Cell>
           <Cell Site="row:1 column:0 columnSpan:4">
-            <TextList ref.Name="textList" MultiSelect="true" View="Check">
+            <BindableTextList ref.Name="textList" MultiSelect="true" View="Check" env.ItemType="Item^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.Items>
-                <_ Text="First"/>
-                <_ Text="Second"/>
-                <_ Text="Third"/>
-                <_ Text="Fourth"/>
-                <_ Text="Fifth"/>
-                <_ Text="Sixth"/>
-              </att.Items>
-            </TextList>
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.TextProperty>Name</att.TextProperty>
+              <att.CheckedProperty>Selected</att.CheckedProperty>
+            </BindableTextList>
           </Cell>
         </Table>
       </Window>
