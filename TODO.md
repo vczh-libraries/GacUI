@@ -20,6 +20,8 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Ensure updating list item's property or property binding refreshes list item
       - ListView
         - Remove `IColumnItemViewCallback` from `DetailListViewItemTemplate`
+        - In `Detail` view need to add more width so that the last resize handle is accessible
+        - In `Detail` stop rebuilding items when dragging columns
       - TreeView
       - BindableListView
       - BindableTreeView
