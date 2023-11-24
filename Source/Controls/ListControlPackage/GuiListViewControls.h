@@ -411,7 +411,7 @@ ListViewItemProvider
 					vint												GetDataColumnCount()override;
 					vint												GetDataColumn(vint index)override;
 					vint												GetColumnCount()override;
-					WString												GetColumnText(vint index)override;;
+					WString												GetColumnText(vint index)override;
 
 					bool												AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
 					bool												DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;

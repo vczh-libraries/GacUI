@@ -6,7 +6,8 @@
     </Instance>
   </Instance>
 
-  <Folder name="Images" content="Link">../../../Resources/App/FullControlTest/ToolbarImages/Images.xml</Folder>
+  <Folder name="LargeImages" content="Link">../../../Resources/App/FullControlTest/Images/LargeImages.xml</Folder>
+  <Folder name="SmallImages" content="Link">../../../Resources/App/FullControlTest/Images/SmallImages.xml</Folder>
 
   <Script name="ViewModelResource">
     <Workflow><![CDATA[
@@ -47,75 +48,100 @@
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
           <Cell Site="row:0 column:0">
-            <Button Text="Use Name">
-              <ev.Clicked-eval><![CDATA[
-                {
-                  textList.TextProperty = func(value:object):string
+            <ComboBox ref.Name="comboView" Alt="V" SelectedIndex="0">
+              <att.BoundsComposition-set PreferredMinSize="x:120"/>
+              <att.ListControl>
+                <TextList HorizontalAlwaysVisible="false" VerticalAlwaysVisible="false">
+                  <att.Items>
+                    <TextItem Text="BigIcon"/>
+                    <TextItem Text="SmallIcon"/>
+                    <TextItem Text="List"/>
+                    <TextItem Text="Tile"/>
+                    <TextItem Text="Information"/>
+                    <TextItem Text="Detail"/>
+                  </att.Items>
+                </TextList>
+              </att.ListControl>
+              <ev.SelectedIndexChanged-eval>
+                <![CDATA[
                   {
-                    return (cast (Item^) value).Name;
-                  };
-                }
-              ]]></ev.Clicked-eval>
-            </Button>
+                    switch (comboView.SelectedIndex)
+                    {
+                    case 0:
+                      {
+                        listView.View = BigIcon;
+                      }
+                    case 1:
+                      {
+                        listView.View = SmallIcon;
+                      }
+                    case 2:
+                      {
+                        listView.View = ListViewView::List;
+                      }
+                    case 3:
+                      {
+                        listView.View = Tile;
+                      }
+                    case 4:
+                      {
+                        listView.View = Information;
+                      }
+                    case 5:
+                      {
+                        listView.View = Detail;
+                      }
+                    }
+                  }
+                ]]>
+              </ev.SelectedIndexChanged-eval>
+            </ComboBox>
           </Cell>
           <Cell Site="row:0 column:1">
-            <Button Text="Use Title">
+            <Button Text="Change MainColumn">
               <ev.Clicked-eval><![CDATA[
                 {
-                  textList.TextProperty = func(value:object):string
-                  {
-                    return (cast (Item^) value).Title;
-                  };
+                  listView.Items[0].Text = "MainColumn";
                 }
               ]]></ev.Clicked-eval>
             </Button>
           </Cell>
           <Cell Site="row:0 column:2">
-            <Button Text="Check First">
+            <Button Text="Change SubColumn">
               <ev.Clicked-eval><![CDATA[
                 {
-                  self.items[0].Selected = true;
+                  listView.Items[0].SubItems[0] = "SubColumn";
                 }
               ]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:0 column:3">
-            <Button Text="Uncheck First">
-              <ev.Clicked-eval><![CDATA[
-                {
-                  self.items[0].Selected = false;
-                }
-              ]]></ev.Clicked-eval>
-            </Button>
-          </Cell>
-          <Cell Site="row:0 column:4">
-            <Button ref.Name="buttonRead" Text="Read (false)">
-              <ev.Clicked-eval><![CDATA[
-                {
-                  if (self.items[0].Selected)
-                  {
-                    buttonRead.Text = "Read (true)";
-                  }
-                  else
-                  {
-                    buttonRead.Text = "Read (false)";
-                  }
-                }
-              ]]></ev.Clicked-eval>
-            </Button>
-          </Cell>
-          <Cell Site="row:1 column:0 columnSpan:6">
-            <BindableTextList ref.Name="textList" MultiSelect="true" View="Check" env.ItemType="Item^">
+          <Cell Site="row:1 column:0 columnSpan:4">
+            <ListView ref.Name="listView" View="BigIcon">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
-              <att.ItemSource-eval>self.items</att.ItemSource-eval>
-              <att.TextProperty>Name</att.TextProperty>
-              <att.CheckedProperty>Selected</att.CheckedProperty>
-            </BindableTextList>
+
+              <att.Columns>
+                <_ Text="Id"/>
+                <_ Text="Category"/>
+                <_ Text="Size"/>
+                <_ Text="File"/>
+              </att.Columns>
+
+              <att.DataColumns>
+                <_>0</_>
+                <_>1</_>
+                <_>2</_>
+              </att.DataColumns>
+
+              <att.Items>
+                <_ Text="First" LargeImage-uri="res://LargeImages/Task" SmallImage-uri="res://SmallImages/Task"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+                <_ Text="Second" LargeImage-uri="res://LargeImages/Reminder" SmallImage-uri="res://SmallImages/Reminder"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+                <_ Text="Third" LargeImage-uri="res://LargeImages/Tip" SmallImage-uri="res://SmallImages/Tip"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+                <_ Text="Fourth" LargeImage-uri="res://LargeImages/Tip" SmallImage-uri="res://SmallImages/Tip"><att.SubItems><_>One</_><_>Two</_><_>Three</_></att.SubItems></_>
+              </att.Items>
+            </ListView>
           </Cell>
         </Table>
       </Window>
