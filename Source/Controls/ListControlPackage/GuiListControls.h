@@ -241,7 +241,7 @@ List Control
 				bool											displayItemBackground = true;
 
 				virtual void									OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);
-				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style);
+				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly);
 				virtual void									OnStyleUninstalled(ItemStyle* style);
 				
 				void											OnRenderTargetChanged(elements::IGuiGraphicsRenderTarget* renderTarget)override;
@@ -379,7 +379,7 @@ Selectable List Control
 
 				void											NotifySelectionChanged();
 				void											OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
-				void											OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void											OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				virtual void									OnItemSelectionChanged(vint itemIndex, bool value);
 				virtual void									OnItemSelectionCleared();
 				void											OnItemLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiItemMouseEventArgs& arguments);

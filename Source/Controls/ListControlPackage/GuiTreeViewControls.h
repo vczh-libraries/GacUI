@@ -456,7 +456,7 @@ GuiVirtualTreeView
 				void													OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)override;
 				void													OnItemExpanded(tree::INodeProvider* node)override;
 				void													OnItemCollapsed(tree::INodeProvider* node)override;
-				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 			public:
 				/// <summary>Create a tree view control in virtual mode.</summary>
 				/// <param name="themeName">The theme name for retriving a default control template.</param>

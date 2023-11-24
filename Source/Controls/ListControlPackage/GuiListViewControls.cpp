@@ -800,9 +800,9 @@ ListViewItemProvider
 GuiListView
 ***********************************************************************/
 
-			void GuiVirtualListView::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			void GuiVirtualListView::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
-				GuiListViewBase::OnStyleInstalled(itemIndex, style);
+				GuiListViewBase::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
 			}
 
 			void GuiVirtualListView::OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -839,31 +839,31 @@ GuiListView
 					SetStyleAndArranger(
 						[](const Value&) { return new list::SmallIconListViewItemTemplate; },
 						Ptr(new list::FixedSizeMultiColumnItemArranger)
-					);
+						);
 					break;
 				case ListViewView::List:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::ListListViewItemTemplate; },
 						Ptr(new list::FixedHeightMultiColumnItemArranger)
-					);
+						);
 					break;
 				case ListViewView::Tile:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::TileListViewItemTemplate; },
 						Ptr(new list::FixedSizeMultiColumnItemArranger)
-					);
+						);
 					break;
 				case ListViewView::Information:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::InformationListViewItemTemplate; },
 						Ptr(new list::FixedHeightItemArranger)
-					);
+						);
 					break;
 				case ListViewView::Detail:
 					SetStyleAndArranger(
 						[](const Value&) { return new list::DetailListViewItemTemplate; },
 						Ptr(new list::ListViewColumnItemArranger)
-					);
+						);
 					break;
 				default:;
 				}

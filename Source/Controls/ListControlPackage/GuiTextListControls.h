@@ -167,7 +167,7 @@ GuiVirtualTextList
 			protected:
 				TextListView											view = TextListView::Unknown;
 
-				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a Text list control in virtual mode.</summary>

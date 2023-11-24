@@ -45,7 +45,7 @@ GuiListControl::ItemCallback
 					});
 				}
 
-				listControl->OnStyleInstalled(itemIndex, style);
+				listControl->OnStyleInstalled(itemIndex, style, false);
 				return { style,bounds };
 			}
 
@@ -184,9 +184,20 @@ GuiListControl
 
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
+				if (!itemReferenceUpdated && itemArranger && count == newCount)
+				{
+					for (vint i = 0; i < newCount; i++)
+					{
+						vint index = start + i;
+						if (auto style = itemArranger->GetVisibleStyle(index))
+						{
+							OnStyleInstalled(index, style, true);
+						}
+					}
+				}
 			}
 
-			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			void GuiListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
 				style->SetFont(GetDisplayFont());
 				style->SetContext(GetContext());
@@ -195,7 +206,11 @@ GuiListControl
 				style->SetSelected(false);
 				style->SetIndex(itemIndex);
 				style->SetAssociatedListControl(this);
-				AttachItemEvents(style);
+
+				if (!refreshPropertiesOnly)
+				{
+					AttachItemEvents(style);
+				}
 			}
 
 			void GuiListControl::OnStyleUninstalled(ItemStyle* style)
@@ -576,9 +591,9 @@ GuiSelectableListControl
 				}
 			}
 
-			void GuiSelectableListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			void GuiSelectableListControl::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
-				GuiListControl::OnStyleInstalled(itemIndex, style);
+				GuiListControl::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
 				style->SetSelected(selectedItems.Contains(itemIndex));
 			}
 

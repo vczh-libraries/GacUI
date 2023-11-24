@@ -458,7 +458,7 @@ GuiVirtualListView
 			protected:
 				ListViewView											view = ListViewView::Unknown;
 
-				void													OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
+				void													OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)override;
 				void													OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 			public:
 				/// <summary>Create a list view control in virtual mode.</summary>

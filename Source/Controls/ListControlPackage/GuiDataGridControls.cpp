@@ -392,9 +392,9 @@ GuiVirtualDataGrid (Editor)
 				}
 			}
 
-			void GuiVirtualDataGrid::OnStyleInstalled(vint index, ItemStyle* style)
+			void GuiVirtualDataGrid::OnStyleInstalled(vint index, ItemStyle* style, bool refreshPropertiesOnly)
 			{
-				GuiVirtualListView::OnStyleInstalled(index, style);
+				GuiVirtualListView::OnStyleInstalled(index, style, refreshPropertiesOnly);
 				if (auto itemStyle = dynamic_cast<DefaultDataGridItemTemplate*>(style))
 				{
 					if (selectedCell.row == index && selectedCell.column != -1)

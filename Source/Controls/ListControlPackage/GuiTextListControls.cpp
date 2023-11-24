@@ -297,9 +297,9 @@ GuiTextList
 			{
 			}
 
-			void GuiVirtualTextList::OnStyleInstalled(vint itemIndex, ItemStyle* style)
+			void GuiVirtualTextList::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
-				GuiSelectableListControl::OnStyleInstalled(itemIndex, style);
+				GuiSelectableListControl::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
 				if (auto textItemStyle = dynamic_cast<templates::GuiTextListItemTemplate*>(style))
 				{
 					textItemStyle->SetTextColor(TypedControlTemplateObject(true)->GetTextColor());
