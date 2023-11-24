@@ -207,9 +207,9 @@ GuiBindableListView
 					// ===================== list::IListViewItemProvider =====================
 
 					void											RebuildAllItems() override;
-					void											RefreshAllItems(bool columnResized) override;
+					void											RefreshAllItems() override;
 					void											NotifyColumnRebuilt() override;
-					void											NotifyColumnResized() override;
+					void											NotifyColumnChanged() override;
 					
 					// ===================== GuiListControl::IItemProvider =====================
 

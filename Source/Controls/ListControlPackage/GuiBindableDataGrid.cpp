@@ -237,14 +237,26 @@ DataReverseSorter
 DataColumn
 ***********************************************************************/
 
-				void DataColumn::NotifyAllColumnsUpdate(bool affectItem)
+				void DataColumn::NotifyRebuilt()
 				{
 					if (dataProvider)
 					{
 						vint index = dataProvider->columns.IndexOf(this);
 						if (index != -1)
 						{
-							dataProvider->columns.NotifyColumnUpdated(index, affectItem);
+							dataProvider->columns.NotifyColumnRebuilt(index);
+						}
+					}
+				}
+
+				void DataColumn::NotifyChanged(bool needToRefreshItems)
+				{
+					if (dataProvider)
+					{
+						vint index = dataProvider->columns.IndexOf(this);
+						if (index != -1)
+						{
+							dataProvider->columns.NotifyColumnChanged(index, needToRefreshItems);
 						}
 					}
 				}
@@ -271,7 +283,7 @@ DataColumn
 					if (text != value)
 					{
 						text = value;
-						NotifyAllColumnsUpdate(false);
+						NotifyChanged(false);
 					}
 				}
 
@@ -285,7 +297,7 @@ DataColumn
 					if (size != value)
 					{
 						size = value;
-						NotifyAllColumnsUpdate(false);
+						NotifyChanged(true);
 					}
 				}
 
@@ -309,7 +321,7 @@ DataColumn
 					if (popup != value)
 					{
 						popup = value;
-						NotifyAllColumnsUpdate(false);
+						NotifyChanged(false);
 					}
 				}
 
@@ -323,7 +335,7 @@ DataColumn
 					if (associatedFilter) associatedFilter->SetCallback(nullptr);
 					associatedFilter = value;
 					if (associatedFilter) associatedFilter->SetCallback(dataProvider);
-					NotifyAllColumnsUpdate(false);
+					NotifyChanged(false);
 				}
 
 				Ptr<IDataSorter> DataColumn::GetSorter()
@@ -336,7 +348,7 @@ DataColumn
 					if (associatedSorter) associatedSorter->SetCallback(nullptr);
 					associatedSorter = value;
 					if (associatedSorter) associatedSorter->SetCallback(dataProvider);
-					NotifyAllColumnsUpdate(false);
+					NotifyChanged(false);
 				}
 
 				Ptr<IDataVisualizerFactory> DataColumn::GetVisualizerFactory()
@@ -347,7 +359,7 @@ DataColumn
 				void DataColumn::SetVisualizerFactory(Ptr<IDataVisualizerFactory> value)
 				{
 					visualizerFactory = value;
-					NotifyAllColumnsUpdate(true);
+					NotifyRebuilt();
 				}
 
 				Ptr<IDataEditorFactory> DataColumn::GetEditorFactory()
@@ -358,7 +370,7 @@ DataColumn
 				void DataColumn::SetEditorFactory(Ptr<IDataEditorFactory> value)
 				{
 					editorFactory = value;
-					NotifyAllColumnsUpdate(true);
+					NotifyRebuilt();
 				}
 
 				WString DataColumn::GetCellText(vint row)
@@ -399,7 +411,7 @@ DataColumn
 					if (textProperty != value)
 					{
 						textProperty = value;
-						NotifyAllColumnsUpdate(true);
+						NotifyRebuilt();
 						compositions::GuiEventArgs arguments;
 						TextPropertyChanged.Execute(arguments);
 					}
@@ -415,7 +427,7 @@ DataColumn
 					if (valueProperty != value)
 					{
 						valueProperty = value;
-						NotifyAllColumnsUpdate(true);
+						NotifyRebuilt();
 						compositions::GuiEventArgs arguments;
 						ValuePropertyChanged.Execute(arguments);
 					}
@@ -425,20 +437,19 @@ DataColumn
 DataColumns
 ***********************************************************************/
 
-				void DataColumns::NotifyColumnUpdated(vint index, bool affectItem)
+				void DataColumns::NotifyColumnRebuilt(vint column)
 				{
-					affectItemFlag = affectItem;
-					NotifyUpdateInternal(index, 1, 1);
-					affectItemFlag = true;
+					NotifyUpdate(column, 1);
+				}
+
+				void DataColumns::NotifyColumnChanged(vint column, bool needToRefreshItems)
+				{
+					dataProvider->NotifyColumnChanged();
 				}
 
 				void DataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					dataProvider->NotifyAllColumnsUpdate();
-					if (affectItemFlag)
-					{
-						dataProvider->NotifyAllItemsUpdate();
-					}
+					dataProvider->NotifyColumnRebuilt();
 				}
 
 				bool DataColumns::QueryInsert(vint index, const Ptr<DataColumn>& value)
@@ -474,7 +485,7 @@ DataProvider
 					InvokeOnItemModified(0, Count(), Count(), true);
 				}
 
-				void DataProvider::RefreshAllItems(bool columnResized)
+				void DataProvider::RefreshAllItems()
 				{
 					InvokeOnItemModified(0, Count(), Count(), false);
 				}
@@ -488,13 +499,13 @@ DataProvider
 					RebuildAllItems();
 				}
 
-				void DataProvider::NotifyColumnResized()
+				void DataProvider::NotifyColumnChanged()
 				{
 					for (auto callback : columnItemViewCallbacks)
 					{
 						callback->OnColumnChanged(true);
 					}
-					RefreshAllItems(true);
+					RefreshAllItems();
 				}
 
 				GuiListControl::IItemProvider* DataProvider::GetItemProvider()

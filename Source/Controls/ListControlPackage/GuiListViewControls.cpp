@@ -434,12 +434,27 @@ ListViewItem
 ListViewColumn
 ***********************************************************************/
 
-				void ListViewColumn::NotifyUpdate(bool affectItem)
+				void ListViewColumn::NotifyRebuilt()
 				{
 					if (owner)
 					{
 						vint index = owner->IndexOf(this);
-						owner->NotifyColumnUpdated(index, affectItem);
+						if (index != -1)
+						{
+							owner->NotifyColumnRebuilt(index);
+						}
+					}
+				}
+
+				void ListViewColumn::NotifyChanged(bool needToRefreshItems)
+				{
+					if (owner)
+					{
+						vint index = owner->IndexOf(this);
+						if (index != -1)
+						{
+							owner->NotifyColumnChanged(index, needToRefreshItems);
+						}
 					}
 				}
 
@@ -467,7 +482,7 @@ ListViewColumn
 					if (text != value)
 					{
 						text = value;
-						NotifyUpdate(false);
+						NotifyChanged(false);
 					}
 				}
 
@@ -479,7 +494,7 @@ ListViewColumn
 				void ListViewColumn::SetTextProperty(const ItemProperty<WString>& value)
 				{
 					textProperty = value;
-					NotifyUpdate(true);
+					NotifyRebuilt();
 				}
 
 				vint ListViewColumn::GetSize()
@@ -492,7 +507,7 @@ ListViewColumn
 					if (size != value)
 					{
 						size = value;
-						NotifyUpdate(false);
+						NotifyChanged(true);
 					}
 				}
 
@@ -516,7 +531,7 @@ ListViewColumn
 					if (dropdownPopup != value)
 					{
 						dropdownPopup = value;
-						NotifyUpdate(false);
+						NotifyChanged(false);
 					}
 				}
 
@@ -530,7 +545,7 @@ ListViewColumn
 					if (sortingState != value)
 					{
 						sortingState = value;
-						NotifyUpdate(false);
+						NotifyChanged(false);
 					}
 				}
 
@@ -556,11 +571,14 @@ ListViewDataColumns
 ListViewColumns
 ***********************************************************************/
 
-				void ListViewColumns::NotifyColumnUpdated(vint column, bool affectItem)
+				void ListViewColumns::NotifyColumnRebuilt(vint column)
 				{
-					affectItemFlag = affectItem;
 					NotifyUpdate(column, 1);
-					affectItemFlag = true;
+				}
+
+				void ListViewColumns::NotifyColumnChanged(vint column, bool needToRefreshItems)
+				{
+					itemProvider->NotifyColumnChanged();
 				}
 
 				void ListViewColumns::AfterInsert(vint index, const Ptr<ListViewColumn>& value)
@@ -577,11 +595,7 @@ ListViewColumns
 
 				void ListViewColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					itemProvider->NotifyAllColumnsUpdate();
-					if (affectItemFlag)
-					{
-						itemProvider->NotifyAllItemsUpdate();
-					}
+					itemProvider->NotifyColumnRebuilt();
 				}
 
 				ListViewColumns::ListViewColumns(IListViewItemProvider* _itemProvider)
@@ -614,7 +628,7 @@ ListViewItemProvider
 					InvokeOnItemModified(0, Count(), Count(), true);
 				}
 
-				void ListViewItemProvider::RefreshAllItems(bool columnResized)
+				void ListViewItemProvider::RefreshAllItems()
 				{
 					InvokeOnItemModified(0, Count(), Count(), false);
 				}
@@ -628,13 +642,13 @@ ListViewItemProvider
 					RebuildAllItems();
 				}
 
-				void ListViewItemProvider::NotifyColumnResized()
+				void ListViewItemProvider::NotifyColumnChanged()
 				{
 					for (auto callback : columnItemViewCallbacks)
 					{
 						callback->OnColumnChanged(true);
 					}
-					RefreshAllItems(true);
+					RefreshAllItems();
 				}
 
 				ListViewItemProvider::ListViewItemProvider()

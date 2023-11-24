@@ -298,7 +298,8 @@ ListViewItemProvider
 					GuiMenu*										dropdownPopup = nullptr;
 					ColumnSortingState								sortingState = ColumnSortingState::NotSorted;
 					
-					void											NotifyUpdate(bool affectItem);
+					void											NotifyRebuilt();
+					void											NotifyChanged(bool needToRefreshItems);
 				public:
 					/// <summary>Create a column with the specified text and size.</summary>
 					/// <param name="_text">The specified text.</param>
@@ -348,9 +349,9 @@ ListViewItemProvider
 				{
 				public:
 					virtual void									RebuildAllItems() = 0;
-					virtual void									RefreshAllItems(bool columnResized) = 0;
+					virtual void									RefreshAllItems() = 0;
 					virtual void									NotifyColumnRebuilt() = 0;
-					virtual void									NotifyColumnResized() = 0;
+					virtual void									NotifyColumnChanged() = 0;
 				};
 
 				/// <summary>List view data column container.</summary>
@@ -375,7 +376,8 @@ ListViewItemProvider
 					IListViewItemProvider*							itemProvider;
 					bool											affectItemFlag = true;
 
-					void											NotifyColumnUpdated(vint column, bool affectItem);
+					void											NotifyColumnRebuilt(vint column);
+					void											NotifyColumnChanged(vint column, bool needToRefreshItems);
 					void											AfterInsert(vint index, const Ptr<ListViewColumn>& value)override;
 					void											BeforeRemove(vint index, const Ptr<ListViewColumn>& value)override;
 					void											NotifyUpdateInternal(vint start, vint count, vint newCount)override;
@@ -409,9 +411,9 @@ ListViewItemProvider
 					// ===================== list::IListViewItemProvider =====================
 
 					void												RebuildAllItems() override;
-					void												RefreshAllItems(bool columnResized) override;
+					void												RefreshAllItems() override;
 					void												NotifyColumnRebuilt() override;
-					void												NotifyColumnResized() override;
+					void												NotifyColumnChanged() override;
 
 				public:
 					ListViewItemProvider();

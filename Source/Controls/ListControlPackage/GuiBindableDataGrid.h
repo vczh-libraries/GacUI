@@ -205,7 +205,8 @@ DataColumn
 					Ptr<IDataVisualizerFactory>							visualizerFactory;
 					Ptr<IDataEditorFactory>								editorFactory;
 
-					void												NotifyAllColumnsUpdate(bool affectItem);
+					void												NotifyRebuilt();
+					void												NotifyChanged(bool needToRefreshItems);
 				public:
 					DataColumn();
 					~DataColumn();
@@ -306,7 +307,8 @@ DataColumn
 					DataProvider*										dataProvider = nullptr;
 					bool												affectItemFlag = true;
 
-					void												NotifyColumnUpdated(vint index, bool affectItem);
+					void												NotifyColumnRebuilt(vint column);
+					void												NotifyColumnChanged(vint column, bool needToRefreshItems);
 					void												NotifyUpdateInternal(vint start, vint count, vint newCount)override;
 					bool												QueryInsert(vint index, const Ptr<DataColumn>& value)override;
 					void												AfterInsert(vint index, const Ptr<DataColumn>& value)override;
@@ -346,9 +348,9 @@ DataProvider
 					collections::List<vint>									virtualRowToSourceRow;
 
 					void													RebuildAllItems() override;
-					void													RefreshAllItems(bool columnResized) override;
+					void													RefreshAllItems() override;
 					void													NotifyColumnRebuilt() override;
-					void													NotifyColumnResized() override;
+					void													NotifyColumnChanged() override;
 					GuiListControl::IItemProvider*							GetItemProvider()override;
 
 					void													OnProcessorChanged()override;

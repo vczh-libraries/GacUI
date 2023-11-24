@@ -326,7 +326,7 @@ GuiBindableListView::ItemSource
 				InvokeOnItemModified(0, Count(), Count(), true);
 			}
 
-			void GuiBindableListView::ItemSource::RefreshAllItems(bool columnResized)
+			void GuiBindableListView::ItemSource::RefreshAllItems()
 			{
 				InvokeOnItemModified(0, Count(), Count(), false);
 			}
@@ -340,13 +340,13 @@ GuiBindableListView::ItemSource
 				RebuildAllItems();
 			}
 
-			void GuiBindableListView::ItemSource::NotifyColumnResized()
+			void GuiBindableListView::ItemSource::NotifyColumnChanged()
 			{
 				for (auto callback : columnItemViewCallbacks)
 				{
 					callback->OnColumnChanged(true);
 				}
-				RefreshAllItems(true);
+				RefreshAllItems();
 			}
 
 			// ===================== GuiListControl::IItemProvider =====================
