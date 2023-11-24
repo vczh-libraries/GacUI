@@ -51,8 +51,7 @@
           </att.Columns>
           <Cell Site="row:0 column:0">
             <Button Text="Check First">
-              <ev.Clicked-eval>
-                  <![CDATA[
+              <ev.Clicked-eval><![CDATA[
                 {
                   self.items[0].Selected = true;
                 }
@@ -61,8 +60,7 @@
           </Cell>
           <Cell Site="row:0 column:1">
             <Button Text="Uncheck First">
-              <ev.Clicked-eval>
-                <![CDATA[
+              <ev.Clicked-eval><![CDATA[
                 {
                   self.items[0].Selected = false;
                 }
@@ -71,8 +69,7 @@
           </Cell>
           <Cell Site="row:0 column:2">
             <Button ref.Name="buttonRead" Text="Read (false)">
-              <ev.Clicked-eval>
-                <![CDATA[
+              <ev.Clicked-eval><![CDATA[
                 {
                   if (self.items[0].Selected)
                   {
