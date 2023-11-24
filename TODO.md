@@ -20,7 +20,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Ensure updating list item's property or property binding refreshes list item
       - ListView
       - TreeView
-      - BindableTextList
       - BindableListView
       - BindableTreeView
       - BindableDataGrid
@@ -53,6 +52,9 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Export darkskin control template colors.
   - Allow changing colors.
   - A window can be called to update all its controls' and components' template.
+- Bindable list control (optional)
+  - When a property referenced by `<att.XXXProperty>` is updated, the list item is not refreshed.
+    - Need to find a way to listen to the event.
 
 ## Optional
 
