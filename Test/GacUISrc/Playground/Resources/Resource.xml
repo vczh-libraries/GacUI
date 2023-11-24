@@ -11,17 +11,67 @@
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
-        <TextList MultiSelect="true">
-          <att.BoundsComposition-set AlignmentToParent="left:5 top:5 right:5 bottom:5"/>
-          <att.Items>
-            <_ Text="First"/>
-            <_ Text="Second"/>
-            <_ Text="Third"/>
-            <_ Text="Fourth"/>
-            <_ Text="Fifth"/>
-            <_ Text="Sixth"/>
-          </att.Items>
-        </TextList>
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="Check First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  textList.Items[0].Checked = true;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Uncheck First">
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  textList.Items[0].Checked = false;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button ref.Name="buttonRead" Text="Read (false)">
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  if (textList.Items[0].Checked)
+                  {
+                    buttonRead.Text = "Read (true)";
+                  }
+                  else
+                  {
+                    buttonRead.Text = "Read (false)";
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:4">
+            <TextList ref.Name="textList" MultiSelect="true" View="Check">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Items>
+                <_ Text="First"/>
+                <_ Text="Second"/>
+                <_ Text="Third"/>
+                <_ Text="Fourth"/>
+                <_ Text="Fifth"/>
+                <_ Text="Sixth"/>
+              </att.Items>
+            </TextList>
+          </Cell>
+        </Table>
       </Window>
     </Instance>
   </Instance>
