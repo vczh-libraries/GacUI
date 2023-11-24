@@ -188,7 +188,7 @@ Type Declaration (Extra)
 				CLASS_MEMBER_BASE(IDescriptable)
 
 				CLASS_MEMBER_METHOD(OnAttached, {L"provider"})
-				CLASS_MEMBER_METHOD(OnItemModified, {L"start" _ L"count" _ L"newCount"})
+				CLASS_MEMBER_METHOD(OnItemModified, {L"start" _ L"count" _ L"newCount" _ L"itemReferenceUpdated"})
 			END_INTERFACE_MEMBER(GuiListControl::IItemProviderCallback)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(GuiListControl::IItemArrangerCallback)

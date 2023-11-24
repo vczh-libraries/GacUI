@@ -385,7 +385,7 @@ DataColumn
 					{
 						auto rowValue = dataProvider->GetBindingValue(row);
 						WriteProperty(rowValue, valueProperty, value);
-						dataProvider->InvokeOnItemModified(row, 1, 1);
+						dataProvider->InvokeOnItemModified(row, 1, 1, false);
 					}
 				}
 
@@ -471,7 +471,7 @@ DataProvider
 
 				void DataProvider::NotifyAllItemsUpdate()
 				{
-					InvokeOnItemModified(0, Count(), Count());
+					InvokeOnItemModified(0, Count(), Count(), true);
 				}
 
 				void DataProvider::NotifyAllColumnsUpdate()
@@ -497,7 +497,7 @@ DataProvider
 				{
 					if (!currentSorter && !currentFilter && count == newCount)
 					{
-						InvokeOnItemModified(start, count, newCount);
+						InvokeOnItemModified(start, count, newCount, true);
 					}
 					else
 					{

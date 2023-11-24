@@ -57,7 +57,7 @@ GuiBindableTextList::ItemSource
 						itemSource = ol;
 						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							InvokeOnItemModified(start, oldCount, newCount);
+							InvokeOnItemModified(start, oldCount, newCount, true);
 						});
 					}
 					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
@@ -70,7 +70,7 @@ GuiBindableTextList::ItemSource
 					}
 				}
 
-				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
 			}
 
 			description::Value GuiBindableTextList::ItemSource::Get(vint index)
@@ -81,7 +81,7 @@ GuiBindableTextList::ItemSource
 
 			void GuiBindableTextList::ItemSource::UpdateBindingProperties()
 			{
-				InvokeOnItemModified(0, Count(), Count());
+				InvokeOnItemModified(0, Count(), Count(), true);
 			}
 					
 			// ===================== GuiListControl::IItemProvider =====================
@@ -152,7 +152,7 @@ GuiBindableTextList::ItemSource
 					{
 						auto thisValue = itemSource->Get(itemIndex);
 						WriteProperty(thisValue, checkedProperty, value);
-						InvokeOnItemModified(itemIndex, 1, 1);
+						InvokeOnItemModified(itemIndex, 1, 1, false);
 					}
 				}
 			}
@@ -268,7 +268,7 @@ GuiBindableListView::ItemSource
 						itemSource = ol;
 						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							InvokeOnItemModified(start, oldCount, newCount);
+							InvokeOnItemModified(start, oldCount, newCount, true);
 						});
 					}
 					else if (auto rl = _itemSource.Cast<IValueReadonlyList>())
@@ -281,7 +281,7 @@ GuiBindableListView::ItemSource
 					}
 				}
 
-				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0);
+				InvokeOnItemModified(0, oldCount, itemSource ? itemSource->GetCount() : 0, true);
 			}
 
 			description::Value GuiBindableListView::ItemSource::Get(vint index)
@@ -292,7 +292,7 @@ GuiBindableListView::ItemSource
 
 			void GuiBindableListView::ItemSource::UpdateBindingProperties()
 			{
-				InvokeOnItemModified(0, Count(), Count());
+				InvokeOnItemModified(0, Count(), Count(), false);
 			}
 
 			bool GuiBindableListView::ItemSource::NotifyUpdate(vint start, vint count)
@@ -304,7 +304,7 @@ GuiBindableListView::ItemSource
 				}
 				else
 				{
-					InvokeOnItemModified(start, count, count);
+					InvokeOnItemModified(start, count, count, true);
 					return true;
 				}
 			}

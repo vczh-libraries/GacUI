@@ -383,10 +383,10 @@ GuiVirtualDataGrid (Editor)
 				return GuiVirtualListView::GetActivatingAltHost();
 			}
 
-			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount)
+			void GuiVirtualDataGrid::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
-				GuiVirtualListView::OnItemModified(start, count, newCount);
-				if(!GetItemProvider()->IsEditing())
+				GuiVirtualListView::OnItemModified(start, count, newCount, itemReferenceUpdated);
+				if (!GetItemProvider()->IsEditing())
 				{
 					StopEdit();
 				}

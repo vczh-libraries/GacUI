@@ -108,9 +108,9 @@ RangedItemArrangerBase
 					}
 				}
 
-				void RangedItemArrangerBase::OnItemModified(vint start, vint count, vint newCount)
+				void RangedItemArrangerBase::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 				{
-					if (itemSource)
+					if (itemSource && itemReferenceUpdated)
 					{
 						itemSource->ItemChanged(start, count, newCount);
 					}

@@ -713,9 +713,9 @@ Interface Proxy (Controls)
 					INVOKE_INTERFACE_PROXY(OnAttached, provider);
 				}
 
-				void OnItemModified(vint start, vint count, vint newCount)override
+				void OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override
 				{
-					INVOKE_INTERFACE_PROXY(OnItemModified, start, count, newCount);
+					INVOKE_INTERFACE_PROXY(OnItemModified, start, count, newCount, itemReferenceUpdated);
 				}
 			END_INTERFACE_PROXY(presentation::controls::GuiListControl::IItemProviderCallback)
 

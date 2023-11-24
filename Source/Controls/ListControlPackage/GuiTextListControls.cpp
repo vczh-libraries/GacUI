@@ -196,7 +196,7 @@ TextItem
 						if (owner)
 						{
 							vint index = owner->IndexOf(this);
-							owner->InvokeOnItemModified(index, 1, 1);
+							owner->InvokeOnItemModified(index, 1, 1, false);
 						}
 					}
 				}
@@ -214,7 +214,7 @@ TextItem
 						if (owner)
 						{
 							vint index = owner->IndexOf(this);
-							owner->InvokeOnItemModified(index, 1, 1);
+							owner->InvokeOnItemModified(index, 1, 1, false);
 
 							GuiItemEventArgs arguments;
 							arguments.itemIndex = index;

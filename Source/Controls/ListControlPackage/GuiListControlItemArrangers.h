@@ -48,7 +48,7 @@ Predefined ItemArranger
 					~RangedItemArrangerBase();
 
 					void											OnAttached(GuiListControl::IItemProvider* provider)override;
-					void											OnItemModified(vint start, vint count, vint newCount)override;
+					void											OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 					void											AttachListControl(GuiListControl* value)override;
 					void											DetachListControl()override;
 					GuiListControl::IItemArrangerCallback*			GetCallback()override;

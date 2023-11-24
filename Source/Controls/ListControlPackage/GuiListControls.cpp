@@ -83,9 +83,9 @@ GuiListControl::ItemCallback
 				itemProvider = provider;
 			}
 
-			void GuiListControl::ItemCallback::OnItemModified(vint start, vint count, vint newCount)
+			void GuiListControl::ItemCallback::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
-				listControl->OnItemModified(start, count, newCount);
+				listControl->OnItemModified(start, count, newCount, itemReferenceUpdated);
 			}
 
 			GuiListControl::ItemStyle* GuiListControl::ItemCallback::CreateItem(vint itemIndex)
@@ -182,7 +182,7 @@ GuiListControl
 				}
 			}
 
-			void GuiListControl::OnItemModified(vint start, vint count, vint newCount)
+			void GuiListControl::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
 			}
 
@@ -567,10 +567,10 @@ GuiSelectableListControl
 				SelectionChanged.Execute(GetNotifyEventArguments());
 			}
 
-			void GuiSelectableListControl::OnItemModified(vint start, vint count, vint newCount)
+			void GuiSelectableListControl::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
-				GuiListControl::OnItemModified(start, count, newCount);
-				if(count!=newCount)
+				GuiListControl::OnItemModified(start, count, newCount, itemReferenceUpdated);
+				if (count != newCount)
 				{
 					ClearSelection();
 				}
@@ -885,14 +885,14 @@ GuiSelectableListControl
 ItemProviderBase
 ***********************************************************************/
 
-				void ItemProviderBase::InvokeOnItemModified(vint start, vint count, vint newCount)
+				void ItemProviderBase::InvokeOnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 				{
 					CHECK_ERROR(!callingOnItemModified, L"ItemProviderBase::InvokeOnItemModified(vint, vint, vint)#Canning modify the observable data source during its item modified event, which will cause this event to be executed recursively.");
 					callingOnItemModified = true;
 					// TODO: (enumerable) foreach
 					for (vint i = 0; i < callbacks.Count(); i++)
 					{
-						callbacks[i]->OnItemModified(start, count, newCount);
+						callbacks[i]->OnItemModified(start, count, newCount, itemReferenceUpdated);
 					}
 					callingOnItemModified = false;
 				}

@@ -55,7 +55,8 @@ List Control
 					/// <param name="start">The index of the first modified item.</param>
 					/// <param name="count">The number of all modified items.</param>
 					/// <param name="newCount">The number of new items. If items are inserted or removed, newCount may not equals to count.</param>
-					virtual void								OnItemModified(vint start, vint count, vint newCount)=0;
+					/// <param name="itemReferenceUpdated">True when items are replaced, false when only content in items are updated.</param>
+					virtual void								OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)=0;
 				};
 
 				/// <summary>Item arranger callback. Item arrangers use this interface to communicate with the list control. When setting positions for item controls, functions in this callback object is suggested to call because they use the result from the [T:vl.presentation.controls.compositions.IGuiAxis].</summary>
@@ -216,7 +217,7 @@ List Control
 					void										ClearCache();
 
 					void										OnAttached(IItemProvider* provider)override;
-					void										OnItemModified(vint start, vint count, vint newCount)override;
+					void										OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 					ItemStyle*									CreateItem(vint itemIndex)override;
 					ItemStyleBounds*							GetItemBounds(ItemStyle* style)override;
 					ItemStyle*									GetItem(ItemStyleBounds* bounds)override;
@@ -239,7 +240,7 @@ List Control
 				Size											fullSize;
 				bool											displayItemBackground = true;
 
-				virtual void									OnItemModified(vint start, vint count, vint newCount);
+				virtual void									OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);
 				virtual void									OnStyleInstalled(vint itemIndex, ItemStyle* style);
 				virtual void									OnStyleUninstalled(ItemStyle* style);
 				
@@ -377,7 +378,7 @@ Selectable List Control
 				vint											selectedItemIndexEnd;
 
 				void											NotifySelectionChanged();
-				void											OnItemModified(vint start, vint count, vint newCount)override;
+				void											OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)override;
 				void											OnStyleInstalled(vint itemIndex, ItemStyle* style)override;
 				virtual void									OnItemSelectionChanged(vint itemIndex, bool value);
 				virtual void									OnItemSelectionCleared();
@@ -455,7 +456,7 @@ Predefined ItemProvider
 					vint														editingCounter = 0;
 					bool														callingOnItemModified = false;
 
-					virtual void								InvokeOnItemModified(vint start, vint count, vint newCount);
+					virtual void								InvokeOnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated);
 				public:
 					/// <summary>Create the item provider.</summary>
 					ItemProviderBase();
@@ -474,7 +475,7 @@ Predefined ItemProvider
 				protected:
 					void NotifyUpdateInternal(vint start, vint count, vint newCount)override
 					{
-						InvokeOnItemModified(start, count, newCount);
+						InvokeOnItemModified(start, count, newCount, true);
 					}
 				public:
 					vint Count()override

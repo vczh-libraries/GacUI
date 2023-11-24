@@ -112,7 +112,7 @@ NodeItemProvider
 								firstChildStart += child->CalculateTotalVisibleNodes();
 							}
 						}
-						InvokeOnItemModified(firstChildStart, offsetBeforeChildModified, offset);
+						InvokeOnItemModified(firstChildStart, offsetBeforeChildModified, offset, true);
 					}
 				}
 
@@ -122,7 +122,7 @@ NodeItemProvider
 					if (base != -2)
 					{
 						vint visibility = node->CalculateTotalVisibleNodes();
-						InvokeOnItemModified(base + 1, 0, visibility - 1);
+						InvokeOnItemModified(base + 1, 0, visibility - 1, true);
 					}
 				}
 
@@ -138,7 +138,7 @@ NodeItemProvider
 							auto child = node->GetChild(i);
 							visibility += child->CalculateTotalVisibleNodes();
 						}
-						InvokeOnItemModified(base + 1, visibility, 0);
+						InvokeOnItemModified(base + 1, visibility, 0, true);
 					}
 				}
 
