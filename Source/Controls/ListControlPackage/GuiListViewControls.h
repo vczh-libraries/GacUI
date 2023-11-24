@@ -121,8 +121,11 @@ ListViewColumnItemArranger
 					class IColumnItemViewCallback : public virtual IDescriptable, public Description<IColumnItemViewCallback>
 					{
 					public:
-						/// <summary>Called when any column is changed (inserted, removed, text changed, etc.).</summary>
-						virtual void							OnColumnChanged()=0;
+						/// <summary>Called when any column object is changed (inserted, removed, updated binding, etc.).</summary>
+						virtual void							OnColumnRebuilt()=0;
+
+						/// <summary>Called when any property of a column is changed (size changed, text changed, etc.).</summary>
+						virtual void							OnColumnChanged(bool needToRefreshItems)=0;
 					};
 					
 					/// <summary>The required <see cref="GuiListControl::IItemProvider"/> view for <see cref="ListViewColumnItemArranger"/>.</summary>
@@ -344,8 +347,10 @@ ListViewItemProvider
 				class IListViewItemProvider : public virtual Interface
 				{
 				public:
-					virtual void									NotifyAllItemsUpdate() = 0;
-					virtual void									NotifyAllColumnsUpdate() = 0;
+					virtual void									RebuildAllItems() = 0;
+					virtual void									RefreshAllItems(bool columnResized) = 0;
+					virtual void									NotifyColumnRebuilt() = 0;
+					virtual void									NotifyColumnResized() = 0;
 				};
 
 				/// <summary>List view data column container.</summary>
@@ -401,8 +406,24 @@ ListViewItemProvider
 					void												AfterInsert(vint index, const Ptr<ListViewItem>& value)override;
 					void												BeforeRemove(vint index, const Ptr<ListViewItem>& value)override;
 
-					void												NotifyAllItemsUpdate()override;
-					void												NotifyAllColumnsUpdate()override;
+					// ===================== list::IListViewItemProvider =====================
+
+					void												RebuildAllItems() override;
+					void												RefreshAllItems(bool columnResized) override;
+					void												NotifyColumnRebuilt() override;
+					void												NotifyColumnResized() override;
+
+				public:
+					ListViewItemProvider();
+					~ListViewItemProvider();
+
+					// ===================== GuiListControl::IItemProvider =====================
+
+					WString												GetTextValue(vint itemIndex)override;
+					description::Value									GetBindingValue(vint itemIndex)override;
+					IDescriptable*										RequestView(const WString& identifier)override;
+
+					// ===================== list::ListViewItemStyleProvider::IListViewItemView =====================
 
 					Ptr<GuiImageData>									GetSmallImage(vint itemIndex)override;
 					Ptr<GuiImageData>									GetLargeImage(vint itemIndex)override;
@@ -413,20 +434,14 @@ ListViewItemProvider
 					vint												GetColumnCount()override;
 					WString												GetColumnText(vint index)override;
 
+					// ===================== list::ListViewColumnItemArranger::IColumnItemView =====================
+
 					bool												AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
 					bool												DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)override;
 					vint												GetColumnSize(vint index)override;
 					void												SetColumnSize(vint index, vint value)override;
 					GuiMenu*											GetDropdownPopup(vint index)override;
 					ColumnSortingState									GetSortingState(vint index)override;
-
-					WString												GetTextValue(vint itemIndex)override;
-					description::Value									GetBindingValue(vint itemIndex)override;
-				public:
-					ListViewItemProvider();
-					~ListViewItemProvider();
-
-					IDescriptable*										RequestView(const WString& identifier)override;
 
 					/// <summary>Get all data columns indices in columns.</summary>
 					/// <returns>All data columns indices in columns.</returns>

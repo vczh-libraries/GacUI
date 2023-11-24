@@ -315,7 +315,8 @@ Type Declaration (Extra)
 			END_CLASS_MEMBER(ListViewColumnItemArranger)
 
 			BEGIN_CLASS_MEMBER(ListViewColumnItemArranger::IColumnItemViewCallback)
-				CLASS_MEMBER_METHOD(OnColumnChanged, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(OnColumnRebuilt, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(OnColumnChanged, {L"needToRefreshItems"})
 			END_CLASS_MEMBER(ListViewColumnItemArranger::IColumnItemViewCallback)
 
 			BEGIN_INTERFACE_MEMBER(ListViewColumnItemArranger::IColumnItemView)

@@ -344,8 +344,10 @@ DataProvider
 					Ptr<IDataSorter>										currentSorter;
 					collections::List<vint>									virtualRowToSourceRow;
 
-					void													NotifyAllItemsUpdate()override;
-					void													NotifyAllColumnsUpdate()override;
+					void													RebuildAllItems() override;
+					void													RefreshAllItems(bool columnResized) override;
+					void													NotifyColumnRebuilt() override;
+					void													NotifyColumnResized() override;
 					GuiListControl::IItemProvider*							GetItemProvider()override;
 
 					void													OnProcessorChanged()override;

@@ -623,6 +623,42 @@ ListViewItemProvider
 					}
 				}
 
+				ListViewItemProvider::ListViewItemProvider()
+					:columns(this)
+					, dataColumns(this)
+				{
+				}
+
+				ListViewItemProvider::~ListViewItemProvider()
+				{
+				}
+
+				WString ListViewItemProvider::GetTextValue(vint itemIndex)
+				{
+					return GetText(itemIndex);
+				}
+
+				description::Value ListViewItemProvider::GetBindingValue(vint itemIndex)
+				{
+					return Value::From(Get(itemIndex));
+				}
+
+				IDescriptable* ListViewItemProvider::RequestView(const WString& identifier)
+				{
+					if (identifier == IListViewItemView::Identifier)
+					{
+						return (IListViewItemView*)this;
+					}
+					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
+					{
+						return (ListViewColumnItemArranger::IColumnItemView*)this;
+					}
+					else
+					{
+						return 0;
+					}
+				}
+
 				Ptr<GuiImageData> ListViewItemProvider::GetSmallImage(vint itemIndex)
 				{
 					return Get(itemIndex)->smallImage;
@@ -746,42 +782,6 @@ ListViewItemProvider
 					else
 					{
 						return columns[index]->GetSortingState();
-					}
-				}
-
-				WString ListViewItemProvider::GetTextValue(vint itemIndex)
-				{
-					return GetText(itemIndex);
-				}
-
-				description::Value ListViewItemProvider::GetBindingValue(vint itemIndex)
-				{
-					return Value::From(Get(itemIndex));
-				}
-
-				ListViewItemProvider::ListViewItemProvider()
-					:columns(this)
-					, dataColumns(this)
-				{
-				}
-
-				ListViewItemProvider::~ListViewItemProvider()
-				{
-				}
-
-				IDescriptable* ListViewItemProvider::RequestView(const WString& identifier)
-				{
-					if (identifier == IListViewItemView::Identifier)
-					{
-						return (IListViewItemView*)this;
-					}
-					else if (identifier == ListViewColumnItemArranger::IColumnItemView::Identifier)
-					{
-						return (ListViewColumnItemArranger::IColumnItemView*)this;
-					}
-					else
-					{
-						return 0;
 					}
 				}
 
