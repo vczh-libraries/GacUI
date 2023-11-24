@@ -371,7 +371,7 @@ ListViewItem
 					if (owner)
 					{
 						vint index = owner->IndexOf(this);
-						owner->NotifyUpdateInternal(index, 1, 1);
+						owner->InvokeOnItemModified(index, 1, 1, false);
 					}
 				}
 

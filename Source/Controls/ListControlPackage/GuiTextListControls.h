@@ -94,6 +94,7 @@ TextItemProvider
 					WString										text;
 					bool										checked;
 
+					void										NotifyUpdate(bool raiseCheckEvent);
 				public:
 					/// <summary>Create an empty text item.</summary>
 					TextItem();

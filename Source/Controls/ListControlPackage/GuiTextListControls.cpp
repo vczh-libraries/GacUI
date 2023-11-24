@@ -166,6 +166,22 @@ DefaultRadioTextListItemTemplate
 TextItem
 ***********************************************************************/
 
+				void TextItem::NotifyUpdate(bool raiseCheckEvent)
+				{
+					if (owner)
+					{
+						vint index = owner->IndexOf(this);
+						owner->InvokeOnItemModified(index, 1, 1, false);
+
+						if (raiseCheckEvent)
+						{
+							GuiItemEventArgs arguments;
+							arguments.itemIndex = index;
+							owner->listControl->ItemChecked.Execute(arguments);
+						}
+					}
+				}
+
 				TextItem::TextItem()
 					:owner(0)
 					, checked(false)
@@ -193,11 +209,7 @@ TextItem
 					if (text != value)
 					{
 						text = value;
-						if (owner)
-						{
-							vint index = owner->IndexOf(this);
-							owner->InvokeOnItemModified(index, 1, 1, false);
-						}
+						NotifyUpdate(false);
 					}
 				}
 
@@ -211,15 +223,7 @@ TextItem
 					if (checked != value)
 					{
 						checked = value;
-						if (owner)
-						{
-							vint index = owner->IndexOf(this);
-							owner->InvokeOnItemModified(index, 1, 1, false);
-
-							GuiItemEventArgs arguments;
-							arguments.itemIndex = index;
-							owner->listControl->ItemChecked.Execute(arguments);
-						}
+						NotifyUpdate(true);
 					}
 				}
 

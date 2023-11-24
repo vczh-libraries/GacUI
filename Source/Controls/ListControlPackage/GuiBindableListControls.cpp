@@ -81,7 +81,7 @@ GuiBindableTextList::ItemSource
 
 			void GuiBindableTextList::ItemSource::UpdateBindingProperties()
 			{
-				InvokeOnItemModified(0, Count(), Count(), true);
+				InvokeOnItemModified(0, Count(), Count(), false);
 			}
 					
 			// ===================== GuiListControl::IItemProvider =====================
