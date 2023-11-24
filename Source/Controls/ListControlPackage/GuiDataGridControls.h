@@ -44,7 +44,8 @@ DefaultDataGridItemTemplate
 					void												OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void												OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 
-					void												OnColumnChanged()override;
+					void												OnColumnRebuilt()override;
+					void												OnColumnChanged(bool needToRefreshItems)override;
 					void												OnInitialize()override;
 					void												OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

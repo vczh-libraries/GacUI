@@ -609,18 +609,32 @@ ListViewItemProvider
 					ListProvider<Ptr<ListViewItem>>::AfterInsert(index, value);
 				}
 
-				void ListViewItemProvider::NotifyAllItemsUpdate()
+				void ListViewItemProvider::RebuildAllItems()
 				{
-					NotifyUpdate(0, Count());
+					InvokeOnItemModified(0, Count(), Count(), true);
 				}
 
-				void ListViewItemProvider::NotifyAllColumnsUpdate()
+				void ListViewItemProvider::RefreshAllItems(bool columnResized)
 				{
-					// TODO: (enumerable) foreach
-					for (vint i = 0; i < columnItemViewCallbacks.Count(); i++)
+					InvokeOnItemModified(0, Count(), Count(), false);
+				}
+
+				void ListViewItemProvider::NotifyColumnRebuilt()
+				{
+					for (auto callback : columnItemViewCallbacks)
 					{
-						columnItemViewCallbacks[i]->OnColumnChanged();
+						callback->OnColumnRebuilt();
 					}
+					RebuildAllItems();
+				}
+
+				void ListViewItemProvider::NotifyColumnResized()
+				{
+					for (auto callback : columnItemViewCallbacks)
+					{
+						callback->OnColumnChanged(true);
+					}
+					RefreshAllItems(true);
 				}
 
 				ListViewItemProvider::ListViewItemProvider()

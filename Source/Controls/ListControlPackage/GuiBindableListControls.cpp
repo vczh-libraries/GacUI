@@ -321,18 +321,32 @@ GuiBindableListView::ItemSource
 					
 			// ===================== list::IListViewItemProvider =====================
 
-			void GuiBindableListView::ItemSource::NotifyAllItemsUpdate()
+			void GuiBindableListView::ItemSource::RebuildAllItems()
 			{
-				NotifyUpdate(0, Count());
+				InvokeOnItemModified(0, Count(), Count(), true);
 			}
 
-			void GuiBindableListView::ItemSource::NotifyAllColumnsUpdate()
+			void GuiBindableListView::ItemSource::RefreshAllItems(bool columnResized)
 			{
-				// TODO: (enumerable) foreach
-				for (vint i = 0; i < columnItemViewCallbacks.Count(); i++)
+				InvokeOnItemModified(0, Count(), Count(), false);
+			}
+
+			void GuiBindableListView::ItemSource::NotifyColumnRebuilt()
+			{
+				for (auto callback : columnItemViewCallbacks)
 				{
-					columnItemViewCallbacks[i]->OnColumnChanged();
+					callback->OnColumnRebuilt();
 				}
+				RebuildAllItems();
+			}
+
+			void GuiBindableListView::ItemSource::NotifyColumnResized()
+			{
+				for (auto callback : columnItemViewCallbacks)
+				{
+					callback->OnColumnChanged(true);
+				}
+				RefreshAllItems(true);
 			}
 
 			// ===================== GuiListControl::IItemProvider =====================

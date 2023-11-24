@@ -332,10 +332,11 @@ DataProvider
 					friend class DataColumn;
 					friend class DataColumns;
 					friend class controls::GuiBindableDataGrid;
+					typedef collections::List<ListViewColumnItemArranger::IColumnItemViewCallback*>		ColumnItemViewCallbackList;
 				protected:
 					ListViewDataColumns										dataColumns;
 					DataColumns												columns;
-					ListViewColumnItemArranger::IColumnItemViewCallback*	columnItemViewCallback = nullptr;
+					ColumnItemViewCallbackList								columnItemViewCallbacks;
 					Ptr<description::IValueReadonlyList>					itemSource;
 					Ptr<EventHandler>										itemChangedEventHandler;
 

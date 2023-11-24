@@ -116,7 +116,8 @@ namespace vl
 					SubItemList								subItems;
 
 					void									OnInitialize()override;
-					void									OnColumnChanged()override;
+					void									OnColumnRebuilt()override;
+					void									OnColumnChanged(bool needToRefreshItems)override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					DetailListViewItemTemplate();

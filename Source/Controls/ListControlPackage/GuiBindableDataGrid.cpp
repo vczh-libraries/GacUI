@@ -469,17 +469,32 @@ DataColumns
 DataProvider
 ***********************************************************************/
 
-				void DataProvider::NotifyAllItemsUpdate()
+				void DataProvider::RebuildAllItems()
 				{
 					InvokeOnItemModified(0, Count(), Count(), true);
 				}
 
-				void DataProvider::NotifyAllColumnsUpdate()
+				void DataProvider::RefreshAllItems(bool columnResized)
 				{
-					if (columnItemViewCallback)
+					InvokeOnItemModified(0, Count(), Count(), false);
+				}
+
+				void DataProvider::NotifyColumnRebuilt()
+				{
+					for (auto callback : columnItemViewCallbacks)
 					{
-						columnItemViewCallback->OnColumnChanged();
+						callback->OnColumnRebuilt();
 					}
+					RebuildAllItems();
+				}
+
+				void DataProvider::NotifyColumnResized()
+				{
+					for (auto callback : columnItemViewCallbacks)
+					{
+						callback->OnColumnChanged(true);
+					}
+					RefreshAllItems(true);
 				}
 
 				GuiListControl::IItemProvider* DataProvider::GetItemProvider()
@@ -757,16 +772,29 @@ DataProvider
 
 				bool DataProvider::AttachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
 				{
-					if (columnItemViewCallback)return false;
-					columnItemViewCallback = value;
-					return true;
+					if (columnItemViewCallbacks.Contains(value))
+					{
+						return false;
+					}
+					else
+					{
+						columnItemViewCallbacks.Add(value);
+						return true;
+					}
 				}
 
 				bool DataProvider::DetachCallback(ListViewColumnItemArranger::IColumnItemViewCallback* value)
 				{
-					if (!columnItemViewCallback) return false;
-					columnItemViewCallback = nullptr;
-					return true;
+					vint index = columnItemViewCallbacks.IndexOf(value);
+					if (index == -1)
+					{
+						return false;
+					}
+					else
+					{
+						columnItemViewCallbacks.Remove(value);
+						return true;
+					}
 				}
 
 				vint DataProvider::GetColumnSize(vint index)
