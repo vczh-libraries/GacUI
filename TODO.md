@@ -18,10 +18,11 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Test `GetAdoptedSize`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
     - Ensure updating list item's property or property binding refreshes list item
-      - TextList
       - ListView
+      - TreeView
       - BindableTextList
       - BindableListView
+      - BindableTreeView
       - BindableDataGrid
     - ListView changes to `List` crashes.
     - ListView changes to `Detail` first item hidden by columns.
