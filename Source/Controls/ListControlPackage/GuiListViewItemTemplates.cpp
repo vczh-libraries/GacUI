@@ -652,7 +652,7 @@ DetailListViewItemTemplate
 								subItems[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
 								textBounds->SetOwnedElement(Ptr(subItems[i]));
 							}
-							OnColumnChanged();
+							UpdateSubItemSize();
 						}
 					}
 
@@ -661,7 +661,7 @@ DetailListViewItemTemplate
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
-				void DetailListViewItemTemplate::OnColumnChanged()
+				void DetailListViewItemTemplate::OnColumnRebuilt()
 				{
 					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 					{
@@ -680,17 +680,14 @@ DetailListViewItemTemplate
 					}
 				}
 
+				void DetailListViewItemTemplate::OnColumnChanged(bool needToRefreshItems)
+				{
+					UpdateSubItemSize();
+				}
+
 				void DetailListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					text->SetFont(GetFont());
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
-					{
-						vint columnCount = view->GetColumnCount() - 1;
-						for (vint i = 0; i < columnCount; i++)
-						{
-							subItems[i]->SetFont(GetFont());
-						}
-					}
+					UpdateSubItemSize();
 				}
 
 				DetailListViewItemTemplate::DetailListViewItemTemplate()
@@ -699,6 +696,25 @@ DetailListViewItemTemplate
 
 				DetailListViewItemTemplate::~DetailListViewItemTemplate()
 				{
+				}
+
+				void DetailListViewItemTemplate::UpdateSubItemSize()
+				{
+					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					{
+						if (columnItemView)
+						{
+							vint columnCount = view->GetColumnCount();
+							if (columnCount>textTable->GetColumns())
+							{
+								columnCount = textTable->GetColumns();
+							}
+							for (vint i = 0; i<columnCount; i++)
+							{
+								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
+							}
+						}
+					}
 				}
 			}
 		}

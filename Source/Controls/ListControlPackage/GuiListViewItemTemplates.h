@@ -122,6 +122,8 @@ namespace vl
 				public:
 					DetailListViewItemTemplate();
 					~DetailListViewItemTemplate();
+
+					void									UpdateSubItemSize();
 				};
 			}
 		}

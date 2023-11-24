@@ -143,7 +143,12 @@ DefaultDataGridItemTemplate
 					}
 				}
 
-				void DefaultDataGridItemTemplate::OnColumnChanged()
+				void DefaultDataGridItemTemplate::OnColumnRebuilt()
+				{
+					UpdateSubItemSize();
+				}
+
+				void DefaultDataGridItemTemplate::OnColumnChanged(bool needToRefreshItems)
 				{
 					UpdateSubItemSize();
 				}

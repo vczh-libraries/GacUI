@@ -658,7 +658,7 @@ DataProvider
 
 					if (invokeCallback)
 					{
-						NotifyAllItemsUpdate();
+						RefreshAllItems();
 					}
 				}
 
@@ -869,7 +869,7 @@ DataProvider
 							ColumnSortingState::Descending
 							;
 					}
-					NotifyAllColumnsUpdate();
+					NotifyColumnChanged();
 					ReorderRows(true);
 				}
 
@@ -981,7 +981,7 @@ GuiBindableDataGrid
 				if (dataProvider->largeImageProperty != value)
 				{
 					dataProvider->largeImageProperty = value;
-					dataProvider->NotifyAllItemsUpdate();
+					dataProvider->RebuildAllItems();
 					LargeImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -996,7 +996,7 @@ GuiBindableDataGrid
 				if (dataProvider->smallImageProperty != value)
 				{
 					dataProvider->smallImageProperty = value;
-					dataProvider->NotifyAllItemsUpdate();
+					dataProvider->RebuildAllItems();
 					SmallImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}

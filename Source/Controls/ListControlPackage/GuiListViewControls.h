@@ -172,7 +172,8 @@ ListViewColumnItemArranger
 						ColumnItemViewCallback(ListViewColumnItemArranger* _arranger);
 						~ColumnItemViewCallback();
 
-						void									OnColumnChanged();
+						void									OnColumnRebuilt() override;
+						void									OnColumnChanged(bool needToRefreshItems) override;
 					};
 
 					class ColumnItemArrangerRepeatComposition : public TBase::ArrangerRepeatComposition

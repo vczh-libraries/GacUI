@@ -94,7 +94,7 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 				{
 				}
 
-				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged()
+				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnRebuilt()
 				{
 					arranger->RebuildColumns();
 					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
@@ -103,7 +103,20 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 					{
 						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style))
 						{
-							callback->OnColumnChanged();
+							callback->OnColumnRebuilt();
+						}
+					}
+				}
+
+				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged(bool needToRefreshItems)
+				{
+					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
+					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
+					for (auto style : arranger->GetRepeatComposition()->Children())
+					{
+						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style))
+						{
+							callback->OnColumnChanged(needToRefreshItems);
 						}
 					}
 				}
@@ -555,7 +568,7 @@ ListViewDataColumns
 
 				void ListViewDataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					itemProvider->NotifyAllItemsUpdate();
+					itemProvider->RefreshAllItems();
 				}
 
 				ListViewDataColumns::ListViewDataColumns(IListViewItemProvider* _itemProvider)
