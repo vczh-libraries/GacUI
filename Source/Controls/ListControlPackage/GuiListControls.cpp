@@ -184,6 +184,11 @@ GuiListControl
 
 			void GuiListControl::OnItemModified(vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
+				// this function is executed before RangedItemArrangerBase::OnItemModified
+				// but we only handle itemReferenceUpdated==false
+				// so RangedItemArrangerBase::GetVisibleStyle is good here
+				// even it is possible that the style object will be replaced later
+				// OnStyleInstalled will be executed on affected style objects anyway
 				if (!itemReferenceUpdated && itemArranger && count == newCount)
 				{
 					for (vint i = 0; i < newCount; i++)
