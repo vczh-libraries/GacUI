@@ -29,8 +29,76 @@
     ]]></Workflow>
   </Script>
 
-  <Instance name="MainWindowResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow">
+  <Instance name="TextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TextListTabPage">
+      <TabPage ref.Name="self" Text="TextList">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="Check First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  textList.Items[0].Checked = true;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Uncheck First">
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  textList.Items[0].Checked = false;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button ref.Name="buttonRead" Text="Read (false)">
+              <ev.Clicked-eval>
+                <![CDATA[
+                {
+                  if (textList.Items[0].Checked)
+                  {
+                    buttonRead.Text = "Read (true)";
+                  }
+                  else
+                  {
+                    buttonRead.Text = "Read (false)";
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:4">
+            <TextList ref.Name="textList" MultiSelect="true" View="Check">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Items>
+                <_ Text="First"/>
+                <_ Text="Second"/>
+                <_ Text="Third"/>
+                <_ Text="Fourth"/>
+                <_ Text="Fifth"/>
+                <_ Text="Sixth"/>
+              </att.Items>
+            </TextList>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="BindableTextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::BindableTextListTabPage">
       <ref.Members><![CDATA[
         var items : observe Item^[] = {
           new Item^("First", "1st")
@@ -38,8 +106,102 @@
           new Item^("Third", "3rd")
         };
       ]]></ref.Members>
-      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
-        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:0 top:0 right:0 bottom:0">
+      <TabPage ref.Name="self" Text="BindableTextList">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="Use Name">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  textList.TextProperty = func(value:object):string
+                  {
+                    return (cast (Item^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Use Title">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  textList.TextProperty = func(value:object):string
+                  {
+                    return (cast (Item^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:2">
+            <Button Text="Check First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.items[0].Selected = true;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:3">
+            <Button Text="Uncheck First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  self.items[0].Selected = false;
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:4">
+            <Button ref.Name="buttonRead" Text="Read (false)">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  if (self.items[0].Selected)
+                  {
+                    buttonRead.Text = "Read (true)";
+                  }
+                  else
+                  {
+                    buttonRead.Text = "Read (false)";
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:6">
+            <BindableTextList ref.Name="textList" MultiSelect="true" View="Check" env.ItemType="Item^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.TextProperty>Name</att.TextProperty>
+              <att.CheckedProperty>Selected</att.CheckedProperty>
+            </BindableTextList>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="ListViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
+      <ref.Members><![CDATA[
+        var items : observe Item^[] = {
+          new Item^("First", "1st")
+          new Item^("Second", "2nd")
+          new Item^("Third", "3rd")
+        };
+      ]]></ref.Members>
+      <TabPage ref.Name="self" Text="ListView">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
           <att.Rows>
             <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
@@ -144,6 +306,21 @@
             </ListView>
           </Cell>
         </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
+  <Instance name="MainWindowResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
+      <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
+        <Tab>
+          <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+          <att.Pages>
+            <demo:TextListTabPage/>
+            <demo:BindableTextListTabPage/>
+            <demo:ListViewTabPage/>
+          </att.Pages>
+        </Tab>
       </Window>
     </Instance>
   </Instance>
