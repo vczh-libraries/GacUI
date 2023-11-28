@@ -30,6 +30,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - ListView changes to `List` crashes.
     - ListView changes to `Detail` first item hidden by columns.
     - ListView changes to `Detail` no HScroll.
+    - ListView changes to `Detail` item font not correct.
     - Ribbon gallary (not list) cannot scroll or display the selected item.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
