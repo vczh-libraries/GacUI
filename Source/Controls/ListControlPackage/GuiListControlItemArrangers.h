@@ -73,12 +73,10 @@ Predefined ItemArranger
 					protected:
 						TArranger*								arranger = nullptr;
 
-					public:
-						template<typename ...TArgs>
-						ArrangerRepeatComposition(TArranger* _arranger, TArgs&& ...args)
-							: TVirtualRepeatComposition(std::forward<TArgs&&>(args)...)
-							, arranger(_arranger)
+						void Layout_UpdateIndex(templates::GuiTemplate* style, vint index) override
 						{
+							auto itemStyle = arranger->callback->GetItem(style);
+							itemStyle->SetIndex(index);
 						}
 
 						templates::GuiTemplate* CreateStyleInternal(vint index) override
@@ -91,6 +89,13 @@ Predefined ItemArranger
 						{
 							auto itemStyle = arranger->callback->GetItem(style);
 							arranger->callback->ReleaseItem(itemStyle);
+						}
+					public:
+						template<typename ...TArgs>
+						ArrangerRepeatComposition(TArranger* _arranger, TArgs&& ...args)
+							: TVirtualRepeatComposition(std::forward<TArgs&&>(args)...)
+							, arranger(_arranger)
+						{
 						}
 					};
 

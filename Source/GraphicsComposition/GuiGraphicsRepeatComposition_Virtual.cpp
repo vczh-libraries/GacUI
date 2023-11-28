@@ -135,6 +135,7 @@ GuiVirtualRepeatCompositionBase
 				}
 				visibleStyles.Clear();
 				viewBounds = Rect({ 0,0 },{ 0,0 });
+				ViewLocationChanged.Execute(GuiEventArgs(this));
 				OnResetViewLocation();
 				itemSourceUpdated = true;
 				Layout_InvalidateItemSizeCache();
