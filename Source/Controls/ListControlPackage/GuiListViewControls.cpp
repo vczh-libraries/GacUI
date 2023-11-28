@@ -851,6 +851,13 @@ GuiListView
 			void GuiVirtualListView::OnStyleInstalled(vint itemIndex, ItemStyle* style, bool refreshPropertiesOnly)
 			{
 				GuiListViewBase::OnStyleInstalled(itemIndex, style, refreshPropertiesOnly);
+				if (refreshPropertiesOnly)
+				{
+					if (auto predefinedItemStyle = dynamic_cast<list::DefaultListViewItemTemplate*>(style))
+					{
+						predefinedItemStyle->RefreshItem();
+					}
+				}
 			}
 
 			void GuiVirtualListView::OnItemTemplateChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

@@ -501,6 +501,7 @@ Predefined ItemProvider
 						{
 							listControl = value;
 							OnInitialize();
+							OnRefresh();
 						}
 #undef ERROR_MESSAGE_PREFIX
 					}
@@ -508,6 +509,11 @@ Predefined ItemProvider
 					PredefinedListItemTemplate()
 					{
 						this->AssociatedListControlChanged.AttachMethod(this, &PredefinedListItemTemplate<TBase>::OnAssociatedListControlChanged);
+					}
+
+					void RefreshItem()
+					{
+						OnRefresh();
 					}
 				};
 			}

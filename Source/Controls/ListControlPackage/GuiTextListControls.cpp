@@ -88,7 +88,6 @@ DefaultTextListItemTemplate
 
 				void DefaultTextListItemTemplate::OnRefresh()
 				{
-					CHECK_FAIL(L"Not Implemented!");
 				}
 
 				void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -311,6 +310,13 @@ GuiTextList
 					if (auto textItemView = dynamic_cast<list::ITextItemView*>(itemProvider->RequestView(list::ITextItemView::Identifier)))
 					{
 						textItemStyle->SetChecked(textItemView->GetChecked(itemIndex));
+					}
+				}
+				if (refreshPropertiesOnly)
+				{
+					if (auto predefinedItemStyle = dynamic_cast<list::DefaultTextListItemTemplate*>(style))
+					{
+						predefinedItemStyle->RefreshItem();
 					}
 				}
 			}

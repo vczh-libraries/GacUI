@@ -942,6 +942,13 @@ GuiVirtualTreeView
 						}
 					}
 				}
+				if (refreshPropertiesOnly)
+				{
+					if (auto predefinedItemStyle = dynamic_cast<tree::DefaultTreeItemTemplate*>(style))
+					{
+						predefinedItemStyle->RefreshItem();
+					}
+				}
 			}
 
 			GuiVirtualTreeView::GuiVirtualTreeView(theme::ThemeName themeName, Ptr<tree::INodeRootProvider> _nodeRootProvider)
