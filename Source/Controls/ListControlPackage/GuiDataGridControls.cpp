@@ -222,6 +222,11 @@ DefaultDataGridItemTemplate
 					VisuallyEnabledChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
+				void DefaultDataGridItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
+				}
+
 				void DefaultDataGridItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					if (!GetSelected())

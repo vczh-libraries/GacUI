@@ -95,6 +95,11 @@ BigIconListViewItemTemplate
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
+				void BigIconListViewItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
+				}
+
 				void BigIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetFont(GetFont());
@@ -171,6 +176,11 @@ SmallIconListViewItemTemplate
 					FontChanged.AttachMethod(this, &SmallIconListViewItemTemplate::OnFontChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void SmallIconListViewItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
 				}
 
 				void SmallIconListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -252,6 +262,11 @@ ListListViewItemTemplate
 					FontChanged.AttachMethod(this, &ListListViewItemTemplate::OnFontChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void ListListViewItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
 				}
 
 				void ListListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -370,6 +385,11 @@ TileListViewItemTemplate
 					FontChanged.AttachMethod(this, &TileListViewItemTemplate::OnFontChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void TileListViewItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
 				}
 
 				void TileListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
@@ -527,6 +547,11 @@ InformationListViewItemTemplate
 					FontChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
+				void InformationListViewItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
+				}
+
 				void InformationListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					{
@@ -659,6 +684,11 @@ DetailListViewItemTemplate
 					FontChanged.AttachMethod(this, &DetailListViewItemTemplate::OnFontChanged);
 
 					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void DetailListViewItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
 				}
 
 				void DetailListViewItemTemplate::OnColumnRebuilt()

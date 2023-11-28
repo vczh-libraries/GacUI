@@ -33,6 +33,7 @@ namespace vl
 					elements::GuiSolidLabelElement*			text = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					BigIconListViewItemTemplate();
@@ -46,6 +47,7 @@ namespace vl
 					elements::GuiSolidLabelElement*			text = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					SmallIconListViewItemTemplate();
@@ -59,6 +61,7 @@ namespace vl
 					elements::GuiSolidLabelElement*			text = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					ListListViewItemTemplate();
@@ -77,6 +80,7 @@ namespace vl
 					elements::GuiSolidLabelElement*			CreateTextElement(vint textRow);
 					void									ResetTextTable(vint textRows);
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					TileListViewItemTemplate();
@@ -96,6 +100,7 @@ namespace vl
 					compositions::GuiBoundsComposition*		bottomLineComposition = nullptr;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					InformationListViewItemTemplate();
@@ -116,6 +121,7 @@ namespace vl
 					SubItemList								subItems;
 
 					void									OnInitialize()override;
+					void									OnRefresh()override;
 					void									OnColumnRebuilt()override;
 					void									OnColumnChanged(bool needToRefreshItems)override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

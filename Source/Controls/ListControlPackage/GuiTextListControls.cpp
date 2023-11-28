@@ -86,6 +86,11 @@ DefaultTextListItemTemplate
 					CheckedChanged.Execute(compositions::GuiEventArgs(this));
 				}
 
+				void DefaultTextListItemTemplate::OnRefresh()
+				{
+					CHECK_FAIL(L"Not Implemented!");
+				}
+
 				void DefaultTextListItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					textElement->SetFont(GetFont());

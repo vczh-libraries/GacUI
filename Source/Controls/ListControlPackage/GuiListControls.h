@@ -490,6 +490,7 @@ Predefined ItemProvider
 				protected:
 					GuiListControl*							listControl = nullptr;
 					virtual void							OnInitialize() = 0;
+					virtual void							OnRefresh() = 0;
 
 					void OnAssociatedListControlChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 					{

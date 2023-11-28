@@ -47,6 +47,7 @@ DefaultDataGridItemTemplate
 					void												OnColumnRebuilt()override;
 					void												OnColumnChanged(bool needToRefreshItems)override;
 					void												OnInitialize()override;
+					void												OnRefresh()override;
 					void												OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void												OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
