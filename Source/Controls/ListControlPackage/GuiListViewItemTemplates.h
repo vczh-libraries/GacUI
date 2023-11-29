@@ -78,7 +78,7 @@ namespace vl
 					DataTextElementArray					dataTexts;
 
 					elements::GuiSolidLabelElement*			CreateTextElement(vint textRow);
-					void									ResetTextTable(vint textRows);
+					void									ResetTextTable(vint dataColumnCount);
 					void									OnInitialize()override;
 					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
@@ -99,6 +99,7 @@ namespace vl
 					elements::GuiSolidBackgroundElement*	bottomLine = nullptr;
 					compositions::GuiBoundsComposition*		bottomLineComposition = nullptr;
 
+					void									ResetTextTable(vint dataColumnCount);
 					void									OnInitialize()override;
 					void									OnRefresh()override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);

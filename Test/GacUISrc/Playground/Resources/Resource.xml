@@ -266,7 +266,8 @@
             <Button Text="Change MainColumn">
               <ev.Clicked-eval><![CDATA[
                 {
-                  listView.Items[0].Text = "MainColumn";
+                  var s = listView.Items[0].Text;
+                  listView.Items[0].Text = s == "First" ? "MainColumn" : "First";
                 }
               ]]></ev.Clicked-eval>
             </Button>
@@ -275,7 +276,8 @@
             <Button Text="Change SubColumn">
               <ev.Clicked-eval><![CDATA[
                 {
-                  listView.Items[0].SubItems[0] = "SubColumn";
+                  var s = listView.Items[0].SubItems[0];
+                  listView.Items[0].SubItems[0] = s == "One" ? "SubColumn" : "One";
                 }
               ]]></ev.Clicked-eval>
             </Button>
