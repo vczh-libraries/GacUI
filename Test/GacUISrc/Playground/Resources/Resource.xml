@@ -320,6 +320,33 @@
             <Button Text="*Column">
               <ev.Clicked-eval><![CDATA[
                 {
+                  var s = listView.Columns[1].Text;
+                  var c = listView.Columns.Count;
+                  if (c == 4)
+                  {
+                    if (s == "Category")
+                    {
+                      listView.Columns[1].Text = "What?";
+                      listView.Columns[2].Text = "Wait?";
+                    }
+                    else
+                    {
+                      listView.Columns.RemoveAt(0);
+                    }
+                  }
+                  else
+                  {
+                    if (s == "Size")
+                    {
+                      var column = new ListViewColumn^();
+                      column.Text = "Category";
+                      listView.Columns.Insert(1, column);
+                    }
+                    else
+                    {
+                      listView.Columns[1].Text = "Size";
+                    }
+                  }
                 }
               ]]></ev.Clicked-eval>
             </Button>
