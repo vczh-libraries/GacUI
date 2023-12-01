@@ -21,7 +21,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
       - ListView
         - Remove `IColumnItemViewCallback` from `DetailListViewItemTemplate`
         - In `Detail` stop rebuilding items when dragging columns
-        - Test adding/remove/change columns
       - TreeView
       - BindableListView
       - BindableTreeView
