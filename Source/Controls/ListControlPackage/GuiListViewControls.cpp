@@ -568,14 +568,7 @@ ListViewDataColumns
 
 				void ListViewDataColumns::NotifyUpdateInternal(vint start, vint count, vint newCount)
 				{
-					if (count == newCount)
-					{
-						itemProvider->RefreshAllItems();
-					}
-					else
-					{
-						itemProvider->RebuildAllItems();
-					}
+					itemProvider->RefreshAllItems();
 				}
 
 				ListViewDataColumns::ListViewDataColumns(IListViewItemProvider* _itemProvider)
