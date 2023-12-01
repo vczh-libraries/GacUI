@@ -210,6 +210,8 @@
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
           <Cell Site="row:0 column:0">
@@ -263,7 +265,7 @@
             </ComboBox>
           </Cell>
           <Cell Site="row:0 column:1">
-            <Button Text="Change MainColumn">
+            <Button Text="*MainColumn">
               <ev.Clicked-eval><![CDATA[
                 {
                   var s = listView.Items[0].Text;
@@ -273,7 +275,7 @@
             </Button>
           </Cell>
           <Cell Site="row:0 column:2">
-            <Button Text="Change SubColumn">
+            <Button Text="*SubColumn">
               <ev.Clicked-eval><![CDATA[
                 {
                   var s = listView.Items[0].SubItems[0];
@@ -282,7 +284,47 @@
               ]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:1 column:0 columnSpan:4">
+          <Cell Site="row:0 column:3">
+            <Button Text="*DataColumn">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var s = listView.DataColumns[0];
+                  var c = listView.DataColumns.Count;
+                  if (c == 3)
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns[0] = 1;
+                    }
+                    else
+                    {
+                      listView.DataColumns.RemoveAt(2);
+                    }
+                  }
+                  else
+                  {
+                    if (s == 0)
+                    {
+                      listView.DataColumns.Add(2);
+                    }
+                    else
+                    {
+                      listView.DataColumns[0] = 0;
+                    }
+                  }
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:4">
+            <Button Text="*Column">
+              <ev.Clicked-eval><![CDATA[
+                {
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:6">
             <ListView ref.Name="listView" View="BigIcon">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
