@@ -385,7 +385,10 @@ TileListViewItemTemplate
 								image->SetImage(nullptr);
 							}
 
+							vint subColumnCount = view->GetColumnCount() - 1;
 							vint dataColumnCount = view->GetDataColumnCount();
+							if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
+							if (dataColumnCount < 0) dataColumnCount = 0;
 							ResetTextTable(dataColumnCount);
 
 							text->SetText(view->GetText(itemIndex));
@@ -560,7 +563,10 @@ InformationListViewItemTemplate
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 							bottomLine->SetColor(listView->TypedControlTemplateObject(true)->GetItemSeparatorColor());
 
+							vint subColumnCount = view->GetColumnCount() - 1;
 							vint dataColumnCount = view->GetDataColumnCount();
+							if (dataColumnCount > subColumnCount) dataColumnCount = subColumnCount;
+							if (dataColumnCount < 0) dataColumnCount = 0;
 							ResetTextTable(dataColumnCount);
 							for (vint i = 0; i < dataColumnCount; i++)
 							{
