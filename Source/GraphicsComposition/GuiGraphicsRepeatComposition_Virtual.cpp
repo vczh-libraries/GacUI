@@ -1090,7 +1090,7 @@ GuiRepeatFixedHeightMultiColumnItemComposition
 						{
 							CHECK_ERROR(newRows < pi_rows, ERROR_MESSAGE_INTERNAL_ERROR);
 							vint oldFirstIndex = pi_firstColumn * pi_rows;
-							pi_rows = newRows;
+							pi_rows = newRows > 0 ? newRows : 1;
 							vint newFirstIndex = pi_firstColumn * pi_rows;
 
 							if (oldFirstIndex == newFirstIndex)

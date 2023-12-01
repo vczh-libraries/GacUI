@@ -28,7 +28,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
       - BindableTreeView
       - BindableDataGrid
         - Remove `IColumnItemViewCallback` from `DefaultDataGridItemTemplate`
-    - ListView changes to `List` crashes.
     - ListView changes to `Detail` first item hidden by columns.
     - ListView changes to `Detail` no HScroll.
     - ListView changes to `Detail` item font not correct.
