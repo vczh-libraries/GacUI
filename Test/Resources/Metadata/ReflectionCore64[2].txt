@@ -1804,7 +1804,8 @@ class presentation::compositions::GuiVirtualRepeatCompositionBase : presentation
     function GetViewLocation() : presentation::Point;
     function GetVisibleIndex(style : presentation::templates::GuiTemplate*) : system::Int64;
     function GetVisibleStyle(itemIndex : system::Int64) : presentation::templates::GuiTemplate*;
-    function ReloadVisibleStyles() : system::Void;
+    function InvalidateLayout() : system::Void;
+    function ResetLayout(recreateVisibleStyles : system::Boolean) : system::Void;
     function SetAxis(value : presentation::compositions::IGuiAxis^) : system::Void;
     function SetViewLocation(value : presentation::Point) : system::Void;
 
@@ -2748,7 +2749,7 @@ interface presentation::controls::GuiListControl::IItemProvider : system::Interf
 
 interface presentation::controls::GuiListControl::IItemProviderCallback : system::Interface {
     function OnAttached(provider : presentation::controls::GuiListControl::IItemProvider*) : system::Void;
-    function OnItemModified(start : system::Int64, count : system::Int64, newCount : system::Int64) : system::Void;
+    function OnItemModified(start : system::Int64, count : system::Int64, newCount : system::Int64, itemReferenceUpdated : system::Boolean) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProviderCallback>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<GuiListControl::IItemProviderCallback>::Create)
@@ -3984,7 +3985,8 @@ interface presentation::controls::list::ListViewColumnItemArranger::IColumnItemV
 }
 
 class presentation::controls::list::ListViewColumnItemArranger::IColumnItemViewCallback : system::ReferenceType {
-    function OnColumnChanged() : system::Void;
+    function OnColumnChanged(needToRefreshItems : system::Boolean) : system::Void;
+    function OnColumnRebuilt() : system::Void;
 
 }
 

@@ -331,7 +331,7 @@
                     }
                     else
                     {
-                      listView.Columns.RemoveAt(0);
+                      listView.Columns.RemoveAt(1);
                     }
                   }
                   else
