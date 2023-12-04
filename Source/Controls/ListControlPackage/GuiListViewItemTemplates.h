@@ -110,7 +110,6 @@ namespace vl
 
 				class DetailListViewItemTemplate
 					: public DefaultListViewItemTemplate
-					, public virtual ListViewColumnItemArranger::IColumnItemViewCallback
 				{
 					typedef collections::Array<compositions::GuiCellComposition*>	SubItemCellList;
 					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemTestList;
@@ -127,8 +126,6 @@ namespace vl
 					void									ResetTextTable(vint subColumnCount);
 					void									OnInitialize()override;
 					void									OnRefresh()override;
-					void									OnColumnRebuilt()override;
-					void									OnColumnChanged(bool needToRefreshItems)override;
 					void									OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					DetailListViewItemTemplate();

@@ -99,26 +99,12 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 					arranger->RebuildColumns();
 					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
 					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
-					for (auto style : arranger->GetRepeatComposition()->Children())
-					{
-						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style))
-						{
-							callback->OnColumnRebuilt();
-						}
-					}
 				}
 
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged(bool needToRefreshItems)
 				{
 					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
 					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
-					for (auto style : arranger->GetRepeatComposition()->Children())
-					{
-						if (auto callback = dynamic_cast<IColumnItemViewCallback*>(style))
-						{
-							callback->OnColumnChanged(needToRefreshItems);
-						}
-					}
 				}
 				
 /***********************************************************************
@@ -652,7 +638,7 @@ ListViewItemProvider
 					{
 						callback->OnColumnRebuilt();
 					}
-					RebuildAllItems();
+					RefreshAllItems();
 				}
 
 				void ListViewItemProvider::NotifyColumnChanged()

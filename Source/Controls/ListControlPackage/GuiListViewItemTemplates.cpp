@@ -761,16 +761,6 @@ DetailListViewItemTemplate
 					UpdateSubItemSize();
 				}
 
-				void DetailListViewItemTemplate::OnColumnRebuilt()
-				{
-					UpdateSubItemSize();
-				}
-
-				void DetailListViewItemTemplate::OnColumnChanged(bool needToRefreshItems)
-				{
-					UpdateSubItemSize();
-				}
-
 				void DetailListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
 					text->SetFont(GetFont());
