@@ -112,15 +112,19 @@ namespace vl
 					: public DefaultListViewItemTemplate
 					, public virtual ListViewColumnItemArranger::IColumnItemViewCallback
 				{
-					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemList;
+					typedef collections::Array<compositions::GuiCellComposition*>	SubItemCellList;
+					typedef collections::Array<elements::GuiSolidLabelElement*>		SubItemTestList;
 					typedef ListViewColumnItemArranger::IColumnItemView				IColumnItemView;
 				protected:
 					IColumnItemView*						columnItemView = nullptr;
 					elements::GuiImageFrameElement*			image = nullptr;
 					elements::GuiSolidLabelElement*			text = nullptr;
 					compositions::GuiTableComposition*		textTable = nullptr;
-					SubItemList								subItems;
+					SubItemCellList							subItemCells;
+					SubItemTestList							subItemTexts;
 
+					void									UpdateSubItemSize();
+					void									ResetTextTable(vint subColumnCount);
 					void									OnInitialize()override;
 					void									OnRefresh()override;
 					void									OnColumnRebuilt()override;
@@ -129,8 +133,6 @@ namespace vl
 				public:
 					DetailListViewItemTemplate();
 					~DetailListViewItemTemplate();
-
-					void									UpdateSubItemSize();
 				};
 			}
 		}

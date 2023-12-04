@@ -613,6 +613,59 @@ InformationListViewItemTemplate
 DetailListViewItemTemplate
 ***********************************************************************/
 
+				void DetailListViewItemTemplate::UpdateSubItemSize()
+				{
+					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
+					{
+						if (columnItemView)
+						{
+							vint columnCount = view->GetColumnCount();
+							if (columnCount > textTable->GetColumns())
+							{
+								columnCount = textTable->GetColumns();
+							}
+							for (vint i = 0; i < columnCount; i++)
+							{
+								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
+							}
+						}
+					}
+				}
+
+				void DetailListViewItemTemplate::ResetTextTable(vint subColumnCount)
+				{
+					if (subItemCells.Count() == subColumnCount) return;
+
+					for (auto cell : subItemCells)
+					{
+						SafeDeleteComposition(cell);
+					}
+					subItemCells.Resize(subColumnCount);
+					subItemTexts.Resize(subColumnCount);
+
+					textTable->SetRowsAndColumns(1, subColumnCount + 1);
+					for (vint i = 0; i < subColumnCount; i++)
+					{
+						auto cell = new GuiCellComposition;
+						textTable->AddChild(cell);
+						cell->SetSite(0, i + 1, 1, 1);
+
+						auto textBounds = new GuiBoundsComposition;
+						cell->AddChild(textBounds);
+						textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
+						textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
+
+						auto subText = GuiSolidLabelElement::Create();
+						subText->SetAlignments(Alignment::Left, Alignment::Center);
+						subText->SetFont(GetFont());
+						subText->SetEllipse(true);
+						textBounds->SetOwnedElement(Ptr(subText));
+
+						subItemCells[i] = cell;
+						subItemTexts[i] = subText;
+					}
+				}
+
 				void DetailListViewItemTemplate::OnInitialize()
 				{
 					columnItemView = dynamic_cast<ListViewColumnItemArranger::IColumnItemView*>(listControl->GetItemProvider()->RequestView(ListViewColumnItemArranger::IColumnItemView::Identifier));
@@ -663,17 +716,28 @@ DetailListViewItemTemplate
 
 								text = GuiSolidLabelElement::Create();
 								text->SetAlignments(Alignment::Left, Alignment::Center);
+								text->SetFont(GetFont());
 								text->SetEllipse(true);
 								textBounds->SetOwnedElement(Ptr(text));
 							}
 						}
 					}
 
+					FontChanged.AttachMethod(this, &DetailListViewItemTemplate::OnFontChanged);
+					FontChanged.Execute(compositions::GuiEventArgs(this));
+				}
+
+				void DetailListViewItemTemplate::OnRefresh()
+				{
 					if (auto listView = dynamic_cast<GuiVirtualListView*>(listControl))
 					{
 						auto itemIndex = GetIndex();
 						if (auto view = dynamic_cast<IListViewItemView*>(listView->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
 						{
+							vint subColumnCount = view->GetColumnCount() - 1;
+							if (subColumnCount < 0) subColumnCount = 0;
+							ResetTextTable(subColumnCount);
+
 							auto imageData = view->GetSmallImage(itemIndex);
 							if (imageData)
 							{
@@ -683,62 +747,23 @@ DetailListViewItemTemplate
 							{
 								image->SetImage(0);
 							}
+
 							text->SetText(view->GetText(itemIndex));
 							text->SetColor(listView->TypedControlTemplateObject(true)->GetPrimaryTextColor());
 
-							vint columnCount = view->GetColumnCount() - 1;
-							subItems.Resize(columnCount);
-							textTable->SetRowsAndColumns(1, columnCount + 1);
-							for (vint i = 0; i < columnCount; i++)
+							for (vint i = 0; i < subColumnCount; i++)
 							{
-								auto cell = new GuiCellComposition;
-								textTable->AddChild(cell);
-								cell->SetSite(0, i + 1, 1, 1);
-
-								auto textBounds = new GuiBoundsComposition;
-								cell->AddChild(textBounds);
-								textBounds->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElement);
-								textBounds->SetAlignmentToParent(Margin(8, 0, 8, 0));
-
-								subItems[i] = GuiSolidLabelElement::Create();
-								subItems[i]->SetAlignments(Alignment::Left, Alignment::Center);
-								subItems[i]->SetFont(text->GetFont());
-								subItems[i]->SetEllipse(true);
-								subItems[i]->SetText(view->GetSubItem(itemIndex, i));
-								subItems[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
-								textBounds->SetOwnedElement(Ptr(subItems[i]));
+								subItemTexts[i]->SetText(view->GetSubItem(itemIndex, i));
+								subItemTexts[i]->SetColor(listView->TypedControlTemplateObject(true)->GetSecondaryTextColor());
 							}
-							UpdateSubItemSize();
 						}
 					}
-
-					FontChanged.AttachMethod(this, &DetailListViewItemTemplate::OnFontChanged);
-
-					FontChanged.Execute(compositions::GuiEventArgs(this));
-				}
-
-				void DetailListViewItemTemplate::OnRefresh()
-				{
-					CHECK_FAIL(L"Not Implemented!");
+					UpdateSubItemSize();
 				}
 
 				void DetailListViewItemTemplate::OnColumnRebuilt()
 				{
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
-					{
-						if (columnItemView)
-						{
-							vint columnCount = view->GetColumnCount();
-							if (columnCount>textTable->GetColumns())
-							{
-								columnCount = textTable->GetColumns();
-							}
-							for (vint i = 0; i<columnCount; i++)
-							{
-								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
-							}
-						}
-					}
+					UpdateSubItemSize();
 				}
 
 				void DetailListViewItemTemplate::OnColumnChanged(bool needToRefreshItems)
@@ -748,7 +773,11 @@ DetailListViewItemTemplate
 
 				void DetailListViewItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
-					UpdateSubItemSize();
+					text->SetFont(GetFont());
+					for (auto subText : subItemTexts)
+					{
+						subText->SetFont(GetFont());
+					}
 				}
 
 				DetailListViewItemTemplate::DetailListViewItemTemplate()
@@ -757,25 +786,6 @@ DetailListViewItemTemplate
 
 				DetailListViewItemTemplate::~DetailListViewItemTemplate()
 				{
-				}
-
-				void DetailListViewItemTemplate::UpdateSubItemSize()
-				{
-					if (auto view = dynamic_cast<IListViewItemView*>(listControl->GetItemProvider()->RequestView(IListViewItemView::Identifier)))
-					{
-						if (columnItemView)
-						{
-							vint columnCount = view->GetColumnCount();
-							if (columnCount>textTable->GetColumns())
-							{
-								columnCount = textTable->GetColumns();
-							}
-							for (vint i = 0; i<columnCount; i++)
-							{
-								textTable->SetColumnOption(i, GuiCellOption::AbsoluteOption(columnItemView->GetColumnSize(i)));
-							}
-						}
-					}
 				}
 			}
 		}
