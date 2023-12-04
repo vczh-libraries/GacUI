@@ -29,6 +29,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Enlarging window slower than shrinking.
 - Examine all demo projects.
 - `FlowAlignment::Right` in demo.
+- Document new virtual repeat compositions.
 - Make document v2 without auto generated content.
 
 ## Progressing
