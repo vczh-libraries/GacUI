@@ -46,6 +46,16 @@ GuiVirtualRepeatCompositionBase
 				return bounds;
 			}
 
+			void GuiVirtualRepeatCompositionBase::Layout_ResetLayout()
+			{
+				viewBounds = Rect({ 0,0 }, { 0,0 });
+				ViewLocationChanged.Execute(GuiEventArgs(this));
+				OnResetViewLocation();
+				itemSourceUpdated = true;
+				Layout_InvalidateItemSizeCache();
+				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
+			}
+
 			void GuiVirtualRepeatCompositionBase::Layout_SetStyleAlignmentToParent(ItemStyleRecord style, Margin value)
 			{
 				style->SetAlignmentToParent(axis->VirtualMarginToRealMargin(value));
@@ -134,12 +144,7 @@ GuiVirtualRepeatCompositionBase
 					DeleteStyle(style);
 				}
 				visibleStyles.Clear();
-				viewBounds = Rect({ 0,0 },{ 0,0 });
-				ViewLocationChanged.Execute(GuiEventArgs(this));
-				OnResetViewLocation();
-				itemSourceUpdated = true;
-				Layout_InvalidateItemSizeCache();
-				AdoptedSizeInvalidated.Execute(GuiEventArgs(this));
+				Layout_ResetLayout();
 			}
 
 			void GuiVirtualRepeatCompositionBase::OnInstallItems()
@@ -362,9 +367,21 @@ GuiVirtualRepeatCompositionBase
 				return -1;
 			}
 
-			void GuiVirtualRepeatCompositionBase::ReloadVisibleStyles()
+			void GuiVirtualRepeatCompositionBase::ResetLayout(bool recreateVisibleStyles)
 			{
-				OnClearItems();
+				if (recreateVisibleStyles)
+				{
+					OnClearItems();
+				}
+				else
+				{
+					Layout_ResetLayout();
+				}
+			}
+
+			void GuiVirtualRepeatCompositionBase::InvalidateLayout()
+			{
+				itemSourceUpdated = true;
 			}
 
 			vint GuiVirtualRepeatCompositionBase::FindItemByRealKeyDirection(vint itemIndex, compositions::KeyDirection key)
@@ -804,8 +821,7 @@ GuiRepeatFixedHeightItemComposition
 				if (itemWidth != value)
 				{
 					itemWidth = value;
-					itemSourceUpdated = true;
-					ReloadVisibleStyles();
+					InvalidateLayout();
 				}
 			}
 
@@ -820,8 +836,7 @@ GuiRepeatFixedHeightItemComposition
 				if (itemYOffset != value)
 				{
 					itemYOffset = value;
-					itemSourceUpdated = true;
-					ReloadVisibleStyles();
+					InvalidateLayout();
 				}
 			}
 

@@ -99,12 +99,14 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 					arranger->RebuildColumns();
 					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
 					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
+					arranger->GetRepeatComposition()->ForceCalculateSizeImmediately();
 				}
 
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged(bool needToRefreshItems)
 				{
 					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
 					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
+					arranger->GetRepeatComposition()->ForceCalculateSizeImmediately();
 				}
 				
 /***********************************************************************
