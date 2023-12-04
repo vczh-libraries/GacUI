@@ -221,6 +221,7 @@ GuiGraphicsComposition
 				if(!child) return false;
 				vint index=children.IndexOf(child);
 				if(index==-1) return false;
+				if(index==newIndex) return true;
 				children.RemoveAt(index);
 				children.Insert(newIndex, child);
 				InvokeOnCompositionStateChanged();

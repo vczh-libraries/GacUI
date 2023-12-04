@@ -352,7 +352,7 @@
             </Button>
           </Cell>
           <Cell Site="row:1 column:0 columnSpan:6">
-            <ListView ref.Name="listView" View="BigIcon">
+            <ListView ref.Name="listView">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
 
               <att.Columns>

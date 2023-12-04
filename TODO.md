@@ -23,9 +23,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
       - BindableTreeView
       - BindableDataGrid
         - Remove `IColumnItemViewCallback` from `DefaultDataGridItemTemplate`
-    - ListView changes to `Detail` first item hidden by columns.
-    - ListView changes to `Detail` no HScroll.
-    - ListView changes to `Detail` item font not correct.
     - Ribbon gallary (not list) cannot scroll or display the selected item.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.

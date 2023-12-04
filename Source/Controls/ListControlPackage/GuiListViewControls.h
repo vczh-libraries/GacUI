@@ -197,21 +197,25 @@ ListViewColumnItemArranger
 					bool										splitterDragging = false;
 					vint										splitterLatestX = 0;
 
+					void										OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments);
 					void										ColumnClicked(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void										ColumnCachedBoundsChanged(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 					void										ColumnHeaderSplitterLeftButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 					void										ColumnHeaderSplitterMouseMove(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 
+					void										FixColumnsAfterViewLocationChanged();
 					void										FixColumnsAfterLayout();
 					vint										GetColumnsWidth();
 					vint										GetColumnsYOffset();
 					void										DeleteColumnButtons();
 					void										RebuildColumns();
+					void										RefreshColumns();
 				public:
 					ListViewColumnItemArranger();
 					~ListViewColumnItemArranger();
 
+					Size										GetTotalSize()override;
 					void										AttachListControl(GuiListControl* value)override;
 					void										DetachListControl()override;
 				};

@@ -97,16 +97,11 @@ ListViewColumnItemArranger::ColumnItemViewCallback
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnRebuilt()
 				{
 					arranger->RebuildColumns();
-					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
-					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
-					arranger->GetRepeatComposition()->ForceCalculateSizeImmediately();
 				}
 
 				void ListViewColumnItemArranger::ColumnItemViewCallback::OnColumnChanged(bool needToRefreshItems)
 				{
-					arranger->GetRepeatComposition()->SetItemWidth(arranger->GetColumnsWidth());
-					arranger->GetRepeatComposition()->SetItemYOffset(arranger->GetColumnsYOffset());
-					arranger->GetRepeatComposition()->ForceCalculateSizeImmediately();
+					arranger->RefreshColumns();
 				}
 				
 /***********************************************************************
@@ -137,6 +132,11 @@ ListViewColumnItemArranger
 ***********************************************************************/
 
 				const wchar_t* const ListViewColumnItemArranger::IColumnItemView::Identifier = L"vl::presentation::controls::list::ListViewColumnItemArranger::IColumnItemView";
+
+				void ListViewColumnItemArranger::OnViewLocationChanged(compositions::GuiGraphicsComposition* composition, compositions::GuiEventArgs& arguments)
+				{
+					FixColumnsAfterViewLocationChanged();
+				}
 
 				void ListViewColumnItemArranger::ColumnClicked(vint index, compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
 				{
@@ -194,12 +194,17 @@ ListViewColumnItemArranger
 					}
 				}
 
-				void ListViewColumnItemArranger::FixColumnsAfterLayout()
+				void ListViewColumnItemArranger::FixColumnsAfterViewLocationChanged()
 				{
 					vint x = GetRepeatComposition()->GetViewLocation().x;
+					columnHeaders->SetExpectedBounds(Rect(Point(-x, 0), Size(0, 0)));
+				}
+
+				void ListViewColumnItemArranger::FixColumnsAfterLayout()
+				{
 					vint count = columnHeaders->GetParent()->Children().Count();
 					columnHeaders->GetParent()->MoveChild(columnHeaders, count - 1);
-					columnHeaders->SetExpectedBounds(Rect(Point(-x, 0), Size(0, 0)));
+					FixColumnsAfterViewLocationChanged();
 				}
 
 				vint ListViewColumnItemArranger::GetColumnsWidth()
@@ -273,10 +278,6 @@ ListViewColumnItemArranger
 								GuiListViewColumnHeader* button = new GuiListViewColumnHeader(theme::ThemeName::Unknown);
 								button->SetAutoFocus(false);
 								button->SetControlTemplate(listView->TypedControlTemplateObject(true)->GetColumnHeaderTemplate());
-								button->SetText(listViewItemView->GetColumnText(i));
-								button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
-								button->SetColumnSortingState(columnItemView->GetSortingState(i));
-								button->GetBoundsComposition()->SetExpectedBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
 								button->Clicked.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnClicked(i, sender, args); });
 								button->GetBoundsComposition()->CachedBoundsChanged.AttachLambda([this, i](GuiGraphicsComposition* sender, GuiEventArgs& args) { ColumnCachedBoundsChanged(i, sender, args); });
 								columnHeaderButtons.Add(button);
@@ -301,7 +302,27 @@ ListViewColumnItemArranger
 							}
 						}
 					}
+
+					RefreshColumns();
 					callback->OnTotalSizeChanged();
+				}
+
+				void ListViewColumnItemArranger::RefreshColumns()
+				{
+					if (columnItemView && listViewItemView)
+					{
+						for (vint i = 0; i < listViewItemView->GetColumnCount(); i++)
+						{
+							auto button = columnHeaderButtons[i];
+							button->SetText(listViewItemView->GetColumnText(i));
+							button->SetSubMenu(columnItemView->GetDropdownPopup(i), false);
+							button->SetColumnSortingState(columnItemView->GetSortingState(i));
+							button->GetBoundsComposition()->SetExpectedBounds(Rect(Point(0, 0), Size(columnItemView->GetColumnSize(i), 0)));
+						}
+						columnHeaders->ForceCalculateSizeImmediately();
+						GetRepeatComposition()->SetItemWidth(GetColumnsWidth());
+						GetRepeatComposition()->SetItemYOffset(GetColumnsYOffset());
+					}
 				}
 
 				ListViewColumnItemArranger::ListViewColumnItemArranger()
@@ -310,6 +331,7 @@ ListViewColumnItemArranger
 					columnHeaders = new GuiStackComposition;
 					columnHeaders->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
 					columnItemViewCallback = Ptr(new ColumnItemViewCallback(this));
+					GetRepeatComposition()->ViewLocationChanged.AttachMethod(this, &ListViewColumnItemArranger::OnViewLocationChanged);
 				}
 
 				ListViewColumnItemArranger::~ListViewColumnItemArranger()
@@ -319,6 +341,13 @@ ListViewColumnItemArranger
 						DeleteColumnButtons();
 						delete columnHeaders;
 					}
+				}
+
+				Size ListViewColumnItemArranger::GetTotalSize()
+				{
+					Size size = TBase::GetTotalSize();
+					size.x += SplitterWidth;
+					return size;
 				}
 
 				void ListViewColumnItemArranger::AttachListControl(GuiListControl* value)
