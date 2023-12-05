@@ -38,8 +38,8 @@
     ]]></Workflow>
   </Script>
 
-  <Instance name="TextListTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::TextListTabPage">
+  <Instance name="RefreshTextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshTextListTabPage">
       <TabPage ref.Name="self" Text="TextList">
         <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
           <att.Rows>
@@ -106,8 +106,8 @@
     </Instance>
   </Instance>
 
-  <Instance name="BindableTextListTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::BindableTextListTabPage">
+  <Instance name="RefreshBindableTextListTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableTextListTabPage">
       <ref.Members><![CDATA[
         var items : observe RefreshItem^[] = {
           new RefreshItem^("First", "1st")
@@ -180,8 +180,8 @@
     </Instance>
   </Instance>
 
-  <Instance name="ListViewTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::ListViewTabPage">
+  <Instance name="RefreshListViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshListViewTabPage">
       <TabPage ref.Name="self" Text="ListView">
         <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
           <att.Rows>
@@ -363,8 +363,8 @@
     </Instance>
   </Instance>
 
-  <Instance name="BindableListViewTabPageResource">
-    <Instance ref.CodeBehind="false" ref.Class="demo::BindableListViewTabPage">
+  <Instance name="RefreshBindableListViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableListViewTabPage">
       <ref.Members><![CDATA[
         var items : observe RefreshItem^[] = {
           new RefreshItem^("First", "1st")
@@ -576,10 +576,10 @@
         <Tab>
           <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
           <att.Pages>
-            <demo:TextListTabPage/>
-            <demo:BindableTextListTabPage/>
-            <demo:ListViewTabPage/>
-            <demo:BindableListViewTabPage/>
+            <demo:RefreshTextListTabPage/>
+            <demo:RefreshBindableTextListTabPage/>
+            <demo:RefreshListViewTabPage/>
+            <demo:RefreshBindableListViewTabPage/>
           </att.Pages>
         </Tab>
       </Window>
