@@ -116,8 +116,6 @@
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
           <Cell Site="row:0 column:0">
@@ -145,24 +143,6 @@
             </Button>
           </Cell>
           <Cell Site="row:0 column:2">
-            <Button Text="Check First">
-              <ev.Clicked-eval><![CDATA[
-                {
-                  self.items[0].Selected = true;
-                }
-              ]]></ev.Clicked-eval>
-            </Button>
-          </Cell>
-          <Cell Site="row:0 column:3">
-            <Button Text="Uncheck First">
-              <ev.Clicked-eval><![CDATA[
-                {
-                  self.items[0].Selected = false;
-                }
-              ]]></ev.Clicked-eval>
-            </Button>
-          </Cell>
-          <Cell Site="row:0 column:4">
             <Button ref.Name="buttonRead" Text="Read (false)">
               <ev.Clicked-eval><![CDATA[
                 {
@@ -178,7 +158,7 @@
               ]]></ev.Clicked-eval>
             </Button>
           </Cell>
-          <Cell Site="row:1 column:0 columnSpan:6">
+          <Cell Site="row:1 column:0 columnSpan:4">
             <BindableTextList ref.Name="textList" MultiSelect="true" View="Check" env.ItemType="Item^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ItemSource-eval>self.items</att.ItemSource-eval>
