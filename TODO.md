@@ -23,6 +23,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
       - BindableDataGrid
         - Remove `IColumnItemViewCallback` from `DefaultDataGridItemTemplate`
     - Ribbon gallary (not list) cannot scroll or display the selected item.
+    - Add the `Playground` test to `FullControlTest`.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
   - Enlarging window slower than shrinking.
