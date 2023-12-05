@@ -364,6 +364,7 @@
           new Item^("First", "1st")
           new Item^("Second", "2nd")
           new Item^("Third", "3rd")
+          new Item^("Fourth", "4th")
         };
       ]]></ref.Members>
       <TabPage ref.Name="self" Text="BindableListView">
@@ -431,7 +432,7 @@
             </ComboBox>
           </Cell>
           <Cell Site="row:0 column:1">
-            <Button Text="*MainColumn">
+            <Button Text="Use Name">
               <ev.Clicked-eval><![CDATA[
                 {
                   listView.Columns[0].TextProperty = func(value:object):string
@@ -443,7 +444,7 @@
             </Button>
           </Cell>
           <Cell Site="row:0 column:2">
-            <Button Text="*SubColumn">
+            <Button Text="Use Title">
               <ev.Clicked-eval><![CDATA[
                 {
                   listView.Columns[0].TextProperty = func(value:object):string
@@ -529,7 +530,6 @@
             <BindableListView ref.Name="listView" env.ItemType="Item^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ItemSource-eval>self.items</att.ItemSource-eval>
-              <att.TextProperty>Name</att.TextProperty>
 
               <att.Columns>
                 <_ Text="Id" TextProperty="Name"/>
