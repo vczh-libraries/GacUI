@@ -19,7 +19,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
     - Ensure updating list item's property or property binding refreshes list item
       - TreeView
-      - BindableListView
       - BindableTreeView
       - BindableDataGrid
         - Remove `IColumnItemViewCallback` from `DefaultDataGridItemTemplate`
