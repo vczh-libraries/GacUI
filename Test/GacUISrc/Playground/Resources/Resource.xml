@@ -13,17 +13,20 @@
     <Workflow><![CDATA[
       module viewmodel;
       using system::*;
+      using presentation::*;
 
       namespace demo
       {
         class RefreshItem
         {
-          prop Name : string = "" {}
-          prop Title : string = "" {}
-          prop Sub1 : string = "One" {}
-          prop Sub2 : string = "Two" {}
-          prop Sub3 : string = "Three" {}
-          prop Selected : bool = false {}
+          prop Name : string = "" {not observe}
+          prop Title : string = "" {not observe}
+          prop Sub1 : string = "One" {not observe}
+          prop Sub2 : string = "Two" {not observe}
+          prop Sub3 : string = "Three" {not observe}
+          prop Selected : bool = false {not observe}
+          prop LargeImage : GuiImageData^ = null {not observe}
+          prop SmallImage : GuiImageData^ = null {not observe}
 
           new (name:string, title:string)
           {
@@ -370,6 +373,18 @@
           new RefreshItem^("Fourth", "4th")
         };
       ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          items[0].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Task", true));
+          items[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          items[1].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Reminder", true));
+          items[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          items[2].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Tip", true));
+          items[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+          items[3].LargeImage = (cast (GuiImageData^) self.ResolveResource("res", "LargeImages/Tip", true));
+          items[3].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+        }
+      ]]></ref.Ctor>
       <TabPage ref.Name="self" Text="BindableListView">
         <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
           <att.Rows>
@@ -533,6 +548,8 @@
             <BindableListView ref.Name="listView" env.ItemType="demo::RefreshItem^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
               <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.LargeImageProperty>LargeImage</att.LargeImageProperty>
+              <att.SmallImageProperty>SmallImage</att.SmallImageProperty>
 
               <att.Columns>
                 <_ Text="Id" TextProperty="Name"/>

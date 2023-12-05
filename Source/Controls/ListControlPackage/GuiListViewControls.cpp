@@ -524,7 +524,7 @@ ListViewColumn
 				void ListViewColumn::SetTextProperty(const ItemProperty<WString>& value)
 				{
 					textProperty = value;
-					NotifyRebuilt();
+					NotifyChanged(true);
 				}
 
 				vint ListViewColumn::GetSize()
