@@ -24,6 +24,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
       - BindableDataGrid
         - Remove `IColumnItemViewCallback` from `DefaultDataGridItemTemplate`
     - Ribbon gallary (not list) cannot scroll or display the selected item.
+    - In `Bindable` tabs, add buttons that notify the list control when item data is changed.
     - Add the `Playground` test to `FullControlTest`.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
