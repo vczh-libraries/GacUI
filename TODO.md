@@ -10,6 +10,8 @@
   - `FakeDialogServiceBase::ShowModalDialogAndDelete` place the window in the center of `owner` instead of the screen.
   - Specify multiple extensions in one filter, exactly like Win32 API.
   - Extensions not applied before checking file existance.
+- Expanding collapsing tree nodes cause the whole list to rebuild, which glitch during multiple passes of layout.
+  - Only affected items need to rebuild.
 
 ## Progressing (before release)
 
@@ -18,8 +20,6 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Test `GetAdoptedSize`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
     - Ensure updating list item's property or property binding refreshes list item
-      - TreeView
-        - Stop rebuilding the whole sub tree when calling `MemoryNodeProvider::SetData`.
       - BindableTreeView
       - BindableDataGrid
         - Remove `IColumnItemViewCallback` from `DefaultDataGridItemTemplate`
