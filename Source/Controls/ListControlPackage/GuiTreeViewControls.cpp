@@ -1087,7 +1087,6 @@ DefaultTreeItemTemplate
 
 				void DefaultTreeItemTemplate::OnRefresh()
 				{
-					CHECK_FAIL(L"Not Implemented!");
 				}
 
 				void DefaultTreeItemTemplate::OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)

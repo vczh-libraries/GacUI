@@ -581,7 +581,6 @@
           <att.Columns>
             <_>composeType:MinSize</_>
             <_>composeType:MinSize</_>
-            <_>composeType:MinSize</_>
             <_>composeType:Percentage percentage:1.0</_>
           </att.Columns>
           <Cell Site="row:0 column:0">
