@@ -27,6 +27,7 @@
           prop Selected : bool = false {not observe}
           prop LargeImage : GuiImageData^ = null {not observe}
           prop SmallImage : GuiImageData^ = null {not observe}
+          prop Children : observe RefreshItem^[] = {} {const, not observe}
 
           new (name:string, title:string)
           {
@@ -631,6 +632,53 @@
     </Instance>
   </Instance>
 
+  <Instance name="RefreshBindableTreeViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableTreeViewTabPage">
+      <TabPage ref.Name="self" Text="BindableTreeView">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="Use Name">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  treeView.TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Name;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="Use Title">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  treeView.TextProperty = func(value:object):string
+                  {
+                    return (cast (RefreshItem^) value).Title;
+                  };
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <BindableTreeView ref.Name="treeView" env.ItemType="demo::RefreshItem^">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+            </BindableTreeView>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
@@ -642,6 +690,7 @@
             <demo:RefreshListViewTabPage/>
             <demo:RefreshBindableListViewTabPage/>
             <demo:RefreshTreeViewTabPage/>
+            <demo:RefreshBindableTreeViewTabPage/>
           </att.Pages>
         </Tab>
       </Window>
