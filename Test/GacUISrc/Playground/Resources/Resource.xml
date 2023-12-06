@@ -590,7 +590,7 @@
                   var node = treeView.Nodes.RootNode.GetChild(0);
                   var data = treeView.Nodes.GetTreeViewData(cast * node);
                   data.text = data.text == "First" ? "One" : "First";
-                  treeView.Nodes.SetTreeViewData(cast * node, data);
+                  treeView.Nodes.UpdateTreeViewData(cast * node);
                 }
               ]]></ev.Clicked-eval>
             </Button>
@@ -602,7 +602,7 @@
                   var node = treeView.Nodes.RootNode.GetChild(0).GetChild(1);
                   var data = treeView.Nodes.GetTreeViewData(cast * node);
                   data.text = data.text == "Second (1)" ? "Two (1)" : "Second (1)";
-                  treeView.Nodes.SetTreeViewData(cast * node, data);
+                  treeView.Nodes.UpdateTreeViewData(cast * node);
                 }
               ]]></ev.Clicked-eval>
             </Button>

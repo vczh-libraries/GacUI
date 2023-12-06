@@ -650,7 +650,7 @@ GuiBindableTreeView::ItemSourceNode
 					{
 						itemChangedEventHandler = ol->ItemChanged.Add([this](vint start, vint oldCount, vint newCount)
 						{
-							callback->OnBeforeItemModified(this, start, oldCount, newCount);
+							callback->OnBeforeItemModified(this, start, oldCount, newCount, true);
 							children.RemoveRange(start, oldCount);
 							for (vint i = 0; i < newCount; i++)
 							{
@@ -658,7 +658,7 @@ GuiBindableTreeView::ItemSourceNode
 								auto node = Ptr(new ItemSourceNode(value, this));
 								children.Insert(start + i, node);
 							}
-							callback->OnAfterItemModified(this, start, oldCount, newCount);
+							callback->OnAfterItemModified(this, start, oldCount, newCount, true);
 						});
 					}
 
@@ -723,11 +723,11 @@ GuiBindableTreeView::ItemSourceNode
 				vint oldCount = childrenVirtualList ? childrenVirtualList->GetCount() : 0;
 				vint newCount = newVirtualList->GetCount();
 
-				callback->OnBeforeItemModified(this, 0, oldCount, newCount);
+				callback->OnBeforeItemModified(this, 0, oldCount, newCount, true);
 				UnprepareChildren();
 				itemSource = _itemSource;
 				PrepareChildren(newVirtualList);
-				callback->OnAfterItemModified(this, 0, oldCount, newCount);
+				callback->OnAfterItemModified(this, 0, oldCount, newCount, true);
 			}
 
 			bool GuiBindableTreeView::ItemSourceNode::GetExpanding()
@@ -828,8 +828,8 @@ GuiBindableTreeView::ItemSource
 					rootNode->UnprepareChildren();
 				}
 				vint newCount = rootNode->GetChildCount();
-				OnBeforeItemModified(rootNode.Obj(), 0, oldCount, newCount);
-				OnAfterItemModified(rootNode.Obj(), 0, oldCount, newCount);
+				OnBeforeItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
+				OnAfterItemModified(rootNode.Obj(), 0, oldCount, newCount, updateChildrenProperty);
 			}
 
 			// ===================== tree::INodeRootProvider =====================

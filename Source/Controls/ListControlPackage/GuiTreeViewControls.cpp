@@ -51,7 +51,7 @@ NodeItemProvider
 				{
 				}
 
-				void NodeItemProvider::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
+				void NodeItemProvider::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 				{
 					vint offset = 0;
 					vint base = CalculateNodeVisibilityIndexInternal(parentNode);
@@ -66,7 +66,7 @@ NodeItemProvider
 					offsetBeforeChildModifieds.Set(parentNode, offset);
 				}
 
-				void NodeItemProvider::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
+				void NodeItemProvider::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 				{
 					vint offsetBeforeChildModified = 0;
 					{
@@ -112,7 +112,7 @@ NodeItemProvider
 								firstChildStart += child->CalculateTotalVisibleNodes();
 							}
 						}
-						InvokeOnItemModified(firstChildStart, offsetBeforeChildModified, offset, true);
+						InvokeOnItemModified(firstChildStart, offsetBeforeChildModified, offset, itemReferenceUpdated);
 					}
 				}
 
@@ -266,7 +266,7 @@ MemoryNodeProvider::NodeCollection
 					INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
 					if (proxy)
 					{
-						proxy->OnBeforeItemModified(ownerProvider, start, count, newCount);
+						proxy->OnBeforeItemModified(ownerProvider, start, count, newCount, true);
 					}
 				}
 
@@ -286,7 +286,7 @@ MemoryNodeProvider::NodeCollection
 					INodeProviderCallback* proxy = ownerProvider->GetCallbackProxyInternal();
 					if (proxy)
 					{
-						proxy->OnAfterItemModified(ownerProvider, start, count, newCount);
+						proxy->OnAfterItemModified(ownerProvider, start, count, newCount, true);
 					}
 				}
 
@@ -381,8 +381,8 @@ MemoryNodeProvider
 						INodeProviderCallback* proxy=GetCallbackProxyInternal();
 						if(proxy)
 						{
-							proxy->OnBeforeItemModified(parent, index, 1, 1);
-							proxy->OnAfterItemModified(parent, index, 1, 1);
+							proxy->OnBeforeItemModified(parent, index, 1, 1, false);
+							proxy->OnAfterItemModified(parent, index, 1, 1, false);
 						}
 					}
 				}
@@ -459,21 +459,21 @@ NodeRootProviderBase
 				{
 				}
 
-				void NodeRootProviderBase::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
+				void NodeRootProviderBase::OnBeforeItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 				{
 					// TODO: (enumerable) foreach
 					for(vint i=0;i<callbacks.Count();i++)
 					{
-						callbacks[i]->OnBeforeItemModified(parentNode, start, count, newCount);
+						callbacks[i]->OnBeforeItemModified(parentNode, start, count, newCount, itemReferenceUpdated);
 					}
 				}
 
-				void NodeRootProviderBase::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount)
+				void NodeRootProviderBase::OnAfterItemModified(INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 				{
 					// TODO: (enumerable) foreach
 					for(vint i=0;i<callbacks.Count();i++)
 					{
-						callbacks[i]->OnAfterItemModified(parentNode, start, count, newCount);
+						callbacks[i]->OnAfterItemModified(parentNode, start, count, newCount, itemReferenceUpdated);
 					}
 				}
 
@@ -592,11 +592,11 @@ GuiVirtualTreeListControl
 			{
 			}
 
-			void GuiVirtualTreeListControl::OnBeforeItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)
+			void GuiVirtualTreeListControl::OnBeforeItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
 			}
 
-			void GuiVirtualTreeListControl::OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)
+			void GuiVirtualTreeListControl::OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
 			}
 
@@ -897,9 +897,9 @@ GuiVirtualTreeView
 				}
 			}
 
-			void GuiVirtualTreeView::OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount)
+			void GuiVirtualTreeView::OnAfterItemModified(tree::INodeProvider* parentNode, vint start, vint count, vint newCount, bool itemReferenceUpdated)
 			{
-				GuiVirtualTreeListControl::OnAfterItemModified(parentNode, start, count, newCount);
+				GuiVirtualTreeListControl::OnAfterItemModified(parentNode, start, count, newCount, itemReferenceUpdated);
 				SetStyleExpandable(parentNode, parentNode->GetChildCount() > 0);
 			}
 
