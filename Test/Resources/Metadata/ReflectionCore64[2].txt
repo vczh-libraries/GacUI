@@ -4071,9 +4071,9 @@ interface presentation::controls::tree::INodeProvider : system::Interface {
 }
 
 interface presentation::controls::tree::INodeProviderCallback : system::Interface {
-    function OnAfterItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int64, count : system::Int64, newCount : system::Int64) : system::Void;
+    function OnAfterItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int64, count : system::Int64, newCount : system::Int64, itemReferenceUpdated : system::Boolean) : system::Void;
     function OnAttached(provider : presentation::controls::tree::INodeRootProvider*) : system::Void;
-    function OnBeforeItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int64, count : system::Int64, newCount : system::Int64) : system::Void;
+    function OnBeforeItemModified(parentNode : presentation::controls::tree::INodeProvider*, start : system::Int64, count : system::Int64, newCount : system::Int64, itemReferenceUpdated : system::Boolean) : system::Void;
     function OnItemCollapsed(node : presentation::controls::tree::INodeProvider*) : system::Void;
     function OnItemExpanded(node : presentation::controls::tree::INodeProvider*) : system::Void;
 
