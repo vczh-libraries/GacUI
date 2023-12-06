@@ -34,6 +34,16 @@
             Name = name;
             Title = title;
           }
+
+          new (name:string, title:string, children:RefreshItem^{})
+          {
+            Name = name;
+            Title = title;
+            for (child in children)
+            {
+              Children.Add(child);
+            }
+          }
         }
       }
     ]]></Workflow>
@@ -634,6 +644,38 @@
 
   <Instance name="RefreshBindableTreeViewTabPageResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::RefreshBindableTreeViewTabPage">
+      <ref.Members><![CDATA[
+        var items : observe RefreshItem^[] = {
+          new RefreshItem^("First", "1st", {
+            new RefreshItem^("First (1)", "1st (1)")
+            new RefreshItem^("Second (1)", "2nd (1)")
+            new RefreshItem^("Third (1)", "3rd (1)")
+          })
+          new RefreshItem^("Second", "2nd", {
+            new RefreshItem^("First (2)", "1st (2)")
+            new RefreshItem^("Second (2)", "2nd (2)")
+            new RefreshItem^("Third (2)", "3rd (2)")
+          })
+          new RefreshItem^("Third", "3rd")
+          new RefreshItem^("Fourth", "4th")
+        };
+      ]]></ref.Members>
+      <ref.Ctor><![CDATA[
+        {
+          items[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          items[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          items[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+          items[3].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+
+          items[0].Children[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          items[0].Children[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          items[0].Children[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+
+          items[1].Children[0].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Task", true));
+          items[1].Children[1].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Reminder", true));
+          items[1].Children[2].SmallImage = (cast (GuiImageData^) self.ResolveResource("res", "SmallImages/Tip", true));
+        }
+      ]]></ref.Ctor>
       <TabPage ref.Name="self" Text="BindableTreeView">
         <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
           <att.Rows>
@@ -672,6 +714,10 @@
           <Cell Site="row:1 column:0 columnSpan:3">
             <BindableTreeView ref.Name="treeView" env.ItemType="demo::RefreshItem^">
               <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.ItemSource-eval>self.items</att.ItemSource-eval>
+              <att.TextProperty>Name</att.TextProperty>
+              <att.ImageProperty>SmallImage</att.ImageProperty>
+              <att.ChildrenProperty>Children</att.ChildrenProperty>
             </BindableTreeView>
           </Cell>
         </Table>
