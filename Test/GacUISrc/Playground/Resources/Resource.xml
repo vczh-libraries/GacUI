@@ -570,6 +570,68 @@
     </Instance>
   </Instance>
 
+  <Instance name="RefreshTreeViewTabPageResource">
+    <Instance ref.CodeBehind="false" ref.Class="demo::RefreshTreeViewTabPage">
+      <TabPage ref.Name="self" Text="TreeView">
+        <Table CellPadding="5" BorderVisible="false" MinSizeLimitation="LimitToElementAndChildren" AlignmentToParent="left:5 top:5 right:5 bottom:5">
+          <att.Rows>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Rows>
+          <att.Columns>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:MinSize</_>
+            <_>composeType:Percentage percentage:1.0</_>
+          </att.Columns>
+          <Cell Site="row:0 column:0">
+            <Button Text="*First">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var node = treeView.Nodes.RootNode.GetChild(0);
+                  var data = treeView.Nodes.GetTreeViewData(cast * node);
+                  data.text = data.text == "First" ? "One" : "First";
+                  treeView.Nodes.SetTreeViewData(cast * node, data);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:0 column:1">
+            <Button Text="*First/Second">
+              <ev.Clicked-eval><![CDATA[
+                {
+                  var node = treeView.Nodes.RootNode.GetChild(0).GetChild(1);
+                  var data = treeView.Nodes.GetTreeViewData(cast * node);
+                  data.text = data.text == "Second (1)" ? "Two (1)" : "Second (1)";
+                  treeView.Nodes.SetTreeViewData(cast * node, data);
+                }
+              ]]></ev.Clicked-eval>
+            </Button>
+          </Cell>
+          <Cell Site="row:1 column:0 columnSpan:3">
+            <TreeView ref.Name="treeView">
+              <att.BoundsComposition-set AlignmentToParent="left:0 top:0 right:0 bottom:0"/>
+              <att.Nodes>
+                <TreeNode Text="First" Image-uri="res://SmallImages/Task">
+                  <TreeNode Text="First (1)" Image-uri="res://SmallImages/Task"/>
+                  <TreeNode Text="Second (1)" Image-uri="res://SmallImages/Reminder"/>
+                  <TreeNode Text="Third (1)" Image-uri="res://SmallImages/Tip"/>
+                </TreeNode>
+                <TreeNode Text="Second" Image-uri="res://SmallImages/Reminder">
+                  <TreeNode Text="First (2)" Image-uri="res://SmallImages/Task"/>
+                  <TreeNode Text="Second (2)" Image-uri="res://SmallImages/Reminder"/>
+                  <TreeNode Text="Third (2)" Image-uri="res://SmallImages/Tip"/>
+                </TreeNode>
+                <TreeNode Text="Third" Image-uri="res://SmallImages/Tip"/>
+                <TreeNode Text="Fourth" Image-uri="res://SmallImages/Tip"/>
+              </att.Nodes>
+            </TreeView>
+          </Cell>
+        </Table>
+      </TabPage>
+    </Instance>
+  </Instance>
+
   <Instance name="MainWindowResource">
     <Instance ref.CodeBehind="false" ref.Class="demo::TestWindow" xmlns:demo="demo::*">
       <Window ref.Name="self" Text="MainWindow" ClientSize="x:640 y:480">
@@ -580,6 +642,7 @@
             <demo:RefreshBindableTextListTabPage/>
             <demo:RefreshListViewTabPage/>
             <demo:RefreshBindableListViewTabPage/>
+            <demo:RefreshTreeViewTabPage/>
           </att.Pages>
         </Tab>
       </Window>
