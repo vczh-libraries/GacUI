@@ -23,10 +23,8 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Test `GetAdoptedSize`.
   - List control (or scroll view) should layout content during layouting composition, not driven by event.
     - Ribbon gallary (not list) cannot scroll or display the selected item.
-    - In `Bindable` tabs, add buttons that notify the list control when item data is changed.
-      - BindableTreeView
-        - Consider add a reverse property binding so that item knows its `INodeProvider`
-      - BindableDataGrid
+    - In `BindableTreeView` tabs, add buttons that notify the list control when item data is changed.
+      - Consider add a reverse property binding so that item knows its `INodeProvider`
     - Update reflection and add the `Playground` test to `FullControlTest`.
 - MISC
   - Check everywhere that uses `CachedBoundsChanged.Attach`.
