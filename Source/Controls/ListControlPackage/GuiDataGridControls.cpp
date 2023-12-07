@@ -165,7 +165,6 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::ResetDataTable(vint columnCount)
 				{
-					NotifyCloseEditor();
 					vint itemIndex = GetIndex();
 
 					if (dataVisualizers.Count() == columnCount)
@@ -244,6 +243,7 @@ DefaultDataGridItemTemplate
 							if (!dataVisualizer)
 							{
 								dataVisualizer = dataVisualizerFactories[i]->CreateVisualizer(dataGrid);
+								dataVisualizer->GetTemplate()->SetFont(GetFont());
 								dataVisualizers[i] = dataVisualizer;
 
 								auto cell = dataCells[i];

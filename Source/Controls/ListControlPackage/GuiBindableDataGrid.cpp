@@ -496,7 +496,7 @@ DataProvider
 					{
 						callback->OnColumnRebuilt();
 					}
-					RebuildAllItems();
+					RefreshAllItems();
 				}
 
 				void DataProvider::NotifyColumnChanged()
