@@ -794,6 +794,16 @@ GuiBindableTreeView::ItemSourceNode
 				return count;
 			}
 
+			void GuiBindableTreeView::ItemSourceNode::NotifyDataModified()
+			{
+				if (parent)
+				{
+					vint index = parent->children.IndexOf(this);
+					callback->OnBeforeItemModified(parent, index, 1, 1, false);
+					callback->OnAfterItemModified(parent, index, 1, 1, false);
+				}
+			}
+
 			vint GuiBindableTreeView::ItemSourceNode::GetChildCount()
 			{
 				if (!childrenVirtualList)

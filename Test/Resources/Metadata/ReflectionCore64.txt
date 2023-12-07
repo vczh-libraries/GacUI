@@ -4065,6 +4065,7 @@ interface presentation::controls::tree::INodeProvider : system::Interface {
     function GetChildCount() : system::Int64;
     function GetExpanding() : system::Boolean;
     function GetParent() : presentation::controls::tree::INodeProvider^;
+    function NotifyDataModified() : system::Void;
     function SetExpanding(value : system::Boolean) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<INodeProvider>::Create($Arguments)
@@ -4117,7 +4118,6 @@ class presentation::controls::tree::MemoryNodeProvider : presentation::controls:
     @ClosureTemplate:::vl::Func<$Func>($This, &$Type::Children)
     function GetChildren() : system::List<presentation::controls::tree::MemoryNodeProvider^>^;
     function GetData() : system::ReferenceType^;
-    function NotifyDataModified() : system::Void;
     function SetData(value : system::ReferenceType^) : system::Void;
 
     constructor () : presentation::controls::tree::MemoryNodeProvider^;

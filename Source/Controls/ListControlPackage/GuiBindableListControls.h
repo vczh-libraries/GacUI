@@ -343,6 +343,7 @@ GuiBindableTreeView
 					bool											GetExpanding()override;
 					void											SetExpanding(bool value)override;
 					vint											CalculateTotalVisibleNodes()override;
+					void											NotifyDataModified()override;
 
 					vint											GetChildCount()override;
 					Ptr<tree::INodeProvider>						GetParent()override;

@@ -373,20 +373,6 @@ MemoryNodeProvider
 					NotifyDataModified();
 				}
 
-				void MemoryNodeProvider::NotifyDataModified()
-				{
-					if(parent)
-					{
-						vint index=parent->children.IndexOf(this);
-						INodeProviderCallback* proxy=GetCallbackProxyInternal();
-						if(proxy)
-						{
-							proxy->OnBeforeItemModified(parent, index, 1, 1, false);
-							proxy->OnAfterItemModified(parent, index, 1, 1, false);
-						}
-					}
-				}
-
 				MemoryNodeProvider::NodeCollection& MemoryNodeProvider::Children()
 				{
 					return children;
@@ -427,6 +413,20 @@ MemoryNodeProvider
 				vint MemoryNodeProvider::CalculateTotalVisibleNodes()
 				{
 					return totalVisibleNodeCount;
+				}
+
+				void MemoryNodeProvider::NotifyDataModified()
+				{
+					if (parent)
+					{
+						vint index = parent->children.IndexOf(this);
+						INodeProviderCallback* proxy = GetCallbackProxyInternal();
+						if (proxy)
+						{
+							proxy->OnBeforeItemModified(parent, index, 1, 1, false);
+							proxy->OnAfterItemModified(parent, index, 1, 1, false);
+						}
+					}
 				}
 
 				vint MemoryNodeProvider::GetChildCount()

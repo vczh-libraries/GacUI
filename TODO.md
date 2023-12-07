@@ -28,7 +28,7 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
     - Ribbon gallary (not list) cannot scroll or display the selected item.
     - In `Bindable` tabs, add buttons that notify the list control when item data is changed.
       - BindableTreeView
-        - Add `INodeProvider::NotifyDataModified` (`MemoryNodeProvider` already implemented, move the function signature position)
+        - Consider add a reverse property binding so that item knows its `INodeProvider`
       - BindableDataGrid
     - Update reflection and add the `Playground` test to `FullControlTest`.
 - MISC
@@ -36,7 +36,12 @@ Turn `GuiListControl::IItemArranger` implementations into compositions.
   - Enlarging window slower than shrinking.
 - Examine all demo projects.
 - `FlowAlignment::Right` in demo.
-- Document new virtual repeat compositions.
+- Document
+  - new virtual repeat compositions.
+  - `GuiBindableTextList::NotifyItemDataModified`
+  - `GuiBindableListView::NotifyItemDataModified`
+  - Calling `INodeProvider::NotifyDataModified` in `GuiBindableTreeView`
+  - Check `IItemArranger` and `IItemArrangerCallback` document (if exists)
 - Make document v2 without auto generated content.
 
 ## Progressing

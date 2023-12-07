@@ -938,6 +938,11 @@ Interface Proxy (Controls)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(CalculateTotalVisibleNodes);
 				}
 
+				void NotifyDataModified()override
+				{
+					INVOKE_INTERFACE_PROXY_NOPARAMS(NotifyDataModified);
+				}
+
 				vint GetChildCount()override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetChildCount);

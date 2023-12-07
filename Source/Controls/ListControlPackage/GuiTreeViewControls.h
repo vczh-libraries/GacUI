@@ -77,6 +77,8 @@ NodeItemProvider
 					/// <summary>Calculate the number of total visible nodes of this node. The number of total visible nodes includes the node itself, and all total visible nodes of all visible sub nodes. If this node is collapsed, this number will be 1.</summary>
 					/// <returns>The number of total visible nodes.</returns>
 					virtual vint					CalculateTotalVisibleNodes()=0;
+					/// <summary>Notify that the state in the binded data object is modified.</summary>
+					virtual void					NotifyDataModified()=0;
 
 					/// <summary>Get the number of all sub nodes.</summary>
 					/// <returns>The number of all sub nodes.</returns>
@@ -247,9 +249,6 @@ MemoryNodeProvider
 					/// <summary>Set the data object.</summary>
 					/// <param name="value">The data object.</param>
 					void							SetData(const Ptr<DescriptableObject>& value);
-					/// <summary>Notify that the state in the binded data object is modified.</summary>
-					/// <param name="itemReferenceUpdated">True when items are replaced, false when only content in items are updated.</param>
-					void							NotifyDataModified();
 					/// <summary>Get all sub nodes.</summary>
 					/// <returns>All sub nodes.</returns>
 					NodeCollection&					Children();
@@ -257,6 +256,7 @@ MemoryNodeProvider
 					bool							GetExpanding()override;
 					void							SetExpanding(bool value)override;
 					vint							CalculateTotalVisibleNodes()override;
+					void							NotifyDataModified()override;
 
 					vint							GetChildCount()override;
 					Ptr<INodeProvider>				GetParent()override;

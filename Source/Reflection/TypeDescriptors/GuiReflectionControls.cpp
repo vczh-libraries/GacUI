@@ -413,6 +413,7 @@ Type Declaration (Extra)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Parent)
 
 				CLASS_MEMBER_METHOD(CalculateTotalVisibleNodes, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(NotifyDataModified, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(GetChild, {L"index"})
 			END_INTERFACE_MEMBER(INodeProvider)
 
@@ -449,7 +450,6 @@ Type Declaration (Extra)
 
 				CLASS_MEMBER_PROPERTY_FAST(Data)
 
-				CLASS_MEMBER_METHOD(NotifyDataModified, NO_PARAMETER)
 				CLASS_MEMBER_METHOD_RENAME(GetChildren, Children, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY(Children, GetChildren)
 			END_CLASS_MEMBER(MemoryNodeProvider)
