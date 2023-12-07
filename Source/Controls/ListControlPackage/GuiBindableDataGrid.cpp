@@ -480,14 +480,28 @@ DataColumns
 DataProvider
 ***********************************************************************/
 
+				bool DataProvider::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
+				{
+					if (!itemSource) return false;
+					if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
+					{
+						return false;
+					}
+					else
+					{
+						InvokeOnItemModified(start, count, count, itemReferenceUpdated);
+						return true;
+					}
+				}
+
 				void DataProvider::RebuildAllItems()
 				{
-					InvokeOnItemModified(0, Count(), Count(), true);
+					NotifyUpdate(0, Count(), true);
 				}
 
 				void DataProvider::RefreshAllItems()
 				{
-					InvokeOnItemModified(0, Count(), Count(), false);
+					NotifyUpdate(0, Count(), false);
 				}
 
 				void DataProvider::NotifyColumnRebuilt()
@@ -981,7 +995,7 @@ GuiBindableDataGrid
 				if (dataProvider->largeImageProperty != value)
 				{
 					dataProvider->largeImageProperty = value;
-					dataProvider->RebuildAllItems();
+					dataProvider->RefreshAllItems();
 					LargeImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -996,7 +1010,7 @@ GuiBindableDataGrid
 				if (dataProvider->smallImageProperty != value)
 				{
 					dataProvider->smallImageProperty = value;
-					dataProvider->RebuildAllItems();
+					dataProvider->RefreshAllItems();
 					SmallImagePropertyChanged.Execute(GetNotifyEventArguments());
 				}
 			}
@@ -1023,7 +1037,8 @@ GuiBindableDataGrid
 
 			bool GuiBindableDataGrid::NotifyItemDataModified(vint start, vint count)
 			{
-				CHECK_FAIL(L"Not Implemented!");
+				StopEdit();
+				return dataProvider->NotifyUpdate(start, count, false);
 			}
 		}
 	}

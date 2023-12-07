@@ -347,6 +347,7 @@ DataProvider
 					Ptr<IDataSorter>										currentSorter;
 					collections::List<vint>									virtualRowToSourceRow;
 
+					bool													NotifyUpdate(vint start, vint count, bool itemReferenceUpdated);
 					void													RebuildAllItems() override;
 					void													RefreshAllItems() override;
 					void													NotifyColumnRebuilt() override;
