@@ -83,7 +83,21 @@ GuiBindableTextList::ItemSource
 			{
 				InvokeOnItemModified(0, Count(), Count(), false);
 			}
-					
+
+			bool GuiBindableTextList::ItemSource::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
+			{
+				if (!itemSource) return false;
+				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
+				{
+					return false;
+				}
+				else
+				{
+					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
+					return true;
+				}
+			}
+
 			// ===================== GuiListControl::IItemProvider =====================
 			
 			vint GuiBindableTextList::ItemSource::Count()
@@ -221,6 +235,11 @@ GuiBindableTextList
 				return itemSource->Get(index);
 			}
 
+			bool GuiBindableTextList::NotifyItemDataModified(vint start, vint count)
+			{
+				return itemSource->NotifyUpdate(start, count, false);
+			}
+
 /***********************************************************************
 GuiBindableListView::ItemSource
 ***********************************************************************/
@@ -295,7 +314,7 @@ GuiBindableListView::ItemSource
 				InvokeOnItemModified(0, Count(), Count(), false);
 			}
 
-			bool GuiBindableListView::ItemSource::NotifyUpdate(vint start, vint count)
+			bool GuiBindableListView::ItemSource::NotifyUpdate(vint start, vint count, bool itemReferenceUpdated)
 			{
 				if (!itemSource) return false;
 				if (start<0 || start >= itemSource->GetCount() || count <= 0 || start + count > itemSource->GetCount())
@@ -304,7 +323,7 @@ GuiBindableListView::ItemSource
 				}
 				else
 				{
-					InvokeOnItemModified(start, count, count, true);
+					InvokeOnItemModified(start, count, count, itemReferenceUpdated);
 					return true;
 				}
 			}
@@ -612,6 +631,11 @@ GuiBindableListView
 				vint index = GetSelectedItemIndex();
 				if (index == -1) return Value();
 				return itemSource->Get(index);
+			}
+
+			bool GuiBindableListView::NotifyItemDataModified(vint start, vint count)
+			{
+				return itemSource->NotifyUpdate(start, count, false);
 			}
 
 /***********************************************************************
