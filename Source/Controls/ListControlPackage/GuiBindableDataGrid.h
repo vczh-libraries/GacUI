@@ -482,6 +482,12 @@ GuiBindableDataGrid
 				/// <summary>Get the selected cell.</summary>
 				/// <returns>Returns the selected item. If there are multiple selected items, or there is no selected item, null will be returned.</returns>
 				description::Value									GetSelectedCellValue();
+
+				/// <summary>Notify the control that data in some items are modified.</summary>
+				/// <param name="start">The index of the first item.</param>
+				/// <param name="count">The number of items</param>
+				/// <returns>Returns true if this operation succeeded.</returns>
+				bool												NotifyItemDataModified(vint start, vint count);
 			};
 		}
 	}

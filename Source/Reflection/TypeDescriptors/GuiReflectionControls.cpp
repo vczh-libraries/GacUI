@@ -1457,6 +1457,7 @@ Type Declaration (Class)
 				CLASS_MEMBER_PROPERTY_GUIEVENT_FAST(SmallImageProperty)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedRowValue, SelectedCellChanged)
 				CLASS_MEMBER_PROPERTY_EVENT_READONLY_FAST(SelectedCellValue, SelectedCellChanged)
+				CLASS_MEMBER_METHOD(NotifyItemDataModified, { L"start" _ L"count" })
 			END_CLASS_MEMBER(GuiBindableDataGrid)
 
 #undef INTERFACE_IDENTIFIER

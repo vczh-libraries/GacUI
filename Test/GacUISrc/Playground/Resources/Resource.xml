@@ -1009,7 +1009,7 @@
             <demo:RefreshBindableListViewTabPage/>
             <demo:RefreshTreeViewTabPage/>
             <demo:RefreshBindableTreeViewTabPage/>
-            <demo:RefreshBindableTreeViewTabPage/>
+            <demo:RefreshBindableDataGridTabPage/>
           </att.Pages>
         </Tab>
       </Window>

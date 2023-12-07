@@ -1020,6 +1020,11 @@ GuiBindableDataGrid
 				}
 				return dataProvider->GetColumns()[pos.column]->GetCellValue(pos.row);
 			}
+
+			bool GuiBindableDataGrid::NotifyItemDataModified(vint start, vint count)
+			{
+				CHECK_FAIL(L"Not Implemented!");
+			}
 		}
 	}
 }
