@@ -29,39 +29,41 @@ DefaultDataGridItemTemplate
 
 				class DefaultDataGridItemTemplate
 					: public DefaultListViewItemTemplate
-					, public ListViewColumnItemArranger::IColumnItemViewCallback
 				{
 				protected:
-					compositions::GuiTableComposition*					textTable = nullptr;
-					collections::Array<Ptr<IDataVisualizer>>			dataVisualizers;
-					IDataEditor*										currentEditor = nullptr;
+					compositions::GuiTableComposition*						textTable = nullptr;
+					collections::Array<IDataVisualizerFactory*>				dataVisualizerFactories;
+					collections::Array<Ptr<IDataVisualizer>>				dataVisualizers;
+					collections::Array<compositions::GuiCellComposition*>	dataCells;
+					IDataEditor*											currentEditor = nullptr;
 
-					IDataVisualizerFactory*								GetDataVisualizerFactory(vint row, vint column);
-					IDataEditorFactory*									GetDataEditorFactory(vint row, vint column);
-					vint												GetCellColumnIndex(compositions::GuiGraphicsComposition* composition);
-					bool												IsInEditor(GuiVirtualDataGrid* dataGrid, compositions::GuiMouseEventArgs& arguments);
-					void												OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-					void												OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
-					void												OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					IDataVisualizerFactory*									GetDataVisualizerFactory(vint row, vint column);
+					IDataEditorFactory*										GetDataEditorFactory(vint row, vint column);
+					vint													GetCellColumnIndex(compositions::GuiGraphicsComposition* composition);
+					bool													IsInEditor(GuiVirtualDataGrid* dataGrid, compositions::GuiMouseEventArgs& arguments);
+					void													OnCellButtonDown(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					void													OnCellLeftButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
+					void													OnCellRightButtonUp(compositions::GuiGraphicsComposition* sender, compositions::GuiMouseEventArgs& arguments);
 
-					void												OnColumnRebuilt()override;
-					void												OnColumnChanged(bool needToRefreshItems)override;
-					void												OnInitialize()override;
-					void												OnRefresh()override;
-					void												OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
-					void												OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void													DeleteAllVisualizers();
+					void													DeleteVisualizer(vint column);
+					void													ResetDataTable(vint columnCount);
+					void													OnInitialize()override;
+					void													OnRefresh()override;
+					void													OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void													OnFontChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void													OnContextChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
+					void													OnVisuallyEnabledChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments);
 				public:
 					DefaultDataGridItemTemplate();
 					~DefaultDataGridItemTemplate();
 
-					void												UpdateSubItemSize();
-					bool												IsEditorOpened();
-					void												NotifyOpenEditor(vint column, IDataEditor* editor);
-					void												NotifyCloseEditor();
-					void												NotifySelectCell(vint column);
-					void												NotifyCellEdited();
+					void													UpdateSubItemSize();
+					bool													IsEditorOpened();
+					void													NotifyOpenEditor(vint column, IDataEditor* editor);
+					void													NotifyCloseEditor();
+					void													NotifySelectCell(vint column);
+					void													NotifyCellEdited();
 				};
 			}
 

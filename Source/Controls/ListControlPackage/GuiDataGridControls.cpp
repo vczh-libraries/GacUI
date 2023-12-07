@@ -143,38 +143,53 @@ DefaultDataGridItemTemplate
 					}
 				}
 
-				void DefaultDataGridItemTemplate::OnColumnRebuilt()
+				void DefaultDataGridItemTemplate::DeleteAllVisualizers()
 				{
-					UpdateSubItemSize();
-				}
-
-				void DefaultDataGridItemTemplate::OnColumnChanged(bool needToRefreshItems)
-				{
-					UpdateSubItemSize();
-				}
-
-				void DefaultDataGridItemTemplate::OnInitialize()
-				{
+					for (vint i = 0; i < dataVisualizers.Count(); i++)
 					{
-						textTable = new GuiTableComposition;
-						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
-						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
-						textTable->SetRowsAndColumns(1, 1);
-						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
-						textTable->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
-						AddChild(textTable);
+						DeleteVisualizer(i);
 					}
+				}
 
-					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
+				void DefaultDataGridItemTemplate::DeleteVisualizer(vint column)
+				{
+					auto visualizer = dataVisualizers[column];
+					auto composition = visualizer->GetTemplate();
+					visualizer->NotifyDeletedTemplate();
+					if (composition->GetParent())
 					{
-						vint columnCount = dataGrid->listViewItemView->GetColumnCount();
-						vint itemIndex = GetIndex();
+						composition->GetParent()->RemoveChild(composition);
+					}
+					SafeDeleteComposition(composition);
+				}
 
-						dataVisualizers.Resize(columnCount);
-						for (vint i = 0; i < dataVisualizers.Count(); i++)
+				void DefaultDataGridItemTemplate::ResetDataTable(vint columnCount)
+				{
+					NotifyCloseEditor();
+					vint itemIndex = GetIndex();
+
+					if (dataVisualizers.Count() == columnCount)
+					{
+						for (vint i = 0; i < columnCount; i++)
 						{
 							auto factory = GetDataVisualizerFactory(itemIndex, i);
-							dataVisualizers[i] = factory->CreateVisualizer(dataGrid);
+							if (dataVisualizerFactories[i] != factory)
+							{
+								DeleteVisualizer(i);
+								dataVisualizerFactories[i] = factory;
+							}
+						}
+					}
+					else
+					{
+						DeleteAllVisualizers();
+						dataVisualizerFactories.Resize(columnCount);
+						dataVisualizers.Resize(columnCount);
+						dataCells.Resize(columnCount);
+						
+						for (vint i = 0; i < columnCount; i++)
+						{
+							dataVisualizerFactories[i] = GetDataVisualizerFactory(itemIndex, i);
 						}
 
 						textTable->SetRowsAndColumns(1, columnCount);
@@ -187,28 +202,21 @@ DefaultDataGridItemTemplate
 							cell->GetEventReceiver()->rightButtonDown.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellButtonDown);
 							cell->GetEventReceiver()->leftButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellLeftButtonUp);
 							cell->GetEventReceiver()->rightButtonUp.AttachMethod(this, &DefaultDataGridItemTemplate::OnCellRightButtonUp);
+							dataCells[i] = cell;
+						}
+					}
+				}
 
-							auto composition = dataVisualizers[i]->GetTemplate();
-							composition->SetAlignmentToParent(Margin(0, 0, 0, 0));
-							cell->AddChild(composition);
-						}
-
-						// TODO: (enumerable) foreach
-						for (vint i = 0; i < dataVisualizers.Count(); i++)
-						{
-							dataVisualizers[i]->BeforeVisualizeCell(dataGrid->GetItemProvider(), itemIndex, i);
-						}
-
-						GridPos selectedCell = dataGrid->GetSelectedCell();
-						if (selectedCell.row == itemIndex)
-						{
-							NotifySelectCell(selectedCell.column);
-						}
-						else
-						{
-							NotifySelectCell(-1);
-						}
-						UpdateSubItemSize();
+				void DefaultDataGridItemTemplate::OnInitialize()
+				{
+					{
+						textTable = new GuiTableComposition;
+						textTable->SetMinSizeLimitation(GuiGraphicsComposition::LimitToElementAndChildren);
+						textTable->SetAlignmentToParent(Margin(0, 0, 0, 0));
+						textTable->SetRowsAndColumns(1, 1);
+						textTable->SetRowOption(0, GuiCellOption::MinSizeOption());
+						textTable->SetColumnOption(0, GuiCellOption::AbsoluteOption(0));
+						AddChild(textTable);
 					}
 
 					SelectedChanged.AttachMethod(this, &DefaultDataGridItemTemplate::OnSelectedChanged);
@@ -224,7 +232,39 @@ DefaultDataGridItemTemplate
 
 				void DefaultDataGridItemTemplate::OnRefresh()
 				{
-					CHECK_FAIL(L"Not Implemented!");
+					if (auto dataGrid = dynamic_cast<GuiVirtualDataGrid*>(listControl))
+					{
+						vint columnCount = dataGrid->listViewItemView->GetColumnCount();
+						vint itemIndex = GetIndex();
+						ResetDataTable(columnCount);
+
+						for (vint i = 0; i < columnCount; i++)
+						{
+							auto& dataVisualizer = dataVisualizers[i];
+							if (!dataVisualizer)
+							{
+								dataVisualizer = dataVisualizerFactories[i]->CreateVisualizer(dataGrid);
+								dataVisualizers[i] = dataVisualizer;
+
+								auto cell = dataCells[i];
+								auto composition = dataVisualizer->GetTemplate();
+								composition->SetAlignmentToParent(Margin(0, 0, 0, 0));
+								cell->AddChild(composition);
+							}
+							dataVisualizer->BeforeVisualizeCell(dataGrid->GetItemProvider(), itemIndex, i);
+						}
+
+						GridPos selectedCell = dataGrid->GetSelectedCell();
+						if (selectedCell.row == itemIndex)
+						{
+							NotifySelectCell(selectedCell.column);
+						}
+						else
+						{
+							NotifySelectCell(-1);
+						}
+					}
+					UpdateSubItemSize();
 				}
 
 				void DefaultDataGridItemTemplate::OnSelectedChanged(compositions::GuiGraphicsComposition* sender, compositions::GuiEventArgs& arguments)
