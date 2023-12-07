@@ -4131,6 +4131,7 @@ class presentation::controls::GuiBindableListView : presentation::controls::GuiV
     function GetLargeImageProperty() : system::Function<presentation::GuiImageData^, system::Object>^;
     function GetSelectedItem() : system::Object;
     function GetSmallImageProperty() : system::Function<presentation::GuiImageData^, system::Object>^;
+    function NotifyItemDataModified(start : system::Int32, count : system::Int32) : system::Boolean;
     function SetItemSource(value : system::Enumerable^) : system::Void;
     function SetLargeImageProperty(value : system::Function<presentation::GuiImageData^, system::Object>^) : system::Void;
     function SetSmallImageProperty(value : system::Function<presentation::GuiImageData^, system::Object>^) : system::Void;
@@ -4195,6 +4196,7 @@ class presentation::controls::GuiBindableTextList : presentation::controls::GuiV
     function GetItemSource() : system::Enumerable^;
     function GetSelectedItem() : system::Object;
     function GetTextProperty() : system::Function<system::String, system::Object>^;
+    function NotifyItemDataModified(start : system::Int32, count : system::Int32) : system::Boolean;
     function SetCheckedProperty(value : system::Function<system::Boolean, system::Object, system::Boolean, system::Boolean>^) : system::Void;
     function SetItemSource(value : system::Enumerable^) : system::Void;
     function SetTextProperty(value : system::Function<system::String, system::Object>^) : system::Void;

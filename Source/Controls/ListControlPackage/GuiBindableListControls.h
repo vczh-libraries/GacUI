@@ -376,7 +376,6 @@ GuiBindableTreeView
 					description::Value								GetBindingValue(tree::INodeProvider* node)override;
 					IDescriptable*									RequestView(const WString& identifier)override;
 
-
 					// ===================== tree::ITreeViewItemView =====================
 
 					Ptr<GuiImageData>								GetNodeImage(tree::INodeProvider* node)override;
